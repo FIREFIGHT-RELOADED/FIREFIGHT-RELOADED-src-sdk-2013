@@ -1,0 +1,5 @@
+#!/bin/bash
+
+pushd `dirname $0`
+devtools/bin/vpc /episodic +game /mksln game_firefightreloaded
+popd
