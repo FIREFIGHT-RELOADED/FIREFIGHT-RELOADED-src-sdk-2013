@@ -7500,6 +7500,100 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		}
 		return true;
 	}
+	else if (stricmp(cmd, "buycallclientcmd") == 0)
+	{
+		if (!IsDead() && g_fr_economy.GetBool())
+		{
+			int moneyAmount = atoi(args[2]);
+			int canGetMultiple = atoi(args[3]);
+			int menuID = atoi(args[4]);
+			if (GetMoney() < moneyAmount)
+			{
+				EmitSound("Store.InsufficientFunds");
+			}
+			else if (HasNamedPlayerItem(args[1]) && canGetMultiple == 0)
+			{
+				EmitSound("Store.InsufficientFunds");
+			}
+			else
+			{
+				engine->ClientCommand(edict(), args[1]);
+				RemoveMoney(moneyAmount);
+				EmitSound("Store.Buy");
+			}
+
+			if (menuID == 1)
+			{
+				KeyValues *data = new KeyValues("data");
+				data->SetString("type", "1");			// show userdata from stringtable entry
+				ShowViewPortPanel(PANEL_BUY_SUPPLIES, true, data);
+			}
+			else if (menuID == 2)
+			{
+				KeyValues *data = new KeyValues("data");
+				data->SetString("type", "1");			// show userdata from stringtable entry
+				ShowViewPortPanel(PANEL_BUY_AMMO, true, data);
+			}
+			else if (menuID == 3)
+			{
+				KeyValues *data = new KeyValues("data");
+				data->SetString("type", "1");			// show userdata from stringtable entry
+				ShowViewPortPanel(PANEL_BUY_WEAPONS, true, data);
+			}
+		}
+		else
+		{
+			EmitSound("Store.InsufficientFunds");
+		}
+		return true;
+	}
+	else if (stricmp(cmd, "buycallservercmd") == 0)
+	{
+		if (!IsDead() && g_fr_economy.GetBool())
+		{
+			int moneyAmount = atoi(args[2]);
+			int canGetMultiple = atoi(args[3]);
+			int menuID = atoi(args[4]);
+			if (GetMoney() < moneyAmount)
+			{
+				EmitSound("Store.InsufficientFunds");
+			}
+			else if (HasNamedPlayerItem(args[1]) && canGetMultiple == 0)
+			{
+				EmitSound("Store.InsufficientFunds");
+			}
+			else
+			{
+				engine->ServerCommand(args[1]);
+				RemoveMoney(moneyAmount);
+				EmitSound("Store.Buy");
+			}
+
+			if (menuID == 1)
+			{
+				KeyValues *data = new KeyValues("data");
+				data->SetString("type", "1");			// show userdata from stringtable entry
+				ShowViewPortPanel(PANEL_BUY_SUPPLIES, true, data);
+			}
+			else if (menuID == 2)
+			{
+				KeyValues *data = new KeyValues("data");
+				data->SetString("type", "1");			// show userdata from stringtable entry
+				ShowViewPortPanel(PANEL_BUY_AMMO, true, data);
+			}
+			else if (menuID == 3)
+			{
+				KeyValues *data = new KeyValues("data");
+				data->SetString("type", "1");			// show userdata from stringtable entry
+				ShowViewPortPanel(PANEL_BUY_WEAPONS, true, data);
+			}
+		}
+		else
+		{
+			EmitSound("Store.InsufficientFunds");
+		}
+		return true;
+	}
 
 	return false;
 }

@@ -50,6 +50,10 @@ ConVar xc_uncrouch_on_jump( "xc_uncrouch_on_jump", "1", FCVAR_ARCHIVE, "Uncrouch
 ConVar player_limit_jump_speed( "player_limit_jump_speed", "1", FCVAR_REPLICATED );
 #endif
 
+//Used for bunnyhopping
+ConVar fr_enable_bunnyhop("fr_enable_bunnyhop", "1", FCVAR_ARCHIVE);
+ConVar fr_autojump("fr_autojump", "1", FCVAR_ARCHIVE);
+
 // option_duck_method is a carrier convar. Its sole purpose is to serve an easy-to-flip
 // convar which is ONLY set by the X360 controller menu to tell us which way to bind the
 // duck controls. Its value is meaningless anytime we don't have the options window open.
@@ -2347,7 +2351,6 @@ void CGameMovement::PlaySwimSound()
 	MoveHelper()->StartSound( mv->GetAbsOrigin(), "Player.Swim" );
 }
 
-
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -2404,7 +2407,7 @@ bool CGameMovement::CheckJumpButton( void )
 		return false;
 #endif
 
-	if ( mv->m_nOldButtons & IN_JUMP )
+	if (mv->m_nOldButtons & IN_JUMP && !fr_autojump.GetBool())
 		return false;		// don't pogo stick
 
 	// Cannot jump will in the unduck transition.
@@ -2414,7 +2417,6 @@ bool CGameMovement::CheckJumpButton( void )
 	// Still updating the eye position.
 	if ( player->m_Local.m_flDuckJumpTime > 0.0f )
 		return false;
-
 
 	// In the air now.
     SetGroundEntity( NULL );
@@ -2473,25 +2475,45 @@ bool CGameMovement::CheckJumpButton( void )
 		AngleVectors( mv->m_vecViewAngles, &vecForward );
 		vecForward.z = 0;
 		VectorNormalize( vecForward );
-		
-		// We give a certain percentage of the current forward movement as a bonus to the jump speed.  That bonus is clipped
-		// to not accumulate over time.
-		float flSpeedBoostPerc = ( !pMoveData->m_bIsSprinting && !player->m_Local.m_bDucked ) ? 0.5f : 0.1f;
-		float flSpeedAddition = fabs( mv->m_flForwardMove * flSpeedBoostPerc );
-		float flMaxSpeed = mv->m_flMaxSpeed + ( mv->m_flMaxSpeed * flSpeedBoostPerc );
-		float flNewSpeed = ( flSpeedAddition + mv->m_vecVelocity.Length2D() );
-
-		// If we're over the maximum, we want to only boost as much as will get us to the goal speed
-		if ( flNewSpeed > flMaxSpeed )
+		if (fr_enable_bunnyhop.GetBool())
 		{
-			flSpeedAddition -= flNewSpeed - flMaxSpeed;
+			if (!pMoveData->m_bIsSprinting && !player->m_Local.m_bDucked)
+			{
+				for (int iAxis = 0; iAxis < 2; ++iAxis)
+				{
+					vecForward[iAxis] *= (mv->m_flForwardMove * 0.5f);
+				}
+			}
+			else
+			{
+				for (int iAxis = 0; iAxis < 2; ++iAxis)
+				{
+					vecForward[iAxis] *= (mv->m_flForwardMove * 0.1f);
+				}
+			}
+			VectorAdd(vecForward, mv->m_vecVelocity, mv->m_vecVelocity);
 		}
+		else
+		{
+			// We give a certain percentage of the current forward movement as a bonus to the jump speed.  That bonus is clipped
+			// to not accumulate over time.
+			float flSpeedBoostPerc = (!pMoveData->m_bIsSprinting && !player->m_Local.m_bDucked) ? 0.5f : 0.1f;
+			float flSpeedAddition = fabs(mv->m_flForwardMove * flSpeedBoostPerc);
+			float flMaxSpeed = mv->m_flMaxSpeed + (mv->m_flMaxSpeed * flSpeedBoostPerc);
+			float flNewSpeed = (flSpeedAddition + mv->m_vecVelocity.Length2D());
 
-		if ( mv->m_flForwardMove < 0.0f )
-			flSpeedAddition *= -1.0f;
+			// If we're over the maximum, we want to only boost as much as will get us to the goal speed
+			if (flNewSpeed > flMaxSpeed)
+			{
+				flSpeedAddition -= flNewSpeed - flMaxSpeed;
+			}
 
-		// Add it on
-		VectorAdd( (vecForward*flSpeedAddition), mv->m_vecVelocity, mv->m_vecVelocity );
+			if (mv->m_flForwardMove < 0.0f)
+				flSpeedAddition *= -1.0f;
+
+			// Add it on
+			VectorAdd((vecForward*flSpeedAddition), mv->m_vecVelocity, mv->m_vecVelocity);
+		}
 	}
 #endif
 
