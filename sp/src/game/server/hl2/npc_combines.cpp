@@ -206,7 +206,7 @@ float CNPC_CombineS::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDama
 	{
 	case HITGROUP_HEAD:
 		int HeadshotRandom = random->RandomInt(0, 4);
-		if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) || g_fr_headshotgore.GetBool())
+		if (!(g_Language.GetInt() == LANGUAGE_GERMAN || !UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool())
 		{
 			if (isNohead == false && HeadshotRandom == 0 && !(info.GetDamageType() & DMG_NEVERGIB) || isNohead == false && info.GetDamageType() & DMG_SNIPER && !(info.GetDamageType() & DMG_NEVERGIB))
 			{
