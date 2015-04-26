@@ -487,7 +487,7 @@ void CNPC_Zombine::DropGrenade( Vector vDir )
 void CNPC_Zombine::Event_Killed( const CTakeDamageInfo &info )
 {
 	CTakeDamageInfo dInfo = info;
-	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && info.GetDamageType() & (DMG_ALWAYSGIB | DMG_BLAST | DMG_CRUSH) && !m_fIsTorso)
+	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && info.GetDamageType() & (DMG_ALWAYSGIB | DMG_BLAST | DMG_CRUSH) && !(info.GetDamageType() & (DMG_DISSOLVE)) && !m_fIsTorso)
 	{
 		dInfo.SetDamageType(info.GetDamageType() | DMG_REMOVENORAGDOLL);
 	}
