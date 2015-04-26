@@ -77,6 +77,7 @@ void CThirdPersonManager::Update( void )
 {
 
 #ifdef CLIENT_DLL
+	/*
 	if ( !sv_cheats )
 	{
 		sv_cheats = cvar->FindVar( "sv_cheats" );
@@ -91,6 +92,7 @@ void CThirdPersonManager::Update( void )
 		}
 		return;
 	}
+	*/
 
 	if ( IsOverridingThirdPerson() == false )
 	{
