@@ -262,7 +262,7 @@ void CNPC_PoisonZombie::Precache( void )
 	PrecacheModel("models/zombie/poison.mdl");
 
 	PrecacheModel("models/gibs/agib_p3.mdl");
-	PrecacheModel("models/gibsapgib_p4.mdl");
+	PrecacheModel("models/gibs/agib_p4.mdl");
 
 	PrecacheScriptSound( "NPC_PoisonZombie.Die" );
 	PrecacheScriptSound( "NPC_PoisonZombie.ThrowWarn" );
