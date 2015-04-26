@@ -2235,22 +2235,27 @@ void CNPC_BaseZombie::PrescheduleThink( void )
 		{
 		case SKILL_EASY:
 			m_iHealth -= 15;
+			UTIL_BloodSpray(WorldSpaceCenter(), vec3_origin, BLOOD_COLOR_YELLOW, 5, FX_BLOODSPRAY_ALL);
 			break;
 
 		case SKILL_MEDIUM:
 			m_iHealth -= 10;
+			UTIL_BloodSpray(WorldSpaceCenter(), vec3_origin, BLOOD_COLOR_YELLOW, 5, FX_BLOODSPRAY_ALL);
 			break;
 
 		case SKILL_HARD:
 			m_iHealth -= 5;
+			UTIL_BloodSpray(WorldSpaceCenter(), vec3_origin, BLOOD_COLOR_YELLOW, 5, FX_BLOODSPRAY_ALL);
 			break;
 
 		case SKILL_VERYHARD:
 			m_iHealth -= 3;
+			UTIL_BloodSpray(WorldSpaceCenter(), vec3_origin, BLOOD_COLOR_YELLOW, 5, FX_BLOODSPRAY_ALL);
 			break;
 
 		case SKILL_NIGHTMARE:
 			m_iHealth -= 1;
+			UTIL_BloodSpray(WorldSpaceCenter(), vec3_origin, BLOOD_COLOR_YELLOW, 5, FX_BLOODSPRAY_ALL);
 			break;
 		}
 	}
