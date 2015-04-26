@@ -2227,6 +2227,33 @@ void CNPC_BaseZombie::PrescheduleThink( void )
 	{
 		m_flBurnDamage = 0;
 	}
+
+	// if our crab is shot off, we will lose health based on difficulty
+	if (m_fIsHeadless)
+	{
+		switch (g_pGameRules->GetSkillLevel())
+		{
+		case SKILL_EASY:
+			m_iHealth -= 15;
+			break;
+
+		case SKILL_MEDIUM:
+			m_iHealth -= 10;
+			break;
+
+		case SKILL_HARD:
+			m_iHealth -= 5;
+			break;
+
+		case SKILL_VERYHARD:
+			m_iHealth -= 3;
+			break;
+
+		case SKILL_NIGHTMARE:
+			m_iHealth -= 1;
+			break;
+		}
+	}
 }
 
 
