@@ -487,7 +487,7 @@ float CNPC_PoisonZombie::GetHitgroupDamageMultiplier(int iHitGroup, const CTakeD
 	case HITGROUP_HEAD:
 	{
 		int HeadshotRandom = random->RandomInt(0, 6);
-		if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) || g_fr_headshotgore.GetBool())
+		if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool())
 		{
 			if (!m_fIsHeadless && HeadshotRandom == 0 && !(info.GetDamageType() & DMG_NEVERGIB) || !m_fIsHeadless && info.GetDamageType() & DMG_SNIPER && !(info.GetDamageType() & DMG_NEVERGIB))
 			{
