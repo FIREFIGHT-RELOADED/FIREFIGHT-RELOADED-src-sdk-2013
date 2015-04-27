@@ -2243,19 +2243,19 @@ int CNPC_BaseZombie::GetDamageForDifficulty(void)
 	switch (g_pGameRules->GetSkillLevel())
 	{
 	case SKILL_EASY:
-		dmg = 15;
-		break;
-
-	case SKILL_MEDIUM:
-		dmg = 10;
-		break;
-
-	case SKILL_HARD:
 		dmg = 5;
 		break;
 
-	case SKILL_VERYHARD:
+	case SKILL_MEDIUM:
+		dmg = 4;
+		break;
+
+	case SKILL_HARD:
 		dmg = 3;
+		break;
+
+	case SKILL_VERYHARD:
+		dmg = 2;
 		break;
 
 	case SKILL_NIGHTMARE:
