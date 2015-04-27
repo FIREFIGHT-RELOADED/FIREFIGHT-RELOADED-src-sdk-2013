@@ -1083,9 +1083,13 @@ public:
 	// Health accessors.
 	virtual int		GetMaxHealth()  const	{ return m_iMaxHealth; }
 	void	SetMaxHealth( int amt )	{ m_iMaxHealth = amt; }
+	void	AddMaxHealth(int amt)	{ m_iMaxHealth += amt; }
+	void	RemoveMaxHealth(int amt)	{ m_iMaxHealth -= amt; }
 
 	int		GetHealth() const		{ return m_iHealth; }
 	void	SetHealth( int amt )	{ m_iHealth = amt; }
+	void	AddHealth(int amt)		{ m_iHealth += amt; }
+	void	RemoveHealth(int amt)		{ m_iHealth -= amt; }
 
 	// Ugly code to lookup all functions to make sure they are in the table when set.
 #ifdef _DEBUG

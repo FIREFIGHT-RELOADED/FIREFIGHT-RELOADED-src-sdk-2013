@@ -159,6 +159,7 @@ public:
 
 	void GatherConditions( void );
 	void PrescheduleThink( void );
+	int GetDamageForDifficulty( void );
 
 	virtual void Event_Killed( const CTakeDamageInfo &info );
 	virtual bool BecomeRagdoll( const CTakeDamageInfo &info, const Vector &forceVector );
