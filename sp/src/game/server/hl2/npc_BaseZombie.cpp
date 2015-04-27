@@ -2231,38 +2231,11 @@ void CNPC_BaseZombie::PrescheduleThink( void )
 	// if our crab is shot off, we will lose health based on difficulty
 	if (m_fIsHeadless)
 	{
-		CTakeDamageInfo info(this, this, GetDamageForDifficulty(), DMG_CLUB);
+		int HeadshotDMGRandom = random->RandomInt(1, 5);
+		CTakeDamageInfo info(this, this, HeadshotDMGRandom, DMG_CLUB);
 		BaseClass::TakeDamage(info);
 		UTIL_BloodImpact(WorldSpaceCenter(), vec3_origin, BloodColor(), 5);
 	}
-}
-
-int CNPC_BaseZombie::GetDamageForDifficulty(void)
-{
-	int dmg = 0;
-	switch (g_pGameRules->GetSkillLevel())
-	{
-	case SKILL_EASY:
-		dmg = 5;
-		break;
-
-	case SKILL_MEDIUM:
-		dmg = 4;
-		break;
-
-	case SKILL_HARD:
-		dmg = 3;
-		break;
-
-	case SKILL_VERYHARD:
-		dmg = 2;
-		break;
-
-	case SKILL_NIGHTMARE:
-		dmg = 1;
-		break;
-	}
-	return dmg;
 }
 
 //---------------------------------------------------------
