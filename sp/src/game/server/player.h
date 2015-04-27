@@ -827,6 +827,7 @@ public:
 	void ResetXPAlt() { m_iExp = 0;}
 
 	int GetMoney() { return m_iMoney; }
+	void SetMoney(int set = 1) { m_iMoney = set; }
 	void AddMoney(int add = 1) { m_iMoney += add; }
 	void RemoveMoney(int remove = 1) { m_iMoney -= remove; }
 	void ResetMoney() { m_iMoney = 0; }

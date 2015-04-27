@@ -215,6 +215,8 @@ ConVar sv_player_voice_death("sv_player_voice_death", "1", FCVAR_ARCHIVE);
 ConVar sv_player_voice_hit_freq("sv_player_voice_hit_freq", "4", FCVAR_CHEAT);
 ConVar sv_player_voice_hit("sv_player_voice_hit", "1", FCVAR_ARCHIVE);
 ConVar sv_player_voice_perk("sv_player_voice_perk", "1", FCVAR_ARCHIVE);
+ConVar sv_player_startingmoney("sv_player_startingmoney", "0", FCVAR_ARCHIVE);
+ConVar sv_player_startingmoney_amount("sv_player_startingmoney_amount", "300", FCVAR_ARCHIVE);
 
 void CC_GiveCurrentAmmo( void )
 {
@@ -5780,6 +5782,10 @@ void CBasePlayer::Spawn( void )
 		GiveNamedItem("weapon_crowbar");
 		GiveNamedItem("weapon_pistol");
 		GiveNamedItem("weapon_physcannon");
+	}
+	if (sv_player_startingmoney.GetBool())
+	{
+		SetMoney(sv_player_startingmoney_amount.GetInt());
 	}
 }
 
