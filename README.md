@@ -7,3 +7,5 @@ FIREFIGHT RELOADED is a (now open source) Source SDK 2013 modification with the 
 ModDB Page: http://www.moddb.com/mods/firefight-reloaded
 
 BSNOOCH Board: http://bsnooch.com/forums/index.php?board=68.0
+
+<b>NOTE: PLEASE NOTE THAT THIS REPOSITORY MAY OR MAY NOT HAVE UNFINISHED OR BUGGY CODE FROM A NEWER RELEASE OF FIREFIGHT RELOADED. KEEP THIS IN MIND BEFORE COMPILING.</b>
