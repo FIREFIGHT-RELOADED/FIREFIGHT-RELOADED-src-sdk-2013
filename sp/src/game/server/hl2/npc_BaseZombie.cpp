@@ -159,6 +159,8 @@ ConVar zombie_decaymax( "zombie_decaymax", "0.4" );
 
 ConVar zombie_ambushdist( "zombie_ambushdist", "16000" );
 
+ConVar zombie_headcrabless_damage("zombie_headcrabless_damage", "1", FCVAR_ARCHIVE);
+
 //=========================================================
 // For a couple of reasons, we keep a running count of how
 // many zombies in the world are angry at any given time.
@@ -2229,7 +2231,7 @@ void CNPC_BaseZombie::PrescheduleThink( void )
 	}
 
 	// if our crab is shot off, we will lose health based on difficulty
-	if (m_fIsHeadless)
+	if (m_fIsHeadless && zombie_headcrabless_damage.GetBool())
 	{
 		int HeadshotDMGRandom = random->RandomInt(1, 5);
 		CTakeDamageInfo info(this, this, HeadshotDMGRandom, DMG_CLUB);
