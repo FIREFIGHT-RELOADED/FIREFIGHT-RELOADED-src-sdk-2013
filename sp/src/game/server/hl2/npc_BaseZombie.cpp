@@ -2231,36 +2231,39 @@ void CNPC_BaseZombie::PrescheduleThink( void )
 	// if our crab is shot off, we will lose health based on difficulty
 	if (m_fIsHeadless)
 	{
-		switch (g_pGameRules->GetSkillLevel())
-		{
-		case SKILL_EASY:
-			m_iHealth -= 15;
-			UTIL_BloodImpact(WorldSpaceCenter(), vec3_origin, BloodColor(), 5);
-			break;
-
-		case SKILL_MEDIUM:
-			m_iHealth -= 10;
-			UTIL_BloodImpact(WorldSpaceCenter(), vec3_origin, BloodColor(), 5);
-			break;
-
-		case SKILL_HARD:
-			m_iHealth -= 5;
-			UTIL_BloodImpact(WorldSpaceCenter(), vec3_origin, BloodColor(), 5);
-			break;
-
-		case SKILL_VERYHARD:
-			m_iHealth -= 3;
-			UTIL_BloodImpact(WorldSpaceCenter(), vec3_origin, BloodColor(), 5);
-			break;
-
-		case SKILL_NIGHTMARE:
-			m_iHealth -= 1;
-			UTIL_BloodImpact(WorldSpaceCenter(), vec3_origin, BloodColor(), 5);
-			break;
-		}
+		CTakeDamageInfo info(this, this, GetDamageForDifficulty(), DMG_CRUSH);
+		BaseClass::TakeDamage(info);
+		UTIL_BloodImpact(WorldSpaceCenter(), vec3_origin, BloodColor(), 5);
 	}
 }
 
+int CNPC_BaseZombie::GetDamageForDifficulty(void)
+{
+	int dmg = 0;
+	switch (g_pGameRules->GetSkillLevel())
+	{
+	case SKILL_EASY:
+		dmg = 15;
+		break;
+
+	case SKILL_MEDIUM:
+		dmg = 10;
+		break;
+
+	case SKILL_HARD:
+		dmg = 5;
+		break;
+
+	case SKILL_VERYHARD:
+		dmg = 3;
+		break;
+
+	case SKILL_NIGHTMARE:
+		dmg = 1;
+		break;
+	}
+	return dmg;
+}
 
 //---------------------------------------------------------
 //---------------------------------------------------------
