@@ -2151,68 +2151,44 @@ void CWeaponCustom::ShootAR2EnergyBallLeft(bool isPrimary, bool usePrimaryAmmo)
 // Purpose: 
 // Output : Activity
 //-----------------------------------------------------------------------------
-Activity CWeaponCustom::GetPrimaryAttackActivity( void )
+Activity CWeaponCustom::GetPrimaryAttackActivity(void)
 {
-	int m_nSelectRecoilAnim = random->RandomInt(0, 3);
-
-	if (m_nSelectRecoilAnim == 1)
-	{
+	if (m_nShotsFired < 2)
 		return ACT_VM_PRIMARYATTACK;
-	}
 
-	if (m_nSelectRecoilAnim == 2)
-	{
+	if (m_nShotsFired < 3)
 		return ACT_VM_RECOIL1;
-	}
-	
-	if (m_nSelectRecoilAnim == 3)
-	{
+
+	if (m_nShotsFired < 4)
 		return ACT_VM_RECOIL2;
-	}
 
 	return ACT_VM_RECOIL3;
 }
 
 Activity CWeaponCustom::GetRightGunActivity(void)
 {
-	int m_nSelectRecoilAnim = random->RandomInt(0, 3);
-
-	if (m_nSelectRecoilAnim == 1)
-	{
+	if (m_nShotsFired < 1)
 		return ACT_VM_PRIMARYATTACK_R;
-	}
 
-	if (m_nSelectRecoilAnim == 2)
-	{
+	if (m_nShotsFired < 2)
 		return ACT_VM_PRIMARYATTACK_R_RECOIL1;
-	}
 
-	if (m_nSelectRecoilAnim == 3)
-	{
+	if (m_nShotsFired < 3)
 		return ACT_VM_PRIMARYATTACK_R_RECOIL2;
-	}
 
 	return ACT_VM_PRIMARYATTACK_R_RECOIL3;
 }
 
 Activity CWeaponCustom::GetLeftGunActivity(void)
 {
-	int m_nSelectRecoilAnim = random->RandomInt(0, 3);
-
-	if (m_nSelectRecoilAnim == 1)
-	{
+	if (m_nShotsFired < 1)
 		return ACT_VM_PRIMARYATTACK_L;
-	}
 
-	if (m_nSelectRecoilAnim == 2)
-	{
+	if (m_nShotsFired < 2)
 		return ACT_VM_PRIMARYATTACK_L_RECOIL1;
-	}
 
-	if (m_nSelectRecoilAnim == 3)
-	{
+	if (m_nShotsFired < 3)
 		return ACT_VM_PRIMARYATTACK_L_RECOIL2;
-	}
 
 	return ACT_VM_PRIMARYATTACK_L_RECOIL3;
 }
