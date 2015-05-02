@@ -105,11 +105,13 @@ void CWeaponCustom::Equip( CBaseCombatCharacter *pOwner )
 	}
 	*/
 
-	ApplyCustomization();
+	//Commented out customization for now untill it is fixed.
+	//ApplyCustomization();
 
 	BaseClass::Equip( pOwner );
 }
 
+/*
 void CWeaponCustom::ApplyCustomization(void)
 {
 	if (this->GetWpnData().m_sUsesCustomization)
@@ -149,6 +151,7 @@ void CWeaponCustom::ApplyCustomization(void)
 		}
 	}
 }
+*/
 
 void CWeaponCustom::ItemPostFrame( void )
 {
@@ -385,6 +388,7 @@ void CWeaponCustom::ShootBullets( bool isPrimary, bool usePrimaryAmmo )
 		if ( (UsesClipsForAmmo2() && m_iClip2 == 0) || ( !UsesClipsForAmmo2() && !pPlayer->GetAmmoCount(m_iSecondaryAmmoType) ) )
 			return;
 	}
+
 	m_nShotsFired++;
 
 	pPlayer->DoMuzzleFlash();
@@ -545,6 +549,7 @@ void CWeaponCustom::ShootBulletsLeft(bool isPrimary, bool usePrimaryAmmo)
 		if ((UsesClipsForAmmo2() && m_iClip2 == 0) || (!UsesClipsForAmmo2() && !pPlayer->GetAmmoCount(m_iSecondaryAmmoType)))
 			return;
 	}
+
 	m_nShotsFired++;
 
 	pPlayer->DoMuzzleFlash();
@@ -705,6 +710,7 @@ void CWeaponCustom::ShootBulletsRight(bool isPrimary, bool usePrimaryAmmo)
 		if ((UsesClipsForAmmo2() && m_iClip2 == 0) || (!UsesClipsForAmmo2() && !pPlayer->GetAmmoCount(m_iSecondaryAmmoType)))
 			return;
 	}
+
 	m_nShotsFired++;
 
 	pPlayer->DoMuzzleFlash();
@@ -918,6 +924,8 @@ void CWeaponCustom::ShootProjectile( bool isPrimary, bool usePrimaryAmmo )
 	m_iPrimaryAttacks++;
 	gamestats->Event_WeaponFired( pOwner, true, GetClassname() );
 
+	m_nShotsFired++;
+
 	if (isPrimary)
 	{
 		if (this->GetWpnData().m_sPrimaryHasRecoilRPGMissle)
@@ -1075,6 +1083,8 @@ void CWeaponCustom::ShootProjectileRight(bool isPrimary, bool usePrimaryAmmo)
 
 	m_iPrimaryAttacks++;
 	gamestats->Event_WeaponFired(pOwner, true, GetClassname());
+
+	m_nShotsFired++;
 
 	if (isPrimary)
 	{
@@ -1234,6 +1244,8 @@ void CWeaponCustom::ShootProjectileLeft(bool isPrimary, bool usePrimaryAmmo)
 	m_iPrimaryAttacks++;
 	gamestats->Event_WeaponFired(pOwner, true, GetClassname());
 
+	m_nShotsFired++;
+
 	if (isPrimary)
 	{
 		if (this->GetWpnData().m_sPrimaryHasRecoilRPGMissle)
@@ -1385,6 +1397,7 @@ void CWeaponCustom::ShootSMGGrenade(bool isPrimary, bool usePrimaryAmmo)
 
 	// player "shoot" animation
 	pOwner->SetAnimation(PLAYER_ATTACK1);
+	m_nShotsFired++;
 
 	if (isPrimary)
 	{
@@ -1518,6 +1531,8 @@ void CWeaponCustom::ShootSMGGrenadeRight(bool isPrimary, bool usePrimaryAmmo)
 	// player "shoot" animation
 	pOwner->SetAnimation(PLAYER_ATTACK1);
 
+	m_nShotsFired++;
+
 	if (isPrimary)
 	{
 		if (this->GetWpnData().m_sPrimaryHasRecoilSMGGrenade)
@@ -1649,6 +1664,7 @@ void CWeaponCustom::ShootSMGGrenadeLeft(bool isPrimary, bool usePrimaryAmmo)
 
 	// player "shoot" animation
 	pOwner->SetAnimation(PLAYER_ATTACK1);
+	m_nShotsFired++;
 
 	if (isPrimary)
 	{
@@ -1800,6 +1816,8 @@ void CWeaponCustom::ShootAR2EnergyBall(bool isPrimary, bool usePrimaryAmmo)
 
 	pOwner->SetAnimation(PLAYER_ATTACK1);
 
+	m_nShotsFired++;
+
 	// Decrease ammo
 	if (isPrimary)
 	{
@@ -1934,6 +1952,8 @@ void CWeaponCustom::ShootAR2EnergyBallRight(bool isPrimary, bool usePrimaryAmmo)
 	pOwner->ViewPunch(QAngle(random->RandomInt(-8, -12), random->RandomInt(1, 2), 0));
 
 	pOwner->SetAnimation(PLAYER_ATTACK1);
+
+	m_nShotsFired++;
 
 	// Decrease ammo
 	if (isPrimary)
@@ -2070,6 +2090,8 @@ void CWeaponCustom::ShootAR2EnergyBallLeft(bool isPrimary, bool usePrimaryAmmo)
 
 	pOwner->SetAnimation(PLAYER_ATTACK1);
 
+	m_nShotsFired++;
+
 	// Decrease ammo
 	if (isPrimary)
 	{
@@ -2131,42 +2153,66 @@ void CWeaponCustom::ShootAR2EnergyBallLeft(bool isPrimary, bool usePrimaryAmmo)
 //-----------------------------------------------------------------------------
 Activity CWeaponCustom::GetPrimaryAttackActivity( void )
 {
-	if ( m_nShotsFired < 2 )
-		return ACT_VM_PRIMARYATTACK;
+	int m_nSelectRecoilAnim = random->RandomInt(0, 3);
 
-	if ( m_nShotsFired < 3 )
+	if (m_nSelectRecoilAnim == 1)
+	{
+		return ACT_VM_PRIMARYATTACK;
+	}
+
+	if (m_nSelectRecoilAnim == 2)
+	{
 		return ACT_VM_RECOIL1;
+	}
 	
-	if ( m_nShotsFired < 4 )
+	if (m_nSelectRecoilAnim == 3)
+	{
 		return ACT_VM_RECOIL2;
+	}
 
 	return ACT_VM_RECOIL3;
 }
 
 Activity CWeaponCustom::GetRightGunActivity(void)
 {
-	if (m_nShotsFired < 1)
+	int m_nSelectRecoilAnim = random->RandomInt(0, 3);
+
+	if (m_nSelectRecoilAnim == 1)
+	{
 		return ACT_VM_PRIMARYATTACK_R;
+	}
 
-	if (m_nShotsFired < 2)
+	if (m_nSelectRecoilAnim == 2)
+	{
 		return ACT_VM_PRIMARYATTACK_R_RECOIL1;
+	}
 
-	if (m_nShotsFired < 3)
+	if (m_nSelectRecoilAnim == 3)
+	{
 		return ACT_VM_PRIMARYATTACK_R_RECOIL2;
+	}
 
 	return ACT_VM_PRIMARYATTACK_R_RECOIL3;
 }
 
 Activity CWeaponCustom::GetLeftGunActivity(void)
 {
-	if (m_nShotsFired < 1)
+	int m_nSelectRecoilAnim = random->RandomInt(0, 3);
+
+	if (m_nSelectRecoilAnim == 1)
+	{
 		return ACT_VM_PRIMARYATTACK_L;
+	}
 
-	if (m_nShotsFired < 2)
+	if (m_nSelectRecoilAnim == 2)
+	{
 		return ACT_VM_PRIMARYATTACK_L_RECOIL1;
+	}
 
-	if (m_nShotsFired < 3)
+	if (m_nSelectRecoilAnim == 3)
+	{
 		return ACT_VM_PRIMARYATTACK_L_RECOIL2;
+	}
 
 	return ACT_VM_PRIMARYATTACK_L_RECOIL3;
 }

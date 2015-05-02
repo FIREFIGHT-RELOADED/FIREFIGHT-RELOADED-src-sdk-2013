@@ -49,7 +49,7 @@ public:
 	void	Drop(const Vector &vecVelocity);
 	bool	Holster(CBaseCombatWeapon *pSwitchingTo = NULL);
 
-	void	ApplyCustomization(void);
+	//void	ApplyCustomization(void);
 
 	float	GetPrimaryFireRate( void ) 
 	{ 
