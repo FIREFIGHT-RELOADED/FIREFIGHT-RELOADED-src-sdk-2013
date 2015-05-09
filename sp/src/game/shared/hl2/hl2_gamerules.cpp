@@ -191,6 +191,14 @@ ConVar	sk_plr_dmg_sniper("sk_plr_dmg_sniper", "0", FCVAR_REPLICATED);
 ConVar	sk_npc_dmg_sniper("sk_npc_dmg_sniper", "0", FCVAR_REPLICATED);
 ConVar	sk_max_sniper("sk_max_sniper", "0", FCVAR_REPLICATED);
 
+ConVar	sk_plr_dmg_deagle("sk_plr_dmg_deagle", "0", FCVAR_REPLICATED);
+ConVar	sk_npc_dmg_deagle("sk_npc_dmg_deagle", "0", FCVAR_REPLICATED);
+ConVar	sk_max_deagle("sk_max_deagle", "0", FCVAR_REPLICATED);
+
+ConVar	sk_plr_dmg_m249para("sk_plr_dmg_m249para", "0", FCVAR_REPLICATED);
+ConVar	sk_npc_dmg_m249para("sk_npc_dmg_m249para", "0", FCVAR_REPLICATED);
+ConVar	sk_max_m249para("sk_max_m249para", "0", FCVAR_REPLICATED);
+
 //Custom Ammo Types
 ConVar	sk_plr_dmg_custom_normal("sk_plr_dmg_custom_normal", "0", FCVAR_REPLICATED);
 ConVar	sk_npc_dmg_custom_normal("sk_npc_dmg_custom_normal", "0", FCVAR_REPLICATED);
@@ -2125,6 +2133,8 @@ CAmmoDef *GetAmmoDef()
 		def.AddAmmoType("AR2AltFire",		DMG_DISSOLVE,				TRACER_NONE,			0, 0, "sk_max_ar2_altfire", 0, 0 );
 		def.AddAmmoType("Grenade",			DMG_BURN | DMG_ALWAYSGIB, TRACER_NONE, "sk_plr_dmg_grenade", "sk_npc_dmg_grenade", "sk_max_grenade", 0, 0);
 		def.AddAmmoType("Sniper",			DMG_BULLET | DMG_SNIPER, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_sniper", "sk_npc_dmg_sniper", "sk_max_sniper", BULLET_IMPULSE(800, 5000), 0);
+		def.AddAmmoType("Deagle",			DMG_BULLET | DMG_SNIPER, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_deagle", "sk_npc_dmg_deagle", "sk_max_deagle", BULLET_IMPULSE(800, 5000), 0);
+		def.AddAmmoType("M249",				DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_m249para", "sk_npc_dmg_m249para", "sk_max_m249para", BULLET_IMPULSE(200, 1225), 0);
 		//CUSTOM AMMO TYPES HERE.
 		def.AddAmmoType("CustomBullet1_Normal", DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_custom_normal", "sk_npc_dmg_custom_normal", "sk_max_custom_normal", BULLET_IMPULSE(800, 5000), 0);
 		def.AddAmmoType("CustomBullet2_NormalBurn", DMG_BULLET | DMG_BURN, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_custom_normal", "sk_npc_dmg_custom_normal", "sk_max_custom_normal", BULLET_IMPULSE(800, 5000), 0);
