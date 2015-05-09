@@ -39,8 +39,6 @@ const char *s_pDebrisContext = "DebrisContext";
 
 const float ATTACHED_DAMPING_SCALE = 50.0f;
 
-ConVar	sv_ragdoll_bleed("sv_ragdoll_bleed", "1", FCVAR_ARCHIVE);
-
 //-----------------------------------------------------------------------------
 // Spawnflags
 //-----------------------------------------------------------------------------
@@ -821,14 +819,6 @@ void CRagdollProp::TraceAttack( const CTakeDamageInfo &info, const Vector &dir, 
 	{
 		VPhysicsSwapObject( m_ragdoll.list[ptr->physicsbone].pObject );
 	}
-
-	CTakeDamageInfo subInfo = info;
-
-	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && sv_ragdoll_bleed.GetBool())
-	{
-		SpawnBlood(ptr->endpos, dir, BloodColor(), subInfo.GetDamage());
-	}
-
 	BaseClass::TraceAttack( info, dir, ptr, pAccumulator );
 }
 
