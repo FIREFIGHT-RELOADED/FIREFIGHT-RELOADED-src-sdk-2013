@@ -202,8 +202,9 @@ void CWeaponM249Para::PrimaryAttack(void)
 	if (GetWpnData().m_bUseMuzzleSmoke)
 	{
 		DispatchParticleEffect("weapon_muzzle_smoke", PATTACH_POINT_FOLLOW, pPlayer->GetViewModel(), "muzzle", true);
-		DispatchParticleEffect("m249para_muzzle_flash", PATTACH_POINT_FOLLOW, pPlayer->GetViewModel(), "muzzle", true);
 	}
+
+	DispatchParticleEffect("m249para_muzzle_flash", PATTACH_POINT_FOLLOW, pPlayer->GetViewModel(), "muzzle", true);
 
 	m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
 	m_flNextSecondaryAttack = gpGlobals->curtime + GetFireRate();
