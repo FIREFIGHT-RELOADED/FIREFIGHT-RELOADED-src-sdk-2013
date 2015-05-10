@@ -259,6 +259,6 @@ void CWeaponM249Para::ItemPostFrame(void)
 	//attach a particle on the muzzle
 	if ((pOwner->m_nButtons & IN_ATTACK) == true)
 	{
-		DispatchParticleEffect("m249para_muzzle_flash", PATTACH_POINT_FOLLOW, pPlayer->GetViewModel(), "muzzle", true);
+		DispatchParticleEffect("m249para_muzzle_flash", PATTACH_POINT_FOLLOW, pOwner->GetViewModel(), "muzzle", true);
 	}
 }
