@@ -224,8 +224,7 @@ void CWeaponM249Para::PrimaryAttack(void)
 
 	pPlayer->FireBullets(1, vecSrc, vecAiming, vec3_origin, MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 0);
 
-	//pPlayer->SetMuzzleFlashTime(gpGlobals->curtime + 0.5);
-	DispatchParticleEffect("m249para_muzzle_flash", PATTACH_POINT_FOLLOW, pPlayer->GetViewModel(), "muzzle");
+	pPlayer->SetMuzzleFlashTime(gpGlobals->curtime + 0.5);
 
 	QAngle vecScratch;
 
