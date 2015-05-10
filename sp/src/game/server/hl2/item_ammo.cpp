@@ -37,7 +37,8 @@ int ITEM_GiveAmmo( CBasePlayer *pPlayer, float flCount, const char *pszAmmoName,
 		return 0;
 	}
 
-	flCount *= g_pGameRules->GetAmmoQuantityScale(iAmmoType);
+	//don't adjust ammo
+	//flCount *= g_pGameRules->GetAmmoQuantityScale(iAmmoType);
 
 	// Don't give out less than 1 of anything.
 	flCount = MAX( 1.0f, flCount );
@@ -741,7 +742,7 @@ public:
 	}
 	bool MyTouch(CBasePlayer *pPlayer)
 	{
-		if (ITEM_GiveAmmo(pPlayer, SIZE_AMMO_PISTOL, "Deagle"))
+		if (ITEM_GiveAmmo(pPlayer, SIZE_AMMO_DEAGLE, "Deagle"))
 		{
 			if (g_pGameRules->ItemShouldRespawn(this) == GR_ITEM_RESPAWN_NO)
 			{
@@ -775,7 +776,7 @@ public:
 	}
 	bool MyTouch(CBasePlayer *pPlayer)
 	{
-		if (ITEM_GiveAmmo(pPlayer, SIZE_AMMO_SMG1, "M249"))
+		if (ITEM_GiveAmmo(pPlayer, SIZE_AMMO_M249, "M249"))
 		{
 			if (g_pGameRules->ItemShouldRespawn(this) == GR_ITEM_RESPAWN_NO)
 			{
