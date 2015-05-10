@@ -204,8 +204,8 @@ void CWeaponM249Para::PrimaryAttack(void)
 		DispatchParticleEffect("weapon_muzzle_smoke", PATTACH_POINT_FOLLOW, pPlayer->GetViewModel(), "muzzle", true);
 	}
 
-	m_flNextPrimaryAttack = gpGlobals->curtime + 0.75;
-	m_flNextSecondaryAttack = gpGlobals->curtime + 0.75;
+	m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
+	m_flNextSecondaryAttack = gpGlobals->curtime + GetFireRate();
 
 	if (!pPlayer->m_iPerkInfiniteAmmo == 1)
 	{
@@ -219,16 +219,13 @@ void CWeaponM249Para::PrimaryAttack(void)
 
 	pPlayer->SetMuzzleFlashTime(gpGlobals->curtime + 0.5);
 
-	//Disorient the player
-	QAngle angles = pPlayer->GetLocalAngles();
+	QAngle vecScratch;
 
-	angles.x += random->RandomInt(-1, 1);
-	angles.y += random->RandomInt(-1, 1);
-	angles.z = 0;
+	vecScratch.x = random->RandomFloat(-2, 2);
+	vecScratch.y = random->RandomFloat(-2, 2);
+	vecScratch.z = random->RandomFloat(-2, 2);
 
-	pPlayer->SnapEyeAngles(angles);
-
-	pPlayer->ViewPunch(QAngle(-4, random->RandomFloat(-2, 2), 0));
+	pPlayer->ViewPunch(vecScratch);
 
 	CSoundEnt::InsertSound(SOUND_COMBAT, GetAbsOrigin(), 600, 0.2, GetOwner());
 
