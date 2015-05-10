@@ -35,8 +35,6 @@ public:
 
 	int		GetMinBurst() { return 2; }
 	int		GetMaxBurst() { return 5; }
-	
-	bool	Reload( void );
 
 	float	GetFireRate(void)	{ return 0.075f; }	// 13.3hz
 	int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
@@ -217,37 +215,16 @@ void CWeaponM249Para::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombat
 //-----------------------------------------------------------------------------
 Activity CWeaponM249Para::GetPrimaryAttackActivity( void )
 {
-	if ( m_nShotsFired < 2 )
-		return ACT_VM_PRIMARYATTACK;
+	int randomanim = random->RandomInt(0, 1);
 
-	if ( m_nShotsFired < 3 )
-		return ACT_VM_RECOIL1;
-	
-	if ( m_nShotsFired < 4 )
-		return ACT_VM_RECOIL2;
-
-	return ACT_VM_RECOIL3;
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-bool CWeaponM249Para::Reload( void )
-{
-	bool fRet;
-	float fCacheTime = m_flNextSecondaryAttack;
-
-	fRet = DefaultReload( GetMaxClip1(), GetMaxClip2(), ACT_VM_RELOAD );
-	if ( fRet )
+	if (randomanim == 1)
 	{
-		// Undo whatever the reload process has done to our secondary
-		// attack timer. We allow you to interrupt reloading to fire
-		// a grenade.
-		m_flNextSecondaryAttack = GetOwner()->m_flNextAttack = fCacheTime;
-
-		WeaponSound( RELOAD );
+		return ACT_VM_PRIMARYATTACK;
 	}
-
-	return fRet;
+	else
+	{
+		return ACT_VM_RECOIL1;
+	}
 }
 
 //-----------------------------------------------------------------------------
