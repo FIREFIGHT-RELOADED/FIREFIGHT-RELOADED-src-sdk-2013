@@ -28,6 +28,7 @@ public:
 	CWeaponM249Para(void);
 	
 	void	PrimaryAttack(void);
+	void	Precache(void);
 	void	Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatCharacter *pOperator);
 	float	GetFireRate(void)	{ return 0.075f; }	// 13.3hz
 
@@ -125,6 +126,12 @@ CWeaponM249Para::CWeaponM249Para( )
 	m_fMaxRange1		= 1400;
 
 	m_bFiresUnderwater = false;
+}
+
+void CWeaponM249Para::Precache(void)
+{
+	PrecacheParticleSystem("m249para_muzzle_flash");
+	BaseClass::Precache();
 }
 
 //-----------------------------------------------------------------------------
