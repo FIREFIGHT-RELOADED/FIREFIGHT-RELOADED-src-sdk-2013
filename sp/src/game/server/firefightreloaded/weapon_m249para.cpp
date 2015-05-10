@@ -221,8 +221,8 @@ void CWeaponM249Para::PrimaryAttack(void)
 
 	QAngle vecScratch;
 
-	vecScratch.x = random->RandomInt(-2, 2);
-	vecScratch.y = random->RandomInt(-2, 2);
+	vecScratch.x = random->RandomInt(-1, 1);
+	vecScratch.y = random->RandomInt(-1, 1);
 	vecScratch.z = 0;
 
 	pPlayer->ViewPunch(vecScratch);
