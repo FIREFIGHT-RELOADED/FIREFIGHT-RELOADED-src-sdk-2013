@@ -29,6 +29,7 @@ public:
 	
 	void	PrimaryAttack(void);
 	void	Precache(void);
+	void	ItemPostFrame(void);
 	void	Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatCharacter *pOperator);
 	float	GetFireRate(void)	{ return 0.075f; }	// 13.3hz
 
@@ -211,8 +212,6 @@ void CWeaponM249Para::PrimaryAttack(void)
 		DispatchParticleEffect("weapon_muzzle_smoke", PATTACH_POINT_FOLLOW, pPlayer->GetViewModel(), "muzzle", true);
 	}
 
-	DispatchParticleEffect("m249para_muzzle_flash", PATTACH_POINT_FOLLOW, pPlayer->GetViewModel(), "muzzle", true);
-
 	m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
 	m_flNextSecondaryAttack = gpGlobals->curtime + GetFireRate();
 
@@ -230,8 +229,8 @@ void CWeaponM249Para::PrimaryAttack(void)
 
 	QAngle vecScratch;
 
-	vecScratch.x = random->RandomInt(-1, 1);
-	vecScratch.y = random->RandomInt(-1, 1);
+	vecScratch.x = random->RandomInt(0, 1);
+	vecScratch.y = random->RandomInt(0, 1);
 	vecScratch.z = 0;
 
 	pPlayer->ViewPunch(vecScratch);
@@ -242,5 +241,24 @@ void CWeaponM249Para::PrimaryAttack(void)
 	{
 		// HEV suit - indicate out of ammo condition
 		pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
+	}
+}
+
+void CWeaponM249Para::ItemPostFrame(void)
+{
+	BaseClass::ItemPostFrame();
+
+	if (m_bInReload)
+		return;
+
+	CBasePlayer *pOwner = ToBasePlayer(GetOwner());
+
+	if (pOwner == NULL)
+		return;
+
+	//attach a particle on the muzzle
+	if ((pOwner->m_nButtons & IN_ATTACK) == true)
+	{
+		DispatchParticleEffect("m249para_muzzle_flash", PATTACH_POINT_FOLLOW, pPlayer->GetViewModel(), "muzzle", true);
 	}
 }
