@@ -721,6 +721,73 @@ public:
 };
 LINK_ENTITY_TO_CLASS(item_ammo_sniperrifle, CItem_BoxSniperRifle);
 
+// ========================================================================
+//	>> BoxSRounds
+// ========================================================================
+class CItem_BoxDeagle : public CItem
+{
+public:
+	DECLARE_CLASS(CItem_BoxDeagle, CItem);
+
+	void Spawn(void)
+	{
+		Precache();
+		SetModel("models/items/boxsrounds.mdl");
+		BaseClass::Spawn();
+	}
+	void Precache(void)
+	{
+		PrecacheModel("models/items/boxsrounds.mdl");
+	}
+	bool MyTouch(CBasePlayer *pPlayer)
+	{
+		if (ITEM_GiveAmmo(pPlayer, SIZE_AMMO_PISTOL, "Deagle"))
+		{
+			if (g_pGameRules->ItemShouldRespawn(this) == GR_ITEM_RESPAWN_NO)
+			{
+				UTIL_Remove(this);
+			}
+
+			return true;
+		}
+		return false;
+	}
+};
+LINK_ENTITY_TO_CLASS(item_ammo_deagle, CItem_BoxDeagle);
+
+// ========================================================================
+//	>> BoxMRounds
+// ========================================================================
+class CItem_BoxM249 : public CItem
+{
+public:
+	DECLARE_CLASS(CItem_BoxM249, CItem);
+
+	void Spawn(void)
+	{
+		Precache();
+		SetModel("models/items/boxmrounds.mdl");
+		BaseClass::Spawn();
+	}
+	void Precache(void)
+	{
+		PrecacheModel("models/items/boxmrounds.mdl");
+	}
+	bool MyTouch(CBasePlayer *pPlayer)
+	{
+		if (ITEM_GiveAmmo(pPlayer, SIZE_AMMO_SMG1, "M249"))
+		{
+			if (g_pGameRules->ItemShouldRespawn(this) == GR_ITEM_RESPAWN_NO)
+			{
+				UTIL_Remove(this);
+			}
+			return true;
+		}
+		return false;
+	}
+};
+LINK_ENTITY_TO_CLASS(item_ammo_m249para, CItem_BoxM249);
+
 //custom ammo stuff
 
 class CItem_BoxCustomNormal : public CItem
