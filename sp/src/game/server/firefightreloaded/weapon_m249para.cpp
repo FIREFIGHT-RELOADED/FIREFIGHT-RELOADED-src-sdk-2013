@@ -20,25 +20,18 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"	
 
-class CWeaponM249Para : public CHLSelectFireMachineGun
+class CWeaponM249Para : public CBaseHLCombatWeapon
 {
-	DECLARE_DATADESC();
+	DECLARE_CLASS(CWeaponM249Para, CBaseHLCombatWeapon);
 public:
-	DECLARE_CLASS( CWeaponM249Para, CHLSelectFireMachineGun );
 
-	CWeaponM249Para();
-
-	DECLARE_SERVERCLASS();
+	CWeaponM249Para(void);
 	
-	void	Precache( void );
-	void	AddViewKick( void );
-
-	int		GetMinBurst() { return 2; }
-	int		GetMaxBurst() { return 5; }
-
+	void	PrimaryAttack(void);
+	void	Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatCharacter *pOperator);
 	float	GetFireRate(void)	{ return 0.075f; }	// 13.3hz
-	int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
-	Activity	GetPrimaryAttackActivity( void );
+
+	float	WeaponAutoAimScale()	{ return 0.6f; }
 
 	virtual const Vector& GetBulletSpread( void )
 	{
@@ -52,12 +45,8 @@ public:
 		return cone;
 	}
 
-	const WeaponProficiencyInfo_t *GetProficiencyValues();
-
-	void FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, Vector &vecShootOrigin, Vector &vecShootDir );
-	void Operator_ForceNPCFire( CBaseCombatCharacter  *pOperator, bool bSecondary );
-	void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
-
+	DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
 	DECLARE_ACTTABLE();
 };
 
@@ -139,125 +128,113 @@ CWeaponM249Para::CWeaponM249Para( )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CWeaponM249Para::Precache( void )
+void CWeaponM249Para::Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatCharacter *pOperator)
 {
-	BaseClass::Precache();
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CWeaponM249Para::FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, Vector &vecShootOrigin, Vector &vecShootDir )
-{
-	// FIXME: use the returned number of bullets to account for >10hz firerate
-	WeaponSoundRealtime( SINGLE_NPC );
-
-	CSoundEnt::InsertSound( SOUND_COMBAT|SOUND_CONTEXT_GUNFIRE, pOperator->GetAbsOrigin(), SOUNDENT_VOLUME_MACHINEGUN, 0.2, pOperator, SOUNDENT_CHANNEL_WEAPON, pOperator->GetEnemy() );
-	pOperator->FireBullets( 1, vecShootOrigin, vecShootDir, VECTOR_CONE_PRECALCULATED,
-		MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 2, entindex(), 0 );
-
-	pOperator->DoMuzzleFlash();
-	m_iClip1 = m_iClip1 - 1;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CWeaponM249Para::Operator_ForceNPCFire( CBaseCombatCharacter *pOperator, bool bSecondary )
-{
-	// Ensure we have enough rounds in the clip
-	m_iClip1++;
-
-	Vector vecShootOrigin, vecShootDir;
-	QAngle	angShootDir;
-	GetAttachment( LookupAttachment( "muzzle" ), vecShootOrigin, angShootDir );
-	AngleVectors( angShootDir, &vecShootDir );
-	FireNPCPrimaryAttack( pOperator, vecShootOrigin, vecShootDir );
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CWeaponM249Para::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
-{
-	switch( pEvent->event )
+	switch (pEvent->event)
 	{
-	case EVENT_WEAPON_SMG1:
-		{
-			Vector vecShootOrigin, vecShootDir;
-			QAngle angDiscard;
+	case EVENT_WEAPON_PISTOL_FIRE:
+	{
+		Vector vecShootOrigin, vecShootDir;
+		vecShootOrigin = pOperator->Weapon_ShootPosition();
 
-			// Support old style attachment point firing
-			if ((pEvent->options == NULL) || (pEvent->options[0] == '\0') || (!pOperator->GetAttachment(pEvent->options, vecShootOrigin, angDiscard)))
-			{
-				vecShootOrigin = pOperator->Weapon_ShootPosition();
-			}
+		CAI_BaseNPC *npc = pOperator->MyNPCPointer();
+		ASSERT(npc != NULL);
 
-			CAI_BaseNPC *npc = pOperator->MyNPCPointer();
-			ASSERT( npc != NULL );
-			vecShootDir = npc->GetActualShootTrajectory( vecShootOrigin );
+		vecShootDir = npc->GetActualShootTrajectory(vecShootOrigin);
 
-			FireNPCPrimaryAttack( pOperator, vecShootOrigin, vecShootDir );
-		}
-		break;
+		CSoundEnt::InsertSound(SOUND_COMBAT | SOUND_CONTEXT_GUNFIRE, pOperator->GetAbsOrigin(), SOUNDENT_VOLUME_PISTOL, 0.2, pOperator, SOUNDENT_CHANNEL_WEAPON, pOperator->GetEnemy());
 
+		WeaponSound(SINGLE_NPC);
+		pOperator->FireBullets(1, vecShootOrigin, vecShootDir, VECTOR_CONE_PRECALCULATED, MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 2);
+		pOperator->DoMuzzleFlash();
+		m_iClip1 = m_iClip1 - 1;
+	}
+	break;
 	default:
-		BaseClass::Operator_HandleAnimEvent( pEvent, pOperator );
+		BaseClass::Operator_HandleAnimEvent(pEvent, pOperator);
 		break;
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Output : Activity
+// Purpose:
 //-----------------------------------------------------------------------------
-Activity CWeaponM249Para::GetPrimaryAttackActivity( void )
+
+void CWeaponM249Para::PrimaryAttack(void)
 {
-	int randomanim = random->RandomInt(0, 1);
+	// Only the player fires this way so we can cast
+	CBasePlayer *pPlayer = ToBasePlayer(GetOwner());
 
-	if (randomanim == 1)
+	if (!pPlayer)
 	{
-		return ACT_VM_PRIMARYATTACK;
-	}
-	else
-	{
-		return ACT_VM_RECOIL1;
-	}
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CWeaponM249Para::AddViewKick( void )
-{
-	#define	EASY_DAMPEN			0.5f
-	#define	MAX_VERTICAL_KICK	1.0f	//Degrees
-	#define	SLIDE_LIMIT			2.0f	//Seconds
-	
-	//Get the view kick
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
-
-	if ( pPlayer == NULL )
 		return;
+	}
 
-	DoMachineGunKick( pPlayer, EASY_DAMPEN, MAX_VERTICAL_KICK, m_fFireDuration, SLIDE_LIMIT );
-}
-
-//-----------------------------------------------------------------------------
-const WeaponProficiencyInfo_t *CWeaponM249Para::GetProficiencyValues()
-{
-	static WeaponProficiencyInfo_t proficiencyTable[] =
+	if (m_iClip1 <= 0)
 	{
-		{ 7.0,		0.75	},
-		{ 5.00,		0.75	},
-		{ 10.0/3.0, 0.75	},
-		{ 5.0/3.0,	0.75	},
-		{ 1.00,		1.0		},
-	};
+		if (!m_bFireOnEmpty)
+		{
+			Reload();
+		}
+		else
+		{
+			WeaponSound(EMPTY);
+			m_flNextPrimaryAttack = 0.15;
+		}
 
-	COMPILE_TIME_ASSERT( ARRAYSIZE(proficiencyTable) == WEAPON_PROFICIENCY_PERFECT + 1);
+		return;
+	}
 
-	return proficiencyTable;
+	m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
+	m_flNextSecondaryAttack = gpGlobals->curtime + GetFireRate();
+
+	m_iPrimaryAttacks++;
+	gamestats->Event_WeaponFired(pPlayer, true, GetClassname());
+
+	WeaponSound(SINGLE);
+	pPlayer->DoMuzzleFlash();
+
+	SendWeaponAnim(ACT_VM_PRIMARYATTACK);
+	pPlayer->SetAnimation(PLAYER_ATTACK1);
+
+	if (GetWpnData().m_bUseMuzzleSmoke)
+	{
+		DispatchParticleEffect("weapon_muzzle_smoke", PATTACH_POINT_FOLLOW, pPlayer->GetViewModel(), "muzzle", true);
+	}
+
+	m_flNextPrimaryAttack = gpGlobals->curtime + 0.75;
+	m_flNextSecondaryAttack = gpGlobals->curtime + 0.75;
+
+	if (!pPlayer->m_iPerkInfiniteAmmo == 1)
+	{
+		m_iClip1--;
+	}
+
+	Vector vecSrc = pPlayer->Weapon_ShootPosition();
+	Vector vecAiming = pPlayer->GetAutoaimVector(AUTOAIM_SCALE_DEFAULT);
+
+	pPlayer->FireBullets(1, vecSrc, vecAiming, vec3_origin, MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 0);
+
+	pPlayer->SetMuzzleFlashTime(gpGlobals->curtime + 0.5);
+
+	//Disorient the player
+	QAngle angles = pPlayer->GetLocalAngles();
+
+	angles.x += random->RandomInt(-1, 1);
+	angles.y += random->RandomInt(-1, 1);
+	angles.z = 0;
+
+	pPlayer->SnapEyeAngles(angles);
+
+	pPlayer->ViewPunch(QAngle(-4, random->RandomFloat(-2, 2), 0));
+
+	CSoundEnt::InsertSound(SOUND_COMBAT, GetAbsOrigin(), 600, 0.2, GetOwner());
+
+	if (!m_iClip1 && pPlayer->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
+	{
+		// HEV suit - indicate out of ammo condition
+		pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
+	}
 }
