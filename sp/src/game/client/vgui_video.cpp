@@ -232,6 +232,15 @@ void VideoPanel::GetPanelPos( int &xpos, int &ypos )
 	ypos = ( (float) ( GetTall() - m_nPlaybackHeight ) / 2 );
 }
 
+float VideoPanel::GetActiveVideoLength()
+{
+	if (m_VideoMaterial != NULL)
+	{
+		return (m_VideoMaterial->GetFrameCount() / m_VideoMaterial->GetVideoFrameRate().GetFPS());
+	}
+	return NULL;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Update and draw the frame
 //-----------------------------------------------------------------------------

@@ -130,7 +130,6 @@ CWeaponM249Para::CWeaponM249Para( )
 
 void CWeaponM249Para::Precache(void)
 {
-	PrecacheParticleSystem("m249para_muzzle_flash");
 	BaseClass::Precache();
 }
 
