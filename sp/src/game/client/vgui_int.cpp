@@ -33,10 +33,15 @@
 #include "tf_gamerules.h"
 #endif
 
+#include "firefightreloaded/vgui/fr_mainmenu.h"
+#include "firefightreloaded/vgui/fr_mainmenu_interface.h"
+
 using namespace vgui;
 
 void MP3Player_Create( vgui::VPANEL parent );
 void MP3Player_Destroy();
+
+void OverrideMainMenu();
 
 #include <vgui/IInputInternal.h>
 vgui::IInputInternal *g_InputInternal = NULL;
@@ -205,6 +210,9 @@ void VGui_CreateGlobalPanels( void )
 	internalCenterPrint->Create( gameToolParent );
 	loadingdisc->Create( gameToolParent );
 	messagechars->Create( gameToolParent );
+
+	MainMenu->Create(NULL);		
+	OverrideMainMenu();
 
 	// Debugging or related tool
 	fps->Create( toolParent );

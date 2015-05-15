@@ -171,6 +171,25 @@ $Project "Client (Episodic)"
 				$File	"firefightreloaded\fr_storemenu_weapons.h"
 				$File 	"firefightreloaded\fr_rendertargets.cpp"
 				$File 	"firefightreloaded\fr_rendertargets.h"
+				$Folder	"mainmenu"
+				{
+					$File 	"firefightreloaded\vgui\fr_controls.cpp"
+					$File 	"firefightreloaded\vgui\fr_controls.h"
+					$File 	"firefightreloaded\vgui\fr_imagepanel.cpp"
+					$File 	"firefightreloaded\vgui\fr_imagepanel.h"
+					$File 	"firefightreloaded\vgui\fr_mainmenu.cpp"
+					$File 	"firefightreloaded\vgui\fr_mainmenu.h"
+					$File 	"firefightreloaded\vgui\fr_mainmenu_interface.cpp"
+					$File 	"firefightreloaded\vgui\fr_mainmenu_interface.h"
+					$File 	"firefightreloaded\vgui\fr_mainmenubutton.cpp"
+					$File 	"firefightreloaded\vgui\fr_mainmenubutton.h"
+					$File 	"firefightreloaded\vgui\fr_mainmenupanel.cpp"
+					$File 	"firefightreloaded\vgui\fr_mainmenupanel.h"
+					$File 	"firefightreloaded\vgui\fr_mainmenupanelbase.cpp"
+					$File 	"firefightreloaded\vgui\fr_mainmenupanelbase.h"
+					$File 	"firefightreloaded\vgui\fr_vgui_video.cpp"
+					$File 	"firefightreloaded\vgui\fr_vgui_video.h"
+				}
 			}
 		}
 		
