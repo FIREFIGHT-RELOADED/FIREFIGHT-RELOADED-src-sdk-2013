@@ -27,6 +27,9 @@ public:
 private:
 	CExLabel			*m_pVersionLabel;
 	CFRMainMenuButton	*m_pDisconnectButton;
+	CFRMainMenuButton	*m_pResumeGameButton;
+	CFRMainMenuButton	*m_pSaveGameButton;
+	CFRMainMenuButton	*m_pReloadMapButton;
 	CFRImagePanel		*m_pBackground;
 	CFRImagePanel		*m_pLogo;
 	EditablePanel		*m_pWeaponIcon;

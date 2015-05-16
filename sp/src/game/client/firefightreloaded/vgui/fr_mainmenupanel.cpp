@@ -32,10 +32,13 @@ CFRMainMenuPanel::CFRMainMenuPanel(vgui::Panel* parent) : CFRMainMenuPanelBase(p
 	m_pVersionLabel = dynamic_cast<CExLabel *>(FindChildByName("VersionLabel"));
 	m_pBackground = dynamic_cast<CFRImagePanel *>(FindChildByName("Background"));
 	m_pDisconnectButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("DisconnectButton"));
+	m_pResumeGameButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("ResumeGameButton"));
+	m_pSaveGameButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("SaveGameButton"));
+	m_pReloadMapButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("ReloadMapButton"));
 	m_pVideo = dynamic_cast<CFRVideoPanel *>(FindChildByName("BackgroundVideo"));
 	m_pLogo = dynamic_cast<CFRImagePanel *>(FindChildByName("Logo"));
 
-	Q_strncpy(m_pzVideoLink, GetRandomVideo(), sizeof(m_pzVideoLink));
+	//Q_strncpy(m_pzVideoLink, GetRandomVideo(), sizeof(m_pzVideoLink));
 	SetVersionLabel();
 
 	DefaultLayout();
@@ -78,15 +81,6 @@ void CFRMainMenuPanel::OnTick()
 		m_flActionThink = gpGlobals->curtime + m_pVideo->GetActiveVideoLength() - 0.21f;
 		b_ShowVideo = false;
 	}
-	if (m_pVersionLabel && m_flAnimationThink < gpGlobals->curtime)
-	{
-		//AnimationController::PublicValue_t newPos = { 20, 30, 0, 0 };
-		float m_fAlpha = (m_bAnimationIn ? 50.0 : 100.0);
-		vgui::GetAnimationController()->RunAnimationCommand(m_pVersionLabel, "Alpha", m_fAlpha, 0.0f, 0.25f, vgui::AnimationController::INTERPOLATOR_LINEAR);
-		m_bAnimationIn = !m_bAnimationIn;
-		m_flAnimationThink = gpGlobals->curtime + 0.25f;
-	}
-
 };
 
 void CFRMainMenuPanel::OnThink()
@@ -121,6 +115,39 @@ void CFRMainMenuPanel::DefaultLayout()
 			m_pDisconnectButton->SetVisible(true);
 		}
 	}
+	if (m_pResumeGameButton)
+	{
+		if (m_pResumeGameButton->OnlyInGame())
+		{
+			m_pResumeGameButton->SetVisible(false);
+		}
+		else if (m_pResumeGameButton->OnlyAtMenu())
+		{
+			m_pResumeGameButton->SetVisible(true);
+		}
+	}
+	if (m_pSaveGameButton)
+	{
+		if (m_pSaveGameButton->OnlyInGame())
+		{
+			m_pSaveGameButton->SetVisible(false);
+		}
+		else if (m_pSaveGameButton->OnlyAtMenu())
+		{
+			m_pSaveGameButton->SetVisible(true);
+		}
+	}
+	if (m_pReloadMapButton)
+	{
+		if (m_pReloadMapButton->OnlyInGame())
+		{
+			m_pReloadMapButton->SetVisible(false);
+		}
+		else if (m_pReloadMapButton->OnlyAtMenu())
+		{
+			m_pReloadMapButton->SetVisible(true);
+		}
+	}
 	if (m_pVideo)
 	{
 		m_pVideo->SetVisible(true);
@@ -140,6 +167,39 @@ void CFRMainMenuPanel::GameLayout()
 		else if (m_pDisconnectButton->OnlyAtMenu())
 		{
 			m_pDisconnectButton->SetVisible(false);
+		}
+	}
+	if (m_pResumeGameButton)
+	{
+		if (m_pResumeGameButton->OnlyInGame())
+		{
+			m_pResumeGameButton->SetVisible(true);
+		}
+		else if (m_pResumeGameButton->OnlyAtMenu())
+		{
+			m_pResumeGameButton->SetVisible(false);
+		}
+	}
+	if (m_pSaveGameButton)
+	{
+		if (m_pSaveGameButton->OnlyInGame())
+		{
+			m_pSaveGameButton->SetVisible(true);
+		}
+		else if (m_pSaveGameButton->OnlyAtMenu())
+		{
+			m_pSaveGameButton->SetVisible(false);
+		}
+	}
+	if (m_pReloadMapButton)
+	{
+		if (m_pReloadMapButton->OnlyInGame())
+		{
+			m_pReloadMapButton->SetVisible(true);
+		}
+		else if (m_pReloadMapButton->OnlyAtMenu())
+		{
+			m_pReloadMapButton->SetVisible(false);
 		}
 	}
 	if (m_pVideo)
@@ -164,7 +224,7 @@ void CFRMainMenuPanel::SetVersionLabel()
 
 			filesystem->Close(fh);
 
-			Q_snprintf(verString, sizeof(verString), "Version: %s", GameInfo + 8);
+			Q_snprintf(verString, sizeof(verString), "VERSION: %s", GameInfo + 8);
 
 			delete[] GameInfo;
 		}
