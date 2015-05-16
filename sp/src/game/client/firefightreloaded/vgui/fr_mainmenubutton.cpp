@@ -7,14 +7,14 @@
 
 
 #include "cbase.h"
-#include "firefightreloaded/vgui/fr_mainmenubutton.h"
+#include "fr_mainmenubutton.h"
 #include "vgui_controls/Frame.h"
 #include <vgui/ISurface.h>
 #include <vgui/IVGui.h>
 #include <vgui/IInput.h>
 #include "vgui_controls/Button.h"
 #include "vgui_controls/ImagePanel.h"
-#include "firefightreloaded/vgui/fr_controls.h"
+#include "fr_controls.h"
 #include <filesystem.h>
 #include <vgui_controls/AnimationController.h>
 #include "basemodelpanel.h"

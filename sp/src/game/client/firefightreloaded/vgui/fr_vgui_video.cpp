@@ -9,7 +9,7 @@
 #include <vgui/ISurface.h>
 #include <KeyValues.h>
 #include "vgui_video.h"
-#include "firefightreloaded/vgui/fr_vgui_video.h"
+#include "fr_vgui_video.h"
 #include "engine/IEngineSound.h"
 
 

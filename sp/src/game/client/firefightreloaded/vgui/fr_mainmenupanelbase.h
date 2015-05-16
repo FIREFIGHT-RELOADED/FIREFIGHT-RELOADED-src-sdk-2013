@@ -3,11 +3,11 @@
 
 #include "GameUI/IGameUI.h"
 #include "vgui_controls/Frame.h"
-#include "firefightreloaded/vgui/fr_mainmenubutton.h"
-#include "firefightreloaded/vgui/fr_controls.h"
+#include "fr_mainmenubutton.h"
+#include "fr_controls.h"
 
 #include <vgui/ISurface.h>
-#include "firefightreloaded/vgui/fr_vgui_video.h"
+#include "fr_vgui_video.h"
 
 #include <filesystem.h>
 #include <vgui_controls/AnimationController.h>

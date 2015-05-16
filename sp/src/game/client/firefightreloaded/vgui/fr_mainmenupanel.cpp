@@ -1,6 +1,6 @@
 #include "cbase.h"
-#include "firefightreloaded/vgui/fr_mainmenupanel.h"
-#include "firefightreloaded/vgui/fr_mainmenu.h"
+#include "fr_mainmenupanel.h"
+#include "fr_mainmenu.h"
 
 using namespace vgui;
 // memdbgon must be the last include file in a .cpp file!!!
@@ -35,7 +35,7 @@ CFRMainMenuPanel::CFRMainMenuPanel(vgui::Panel* parent) : CFRMainMenuPanelBase(p
 	m_pVideo = dynamic_cast<CFRVideoPanel *>(FindChildByName("BackgroundVideo"));
 	m_pLogo = dynamic_cast<CFRImagePanel *>(FindChildByName("Logo"));
 
-	//Q_strncpy(m_pzVideoLink, GetRandomVideo(), sizeof(m_pzVideoLink));
+	Q_strncpy(m_pzVideoLink, GetRandomVideo(), sizeof(m_pzVideoLink));
 	SetVersionLabel();
 
 	DefaultLayout();

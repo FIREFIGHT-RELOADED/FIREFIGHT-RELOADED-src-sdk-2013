@@ -12,8 +12,8 @@
 #endif
 
 #include <vgui_controls/EditablePanel.h>
-#include "firefightreloaded/vgui/fr_imagepanel.h"
-#include "firefightreloaded/vgui/fr_controls.h"
+#include "fr_imagepanel.h"
+#include "fr_controls.h"
 
 using namespace vgui;
 

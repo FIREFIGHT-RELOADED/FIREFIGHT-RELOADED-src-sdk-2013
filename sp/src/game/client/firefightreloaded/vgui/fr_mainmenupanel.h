@@ -2,7 +2,7 @@
 #define FRMAINMENUPANEL_H
 
 #include "vgui_controls/Panel.h"
-#include "firefightreloaded/vgui/fr_mainmenupanelbase.h"
+#include "fr_mainmenupanelbase.h"
 
 //-----------------------------------------------------------------------------
 // Purpose: 

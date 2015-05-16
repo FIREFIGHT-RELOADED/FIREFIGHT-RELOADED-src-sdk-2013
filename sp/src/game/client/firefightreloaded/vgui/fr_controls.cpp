@@ -10,7 +10,7 @@
 #include <vgui_controls/ScrollBarSlider.h>
 #include "vgui/ILocalize.h"
 #include "vgui/ISurface.h"
-#include "firefightreloaded/vgui/fr_controls.h"
+#include "fr_controls.h"
 
 
 using namespace vgui;

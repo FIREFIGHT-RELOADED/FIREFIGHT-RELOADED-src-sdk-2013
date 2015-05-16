@@ -20,7 +20,7 @@
 #include <vgui_controls/Button.h>
 #include <vgui_controls/Label.h>
 #include <vgui_controls/RichText.h>
-#include "firefightreloaded/vgui/fr_imagepanel.h"
+#include "fr_imagepanel.h"
 #include <vgui_controls/ImagePanel.h>
 
 

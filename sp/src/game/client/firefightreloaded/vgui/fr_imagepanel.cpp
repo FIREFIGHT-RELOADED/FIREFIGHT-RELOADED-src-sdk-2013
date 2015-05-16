@@ -18,7 +18,7 @@
 #include <vgui/IImage.h>
 #include <vgui_controls/Label.h>
 
-#include "firefightreloaded/vgui/fr_imagepanel.h"
+#include "fr_imagepanel.h"
 
 using namespace vgui;
 

@@ -4,7 +4,7 @@
 #include "vgui_controls/Frame.h"
 #include "vgui_controls/Panel.h"
 #include "GameUI/IGameUI.h"
-#include "firefightreloaded/vgui/fr_mainmenupanel.h"
+#include "fr_mainmenupanel.h"
 
 enum MenuPanel 
 {

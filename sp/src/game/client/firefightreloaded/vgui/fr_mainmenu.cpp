@@ -1,6 +1,6 @@
 #include "cbase.h"
-#include "firefightreloaded/vgui/fr_mainmenu.h"
-#include "firefightreloaded/vgui/fr_mainmenu_interface.h"
+#include "fr_mainmenu.h"
+#include "fr_mainmenu_interface.h"
 
 #include <filesystem.h>
 #include <vgui_controls/AnimationController.h>

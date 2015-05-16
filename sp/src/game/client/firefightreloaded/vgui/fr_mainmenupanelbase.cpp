@@ -1,6 +1,6 @@
 #include "cbase.h"
-#include "firefightreloaded/vgui/fr_mainmenupanelbase.h"
-#include "firefightreloaded/vgui/fr_mainmenu.h"
+#include "fr_mainmenupanelbase.h"
+#include "fr_mainmenu.h"
 
 using namespace vgui;
 // memdbgon must be the last include file in a .cpp file!!!
