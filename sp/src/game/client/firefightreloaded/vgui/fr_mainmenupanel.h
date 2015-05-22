@@ -40,6 +40,8 @@ private:
 	float				m_flAnimationThink;
 	bool				m_bAnimationIn;
 	char*				GetRandomVideo();
+	int					width;
+	int					height;
 };
 
 #endif // TFMAINMENUPANEL_H
