@@ -145,6 +145,8 @@ void CFRMainMenu::OnTick()
 
 	int newWidth, newHeight;
 	surface()->GetScreenSize(newWidth, newHeight);
+	Msg("NEW RESOLUTION = %ix%i", newWidth, newHeight);
+	Msg("OLD RESOLUTION = %ix%i", width, height);
 	if (width != newWidth && height != newHeight)
 	{
 		//restart the panel after applying res settings.
