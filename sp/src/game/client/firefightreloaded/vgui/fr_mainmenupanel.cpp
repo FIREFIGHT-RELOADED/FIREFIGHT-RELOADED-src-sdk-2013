@@ -17,6 +17,7 @@ CFRMainMenuPanel::CFRMainMenuPanel(vgui::Panel* parent) : CFRMainMenuPanelBase(p
 	SetVisible(true);
 	SetMainMenu(GetParent());
 
+	int width, height;
 	surface()->GetScreenSize(width, height);
 	SetSize(width, height);
 	SetPos(0, 0);
@@ -79,15 +80,6 @@ void CFRMainMenuPanel::OnTick()
 		m_pVideo->MoveToFront();
 		m_flActionThink = gpGlobals->curtime + m_pVideo->GetActiveVideoLength() - 0.21f;
 		b_ShowVideo = false;
-	}
-
-	int newWidth, newHeight;
-	surface()->GetScreenSize(newWidth, newHeight);
-	if (width != newWidth && height != newHeight)
-	{
-		surface()->GetScreenSize(width, height);
-		SetSize(width, height);
-		LoadControlSettings("resource/UI/MainMenu.res");
 	}
 };
 
