@@ -145,12 +145,11 @@ void CFRMainMenu::OnTick()
 
 	int newWidth, newHeight;
 	surface()->GetScreenSize(newWidth, newHeight);
-	Msg("NEW RESOLUTION = %ix%i", newWidth, newHeight);
-	Msg("OLD RESOLUTION = %ix%i", width, height);
-	if (width != newWidth && height != newHeight)
+	if (width != newWidth || height != newHeight)
 	{
 		//restart the panel after applying res settings.
-		surface()->GetScreenSize(width, height);
+		width = newWidth;
+		height = newHeight;
 		SetSize(width, height);
 		MainMenuPanel->SetParent((vgui::Panel *)NULL);
 		delete MainMenuPanel;
