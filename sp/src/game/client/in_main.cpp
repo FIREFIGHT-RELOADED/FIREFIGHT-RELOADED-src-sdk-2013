@@ -44,6 +44,10 @@ extern ConVar cam_idealyaw;
 // For showing/hiding the scoreboard
 #include <game/client/iviewport.h>
 
+//thirdperson helpers
+#include "view.h"
+#include "hud_macros.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -1046,6 +1050,9 @@ void CInput::ExtraMouseSample( float frametime, bool active )
 #endif
 	}
 
+	//thirdperson helpers
+	CalcPlayerAngle(cmd);
+
 	// Retreive view angles from engine ( could have been set in IN_AdjustAngles above )
 	engine->GetViewAngles( viewangles );
 
@@ -1164,6 +1171,10 @@ void CInput::CreateMove ( int sequence_number, float input_sample_frametime, boo
 			ResetMouse();
 		}
 	}
+
+	//thirdperson helpers
+	CalcPlayerAngle(cmd);
+
 	// Retreive view angles from engine ( could have been set in IN_AdjustAngles above )
 	engine->GetViewAngles( viewangles );
 
@@ -1291,6 +1302,55 @@ void CInput::CreateMove ( int sequence_number, float input_sample_frametime, boo
 
 	pVerified->m_cmd = *cmd;
 	pVerified->m_crc = cmd->GetChecksum();
+}
+
+//thirdperson helpers
+void CInput::CalcPlayerAngle(CUserCmd *cmd)
+{
+	C_BasePlayer *pl = C_BasePlayer::GetLocalPlayer();
+	if (!pl || !pl->AllowOvertheShoulderView())
+	{
+		engine->SetViewAngles(m_angViewAngle);
+		return;
+	}
+
+	trace_t tr;
+	const Vector eyePos = pl->EyePosition();
+	UTIL_TraceLine(MainViewOrigin(), MainViewOrigin() + MainViewForward() * MAX_TRACE_LENGTH, MASK_SHOT, pl, COLLISION_GROUP_NONE, &tr);
+
+	// ensure that the player entity does not shoot towards the camera, get dist to plane where the player is on and add a constant
+	float flMinForward = abs(DotProduct(MainViewForward(), eyePos - MainViewOrigin())) + 32.0f;
+	Vector vecTrace = tr.endpos - tr.startpos;
+	float flLenOld = vecTrace.NormalizeInPlace();
+	float flLen = max(flMinForward, flLenOld);
+	vecTrace *= flLen;
+
+	Vector vecFinalDir = MainViewOrigin() + vecTrace - eyePos; //eyePos;
+
+	QAngle playerangles;
+	VectorAngles(vecFinalDir, playerangles);
+	engine->SetViewAngles(playerangles);
+
+	QAngle angCam = m_angViewAngle;
+	playerangles.z = angCam.z = 0;
+	playerangles.x = angCam.x = 0;
+	Vector cFwd, cRight, pFwd, pRight;
+	AngleVectors(angCam, &cFwd, &cRight, NULL);
+	AngleVectors(playerangles, &pFwd, &pRight, NULL);
+
+	float flMove[2] = { cmd->forwardmove, cmd->sidemove };
+	cmd->forwardmove = DotProduct(cFwd, pFwd) * flMove[0] + DotProduct(cRight, pFwd) * flMove[1];
+	cmd->sidemove = DotProduct(cRight, pRight) * flMove[1] + DotProduct(cFwd, pRight) * flMove[0];
+}
+
+void CInput::SetCamViewangles(QAngle const &view)
+{
+	m_angViewAngle = view;
+
+	if (m_angViewAngle.x > 180.0f)
+		m_angViewAngle.x -= 360.0f;
+	if (m_angViewAngle.x < -180.0f)
+		m_angViewAngle.x += 360.0f;
 }
 
 //-----------------------------------------------------------------------------
@@ -1653,6 +1713,19 @@ static ConCommand toggle_duck( "toggle_duck", IN_DuckToggle );
 static ConCommand xboxmove("xmove", IN_XboxStub);
 static ConCommand xboxlook("xlook", IN_XboxStub);
 
+//thirdperson helpers
+static void __MsgFunc_SetThirdpersonAngle(bf_read &msg)
+{
+	bool bFPOnly;
+	msg.ReadBits(&bFPOnly, 1);
+	if (bFPOnly && ::input->CAM_IsThirdPerson())
+		return;
+
+	QAngle angAbs;
+	msg.ReadBitAngles(angAbs);
+	::input->SetCamViewangles(angAbs);
+}
+
 /*
 ============
 Init_All
@@ -1689,6 +1762,10 @@ void CInput::Init_All (void)
 		
 	// Initialize third person camera controls.
 	Init_Camera();
+
+	//thirdperson helpers
+	m_angViewAngle = vec3_angle;
+	HOOK_MESSAGE(SetThirdpersonAngle);
 }
 
 /*

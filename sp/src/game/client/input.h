@@ -84,6 +84,10 @@ public:
 	virtual		float		Joystick_GetYaw( void );
 	virtual		void		ClearInputButton( int bits );
 
+	//thirdperson helpers
+	virtual		void		const GetCamViewangles(QAngle &view){ view = m_angViewAngle; };
+	virtual		void		SetCamViewangles(QAngle const &view);
+
 	virtual		void		CAM_Think( void );
 	virtual		int			CAM_IsThirdPerson( void );
 	virtual		void		CAM_ToThirdPerson(void);
@@ -142,6 +146,10 @@ private:
 	void		JoyStickMove ( float frametime, CUserCmd *cmd );
 	float		ScaleAxisValue( const float axisValue, const float axisThreshold );
 	virtual float JoyStickAdjustYaw( float flSpeed ) { return flSpeed; }
+
+	//thirdperson helpers
+	QAngle		m_angViewAngle;
+	void		CalcPlayerAngle(CUserCmd *cmd);
 
 	// Call this to get the cursor position. The call will be logged in the VCR file if there is one.
 	void		GetMousePos(int &x, int &y);

@@ -2321,6 +2321,15 @@ void C_BasePlayer::PlayPlayerJingle()
 #endif
 }
 
+bool C_BasePlayer::AllowOvertheShoulderView()
+{
+	if (!IsAlive())
+		return false;
+	if (GetTeamNumber() == TEAM_SPECTATOR)
+		return false;
+	return ::input->CAM_IsThirdPerson();
+}
+
 // Stuff for prediction
 void C_BasePlayer::SetSuitUpdate(const char *name, int fgroup, int iNoRepeat)
 {

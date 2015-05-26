@@ -342,7 +342,8 @@ public:
 	void					CacheVehicleView( void );	// Calculate and cache the position of the player in the vehicle
 
 	// Sets the view angles
-	void					SnapEyeAngles( const QAngle &viewAngles );
+	//void					SnapEyeAngles( const QAngle &viewAngles );
+	void					SnapEyeAngles(const QAngle &viewAngles, bool bFirstPersonOnly = false);
 
 	virtual QAngle			BodyAngles();
 	virtual Vector			BodyTarget( const Vector &posSrc, bool bNoisy);

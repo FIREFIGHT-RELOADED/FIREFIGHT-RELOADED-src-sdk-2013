@@ -81,6 +81,10 @@ public:
 	virtual	float		Joystick_GetPitch( void ) = 0;
 	virtual	float		Joystick_GetYaw( void ) = 0;
 
+	//thirdperson helpers
+	virtual void		const GetCamViewangles(QAngle &view) = 0;
+	virtual void		SetCamViewangles(QAngle const &view) = 0;
+
 	// Third Person camera ( TODO/FIXME:  Move this to a separate interface? )
 	virtual void		CAM_Think( void ) = 0;
 	virtual int			CAM_IsThirdPerson( void ) = 0;
