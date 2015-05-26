@@ -370,7 +370,7 @@ int CGrenadeFrag::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 	VPhysicsTakeDamage( inputInfo );
 
 	// Grenades only suffer blast damage and burn damage.
-	if( !(inputInfo.GetDamageType() & (DMG_BLAST|DMG_BURN) ) )
+	if( !(inputInfo.GetDamageType() & (DMG_BLAST|DMG_BURN|DMG_BULLET) ) )
 		return 0;
 
 	return BaseClass::OnTakeDamage( inputInfo );
