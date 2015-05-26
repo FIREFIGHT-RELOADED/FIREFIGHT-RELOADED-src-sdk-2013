@@ -81,17 +81,6 @@ ConVar hud_takesshots( "hud_takesshots", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "
 ConVar hud_freezecamhide( "hud_freezecamhide", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Hide the HUD during freeze-cam" );
 ConVar cl_show_num_particle_systems( "cl_show_num_particle_systems", "0", FCVAR_CLIENTDLL, "Display the number of active particle systems." );
 
-//thirdperson helpers
-static ConVar thirdpersonshoulder_offset("cam_ots_offset", "20 -75 20", FCVAR_ARCHIVE);
-static ConVar thirdpersonshoulder_offsetlag("cam_ots_offset_lag", "64.0", FCVAR_ARCHIVE);
-static ConVar thirdpersonshoulder_originlag("cam_ots_origin_lag", "38.0", FCVAR_ARCHIVE);
-static ConVar thirdpersonshoulder_translucencythreshold("cam_ots_translucencyThreshold", "32.0", FCVAR_ARCHIVE);
-
-static ConVar thirdpersonshoulder_shake_enable("cam_ots_shake_enable", "1", FCVAR_ARCHIVE);
-static ConVar thirdpersonshoulder_shake_speed("cam_ots_shake_speed", "400", FCVAR_ARCHIVE);
-static ConVar thirdpersonshoulder_shake_amount("cam_ots_shake_amount", "2", FCVAR_ARCHIVE);
-static ConVar thirdpersonshoulder_shake_interpspeed("cam_ots_shake_interpspeed", "5", FCVAR_ARCHIVE);
-
 extern ConVar v_viewmodel_fov;
 extern ConVar voice_modenable;
 
@@ -426,223 +415,51 @@ void ClientModeShared::OverrideView( CViewSetup *pSetup )
 
 	// Let the player override the view.
 	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
-	if (!pPlayer)
+	if(!pPlayer)
 		return;
 
-	pPlayer->OverrideView(pSetup);
-	float flPlayerTranslucency = 0;
+	pPlayer->OverrideView( pSetup );
 
-	if (::input->CAM_IsThirdPerson())
+	if( ::input->CAM_IsThirdPerson() )
 	{
-		if (pPlayer->AllowOvertheShoulderView())
+		Vector cam_ofs = g_ThirdPersonManager.GetCameraOffsetAngles();
+		Vector cam_ofs_distance = g_ThirdPersonManager.GetFinalCameraOffset();
+
+		cam_ofs_distance *= g_ThirdPersonManager.GetDistanceFraction();
+
+		camAngles[ PITCH ] = cam_ofs[ PITCH ];
+		camAngles[ YAW ] = cam_ofs[ YAW ];
+		camAngles[ ROLL ] = 0;
+
+		Vector camForward, camRight, camUp;
+		
+
+		if ( g_ThirdPersonManager.IsOverridingThirdPerson() == false )
 		{
-			// hack to hide weird interpolation issue for the origin of the listenserver host
-			static ConVarRef fakelag("net_fakelag");
-			if (fakelag.GetInt() != 1)
-				fakelag.SetValue(1);
-
-			enum // for readability
-			{
-				CAM_RIGHT = 0,
-				CAM_FORWARD,
-				CAM_UP
-			};
-			const Vector camHull(10, 10, 10); // collision test hull
-			float idealcamShoulderOffset[3] = { 20, -75, 20 }; // ideal local offset; right, fwd, up
-			float idealcamShoulderOffset_ColTest[3] = { 30, -75, 20 }; // ideal local offset; right, fwd, up
-			const float camLag = thirdpersonshoulder_offsetlag.GetFloat(); // smoothing speed
-			const float camOriginLag = thirdpersonshoulder_originlag.GetFloat();
-			const bool bDoShake = thirdpersonshoulder_shake_enable.GetBool();
-			QAngle angPunch = pPlayer->GetPunchAngle();
-
-			Vector velo;
-			const float flShake_Speed = thirdpersonshoulder_shake_speed.GetFloat();
-			float flShake_Amt = thirdpersonshoulder_shake_amount.GetFloat();
-			float flPlayerGroundSpeed = 0;
-			static float flInterpolate_GroundState = 1;
-			static float flInterpolate_AirSpeed = 0;
-			static float flTimer = 0;
-
-			float add = gpGlobals->frametime * flShake_Speed;
-			flTimer += add;
-			if (flTimer > 360.0f)
-				flTimer -= 360.0f;
-			pPlayer->EstimateAbsVelocity(velo);
-			flInterpolate_AirSpeed = Approach(velo.z, flInterpolate_AirSpeed, gpGlobals->frametime * 1000.0f);
-			flPlayerGroundSpeed = velo.Length2DSqr() / 90000.0f;
-			bool bOnGround = (pPlayer->GetFlags() & FL_ONGROUND);
-			flInterpolate_GroundState = Approach((bOnGround ? 1.0f : 0.0f), flInterpolate_GroundState, gpGlobals->frametime * thirdpersonshoulder_shake_interpspeed.GetFloat());
-			const float flInterpolate_AirState = 1.0f - flInterpolate_GroundState;
-
-			if (Q_strlen(thirdpersonshoulder_offset.GetString()) > 1)
-			{
-				CCommand cmd;
-				cmd.Tokenize(thirdpersonshoulder_offset.GetString());
-				if (cmd.ArgC() >= 3)
-				{
-					for (int i = 0; i < 3; i++)
-						idealcamShoulderOffset_ColTest[i] = idealcamShoulderOffset[i] = atoi(cmd[i]);
-					idealcamShoulderOffset_ColTest[CAM_RIGHT] += 10 * Sign(idealcamShoulderOffset_ColTest[CAM_RIGHT]);
-				}
-			}
-
-			flShake_Amt *= Vector(idealcamShoulderOffset[0], idealcamShoulderOffset[1], idealcamShoulderOffset[2]).Length2DSqr()
-				/ 6425; // scale by difference to default length
-
-			const float eyeposlag_snap_threshold = 128;
-			static Vector eyepos_lag = vec3_origin;
-			const Vector eyepos = pPlayer->EyePosition();
-			float eyeposDist = (eyepos - eyepos_lag).Length();
-			if (eyeposDist > eyeposlag_snap_threshold)
-				eyepos_lag = eyepos;
-
-			float speedVariety = eyeposDist / eyeposlag_snap_threshold;
-			if (speedVariety)
-			{
-				Vector delta = eyepos - eyepos_lag;
-				float maxLength = delta.NormalizeInPlace();
-				delta *= min(maxLength, gpGlobals->frametime * (camOriginLag + camOriginLag * camOriginLag * speedVariety));
-				eyepos_lag += delta;
-			}
-
-			QAngle viewAng;
-			Vector directions[3];
-			Vector idealCamPos;
-			static Vector lastLocalCamPos = vec3_origin;
-			trace_t tr;
-
-			::input->GetCamViewangles(viewAng);
-			if (bDoShake)
-			{
-				viewAng.y += flInterpolate_GroundState * flPlayerGroundSpeed * FastCos(DEG2RAD(flTimer)) * flShake_Amt;
-				viewAng.x += flInterpolate_GroundState * flPlayerGroundSpeed * sin(DEG2RAD(flTimer) * 2.0f) * flShake_Amt * 0.5f;
-
-				viewAng.x -= flInterpolate_AirState * clamp(flInterpolate_AirSpeed, -1000.0f, 1000.0f) / 25.0f;
-			}
-			AngleVectors(viewAng, &directions[CAM_FORWARD], &directions[CAM_RIGHT], &directions[CAM_UP]);
-
-			idealCamPos = eyepos_lag;
-
-			// set up possible cam positions to test for
-			Vector camPositions[3] = { idealCamPos, idealCamPos, idealCamPos };
-			const float idealPos_Dir[3][3] = { 1, 1, 1,
-				-1, 1, 1,
-				0, 1, 1 }; // three possible offsets
-			for (int x = 0; x < 3; x++)
-				for (int y = 0; y < 3; y++)
-				{
-					UTIL_TraceHull(camPositions[x], camPositions[x] + idealcamShoulderOffset_ColTest[y] * directions[y] * idealPos_Dir[x][y],
-						-camHull, camHull, MASK_SOLID, pPlayer, COLLISION_GROUP_DEBRIS, &tr);
-					camPositions[x] = tr.endpos;
-				}
-
-			// choose the camoffsets that give us the furthest distance
-			int bestDirection = 0;
-			float maxBack = (camPositions[0] - eyepos_lag).Length();
-			for (int i = 1; i < 3; i++)
-			{
-				float curBack = abs((camPositions[i] - eyepos_lag).Length()) - 5.0f * i;
-				if (maxBack < curBack)
-				{
-					maxBack = curBack;
-					bestDirection = i;
-				}
-			}
-
-			const float sortFinalCollisionTest[3] = { CAM_FORWARD, CAM_UP, CAM_RIGHT }; // do collisiontest to the side at the end
-			// get the final cam position
-			Vector tmpidealCamPos = idealCamPos;
-			for (int i = 0; i < 3; i++)
-			{
-				int colTest = sortFinalCollisionTest[i];
-
-				// first check how far we can go actually
-				float maxShoulderOffset = idealcamShoulderOffset[colTest] * idealPos_Dir[bestDirection][colTest];
-				UTIL_TraceHull(tmpidealCamPos, tmpidealCamPos + maxShoulderOffset * directions[colTest],
-					-camHull, camHull, MASK_SOLID, pPlayer, COLLISION_GROUP_DEBRIS, &tr);
-				maxShoulderOffset = Sign(maxShoulderOffset) * (tr.endpos - tr.startpos).Length();
-				tmpidealCamPos = tr.endpos;
-
-				// approach this position
-				float idealOffset = maxShoulderOffset;
-				if (idealOffset != lastLocalCamPos[colTest])
-					lastLocalCamPos[colTest] = Approach(idealOffset, lastLocalCamPos[colTest],
-					gpGlobals->frametime * camLag * abs(idealcamShoulderOffset[colTest] / idealcamShoulderOffset[CAM_RIGHT]));
-
-				// don't punch through walls due to interpolation
-				UTIL_TraceHull(idealCamPos, idealCamPos + lastLocalCamPos[colTest] * directions[colTest],
-					-camHull, camHull, MASK_SOLID, pPlayer, COLLISION_GROUP_DEBRIS, &tr);
-
-				idealCamPos = tr.endpos;
-			}
-
-			// get rid of other unintended cam shaking
-			Vector localCamOffset = idealCamPos - eyepos_lag;
-			for (int i = 0; i < 3; i++)
-			{
-				float dot = DotProduct(directions[i], localCamOffset);
-				lastLocalCamPos[i] = (min(idealPos_Dir[bestDirection][i], idealcamShoulderOffset[i]) < 0) ?
-					max(lastLocalCamPos[i], dot) : min(lastLocalCamPos[i], dot);
-			}
-
-			pSetup->origin = idealCamPos;
-			pSetup->angles = viewAng + angPunch;
-
-			const float zLimits_Norm[2] = { VEC_HULL_MIN.z, VEC_HULL_MAX.z };
-			const float zLimits_Ducked[2] = { VEC_DUCK_HULL_MIN.z, VEC_DUCK_HULL_MAX.z };
-			const float *zLimits = pPlayer->m_Local.m_bDucking ? zLimits_Ducked : zLimits_Norm;
-			Vector orig = pPlayer->GetAbsOrigin();
-			orig += zLimits[0];
-
-			const float minOpaqueDistSquared = thirdpersonshoulder_translucencythreshold.GetFloat() * thirdpersonshoulder_translucencythreshold.GetFloat();
-			Vector camDelta = idealCamPos - orig;
-			camDelta.z -= min(zLimits[1], max(0, camDelta.z));
-			float distSqr = (camDelta).LengthSqr();
-			flPlayerTranslucency = 1.0f - (minOpaqueDistSquared ? min(1, distSqr / minOpaqueDistSquared) : 1.0f);
+			engine->GetViewAngles( camAngles );
 		}
+			
+		// get the forward vector
+		AngleVectors( camAngles, &camForward, &camRight, &camUp );
+	
+		VectorMA( pSetup->origin, -cam_ofs_distance[0], camForward, pSetup->origin );
+		VectorMA( pSetup->origin, cam_ofs_distance[1], camRight, pSetup->origin );
+		VectorMA( pSetup->origin, cam_ofs_distance[2], camUp, pSetup->origin );
+
+		// Override angles from third person camera
+		VectorCopy( camAngles, pSetup->angles );
 	}
 	else if (::input->CAM_IsOrthographic())
 	{
 		pSetup->m_bOrtho = true;
 		float w, h;
-		::input->CAM_OrthographicSize(w, h);
+		::input->CAM_OrthographicSize( w, h );
 		w *= 0.5f;
 		h *= 0.5f;
-		pSetup->m_OrthoLeft = -w;
-		pSetup->m_OrthoTop = -h;
-		pSetup->m_OrthoRight = w;
+		pSetup->m_OrthoLeft   = -w;
+		pSetup->m_OrthoTop    = -h;
+		pSetup->m_OrthoRight  = w;
 		pSetup->m_OrthoBottom = h;
-	}
-
-	// translucency will not work flawlessly on player models that use one of the eyeshaders
-	// since those shaders do not support alpha blending by default
-	bool bWasTransulcent = pPlayer->GetRenderMode() != kRenderNormal ||
-		(pPlayer->GetActiveWeapon() && pPlayer->GetActiveWeapon()->GetRenderMode() != kRenderNormal);
-	bool bShouldBeTranslucent = !!flPlayerTranslucency;
-	if (bWasTransulcent != bShouldBeTranslucent || bShouldBeTranslucent)
-	{
-		if (bShouldBeTranslucent)
-		{
-			unsigned char alpha = (1.0f - flPlayerTranslucency) * 255;
-			pPlayer->SetRenderMode(kRenderTransTexture, true);
-			pPlayer->SetRenderColorA(alpha);
-			if (pPlayer->GetActiveWeapon())
-			{
-				pPlayer->GetActiveWeapon()->SetRenderMode(kRenderTransTexture, true);
-				pPlayer->GetActiveWeapon()->SetRenderColorA(alpha);
-			}
-		}
-		else	// not really required because this will be reset due to networking anyway
-			// disabling networking for those may cause other issues though
-		{
-			pPlayer->SetRenderMode(kRenderNormal, true);
-			pPlayer->SetRenderColorA(255);
-			if (pPlayer->GetActiveWeapon())
-			{
-				pPlayer->GetActiveWeapon()->SetRenderMode(kRenderNormal, true);
-				pPlayer->GetActiveWeapon()->SetRenderColorA(255);
-			}
-		}
 	}
 }
 

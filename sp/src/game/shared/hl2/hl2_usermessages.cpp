@@ -48,7 +48,6 @@ void RegisterUserMessages( void )
 	usermessages->Register( "AchievementHintText", -1 );
 	usermessages->Register( "LevelHintText", -1 );
 	usermessages->Register( "PerkHintText", -1 );
-	usermessages->Register("SetThirdpersonAngle", -1);
 
 #ifndef _X360
 	// NVNT register haptic user messages

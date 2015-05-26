@@ -648,10 +648,10 @@ void CInput::MouseMove( CUserCmd *cmd )
 {
 	float	mouse_x, mouse_y;
 	float	mx, my;
-	//QAngle	viewangles;
+	QAngle	viewangles;
 
 	// Get view angles from engine
-	//engine->GetViewAngles( viewangles );
+	engine->GetViewAngles( viewangles );
 
 	// Validate mouse speed/acceleration settings
 	CheckMouseAcclerationVars();
@@ -680,15 +680,14 @@ void CInput::MouseMove( CUserCmd *cmd )
 		g_pClientMode->OverrideMouseInput( &mouse_x, &mouse_y );
 
 		// Add mouse X/Y movement to cmd
-		//ApplyMouse( viewangles, cmd, mouse_x, mouse_y );
-		ApplyMouse(m_angViewAngle, cmd, mouse_x, mouse_y);
+		ApplyMouse( viewangles, cmd, mouse_x, mouse_y );
 
 		// Re-center the mouse.
 		ResetMouse();
 	}
 
 	// Store out the new viewangles.
-	//engine->SetViewAngles( viewangles );
+	engine->SetViewAngles( viewangles );
 }
 
 //-----------------------------------------------------------------------------

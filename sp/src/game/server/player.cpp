@@ -1418,25 +1418,10 @@ void CBasePlayer::LevelUpClassic()
 //-----------------------------------------------------------------------------
 // Sets the view angles
 //-----------------------------------------------------------------------------
-/*
 void CBasePlayer::SnapEyeAngles( const QAngle &viewAngles )
 {
 	pl.v_angle = viewAngles;
 	pl.fixangle = FIXANGLE_ABSOLUTE;
-}
-*/
-void CBasePlayer::SnapEyeAngles(const QAngle &viewAngles, bool bFirstPersonOnly)
-{
-	pl.v_angle = viewAngles;
-	pl.fixangle = FIXANGLE_ABSOLUTE;
-
-	CSingleUserRecipientFilter user(this);
-	user.MakeReliable();
-
-	UserMessageBegin(user, "SetThirdpersonAngle");
-	WRITE_BOOL(bFirstPersonOnly);
-	WRITE_ANGLES(viewAngles);
-	MessageEnd();
 }
 
 

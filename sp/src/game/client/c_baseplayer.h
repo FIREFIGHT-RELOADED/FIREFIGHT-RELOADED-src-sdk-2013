@@ -176,6 +176,7 @@ public:
 	void			EyeVectors( Vector *pForward, Vector *pRight = NULL, Vector *pUp = NULL );
 	void			CacheVehicleView( void );	// Calculate and cache the position of the player in the vehicle
 
+
 	bool			IsSuitEquipped( void ) { return m_Local.m_bWearingSuit; };
 
 	// Team handlers
@@ -340,8 +341,6 @@ public:
 
 	virtual void DoMuzzleFlash();
 	virtual void PlayPlayerJingle();
-
-	virtual bool AllowOvertheShoulderView();
 
 	virtual void UpdateStepSound( surfacedata_t *psurface, const Vector &vecOrigin, const Vector &vecVelocity  );
 	virtual void PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force );

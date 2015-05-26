@@ -929,5 +929,4 @@ Init_Camera
 void CInput::Init_Camera( void )
 {
 	m_CameraIsOrthographic = false;
-	m_fCameraInThirdPerson = false;
 }
