@@ -55,10 +55,8 @@ public:
 	virtual void VidInit( void );
 	virtual void Reset( void );
 	virtual void OnThink();
-	virtual void OnTick(void);
 
 private:
-	int m_iRemain;
 };	
 
 DECLARE_HUDELEMENT( CHudTimer );
@@ -68,8 +66,6 @@ DECLARE_HUDELEMENT( CHudTimer );
 //-----------------------------------------------------------------------------
 CHudTimer::CHudTimer( const char *pElementName ) : CHudElement( pElementName ), CHudBaseTimer(NULL, "HudTimer")
 {
-	m_iRemain = 0;
-	vgui::ivgui()->AddTickSignal(GetVPanel());
 }
 
 //-----------------------------------------------------------------------------
@@ -87,7 +83,6 @@ void CHudTimer::Reset()
 {
 	SetMinutes(INIT_TIMER);
 	SetSeconds(INIT_TIMER);
-	m_iRemain = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -105,22 +100,15 @@ void CHudTimer::OnThink()
 {
 	if (cl_fr_usetimer.GetBool())
 	{
+		int iRemain = (int)gpGlobals->curtime;
 		int iMinutes, iSeconds;
-		iMinutes = m_iRemain / 60;
-		iSeconds = m_iRemain % 60;
+		iMinutes = iRemain / 60;
+		iSeconds = iRemain % 60;
 		SetMinutes(iMinutes);
 		SetSeconds(iSeconds);
 	}
 	else
 	{
 		g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("TimerHide");
-	}
-}
-
-void CHudTimer::OnTick(void)
-{
-	if (cl_fr_usetimer.GetBool())
-	{
-		m_iRemain += 1;
 	}
 }
