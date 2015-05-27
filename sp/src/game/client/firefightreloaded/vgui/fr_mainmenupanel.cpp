@@ -54,6 +54,7 @@ CFRMainMenuPanel::~CFRMainMenuPanel()
 
 void CFRMainMenuPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
 {
+	LoadControlSettings("resource/UI/MainMenu.res");
 	BaseClass::ApplySchemeSettings(pScheme);
 }
 
