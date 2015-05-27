@@ -82,7 +82,6 @@ void CHudTimer::Reset()
 {
 	SetMinutes(INIT_TIMER);
 	SetSeconds(INIT_TIMER);
-	g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("TimerInit");
 }
 
 //-----------------------------------------------------------------------------
@@ -101,8 +100,8 @@ void CHudTimer::OnThink()
 	if (cl_fr_usetimer.GetBool())
 	{
 		int iMinutes, iSeconds;
-		int iRemain = 300;
-		//iRemain += 1;
+		int iRemain = 0;
+		iRemain += 1;
 		iMinutes = iRemain / 60;
 		iSeconds = iRemain % 60;
 		SetMinutes(iMinutes);
