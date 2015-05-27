@@ -31,7 +31,6 @@ CFRMainMenuPanel::CFRMainMenuPanel(vgui::Panel* parent) : CFRMainMenuPanelBase(p
 	m_bAnimationIn = true;
 
 	//Q_strncpy(m_pzVideoLink, GetRandomVideo(), sizeof(m_pzVideoLink));
-	SetVersionLabel();
 
 	DefaultLayout();
 }
