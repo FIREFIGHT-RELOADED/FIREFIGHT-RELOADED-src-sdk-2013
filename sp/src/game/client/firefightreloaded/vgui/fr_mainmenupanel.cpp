@@ -29,14 +29,6 @@ CFRMainMenuPanel::CFRMainMenuPanel(vgui::Panel* parent) : CFRMainMenuPanelBase(p
 	m_flActionThink = -1;
 	m_flAnimationThink = -1;
 	m_bAnimationIn = true;
-	m_pVersionLabel = dynamic_cast<CExLabel *>(FindChildByName("VersionLabel"));
-	m_pBackground = dynamic_cast<CFRImagePanel *>(FindChildByName("Background"));
-	m_pDisconnectButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("DisconnectButton"));
-	m_pResumeGameButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("ResumeGameButton"));
-	m_pSaveGameButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("SaveGameButton"));
-	m_pReloadMapButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("ReloadMapButton"));
-	m_pVideo = dynamic_cast<CFRVideoPanel *>(FindChildByName("BackgroundVideo"));
-	m_pLogo = dynamic_cast<CFRImagePanel *>(FindChildByName("Logo"));
 
 	//Q_strncpy(m_pzVideoLink, GetRandomVideo(), sizeof(m_pzVideoLink));
 	SetVersionLabel();
@@ -54,9 +46,17 @@ CFRMainMenuPanel::~CFRMainMenuPanel()
 
 void CFRMainMenuPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
 {
-	LoadControlSettings("resource/UI/MainMenu.res");
-	SetVersionLabel();
 	BaseClass::ApplySchemeSettings(pScheme);
+	LoadControlSettings("resource/UI/MainMenu.res");
+	m_pVersionLabel = dynamic_cast<CExLabel *>(FindChildByName("VersionLabel"));
+	m_pBackground = dynamic_cast<CFRImagePanel *>(FindChildByName("Background"));
+	m_pDisconnectButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("DisconnectButton"));
+	m_pResumeGameButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("ResumeGameButton"));
+	m_pSaveGameButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("SaveGameButton"));
+	m_pReloadMapButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("ReloadMapButton"));
+	m_pVideo = dynamic_cast<CFRVideoPanel *>(FindChildByName("BackgroundVideo"));
+	m_pLogo = dynamic_cast<CFRImagePanel *>(FindChildByName("Logo"));
+	SetVersionLabel();
 }
 
 void CFRMainMenuPanel::PerformLayout()
