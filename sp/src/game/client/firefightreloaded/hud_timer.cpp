@@ -24,6 +24,8 @@
 
 #include <vgui/ILocalize.h>
 
+#include <vgui/IVGui.h>
+
 using namespace vgui;
 
 #include "hudelement.h"
@@ -53,6 +55,7 @@ public:
 	virtual void VidInit( void );
 	virtual void Reset( void );
 	virtual void OnThink();
+	virtual void OnTick(void);
 
 private:
 	// old variables
@@ -65,6 +68,7 @@ DECLARE_HUDELEMENT( CHudTimer );
 //-----------------------------------------------------------------------------
 CHudTimer::CHudTimer( const char *pElementName ) : CHudElement( pElementName ), CHudBaseTimer(NULL, "HudTimer")
 {
+	vgui::ivgui()->AddTickSignal(GetVPanel());
 }
 
 //-----------------------------------------------------------------------------
@@ -97,6 +101,14 @@ void CHudTimer::VidInit()
 //-----------------------------------------------------------------------------
 void CHudTimer::OnThink()
 {
+	if (!cl_fr_usetimer.GetBool())
+	{
+		g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("TimerHide");
+	}
+}
+
+void CHudTimer::OnTick(void)
+{
 	if (cl_fr_usetimer.GetBool())
 	{
 		int iMinutes, iSeconds;
@@ -106,9 +118,5 @@ void CHudTimer::OnThink()
 		iSeconds = iRemain % 60;
 		SetMinutes(iMinutes);
 		SetSeconds(iSeconds);
-	}
-	else
-	{
-		g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("TimerHide");
 	}
 }
