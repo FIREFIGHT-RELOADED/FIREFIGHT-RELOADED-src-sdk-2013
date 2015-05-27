@@ -171,6 +171,7 @@ $Project "Client (Episodic)"
 				$File	"firefightreloaded\fr_storemenu_weapons.h"
 				$File 	"firefightreloaded\fr_rendertargets.cpp"
 				$File 	"firefightreloaded\fr_rendertargets.h"
+				$File 	"firefightreloaded\hud_timer.cpp"
 				$Folder	"mainmenu"
 				{
 					$File 	"firefightreloaded\vgui\fr_controls.cpp"
