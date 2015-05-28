@@ -31,8 +31,6 @@ CFRMainMenuPanel::CFRMainMenuPanel(vgui::Panel* parent) : CFRMainMenuPanelBase(p
 	m_bAnimationIn = true;
 
 	//Q_strncpy(m_pzVideoLink, GetRandomVideo(), sizeof(m_pzVideoLink));
-
-	PerformLayout();
 }
 
 //-----------------------------------------------------------------------------
@@ -56,6 +54,7 @@ void CFRMainMenuPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
 	m_pVideo = dynamic_cast<CFRVideoPanel *>(FindChildByName("BackgroundVideo"));
 	m_pLogo = dynamic_cast<CFRImagePanel *>(FindChildByName("Logo"));
 	SetVersionLabel();
+	PerformLayout();
 }
 
 void CFRMainMenuPanel::PerformLayout()
