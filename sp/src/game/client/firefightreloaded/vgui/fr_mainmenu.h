@@ -38,6 +38,8 @@ private:
 	bool				LoadGameUI();
 	bool				InGame();
 	IGameUI*			gameui;
+	int					width;
+	int					height;
 };
 
 extern CFRMainMenu *guiroot;

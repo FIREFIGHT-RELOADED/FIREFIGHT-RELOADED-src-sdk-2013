@@ -39,6 +39,7 @@ CFRMainMenuPanel::CFRMainMenuPanel(vgui::Panel* parent) : CFRMainMenuPanelBase(p
 	m_pLogo = dynamic_cast<CFRImagePanel *>(FindChildByName("Logo"));
 
 	//Q_strncpy(m_pzVideoLink, GetRandomVideo(), sizeof(m_pzVideoLink));
+	SetVersionLabel();
 
 	DefaultLayout();
 }
@@ -53,8 +54,6 @@ CFRMainMenuPanel::~CFRMainMenuPanel()
 
 void CFRMainMenuPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
 {
-	LoadControlSettings("resource/UI/MainMenu.res");
-	SetVersionLabel();
 	BaseClass::ApplySchemeSettings(pScheme);
 }
 

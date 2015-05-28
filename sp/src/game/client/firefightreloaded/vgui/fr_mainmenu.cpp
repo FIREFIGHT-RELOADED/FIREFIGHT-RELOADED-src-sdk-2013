@@ -45,7 +45,6 @@ CFRMainMenu::CFRMainMenu(VPANEL parent) : vgui::EditablePanel(NULL, "MainMenu")
 	SetProportional(false);
 	SetVisible(true);
 
-	int width, height;
 	surface()->GetScreenSize(width, height);
 	SetSize(width, height);
 	SetPos(0, 0);
@@ -142,6 +141,19 @@ void CFRMainMenu::OnTick()
 	if (!engine->IsDrawingLoadingImage() && !IsVisible())
 	{
 		SetVisible(true);
+	}
+
+	int newWidth, newHeight;
+	surface()->GetScreenSize(newWidth, newHeight);
+	if (width != newWidth || height != newHeight)
+	{
+		//restart the panel after applying res settings.
+		width = newWidth;
+		height = newHeight;
+		SetSize(width, height);
+		MainMenuPanel->SetParent((vgui::Panel *)NULL);
+		delete MainMenuPanel;
+		MainMenuPanel = new CFRMainMenuPanel(this);
 	}
 };
 
