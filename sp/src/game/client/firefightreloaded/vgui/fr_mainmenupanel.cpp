@@ -54,12 +54,65 @@ void CFRMainMenuPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
 	m_pVideo = dynamic_cast<CFRVideoPanel *>(FindChildByName("BackgroundVideo"));
 	m_pLogo = dynamic_cast<CFRImagePanel *>(FindChildByName("Logo"));
 	SetVersionLabel();
-	PerformLayout();
+	if (!InGame() && InGameLayout)
+	{
+		DefaultLayout();
+		InGameLayout = false;
+	}
+	else if (InGame() && !InGameLayout)
+	{
+		GameLayout();
+		InGameLayout = true;
+	}
 }
 
 void CFRMainMenuPanel::PerformLayout()
 {
 	BaseClass::PerformLayout();
+};
+
+
+void CFRMainMenuPanel::OnCommand(const char* command)
+{
+	BaseClass::OnCommand(command);
+}
+
+
+void CFRMainMenuPanel::OnTick()
+{
+	BaseClass::OnTick();
+
+	/*
+	if (m_pVideo && m_pVideo->IsVisible() && !InGameLayout && m_flActionThink < gpGlobals->curtime)
+	{
+		m_pVideo->Activate();
+		m_pVideo->BeginPlayback(m_pzVideoLink);
+		m_pVideo->MoveToFront();
+		m_flActionThink = gpGlobals->curtime + m_pVideo->GetActiveVideoLength() - 0.21f;
+		b_ShowVideo = false;
+	}
+	*/
+};
+
+void CFRMainMenuPanel::OnThink()
+{
+	BaseClass::OnThink();
+
+	if (!InGame() && InGameLayout)
+	{
+		DefaultLayout();
+		InGameLayout = false;
+	}
+	else if (InGame() && !InGameLayout)
+	{
+		GameLayout();
+		InGameLayout = true;
+	}
+};
+
+void CFRMainMenuPanel::DefaultLayout()
+{
+	BaseClass::DefaultLayout();
 
 	//we need to find better way to show/hide stuff
 	if (m_pDisconnectButton)
@@ -109,53 +162,9 @@ void CFRMainMenuPanel::PerformLayout()
 	/*
 	if (m_pVideo)
 	{
-		m_pVideo->SetVisible(true);
+	m_pVideo->SetVisible(true);
 	}
 	*/
-};
-
-
-void CFRMainMenuPanel::OnCommand(const char* command)
-{
-	BaseClass::OnCommand(command);
-}
-
-
-void CFRMainMenuPanel::OnTick()
-{
-	BaseClass::OnTick();
-
-	/*
-	if (m_pVideo && m_pVideo->IsVisible() && !InGameLayout && m_flActionThink < gpGlobals->curtime)
-	{
-		m_pVideo->Activate();
-		m_pVideo->BeginPlayback(m_pzVideoLink);
-		m_pVideo->MoveToFront();
-		m_flActionThink = gpGlobals->curtime + m_pVideo->GetActiveVideoLength() - 0.21f;
-		b_ShowVideo = false;
-	}
-	*/
-};
-
-void CFRMainMenuPanel::OnThink()
-{
-	BaseClass::OnThink();
-
-	if (!InGame() && InGameLayout)
-	{
-		PerformLayout();
-		InGameLayout = false;
-	}
-	else if (InGame() && !InGameLayout)
-	{
-		GameLayout();
-		InGameLayout = true;
-	}
-};
-
-void CFRMainMenuPanel::DefaultLayout()
-{
-	BaseClass::DefaultLayout();
 };
 
 void CFRMainMenuPanel::GameLayout()
