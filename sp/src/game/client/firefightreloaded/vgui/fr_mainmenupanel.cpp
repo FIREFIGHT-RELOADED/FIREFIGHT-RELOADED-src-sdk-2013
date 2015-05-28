@@ -29,8 +29,18 @@ CFRMainMenuPanel::CFRMainMenuPanel(vgui::Panel* parent) : CFRMainMenuPanelBase(p
 	m_flActionThink = -1;
 	m_flAnimationThink = -1;
 	m_bAnimationIn = true;
+	m_pVersionLabel = dynamic_cast<CExLabel *>(FindChildByName("VersionLabel"));
+	m_pBackground = dynamic_cast<CFRImagePanel *>(FindChildByName("Background"));
+	m_pDisconnectButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("DisconnectButton"));
+	m_pResumeGameButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("ResumeGameButton"));
+	m_pSaveGameButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("SaveGameButton"));
+	m_pReloadMapButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("ReloadMapButton"));
+	m_pVideo = dynamic_cast<CFRVideoPanel *>(FindChildByName("BackgroundVideo"));
+	m_pLogo = dynamic_cast<CFRImagePanel *>(FindChildByName("Logo"));
 
 	//Q_strncpy(m_pzVideoLink, GetRandomVideo(), sizeof(m_pzVideoLink));
+
+	DefaultLayout();
 }
 
 //-----------------------------------------------------------------------------
@@ -43,27 +53,9 @@ CFRMainMenuPanel::~CFRMainMenuPanel()
 
 void CFRMainMenuPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
 {
-	BaseClass::ApplySchemeSettings(pScheme);
 	LoadControlSettings("resource/UI/MainMenu.res");
-	m_pVersionLabel = dynamic_cast<CExLabel *>(FindChildByName("VersionLabel"));
-	m_pBackground = dynamic_cast<CFRImagePanel *>(FindChildByName("Background"));
-	m_pDisconnectButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("DisconnectButton"));
-	m_pResumeGameButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("ResumeGameButton"));
-	m_pSaveGameButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("SaveGameButton"));
-	m_pReloadMapButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("ReloadMapButton"));
-	m_pVideo = dynamic_cast<CFRVideoPanel *>(FindChildByName("BackgroundVideo"));
-	m_pLogo = dynamic_cast<CFRImagePanel *>(FindChildByName("Logo"));
 	SetVersionLabel();
-	if (!InGame() && InGameLayout)
-	{
-		DefaultLayout();
-		InGameLayout = false;
-	}
-	else if (InGame() && !InGameLayout)
-	{
-		GameLayout();
-		InGameLayout = true;
-	}
+	BaseClass::ApplySchemeSettings(pScheme);
 }
 
 void CFRMainMenuPanel::PerformLayout()
@@ -82,7 +74,6 @@ void CFRMainMenuPanel::OnTick()
 {
 	BaseClass::OnTick();
 
-	/*
 	if (m_pVideo && m_pVideo->IsVisible() && !InGameLayout && m_flActionThink < gpGlobals->curtime)
 	{
 		m_pVideo->Activate();
@@ -91,7 +82,6 @@ void CFRMainMenuPanel::OnTick()
 		m_flActionThink = gpGlobals->curtime + m_pVideo->GetActiveVideoLength() - 0.21f;
 		b_ShowVideo = false;
 	}
-	*/
 };
 
 void CFRMainMenuPanel::OnThink()
@@ -159,12 +149,10 @@ void CFRMainMenuPanel::DefaultLayout()
 			m_pReloadMapButton->SetVisible(true);
 		}
 	}
-	/*
 	if (m_pVideo)
 	{
-	m_pVideo->SetVisible(true);
+		m_pVideo->SetVisible(true);
 	}
-	*/
 };
 
 void CFRMainMenuPanel::GameLayout()
@@ -215,12 +203,10 @@ void CFRMainMenuPanel::GameLayout()
 			m_pReloadMapButton->SetVisible(false);
 		}
 	}
-	/*
 	if (m_pVideo)
 	{
 		m_pVideo->SetVisible(false);
 	}
-	*/
 };
 
 void CFRMainMenuPanel::SetVersionLabel()
