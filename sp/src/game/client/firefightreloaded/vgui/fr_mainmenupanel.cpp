@@ -32,7 +32,7 @@ CFRMainMenuPanel::CFRMainMenuPanel(vgui::Panel* parent) : CFRMainMenuPanelBase(p
 
 	//Q_strncpy(m_pzVideoLink, GetRandomVideo(), sizeof(m_pzVideoLink));
 
-	DefaultLayout();
+	PerformLayout();
 }
 
 //-----------------------------------------------------------------------------
@@ -144,7 +144,7 @@ void CFRMainMenuPanel::OnThink()
 
 	if (!InGame() && InGameLayout)
 	{
-		DefaultLayout();
+		PerformLayout();
 		InGameLayout = false;
 	}
 	else if (InGame() && !InGameLayout)
