@@ -176,6 +176,8 @@ void CSingleplayerAdvancedDialog::GatherCurrentValues()
 			pEdit->GetText( strValue, sizeof( strValue ) );
 			sprintf( szValue, "%s", strValue );
 			break;
+		case O_CATEGORY:
+			break;
 		case O_LIST:
 			pCombo = (ComboBox *)pList->pControl;
 			// pCombo->GetText( strValue, sizeof( strValue ) );
@@ -232,6 +234,7 @@ void CSingleplayerAdvancedDialog::CreateControls()
 	CheckButton *pBox;
 	TextEntry *pEdit;
 	ComboBox *pCombo;
+	Label *pLabel;
 	CScriptListItem *pListItem;
 
 	Panel *objParent = m_pListPanel;
@@ -275,11 +278,15 @@ void CSingleplayerAdvancedDialog::CreateControls()
 
 			pCtrl->pControl = (Panel *)pCombo;
 			break;
+		case O_CATEGORY:
+			pLabel = new Label(pCtrl, "DescTextTitle", pObj->prompt);
+			pCtrl->pControl = (Panel *)pLabel;
+			break;
 		default:
 			break;
 		}
 
-		if ( pCtrl->type != O_BOOL )
+		if (pCtrl->type != O_BOOL && pCtrl->type != O_CATEGORY)
 		{
 			pCtrl->pPrompt = new vgui::Label( pCtrl, "DescLabel", "" );
 			pCtrl->pPrompt->SetContentAlignment( vgui::Label::a_west );
@@ -389,19 +396,22 @@ CInfoDescription::CInfoDescription( CPanelListPanel *panel )
 //   STRING\r\n\
 //   NUMBER\r\n\
 //   LIST\r\n\
+//   CATEGORY\r\n\
 //\r\n\
 // type info:\r\n\
 // BOOL                 no type info\r\n\
 // NUMBER       min max range, use -1 -1 for no limits\r\n\
 // STRING       no type info\r\n\
 // LIST         "" delimited list of options value pairs\r\n\
+// CATEGORY		no type info\r\n\
 //\r\n\
 //\r\n\
 // default depends on type\r\n\
 // BOOL is \"0\" or \"1\"\r\n\
 // NUMBER is \"value\"\r\n\
 // STRING is \"value\"\r\n\
-// LIST is \"index\", where index \"0\" is the first element of the list\r\n\r\n\r\n" );
+// LIST is \"index\", where index \"0\" is the first element of the list\r\n\
+// CATEGORY	is none\r\n\r\n\r\n");
 
 	setDescription( "INFO_SINGLEPLAYEROPTIONS" );
 }

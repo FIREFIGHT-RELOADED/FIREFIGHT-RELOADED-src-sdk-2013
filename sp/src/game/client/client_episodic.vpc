@@ -138,15 +138,12 @@ $Project "Client (Episodic)"
 
 			$Folder	"GameUI"
 			{
-				$File	"gameui\EngineInterface.h"
-				$File	"gameui\ModInfo.cpp"
-				$File	"gameui\ModInfo.h"
 				$File	"gameui\PanelListPanel.cpp"
 				$File	"gameui\PanelListPanel.h"
 				$File	"gameui\ScriptObject.cpp"
 				$File	"gameui\ScriptObject.h"
 				$File	"gameui\SingleplayerAdvancedDialog.cpp"
-				$File	"gameui\SingleplayerAdvancedDialog.cpp"
+				$File	"gameui\SingleplayerAdvancedDialog.h"
 			}
 
 			$Folder	"vgui"

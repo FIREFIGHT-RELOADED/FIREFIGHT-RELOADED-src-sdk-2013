@@ -24,8 +24,10 @@ enum objtype_t
 	O_BADTYPE,
 	O_BOOL,
 	O_NUMBER,
+	O_SLIDER,
 	O_LIST,
 	O_STRING,
+	O_CATEGORY,
 	O_OBSOLETE,
 };
 
@@ -39,7 +41,7 @@ class CScriptListItem
 {
 public:
 	CScriptListItem();
-	CScriptListItem( char const *strItem, char const *strValue );
+	CScriptListItem(char const *strItem, char const *strValue);
 
 	char szItemText[128];
 	char szValue[256];
@@ -50,31 +52,31 @@ public:
 class CScriptObject : public vgui::Panel
 {
 public:
-	void AddItem( CScriptListItem *pItem );
-	CScriptObject( void );
+	void AddItem(CScriptListItem *pItem);
+	CScriptObject(void);
 	~CScriptObject();
 
-	bool ReadFromBuffer( const char **pBuffer, bool isNewObject );
+	bool ReadFromBuffer(const char **pBuffer, bool isNewObject);
 	void WriteToConfig();
-	void WriteToFile( FileHandle_t fp );
-	void WriteToScriptFile( FileHandle_t fp );
-	void SetCurValue( char const *strValue );
+	void WriteToFile(FileHandle_t fp);
+	void WriteToScriptFile(FileHandle_t fp);
+	void SetCurValue(char const *strValue);
 
-	objtype_t GetType( char *pszType );
+	objtype_t GetType(char *pszType);
 
 	objtype_t type;
 
-	char cvarname[64 ];
-	char prompt[ 256 ];
+	char cvarname[64];
+	char prompt[256];
 
 	CScriptListItem *pListItems;
 
 	float fMin, fMax;
 
-	char	defValue[ 128 ];  // Default value string
+	char	defValue[128];  // Default value string
 	float   fdefValue; // Float version of default value.
 
-	char	curValue[ 128 ];
+	char	curValue[128];
 	float   fcurValue;
 
 	bool bSetInfo;  // Prepend "Setinfo" to keyvalue pair in config?
@@ -86,31 +88,31 @@ public:
 abstract_class CDescription
 {
 public:
-	CDescription( CPanelListPanel *panel );
+	CDescription(CPanelListPanel *panel);
 	~CDescription();
 
-	bool ReadFromBuffer( const char **pBuffer );
-	bool InitFromFile( char *pszFileName );
-	void TransferCurrentValues( const char *pszConfigFile );
+	bool ReadFromBuffer(const char **pBuffer);
+	bool InitFromFile(char *pszFileName);
+	void TransferCurrentValues(const char *pszConfigFile);
 
-	void AddObject( CScriptObject *pItem );
+	void AddObject(CScriptObject *pItem);
 	void WriteToConfig();
-	void WriteToFile( FileHandle_t fp );
-	void WriteToScriptFile( FileHandle_t fp );
+	void WriteToFile(FileHandle_t fp);
+	void WriteToScriptFile(FileHandle_t fp);
 
-	virtual void WriteScriptHeader( FileHandle_t fp ) = 0; // Clients must implement this.
-	virtual void WriteFileHeader( FileHandle_t fp ) = 0; // Clients must implement this.
+	virtual void WriteScriptHeader(FileHandle_t fp) = 0; // Clients must implement this.
+	virtual void WriteFileHeader(FileHandle_t fp) = 0; // Clients must implement this.
 
-	void setDescription( const char *pszDesc );
-	void setHint( const char *pszHint );
+	void setDescription(const char *pszDesc);
+	void setHint(const char *pszHint);
 
-	const char *GetDescription( void ) { return m_pszDescriptionType; };
-	const char *getHint( void ) { return m_pszHintText; } ;
+	const char *GetDescription(void) { return m_pszDescriptionType; };
+	const char *getHint(void) { return m_pszHintText; };
 public:
 	CScriptObject *pObjList;
 
 private:
-	CScriptObject * FindObject( const char *pszObjectName );
+	CScriptObject * FindObject(const char *pszObjectName);
 
 	char *m_pszHintText;
 	char *m_pszDescriptionType;
@@ -127,9 +129,9 @@ namespace vgui
 class mpcontrol_t : public vgui::Panel
 {
 public:
-	mpcontrol_t( vgui::Panel *parent, char const *panelName );
+	mpcontrol_t(vgui::Panel *parent, char const *panelName);
 
-	virtual	void	OnSizeChanged( int wide, int tall );
+	virtual	void	OnSizeChanged(int wide, int tall);
 
 	objtype_t		type;
 	vgui::Panel		*pControl;
@@ -142,12 +144,12 @@ public:
 class CInfoDescription : public CDescription
 {
 public:
-	CInfoDescription( CPanelListPanel *panel );
+	CInfoDescription(CPanelListPanel *panel);
 
-	void WriteScriptHeader( FileHandle_t fp );
-	void WriteFileHeader( FileHandle_t fp ); 
+	void WriteScriptHeader(FileHandle_t fp);
+	void WriteFileHeader(FileHandle_t fp);
 };
 
-void UTIL_StripInvalidCharacters( char *pszInput, int maxlen );
+void UTIL_StripInvalidCharacters(char *pszInput, int maxlen);
 
 #endif // SCRIPTOBJECT_H
