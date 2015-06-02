@@ -20,6 +20,7 @@
 #include <vgui_controls/CheckButton.h>
 #include <vgui_controls/ComboBox.h>
 #include <vgui_controls/TextEntry.h>
+#include <vgui_controls/Slider.h>
 #include "PanelListPanel.h"
 #include <vgui/IInput.h>
 
@@ -139,6 +140,7 @@ void CSingleplayerAdvancedDialog::GatherCurrentValues()
 	CheckButton *pBox;
 	TextEntry *pEdit;
 	ComboBox *pCombo;
+	Slider *pSlider;
 
 	mpcontrol_t *pList;
 
@@ -147,6 +149,7 @@ void CSingleplayerAdvancedDialog::GatherCurrentValues()
 
 	char szValue[256];
 	char strValue[ 256 ];
+	int iValue;
 
 	pList = m_pList;
 	while ( pList )
@@ -170,6 +173,11 @@ void CSingleplayerAdvancedDialog::GatherCurrentValues()
 			pEdit = ( TextEntry * )pList->pControl;
 			pEdit->GetText( strValue, sizeof( strValue ) );
 			sprintf( szValue, "%s", strValue );
+			break;
+		case O_SLIDER:
+			pSlider = (Slider *)pList->pControl;
+			iValue = pSlider->GetValue();
+			sprintf(szValue, "%i", iValue);
 			break;
 		case O_STRING:
 			pEdit = ( TextEntry * )pList->pControl;
@@ -235,6 +243,7 @@ void CSingleplayerAdvancedDialog::CreateControls()
 	TextEntry *pEdit;
 	ComboBox *pCombo;
 	Label *pLabel;
+	Slider *pSlider;
 	CScriptListItem *pListItem;
 
 	Panel *objParent = m_pListPanel;
@@ -264,6 +273,12 @@ void CSingleplayerAdvancedDialog::CreateControls()
 			pEdit->InsertString(pObj->defValue);
 			pCtrl->pControl = (Panel *)pEdit;
 			break;
+		case O_SLIDER:
+			pSlider = new Slider(pCtrl, "DescScrollEntry");
+			pSlider->SetValue(pObj->fdefValue);
+			pSlider->SetRange(pObj->fMin, pObj->fMax);
+			pCtrl->pControl = (Panel *)pSlider;
+			break;
 		case O_LIST:
 			pCombo = new ComboBox(pCtrl, "DescComboBox", singleadvanced_listlines.GetInt(), false);
 
@@ -286,7 +301,7 @@ void CSingleplayerAdvancedDialog::CreateControls()
 			break;
 		}
 
-		if (pCtrl->type != O_BOOL && pCtrl->type != O_CATEGORY)
+		if (pCtrl->type != O_BOOL && pCtrl->type != O_CATEGORY && pCtrl->type != O_SLIDER)
 		{
 			pCtrl->pPrompt = new vgui::Label( pCtrl, "DescLabel", "" );
 			pCtrl->pPrompt->SetContentAlignment( vgui::Label::a_west );
@@ -395,12 +410,14 @@ CInfoDescription::CInfoDescription( CPanelListPanel *panel )
 //   BOOL   (a yes/no toggle)\r\n\
 //   STRING\r\n\
 //   NUMBER\r\n\
+//   SLIDER\r\n\
 //   LIST\r\n\
 //   CATEGORY\r\n\
 //\r\n\
 // type info:\r\n\
 // BOOL                 no type info\r\n\
 // NUMBER       min max range, use -1 -1 for no limits\r\n\
+// SLIDER       min max range, use -1 -1 for no limits\r\n\
 // STRING       no type info\r\n\
 // LIST         "" delimited list of options value pairs\r\n\
 // CATEGORY		no type info\r\n\
@@ -409,6 +426,7 @@ CInfoDescription::CInfoDescription( CPanelListPanel *panel )
 // default depends on type\r\n\
 // BOOL is \"0\" or \"1\"\r\n\
 // NUMBER is \"value\"\r\n\
+// SLIDER is \"value\"\r\n\
 // STRING is \"value\"\r\n\
 // LIST is \"index\", where index \"0\" is the first element of the list\r\n\
 // CATEGORY	is none\r\n\r\n\r\n");
