@@ -410,7 +410,7 @@ CInfoDescription::CInfoDescription( CPanelListPanel *panel )
 //   BOOL   (a yes/no toggle)\r\n\
 //   STRING\r\n\
 //   NUMBER\r\n\
-//   SLIDER\r\n\
+//   SLIDER   (doesn't work properly for the time being)\r\n\
 //   LIST\r\n\
 //   CATEGORY\r\n\
 //\r\n\

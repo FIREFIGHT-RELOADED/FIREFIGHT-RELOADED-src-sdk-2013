@@ -1,7 +1,6 @@
 #include "cbase.h"
 #include "fr_mainmenu.h"
 #include "fr_mainmenu_interface.h"
-#include "gameui\SingleplayerAdvancedDialog.h"
 #include <filesystem.h>
 #include <vgui_controls/AnimationController.h>
 
