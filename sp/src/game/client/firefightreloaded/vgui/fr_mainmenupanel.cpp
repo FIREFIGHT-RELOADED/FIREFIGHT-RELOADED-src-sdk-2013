@@ -65,7 +65,14 @@ void CFRMainMenuPanel::PerformLayout()
 
 void CFRMainMenuPanel::OnCommand(const char* command)
 {
-	BaseClass::OnCommand(command);
+	if (!Q_strcmp(command, "singleplayeroptions"))
+	{
+		dynamic_cast<CFRMainMenu*>(GetMainMenu())->ShowPanel(ADVOPTIONS_MENU);
+	}
+	else
+	{
+		BaseClass::OnCommand(command);
+	}
 }
 
 
