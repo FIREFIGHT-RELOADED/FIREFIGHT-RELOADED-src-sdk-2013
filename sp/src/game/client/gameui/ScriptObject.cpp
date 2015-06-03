@@ -317,7 +317,7 @@ void CScriptObject::WriteToScriptFile(FileHandle_t fp)
 
 void CScriptObject::WriteToFile(FileHandle_t fp)
 {
-	if (type == O_OBSOLETE || type == O_CATEGORY)
+	if (type == O_OBSOLETE)
 		return;
 
 	FixupString(cvarname, sizeof(cvarname));
@@ -379,7 +379,7 @@ void CScriptObject::WriteToFile(FileHandle_t fp)
 
 void CScriptObject::WriteToConfig(void)
 {
-	if (type == O_OBSOLETE || type == O_CATEGORY)
+	if (type == O_OBSOLETE)
 		return;
 
 	char *pszKey;
