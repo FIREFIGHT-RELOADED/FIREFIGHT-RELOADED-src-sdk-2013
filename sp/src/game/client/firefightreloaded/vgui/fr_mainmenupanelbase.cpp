@@ -22,6 +22,8 @@ CFRMainMenuPanelBase::CFRMainMenuPanelBase(vgui::Panel* parent) : EditablePanel(
 	SetPos(0, 0);
 
 	vgui::ivgui()->AddTickSignal(GetVPanel(), 100);
+
+	bInMenu = true;
 }
 
 void CFRMainMenuPanelBase::ApplySchemeSettings(vgui::IScheme *pScheme)
@@ -89,10 +91,12 @@ bool CFRMainMenuPanelBase::InGame()
 
 	if (pPlayer && IsVisible())
 	{
+		bInMenu = false;
 		return true;
 	}
 	else 
 	{
+		bInMenu = true;
 		return false;
 	}
 }

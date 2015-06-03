@@ -38,6 +38,7 @@ public:
 protected:
 	bool				InGameLayout;
 	Panel				*m_pMainMenu;
+	bool				bInMenu;
 };
 
 #endif // FRMAINMENUPANELBASE_H
