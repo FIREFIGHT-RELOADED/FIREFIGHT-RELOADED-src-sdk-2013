@@ -1,6 +1,7 @@
 #include "cbase.h"
 #include "fr_mainmenupanel.h"
 #include "fr_mainmenu.h"
+#include "gameui\SingleplayerAdvancedDialog.h"
 
 using namespace vgui;
 // memdbgon must be the last include file in a .cpp file!!!
@@ -67,7 +68,8 @@ void CFRMainMenuPanel::OnCommand(const char* command)
 {
 	if (!Q_strcmp(command, "singleplayeroptions"))
 	{
-		dynamic_cast<CFRMainMenu*>(GetMainMenu())->ShowPanel(ADVOPTIONS_MENU);
+		CSingleplayerAdvancedDialog* pCSingleplayerAdvancedDialog = new CSingleplayerAdvancedDialog(this);
+		pCSingleplayerAdvancedDialog->Activate();
 	}
 	else
 	{

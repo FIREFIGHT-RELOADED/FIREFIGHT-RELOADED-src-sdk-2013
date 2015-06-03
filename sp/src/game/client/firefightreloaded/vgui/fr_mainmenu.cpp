@@ -49,7 +49,6 @@ CFRMainMenu::CFRMainMenu(VPANEL parent) : vgui::EditablePanel(NULL, "MainMenu")
 	SetPos(0, 0);
 
 	MainMenuPanel = new CFRMainMenuPanel(this);
-	OptionsPanel = new CSingleplayerAdvancedDialog(this);
 
 	vgui::ivgui()->AddTickSignal(GetVPanel(), 100);
 }
@@ -70,9 +69,6 @@ void CFRMainMenu::ShowPanel(MenuPanel iPanel)
 	case MAIN_MENU:
 		MainMenuPanel->SetVisible(true);
 		break;
-	case ADVOPTIONS_MENU:
-		OptionsPanel->SetVisible(true);
-		break;
 	default:
 		break;
 	}
@@ -84,9 +80,6 @@ void CFRMainMenu::HidePanel(MenuPanel iPanel)
 	{
 	case MAIN_MENU:
 		MainMenuPanel->SetVisible(false);
-		break;
-	case ADVOPTIONS_MENU:
-		OptionsPanel->SetVisible(false);
 		break;
 	default:
 		break;

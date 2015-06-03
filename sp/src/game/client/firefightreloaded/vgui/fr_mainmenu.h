@@ -5,13 +5,11 @@
 #include "vgui_controls/Panel.h"
 #include "GameUI/IGameUI.h"
 #include "fr_mainmenupanel.h"
-#include "gameui\SingleplayerAdvancedDialog.h"
 
 enum MenuPanel 
 {
 	NONE_MENU,
 	MAIN_MENU,
-	ADVOPTIONS_MENU,
 	COUNT_MENU
 };
 
@@ -37,7 +35,6 @@ public:
 
 private:
 	CFRMainMenuPanel	*MainMenuPanel;
-	CSingleplayerAdvancedDialog	*OptionsPanel;
 	bool				LoadGameUI();
 	bool				InGame();
 	IGameUI*			gameui;
