@@ -40,6 +40,7 @@ public:
 
 	void ApplySettings(KeyValues *inResourceData);
 	void ApplySchemeSettings(vgui::IScheme *pScheme);
+	void PerformLayout();
 
 	void SendAnimation(MouseState flag);
 	void SetDefaultAnimation();

@@ -80,6 +80,27 @@ void CFRMainMenuButton::ApplySchemeSettings(vgui::IScheme *pScheme)
 {
 	BaseClass::ApplySchemeSettings(pScheme);
 
+	pButton->SetDefaultColor(pScheme->GetColor(pDefaultText, Color(255, 255, 255, 255)), Color(0, 0, 0, 0));
+	pButton->SetArmedColor(pScheme->GetColor(pArmedText, Color(255, 255, 255, 255)), Color(0, 0, 0, 0));
+	pButton->SetDepressedColor(pScheme->GetColor(pDepressedText, Color(255, 255, 255, 255)), Color(0, 0, 0, 0));
+	pButton->SetSelectedColor(pScheme->GetColor(pDepressedText, Color(255, 255, 255, 255)), Color(0, 0, 0, 0));
+
+	if (m_bBorderVisible)
+	{
+		pButton->SetDefaultBorder(pScheme->GetBorder(pDefaultBorder));
+		pButton->SetArmedBorder(pScheme->GetBorder(pArmedBorder));
+		pButton->SetDepressedBorder(pScheme->GetBorder(pDepressedBorder));
+		pButton->SetSelectedBorder(pScheme->GetBorder(pDepressedBorder));
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CFRMainMenuButton::PerformLayout()
+{
+	BaseClass::PerformLayout();
+
 	pButton->SetCommand(m_szCommand);
 	GetText(m_szText, sizeof(m_szText));
 	pButton->SetText(m_szText);
@@ -109,19 +130,6 @@ void CFRMainMenuButton::ApplySchemeSettings(vgui::IScheme *pScheme)
 	SetArmedColor(Color(0, 0, 0, 0), Color(0, 0, 0, 0));
 	SetDepressedColor(Color(0, 0, 0, 0), Color(0, 0, 0, 0));
 	SetSelectedColor(Color(0, 0, 0, 0), Color(0, 0, 0, 0));
-
-	pButton->SetDefaultColor(pScheme->GetColor(pDefaultText, Color(255, 255, 255, 255)), Color(0, 0, 0, 0));
-	pButton->SetArmedColor(pScheme->GetColor(pArmedText, Color(255, 255, 255, 255)), Color(0, 0, 0, 0));
-	pButton->SetDepressedColor(pScheme->GetColor(pDepressedText, Color(255, 255, 255, 255)), Color(0, 0, 0, 0));
-	pButton->SetSelectedColor(pScheme->GetColor(pDepressedText, Color(255, 255, 255, 255)), Color(0, 0, 0, 0));
-
-	if (m_bBorderVisible)
-	{
-		pButton->SetDefaultBorder(pScheme->GetBorder(pDefaultBorder));
-		pButton->SetArmedBorder(pScheme->GetBorder(pArmedBorder));
-		pButton->SetDepressedBorder(pScheme->GetBorder(pDepressedBorder));
-		pButton->SetSelectedBorder(pScheme->GetBorder(pDepressedBorder));
-	}
 
 	pButton->SetArmedSound("ui/buttonrollover.wav");
 	pButton->SetDepressedSound("ui/buttonclick.wav");
