@@ -275,8 +275,8 @@ void CSingleplayerAdvancedDialog::CreateControls()
 			break;
 		case O_SLIDER:
 			pSlider = new Slider(pCtrl, "DescScrollEntry");
-			pSlider->SetValue(pObj->fdefValue);
 			pSlider->SetRange(pObj->fMin, pObj->fMax);
+			pSlider->SetValue(pObj->fdefValue);
 			pCtrl->pControl = (Panel *)pSlider;
 			break;
 		case O_LIST:
@@ -301,7 +301,7 @@ void CSingleplayerAdvancedDialog::CreateControls()
 			break;
 		}
 
-		if (pCtrl->type != O_BOOL && pCtrl->type != O_CATEGORY && pCtrl->type != O_SLIDER)
+		if (pCtrl->type != O_BOOL && pCtrl->type != O_CATEGORY)
 		{
 			pCtrl->pPrompt = new vgui::Label( pCtrl, "DescLabel", "" );
 			pCtrl->pPrompt->SetContentAlignment( vgui::Label::a_west );
