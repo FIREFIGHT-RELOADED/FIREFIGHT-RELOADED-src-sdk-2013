@@ -680,7 +680,7 @@ protected:
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
 		CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
-		if (pVictim == pPlayer && pPlayer->IsDead())
+		if (pPlayer->GetHealth() <= 0)
 		{
 			if (pPlayer->FragCount() >= 100)
 			{

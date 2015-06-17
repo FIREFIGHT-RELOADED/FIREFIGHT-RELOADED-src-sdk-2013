@@ -106,9 +106,10 @@ void CHudTimer::OnThink()
 		iSeconds = iRemain % 60;
 		SetMinutes(iMinutes);
 		SetSeconds(iSeconds);
+		SetAlpha(255);
 	}
 	else
 	{
-		g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("TimerHide");
+		SetAlpha(0);
 	}
 }

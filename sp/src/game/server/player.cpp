@@ -217,6 +217,7 @@ ConVar sv_player_voice_hit("sv_player_voice_hit", "1", FCVAR_ARCHIVE);
 ConVar sv_player_voice_perk("sv_player_voice_perk", "1", FCVAR_ARCHIVE);
 ConVar sv_player_startingmoney("sv_player_startingmoney", "0", FCVAR_ARCHIVE);
 ConVar sv_player_startingmoney_amount("sv_player_startingmoney_amount", "300", FCVAR_ARCHIVE);
+ConVar sv_player_hardcoremode("sv_player_hardcoremode", "0", FCVAR_ARCHIVE);
 
 void CC_GiveCurrentAmmo( void )
 {
@@ -5775,14 +5776,23 @@ void CBasePlayer::Spawn( void )
 
 	if (sk_player_weapons.GetBool() && gpGlobals->eLoadType != MapLoad_Background)
 	{
-		EquipSuit();
-		GiveAmmo(120, "Pistol");
-		GiveAmmo(220, "SMG1");	
-		GiveNamedItem("weapon_smg1");
-		GiveNamedItem("weapon_crowbar");
-		GiveNamedItem("weapon_pistol");
-		GiveNamedItem("weapon_physcannon");
+		if (sv_player_hardcoremode.GetBool())
+		{
+			EquipSuit();
+			GiveNamedItem("weapon_physcannon");
+		}
+		else
+		{
+			EquipSuit();
+			GiveAmmo(120, "Pistol");
+			GiveAmmo(220, "SMG1");
+			GiveNamedItem("weapon_smg1");
+			GiveNamedItem("weapon_crowbar");
+			GiveNamedItem("weapon_pistol");
+			GiveNamedItem("weapon_physcannon");
+		}
 	}
+
 	if (sv_player_startingmoney.GetBool())
 	{
 		SetMoney(sv_player_startingmoney_amount.GetInt());
