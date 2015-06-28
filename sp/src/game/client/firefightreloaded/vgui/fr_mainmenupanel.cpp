@@ -93,6 +93,14 @@ void CFRMainMenuPanel::OnTick()
 		m_flActionThink = gpGlobals->curtime + m_pVideo->GetActiveVideoLength() - 0.21f;
 		b_ShowVideo = false;
 	}
+	if (m_pHintLabel && m_flAnimationThink < gpGlobals->curtime)
+	{
+		//AnimationController::PublicValue_t newPos = { 20, 30, 0, 0 };
+		float m_fAlpha = (m_bAnimationIn ? 50.0 : 100.0);
+		vgui::GetAnimationController()->RunAnimationCommand(m_pHintLabel, "Alpha", m_fAlpha, 0.0f, 0.25f, vgui::AnimationController::INTERPOLATOR_LINEAR);
+		m_bAnimationIn = !m_bAnimationIn;
+		m_flAnimationThink = gpGlobals->curtime + 0.25f;
+	}
 };
 
 void CFRMainMenuPanel::OnThink()
