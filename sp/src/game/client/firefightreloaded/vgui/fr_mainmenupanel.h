@@ -23,9 +23,11 @@ public:
 	void DefaultLayout();
 	void GameLayout();
 	void SetVersionLabel();
+	void SetHintLabel();
 
 private:
 	CExLabel			*m_pVersionLabel;
+	CExLabel			*m_pHintLabel;
 	CFRMainMenuButton	*m_pDisconnectButton;
 	CFRMainMenuButton	*m_pResumeGameButton;
 	CFRMainMenuButton	*m_pSaveGameButton;

@@ -1,6 +1,7 @@
 #include "cbase.h"
 #include "fr_mainmenupanel.h"
 #include "fr_mainmenu.h"
+#include "fr_tips.h"
 #include "gameui\SingleplayerAdvancedDialog.h"
 
 using namespace vgui;
@@ -31,6 +32,7 @@ CFRMainMenuPanel::CFRMainMenuPanel(vgui::Panel* parent) : CFRMainMenuPanelBase(p
 	m_flAnimationThink = -1;
 	m_bAnimationIn = true;
 	m_pVersionLabel = dynamic_cast<CExLabel *>(FindChildByName("VersionLabel"));
+	m_pHintLabel = dynamic_cast<CExLabel *>(FindChildByName("HintLabel"));
 	m_pBackground = dynamic_cast<CFRImagePanel *>(FindChildByName("Background"));
 	m_pDisconnectButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("DisconnectButton"));
 	m_pResumeGameButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("ResumeGameButton"));
@@ -41,6 +43,7 @@ CFRMainMenuPanel::CFRMainMenuPanel(vgui::Panel* parent) : CFRMainMenuPanelBase(p
 
 	//Q_strncpy(m_pzVideoLink, GetRandomVideo(), sizeof(m_pzVideoLink));
 	SetVersionLabel();
+	SetHintLabel();
 
 	DefaultLayout();
 }
@@ -238,6 +241,15 @@ void CFRMainMenuPanel::SetVersionLabel()
 			delete[] GameInfo;
 		}
 		m_pVersionLabel->SetText(verString);
+	}
+};
+
+void CFRMainMenuPanel::SetHintLabel()
+{
+	if (m_pHintLabel)
+	{
+		const wchar_t *wzTip = g_FRTips.GetRandomTip();
+		m_pHintLabel->SetText(wzTip);
 	}
 };
 

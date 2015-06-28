@@ -187,6 +187,8 @@ $Project "Client (Episodic)"
 					$File 	"firefightreloaded\vgui\fr_mainmenupanelbase.h"
 					$File 	"firefightreloaded\vgui\fr_vgui_video.cpp"
 					$File 	"firefightreloaded\vgui\fr_vgui_video.h"
+					$File 	"firefightreloaded\vgui\fr_tips.cpp"
+					$File 	"firefightreloaded\vgui\fr_tips.h"
 				}
 			}
 		}
