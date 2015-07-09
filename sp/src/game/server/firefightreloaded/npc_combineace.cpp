@@ -35,6 +35,8 @@ ConVar sk_combine_ace_kick( "sk_combine_ace_kick", "0");
 // Whether or not the combine guard should spawn health on death
 ConVar combine_ace_spawn_health( "combine_ace_spawn_health", "1" );
 
+ConVar combine_ace_spawnwithgrenades("combine_ace_spawnwithgrenades", "1", FCVAR_ARCHIVE);
+
 extern ConVar sk_plr_dmg_buckshot;	
 extern ConVar sk_plr_num_shotgun_pellets;
 
@@ -58,21 +60,24 @@ void CNPC_CombineAce::Spawn( void )
 	SetModel( "models/combine_ace_soldier.mdl" );
 
 	//Give him a random amount of grenades on spawn
-	if (g_pGameRules->IsSkillLevel(SKILL_HARD))
+	if (combine_ace_spawnwithgrenades.GetBool())
 	{
-		m_iNumGrenades = random->RandomInt(2, 3);
-	}
-	else if (g_pGameRules->IsSkillLevel(SKILL_VERYHARD))
-	{
-		m_iNumGrenades = random->RandomInt(4, 6);
-	}
-	else if (g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE))
-	{
-		m_iNumGrenades = random->RandomInt(8, 12);
-	}
-	else
-	{
-		m_iNumGrenades = random->RandomInt(0, 2);
+		if (g_pGameRules->IsSkillLevel(SKILL_HARD))
+		{
+			m_iNumGrenades = random->RandomInt(2, 3);
+		}
+		else if (g_pGameRules->IsSkillLevel(SKILL_VERYHARD))
+		{
+			m_iNumGrenades = random->RandomInt(4, 6);
+		}
+		else if (g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE))
+		{
+			m_iNumGrenades = random->RandomInt(8, 12);
+		}
+		else
+		{
+			m_iNumGrenades = random->RandomInt(0, 2);
+		}
 	}
 
 	m_fIsElite = true;

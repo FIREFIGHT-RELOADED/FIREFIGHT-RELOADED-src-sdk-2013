@@ -132,6 +132,8 @@ ConVar sk_kick_damage_mult("sk_kick_damage_mult", "1");
 ConVar sk_kick_throwforce_div("sk_kick_throwforce_div", "48");
 ConVar sk_kick_damage_div("sk_kick_damage_div", "48");
 
+ConVar sv_player_shootinzoom("sv_player_shootinzoom", "1", FCVAR_ARCHIVE);
+
 #define	FLASH_DRAIN_TIME	 1.1111	// 100 units / 90 secs
 #define	FLASH_CHARGE_TIME	 50.0f	// 100 units / 2 secs
 const char *szModelName = NULL;
@@ -976,29 +978,32 @@ void CHL2_Player::PreThink(void)
 	// Update weapon's ready status
 	UpdateWeaponPosture();
 
-	// Disallow shooting while zooming
-	if ( IsX360() )
+	// Disallow shooting while zooming.
+	if (!sv_player_shootinzoom.GetBool())
 	{
-		if ( IsZooming() )
+		if (IsX360())
 		{
-			if( GetActiveWeapon() && !GetActiveWeapon()->IsWeaponZoomed() )
+			if (IsZooming())
 			{
-				// If not zoomed because of the weapon itself, do not attack.
-				m_nButtons &= ~(IN_ATTACK|IN_ATTACK2);
+				if (GetActiveWeapon() && !GetActiveWeapon()->IsWeaponZoomed())
+				{
+					// If not zoomed because of the weapon itself, do not attack.
+					m_nButtons &= ~(IN_ATTACK | IN_ATTACK2);
+				}
 			}
 		}
-	}
-	else
-	{
-		if ( m_nButtons & IN_ZOOM )
+		else
 		{
-			//FIXME: Held weapons like the grenade get sad when this happens
-	#ifdef HL2_EPISODIC
-			// Episodic allows players to zoom while using a func_tank
-			CBaseCombatWeapon* pWep = GetActiveWeapon();
-			if ( !m_hUseEntity || ( pWep && pWep->IsWeaponVisible() ) )
-	#endif
-			m_nButtons &= ~(IN_ATTACK|IN_ATTACK2);
+			if (m_nButtons & IN_ZOOM)
+			{
+				//FIXME: Held weapons like the grenade get sad when this happens
+#ifdef HL2_EPISODIC
+				// Episodic allows players to zoom while using a func_tank
+				CBaseCombatWeapon* pWep = GetActiveWeapon();
+				if (!m_hUseEntity || (pWep && pWep->IsWeaponVisible()))
+#endif
+					m_nButtons &= ~(IN_ATTACK | IN_ATTACK2);
+			}
 		}
 	}
 }

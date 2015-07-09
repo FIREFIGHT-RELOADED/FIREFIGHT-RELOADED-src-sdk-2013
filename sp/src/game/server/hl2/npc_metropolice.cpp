@@ -120,6 +120,8 @@ ConVar	metropolice_chase_use_follow( "metropolice_chase_use_follow", "0" );
 ConVar  metropolice_move_and_melee("metropolice_move_and_melee", "1" );
 ConVar  metropolice_charge("metropolice_charge", "1" );
 
+ConVar	metropolice_spawnwithmanhacks("metropolice_spawnwithmanhacks", "1", FCVAR_ARCHIVE);
+
 // How many clips of pistol ammo a metropolice carries.
 #define METROPOLICE_NUM_CLIPS			10
 #define METROPOLICE_BURST_RELOAD_COUNT	20
@@ -733,6 +735,27 @@ void CNPC_MetroPolice::Spawn( void )
 	if ( m_iManhacks )
 	{
 		SetBodygroup( METROPOLICE_BODYGROUP_MANHACK, true );
+	}
+
+	//Give him a random number of manhacks on spawn.
+	if (metropolice_spawnwithmanhacks.GetBool())
+	{
+		if (g_pGameRules->IsSkillLevel(SKILL_HARD))
+		{
+			m_iManhacks = random->RandomInt(2, 3);
+		}
+		else if (g_pGameRules->IsSkillLevel(SKILL_VERYHARD))
+		{
+			m_iManhacks = random->RandomInt(4, 6);
+		}
+		else if (g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE))
+		{
+			m_iManhacks = random->RandomInt(8, 12);
+		}
+		else
+		{
+			m_iManhacks = random->RandomInt(0, 2);
+		}
 	}
 }
 
