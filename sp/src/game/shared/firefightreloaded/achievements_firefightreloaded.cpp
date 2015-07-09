@@ -691,4 +691,33 @@ protected:
 };
 DECLARE_ACHIEVEMENT(CAchievementKill100EnemiesOnDeath, ACHIEVEMENT_FIREFIGHTRELOADED_KILL100ENEMIESONDEATH, "FIREFIGHTRELOADED_KILL100ENEMIESONDEATH", 20);
 
+class CAchievementKill10EnemiesWithOwnGrenade : public CBaseAchievement
+{
+protected:
+	virtual void Init()
+	{
+		SetFlags(ACH_LISTEN_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
+		SetInflictorFilter("npc_grenade_frag");
+		SetGameDirFilter("firefightreloaded");
+		SetGoal(10);
+	}
+
+	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
+	{
+		CBaseGrenade *pGrenade = dynamic_cast<CBaseGrenade *>(pInflictor);
+		if (pGrenade)
+		{
+			CBaseEntity *pThrower = pGrenade->GetThrower();
+			CBaseEntity *pOriginalThrower = pGrenade->GetOriginalThrower();
+			CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+			// check if player was most recent thrower, but the victim was the original thrower
+			if ((pPlayer == pThrower) && (pOriginalThrower == pVictim))
+			{
+				IncrementCount();
+			}
+		}
+	}
+};
+DECLARE_ACHIEVEMENT(CAchievementKill10EnemiesWithOwnGrenade, ACHIEVEMENT_FIREFIGHTRELOADED_KILL10ENEMIESWITHOWNGRENADE, "FIREFIGHTRELOADED_KILL10ENEMIESWITHOWNGRENADE", 35);
+
 #endif // GAME_DLL
