@@ -883,7 +883,7 @@ void CBaseCombatWeapon::ToggleIronsights()
 	if (!HasIronsights())
 		return;
 
-	if (m_bIsIronsighted)
+	if (IsIronsighted())
 		DisableIronsights();
 	else
 		EnableIronsights();
@@ -904,7 +904,7 @@ void CBaseCombatWeapon::EnableIronsights()
 	if (!pOwner)
 		return;
 
-	if (pOwner->SetFOV(this, pOwner->GetDefaultFOV() + GetIronsightFOVOffset(), 0.4f)) //modify the last value to adjust how fast the fov is applied
+	if (pOwner->SetFOV(this, pOwner->GetFOV() + GetIronsightFOVOffset(), 0.4f)) //modify the last value to adjust how fast the fov is applied
 	{
 		m_bIsIronsighted = true;
 		SetIronsightTime();
@@ -933,7 +933,7 @@ void CBaseCombatWeapon::DisableIronsights()
 	if (!pOwner)
 		return;
 
-	if (pOwner->SetFOV(this, 0, 0.4f)) //modify the last value to adjust how fast the fov is applied
+	if (pOwner->SetFOV(this, pOwner->GetDefaultFOV(), 0.4f)) //modify the last value to adjust how fast the fov is applied
 	{
 		m_bIsIronsighted = false;
 		SetIronsightTime();
