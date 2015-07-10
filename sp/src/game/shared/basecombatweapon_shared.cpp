@@ -74,8 +74,6 @@ ConVar viewmodel_adjust_fov("viewmodel_adjust_fov", "0", FCVAR_REPLICATED, "Note
 ConVar viewmodel_adjust_enabled("viewmodel_adjust_enabled", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "enabled viewmodel adjusting", vm_adjust_enable_callback);
 ConVar viewmodel_lower_on_sprint("viewmodel_lower_on_sprint", "0", FCVAR_ARCHIVE);
 ConVar weapon_magazinestyledreloads("weapon_magazinestyledreloads", "0", FCVAR_ARCHIVE);
-ConVar weapon_ironsight("weapon_ironsight", "1", FCVAR_ARCHIVE);
-ConVar weapon_ironsight_fov("weapon_ironsight_fov", "1", FCVAR_ARCHIVE);
 
 void vm_adjust_enable_callback(IConVar *pConVar, char const *pOldString, float flOldValue)
 {
@@ -882,7 +880,7 @@ bool CBaseCombatWeapon::IsIronsighted()
 
 void CBaseCombatWeapon::ToggleIronsights()
 {
-	if (!HasIronsights() || !weapon_ironsight.GetBool())
+	if (!HasIronsights())
 		return;
 
 	if (IsIronsighted())
@@ -898,7 +896,7 @@ void CBaseCombatWeapon::EnableIronsights()
 	if( !prediction->IsFirstTimePredicted() )
 		return;
 #endif*/
-	if (!HasIronsights() || IsIronsighted() || !weapon_ironsight.GetBool())
+	if (!HasIronsights() || IsIronsighted())
 		return;
 
 	CBasePlayer *pOwner = ToBasePlayer(GetOwner());
@@ -906,19 +904,11 @@ void CBaseCombatWeapon::EnableIronsights()
 	if (!pOwner)
 		return;
 
-	if (weapon_ironsight_fov.GetBool())
-	{
-		if (pOwner->SetFOV(this, pOwner->GetFOV() + GetIronsightFOVOffset(), 0.4f)) //modify the last value to adjust how fast the fov is applied
-		{
-			m_bIsIronsighted = true;
-			SetIronsightTime();
-		}
-	}
-	else
-	{
+	//if (pOwner->SetFOV(this, pOwner->GetFOV() + GetIronsightFOVOffset(), 0.4f)) //modify the last value to adjust how fast the fov is applied
+	//{
 		m_bIsIronsighted = true;
 		SetIronsightTime();
-	}
+	//}
 
 	if (!CanIronsightUseCrosshair())
 	{
@@ -935,7 +925,7 @@ void CBaseCombatWeapon::DisableIronsights()
 	if( !prediction->IsFirstTimePredicted() )
 		return;
 #endif*/
-	if (!HasIronsights() || !IsIronsighted() || !weapon_ironsight.GetBool())
+	if (!HasIronsights() || !IsIronsighted())
 		return;
 
 	CBasePlayer *pOwner = ToBasePlayer(GetOwner());
@@ -943,19 +933,11 @@ void CBaseCombatWeapon::DisableIronsights()
 	if (!pOwner)
 		return;
 
-	if (weapon_ironsight_fov.GetBool())
-	{
-		if (pOwner->SetFOV(this, 0, 0.4f)) //modify the last value to adjust how fast the fov is applied
-		{
-			m_bIsIronsighted = false;
-			SetIronsightTime();
-		}
-	}
-	else
-	{
+	//if (pOwner->SetFOV(this, 0, 0.4f)) //modify the last value to adjust how fast the fov is applied
+	//{
 		m_bIsIronsighted = false;
 		SetIronsightTime();
-	}
+	//}
 
 	if (!CanIronsightUseCrosshair())
 	{
