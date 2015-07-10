@@ -896,7 +896,7 @@ void CBaseCombatWeapon::EnableIronsights()
 	if( !prediction->IsFirstTimePredicted() )
 		return;
 #endif*/
-	if (!HasIronsights() || m_bIsIronsighted)
+	if (!HasIronsights() || IsIronsighted())
 		return;
 
 	CBasePlayer *pOwner = ToBasePlayer(GetOwner());
@@ -925,7 +925,7 @@ void CBaseCombatWeapon::DisableIronsights()
 	if( !prediction->IsFirstTimePredicted() )
 		return;
 #endif*/
-	if (!HasIronsights() || !m_bIsIronsighted)
+	if (!HasIronsights() || !IsIronsighted())
 		return;
 
 	CBasePlayer *pOwner = ToBasePlayer(GetOwner());
@@ -933,7 +933,7 @@ void CBaseCombatWeapon::DisableIronsights()
 	if (!pOwner)
 		return;
 
-	if (pOwner->SetFOV(this, pOwner->GetDefaultFOV(), 0.4f)) //modify the last value to adjust how fast the fov is applied
+	if (pOwner->SetFOV(this, 0, 0.4f)) //modify the last value to adjust how fast the fov is applied
 	{
 		m_bIsIronsighted = false;
 		SetIronsightTime();
