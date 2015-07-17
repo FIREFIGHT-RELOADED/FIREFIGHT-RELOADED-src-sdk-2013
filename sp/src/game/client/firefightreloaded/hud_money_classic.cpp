@@ -112,11 +112,11 @@ void CHudMoneyClassic::OnThink(void)
 		SetDisplayValue(m_iMoney);
 	}
 
-	if (g_fr_classic.GetBool())
+	if (pPlayer->GetLevel() == MAX_LEVEL && !g_fr_classic.GetBool())
 	{
 		if (g_fr_economy.GetBool())
 		{
-			SetPos(184, 424);
+			SetPos(250, 424);
 			SetAlpha(255);
 		}
 		else
@@ -124,11 +124,11 @@ void CHudMoneyClassic::OnThink(void)
 			SetAlpha(0);
 		}
 	}
-	else if (pPlayer->GetLevel() == MAX_LEVEL && !g_fr_classic.GetBool())
+	else if (g_fr_classic.GetBool())
 	{
 		if (g_fr_economy.GetBool())
 		{
-			SetPos(250, 424);
+			SetPos(184, 424);
 			SetAlpha(255);
 		}
 		else
