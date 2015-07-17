@@ -50,6 +50,8 @@ private:
 	CPanelAnimationVar( vgui::HFont, m_hTextFont, "TextFont", "Default" );
 	CPanelAnimationVarAliasType( float, text_xpos, "text_xpos", "5", "proportional_float" );
 	CPanelAnimationVarAliasType( float, text_ypos, "text_ypos", "3", "proportional_float" );
+	CPanelAnimationVarAliasType(float, text_xpos2, "text_xpos2", "5", "proportional_float");
+	CPanelAnimationVarAliasType(float, text_ypos2, "text_ypos2", "13", "proportional_float");
 };	
 
 using namespace vgui;
@@ -132,31 +134,49 @@ void CHudEXP::Paint()
 	}
 
 	// draw the suit power bar
-	surface()->DrawSetColor(clrEXP);
-	int xpos = m_flBarInsetX, ypos = m_flBarInsetY;
-	for (int i = 0; i < enabledChunks; i++)
+	if (pPlayer->GetLevel() != MAX_LEVEL)
 	{
-		surface()->DrawFilledRect(xpos, ypos, xpos + m_flBarChunkWidth, ypos + m_flBarHeight);
-		xpos += (m_flBarChunkWidth + m_flBarChunkGap);
+		surface()->DrawSetColor(clrEXP);
+		int xpos = m_flBarInsetX, ypos = m_flBarInsetY;
+		for (int i = 0; i < enabledChunks; i++)
+		{
+			surface()->DrawFilledRect(xpos, ypos, xpos + m_flBarChunkWidth, ypos + m_flBarHeight);
+			xpos += (m_flBarChunkWidth + m_flBarChunkGap);
+		}
+
+		// Be even less transparent than we already are
+		clrEXP[3] = clrEXP[3] / 8;
+
+		// draw the exhausted portion of the bar.
+		surface()->DrawSetColor(clrEXP);
+		for (int i = enabledChunks; i < chunkCount; i++)
+		{
+			surface()->DrawFilledRect(xpos, ypos, xpos + m_flBarChunkWidth, ypos + m_flBarHeight);
+			xpos += (m_flBarChunkWidth + m_flBarChunkGap);
+		}
 	}
-
-	// Be even less transparent than we already are
-	clrEXP[3] = clrEXP[3] / 8;
-
-	// draw the exhausted portion of the bar.
-	surface()->DrawSetColor(clrEXP);
-	for (int i = enabledChunks; i < chunkCount; i++)
+	else
 	{
-		surface()->DrawFilledRect(xpos, ypos, xpos + m_flBarChunkWidth, ypos + m_flBarHeight);
-		xpos += (m_flBarChunkWidth + m_flBarChunkGap);
+		surface()->DrawSetTextFont(m_hTextFont);
+		surface()->DrawSetTextColor(clrText);
+		surface()->DrawSetTextPos(text_xpos2, text_ypos2);
+
+		wchar_t *tempString = g_pVGuiLocalize->Find("#Valve_Hud_EXPERIENCE_MaxLevel");
+
+		if (tempString)
+		{
+			surface()->DrawPrintText(tempString, wcslen(tempString));
+		}
+		else
+		{
+			surface()->DrawPrintText(L"MAXIMUM LEVEL REACHED", wcslen(L"MAXIMUM LEVEL REACHED"));
+		}
 	}
 }
 
 void CHudEXP::OnThink(void)
 {
-	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
-
-	if (g_fr_classic.GetBool() || pPlayer->GetLevel() == MAX_LEVEL)
+	if (g_fr_classic.GetBool())
 	{
 		SetAlpha(0);
 	}
