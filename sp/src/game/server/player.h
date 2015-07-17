@@ -822,6 +822,7 @@ public:
 	int GetXpToLevelUp(int level);
 	void CheckLevel();
 	void LevelUp();
+	void SetLevel(int set = 1) { m_iLevel = set; }
 
 	void ResetXP() { m_iExp = 0; m_iLevel = 1; LevelUp(); } // calling LevelUp will reset max health, etc
 	void ResetXPAlt() { m_iExp = 0;}

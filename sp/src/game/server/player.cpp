@@ -223,6 +223,8 @@ ConVar sv_store_denynotifications("sv_store_denynotifications", "1", FCVAR_ARCHI
 ConVar sv_store_buysounds("sv_store_buysounds", "1", FCVAR_ARCHIVE);
 ConVar sv_store_denysounds("sv_store_denysounds", "1", FCVAR_ARCHIVE);
 
+#define MAX_LEVEL 50
+
 void CC_GiveCurrentAmmo( void )
 {
 	CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
@@ -377,6 +379,49 @@ void CC_BuyUpgrade(const CCommand &args)
 }
 static ConCommand buyupgrade("buyupgrade", CC_BuyUpgrade, "Buy a upgrade.\n");
 */
+
+void CC_PlayerXP(const CCommand &args)
+{
+	CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
+
+	int XPAmount = atoi(args[1]);
+
+	if (pPlayer)
+	{
+		pPlayer->AddXP(XPAmount);
+	}
+}
+static ConCommand player_givexp("player_givexp", CC_PlayerXP, "Gives the player XP points.\n", FCVAR_CHEAT);
+
+void CC_PlayerLevel(const CCommand &args)
+{
+	CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
+
+	int LevelNum = atoi(args[1]);
+
+	if (pPlayer && LevelNum <= MAX_LEVEL)
+	{
+		pPlayer->SetLevel(LevelNum);
+	}
+	else
+	{
+		Warning("You are already at the maximum level possible!");
+	}
+}
+static ConCommand player_setlevel("player_setlevel", CC_PlayerLevel, "Increases the player's level.\n", FCVAR_CHEAT);
+
+void CC_PlayerMoney(const CCommand &args)
+{
+	CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
+
+	int MoneyAmount = atoi(args[1]);
+
+	if (pPlayer)
+	{
+		pPlayer->AddMoney(MoneyAmount);
+	}
+}
+static ConCommand player_givemoney("player_givemoney", CC_PlayerMoney, "Gives the player money. DOSH!\n", FCVAR_CHEAT);
 
 
 // pl
@@ -954,7 +999,6 @@ void CBasePlayer::SetBonusChallenge( int iBonusChallenge )
 	m_iBonusChallenge = iBonusChallenge;
 }
 
-#define MAX_LEVEL 50
 #define MAX_EXP 60
 int CBasePlayer::GetXpToLevelUp(int level)
 {
