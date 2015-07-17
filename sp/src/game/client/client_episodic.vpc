@@ -135,6 +135,8 @@ $Project "Client (Episodic)"
 			$File	"firefightreloaded_clientcmds.cpp"
 			$File	"$SRCDIR\game\shared\firefightreloaded\singleplayer_animstate.cpp"
 			$File	"$SRCDIR\game\shared\firefightreloaded\singleplayer_animstate.h"
+			$File 	"firefightreloaded\fr_rendertargets.cpp"
+			$File 	"firefightreloaded\fr_rendertargets.h"
 
 			$Folder	"GameUI"
 			{
@@ -164,8 +166,6 @@ $Project "Client (Episodic)"
 				$File	"firefightreloaded\fr_storemenu_supplies.h"
 				$File	"firefightreloaded\fr_storemenu_weapons.cpp"
 				$File	"firefightreloaded\fr_storemenu_weapons.h"
-				$File 	"firefightreloaded\fr_rendertargets.cpp"
-				$File 	"firefightreloaded\fr_rendertargets.h"
 				$File 	"firefightreloaded\hud_timer.cpp"
 				$Folder	"mainmenu"
 				{
