@@ -19,6 +19,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#define MAX_LEVEL 50
+
 //-----------------------------------------------------------------------------
 // Purpose: Shows the flashlight icon
 //-----------------------------------------------------------------------------
@@ -152,7 +154,9 @@ void CHudEXP::Paint()
 
 void CHudEXP::OnThink(void)
 {
-	if (g_fr_classic.GetBool())
+	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
+
+	if (g_fr_classic.GetBool() || pPlayer->GetLevel() == MAX_LEVEL)
 	{
 		SetAlpha(0);
 	}

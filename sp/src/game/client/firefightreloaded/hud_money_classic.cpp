@@ -26,6 +26,7 @@
 #include "tier0/memdbgon.h"
 
 #define INIT_MONEY	-1
+#define MAX_LEVEL 50
 
 //-----------------------------------------------------------------------------
 // Purpose: Displays suit power (armor) on hud
@@ -115,6 +116,19 @@ void CHudMoneyClassic::OnThink(void)
 	{
 		if (g_fr_economy.GetBool())
 		{
+			SetPos(184, 424);
+			SetAlpha(255);
+		}
+		else
+		{
+			SetAlpha(0);
+		}
+	}
+	else if (pPlayer->GetLevel() == MAX_LEVEL && !g_fr_classic.GetBool())
+	{
+		if (g_fr_economy.GetBool())
+		{
+			SetPos(250, 424);
 			SetAlpha(255);
 		}
 		else
