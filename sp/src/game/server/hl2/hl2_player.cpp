@@ -1427,6 +1427,30 @@ void CHL2_Player::Spawn(void)
 	m_flNextKickAttack = gpGlobals->curtime;
 	CBaseViewModel *Leg = GetViewModel(VM_LEGS);
 	Leg->SetWeaponModel("models/weapons/v_kick.mdl", NULL);
+
+	//if we are in coop treat us like hl2mp_player.
+	if (gpGlobals->coop || gpGlobals->deathmatch)
+	{
+		if (!IsObserver())
+		{
+			pl.deadflag = false;
+			RemoveSolidFlags(FSOLID_NOT_SOLID);
+
+			RemoveEffects(EF_NODRAW);
+		}
+
+		SetNumAnimOverlays(3);
+
+		m_nRenderFX = kRenderNormal;
+
+		m_Local.m_iHideHUD = 0;
+
+		AddFlag(FL_ONGROUND); // set the player on the ground at the start of the round.
+
+		m_Local.m_bDucked = false;
+
+		SetPlayerUnderwater(false);
+	}
 }
 
 //-----------------------------------------------------------------------------

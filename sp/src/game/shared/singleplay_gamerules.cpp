@@ -1074,7 +1074,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 	int CSingleplayRules::PlayerRelationship( CBaseEntity *pPlayer, CBaseEntity *pTarget )
 	{
 		// why would a single player in half life need this? 
-		return GR_NOTTEAMMATE;
+		return GR_TEAMMATE;
 	}
 
 	//=========================================================
