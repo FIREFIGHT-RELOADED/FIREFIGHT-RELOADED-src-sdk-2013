@@ -57,7 +57,7 @@ extern ConVar sv_player_voice_kill;
 //=========================================================
 bool CSingleplayRules::IsMultiplayer( void )
 {
-	return false;
+	return gpGlobals->maxClients > 1;
 }
 
 // Needed during the conversion, but once DMG_* types have been fixed, this isn't used anymore.
