@@ -139,7 +139,7 @@ void respawn( CBaseEntity *pEdict, bool fCopyCorpse )
 		}
 
 		// respawn player
-		pEdict->Spawn();
+		((CHL2_Player *)pEdict)->Spawn();
 	}
 	else
 	{       // restart the entire server

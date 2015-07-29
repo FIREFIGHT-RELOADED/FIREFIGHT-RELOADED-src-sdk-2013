@@ -5556,6 +5556,7 @@ CBaseEntity *CBasePlayer::EntSelectSpawnPoint()
 	player = edict();
 
 // choose a info_player_deathmatch point
+	/*
 	if (g_pGameRules->IsCoOp())
 	{
 		pSpot = gEntList.FindEntityByClassname( g_pLastSpawn, "info_player_coop");
@@ -5565,8 +5566,9 @@ CBaseEntity *CBasePlayer::EntSelectSpawnPoint()
 		if ( pSpot ) 
 			goto ReturnSpot;
 	}
+	*/
 	//else if ( g_pGameRules->IsDeathmatch() )
-	if (sk_player_deathmatch_spawn.GetBool())
+	if (sk_player_deathmatch_spawn.GetBool() || g_pGameRules->IsCoOp())
 	{
 		pSpot = g_pLastSpawn;
 		// Randomize the start spot

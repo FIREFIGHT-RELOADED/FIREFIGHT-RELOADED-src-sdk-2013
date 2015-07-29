@@ -49,6 +49,8 @@ ConVar sv_weapon_respawn_time("sv_weapon_respawn_time", "180", FCVAR_CHEAT);
 
 ConVar sv_player_dropweaponsondeath("sv_player_dropweaponsondeath", "1", FCVAR_ARCHIVE);
 
+ConVar fr_coop("fr_coop", "0");
+
 extern ConVar sv_player_voice;
 extern ConVar sv_player_voice_kill_freq;
 extern ConVar sv_player_voice_kill;
@@ -417,7 +419,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 	//=========================================================
 	bool CSingleplayRules::IsCoOp( void )
 	{
-		return false;
+		return fr_coop.GetBool();
 	}
 
 	//-----------------------------------------------------------------------------
