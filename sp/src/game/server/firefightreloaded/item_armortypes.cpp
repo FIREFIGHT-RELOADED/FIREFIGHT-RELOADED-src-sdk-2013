@@ -71,3 +71,30 @@ public:
 LINK_ENTITY_TO_CLASS(item_heavyarmor, CItemHeavyArmor);
 PRECACHE_REGISTER(item_heavyarmor);
 
+class CItemShield : public CItem
+{
+public:
+	DECLARE_CLASS(CItemShield, CItem);
+
+	void Spawn(void)
+	{
+		Precache();
+		SetModel("models/armor/shield.mdl");
+		BaseClass::Spawn();
+	}
+	void Precache(void)
+	{
+		PrecacheModel("models/armor/shield.mdl");
+		PrecacheScriptSound("ItemArmor.Touch");
+
+	}
+	bool MyTouch(CBasePlayer *pPlayer)
+	{
+		CHL2_Player *pHL2Player = dynamic_cast<CHL2_Player *>(pPlayer);
+		return (pHL2Player && pHL2Player->ApplyShield());
+	}
+};
+
+LINK_ENTITY_TO_CLASS(item_shield, CItemShield);
+PRECACHE_REGISTER(item_shield);
+

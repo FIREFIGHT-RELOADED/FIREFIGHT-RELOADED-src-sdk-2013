@@ -37,6 +37,8 @@ ConVar combine_ace_spawn_health( "combine_ace_spawn_health", "1" );
 
 ConVar combine_ace_spawnwithgrenades("combine_ace_spawnwithgrenades", "1", FCVAR_ARCHIVE);
 
+ConVar combine_ace_spawnwithshield("combine_ace_spawnwithshield", "1", FCVAR_ARCHIVE);
+
 extern ConVar sk_plr_dmg_buckshot;	
 extern ConVar sk_plr_num_shotgun_pellets;
 
@@ -118,7 +120,14 @@ void CNPC_CombineAce::Spawn( void )
 
 	SetEyeState(ACE_EYE_DORMANT);
 
-	SpawnArmorPieces();
+	if (combine_ace_spawnwithshield.GetBool())
+	{
+		SpawnArmorPieces();
+	}
+	else
+	{
+		pArmor = NULL;
+	}
 
 	BaseClass::Spawn();
 
@@ -289,30 +298,33 @@ float CNPC_CombineAce::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDa
 		int HeadshotRandom = random->RandomInt(0, 6);
 		if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool())
 		{
-			if (isNohead == false && HeadshotRandom == 0 && !(info.GetDamageType() & DMG_NEVERGIB) || isNohead == false && info.GetDamageType() & DMG_SNIPER && !(info.GetDamageType() & DMG_NEVERGIB))
+			if (!pArmor)
 			{
-				SetModel("models/gibs/combine_ace_soldier_beheaded.mdl");
-				DispatchParticleEffect("headshotspray", PATTACH_POINT_FOLLOW, this, "bloodspurt", true);
-				CGib::SpawnSpecificGibs(this, 6, 750, 1500, "models/gibs/pgib_p3.mdl", 6);
-				CGib::SpawnSpecificGibs(this, 6, 750, 1500, "models/gibs/pgib_p4.mdl", 6);
-				EmitSound("Gore.Headshot");
-				m_iHealth = 0;
-				g_pGameRules->iHeadshotCount += 1;
-				isNohead = true;
-				CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
-				if (g_fr_economy.GetBool())
+				if (isNohead == false && HeadshotRandom == 0 && !(info.GetDamageType() & DMG_NEVERGIB) || isNohead == false && info.GetDamageType() & DMG_SNIPER && !(info.GetDamageType() & DMG_NEVERGIB))
 				{
-					pPlayer->AddMoney(7);
+					SetModel("models/gibs/combine_ace_soldier_beheaded.mdl");
+					DispatchParticleEffect("headshotspray", PATTACH_POINT_FOLLOW, this, "bloodspurt", true);
+					CGib::SpawnSpecificGibs(this, 6, 750, 1500, "models/gibs/pgib_p3.mdl", 6);
+					CGib::SpawnSpecificGibs(this, 6, 750, 1500, "models/gibs/pgib_p4.mdl", 6);
+					EmitSound("Gore.Headshot");
+					m_iHealth = 0;
+					g_pGameRules->iHeadshotCount += 1;
+					isNohead = true;
+					CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
+					if (g_fr_economy.GetBool())
+					{
+						pPlayer->AddMoney(7);
+					}
+					if (!g_fr_classic.GetBool())
+					{
+						pPlayer->AddXP(9);
+					}
 				}
-				if (!g_fr_classic.GetBool())
+				else
 				{
-					pPlayer->AddXP(9);
+					// Soldiers take double headshot damage
+					return 2.0f;
 				}
-			}
-			else
-			{
-				// Soldiers take double headshot damage
-				return 2.0f;
 			}
 		}
 		else
@@ -397,11 +409,10 @@ void CNPC_CombineAce::Event_Killed( const CTakeDamageInfo &info )
 
 	SetEyeState(ACE_EYE_DEAD);
 
-	pArmor->Remove();
-
-	//create a shield that acts as a prop.
-
-	CreatePhysicsProp("models/armor/shield.mdl", vec3_origin, vec3_origin, this, false, "prop_physics");
+	if (combine_ace_spawnwithshield.GetBool())
+	{
+		pArmor->Remove();
+	}
 
 	CBasePlayer *pPlayer = ToBasePlayer( info.GetAttacker() );
 
@@ -494,6 +505,11 @@ void CNPC_CombineAce::Event_Killed( const CTakeDamageInfo &info )
 		{
 			DropItem( "item_healthvial", WorldSpaceCenter()+RandomVector(-4,4), RandomAngle(0,360) );
 			pHL2GameRules->NPC_DroppedHealth();
+		}
+
+		if (combine_ace_spawnwithshield.GetBool())
+		{
+			DropItem("item_shield", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
 		}
 	}
 

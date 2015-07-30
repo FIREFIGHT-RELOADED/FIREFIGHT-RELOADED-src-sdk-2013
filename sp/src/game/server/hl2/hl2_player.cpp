@@ -2524,6 +2524,40 @@ bool CHL2_Player::ApplyHeavyArmor()
 	return false;
 }
 
+ConVar	sk_shield("sk_shield", "50"); //the 50 is for testing before we put it in skill.cfg
+bool CHL2_Player::ApplyShield()
+{
+	const float MAX_NORMAL_SHIELD = GetMaxArmorValue();
+	if ((ArmorValue() < MAX_NORMAL_SHIELD) && IsSuitEquipped())
+	{
+		int pct;
+		char szcharge[64];
+
+		IncrementArmorValue(sk_shield.GetFloat(), MAX_NORMAL_SHIELD);
+
+		CPASAttenuationFilter filter(this, "ItemArmor.Touch");
+		EmitSound(filter, entindex(), "ItemArmor.Touch");
+
+		CSingleUserRecipientFilter user(this);
+		user.MakeReliable();
+
+		UserMessageBegin(user, "ItemPickup");
+		WRITE_STRING("item_shield");
+		MessageEnd();
+
+		// Suit reports new power level
+		// For some reason this wasn't working in release build -- round it.
+		pct = (int)((float)(ArmorValue() * GetMaxArmorValue()) * (1.0 / MAX_NORMAL_SHIELD) + 0.5);
+		pct = (pct / 5);
+		if (pct > 0)
+			pct--;
+
+		Q_snprintf(szcharge, sizeof(szcharge), "!HEV_%1dP", pct);
+		return true;
+	}
+	return false;
+}
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 int CHL2_Player::FlashlightIsOn( void )

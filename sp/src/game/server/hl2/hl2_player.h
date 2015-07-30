@@ -144,6 +144,7 @@ public:
 	bool ApplyBattery( float powerMultiplier = 1.0 );
 	bool ApplyLightArmor();
 	bool ApplyHeavyArmor();
+	bool ApplyShield();
 
 	// Commander Mode for controller NPCs
 	enum CommanderCommand_t
