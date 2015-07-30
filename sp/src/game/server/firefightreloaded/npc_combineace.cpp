@@ -40,8 +40,8 @@ ConVar combine_ace_spawnwithgrenades("combine_ace_spawnwithgrenades", "1", FCVAR
 extern ConVar sk_plr_dmg_buckshot;	
 extern ConVar sk_plr_num_shotgun_pellets;
 
+LINK_ENTITY_TO_CLASS( combine_armor_piece , CArmorPiece );
 LINK_ENTITY_TO_CLASS( npc_combine_ace, CNPC_CombineAce );
-
 
 #define AE_SOLDIER_BLOCK_PHYSICS		20 // trying to block an incoming physics object
 
@@ -126,6 +126,8 @@ void CNPC_CombineAce::Spawn( void )
 		Msg( "Soldier %s is set to use march anim, but is not an efficient AI. The blended march anim can only be used for dead-ahead walks!\n", GetDebugName() );
 	}
 #endif
+
+	SpawnArmorPieces();
 }
 
 //-----------------------------------------------------------------------------
@@ -146,6 +148,7 @@ void CNPC_CombineAce::Precache()
 	UTIL_PrecacheOther( "weapon_frag" );
 	UTIL_PrecacheOther( "item_ammo_ar2_altfire" );
 	UTIL_PrecacheOther( "item_ammo_smg1_grenade" );
+	UTIL_PrecacheOther( "combine_armor_piece" );
 
 	PrecacheModel("sprites/redglow1.vmt");
 
@@ -154,6 +157,33 @@ void CNPC_CombineAce::Precache()
 	BaseClass::Precache();
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CNPC_CombineAce::SpawnArmorPieces(void)
+{
+	struct armorpiecepositions_t
+	{
+		char	*pszAttachment;
+		char	*pszModel;
+	};
+
+	armorpiecepositions_t ArmorPiecesPositions[] =
+	{
+		{ "shield_attach", "models/armor/shield.mdl" },
+	};
+
+	for (int i = 0; i < ARRAYSIZE(ArmorPiecesPositions); i++)
+	{
+		CArmorPiece *pArmor = (CArmorPiece *)CBaseEntity::CreateNoSpawn("combine_armor_piece", GetAbsOrigin(), GetAbsAngles(), this);
+		pArmor->SetModelName(MAKE_STRING(ArmorPiecesPositions[i].pszModel));
+		pArmor->SetParent(this, LookupAttachment(ArmorPiecesPositions[i].pszAttachment));
+		pArmor->SetLocalOrigin(vec3_origin);
+		pArmor->SetLocalAngles(vec3_angle);
+		DispatchSpawn(pArmor);
+		pArmor->Activate();
+	}
+}
 
 void CNPC_CombineAce::DeathSound( const CTakeDamageInfo &info )
 {
