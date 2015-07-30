@@ -118,6 +118,8 @@ void CNPC_CombineAce::Spawn( void )
 
 	SetEyeState(ACE_EYE_DORMANT);
 
+	SpawnArmorPieces();
+
 	BaseClass::Spawn();
 
 #if HL2_EPISODIC
@@ -126,8 +128,6 @@ void CNPC_CombineAce::Spawn( void )
 		Msg( "Soldier %s is set to use march anim, but is not an efficient AI. The blended march anim can only be used for dead-ahead walks!\n", GetDebugName() );
 	}
 #endif
-
-	SpawnArmorPieces();
 }
 
 //-----------------------------------------------------------------------------
@@ -155,34 +155,6 @@ void CNPC_CombineAce::Precache()
 	PrecacheScriptSound("Gore.Headshot");
 
 	BaseClass::Precache();
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CNPC_CombineAce::SpawnArmorPieces(void)
-{
-	struct armorpiecepositions_t
-	{
-		char	*pszAttachment;
-		char	*pszModel;
-	};
-
-	armorpiecepositions_t ArmorPiecesPositions[] =
-	{
-		{ "shield_attach", "models/armor/shield.mdl" },
-	};
-
-	for (int i = 0; i < ARRAYSIZE(ArmorPiecesPositions); i++)
-	{
-		CArmorPiece *pArmor = (CArmorPiece *)CBaseEntity::CreateNoSpawn("combine_armor_piece", GetAbsOrigin(), GetAbsAngles(), this);
-		pArmor->SetModelName(MAKE_STRING(ArmorPiecesPositions[i].pszModel));
-		pArmor->SetParent(this, LookupAttachment(ArmorPiecesPositions[i].pszAttachment));
-		pArmor->SetLocalOrigin(vec3_origin);
-		pArmor->SetLocalAngles(vec3_angle);
-		DispatchSpawn(pArmor);
-		pArmor->Activate();
-	}
 }
 
 void CNPC_CombineAce::DeathSound( const CTakeDamageInfo &info )
@@ -425,6 +397,12 @@ void CNPC_CombineAce::Event_Killed( const CTakeDamageInfo &info )
 
 	SetEyeState(ACE_EYE_DEAD);
 
+	pArmor->Remove();
+
+	//create a shield that acts as a prop.
+
+	CreatePhysicsProp("models/armor/shield.mdl", vec3_origin, vec3_origin, this, false, "prop_physics");
+
 	CBasePlayer *pPlayer = ToBasePlayer( info.GetAttacker() );
 
 	if ( !pPlayer )
@@ -606,6 +584,20 @@ Activity CNPC_CombineAce::NPC_TranslateActivity( Activity eNewActivity )
 	}
 
 	return BaseClass::NPC_TranslateActivity( eNewActivity );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CNPC_CombineAce::SpawnArmorPieces(void)
+{
+	pArmor = (CArmorPiece *)CBaseEntity::CreateNoSpawn("combine_armor_piece", GetAbsOrigin(), GetAbsAngles(), this);
+	pArmor->SetModelName(MAKE_STRING("models/armor/shield.mdl"));
+	pArmor->SetParent(this, LookupAttachment("shield_attach"));
+	pArmor->SetLocalOrigin(vec3_origin);
+	pArmor->SetLocalAngles(vec3_angle);
+	DispatchSpawn(pArmor);
+	pArmor->Activate();
 }
 
 

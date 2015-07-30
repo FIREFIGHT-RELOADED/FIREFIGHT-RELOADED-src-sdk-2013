@@ -69,7 +69,6 @@ class CNPC_CombineAce : public CNPC_Combine
 public: 
 	void		Spawn( void );
 	void		Precache( void );
-	void		SpawnArmorPieces(void);
 	void		DeathSound( const CTakeDamageInfo &info );
 	void		PrescheduleThink( void );
 	void		BuildScheduleTestBits( void );
@@ -89,12 +88,15 @@ public:
 
 	virtual	bool		AllowedToIgnite( void ) { return true; }
 
+	void		SpawnArmorPieces(void);
+
 private:
 	bool		ShouldHitPlayer( const Vector &targetDir, float targetDist );
 	void		SetEyeState(aceEyeState_t state);
 
 	CSprite				*m_pEyeSprite;
 	CSpriteTrail		*m_pEyeTrail;
+	CArmorPiece			*pArmor;
 
 #if HL2_EPISODIC
 public:
