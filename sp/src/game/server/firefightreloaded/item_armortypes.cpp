@@ -80,6 +80,7 @@ public:
 	{
 		Precache();
 		SetModel("models/armor/shield.mdl");
+		AddSpawnFlags(SF_NORESPAWN);
 		BaseClass::Spawn();
 	}
 	void Precache(void)
