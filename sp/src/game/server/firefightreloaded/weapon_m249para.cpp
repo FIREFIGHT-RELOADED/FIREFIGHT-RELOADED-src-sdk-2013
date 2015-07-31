@@ -30,7 +30,7 @@ public:
 	void	PrimaryAttack(void);
 	void	Precache(void);
 	void	Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatCharacter *pOperator);
-	float	GetFireRate(void)	{ return 0.150f; }	// 13.3hz
+	float	GetFireRate(void)	{ return 0.100f; }	// 13.3hz
 
 	float	WeaponAutoAimScale()	{ return 0.6f; }
 

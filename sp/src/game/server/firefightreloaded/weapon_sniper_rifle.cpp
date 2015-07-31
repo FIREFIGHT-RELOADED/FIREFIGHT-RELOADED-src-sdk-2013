@@ -161,7 +161,7 @@ void CWeaponSniperRifle::PrimaryAttack( void )
 		return;
 	}
 
-	m_flNextPrimaryAttack = gpGlobals->curtime + 1.00;
+	m_flNextPrimaryAttack = gpGlobals->curtime + 0.85;
 
 	m_iPrimaryAttacks++;
 	gamestats->Event_WeaponFired( pPlayer, true, GetClassname() );
@@ -176,9 +176,6 @@ void CWeaponSniperRifle::PrimaryAttack( void )
 	{
 		DispatchParticleEffect("weapon_muzzle_smoke", PATTACH_POINT_FOLLOW, pPlayer->GetViewModel(), "muzzle", true);
 	}
-
-	m_flNextPrimaryAttack = gpGlobals->curtime + 1.75;
-	m_flNextSecondaryAttack = gpGlobals->curtime + 1.75;
 
 	if (!pPlayer->m_iPerkInfiniteAmmo == 1)
 	{
