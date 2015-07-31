@@ -29,20 +29,51 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+void CArmorPiece::Spawn(void)
+{
+	BaseClass::Spawn();
+	Precache();
+
+	SetModel(STRING(GetModelName()));
+
+	CreateVPhysics();
+}
+
+void CArmorPiece::Precache(void)
+{
+	PrecacheModel(STRING(GetModelName()));
+}
+
+bool CArmorPiece::CreateVPhysics(void)
+{
+	SetSolid(SOLID_VPHYSICS);
+	IPhysicsObject *pPhysicsObject = VPhysicsInitShadow(false, false);
+
+	if (!pPhysicsObject)
+	{
+		SetSolid(SOLID_NONE);
+		SetMoveType(MOVETYPE_NONE);
+		Warning("ERROR!: Can't create physics object for %s\n", STRING(GetModelName()));
+	}
+
+	return true;
+}
+
+LINK_ENTITY_TO_CLASS(combine_armor_piece, CArmorPiece);
+
+//ACE BELOW.
+
 ConVar sk_combine_ace_health( "sk_combine_ace_health", "0");
 ConVar sk_combine_ace_kick( "sk_combine_ace_kick", "0");
  
 // Whether or not the combine guard should spawn health on death
-ConVar combine_ace_spawn_health( "combine_ace_spawn_health", "1" );
-
+ConVar combine_ace_spawn_health("combine_ace_spawn_health", "1");
 ConVar combine_ace_spawnwithgrenades("combine_ace_spawnwithgrenades", "1", FCVAR_ARCHIVE);
-
-ConVar combine_ace_spawnwithshield("combine_ace_spawnwithshield", "1", FCVAR_ARCHIVE);
+ConVar combine_ace_shieldspawnmode("combine_ace_shieldspawnmode", "2", FCVAR_ARCHIVE);
 
 extern ConVar sk_plr_dmg_buckshot;	
 extern ConVar sk_plr_num_shotgun_pellets;
 
-LINK_ENTITY_TO_CLASS( combine_armor_piece , CArmorPiece );
 LINK_ENTITY_TO_CLASS( npc_combine_ace, CNPC_CombineAce );
 
 #define AE_SOLDIER_BLOCK_PHYSICS		20 // trying to block an incoming physics object
@@ -120,13 +151,27 @@ void CNPC_CombineAce::Spawn( void )
 
 	SetEyeState(ACE_EYE_DORMANT);
 
-	if (combine_ace_spawnwithshield.GetBool())
+	if (combine_ace_shieldspawnmode.GetInt() == 1)
 	{
 		SpawnArmorPieces();
+	}
+	else if (combine_ace_shieldspawnmode.GetInt() > 1)
+	{
+		int iShieldRandom = random->RandomInt(0, 3);
+		if (iShieldRandom == 0)
+		{
+			SpawnArmorPieces();
+		}
+		else
+		{
+			pArmor = NULL;
+			m_bNoArmor = true;
+		}
 	}
 	else
 	{
 		pArmor = NULL;
+		m_bNoArmor = true;
 	}
 
 	BaseClass::Spawn();
@@ -298,33 +343,30 @@ float CNPC_CombineAce::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDa
 		int HeadshotRandom = random->RandomInt(0, 6);
 		if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool())
 		{
-			if (!pArmor)
+			if (isNohead == false && HeadshotRandom == 0 && !(info.GetDamageType() & DMG_NEVERGIB) || isNohead == false && info.GetDamageType() & DMG_SNIPER && !(info.GetDamageType() & DMG_NEVERGIB))
 			{
-				if (isNohead == false && HeadshotRandom == 0 && !(info.GetDamageType() & DMG_NEVERGIB) || isNohead == false && info.GetDamageType() & DMG_SNIPER && !(info.GetDamageType() & DMG_NEVERGIB))
+				SetModel("models/gibs/combine_ace_soldier_beheaded.mdl");
+				DispatchParticleEffect("headshotspray", PATTACH_POINT_FOLLOW, this, "bloodspurt", true);
+				CGib::SpawnSpecificGibs(this, 6, 750, 1500, "models/gibs/pgib_p3.mdl", 6);
+				CGib::SpawnSpecificGibs(this, 6, 750, 1500, "models/gibs/pgib_p4.mdl", 6);
+				EmitSound("Gore.Headshot");
+				m_iHealth = 0;
+				g_pGameRules->iHeadshotCount += 1;
+				isNohead = true;
+				CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
+				if (g_fr_economy.GetBool())
 				{
-					SetModel("models/gibs/combine_ace_soldier_beheaded.mdl");
-					DispatchParticleEffect("headshotspray", PATTACH_POINT_FOLLOW, this, "bloodspurt", true);
-					CGib::SpawnSpecificGibs(this, 6, 750, 1500, "models/gibs/pgib_p3.mdl", 6);
-					CGib::SpawnSpecificGibs(this, 6, 750, 1500, "models/gibs/pgib_p4.mdl", 6);
-					EmitSound("Gore.Headshot");
-					m_iHealth = 0;
-					g_pGameRules->iHeadshotCount += 1;
-					isNohead = true;
-					CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
-					if (g_fr_economy.GetBool())
-					{
-						pPlayer->AddMoney(7);
-					}
-					if (!g_fr_classic.GetBool())
-					{
-						pPlayer->AddXP(9);
-					}
+					pPlayer->AddMoney(7);
 				}
-				else
+				if (!g_fr_classic.GetBool())
 				{
-					// Soldiers take double headshot damage
-					return 2.0f;
+					pPlayer->AddXP(9);
 				}
+			}
+			else
+			{
+				// Soldiers take double headshot damage
+				return 2.0f;
 			}
 		}
 		else
@@ -409,7 +451,7 @@ void CNPC_CombineAce::Event_Killed( const CTakeDamageInfo &info )
 
 	SetEyeState(ACE_EYE_DEAD);
 
-	if (combine_ace_spawnwithshield.GetBool())
+	if (!m_bNoArmor && combine_ace_shieldspawnmode.GetInt() > 0)
 	{
 		pArmor->Remove();
 	}
@@ -507,7 +549,7 @@ void CNPC_CombineAce::Event_Killed( const CTakeDamageInfo &info )
 			pHL2GameRules->NPC_DroppedHealth();
 		}
 
-		if (combine_ace_spawnwithshield.GetBool())
+		if (!m_bNoArmor && combine_ace_shieldspawnmode.GetInt() > 0)
 		{
 			DropItem("item_shield", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
 		}
@@ -614,6 +656,8 @@ void CNPC_CombineAce::SpawnArmorPieces(void)
 	pArmor->SetLocalAngles(vec3_angle);
 	DispatchSpawn(pArmor);
 	pArmor->Activate();
+
+	m_bNoArmor = false;
 }
 
 

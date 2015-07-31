@@ -30,7 +30,7 @@ public:
 	void	PrimaryAttack(void);
 	void	Precache(void);
 	void	Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatCharacter *pOperator);
-	float	GetFireRate(void)	{ return 0.075f; }	// 13.3hz
+	float	GetFireRate(void)	{ return 0.150f; }	// 13.3hz
 
 	float	WeaponAutoAimScale()	{ return 0.6f; }
 
@@ -209,9 +209,6 @@ void CWeaponM249Para::PrimaryAttack(void)
 	{
 		DispatchParticleEffect("weapon_muzzle_smoke", PATTACH_POINT_FOLLOW, pPlayer->GetViewModel(), "muzzle");
 	}
-
-	m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
-	m_flNextSecondaryAttack = gpGlobals->curtime + GetFireRate();
 
 	if (!pPlayer->m_iPerkInfiniteAmmo == 1)
 	{

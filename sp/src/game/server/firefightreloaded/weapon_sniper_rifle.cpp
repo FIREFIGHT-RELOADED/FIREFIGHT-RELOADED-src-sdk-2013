@@ -161,7 +161,7 @@ void CWeaponSniperRifle::PrimaryAttack( void )
 		return;
 	}
 
-	m_flNextPrimaryAttack = gpGlobals->curtime + 1.75;
+	m_flNextPrimaryAttack = gpGlobals->curtime + 1.00;
 
 	m_iPrimaryAttacks++;
 	gamestats->Event_WeaponFired( pPlayer, true, GetClassname() );

@@ -2524,7 +2524,7 @@ bool CHL2_Player::ApplyHeavyArmor()
 	return false;
 }
 
-ConVar	sk_shield("sk_shield", "50"); //the 50 is for testing before we put it in skill.cfg
+ConVar	sk_shield("sk_shield", "0");
 bool CHL2_Player::ApplyShield()
 {
 	const float MAX_NORMAL_SHIELD = GetMaxArmorValue();

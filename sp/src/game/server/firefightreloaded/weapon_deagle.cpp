@@ -37,7 +37,6 @@ public:
 	CWeaponDeagle( void );
 
 	void	PrimaryAttack( void );
-	void	ItemPostFrame(void);
 	void	Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
 
 	float	WeaponAutoAimScale()	{ return 0.6f; }
@@ -57,9 +56,6 @@ public:
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 	DECLARE_ACTTABLE();
-
-private:
-	float	m_flSoonestPrimaryAttack;
 };
 
 acttable_t CWeaponDeagle::m_acttable[] =
@@ -98,7 +94,6 @@ IMPLEMENT_SERVERCLASS_ST( CWeaponDeagle, DT_WeaponDeagle )
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CWeaponDeagle )
-	DEFINE_FIELD(m_flSoonestPrimaryAttack, FIELD_TIME),
 END_DATADESC()
 
 //-----------------------------------------------------------------------------
@@ -108,8 +103,6 @@ CWeaponDeagle::CWeaponDeagle( void )
 {
 	m_bReloadsSingly	= false;
 	m_bFiresUnderwater	= false;
-
-	m_flSoonestPrimaryAttack = gpGlobals->curtime;
 }
 
 //-----------------------------------------------------------------------------
@@ -172,8 +165,8 @@ void CWeaponDeagle::PrimaryAttack( void )
 		return;
 	}
 
-	m_flNextPrimaryAttack = gpGlobals->curtime + 0.75;
-	m_flNextSecondaryAttack = gpGlobals->curtime + 0.75;
+	m_flNextPrimaryAttack = gpGlobals->curtime + 0.65;
+	m_flNextSecondaryAttack = gpGlobals->curtime + 0.65;
 
 	m_iPrimaryAttacks++;
 	gamestats->Event_WeaponFired( pPlayer, true, GetClassname() );
@@ -188,8 +181,6 @@ void CWeaponDeagle::PrimaryAttack( void )
 	{
 		DispatchParticleEffect("weapon_muzzle_smoke", PATTACH_POINT_FOLLOW, pPlayer->GetViewModel(), "muzzle", true);
 	}
-
-	m_flSoonestPrimaryAttack = gpGlobals->curtime + DEAGLE_FASTEST_REFIRE_TIME;
 
 	if (!pPlayer->m_iPerkInfiniteAmmo == 1)
 	{
@@ -220,24 +211,5 @@ void CWeaponDeagle::PrimaryAttack( void )
 	{
 		// HEV suit - indicate out of ammo condition
 		pPlayer->SetSuitUpdate( "!HEV_AMO0", FALSE, 0 ); 
-	}
-}
-
-void CWeaponDeagle::ItemPostFrame(void)
-{
-	BaseClass::ItemPostFrame();
-
-	if (m_bInReload)
-		return;
-
-	CBasePlayer *pOwner = ToBasePlayer(GetOwner());
-
-	if (pOwner == NULL)
-		return;
-
-	//Allow a refire as fast as the player can click
-	if (((pOwner->m_nButtons & IN_ATTACK) == false) && (m_flSoonestPrimaryAttack < gpGlobals->curtime))
-	{
-		m_flNextPrimaryAttack = gpGlobals->curtime - 0.1f;
 	}
 }

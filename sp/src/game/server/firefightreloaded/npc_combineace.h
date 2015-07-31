@@ -14,46 +14,20 @@
 #include "Sprite.h"
 #include "SpriteTrail.h"
 
+class CArmorPiece : public CBaseAnimating
+{
+	DECLARE_CLASS(CArmorPiece, CBaseAnimating);
+public:
+	void Spawn(void);
+	void Precache(void);
+	bool CreateVPhysics(void);
+};
+
 enum aceEyeState_t
 {
 	ACE_EYE_ACTIVATE,		//active
 	ACE_EYE_DORMANT,			//Not active
 	ACE_EYE_DEAD,				//Completely invisible
-};
-
-class CArmorPiece : public CBaseAnimating
-{
-	DECLARE_CLASS(CArmorPiece, CBaseAnimating);
-public:
-	void Spawn(void)
-	{
-		BaseClass::Spawn();
-		Precache();
-
-		SetModel(STRING(GetModelName()));
-
-		CreateVPhysics();
-	}
-
-	void Precache(void)
-	{
-		PrecacheModel(STRING(GetModelName()));
-	}
-
-	bool CreateVPhysics(void)
-	{
-		SetSolid(SOLID_VPHYSICS);
-		IPhysicsObject *pPhysicsObject = VPhysicsInitShadow(false, false);
-
-		if (!pPhysicsObject)
-		{
-			SetSolid(SOLID_NONE);
-			SetMoveType(MOVETYPE_NONE);
-			Warning("ERROR!: Can't create physics object for %s\n", STRING(GetModelName()));
-		}
-
-		return true;
-	}
 };
 
 //=========================================================
@@ -97,6 +71,7 @@ private:
 	CSprite				*m_pEyeSprite;
 	CSpriteTrail		*m_pEyeTrail;
 	CArmorPiece			*pArmor;
+	bool					m_bNoArmor;
 
 #if HL2_EPISODIC
 public:
