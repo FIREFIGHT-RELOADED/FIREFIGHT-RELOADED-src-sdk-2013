@@ -891,6 +891,7 @@ void CAchievementMgr::SaveGlobalStateIfDirty( bool bAsync )
 	}
 }
 
+
 #ifdef GAME_DLL
 void CAchievementMgr::ShowAchievementMessage(CBaseEntity *pEntity, const char *pMessage)
 {
@@ -945,9 +946,11 @@ void CAchievementMgr::AwardAchievement( int iAchievementID )
 	if (!pEntity)
 		return;
 
+#ifdef MOD_VER
 	CFmtStr hint;
 	hint.sprintf("#%s_ACHIEVED", pAchievement->GetName());
 	ShowAchievementMessage(pEntity, hint.Access());
+#endif
 	pEntity->AddXP(pAchievement->GetPointValue());
 	pEntity->AddMoney(pAchievement->GetPointValue());
 #endif
