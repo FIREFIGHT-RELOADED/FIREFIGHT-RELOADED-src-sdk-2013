@@ -326,6 +326,8 @@ $Project "Server (Episodic)"
 			$File	"firefightreloaded\weapon_sniper_rifle.cpp"
 			$File	"firefightreloaded\weapon_deagle.cpp"
 			$File	"firefightreloaded\weapon_m249para.cpp"
+			$File	"firefightreloaded\npc_assassin.cpp"
+			$File	"firefightreloaded\npc_assassin.h"
 
 			$Folder	"HL2 Imported"
 			{
