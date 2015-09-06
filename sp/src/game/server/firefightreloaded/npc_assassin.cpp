@@ -20,7 +20,7 @@
 #include "tier0/memdbgon.h"
 
 // keep at 150 for testing only.
-ConVar	sk_assassin_health( "sk_assassin_health","150");
+ConVar	sk_assassin_health( "sk_assassin_health","0");
 ConVar	g_debug_assassin( "g_debug_assassin", "0" );
 
 //=========================================================

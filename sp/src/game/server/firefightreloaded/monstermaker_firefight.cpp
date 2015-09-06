@@ -52,6 +52,7 @@ const char *g_charNPCSSpawnerList[] =
 	"npc_houndeye",
 	"npc_bullsquid",
 	"npc_vortigaunt",
+	"npc_assassin",
 	//"npc_cremator",
 };
 
@@ -68,6 +69,7 @@ const char *g_charNPCSCombineFirefightRare[] =
 {
 	"npc_combine_ace",
 	"npc_hunter",
+	"npc_assassin",
 	//"npc_cremator",
 };
 
@@ -123,14 +125,14 @@ const char *g_charNPCSZombieSurvivalRare[] =
 const char *g_charNPCSXenInvasionCommon[] =
 {
 	"npc_headcrab",
-	"npc_headcrab_fast",
+	"npc_houndeye",
+	"npc_bullsquid",
 };
 
 const char *g_charNPCSXenInvasionRare[] =
 {
+	"npc_headcrab_fast",
 	"npc_headcrab_poison",
-	"npc_houndeye",
-	"npc_bullsquid",
 	"npc_vortigaunt",
 };
 
@@ -147,7 +149,8 @@ const char *g_charNPCSFirefightRumbleCommon[] =
 	"npc_fastzombie",
 	"npc_fastzombie_torso",
 	"npc_headcrab",
-	"npc_headcrab_fast",
+	"npc_houndeye",
+	"npc_bullsquid",
 };
 
 const char *g_charNPCSFirefightRumbleRare[] =
@@ -159,10 +162,10 @@ const char *g_charNPCSFirefightRumbleRare[] =
 	"npc_antlionguardian",
 	"npc_poisonzombie",
 	"npc_zombine",
+	"npc_headcrab_fast",
 	"npc_headcrab_poison",
-	"npc_houndeye",
-	"npc_bullsquid",
 	"npc_vortigaunt",
+	"npc_assassin",
 	//"npc_cremator",
 };
 
