@@ -66,6 +66,9 @@ extern ConVar developer;
 
 #define DEBUG_ACHIEVEMENTS_IN_RELEASE 0
 
+// this is used for turning the achievement hud on/off for steam.
+#define MOD_VER 1
+
 #ifdef SWDS
 // Hack this for now until we get steam_api recompiling in the Steam codebase.
 ISteamUserStats *SteamUserStats()
