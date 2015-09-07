@@ -334,6 +334,8 @@ $Project "Server (Episodic)"
 			$File	"firefightreloaded\grenade_satchel.h"
 			$File	"firefightreloaded\grenade_tripmine.cpp"
 			$File	"firefightreloaded\grenade_tripmine.h"
+			$File	"firefightreloaded\weapon_oicw.cpp"
+			$File	"firefightreloaded\weapon_oicw.h"
 
 			$Folder	"HL2 Imported"
 			{
