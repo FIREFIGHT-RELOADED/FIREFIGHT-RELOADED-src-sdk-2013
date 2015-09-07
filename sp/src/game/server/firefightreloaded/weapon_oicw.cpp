@@ -26,10 +26,7 @@
 #include "rumble_shared.h"
 #include "gamestats.h"
 
-extern ConVar    sk_plr_dmg_ar2_grenade;	
-extern ConVar    sk_npc_dmg_ar2_grenade;
-extern ConVar    sk_max_ar2_grenade;
-extern ConVar	 sk_ar2_grenade_radius;
+extern ConVar    sk_plr_dmg_oicw_grenade;
 
 #define OICW_ZOOM_RATE	0.5f	// Interval between zoom levels in seconds.
 
@@ -198,7 +195,7 @@ void CWeaponOICW::GrenadeAttack(void)
 	pGrenade->SetLocalAngularVelocity(RandomAngle(-400, 400));
 	pGrenade->SetMoveType(MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE);
 	pGrenade->SetThrower(GetOwner());
-	pGrenade->SetDamage(sk_plr_dmg_smg1_grenade.GetFloat());
+	pGrenade->SetDamage(sk_plr_dmg_oicw_grenade.GetFloat());
 
 	SendWeaponAnim(ACT_VM_SECONDARYATTACK);
 
