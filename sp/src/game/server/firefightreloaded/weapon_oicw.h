@@ -39,6 +39,7 @@ public:
 	void	ItemPostFrame( void );
 	void	Precache( void );
 	void	PrimaryAttack( void );
+	void	GrenadeAttack(void);
 	void	AddViewKick( void );
 	void	Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
 
