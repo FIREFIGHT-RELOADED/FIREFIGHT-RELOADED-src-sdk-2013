@@ -87,7 +87,7 @@ void CWeaponOICW::Precache( void )
 bool CWeaponOICW::Deploy( void )
 {
 	m_nShotsFired = 0;
-	m_flNextGrenade = gpGlobals->curtime + SequenceDuration();
+	m_flNextGrenade = gpGlobals->curtime + 1.0;
 
 	return BaseClass::Deploy();
 }
