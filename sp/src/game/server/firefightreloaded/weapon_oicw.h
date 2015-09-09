@@ -66,6 +66,7 @@ public:
 		return cone;
 	}
 	
+	virtual void	Equip(CBaseCombatCharacter *pOwner);
 	virtual bool	Deploy( void );
 	virtual void	Drop( const Vector &velocity );
 
@@ -75,6 +76,8 @@ protected:
 
 	int				m_nShotsFired;
 	bool			m_bZoomed;
+
+	float			m_flNextGrenade;
 
 	static const char *pShootSounds[];
 
