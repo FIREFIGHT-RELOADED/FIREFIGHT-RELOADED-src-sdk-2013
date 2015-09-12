@@ -88,6 +88,8 @@ bool CWeaponOICW::Deploy( void )
 {
 	m_nShotsFired = 0;
 
+	m_flNextGrenade = gpGlobals->curtime + 1.0;
+
 	return BaseClass::Deploy();
 }
 
@@ -121,25 +123,7 @@ void CWeaponOICW::ItemPostFrame( void )
 	//Throw a grenade.
 	if (pOwner->m_afButtonPressed & IN_ATTACK3 && (m_flNextGrenade <= gpGlobals->curtime))
 	{
-		if (pOwner->GetAmmoCount(m_iSecondaryAmmoType) <= 0)
-		{
-			if (m_flNextEmptySoundTime < gpGlobals->curtime)
-			{
-				WeaponSound(EMPTY);
-				m_flNextGrenade = m_flNextEmptySoundTime = gpGlobals->curtime + 0.5;
-			}
-		}
-		else if (pOwner->GetWaterLevel() == 3 && m_bAltFiresUnderwater == false)
-		{
-			// This weapon doesn't fire underwater
-			WeaponSound(EMPTY);
-			m_flNextPrimaryAttack = gpGlobals->curtime + 0.2;
-			return;
-		}
-		else
-		{
-			GrenadeAttack();
-		}
+		GrenadeAttack();
 	}
 
 	//Don't kick the same when we're zoomed in
