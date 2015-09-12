@@ -14,10 +14,10 @@
 #include "basegrenade_shared.h"
 #include "basehlcombatweapon_shared.h"
 #include "ammodef.h"
-//#include "iservervehicle.h"
-//#include "npc_antlion.h"
-//#include "npc_hunter.h"
 
+#ifndef MOD_VER
+CAchievementMgr g_AchievementMgrFIREFIGHTRELOADED;
+#endif
 
 class CAchievementKill20CombineSoldier : public CBaseAchievement
 {
@@ -27,6 +27,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter( "firefightreloaded" );
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal( 20 );
 	}
 
@@ -48,6 +51,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(50);
 	}
 
@@ -69,6 +75,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(100);
 	}
 
@@ -91,6 +100,9 @@ protected:
 		SetVictimFilter("npc_hunter");
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(20);
 	}
 };
@@ -105,6 +117,9 @@ protected:
 		SetVictimFilter("npc_hunter");
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(50);
 	}
 };
@@ -119,6 +134,9 @@ protected:
 		SetVictimFilter("npc_hunter");
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(100);
 	}
 };
@@ -158,6 +176,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(100);
 	}
 
@@ -179,6 +200,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(1000);
 	}
 };
@@ -192,6 +216,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(1000000);
 	}
 };
@@ -228,6 +255,9 @@ protected:
 		SetVictimFilter("npc_hunter");
 		SetInflictorFilter("hunter_flechette");
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(10);
 	}
 };
@@ -240,6 +270,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(100);
 	}
 
@@ -261,6 +294,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(20);
 	}
 
@@ -282,6 +318,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(50);
 	}
 
@@ -303,6 +342,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(100);
 	}
 
@@ -324,6 +366,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(20);
 	}
 
@@ -345,6 +390,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(50);
 	}
 
@@ -366,6 +414,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(100);
 	}
 
@@ -387,6 +438,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(20);
 	}
 
@@ -408,6 +462,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(50);
 	}
 
@@ -429,6 +486,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(100);
 	}
 
@@ -450,6 +510,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(20);
 	}
 
@@ -471,6 +534,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(50);
 	}
 
@@ -492,6 +558,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(100);
 	}
 
@@ -513,6 +582,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(20);
 	}
 
@@ -534,6 +606,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(50);
 	}
 
@@ -555,6 +630,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(100);
 	}
 
@@ -576,6 +654,9 @@ protected:
 		SetInflictorFilter("grenade_ar2");
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(10);
 	}
 };
@@ -592,6 +673,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_MAP_EVENTS | ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(10);
 	}
 
@@ -623,6 +707,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_MAP_EVENTS | ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(20);
 	}
 
@@ -652,6 +739,9 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(10);
 	}
 
@@ -699,6 +789,9 @@ protected:
 		SetFlags(ACH_LISTEN_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
 		SetInflictorFilter("npc_grenade_frag");
 		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		SetStoreProgressInSteam(true);
+#endif
 		SetGoal(10);
 	}
 
