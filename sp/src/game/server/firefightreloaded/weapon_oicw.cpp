@@ -37,7 +37,6 @@ BEGIN_DATADESC( CWeaponOICW )
 
 	DEFINE_FIELD(  m_nShotsFired,	FIELD_INTEGER ),
 	DEFINE_FIELD(  m_bZoomed,		FIELD_BOOLEAN ),
-	DEFINE_FIELD(m_flNextGrenade, FIELD_TIME),
 
 END_DATADESC()
 
@@ -88,15 +87,11 @@ bool CWeaponOICW::Deploy( void )
 {
 	m_nShotsFired = 0;
 
-	m_flNextGrenade = gpGlobals->curtime + 1.0;
-
 	return BaseClass::Deploy();
 }
 
 void CWeaponOICW::Equip(CBaseCombatCharacter *pOwner)
 {
-	m_flNextGrenade = gpGlobals->curtime;
-
 	return BaseClass::Equip(pOwner);
 }
 
@@ -121,9 +116,18 @@ void CWeaponOICW::ItemPostFrame( void )
 	}
 
 	//Throw a grenade.
-	if (pOwner->m_afButtonPressed & IN_ATTACK3 && (m_flNextGrenade <= gpGlobals->curtime))
+	if (pOwner->m_afButtonPressed & IN_ATTACK3)
 	{
-		GrenadeAttack();
+		if (pOwner->GetAmmoCount(m_iSecondaryAmmoType) > 0)
+		{
+			GrenadeAttack();
+		}
+		else
+		{
+			SendWeaponAnim(ACT_VM_DRYFIRE);
+			BaseClass::WeaponSound(EMPTY);
+			return;
+		}
 	}
 
 	//Don't kick the same when we're zoomed in
@@ -173,15 +177,6 @@ void CWeaponOICW::GrenadeAttack(void)
 	if (pPlayer == NULL)
 		return;
 
-	//Must have ammo
-	if ((pPlayer->GetAmmoCount(m_iSecondaryAmmoType) <= 0) || (pPlayer->GetWaterLevel() == 3))
-	{
-		SendWeaponAnim(ACT_VM_DRYFIRE);
-		BaseClass::WeaponSound(EMPTY);
-		m_flNextSecondaryAttack = gpGlobals->curtime + 0.5f;
-		return;
-	}
-
 	if (m_bInReload)
 		m_bInReload = false;
 
@@ -219,11 +214,6 @@ void CWeaponOICW::GrenadeAttack(void)
 
 	// Can shoot again immediately
 	m_flNextPrimaryAttack = gpGlobals->curtime + 0.5f;
-
-	// Can blow up after a short delay (so have time to release mouse button)
-	m_flNextSecondaryAttack = gpGlobals->curtime + 1.0f;
-
-	m_flNextGrenade = gpGlobals->curtime + 1.0f;
 
 	// Register a muzzleflash for the AI.
 	pPlayer->SetMuzzleFlashTime(gpGlobals->curtime + 0.5);
@@ -355,21 +345,7 @@ bool CWeaponOICW::Reload( void )
 		Zoom();
 	}
 
-	bool fRet;
-	float fCacheTime = m_flNextGrenade;
-
-	fRet = DefaultReload(GetMaxClip1(), GetMaxClip2(), ACT_VM_RELOAD);
-	if (fRet)
-	{
-		// Undo whatever the reload process has done to our secondary
-		// attack timer. We allow you to interrupt reloading to fire
-		// a grenade.
-		m_flNextGrenade = GetOwner()->m_flNextAttack = fCacheTime;
-
-		WeaponSound(RELOAD);
-	}
-
-	return fRet;
+	return BaseClass::Reload();
 }
 
 //-----------------------------------------------------------------------------

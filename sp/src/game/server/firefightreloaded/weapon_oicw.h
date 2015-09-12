@@ -77,8 +77,6 @@ protected:
 	int				m_nShotsFired;
 	bool			m_bZoomed;
 
-	float			m_flNextGrenade;
-
 	static const char *pShootSounds[];
 
 	DECLARE_ACTTABLE();
