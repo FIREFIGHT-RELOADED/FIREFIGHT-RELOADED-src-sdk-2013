@@ -36,7 +36,11 @@ public:
         SteamCloudPersist_On,
     };
 
+#ifdef MOD_VER
 	CAchievementMgr( SteamCloudPersisting ePersistToSteamCloud = SteamCloudPersist_Off );
+#else
+	CAchievementMgr(SteamCloudPersisting ePersistToSteamCloud = SteamCloudPersist_On);
+#endif
 
     //=============================================================================
     // HPE_END

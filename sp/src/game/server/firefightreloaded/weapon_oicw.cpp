@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ï¿½ 1996-2001, Valve LLC, All rights reserved. ============
 //
 // Purpose:
 //
@@ -33,48 +33,47 @@ extern ConVar    sk_plr_dmg_oicw_grenade;
 //=========================================================
 //=========================================================
 
-BEGIN_DATADESC( CWeaponOICW )
+BEGIN_DATADESC(CWeaponOICW)
 
-	DEFINE_FIELD(  m_nShotsFired,	FIELD_INTEGER ),
-	DEFINE_FIELD(  m_bZoomed,		FIELD_BOOLEAN ),
+DEFINE_FIELD(m_nShotsFired, FIELD_INTEGER),
 
 END_DATADESC()
 
 IMPLEMENT_SERVERCLASS_ST(CWeaponOICW, DT_WeaponOICW)
 END_SEND_TABLE()
 
-LINK_ENTITY_TO_CLASS( weapon_oicw, CWeaponOICW );
+LINK_ENTITY_TO_CLASS(weapon_oicw, CWeaponOICW);
 PRECACHE_WEAPON_REGISTER(weapon_oicw);
 
-acttable_t	CWeaponOICW::m_acttable[] = 
+acttable_t	CWeaponOICW::m_acttable[] =
 {
-	{ ACT_RANGE_ATTACK1,	ACT_RANGE_ATTACK_AR2, true },
-	{ ACT_WALK,				ACT_WALK_RIFLE,					false },
-	{ ACT_WALK_AIM,			ACT_WALK_AIM_RIFLE,				false },
-	{ ACT_WALK_CROUCH,		ACT_WALK_CROUCH_RIFLE,			false },
-	{ ACT_WALK_CROUCH_AIM,	ACT_WALK_CROUCH_AIM_RIFLE,		false },
-	{ ACT_RUN,				ACT_RUN_RIFLE,					false },
-	{ ACT_RUN_AIM,			ACT_RUN_AIM_RIFLE,				false },
-	{ ACT_RUN_CROUCH,		ACT_RUN_CROUCH_RIFLE,			false },
-	{ ACT_RUN_CROUCH_AIM,	ACT_RUN_CROUCH_AIM_RIFLE,		false },
-	{ ACT_GESTURE_RANGE_ATTACK1,	ACT_GESTURE_RANGE_ATTACK_AR2,	false },
-//	{ ACT_RANGE_ATTACK2, ACT_RANGE_ATTACK_AR2_GRENADE, true },
+	{ ACT_RANGE_ATTACK1, ACT_RANGE_ATTACK_AR2, true },
+	{ ACT_WALK, ACT_WALK_RIFLE, false },
+	{ ACT_WALK_AIM, ACT_WALK_AIM_RIFLE, false },
+	{ ACT_WALK_CROUCH, ACT_WALK_CROUCH_RIFLE, false },
+	{ ACT_WALK_CROUCH_AIM, ACT_WALK_CROUCH_AIM_RIFLE, false },
+	{ ACT_RUN, ACT_RUN_RIFLE, false },
+	{ ACT_RUN_AIM, ACT_RUN_AIM_RIFLE, false },
+	{ ACT_RUN_CROUCH, ACT_RUN_CROUCH_RIFLE, false },
+	{ ACT_RUN_CROUCH_AIM, ACT_RUN_CROUCH_AIM_RIFLE, false },
+	{ ACT_GESTURE_RANGE_ATTACK1, ACT_GESTURE_RANGE_ATTACK_AR2, false },
+	//	{ ACT_RANGE_ATTACK2, ACT_RANGE_ATTACK_AR2_GRENADE, true },
 };
 
 IMPLEMENT_ACTTABLE(CWeaponOICW);
 
-CWeaponOICW::CWeaponOICW( )
+CWeaponOICW::CWeaponOICW()
 {
-	m_fMinRange1	= 65;
-	m_fMaxRange1	= 2048;
+	m_fMinRange1 = 65;
+	m_fMaxRange1 = 2048;
 
-	m_fMinRange2	= 256;
-	m_fMaxRange2	= 1024;
+	m_fMinRange2 = 256;
+	m_fMaxRange2 = 1024;
 
-	m_nShotsFired	= 0;
+	m_nShotsFired = 0;
 }
 
-void CWeaponOICW::Precache( void )
+void CWeaponOICW::Precache(void)
 {
 	UTIL_PrecacheOther("grenade_ar2");
 	BaseClass::Precache();
@@ -83,55 +82,61 @@ void CWeaponOICW::Precache( void )
 //-----------------------------------------------------------------------------
 // Purpose: Offset the autoreload
 //-----------------------------------------------------------------------------
-bool CWeaponOICW::Deploy( void )
+bool CWeaponOICW::Deploy(void)
 {
 	m_nShotsFired = 0;
+	m_flNextSecondaryAttack = gpGlobals->curtime + SequenceDuration();
 
 	return BaseClass::Deploy();
 }
 
 void CWeaponOICW::Equip(CBaseCombatCharacter *pOwner)
 {
+	m_flNextSecondaryAttack = gpGlobals->curtime;
+
 	return BaseClass::Equip(pOwner);
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Handle grenade detonate in-air (even when no ammo is left)
 //-----------------------------------------------------------------------------
-void CWeaponOICW::ItemPostFrame( void )
+void CWeaponOICW::ItemPostFrame(void)
 {
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+	CBasePlayer *pOwner = ToBasePlayer(GetOwner());
 	if (!pOwner)
 		return;
 
-	if ( ( pOwner->m_nButtons & IN_ATTACK ) == false )
+	if ((pOwner->m_nButtons & IN_ATTACK) == false)
 	{
 		m_nShotsFired = 0;
 	}
 
-	//Zoom in
-	if ( pOwner->m_afButtonPressed & IN_ATTACK2 )
-	{
-		Zoom();
-	}
-
 	//Throw a grenade.
-	if (pOwner->m_afButtonPressed & IN_ATTACK3)
+	if (pOwner->m_afButtonPressed & IN_ATTACK2 && (m_flNextSecondaryAttack <= gpGlobals->curtime))
 	{
-		if (pOwner->GetAmmoCount(m_iSecondaryAmmoType) > 0)
+		if (pOwner->GetAmmoCount(m_iSecondaryAmmoType) <= 0)
 		{
-			GrenadeAttack();
+			if (m_flNextEmptySoundTime < gpGlobals->curtime)
+			{
+				WeaponSound(EMPTY);
+				m_flNextSecondaryAttack = m_flNextEmptySoundTime = gpGlobals->curtime + 0.5;
+			}
+		}
+		else if (pOwner->GetWaterLevel() == 3 && m_bAltFiresUnderwater == false)
+		{
+			// This weapon doesn't fire underwater
+			WeaponSound(EMPTY);
+			m_flNextPrimaryAttack = gpGlobals->curtime + 0.2;
+			return;
 		}
 		else
 		{
-			SendWeaponAnim(ACT_VM_DRYFIRE);
-			BaseClass::WeaponSound(EMPTY);
-			return;
+			GrenadeAttack();
 		}
 	}
 
 	//Don't kick the same when we're zoomed in
-	if ( m_bZoomed )
+	if (m_bIsIronsighted)
 	{
 		m_fFireDuration = 0.05f;
 	}
@@ -145,13 +150,13 @@ void CWeaponOICW::ItemPostFrame( void )
 //-----------------------------------------------------------------------------
 Activity CWeaponOICW::GetPrimaryAttackActivity(void)
 {
-	if ( m_nShotsFired < 2 )
+	if (m_nShotsFired < 2)
 		return ACT_VM_PRIMARYATTACK;
 
-	if ( m_nShotsFired < 3 )
+	if (m_nShotsFired < 3)
 		return ACT_VM_HITLEFT;
-	
-	if ( m_nShotsFired < 4 )
+
+	if (m_nShotsFired < 4)
 		return ACT_VM_HITLEFT2;
 
 	return ACT_VM_HITRIGHT;
@@ -159,7 +164,7 @@ Activity CWeaponOICW::GetPrimaryAttackActivity(void)
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CWeaponOICW::PrimaryAttack( void )
+void CWeaponOICW::PrimaryAttack(void)
 {
 	m_nShotsFired++;
 
@@ -176,6 +181,15 @@ void CWeaponOICW::GrenadeAttack(void)
 
 	if (pPlayer == NULL)
 		return;
+
+	//Must have ammo
+	if ((pPlayer->GetAmmoCount(m_iSecondaryAmmoType) <= 0) || (pPlayer->GetWaterLevel() == 3))
+	{
+		SendWeaponAnim(ACT_VM_DRYFIRE);
+		BaseClass::WeaponSound(EMPTY);
+		m_flNextSecondaryAttack = gpGlobals->curtime + 0.5f;
+		return;
+	}
 
 	if (m_bInReload)
 		m_bInReload = false;
@@ -215,6 +229,9 @@ void CWeaponOICW::GrenadeAttack(void)
 	// Can shoot again immediately
 	m_flNextPrimaryAttack = gpGlobals->curtime + 0.5f;
 
+	// Can blow up after a short delay (so have time to release mouse button)
+	m_flNextSecondaryAttack = gpGlobals->curtime + 1.0f;
+
 	// Register a muzzleflash for the AI.
 	pPlayer->SetMuzzleFlashTime(gpGlobals->curtime + 0.5);
 
@@ -222,27 +239,27 @@ void CWeaponOICW::GrenadeAttack(void)
 	gamestats->Event_WeaponFired(pPlayer, false, GetClassname());
 }
 
-void CWeaponOICW::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
+void CWeaponOICW::Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatCharacter *pOperator)
 {
-	switch( pEvent->event )
-	{ 
-		case EVENT_WEAPON_AR2:
-		{
-			Vector vecShootOrigin, vecShootDir;
-			vecShootOrigin = pOperator->Weapon_ShootPosition();
+	switch (pEvent->event)
+	{
+	case EVENT_WEAPON_AR2:
+	{
+		Vector vecShootOrigin, vecShootDir;
+		vecShootOrigin = pOperator->Weapon_ShootPosition();
 
-			CAI_BaseNPC *npc = pOperator->MyNPCPointer();
-			ASSERT( npc != NULL );
-			vecShootDir = npc->GetActualShootTrajectory( vecShootOrigin );
-			WeaponSound(SINGLE_NPC);
-			pOperator->FireBullets( 1, vecShootOrigin, vecShootDir, VECTOR_CONE_PRECALCULATED, MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 2 );
-			pOperator->DoMuzzleFlash();
-			m_iClip1 = m_iClip1 - 1;
-		}
+		CAI_BaseNPC *npc = pOperator->MyNPCPointer();
+		ASSERT(npc != NULL);
+		vecShootDir = npc->GetActualShootTrajectory(vecShootOrigin);
+		WeaponSound(SINGLE_NPC);
+		pOperator->FireBullets(1, vecShootOrigin, vecShootDir, VECTOR_CONE_PRECALCULATED, MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 2);
+		pOperator->DoMuzzleFlash();
+		m_iClip1 = m_iClip1 - 1;
+	}
+	break;
+	default:
+		CBaseCombatWeapon::Operator_HandleAnimEvent(pEvent, pOperator);
 		break;
-		default:
-			CBaseCombatWeapon::Operator_HandleAnimEvent( pEvent, pOperator );
-			break;
 	}
 }
 
@@ -252,59 +269,70 @@ AddViewKick
 ==================================================
 */
 
-void CWeaponOICW::AddViewKick( void )
+void CWeaponOICW::AddViewKick(void)
 {
-	#define	EASY_DAMPEN			0.5f
-	#define	MAX_VERTICAL_KICK	24.0f	//Degrees
-	#define	SLIDE_LIMIT			3.0f	//Seconds
-	
+#define	EASY_DAMPEN			0.5f
+#define	MAX_VERTICAL_KICK	24.0f	//Degrees
+#define	SLIDE_LIMIT			3.0f	//Seconds
+
 	//Get the view kick
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
+	CBasePlayer *pPlayer = ToBasePlayer(GetOwner());
 
 	if (!pPlayer)
 		return;
 
-	DoMachineGunKick( pPlayer, EASY_DAMPEN, MAX_VERTICAL_KICK, m_fFireDuration, SLIDE_LIMIT );
+	DoMachineGunKick(pPlayer, EASY_DAMPEN, MAX_VERTICAL_KICK, m_fFireDuration, SLIDE_LIMIT);
 }
 
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CWeaponOICW::Zoom( void )
+void CWeaponOICW::ToggleIronsights()
 {
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
-	
-	if ( pPlayer == NULL )
+	if (!HasIronsights())
+		return;
+
+	if (IsIronsighted())
+		DisableIronsights();
+	else
+		EnableIronsights();
+}
+
+void CWeaponOICW::EnableIronsights(void)
+{
+	if (!HasIronsights() || IsIronsighted())
+		return;
+
+	CBasePlayer *pPlayer = ToBasePlayer(GetOwner());
+
+	if (pPlayer == NULL)
 		return;
 
 	color32 lightGreen = { 50, 255, 170, 32 };
 
-	if ( m_bZoomed )
+	if (pPlayer->SetFOV(this, 35, 0.1f))
 	{
-		if (pPlayer->SetFOV( this, 0, 0.1f))
-		{
-			pPlayer->ShowViewModel( true );
-
-			// Zoom out to the default zoom level
-			WeaponSound(SPECIAL2);
-
-			m_bZoomed = false;
-
-			UTIL_ScreenFade(pPlayer, lightGreen, 0.2f, 0, (FFADE_IN | FFADE_PURGE));
-		}
+		pPlayer->ShowViewModel(false);
+		WeaponSound(SPECIAL1);
+		UTIL_ScreenFade(pPlayer, lightGreen, 0.2f, 0, (FFADE_OUT | FFADE_PURGE | FFADE_STAYOUT));
 	}
-	else
+}
+
+void CWeaponOICW::DisableIronsights(void)
+{
+	if (!HasIronsights() || !IsIronsighted())
+		return;
+
+	CBasePlayer *pPlayer = ToBasePlayer(GetOwner());
+
+	if (pPlayer == NULL)
+		return;
+
+	color32 lightGreen = { 50, 255, 170, 32 };
+
+	if (pPlayer->SetFOV(this, 0, 0.1f))
 	{
-		if (pPlayer->SetFOV(this, 35, 0.1f))
-		{
-			pPlayer->ShowViewModel(false);
-
-			WeaponSound(SPECIAL1);
-
-			m_bZoomed = true;
-
-			UTIL_ScreenFade(pPlayer, lightGreen, 0.2f, 0, (FFADE_OUT | FFADE_PURGE | FFADE_STAYOUT));
-		}
+		pPlayer->ShowViewModel(true);
+		// Zoom out to the default zoom level
+		WeaponSound(SPECIAL2);
+		UTIL_ScreenFade(pPlayer, lightGreen, 0.2f, 0, (FFADE_IN | FFADE_PURGE));
 	}
 }
 
@@ -312,9 +340,9 @@ void CWeaponOICW::Zoom( void )
 // Purpose: 
 // Output : float
 //-----------------------------------------------------------------------------
-float CWeaponOICW::GetFireRate( void )
-{ 
-	if ( m_bZoomed )
+float CWeaponOICW::GetFireRate(void)
+{
+	if (m_bIsIronsighted)
 		return 0.3f;
 
 	return 0.1f;
@@ -324,39 +352,38 @@ float CWeaponOICW::GetFireRate( void )
 // Purpose: 
 // Input  : NULL - 
 //-----------------------------------------------------------------------------
-bool CWeaponOICW::Holster( CBaseCombatWeapon *pSwitchingTo )
+bool CWeaponOICW::Holster(CBaseCombatWeapon *pSwitchingTo)
 {
-	if ( m_bZoomed )
-	{
-		Zoom();
-	}
-
-	return BaseClass::Holster( pSwitchingTo );
+	return BaseClass::Holster(pSwitchingTo);
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CWeaponOICW::Reload( void )
+bool CWeaponOICW::Reload(void)
 {
-	if (m_bZoomed)
+	bool fRet;
+	float fCacheTime = m_flNextSecondaryAttack;
+
+	fRet = DefaultReload(GetMaxClip1(), GetMaxClip2(), ACT_VM_RELOAD);
+	if (fRet)
 	{
-		Zoom();
+		// Undo whatever the reload process has done to our secondary
+		// attack timer. We allow you to interrupt reloading to fire
+		// a grenade.
+		m_flNextSecondaryAttack = GetOwner()->m_flNextAttack = fCacheTime;
+
+		WeaponSound(RELOAD);
 	}
 
-	return BaseClass::Reload();
+	return fRet;
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CWeaponOICW::Drop( const Vector &velocity )
+void CWeaponOICW::Drop(const Vector &velocity)
 {
-	if ( m_bZoomed )
-	{
-		Zoom();
-	}
-
-	BaseClass::Drop( velocity );
+	BaseClass::Drop(velocity);
 }

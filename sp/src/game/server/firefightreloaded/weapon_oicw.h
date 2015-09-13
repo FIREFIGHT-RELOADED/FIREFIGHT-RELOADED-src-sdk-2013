@@ -27,55 +27,55 @@ class CGrenadeAR2;
 class CWeaponOICW : public CHLMachineGun
 {
 public:
-	DECLARE_CLASS( CWeaponOICW, CHLMachineGun );
+	DECLARE_CLASS(CWeaponOICW, CHLMachineGun);
 
 	CWeaponOICW();
 
 	DECLARE_SERVERCLASS();
 
-	bool	Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
-	bool	Reload( void );
-	float	GetFireRate( void );
-	void	ItemPostFrame( void );
-	void	Precache( void );
-	void	PrimaryAttack( void );
+	bool	Holster(CBaseCombatWeapon *pSwitchingTo = NULL);
+	bool	Reload(void);
+	float	GetFireRate(void);
+	void	ItemPostFrame(void);
+	void	Precache(void);
+	void	PrimaryAttack(void);
 	void	GrenadeAttack(void);
-	void	AddViewKick( void );
-	void	Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+	void	AddViewKick(void);
+	void	Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatCharacter *pOperator);
+	void	ToggleIronsights(void);
+	void	EnableIronsights(void);
+	void	DisableIronsights(void);
 
 	int		GetMinBurst() { return 4; }
 	int		GetMaxBurst() { return 7; }
 
-	int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
+	int		CapabilitiesGet(void) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
 
 	Activity	GetPrimaryAttackActivity(void);
 
-	virtual const Vector& GetBulletSpread( void )
+	virtual const Vector& GetBulletSpread(void)
 	{
 		static Vector cone;
-		
-		if( GetOwner() && GetOwner()->IsPlayer() )
+
+		if (GetOwner() && GetOwner()->IsPlayer())
 		{
-			cone = ( m_bZoomed ) ? VECTOR_CONE_1DEGREES : VECTOR_CONE_3DEGREES;
+			cone = (m_bIsIronsighted) ? VECTOR_CONE_1DEGREES : VECTOR_CONE_3DEGREES;
 		}
 		else
 		{
 			cone = VECTOR_CONE_8DEGREES;
 		}
-		
+
 		return cone;
 	}
-	
+
 	virtual void	Equip(CBaseCombatCharacter *pOwner);
-	virtual bool	Deploy( void );
-	virtual void	Drop( const Vector &velocity );
+	virtual bool	Deploy(void);
+	virtual void	Drop(const Vector &velocity);
 
 protected:
 
-	void			Zoom( void );
-
 	int				m_nShotsFired;
-	bool			m_bZoomed;
 
 	static const char *pShootSounds[];
 
