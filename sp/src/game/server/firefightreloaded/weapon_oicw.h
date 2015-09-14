@@ -42,9 +42,6 @@ public:
 	void	GrenadeAttack(void);
 	void	AddViewKick(void);
 	void	Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatCharacter *pOperator);
-	void	ToggleIronsights(void);
-	void	EnableIronsights(void);
-	void	DisableIronsights(void);
 
 	int		GetMinBurst() { return 4; }
 	int		GetMaxBurst() { return 7; }
@@ -59,7 +56,7 @@ public:
 
 		if (GetOwner() && GetOwner()->IsPlayer())
 		{
-			cone = (m_bIsIronsighted) ? VECTOR_CONE_1DEGREES : VECTOR_CONE_3DEGREES;
+			cone = (m_bZoomed) ? VECTOR_CONE_1DEGREES : VECTOR_CONE_3DEGREES;
 		}
 		else
 		{
@@ -75,7 +72,13 @@ public:
 
 protected:
 
+	void			Zoom(void);
+
 	int				m_nShotsFired;
+
+	bool			m_bZoomed;
+
+	float	m_flSoonestPrimaryAttack;
 
 	static const char *pShootSounds[];
 

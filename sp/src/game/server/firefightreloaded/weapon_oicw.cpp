@@ -29,6 +29,7 @@
 extern ConVar    sk_plr_dmg_oicw_grenade;
 
 #define OICW_ZOOM_RATE	0.5f	// Interval between zoom levels in seconds.
+#define	OICW_FASTEST_REFIRE_TIME		0.1f
 
 //=========================================================
 //=========================================================
@@ -36,6 +37,8 @@ extern ConVar    sk_plr_dmg_oicw_grenade;
 BEGIN_DATADESC(CWeaponOICW)
 
 DEFINE_FIELD(m_nShotsFired, FIELD_INTEGER),
+DEFINE_FIELD(m_bZoomed, FIELD_BOOLEAN),
+DEFINE_FIELD(m_flSoonestPrimaryAttack, FIELD_TIME),
 
 END_DATADESC()
 
@@ -71,6 +74,10 @@ CWeaponOICW::CWeaponOICW()
 	m_fMaxRange2 = 1024;
 
 	m_nShotsFired = 0;
+
+	m_bAltFiresUnderwater = false;
+
+	m_flSoonestPrimaryAttack = gpGlobals->curtime;
 }
 
 void CWeaponOICW::Precache(void)
@@ -111,8 +118,14 @@ void CWeaponOICW::ItemPostFrame(void)
 		m_nShotsFired = 0;
 	}
 
+	//Zoom in
+	if (pOwner->m_afButtonPressed & IN_ATTACK2)
+	{
+		Zoom();
+	}
+
 	//Throw a grenade.
-	if (pOwner->m_afButtonPressed & IN_ATTACK2 && (m_flNextSecondaryAttack <= gpGlobals->curtime))
+	if (pOwner->m_afButtonPressed & IN_ATTACK3 && (m_flNextSecondaryAttack <= gpGlobals->curtime))
 	{
 		if (pOwner->GetAmmoCount(m_iSecondaryAmmoType) <= 0)
 		{
@@ -135,8 +148,14 @@ void CWeaponOICW::ItemPostFrame(void)
 		}
 	}
 
+	//Allow a refire as fast as the player can click
+	if (m_bZoomed && ((pOwner->m_nButtons & IN_ATTACK) == false) && (m_flSoonestPrimaryAttack < gpGlobals->curtime))
+	{
+		m_flNextPrimaryAttack = gpGlobals->curtime - 0.1f;
+	}
+
 	//Don't kick the same when we're zoomed in
-	if (m_bIsIronsighted)
+	if (m_bZoomed)
 	{
 		m_fFireDuration = 0.05f;
 	}
@@ -167,6 +186,8 @@ Activity CWeaponOICW::GetPrimaryAttackActivity(void)
 void CWeaponOICW::PrimaryAttack(void)
 {
 	m_nShotsFired++;
+
+	m_flSoonestPrimaryAttack = gpGlobals->curtime + OICW_FASTEST_REFIRE_TIME;
 
 	BaseClass::PrimaryAttack();
 }
@@ -284,22 +305,8 @@ void CWeaponOICW::AddViewKick(void)
 	DoMachineGunKick(pPlayer, EASY_DAMPEN, MAX_VERTICAL_KICK, m_fFireDuration, SLIDE_LIMIT);
 }
 
-void CWeaponOICW::ToggleIronsights()
+void CWeaponOICW::Zoom(void)
 {
-	if (!HasIronsights())
-		return;
-
-	if (IsIronsighted())
-		DisableIronsights();
-	else
-		EnableIronsights();
-}
-
-void CWeaponOICW::EnableIronsights(void)
-{
-	if (!HasIronsights() || IsIronsighted())
-		return;
-
 	CBasePlayer *pPlayer = ToBasePlayer(GetOwner());
 
 	if (pPlayer == NULL)
@@ -307,32 +314,32 @@ void CWeaponOICW::EnableIronsights(void)
 
 	color32 lightGreen = { 50, 255, 170, 32 };
 
-	if (pPlayer->SetFOV(this, 35, 0.1f))
+	if (m_bZoomed)
 	{
-		pPlayer->ShowViewModel(false);
-		WeaponSound(SPECIAL1);
-		UTIL_ScreenFade(pPlayer, lightGreen, 0.2f, 0, (FFADE_OUT | FFADE_PURGE | FFADE_STAYOUT));
+		if (pPlayer->SetFOV(this, 0, 0.1f))
+		{
+			pPlayer->ShowViewModel(true);
+
+			// Zoom out to the default zoom level
+			WeaponSound(SPECIAL2);
+
+			m_bZoomed = false;
+
+			UTIL_ScreenFade(pPlayer, lightGreen, 0.2f, 0, (FFADE_IN | FFADE_PURGE));
+		}
 	}
-}
-
-void CWeaponOICW::DisableIronsights(void)
-{
-	if (!HasIronsights() || !IsIronsighted())
-		return;
-
-	CBasePlayer *pPlayer = ToBasePlayer(GetOwner());
-
-	if (pPlayer == NULL)
-		return;
-
-	color32 lightGreen = { 50, 255, 170, 32 };
-
-	if (pPlayer->SetFOV(this, 0, 0.1f))
+	else
 	{
-		pPlayer->ShowViewModel(true);
-		// Zoom out to the default zoom level
-		WeaponSound(SPECIAL2);
-		UTIL_ScreenFade(pPlayer, lightGreen, 0.2f, 0, (FFADE_IN | FFADE_PURGE));
+		if (pPlayer->SetFOV(this, 35, 0.1f))
+		{
+			pPlayer->ShowViewModel(false);
+
+			WeaponSound(SPECIAL1);
+
+			m_bZoomed = true;
+
+			UTIL_ScreenFade(pPlayer, lightGreen, 0.2f, 0, (FFADE_OUT | FFADE_PURGE | FFADE_STAYOUT));
+		}
 	}
 }
 
@@ -342,7 +349,7 @@ void CWeaponOICW::DisableIronsights(void)
 //-----------------------------------------------------------------------------
 float CWeaponOICW::GetFireRate(void)
 {
-	if (m_bIsIronsighted)
+	if (m_bZoomed)
 		return 0.3f;
 
 	return 0.1f;
@@ -354,6 +361,11 @@ float CWeaponOICW::GetFireRate(void)
 //-----------------------------------------------------------------------------
 bool CWeaponOICW::Holster(CBaseCombatWeapon *pSwitchingTo)
 {
+	if (m_bZoomed)
+	{
+		Zoom();
+	}
+
 	return BaseClass::Holster(pSwitchingTo);
 }
 
@@ -363,6 +375,11 @@ bool CWeaponOICW::Holster(CBaseCombatWeapon *pSwitchingTo)
 //-----------------------------------------------------------------------------
 bool CWeaponOICW::Reload(void)
 {
+	if (m_bZoomed)
+	{
+		Zoom();
+	}
+
 	bool fRet;
 	float fCacheTime = m_flNextSecondaryAttack;
 
@@ -385,5 +402,10 @@ bool CWeaponOICW::Reload(void)
 //-----------------------------------------------------------------------------
 void CWeaponOICW::Drop(const Vector &velocity)
 {
+	if (m_bZoomed)
+	{
+		Zoom();
+	}
+
 	BaseClass::Drop(velocity);
 }
