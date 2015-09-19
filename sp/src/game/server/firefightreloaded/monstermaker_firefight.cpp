@@ -53,7 +53,7 @@ const char *g_charNPCSSpawnerList[] =
 	"npc_bullsquid",
 	"npc_vortigaunt",
 	"npc_assassin",
-	//"npc_cremator",
+	"npc_cremator",
 };
 
 const char *g_charNPCSCombineFirefightCommon[] =
@@ -70,7 +70,7 @@ const char *g_charNPCSCombineFirefightRare[] =
 	"npc_combine_ace",
 	"npc_hunter",
 	"npc_assassin",
-	//"npc_cremator",
+	"npc_cremator",
 };
 
 const char *g_charNPCSCombineFirefightSoldierWeapons[] =
@@ -166,7 +166,7 @@ const char *g_charNPCSFirefightRumbleRare[] =
 	"npc_headcrab_poison",
 	"npc_vortigaunt",
 	"npc_assassin",
-	//"npc_cremator",
+	"npc_cremator",
 };
 
 static void DispatchActivate( CBaseEntity *pEntity )

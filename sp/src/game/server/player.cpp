@@ -1669,8 +1669,8 @@ void CBasePlayer::DamageEffect(float flDamage, int fDamageType)
 	else if (fDamageType & DMG_PLASMA)
 	{
 		// Blue screen fade
-		color32 blue = {0,0,255,100};
-		UTIL_ScreenFade( this, blue, 0.2, 0.4, FFADE_MODULATE );
+		color32 blue = { 50, 255, 170, 32 };
+		UTIL_ScreenFade(this, blue, 0.2, 0.4, FFADE_IN);
 
 		// Very small screen shake
 		// Both -0.1 and 0.1 map to 0 when converted to integer, so all of these RandomInt
@@ -1691,7 +1691,7 @@ void CBasePlayer::DamageEffect(float flDamage, int fDamageType)
 	{
 		color32 red = { 128, 0, 0, 128 };
 		UTIL_ScreenFade(this, red, 1.0f, 0.1f, FFADE_IN);
-		EmitSound( "Flesh.BulletImpact" );
+		EmitSound( "Player.BulletDamage" );
 	}
 }
 
