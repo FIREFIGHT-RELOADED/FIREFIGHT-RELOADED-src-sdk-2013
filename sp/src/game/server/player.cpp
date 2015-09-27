@@ -5865,6 +5865,7 @@ void CBasePlayer::Precache( void )
 	PrecacheScriptSound( "Player.Death" );
 	PrecacheScriptSound( "Player.PlasmaDamage" );
 	PrecacheScriptSound( "Player.SonicDamage" );
+	PrecacheScriptSound( "Player.BulletDamage");
 	PrecacheScriptSound( "Player.DrownStart" );
 	PrecacheScriptSound( "Player.DrownContinue" );
 	PrecacheScriptSound( "Player.Wade" );
@@ -6990,9 +6991,10 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveAmmo(999, "slam");
 		GiveAmmo(999, "OICW");
 		GiveAmmo(999, "OICW_Grenade");
-#ifdef HL2_EPISODIC
-		GiveAmmo( 999, "Hopwire" );
-#endif		
+		GiveAmmo(999, "FlareRound");
+//#ifdef HL2_EPISODIC
+		//GiveAmmo( 999, "Hopwire" );
+//#endif		
 		GiveNamedItem( "weapon_smg1" );
 		GiveNamedItem( "weapon_frag" );
 		GiveNamedItem( "weapon_crowbar" );
@@ -7009,6 +7011,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveNamedItem( "weapon_m249para" );
 		GiveNamedItem("weapon_slam");
 		GiveNamedItem("weapon_oicw");
+		GiveNamedItem("weapon_flaregun");
 #ifdef HL2_EPISODIC
 		// GiveNamedItem( "weapon_magnade" );
 #endif

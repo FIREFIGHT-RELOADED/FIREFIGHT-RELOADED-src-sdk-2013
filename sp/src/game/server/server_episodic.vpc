@@ -336,8 +336,9 @@ $Project "Server (Episodic)"
 			$File	"firefightreloaded\grenade_tripmine.h"
 			$File	"firefightreloaded\weapon_oicw.cpp"
 			$File	"firefightreloaded\weapon_oicw.h"
-			$File	"firefightreloaded\npc_cremator.cpp"
-			$File	"firefightreloaded\npc_cremator.h"
+			//soon
+			//$File	"firefightreloaded\npc_cremator.cpp"
+			//$File	"firefightreloaded\npc_cremator.h"
 
 			$Folder	"HL2 Imported"
 			{

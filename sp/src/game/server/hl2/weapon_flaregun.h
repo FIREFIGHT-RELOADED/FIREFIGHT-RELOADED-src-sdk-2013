@@ -99,7 +99,8 @@ public:
 
 	void Precache( void );
 	void PrimaryAttack( void );
-	void SecondaryAttack( void );
+
+	DECLARE_ACTTABLE();
 };
 
 #endif // WEAPON_FLAREGUN_H

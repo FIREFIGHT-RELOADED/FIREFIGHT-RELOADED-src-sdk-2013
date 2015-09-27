@@ -43,7 +43,6 @@ void CNPC_Cremator::Precache()
 	//UTIL_PrecacheOther( "grenade_molotov" );
 
 	PrecacheParticleSystem( "flamethrower" ); // зеленое пламя для Интервала.
-	PrecacheParticleSystem( "flamethrower_orange" ); // альтернативное, обычное оранжевое пламя.
 
 	engine->PrecacheModel("sprites/crystal_beam1.vmt"); // for the beam attack
 }
