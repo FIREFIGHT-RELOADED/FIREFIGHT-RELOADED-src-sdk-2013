@@ -73,6 +73,10 @@ void CFRMainMenuPanel::OnCommand(const char* command)
 		CSingleplayerAdvancedDialog* pCSingleplayerAdvancedDialog = new CSingleplayerAdvancedDialog(this);
 		pCSingleplayerAdvancedDialog->Activate();
 	}
+	else if (!Q_strcmp(command, "changesplash"))
+	{
+		SetHintLabel();
+	}
 	else
 	{
 		BaseClass::OnCommand(command);
