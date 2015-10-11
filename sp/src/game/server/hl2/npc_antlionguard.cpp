@@ -4327,6 +4327,9 @@ void CNPC_AntlionGuard::InputDisableBark( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 void CNPC_AntlionGuard::DeathSound( const CTakeDamageInfo &info )
 {
+	if (IsOnFire())
+		return;
+
 	EmitSound( "NPC_AntlionGuard.Die" );
 }
 

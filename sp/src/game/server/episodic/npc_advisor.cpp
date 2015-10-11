@@ -1586,12 +1586,18 @@ void CNPC_Advisor::AlertSound()
 
 void CNPC_Advisor::PainSound( const CTakeDamageInfo &info )
 {
+	if (IsOnFire())
+		return;
+
 	EmitSound( "NPC_Advisor.Pain" );
 }
 
 
 void CNPC_Advisor::DeathSound( const CTakeDamageInfo &info )
 {
+	if (IsOnFire())
+		return;
+
 	EmitSound( "NPC_Advisor.Die" );
 }
 

@@ -191,6 +191,9 @@ void CNPC_Bullsquid::IdleSound( void )
 //=========================================================
 void CNPC_Bullsquid::PainSound( const CTakeDamageInfo &info )
 {
+	if (IsOnFire())
+		return;
+
 	EmitSound( "NPC_Bullsquid.Pain" );
 }
 
@@ -207,6 +210,9 @@ void CNPC_Bullsquid::AlertSound( void )
 //=========================================================
 void CNPC_Bullsquid::DeathSound( const CTakeDamageInfo &info )
 {
+	if (IsOnFire())
+		return;
+
 	EmitSound( "NPC_Bullsquid.Death" );
 }
 

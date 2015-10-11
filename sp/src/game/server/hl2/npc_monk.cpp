@@ -290,6 +290,9 @@ void CNPC_Monk::Spawn()
 //------------------------------------------------------------------------------
 void CNPC_Monk::PainSound( const CTakeDamageInfo &info )
 {
+	if (IsOnFire())
+		return;
+
 	SpeakIfAllowed( TLK_WOUND );
 }
 
@@ -297,6 +300,9 @@ void CNPC_Monk::PainSound( const CTakeDamageInfo &info )
 //------------------------------------------------------------------------------
 void CNPC_Monk::DeathSound( const CTakeDamageInfo &info )
 {
+	if (IsOnFire())
+		return;
+
 	// Sentences don't play on dead NPCs
 	SentenceStop();
 

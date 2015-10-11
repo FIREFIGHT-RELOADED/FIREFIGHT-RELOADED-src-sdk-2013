@@ -1225,6 +1225,9 @@ void CNPC_Vortigaunt::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 //=========================================================
 void CNPC_Vortigaunt::PainSound( const CTakeDamageInfo &info )
 {
+	if (IsOnFire())
+		return;
+
 	if ( gpGlobals->curtime < m_flPainTime )
 		return;
 	
@@ -1238,6 +1241,9 @@ void CNPC_Vortigaunt::PainSound( const CTakeDamageInfo &info )
 //=========================================================
 void CNPC_Vortigaunt::DeathSound( const CTakeDamageInfo &info )
 {
+	if (IsOnFire())
+		return;
+
 	Speak( VORT_DIE );
 }
 

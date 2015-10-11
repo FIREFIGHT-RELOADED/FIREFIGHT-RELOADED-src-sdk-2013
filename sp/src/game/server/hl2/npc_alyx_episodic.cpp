@@ -2423,6 +2423,9 @@ bool CNPC_Alyx::IsAllowedToAim()
 //-----------------------------------------------------------------------------
 void CNPC_Alyx::PainSound( const CTakeDamageInfo &info )
 {
+	if (IsOnFire())
+		return;
+
 	// Alex has specific sounds for when attacked in the dark
 	if ( !HasCondition( COND_ALYX_IN_DARK ) )
 	{
@@ -2437,6 +2440,9 @@ void CNPC_Alyx::PainSound( const CTakeDamageInfo &info )
 
 void CNPC_Alyx::DeathSound( const CTakeDamageInfo &info )
 {
+	if (IsOnFire())
+		return;
+
 	// Sentences don't play on dead NPCs
 	SentenceStop();
 
@@ -3110,6 +3116,9 @@ void CNPC_Alyx::OnUpdateShotRegulator( )
 //-----------------------------------------------------------------------------
 void CNPC_Alyx::BarnacleDeathSound( void )
 {
+	if (IsOnFire())
+		return;
+
 	Speak( TLK_SELF_IN_BARNACLE );
 }
 

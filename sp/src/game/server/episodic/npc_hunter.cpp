@@ -5339,6 +5339,9 @@ void CNPC_Hunter::AlertSound()
 //-----------------------------------------------------------------------------
 void CNPC_Hunter::PainSound( const CTakeDamageInfo &info )
 {
+	if (IsOnFire())
+		return;
+
 	if ( gpGlobals->curtime > m_flNextDamageTime )
 	{
 		EmitSound( "NPC_Hunter.Pain" );
@@ -5351,6 +5354,9 @@ void CNPC_Hunter::PainSound( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 void CNPC_Hunter::DeathSound( const CTakeDamageInfo &info )
 {
+	if (IsOnFire())
+		return;
+
 	EmitSound( "NPC_Hunter.Death" );
 }
 

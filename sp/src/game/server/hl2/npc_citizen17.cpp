@@ -3837,6 +3837,9 @@ void CNPC_Citizen::InputSpeakIdleResponse( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 void CNPC_Citizen::DeathSound( const CTakeDamageInfo &info )
 {
+	if (IsOnFire())
+		return;
+
 	// Sentences don't play on dead NPCs
 	SentenceStop();
 

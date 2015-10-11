@@ -1335,7 +1335,8 @@ void CNPC_Combine::BuildScheduleTestBits( void )
 Activity CNPC_Combine::NPC_TranslateActivity( Activity eNewActivity )
 {
 	//Slaming this back to ACT_COMBINE_BUGBAIT since we don't want ANYTHING to change our activity while we burn.
-	if ( HasCondition( COND_COMBINE_ON_FIRE ) )
+	//Now when we burn, we either continue fighting or stand there like an idiot. Its random, so there's that. -Bitl
+	if ( HasCondition( COND_COMBINE_ON_FIRE ) && random->RandomInt(1,5) == 3 )
 		return BaseClass::NPC_TranslateActivity( ACT_COMBINE_BUGBAIT );
 
 	if (eNewActivity == ACT_RANGE_ATTACK2)
@@ -1730,7 +1731,7 @@ int CNPC_Combine::SelectSchedule( void )
 		return BaseClass::SelectSchedule();
 	}
 
-	if ( HasCondition(COND_COMBINE_ON_FIRE) )
+	if (HasCondition(COND_COMBINE_ON_FIRE) && random->RandomInt(1, 5) == 3)
 		return SCHED_COMBINE_BURNING_STAND;
 
 	int nSched = SelectFlinchSchedule();
@@ -2635,6 +2636,9 @@ void CNPC_Combine::SpeakSentence( int sentenceType )
 //=========================================================
 void CNPC_Combine::PainSound ( void )
 {
+	if (IsOnFire())
+		return;
+
 	// NOTE: The response system deals with this at the moment
 	if ( GetFlags() & FL_DISSOLVING )
 		return;
@@ -2740,6 +2744,9 @@ void CNPC_Combine::DeathSound ( void )
 {
 	// NOTE: The response system deals with this at the moment
 	if ( GetFlags() & FL_DISSOLVING )
+		return;
+
+	if (IsOnFire())
 		return;
 
 	m_Sentences.Speak( "COMBINE_DIE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS );

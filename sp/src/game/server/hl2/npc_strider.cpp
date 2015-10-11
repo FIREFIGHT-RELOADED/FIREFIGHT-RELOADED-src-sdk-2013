@@ -2964,6 +2964,9 @@ void CNPC_Strider::AlertSound()
 //---------------------------------------------------------
 void CNPC_Strider::PainSound( const CTakeDamageInfo &info )
 {
+	if (IsOnFire())
+		return;
+
 	// This means that we've exploded into pieces and have no way to whimper
 	if ( ShouldExplodeFromDamage( info ) )
 		return;
@@ -2975,6 +2978,9 @@ void CNPC_Strider::PainSound( const CTakeDamageInfo &info )
 //---------------------------------------------------------
 void CNPC_Strider::DeathSound( const CTakeDamageInfo &info )
 {
+	if (IsOnFire())
+		return;
+
 	// This means that we've exploded into pieces and have no way to whimper
 	if ( m_bExploding )
 	{

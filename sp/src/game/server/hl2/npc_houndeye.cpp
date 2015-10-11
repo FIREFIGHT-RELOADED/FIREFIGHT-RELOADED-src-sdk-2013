@@ -522,6 +522,9 @@ void CNPC_Houndeye::AlertSound ( void )
 //=========================================================
 void CNPC_Houndeye::DeathSound(void)
 {
+	if (IsOnFire())
+		return;
+
 	EmitSound( "NPC_Houndeye.Die" );
 }
 
@@ -530,6 +533,9 @@ void CNPC_Houndeye::DeathSound(void)
 //=========================================================
 void CNPC_Houndeye::PainSound(void)
 {
+	if (IsOnFire())
+		return;
+
 	EmitSound( "NPC_Houndeye.Pain" );
 }
 

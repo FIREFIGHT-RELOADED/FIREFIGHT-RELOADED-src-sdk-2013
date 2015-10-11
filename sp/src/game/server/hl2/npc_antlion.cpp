@@ -2773,6 +2773,9 @@ void CNPC_Antlion::IdleSound( void )
 //-----------------------------------------------------------------------------
 void CNPC_Antlion::PainSound( const CTakeDamageInfo &info )
 {
+	if (IsOnFire())
+		return;
+
 	EmitSound( "NPC_Antlion.Pain" );
 }
 

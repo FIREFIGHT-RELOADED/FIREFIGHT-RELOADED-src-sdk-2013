@@ -185,6 +185,9 @@ void CNPC_Barney::HandleAnimEvent( animevent_t *pEvent )
 //------------------------------------------------------------------------------
 void CNPC_Barney::DeathSound( const CTakeDamageInfo &info )
 {
+	if (IsOnFire())
+		return;
+
 	// Sentences don't play on dead NPCs
 	SentenceStop();
 

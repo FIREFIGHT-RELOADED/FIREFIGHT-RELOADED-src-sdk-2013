@@ -1312,6 +1312,9 @@ void CNPC_Crow::PainSound( const CTakeDamageInfo &info )
 
 void CNPC_Crow::DeathSound( const CTakeDamageInfo &info )
 {
+	if (IsOnFire())
+		return;
+
 	if ( m_iBirdType != BIRDTYPE_CROW )
 		 return;
 

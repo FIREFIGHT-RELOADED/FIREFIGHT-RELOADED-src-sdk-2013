@@ -2493,6 +2493,9 @@ void CHeadcrab::PainSound( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 void CHeadcrab::DeathSound( const CTakeDamageInfo &info )
 {
+	if (IsOnFire())
+		return;
+
 	EmitSound( "NPC_HeadCrab.Die" );
 }
 
@@ -2609,6 +2612,9 @@ void CFastHeadcrab::PainSound( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 void CFastHeadcrab::DeathSound( const CTakeDamageInfo &info )
 {
+	if (IsOnFire())
+		return;
+
 	EmitSound( "NPC_FastHeadcrab.Die" );
 }
 
@@ -3548,6 +3554,9 @@ void CBlackHeadcrab::PainSound( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 void CBlackHeadcrab::DeathSound( const CTakeDamageInfo &info )
 {
+	if (IsOnFire())
+		return;
+
 	EmitSound( "NPC_BlackHeadcrab.Die" );
 }
 

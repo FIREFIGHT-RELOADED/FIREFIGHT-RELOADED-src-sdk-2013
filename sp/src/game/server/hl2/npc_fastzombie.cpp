@@ -906,6 +906,9 @@ void CFastZombie::IdleSound( void )
 //-----------------------------------------------------------------------------
 void CFastZombie::PainSound( const CTakeDamageInfo &info )
 {
+	if (IsOnFire())
+		return;
+
 	if ( m_pLayer2 )
 		ENVELOPE_CONTROLLER.SoundPlayEnvelope( m_pLayer2, SOUNDCTRL_CHANGE_VOLUME, envFastZombieVolumePain, ARRAYSIZE(envFastZombieVolumePain) );
 	if ( m_pMoanSound )
@@ -916,6 +919,9 @@ void CFastZombie::PainSound( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 void CFastZombie::DeathSound( const CTakeDamageInfo &info ) 
 {
+	if (IsOnFire())
+		return;
+
 	EmitSound( "NPC_FastZombie.Die" );
 }
 

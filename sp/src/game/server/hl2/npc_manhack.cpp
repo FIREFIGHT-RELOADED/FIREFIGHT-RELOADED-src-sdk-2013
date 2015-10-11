@@ -347,6 +347,9 @@ void CNPC_Manhack::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDi
 //-----------------------------------------------------------------------------
 void CNPC_Manhack::DeathSound( const CTakeDamageInfo &info )
 {
+	if (IsOnFire())
+		return;
+
 	StopSound("NPC_Manhack.Stunned");
 	CPASAttenuationFilter filter2( this, "NPC_Manhack.Die" );
 	EmitSound( filter2, entindex(), "NPC_Manhack.Die" );

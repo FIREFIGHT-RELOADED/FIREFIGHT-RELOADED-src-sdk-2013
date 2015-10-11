@@ -127,6 +127,9 @@ void CNPC_CombineShot::DeathSound(const CTakeDamageInfo &info)
 	if ( GetFlags() & FL_DISSOLVING )
 		return;
 
+	if (IsOnFire())
+		return;
+
 	GetSentences()->Speak( "COMBINE_DIE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS ); 
 }
 
