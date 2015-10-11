@@ -42,8 +42,6 @@ public:
 	bool		IsLightDamage( const CTakeDamageInfo &info );
 	bool		IsHeavyDamage( const CTakeDamageInfo &info );
 
-	virtual	bool		AllowedToIgnite( void ) { return true; }
-
 private:
 	bool		ShouldHitPlayer( const Vector &targetDir, float targetDist );
 

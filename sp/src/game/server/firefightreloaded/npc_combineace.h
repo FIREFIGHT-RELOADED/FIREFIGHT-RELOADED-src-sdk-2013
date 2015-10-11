@@ -60,8 +60,6 @@ public:
 	bool		IsLightDamage( const CTakeDamageInfo &info );
 	bool		IsHeavyDamage( const CTakeDamageInfo &info );
 
-	virtual	bool		AllowedToIgnite( void ) { return true; }
-
 	void		SpawnArmorPieces(void);
 
 private:

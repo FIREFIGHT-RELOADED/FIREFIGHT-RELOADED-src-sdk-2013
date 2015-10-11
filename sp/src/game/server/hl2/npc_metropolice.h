@@ -104,8 +104,6 @@ public:
 
 	CAI_Sentence< CNPC_MetroPolice > *GetSentences() { return &m_Sentences; }
 
-	virtual	bool		AllowedToIgnite( void ) { return true; }
-
 	void	PlayFlinchGesture( void );
 
 protected:
