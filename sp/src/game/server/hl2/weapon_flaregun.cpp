@@ -722,10 +722,7 @@ void CFlaregun::PrimaryAttack( void )
 		return;
 	}
 
-	if (!pOwner->m_iPerkInfiniteAmmo == 1)
-	{
-		m_iClip1--;
-	}
+	m_iClip1--;
 
 	SendWeaponAnim( ACT_VM_PRIMARYATTACK );
 	pOwner->m_flNextAttack = gpGlobals->curtime + 1;
