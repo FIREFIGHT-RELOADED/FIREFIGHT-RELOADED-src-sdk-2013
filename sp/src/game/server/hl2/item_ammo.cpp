@@ -438,7 +438,7 @@ LINK_ENTITY_TO_CLASS(item_flare_round, CItem_FlareRound);
 // ========================================================================
 //	>> BoxFlareRounds
 // ========================================================================
-#define SIZE_BOX_FLARE_ROUNDS 5
+#define SIZE_BOX_FLARE_ROUNDS 15
 
 class CItem_BoxFlareRounds : public CItem
 {
@@ -788,6 +788,96 @@ public:
 	}
 };
 LINK_ENTITY_TO_CLASS(item_ammo_m249para, CItem_BoxM249);
+
+class CItem_BoxOICW : public CItem
+{
+public:
+	DECLARE_CLASS(CItem_BoxOICW, CItem);
+
+	void Spawn(void)
+	{
+		Precache();
+		SetModel("models/items/boxmrounds.mdl");
+		BaseClass::Spawn();
+	}
+	void Precache(void)
+	{
+		PrecacheModel("models/items/boxmrounds.mdl");
+	}
+	bool MyTouch(CBasePlayer *pPlayer)
+	{
+		if (ITEM_GiveAmmo(pPlayer, SIZE_AMMO_OICW, "OICW"))
+		{
+			if (g_pGameRules->ItemShouldRespawn(this) == GR_ITEM_RESPAWN_NO)
+			{
+				UTIL_Remove(this);
+			}
+			return true;
+		}
+		return false;
+	}
+};
+LINK_ENTITY_TO_CLASS(item_ammo_oicw, CItem_BoxOICW);
+
+class CItem_OICW_Grenade : public CItem
+{
+public:
+	DECLARE_CLASS(CItem_OICW_Grenade, CItem);
+
+	void Spawn(void)
+	{
+		Precache();
+		SetModel("models/items/ar2_grenade.mdl");
+		BaseClass::Spawn();
+	}
+	void Precache(void)
+	{
+		PrecacheModel("models/items/ar2_grenade.mdl");
+	}
+	bool MyTouch(CBasePlayer *pPlayer)
+	{
+		if (ITEM_GiveAmmo(pPlayer, 1, "OICW_Grenade"))
+		{
+			if (g_pGameRules->ItemShouldRespawn(this) == GR_ITEM_RESPAWN_NO)
+			{
+				UTIL_Remove(this);
+			}
+			return true;
+		}
+		return false;
+	}
+};
+LINK_ENTITY_TO_CLASS(item_oicw_grenade, CItem_OICW_Grenade);
+
+class CItem_SLAM_Ammo : public CItem
+{
+public:
+	DECLARE_CLASS(CItem_SLAM_Ammo, CItem);
+
+	void Spawn(void)
+	{
+		Precache();
+		SetModel("models/weapons/w_slam.mdl");
+		BaseClass::Spawn();
+	}
+	void Precache(void)
+	{
+		PrecacheModel("models/weapons/w_slam.mdl");
+	}
+	bool MyTouch(CBasePlayer *pPlayer)
+	{
+		if (ITEM_GiveAmmo(pPlayer, 1, "slam"))
+		{
+			if (g_pGameRules->ItemShouldRespawn(this) == GR_ITEM_RESPAWN_NO)
+			{
+				UTIL_Remove(this);
+			}
+			return true;
+		}
+		return false;
+	}
+};
+LINK_ENTITY_TO_CLASS(item_slam_ammo, CItem_SLAM_Ammo);
 
 //custom ammo stuff
 
