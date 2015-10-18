@@ -866,12 +866,27 @@ public:
 	}
 	bool MyTouch(CBasePlayer *pPlayer)
 	{
-		if (ITEM_GiveAmmo(pPlayer, 1, "slam"))
+		if (pPlayer->HasNamedPlayerItem("weapon_slam"))
 		{
+			if (ITEM_GiveAmmo(pPlayer, 1, "slam"))
+			{
+				if (g_pGameRules->ItemShouldRespawn(this) == GR_ITEM_RESPAWN_NO)
+				{
+					UTIL_Remove(this);
+				}
+
+				return true;
+			}
+		}
+		else
+		{
+			pPlayer->GiveNamedItem("weapon_slam");
+
 			if (g_pGameRules->ItemShouldRespawn(this) == GR_ITEM_RESPAWN_NO)
 			{
 				UTIL_Remove(this);
 			}
+
 			return true;
 		}
 		return false;
