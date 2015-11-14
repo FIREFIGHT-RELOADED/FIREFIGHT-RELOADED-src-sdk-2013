@@ -146,6 +146,8 @@ $Project "Client (Episodic)"
 				$File	"gameui\ScriptObject.h"
 				$File	"gameui\SingleplayerAdvancedDialog.cpp"
 				$File	"gameui\SingleplayerAdvancedDialog.h"
+				$File	"gameui\NewSingleplayerGameDialog.cpp"
+				$File	"gameui\NewSingleplayerGameDialog.h"
 			}
 
 			$Folder	"vgui"

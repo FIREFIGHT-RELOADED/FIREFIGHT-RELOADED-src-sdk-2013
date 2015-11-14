@@ -3,6 +3,7 @@
 #include "fr_mainmenu.h"
 #include "fr_tips.h"
 #include "gameui\SingleplayerAdvancedDialog.h"
+#include "gameui\NewSingleplayerGameDialog.h"
 
 using namespace vgui;
 // memdbgon must be the last include file in a .cpp file!!!
@@ -76,6 +77,11 @@ void CFRMainMenuPanel::OnCommand(const char* command)
 	else if (!Q_strcmp(command, "changesplash"))
 	{
 		SetHintLabel();
+	}
+	else if (!Q_strcmp(command, "createnewgame"))
+	{
+		CNewSingleplayerGameDialog* pCNewSingleplayerGameDialog = new CNewSingleplayerGameDialog(this);
+		pCNewSingleplayerGameDialog->Activate();
 	}
 	else
 	{

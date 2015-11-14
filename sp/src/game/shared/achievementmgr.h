@@ -20,7 +20,7 @@
 
 #define THINK_CLEAR		-1
 
-#define MOD_VER 1
+//#define MOD_VER 1
 
 class CAchievementMgr : public CAutoGameSystemPerFrame, public CGameEventListener, public IAchievementMgr
 {
