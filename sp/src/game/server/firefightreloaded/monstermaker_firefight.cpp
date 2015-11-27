@@ -87,12 +87,6 @@ const char *g_charNPCSCombineFirefightMetropoliceWeapons[] =
 	"weapon_stunstick",
 };
 
-const char *g_charNPCSCombineFirefightShotgunnerWeapons[] =
-{
-	"weapon_smg1",
-	"weapon_shotgun",
-};
-
 //TODO: Add more weapons to ace
 const char *g_charNPCSCombineFirefightAceWeapons[] =
 {
@@ -525,10 +519,7 @@ void CNPCMakerFirefight::MakeNPC(void)
 			}
 			else if (Q_stristr(pRandomName, "npc_combine_shot"))
 			{
-				int nWeaponsShot = ARRAYSIZE(g_charNPCSCombineFirefightShotgunnerWeapons);
-				int randomChoiceShot = rand() % nWeaponsShot;
-				const char *pRandomNameShot = g_charNPCSCombineFirefightShotgunnerWeapons[randomChoiceShot];
-				pent->m_spawnEquipment = MAKE_STRING(pRandomNameShot);
+				pent->m_spawnEquipment = MAKE_STRING("weapon_shotgun");
 			}
 			else
 			{
@@ -761,10 +752,7 @@ void CNPCMakerFirefight::MakeNPC(void)
 			}
 			else if (Q_stristr(pRandomName, "npc_combine_shot"))
 			{
-				int nWeaponsShot = ARRAYSIZE(g_charNPCSCombineFirefightShotgunnerWeapons);
-				int randomChoiceShot = rand() % nWeaponsShot;
-				const char *pRandomNameShot = g_charNPCSCombineFirefightShotgunnerWeapons[randomChoiceShot];
-				pent->m_spawnEquipment = MAKE_STRING(pRandomNameShot);
+				pent->m_spawnEquipment = MAKE_STRING("weapon_shotgun");
 			}
 			else if (Q_stristr(pRandomName, "npc_combine_s"))
 			{
@@ -907,10 +895,7 @@ void CNPCMakerFirefight::MakeNPC(void)
 			}
 			else if (Q_stristr(pRandomName, "npc_combine_shot"))
 			{
-				int nWeaponsShot = ARRAYSIZE(g_charNPCSCombineFirefightShotgunnerWeapons);
-				int randomChoiceShot = rand() % nWeaponsShot;
-				const char *pRandomNameShot = g_charNPCSCombineFirefightShotgunnerWeapons[randomChoiceShot];
-				pent->m_spawnEquipment = MAKE_STRING(pRandomNameShot);
+				pent->m_spawnEquipment = MAKE_STRING("weapon_shotgun");
 			}
 			else
 			{
@@ -1143,10 +1128,7 @@ void CNPCMakerFirefight::MakeNPC(void)
 			}
 			else if (Q_stristr(pRandomName, "npc_combine_shot"))
 			{
-				int nWeaponsShot = ARRAYSIZE(g_charNPCSCombineFirefightShotgunnerWeapons);
-				int randomChoiceShot = rand() % nWeaponsShot;
-				const char *pRandomNameShot = g_charNPCSCombineFirefightShotgunnerWeapons[randomChoiceShot];
-				pent->m_spawnEquipment = MAKE_STRING(pRandomNameShot);
+				pent->m_spawnEquipment = MAKE_STRING("weapon_shotgun");
 			}
 			else if (Q_stristr(pRandomName, "npc_combine_s"))
 			{

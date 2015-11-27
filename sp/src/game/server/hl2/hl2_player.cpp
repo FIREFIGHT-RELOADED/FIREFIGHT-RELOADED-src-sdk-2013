@@ -1122,7 +1122,7 @@ void CHL2_Player::PostThink( void )
 
 	if (!IsDead())
 	{
-		if (m_afButtonReleased & IN_KICK && m_flNextKickAttack / 2.0f < gpGlobals->curtime /* && m_flNextKickAttack < gpGlobals->curtime  && !m_bIsKicking*/)
+		if (m_afButtonReleased & IN_KICK && m_flNextKickAttack < gpGlobals->curtime /* && m_flNextKickAttack < gpGlobals->curtime  && !m_bIsKicking*/)
 		{
 			KickAttack();
 			m_bIsKicking = true;
