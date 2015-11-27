@@ -605,7 +605,6 @@ void FileWeaponInfo_t::Parse( KeyValues *pKeyValuesData, const char *szWeaponNam
 			m_sPrimaryFireRate = pPrimaryFire->GetFloat("FireRate", 1.0f);
 			m_sPrimaryIronsightFireRate = pPrimaryFire->GetFloat("IronsightFireRate", m_sPrimaryFireRate);
 			m_sPrimaryZoomFireRate = pPrimaryFire->GetFloat("ZoomFireRate", m_sPrimaryFireRate);
-			m_sPrimaryInfiniteAmmoPerkEnabled = (pPrimaryFire->GetInt("InfiniteAmmoPerk", 1) != 0) ? true : false;
 			m_sPrimaryInfiniteAmmoEnabled = (pPrimaryFire->GetInt("InfiniteAmmo", 1) != 0) ? true : false;
 			m_sPrimaryMinRange = pPrimaryFire->GetInt("MinRange", 0);
 			m_sPrimaryMinRange = pPrimaryFire->GetInt("MaxRange", 0);
@@ -734,7 +733,6 @@ void FileWeaponInfo_t::Parse( KeyValues *pKeyValuesData, const char *szWeaponNam
 			m_sSecondaryIronsightFireRate = pSecondaryFire->GetFloat("IronsightFireRate", m_sSecondaryFireRate);
 			m_sSecondaryZoomFireRate = pSecondaryFire->GetFloat("ZoomFireRate", m_sSecondaryFireRate);
 			m_sUsePrimaryAmmo = (pSecondaryFire->GetInt("UsePrimaryAmmo", 0) != 0) ? true : false;
-			m_sSecondaryInfiniteAmmoPerkEnabled = (pSecondaryFire->GetInt("InfiniteAmmoPerk", 1) != 0) ? true : false;
 			m_sSecondaryInfiniteAmmoEnabled = (pSecondaryFire->GetInt("InfiniteAmmo", 1) != 0) ? true : false;
 			m_sSecondaryMinRange = pSecondaryFire->GetInt("MinRange", 0);
 			m_sSecondaryMinRange = pSecondaryFire->GetInt("MaxRange", 0);

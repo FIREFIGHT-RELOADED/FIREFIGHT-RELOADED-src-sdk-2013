@@ -405,7 +405,14 @@ void CWeaponShotgun::FillClip( void )
 		if ( Clip1() < GetMaxClip1() )
 		{
 			m_iClip1++;
-			pOwner->RemoveAmmo( 1, m_iPrimaryAmmoType );
+
+			if (pOwner->IsPlayer())
+			{
+				if (!((CBasePlayer *)pOwner)->m_iPerkInfiniteAmmo == 1)
+				{
+					pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
+				}
+			}
 		}
 	}
 }
@@ -478,10 +485,7 @@ void CWeaponShotgun::PrimaryAttack( void )
 
 	// Don't fire again until fire animation has completed
 	m_flNextPrimaryAttack = gpGlobals->curtime + GetViewModelSequenceDuration();
-	if (!pPlayer->m_iPerkInfiniteAmmo == 1)
-	{
-		m_iClip1 -= 1;
-	}
+	m_iClip1 -= 1;
 
 	Vector	vecSrc		= pPlayer->Weapon_ShootPosition( );
 	Vector	vecAiming	= pPlayer->GetAutoaimVector( AUTOAIM_SCALE_DEFAULT );	
@@ -544,10 +548,7 @@ void CWeaponShotgun::SecondaryAttack( void )
 
 	// Don't fire again until fire animation has completed
 	m_flNextPrimaryAttack = gpGlobals->curtime + GetViewModelSequenceDuration();
-	if (!pPlayer->m_iPerkInfiniteAmmo == 1)
-	{
-		m_iClip1 -= 2;	// Shotgun uses same clip for primary and secondary attacks
-	}
+	m_iClip1 -= 2;	// Shotgun uses same clip for primary and secondary attacks
 
 	Vector vecSrc	 = pPlayer->Weapon_ShootPosition();
 	Vector vecAiming = pPlayer->GetAutoaimVector( AUTOAIM_SCALE_DEFAULT );	

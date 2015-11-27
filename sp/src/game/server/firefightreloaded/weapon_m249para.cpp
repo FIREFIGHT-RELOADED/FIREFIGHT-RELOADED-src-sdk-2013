@@ -210,10 +210,7 @@ void CWeaponM249Para::PrimaryAttack(void)
 		DispatchParticleEffect("weapon_muzzle_smoke", PATTACH_POINT_FOLLOW, pPlayer->GetViewModel(), "muzzle");
 	}
 
-	if (!pPlayer->m_iPerkInfiniteAmmo == 1)
-	{
-		m_iClip1--;
-	}
+	m_iClip1--;
 
 	Vector vecSrc = pPlayer->Weapon_ShootPosition();
 	Vector vecAiming = pPlayer->GetAutoaimVector(AUTOAIM_SCALE_DEFAULT);

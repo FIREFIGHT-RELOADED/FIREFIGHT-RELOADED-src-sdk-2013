@@ -124,7 +124,6 @@ public:
 	int m_sPrimaryShotCount;
 	float m_sPrimaryFireRate;
 	Vector m_vPrimarySpread;
-	bool	m_sPrimaryInfiniteAmmoPerkEnabled;
 	bool	m_sPrimaryInfiniteAmmoEnabled;
 	bool	m_sPrimarySMGGrenadeEnabled;
 	float	m_sSMGGrenadePrimaryDamage;
@@ -156,7 +155,6 @@ public:
 	int m_sSecondaryShotCount;
 	float m_sSecondaryFireRate;
 	Vector m_vSecondarySpread;
-	bool	m_sSecondaryInfiniteAmmoPerkEnabled;
 	bool	m_sSecondaryInfiniteAmmoEnabled;
 	bool	m_sSecondarySMGGrenadeEnabled;
 	float	m_sSMGGrenadeSecondaryDamage;

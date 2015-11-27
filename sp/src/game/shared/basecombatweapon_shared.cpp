@@ -2357,7 +2357,11 @@ void CBaseCombatWeapon::CheckReload( void )
 			{
 				// Add them to the clip
 				m_iClip1 += 1;
-				pOwner->RemoveAmmo( 1, m_iPrimaryAmmoType );
+
+				if (!pOwner->m_iPerkInfiniteAmmo == 1)
+				{
+					pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
+				}
 
 				Reload();
 				return;
@@ -2403,18 +2407,39 @@ void CBaseCombatWeapon::FinishReload( void )
 				if (pOwner->GetAmmoCount(m_iPrimaryAmmoType) >= GetMaxClip1())
 				{
 					m_iClip1 = m_bMagazineStyleReloads ? GetMaxClip1() : m_iClip1 + primary;
-					pOwner->RemoveAmmo(m_bMagazineStyleReloads ? GetMaxClip1() : primary, m_iPrimaryAmmoType);
+
+					if (pOwner->IsPlayer())
+					{
+						if (!((CBasePlayer *)pOwner)->m_iPerkInfiniteAmmo == 1)
+						{
+							pOwner->RemoveAmmo(m_bMagazineStyleReloads ? GetMaxClip1() : primary, m_iPrimaryAmmoType);
+						}
+					}
 				}
 				else
 				{
 					m_iClip1 = pOwner->GetAmmoCount(m_iPrimaryAmmoType);
-					pOwner->RemoveAmmo(GetMaxClip1(), m_iPrimaryAmmoType);
+
+					if (pOwner->IsPlayer())
+					{
+						if (!((CBasePlayer *)pOwner)->m_iPerkInfiniteAmmo == 1)
+						{
+							pOwner->RemoveAmmo(GetMaxClip1(), m_iPrimaryAmmoType);
+						}
+					}
 				}
 			}
 			else
 			{
 				m_iClip1 += primary;
-				pOwner->RemoveAmmo(primary, m_iPrimaryAmmoType);
+
+				if (pOwner->IsPlayer())
+				{
+					if (!((CBasePlayer *)pOwner)->m_iPerkInfiniteAmmo == 1)
+					{
+						pOwner->RemoveAmmo(primary, m_iPrimaryAmmoType);
+					}
+				}
 			}
 		}
 
@@ -2545,35 +2570,15 @@ void CBaseCombatWeapon::PrimaryAttack( void )
 	}
 
 	// Make sure we don't fire more than the amount in the clip
-	
-	if (!pPlayer->m_iPerkInfiniteAmmo == 1)
+	if (UsesClipsForAmmo1())
 	{
-		if (UsesClipsForAmmo1())
-		{
-			info.m_iShots = MIN(info.m_iShots, m_iClip1);
-			m_iClip1 -= info.m_iShots;
-		}
-		else
-		{
-			info.m_iShots = MIN(info.m_iShots, pPlayer->GetAmmoCount(m_iPrimaryAmmoType));
-			pPlayer->RemoveAmmo(info.m_iShots, m_iPrimaryAmmoType);
-		}
+		info.m_iShots = MIN(info.m_iShots, m_iClip1);
+		m_iClip1 -= info.m_iShots;
 	}
 	else
 	{
-		if (Q_stristr(GetWeaponType(), "explosive") || Q_stristr(GetWeaponType(), "crossbow"))
-		{
-			if (UsesClipsForAmmo1())
-			{
-				info.m_iShots = MIN(info.m_iShots, m_iClip1);
-				m_iClip1 -= info.m_iShots;
-			}
-			else
-			{
-				info.m_iShots = MIN(info.m_iShots, pPlayer->GetAmmoCount(m_iPrimaryAmmoType));
-				pPlayer->RemoveAmmo(info.m_iShots, m_iPrimaryAmmoType);
-			}
-		}
+		info.m_iShots = MIN(info.m_iShots, pPlayer->GetAmmoCount(m_iPrimaryAmmoType));
+		pPlayer->RemoveAmmo(info.m_iShots, m_iPrimaryAmmoType);
 	}
 
 	info.m_flDistance = MAX_TRACE_LENGTH;

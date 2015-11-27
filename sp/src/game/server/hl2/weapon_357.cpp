@@ -186,10 +186,7 @@ void CWeapon357::PrimaryAttack( void )
 	m_flNextPrimaryAttack = gpGlobals->curtime + 0.75;
 	m_flNextSecondaryAttack = gpGlobals->curtime + 0.75;
 
-	if (!pPlayer->m_iPerkInfiniteAmmo == 1)
-	{
-		m_iClip1--;
-	}
+	m_iClip1--;
 
 	Vector vecSrc		= pPlayer->Weapon_ShootPosition();
 	Vector vecAiming	= pPlayer->GetAutoaimVector( AUTOAIM_SCALE_DEFAULT );	

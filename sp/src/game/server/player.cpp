@@ -1081,18 +1081,18 @@ void CBasePlayer::LevelUp()
 		}
 
 		int randomperk = random->RandomInt(0, 5);
-		int CurrentLevel = GetLevel();
+		//int CurrentLevel = GetLevel();
 
 		if (randomperk == FIREFIGHT_PERK_HEALTHREGENERATION)
 		{
-			if (!m_bAlreadyHasRegeneratePerk)
+			if (!m_bAlreadyHasRegeneratePerk && GetLevel() >= 20)
 			{
 				m_iPerkRegenerate = 1;
 				m_bAlreadyHasRegeneratePerk = true;
 			}
 			else
 			{
-				if (!m_bAlreadyHasInfiniteAuxPowerPerk)
+				if (!m_bAlreadyHasInfiniteAuxPowerPerk && GetLevel() >= 10)
 				{
 					randomperk = FIREFIGHT_PERK_INFINITEAUXPOWER;
 					m_iPerkInfiniteAuxPower = 1;
@@ -1100,7 +1100,7 @@ void CBasePlayer::LevelUp()
 				}
 				else
 				{
-					if (!m_bAlreadyHasInfiniteAmmoPerk)
+					if (!m_bAlreadyHasInfiniteAmmoPerk && GetLevel() >= 15)
 					{
 						randomperk = FIREFIGHT_PERK_INFINITEAMMO;
 						m_iPerkInfiniteAmmo = 1;
@@ -1109,8 +1109,8 @@ void CBasePlayer::LevelUp()
 					else
 					{
 						randomperk = FIREFIGHT_PERK_MOREHEALTH;
-						int CurrentMaxHealth = (GetMaxHealth() + ((CurrentLevel - 1) * 10));
-						int CurrentHealth = (GetHealth() + ((CurrentLevel - 1) * 10));
+						int CurrentMaxHealth = (GetMaxHealth() + 10);
+						int CurrentHealth = (GetHealth() + 10);
 						SetMaxHealth(CurrentMaxHealth);
 						SetHealth(CurrentHealth);
 						m_iHealth = CurrentHealth;
@@ -1121,14 +1121,14 @@ void CBasePlayer::LevelUp()
 		}
 		else if (randomperk == FIREFIGHT_PERK_INFINITEAUXPOWER)
 		{
-			if (!m_bAlreadyHasInfiniteAuxPowerPerk)
+			if (!m_bAlreadyHasInfiniteAuxPowerPerk && GetLevel() >= 10)
 			{
 				m_iPerkInfiniteAuxPower = 1;
 				m_bAlreadyHasInfiniteAuxPowerPerk = true;
 			}
 			else
 			{
-				if (!m_bAlreadyHasInfiniteAmmoPerk)
+				if (!m_bAlreadyHasInfiniteAmmoPerk && GetLevel() >= 15)
 				{
 					randomperk = FIREFIGHT_PERK_INFINITEAMMO;
 					m_iPerkInfiniteAmmo = 1;
@@ -1137,8 +1137,8 @@ void CBasePlayer::LevelUp()
 				else
 				{
 					randomperk = FIREFIGHT_PERK_MOREHEALTH;
-					int CurrentMaxHealth = (GetMaxHealth() + ((CurrentLevel - 1) * 10));
-					int CurrentHealth = (GetHealth() + ((CurrentLevel - 1) * 10));
+					int CurrentMaxHealth = (GetMaxHealth() + 10);
+					int CurrentHealth = (GetHealth() + 10);
 					SetMaxHealth(CurrentMaxHealth);
 					SetHealth(CurrentHealth);
 					m_iHealth = CurrentHealth;
@@ -1148,7 +1148,7 @@ void CBasePlayer::LevelUp()
 		}
 		else if (randomperk == FIREFIGHT_PERK_INFINITEAMMO)
 		{
-			if (!m_bAlreadyHasInfiniteAmmoPerk)
+			if (!m_bAlreadyHasInfiniteAmmoPerk && GetLevel() >= 15)
 			{
 				m_iPerkInfiniteAmmo = 1;
 				m_bAlreadyHasInfiniteAmmoPerk = true;
@@ -1156,8 +1156,8 @@ void CBasePlayer::LevelUp()
 			else
 			{
 				randomperk = FIREFIGHT_PERK_MOREHEALTH;
-				int CurrentMaxHealth = (GetMaxHealth() + ((CurrentLevel - 1) * 10));
-				int CurrentHealth = (GetHealth() + ((CurrentLevel - 1) * 10));
+				int CurrentMaxHealth = (GetMaxHealth() + 10);
+				int CurrentHealth = (GetHealth() + 10);
 				SetMaxHealth(CurrentMaxHealth);
 				SetHealth(CurrentHealth);
 				m_iHealth = CurrentHealth;
@@ -1166,8 +1166,8 @@ void CBasePlayer::LevelUp()
 		}
 		else if (randomperk == FIREFIGHT_PERK_MOREHEALTH)
 		{
-			int CurrentMaxHealth = (GetMaxHealth() + ((CurrentLevel - 1) * 10));
-			int CurrentHealth = (GetHealth() + ((CurrentLevel - 1) * 10));
+			int CurrentMaxHealth = (GetMaxHealth() + 10);
+			int CurrentHealth = (GetHealth() + 10);
 			SetMaxHealth(CurrentMaxHealth);
 			SetHealth(CurrentHealth);
 			m_iHealth = CurrentHealth;
@@ -1175,8 +1175,8 @@ void CBasePlayer::LevelUp()
 		}
 		else if (randomperk == FIREFIGHT_PERK_MOREARMOR)
 		{
-			int CurrentMaxArmor = (GetMaxArmorValue() + ((CurrentLevel - 1) * 10));
-			int CurrentArmor = (ArmorValue() + ((CurrentLevel - 1) * 10));
+			int CurrentMaxArmor = (GetMaxArmorValue() + 10);
+			int CurrentArmor = (ArmorValue() + 10);
 			SetMaxArmorValue(CurrentMaxArmor);
 			SetArmorValue(CurrentArmor);
 			m_ArmorValue = CurrentArmor;
@@ -1184,7 +1184,7 @@ void CBasePlayer::LevelUp()
 		}
 		else if (randomperk == FIREFIGHT_PERK_HEALTHREGENERATIONRATE)
 		{
-			if (m_bAlreadyHasRegeneratePerk)
+			if (m_bAlreadyHasRegeneratePerk && GetLevel() >= 25)
 			{
 				m_fRegenRate = m_fRegenRate + 0.5f;
 			}
@@ -1195,8 +1195,8 @@ void CBasePlayer::LevelUp()
 				if (randAltPerk == 1)
 				{
 					randomperk = FIREFIGHT_PERK_MOREARMOR;
-					int CurrentMaxArmor = (GetMaxArmorValue() + ((CurrentLevel - 1) * 10));
-					int CurrentArmor = (ArmorValue() + ((CurrentLevel - 1) * 10));
+					int CurrentMaxArmor = (GetMaxArmorValue() + 10);
+					int CurrentArmor = (ArmorValue() + 10);
 					SetMaxArmorValue(CurrentMaxArmor);
 					SetArmorValue(CurrentArmor);
 					m_ArmorValue = CurrentArmor;
@@ -1205,8 +1205,8 @@ void CBasePlayer::LevelUp()
 				else
 				{
 					randomperk = FIREFIGHT_PERK_MOREHEALTH;
-					int CurrentMaxHealth = (GetMaxHealth() + ((CurrentLevel - 1) * 10));
-					int CurrentHealth = (GetHealth() + ((CurrentLevel - 1) * 10));
+					int CurrentMaxHealth = (GetMaxHealth() + 10);
+					int CurrentHealth = (GetHealth() + 10);
 					SetMaxHealth(CurrentMaxHealth);
 					SetHealth(CurrentHealth);
 					m_iHealth = CurrentHealth;
@@ -1273,14 +1273,14 @@ void CBasePlayer::GiveRandomPerk()
 
 	if (randomperk == FIREFIGHT_PERK_HEALTHREGENERATION)
 	{
-		if (!m_bAlreadyHasRegeneratePerk)
+		if (!m_bAlreadyHasRegeneratePerk && GetLevel() >= 20)
 		{
 			m_iPerkRegenerate = 1;
 			m_bAlreadyHasRegeneratePerk = true;
 		}
 		else
 		{
-			if (!m_bAlreadyHasInfiniteAuxPowerPerk)
+			if (!m_bAlreadyHasInfiniteAuxPowerPerk && GetLevel() >= 10)
 			{
 				randomperk = FIREFIGHT_PERK_INFINITEAUXPOWER;
 				m_iPerkInfiniteAuxPower = 1;
@@ -1288,7 +1288,7 @@ void CBasePlayer::GiveRandomPerk()
 			}
 			else
 			{
-				if (!m_bAlreadyHasInfiniteAmmoPerk)
+				if (!m_bAlreadyHasInfiniteAmmoPerk && GetLevel() >= 15)
 				{
 					randomperk = FIREFIGHT_PERK_INFINITEAMMO;
 					m_iPerkInfiniteAmmo = 1;
@@ -1309,14 +1309,14 @@ void CBasePlayer::GiveRandomPerk()
 	}
 	else if (randomperk == FIREFIGHT_PERK_INFINITEAUXPOWER)
 	{
-		if (!m_bAlreadyHasInfiniteAuxPowerPerk)
+		if (!m_bAlreadyHasInfiniteAuxPowerPerk && GetLevel() >= 10)
 		{
 			m_iPerkInfiniteAuxPower = 1;
 			m_bAlreadyHasInfiniteAuxPowerPerk = true;
 		}
 		else
 		{
-			if (!m_bAlreadyHasInfiniteAmmoPerk)
+			if (!m_bAlreadyHasInfiniteAmmoPerk && GetLevel() >= 15)
 			{
 				randomperk = FIREFIGHT_PERK_INFINITEAMMO;
 				m_iPerkInfiniteAmmo = 1;
@@ -1336,7 +1336,7 @@ void CBasePlayer::GiveRandomPerk()
 	}
 	else if (randomperk == FIREFIGHT_PERK_INFINITEAMMO)
 	{
-		if (!m_bAlreadyHasInfiniteAmmoPerk)
+		if (!m_bAlreadyHasInfiniteAmmoPerk && GetLevel() >= 15)
 		{
 			m_iPerkInfiniteAmmo = 1;
 			m_bAlreadyHasInfiniteAmmoPerk = true;
@@ -1372,7 +1372,7 @@ void CBasePlayer::GiveRandomPerk()
 	}
 	else if (randomperk == FIREFIGHT_PERK_HEALTHREGENERATIONRATE)
 	{
-		if (m_bAlreadyHasRegeneratePerk)
+		if (m_bAlreadyHasRegeneratePerk && GetLevel() >= 25)
 		{
 			m_fRegenRate = m_fRegenRate + 0.5f;
 		}

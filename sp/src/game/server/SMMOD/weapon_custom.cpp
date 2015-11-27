@@ -413,19 +413,7 @@ void CWeaponCustom::ShootBullets( bool isPrimary, bool usePrimaryAmmo )
 	{
 		m_iPrimaryAttacks++;
 	// Make sure we don't fire more than the amount in the clip, if this weapon uses clips
-		if (this->GetWpnData().m_sPrimaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pPlayer->m_iPerkInfiniteAmmo == 1)
-			{
-				if (UsesClipsForAmmo1())
-				{
-					if (iBulletsToFire > m_iClip1)
-						iBulletsToFire = m_iClip1;
-					m_iClip1 -= iBulletsToFire;
-				}
-			}
-		}
-		else if (!this->GetWpnData().m_sPrimaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sPrimaryInfiniteAmmoEnabled)
 		{
 			if (UsesClipsForAmmo1())
 			{
@@ -439,19 +427,7 @@ void CWeaponCustom::ShootBullets( bool isPrimary, bool usePrimaryAmmo )
 	{
 		m_iSecondaryAttacks++;
 		// Make sure we don't fire more than the amount in the clip, if this weapon uses clips
-		if (this->GetWpnData().m_sSecondaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pPlayer->m_iPerkInfiniteAmmo == 1)
-			{
-				if (UsesClipsForAmmo1())
-				{
-					if (iBulletsToFire > m_iClip1)
-						iBulletsToFire = m_iClip1;
-					m_iClip1 -= iBulletsToFire;
-				}
-			}
-		}
-		else if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
 		{
 			if (UsesClipsForAmmo1())
 			{
@@ -465,19 +441,7 @@ void CWeaponCustom::ShootBullets( bool isPrimary, bool usePrimaryAmmo )
 	{
 		m_iSecondaryAttacks++;
 	// Make sure we don't fire more than the amount in the clip, if this weapon uses clips
-		if (this->GetWpnData().m_sSecondaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pPlayer->m_iPerkInfiniteAmmo == 1)
-			{
-				if (UsesClipsForAmmo2())
-				{
-					if (iBulletsToFire > m_iClip2)
-						iBulletsToFire = m_iClip2;
-					m_iClip2 -= iBulletsToFire;
-				}
-			}
-		}
-		else if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
 		{
 			if (UsesClipsForAmmo2())
 			{
@@ -574,19 +538,7 @@ void CWeaponCustom::ShootBulletsLeft(bool isPrimary, bool usePrimaryAmmo)
 	{
 		m_iPrimaryAttacks++;
 		// Make sure we don't fire more than the amount in the clip, if this weapon uses clips
-		if (this->GetWpnData().m_sPrimaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pPlayer->m_iPerkInfiniteAmmo == 1)
-			{
-				if (UsesClipsForAmmo1())
-				{
-					if (iBulletsToFire > m_iClip1)
-						iBulletsToFire = m_iClip1;
-					m_iClip1 -= iBulletsToFire;
-				}
-			}
-		}
-		else if (!this->GetWpnData().m_sPrimaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sPrimaryInfiniteAmmoEnabled)
 		{
 			if (UsesClipsForAmmo1())
 			{
@@ -600,19 +552,7 @@ void CWeaponCustom::ShootBulletsLeft(bool isPrimary, bool usePrimaryAmmo)
 	{
 		m_iSecondaryAttacks++;
 		// Make sure we don't fire more than the amount in the clip, if this weapon uses clips
-		if (this->GetWpnData().m_sSecondaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pPlayer->m_iPerkInfiniteAmmo == 1)
-			{
-				if (UsesClipsForAmmo1())
-				{
-					if (iBulletsToFire > m_iClip1)
-						iBulletsToFire = m_iClip1;
-					m_iClip1 -= iBulletsToFire;
-				}
-			}
-		}
-		else if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
 		{
 			if (UsesClipsForAmmo1())
 			{
@@ -626,19 +566,7 @@ void CWeaponCustom::ShootBulletsLeft(bool isPrimary, bool usePrimaryAmmo)
 	{
 		m_iSecondaryAttacks++;
 		// Make sure we don't fire more than the amount in the clip, if this weapon uses clips
-		if (this->GetWpnData().m_sSecondaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pPlayer->m_iPerkInfiniteAmmo == 1)
-			{
-				if (UsesClipsForAmmo2())
-				{
-					if (iBulletsToFire > m_iClip2)
-						iBulletsToFire = m_iClip2;
-					m_iClip2 -= iBulletsToFire;
-				}
-			}
-		}
-		else if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
 		{
 			if (UsesClipsForAmmo2())
 			{
@@ -735,19 +663,7 @@ void CWeaponCustom::ShootBulletsRight(bool isPrimary, bool usePrimaryAmmo)
 	{
 		m_iPrimaryAttacks++;
 		// Make sure we don't fire more than the amount in the clip, if this weapon uses clips
-		if (this->GetWpnData().m_sPrimaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pPlayer->m_iPerkInfiniteAmmo == 1)
-			{
-				if (UsesClipsForAmmo1())
-				{
-					if (iBulletsToFire > m_iClip1)
-						iBulletsToFire = m_iClip1;
-					m_iClip1 -= iBulletsToFire;
-				}
-			}
-		}
-		else if (!this->GetWpnData().m_sPrimaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sPrimaryInfiniteAmmoEnabled)
 		{
 			if (UsesClipsForAmmo1())
 			{
@@ -761,19 +677,7 @@ void CWeaponCustom::ShootBulletsRight(bool isPrimary, bool usePrimaryAmmo)
 	{
 		m_iSecondaryAttacks++;
 		// Make sure we don't fire more than the amount in the clip, if this weapon uses clips
-		if (this->GetWpnData().m_sSecondaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pPlayer->m_iPerkInfiniteAmmo == 1)
-			{
-				if (UsesClipsForAmmo1())
-				{
-					if (iBulletsToFire > m_iClip1)
-						iBulletsToFire = m_iClip1;
-					m_iClip1 -= iBulletsToFire;
-				}
-			}
-		}
-		else if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
 		{
 			if (UsesClipsForAmmo1())
 			{
@@ -787,19 +691,7 @@ void CWeaponCustom::ShootBulletsRight(bool isPrimary, bool usePrimaryAmmo)
 	{
 		m_iSecondaryAttacks++;
 		// Make sure we don't fire more than the amount in the clip, if this weapon uses clips
-		if (this->GetWpnData().m_sSecondaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pPlayer->m_iPerkInfiniteAmmo == 1)
-			{
-				if (UsesClipsForAmmo2())
-				{
-					if (iBulletsToFire > m_iClip2)
-						iBulletsToFire = m_iClip2;
-					m_iClip2 -= iBulletsToFire;
-				}
-			}
-		}
-		else if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
 		{
 			if (UsesClipsForAmmo2())
 			{
@@ -945,42 +837,21 @@ void CWeaponCustom::ShootProjectile( bool isPrimary, bool usePrimaryAmmo )
 
 	if (isPrimary)
 	{
-		if (this->GetWpnData().m_sPrimaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sPrimaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sPrimaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
 		}
 	}
 	else if (usePrimaryAmmo)
 	{
-		if (this->GetWpnData().m_sSecondaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
 		}
 	}
 	else
 	{
-		if (this->GetWpnData().m_sSecondaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iSecondaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iSecondaryAmmoType);
 		}
@@ -1105,42 +976,21 @@ void CWeaponCustom::ShootProjectileRight(bool isPrimary, bool usePrimaryAmmo)
 
 	if (isPrimary)
 	{
-		if (this->GetWpnData().m_sPrimaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sPrimaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sPrimaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
 		}
 	}
 	else if (usePrimaryAmmo)
 	{
-		if (this->GetWpnData().m_sSecondaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
 		}
 	}
 	else
 	{
-		if (this->GetWpnData().m_sSecondaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iSecondaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iSecondaryAmmoType);
 		}
@@ -1265,42 +1115,21 @@ void CWeaponCustom::ShootProjectileLeft(bool isPrimary, bool usePrimaryAmmo)
 
 	if (isPrimary)
 	{
-		if (this->GetWpnData().m_sPrimaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sPrimaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sPrimaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
 		}
 	}
 	else if (usePrimaryAmmo)
 	{
-		if (this->GetWpnData().m_sSecondaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
 		}
 	}
 	else
 	{
-		if (this->GetWpnData().m_sSecondaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iSecondaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iSecondaryAmmoType);
 		}
@@ -1417,42 +1246,21 @@ void CWeaponCustom::ShootSMGGrenade(bool isPrimary, bool usePrimaryAmmo)
 	// Decrease ammo
 	if (isPrimary)
 	{
-		if (this->GetWpnData().m_sPrimaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sPrimaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sPrimaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
 		}
 	}
 	else if (usePrimaryAmmo)
 	{
-		if (this->GetWpnData().m_sSecondaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
 		}
 	}
 	else
 	{
-		if (this->GetWpnData().m_sSecondaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iSecondaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iSecondaryAmmoType);
 		}
@@ -1551,42 +1359,21 @@ void CWeaponCustom::ShootSMGGrenadeRight(bool isPrimary, bool usePrimaryAmmo)
 	// Decrease ammo
 	if (isPrimary)
 	{
-		if (this->GetWpnData().m_sPrimaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sPrimaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sPrimaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
 		}
 	}
 	else if (usePrimaryAmmo)
 	{
-		if (this->GetWpnData().m_sSecondaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
 		}
 	}
 	else
 	{
-		if (this->GetWpnData().m_sSecondaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iSecondaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iSecondaryAmmoType);
 		}
@@ -1684,42 +1471,21 @@ void CWeaponCustom::ShootSMGGrenadeLeft(bool isPrimary, bool usePrimaryAmmo)
 	// Decrease ammo
 	if (isPrimary)
 	{
-		if (this->GetWpnData().m_sPrimaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sPrimaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sPrimaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
 		}
 	}
 	else if (usePrimaryAmmo)
 	{
-		if (this->GetWpnData().m_sSecondaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
 		}
 	}
 	else
 	{
-		if (this->GetWpnData().m_sSecondaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iSecondaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iSecondaryAmmoType);
 		}
@@ -1821,42 +1587,21 @@ void CWeaponCustom::ShootAR2EnergyBall(bool isPrimary, bool usePrimaryAmmo)
 	// Decrease ammo
 	if (isPrimary)
 	{
-		if (this->GetWpnData().m_sPrimaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sPrimaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sPrimaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
 		}
 	}
 	else if (usePrimaryAmmo)
 	{
-		if (this->GetWpnData().m_sSecondaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
 		}
 	}
 	else
 	{
-		if (this->GetWpnData().m_sSecondaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iSecondaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iSecondaryAmmoType);
 		}
@@ -1958,42 +1703,21 @@ void CWeaponCustom::ShootAR2EnergyBallRight(bool isPrimary, bool usePrimaryAmmo)
 	// Decrease ammo
 	if (isPrimary)
 	{
-		if (this->GetWpnData().m_sPrimaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sPrimaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sPrimaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
 		}
 	}
 	else if (usePrimaryAmmo)
 	{
-		if (this->GetWpnData().m_sSecondaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
 		}
 	}
 	else
 	{
-		if (this->GetWpnData().m_sSecondaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iSecondaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iSecondaryAmmoType);
 		}
@@ -2095,42 +1819,21 @@ void CWeaponCustom::ShootAR2EnergyBallLeft(bool isPrimary, bool usePrimaryAmmo)
 	// Decrease ammo
 	if (isPrimary)
 	{
-		if (this->GetWpnData().m_sPrimaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sPrimaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sPrimaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
 		}
 	}
 	else if (usePrimaryAmmo)
 	{
-		if (this->GetWpnData().m_sSecondaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
 		}
 	}
 	else
 	{
-		if (this->GetWpnData().m_sSecondaryInfiniteAmmoPerkEnabled)
-		{
-			if (!pOwner->m_iPerkInfiniteAmmo == 1)
-			{
-				pOwner->RemoveAmmo(1, m_iSecondaryAmmoType);
-			}
-		}
-		else if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
+		if (!this->GetWpnData().m_sSecondaryInfiniteAmmoEnabled)
 		{
 			pOwner->RemoveAmmo(1, m_iSecondaryAmmoType);
 		}
