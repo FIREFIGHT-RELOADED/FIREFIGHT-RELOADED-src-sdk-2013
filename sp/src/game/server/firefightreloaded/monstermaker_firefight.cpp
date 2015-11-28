@@ -283,7 +283,7 @@ void CNPCMakerFirefight::MakerThink(void)
 	{
 		if (g_pGameRules->iRandomGamemode == FIREFIGHT_PRIMARY_ANTLIONASSAULT)
 		{
-			SetNextThink(gpGlobals->curtime + m_flSpawnFrequency + 15);
+			SetNextThink(gpGlobals->curtime + (m_flSpawnFrequency + 15));
 		}
 		else
 		{
@@ -294,7 +294,7 @@ void CNPCMakerFirefight::MakerThink(void)
 	{
 		if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_ANTLIONASSAULT)
 		{
-			SetNextThink(gpGlobals->curtime + m_flSpawnFrequency + 15);
+			SetNextThink(gpGlobals->curtime + (m_flSpawnFrequency + 15));
 		}
 		else
 		{
