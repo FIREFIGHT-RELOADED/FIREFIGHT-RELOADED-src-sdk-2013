@@ -274,7 +274,7 @@ void CWeaponOICW::GrenadeAttack(void)
 	//Create the grenade
 	QAngle angles;
 	VectorAngles(vecThrow, angles);
-	CGrenadeAR2 *pGrenade = (CGrenadeAR2*)Create("grenade_ar2", vecSrc, angles, pPlayer);
+	CGrenadeOCIW *pGrenade = (CGrenadeOCIW*)Create("grenade_ociw", vecSrc, angles, pPlayer);
 	pGrenade->SetAbsVelocity(vecThrow);
 
 	pGrenade->SetLocalAngularVelocity(RandomAngle(-400, 400));

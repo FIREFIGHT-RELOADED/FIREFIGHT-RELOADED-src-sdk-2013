@@ -279,7 +279,29 @@ void CNPCMakerFirefight::Precache(void)
 //-----------------------------------------------------------------------------
 void CNPCMakerFirefight::MakerThink(void)
 {
-	SetNextThink(gpGlobals->curtime + m_flSpawnFrequency);
+	if (g_pGameRules->bHasRandomized)
+	{
+		if (g_pGameRules->iRandomGamemode == FIREFIGHT_PRIMARY_ANTLIONASSAULT)
+		{
+			SetNextThink(gpGlobals->curtime + m_flSpawnFrequency + 15);
+		}
+		else
+		{
+			SetNextThink(gpGlobals->curtime + m_flSpawnFrequency);
+		}
+	}
+	else
+	{
+		if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_ANTLIONASSAULT)
+		{
+			SetNextThink(gpGlobals->curtime + m_flSpawnFrequency + 15);
+		}
+		else
+		{
+			SetNextThink(gpGlobals->curtime + m_flSpawnFrequency);
+		}
+	}
+
 	if (sk_spawnrareenemies.GetBool())
 	{
 		int rarenpcrandom = random->RandomInt(0, m_nRareNPCRarity);

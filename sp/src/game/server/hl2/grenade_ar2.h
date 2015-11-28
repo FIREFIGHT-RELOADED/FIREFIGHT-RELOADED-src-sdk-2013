@@ -44,4 +44,27 @@ public:
 	DECLARE_DATADESC();
 };
 
+class CGrenadeOCIW : public CBaseGrenade
+{
+public:
+	DECLARE_CLASS(CGrenadeOCIW, CBaseGrenade);
+
+	CHandle< SmokeTrail > m_hSmokeTrail;
+	float				 m_fSpawnTime;
+	float				m_fDangerRadius;
+
+
+	void		Spawn(void);
+	void		Precache(void);
+	void 		GrenadeOCIWTouch(CBaseEntity *pOther);
+	void		GrenadeOCIWThink(void);
+	void		Event_Killed(const CTakeDamageInfo &info);
+
+public:
+	void EXPORT				Detonate(void);
+	CGrenadeOCIW(void);
+
+	DECLARE_DATADESC();
+};
+
 #endif	//GRENADEAR2_H

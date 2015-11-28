@@ -267,6 +267,7 @@ void CBaseCombatWeapon::Spawn( void )
 
 	m_iReloadHudHintCount = 0;
 	m_iAltFireHudHintCount = 0;
+	m_iStoreHudHintCount = 0;
 	m_flHudHintMinDisplayTime = 0;
 }
 
@@ -1132,6 +1133,51 @@ void CBaseCombatWeapon::RescindReloadHudHint()
 #endif//CLIENT_DLL
 }
 
+//---------------------------------------------------------
+// It's OK for base classes to override this completely 
+// without calling up. (sjb)
+//---------------------------------------------------------
+bool CBaseCombatWeapon::ShouldDisplayStoreHUDHint()
+{
+	if (m_iStoreHudHintCount >= WEAPON_RELOAD_HUD_HINT_COUNT)
+		return false;
+
+	//we have a random chance to create this one.
+	int randHint = random->RandomInt(0,10);
+
+	if (randHint == 10 && g_fr_economy.GetBool())
+	{
+		return true;
+	}
+
+	return false;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CBaseCombatWeapon::DisplayStoreHudHint()
+{
+#if !defined( CLIENT_DLL )
+	UTIL_HudHintText(GetOwner(), "#valve_hint_store");
+	m_iStoreHudHintCount++;
+	m_bStoreHudHintDisplayed = true;
+	m_flHudHintMinDisplayTime = gpGlobals->curtime + MIN_HUDHINT_DISPLAY_TIME;
+#endif//CLIENT_DLL
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CBaseCombatWeapon::RescindStoreHudHint()
+{
+#if !defined( CLIENT_DLL )
+	Assert(m_bStoreHudHintDisplayed);
+
+	UTIL_HudHintText(GetOwner(), "");
+	--m_iStoreHudHintCount;
+	m_bStoreHudHintDisplayed = false;
+#endif//CLIENT_DLL
+}
+
 
 void CBaseCombatWeapon::SetPickupTouch( void )
 {
@@ -1608,6 +1654,7 @@ bool CBaseCombatWeapon::DefaultDeploy( char *szViewModel, char *szWeaponModel, i
 
 	m_bAltFireHudHintDisplayed = false;
 	m_bReloadHudHintDisplayed = false;
+	m_bStoreHudHintDisplayed = false;
 	m_flHudHintPollTime = gpGlobals->curtime + 5.0f;
 	
 	WeaponSound( DEPLOY );
@@ -1694,6 +1741,9 @@ bool CBaseCombatWeapon::Holster( CBaseCombatWeapon *pSwitchingTo )
 
 		if( m_bReloadHudHintDisplayed )
 			RescindReloadHudHint();
+
+		if (m_bStoreHudHintDisplayed)
+			RescindStoreHudHint();
 	}
 
 	DisableIronsights();
@@ -1833,6 +1883,10 @@ void CBaseCombatWeapon::ItemPreFrame( void )
 				else if( ShouldDisplayAltFireHUDHint() )
 				{
 					DisplayAltFireHudHint();
+				}
+				else if (ShouldDisplayStoreHUDHint())
+				{
+					DisplayStoreHudHint();
 				}
 			}
 			else
@@ -2925,8 +2979,10 @@ BEGIN_DATADESC( CBaseCombatWeapon )
 
 	DEFINE_FIELD( m_iReloadHudHintCount,	FIELD_INTEGER ),
 	DEFINE_FIELD( m_iAltFireHudHintCount,	FIELD_INTEGER ),
+	DEFINE_FIELD(m_iStoreHudHintCount, FIELD_INTEGER),
 	DEFINE_FIELD( m_bReloadHudHintDisplayed, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bAltFireHudHintDisplayed, FIELD_BOOLEAN ),
+	DEFINE_FIELD(m_bStoreHudHintDisplayed, FIELD_BOOLEAN),
 	DEFINE_FIELD( m_flHudHintPollTime, FIELD_TIME ),
 	DEFINE_FIELD( m_flHudHintMinDisplayTime, FIELD_TIME ),
 
