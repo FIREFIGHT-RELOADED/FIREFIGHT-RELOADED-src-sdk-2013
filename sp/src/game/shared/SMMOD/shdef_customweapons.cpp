@@ -1,4 +1,6 @@
 #include "cbase.h"
+#include "filesystem.h"
+#include "weapon_parse.h"
 #if defined(CLIENT_DLL)
 	#include "SMMOD/c_weapon_custom.h"
 	#include "c_weapon__stubs.h"
@@ -7,6 +9,8 @@
 #endif
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+
 #ifdef CLIENT_DLL
 CustomWeapon_IMPLEMENT(1)
 CustomWeapon_IMPLEMENT(2)

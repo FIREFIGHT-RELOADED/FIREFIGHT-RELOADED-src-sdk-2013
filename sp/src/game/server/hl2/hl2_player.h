@@ -304,6 +304,7 @@ public:
 protected:
 	virtual void		PreThink( void );
 	virtual void		KickAttack(void);
+	virtual void		FlyJetpack(void);
 	virtual	void		PostThink( void );
 	virtual bool		HandleInteraction(int interactionType, void *data, CBaseCombatCharacter* sourceEnt);
 

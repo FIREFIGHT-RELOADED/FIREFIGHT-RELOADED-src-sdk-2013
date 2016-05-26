@@ -536,8 +536,11 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 	{
 		// subtract off the speed at which a player is allowed to fall without being hurt,
 		// so damage will be based on speed beyond that, not the entire fall
-		pPlayer->m_Local.m_flFallVelocity -= PLAYER_MAX_SAFE_FALL_SPEED;
-		return pPlayer->m_Local.m_flFallVelocity * DAMAGE_FOR_FALL_SPEED;
+		//pPlayer->m_Local.m_flFallVelocity -= PLAYER_MAX_SAFE_FALL_SPEED;
+		//return pPlayer->m_Local.m_flFallVelocity * DAMAGE_FOR_FALL_SPEED;
+		//since we now have a jetpack in FIREFIGHT, we're commenting this out so we can allow the player to fly 
+		//all over the place without getting hurt. - Bitl
+		return 0;
 	}
 
 	//=========================================================

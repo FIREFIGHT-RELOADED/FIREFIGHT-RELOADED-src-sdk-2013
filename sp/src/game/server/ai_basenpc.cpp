@@ -147,6 +147,8 @@ ConVar	ai_efficiency_override( "ai_efficiency_override", "0" );
 ConVar	ai_debug_efficiency( "ai_debug_efficiency", "0" );
 ConVar	ai_debug_dyninteractions( "ai_debug_dyninteractions", "0", FCVAR_NONE, "Debug the NPC dynamic interaction system." );
 ConVar	ai_frametime_limit( "ai_frametime_limit", "50", FCVAR_NONE, "frametime limit for min efficiency AIE_NORMAL (in sec's)." );
+ConVar	ai_disappear("ai_disappear", "1", FCVAR_ARCHIVE, "Makes AI disappear after a specified amount of time.");
+ConVar	ai_disappear_time("ai_disappear_time", "60", FCVAR_ARCHIVE);
 
 ConVar	ai_use_think_optimizations( "ai_use_think_optimizations", "1" );
 
@@ -4071,6 +4073,20 @@ void CAI_BaseNPC::NPCThink( void )
 	else
 	{
 		m_flNextDecisionTime = 0;
+	}
+
+	CBaseEntity *pEnemy = GetEnemy();
+
+	if (ai_disappear.GetBool() && gpGlobals->curtime >= m_fIdleTime)
+	{
+		if (pEnemy && pEnemy->MyCombatCharacterPointer() && !pEnemy->MyCombatCharacterPointer()->FInViewCone(this) && !pEnemy->MyCombatCharacterPointer()->FVisible(this))
+		{
+			SUB_Remove();
+		}
+		else
+		{
+			m_fIdleTime = gpGlobals->curtime + ai_disappear_time.GetFloat();
+		}
 	}
 }
 
@@ -11399,6 +11415,11 @@ CAI_BaseNPC::CAI_BaseNPC(void)
 	m_bInChoreo = true; // assume so until call to UpdateEfficiency()
 	
 	SetCollisionGroup( COLLISION_GROUP_NPC );
+
+	if (ai_disappear.GetBool())
+	{
+		m_fIdleTime = gpGlobals->curtime + ai_disappear_time.GetFloat();
+	}
 }
 
 //-----------------------------------------------------------------------------

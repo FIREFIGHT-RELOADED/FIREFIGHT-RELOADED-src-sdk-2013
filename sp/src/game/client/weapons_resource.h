@@ -31,7 +31,7 @@ public:
 	void Reset( void );
 
 	// Sprite handling
-	void LoadWeaponSprites( WEAPON_FILE_INFO_HANDLE hWeaponFileInfo, bool customWeapon = false );
+	void LoadWeaponSprites( WEAPON_FILE_INFO_HANDLE hWeaponFileInfo);
 	void LoadAllWeaponSprites( void );
 
 	// Ammo Handling

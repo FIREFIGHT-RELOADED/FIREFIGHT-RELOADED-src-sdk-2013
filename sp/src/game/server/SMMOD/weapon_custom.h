@@ -34,6 +34,9 @@ public:
 	void	ShootSMGGrenade(bool isPrimary, bool usePrimaryAmmo);
 	void	ShootSMGGrenadeRight(bool isPrimary, bool usePrimaryAmmo);
 	void	ShootSMGGrenadeLeft(bool isPrimary, bool usePrimaryAmmo);
+
+
+
 	//void	ShootFragGrenadeThrow(bool isPrimary, bool usePrimaryAmmo);
 	//void	ShootFragGrenadeRoll(bool isPrimary, bool usePrimaryAmmo);
 	void	ItemPostFrame( void );
@@ -83,8 +86,9 @@ public:
 		}
 	}
 
-	int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
+	int		CapabilitiesGet(void);
 	int		WeaponRangeAttack2Condition( float flDot, float flDist );
+	virtual	int		WeaponMeleeAttack1Condition(float flDot, float flDist);
 	Activity	GetPrimaryAttackActivity( void );
 	Activity	GetLeftGunActivity(void);
 	Activity	GetRightGunActivity(void);
@@ -131,15 +135,22 @@ public:
 
 	const WeaponProficiencyInfo_t *GetProficiencyValues();
 
-	void FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, Vector &vecShootOrigin, Vector &vecShootDir );
-	void Operator_ForceNPCFire( CBaseCombatCharacter  *pOperator, bool bSecondary );
-	void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+	//void FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, Vector &vecShootOrigin, Vector &vecShootDir );
+	//void Operator_ForceNPCFire( CBaseCombatCharacter  *pOperator, bool bSecondary );
+	//void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+
+protected:
+		virtual	void	ImpactEffect(trace_t &trace);
 protected: //Why did I not put this in? I have no idea...
 		CHandle<CMissile>	m_hMissile;
 		CHandle<CMissile>	m_hMissile2;
 private:
 	void	CheckZoomToggle(void);
 	void	ToggleZoom(void);
+	bool			ImpactWater(const Vector &start, const Vector &end);
+	void			Swing(int bIsSecondary);
+	void			Hit(trace_t &traceHit, Activity nHitActivity, bool bIsSecondary);
+	Activity		ChooseIntersectionPointAndActivity(trace_t &hitTrace, const Vector &mins, const Vector &maxs, CBasePlayer *pOwner);
 
 private:
 	bool				m_bInZoom;
@@ -175,6 +186,6 @@ IMPLEMENT_SERVERCLASS_ST(CWeaponCustomNamed##customname, DT_WeaponCustomNamed##c
 END_SEND_TABLE()													\
 BEGIN_DATADESC( CWeaponCustomNamed##customname )										\
 END_DATADESC()														\
-LINK_ENTITY_TO_CLASS( weapon_##customname, CWeaponCustomNamed##customname );		\
-PRECACHE_WEAPON_REGISTER(weapon_##customname);
+LINK_ENTITY_TO_CLASS( weapon_custom_##customname, CWeaponCustomNamed##customname );		\
+PRECACHE_WEAPON_REGISTER(weapon_custom_##customname);
 #endif	//WEAPONCUSTOM_H

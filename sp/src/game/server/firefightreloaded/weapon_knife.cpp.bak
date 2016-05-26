@@ -1,0 +1,562 @@
+//========= Copyright Valve Corporation, All rights reserved. ============//
+//
+// Purpose:		Knife - other end goes into evil man
+//
+// $NoKeywords: $
+//=============================================================================//
+
+#include "cbase.h"
+#include "basehlcombatweapon.h"
+#include "player.h"
+#include "gamerules.h"
+#include "ammodef.h"
+#include "mathlib/mathlib.h"
+#include "in_buttons.h"
+#include "soundent.h"
+#include "basebludgeonweapon.h"
+#include "vstdlib/random.h"
+#include "npcevent.h"
+#include "ai_basenpc.h"
+#include "rumble_shared.h"
+#include "gamestats.h"
+#include "decals.h"
+#include "IEffects.h"
+#include "te_effect_dispatch.h"
+#include "weapon_knife.h"
+
+// memdbgon must be the last include file in a .cpp file!!!
+#include "tier0/memdbgon.h"
+
+ConVar    sk_plr_dmg_knife		( "sk_plr_dmg_knife","0");
+ConVar    sk_npc_dmg_knife		( "sk_npc_dmg_knife","0");
+
+ConVar    sk_plr_dmg_thrownknife		( "sk_plr_dmg_thrownknife","0");
+ConVar    sk_npc_dmg_thrownknife		( "sk_npc_dmg_thrownknife","0");
+
+LINK_ENTITY_TO_CLASS( thrown_knife, CThrownKnife );
+
+BEGIN_DATADESC( CThrownKnife )
+	// Function Pointers
+	DEFINE_FUNCTION( BubbleThink ),
+	DEFINE_FUNCTION( KnifeTouch ),
+
+	// These are recreated on reload, they don't need storage
+
+END_DATADESC()
+
+//IMPLEMENT_SERVERCLASS_ST( CThrownKnife, DT_ThrownKnife )
+//END_SEND_TABLE()
+
+CThrownKnife *CThrownKnife::KnifeCreate( const Vector &vecOrigin, const QAngle &angAngles, CBasePlayer *pentOwner )
+{
+	// Create a new entity with CThrownKnife private data
+	CThrownKnife *pKnife = (CThrownKnife *)CreateEntityByName( "thrown_knife" );
+	UTIL_SetOrigin( pKnife, vecOrigin );
+	pKnife->SetAbsAngles( angAngles );
+	pKnife->Spawn();
+	pKnife->SetOwnerEntity( pentOwner );
+
+	return pKnife;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+CThrownKnife::~CThrownKnife( void )
+{
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Output : Returns true on success, false on failure.
+//-----------------------------------------------------------------------------
+bool CThrownKnife::CreateVPhysics( void )
+{
+	// Create the object in the physics system
+	VPhysicsInitNormal( SOLID_BBOX, FSOLID_NOT_STANDABLE, false );
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+unsigned int CThrownKnife::PhysicsSolidMaskForEntity() const
+{
+	return ( BaseClass::PhysicsSolidMaskForEntity() | CONTENTS_HITBOX ) & ~CONTENTS_GRATE;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CThrownKnife::Spawn( void )
+{
+	Precache( );
+
+	SetModel( THROWNKNIFE_MODEL );
+	SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_CUSTOM );
+	//UTIL_SetSize( this, -Vector(0.3f,0.3f,0.3f), Vector(0.3f,0.3f,0.3f) );
+	SetSolid( SOLID_BBOX );
+	SetGravity( 0.05f );
+	
+	// Make sure we're updated if we're underwater
+	UpdateWaterState();
+
+	SetTouch( &CThrownKnife::KnifeTouch );
+
+	SetThink( &CThrownKnife::BubbleThink );
+	SetNextThink( gpGlobals->curtime + 0.1f );
+}
+
+
+void CThrownKnife::Precache( void )
+{
+	PrecacheModel( THROWNKNIFE_MODEL );
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CThrownKnife::KnifeTouch( CBaseEntity *pOther )
+{
+	if ( pOther->IsSolidFlagSet(FSOLID_VOLUME_CONTENTS | FSOLID_TRIGGER) )
+	{
+		// Some NPCs are triggers that can take damage (like antlion grubs). We should hit them.
+		if ( ( pOther->m_takedamage == DAMAGE_NO ) || ( pOther->m_takedamage == DAMAGE_EVENTS_ONLY ) )
+			return;
+	}
+
+	if ( pOther->m_takedamage != DAMAGE_NO )
+	{
+		trace_t	tr, tr2;
+		tr = BaseClass::GetTouchTrace();
+		Vector	vecNormalizedVel = GetAbsVelocity();
+
+		ClearMultiDamage();
+		VectorNormalize( vecNormalizedVel );
+
+#if defined(HL2_EPISODIC)
+		//!!!HACKHACK - specific hack for ep2_outland_10 to allow crossbow bolts to pass through her bounding box when she's crouched in front of the player
+		// (the player thinks they have clear line of sight because Alyx is crouching, but her BBOx is still full-height and blocks crossbow bolts.
+		if( GetOwnerEntity() && GetOwnerEntity()->IsPlayer() && pOther->Classify() == CLASS_PLAYER_ALLY_VITAL && FStrEq(STRING(gpGlobals->mapname), "ep2_outland_10") )
+		{
+			// Change the owner to stop further collisions with Alyx. We do this by making her the owner.
+			// The player won't get credit for this kill but at least the bolt won't magically disappear!
+			SetOwnerEntity( pOther );
+			return;
+		}
+#endif//HL2_EPISODIC
+
+		if( GetOwnerEntity() && GetOwnerEntity()->IsPlayer() && pOther->IsNPC() )
+		{
+			CTakeDamageInfo	dmgInfo( this, GetOwnerEntity(), sk_plr_dmg_thrownknife.GetFloat(), DMG_NEVERGIB );
+			dmgInfo.AdjustPlayerDamageInflictedForSkillLevel();
+			CalculateMeleeDamageForce( &dmgInfo, vecNormalizedVel, tr.endpos, 0.7f );
+			dmgInfo.SetDamagePosition( tr.endpos );
+			pOther->DispatchTraceAttack( dmgInfo, vecNormalizedVel, &tr );
+
+			CBasePlayer *pPlayer = ToBasePlayer( GetOwnerEntity() );
+			if ( pPlayer )
+			{
+				gamestats->Event_WeaponHit( pPlayer, true, "weapon_knife", dmgInfo );
+			}
+
+		}
+		else
+		{
+			CTakeDamageInfo	dmgInfo( this, GetOwnerEntity(), sk_plr_dmg_thrownknife.GetFloat(), DMG_BULLET | DMG_NEVERGIB );
+			CalculateMeleeDamageForce( &dmgInfo, vecNormalizedVel, tr.endpos, 0.7f );
+			dmgInfo.SetDamagePosition( tr.endpos );
+			pOther->DispatchTraceAttack( dmgInfo, vecNormalizedVel, &tr );
+		}
+
+		ApplyMultiDamage();
+
+		//Adrian: keep going through the glass.
+		if ( pOther->GetCollisionGroup() == COLLISION_GROUP_BREAKABLE_GLASS )
+			 return;
+
+		if ( !pOther->IsAlive() )
+		{
+			// We killed it! 
+			const surfacedata_t *pdata = physprops->GetSurfaceData( tr.surface.surfaceProps );
+			if ( pdata->game.material == CHAR_TEX_GLASS )
+			{
+				return;
+			}
+		}
+
+		SetAbsVelocity( Vector( 0, 0, 0 ) );
+
+		// play body "thwack" sound
+		//EmitSound( "Weapon_Crossbow.KnifeHitBody" );
+
+		Vector vForward;
+
+		AngleVectors( GetAbsAngles(), &vForward );
+		VectorNormalize ( vForward );
+
+		UTIL_TraceLine( GetAbsOrigin(),	GetAbsOrigin() + vForward * 128, MASK_BLOCKLOS, pOther, COLLISION_GROUP_NONE, &tr2 );
+
+		if ( tr2.fraction != 1.0f )
+		{
+//			NDebugOverlay::Box( tr2.endpos, Vector( -16, -16, -16 ), Vector( 16, 16, 16 ), 0, 255, 0, 0, 10 );
+//			NDebugOverlay::Box( GetAbsOrigin(), Vector( -16, -16, -16 ), Vector( 16, 16, 16 ), 0, 0, 255, 0, 10 );
+
+			if ( tr2.m_pEnt == NULL || ( tr2.m_pEnt && tr2.m_pEnt->GetMoveType() == MOVETYPE_NONE ) )
+			{
+				CEffectData	data;
+
+				data.m_vOrigin = tr2.endpos;
+				data.m_vNormal = vForward;
+				data.m_nEntIndex = tr2.fraction != 1.0f;
+			
+				DispatchEffect( "BoltImpact", data );
+			}
+		}
+		
+		SetTouch( NULL );
+		SetThink( NULL );
+
+		if ( !g_pGameRules->IsMultiplayer() )
+		{
+			UTIL_Remove( this );
+		}
+	}
+	else
+	{
+		trace_t	tr;
+		tr = BaseClass::GetTouchTrace();
+
+		// See if we struck the world
+		if ( pOther->GetMoveType() == MOVETYPE_NONE && !( tr.surface.flags & SURF_SKY ) )
+		{
+			//EmitSound( "Weapon_Crossbow.KnifeHitWorld" );
+
+			// if what we hit is static architecture, can stay around for a while.
+			Vector vecDir = GetAbsVelocity();
+			float speed = VectorNormalize( vecDir );
+
+			// See if we should reflect off this surface
+			float hitDot = DotProduct( tr.plane.normal, -vecDir );
+			
+			if ( ( hitDot < 0.5f ) && ( speed > 100 ) )
+			{
+				Vector vReflection = 2.0f * tr.plane.normal * hitDot + vecDir;
+				
+				QAngle reflectAngles;
+
+				VectorAngles( vReflection, reflectAngles );
+
+				SetLocalAngles( reflectAngles );
+
+				SetAbsVelocity( vReflection * speed * 0.75f );
+
+				// Start to sink faster
+				SetGravity( 1.0f );
+			}
+			else
+			{
+				SetThink( &CThrownKnife::SUB_Remove );
+				SetNextThink( gpGlobals->curtime + 2.0f );
+				
+				//FIXME: We actually want to stick (with hierarchy) to what we've hit
+				SetMoveType( MOVETYPE_NONE );
+			
+				Vector vForward;
+
+				AngleVectors( GetAbsAngles(), &vForward );
+				VectorNormalize ( vForward );
+
+				CEffectData	data;
+
+				data.m_vOrigin = tr.endpos;
+				data.m_vNormal = vForward;
+				data.m_nEntIndex = 0;
+			
+				DispatchEffect( "BoltImpact", data );
+				
+				UTIL_ImpactTrace( &tr, DMG_BULLET );
+
+				AddEffects( EF_NODRAW );
+				SetTouch( NULL );
+				SetThink( &CThrownKnife::SUB_Remove );
+				SetNextThink( gpGlobals->curtime + 2.0f );
+			}
+			
+			// Shoot some sparks
+			if ( UTIL_PointContents( GetAbsOrigin() ) != CONTENTS_WATER)
+			{
+				g_pEffects->Sparks( GetAbsOrigin() );
+			}
+		}
+		else
+		{
+			// Put a mark unless we've hit the sky
+			if ( ( tr.surface.flags & SURF_SKY ) == false )
+			{
+				UTIL_ImpactTrace( &tr, DMG_BULLET );
+			}
+
+			UTIL_Remove( this );
+		}
+	}
+
+	if ( g_pGameRules->IsMultiplayer() )
+	{
+//		SetThink( &CThrownKnife::ExplodeThink );
+//		SetNextThink( gpGlobals->curtime + 0.1f );
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CThrownKnife::BubbleThink( void )
+{
+	QAngle angNewAngles;
+
+	VectorAngles( GetAbsVelocity(), angNewAngles );
+	SetAbsAngles( angNewAngles );
+
+	SetNextThink( gpGlobals->curtime + 0.1f );
+
+	// Make danger sounds out in front of me, to scare snipers back into their hole
+	CSoundEnt::InsertSound( SOUND_DANGER_SNIPERONLY, GetAbsOrigin() + GetAbsVelocity() * 0.2, 120.0f, 0.5f, this, SOUNDENT_CHANNEL_REPEATED_DANGER );
+
+	if ( GetWaterLevel()  == 0 )
+		return;
+
+	UTIL_BubbleTrail( GetAbsOrigin() - GetAbsVelocity() * 0.1f, GetAbsOrigin(), 5 );
+}
+
+//-----------------------------------------------------------------------------
+// CWeaponKnife
+//-----------------------------------------------------------------------------
+
+IMPLEMENT_SERVERCLASS_ST(CWeaponKnife, DT_WeaponKnife)
+END_SEND_TABLE()
+
+#ifndef HL2MP
+LINK_ENTITY_TO_CLASS( weapon_knife, CWeaponKnife );
+PRECACHE_WEAPON_REGISTER( weapon_knife );
+#endif
+
+acttable_t CWeaponKnife::m_acttable[] = 
+{
+	{ ACT_MELEE_ATTACK1,	ACT_MELEE_ATTACK_SWING, true },
+	{ ACT_IDLE,				ACT_IDLE_ANGRY_MELEE,	false },
+	{ ACT_IDLE_ANGRY,		ACT_IDLE_ANGRY_MELEE,	false },
+	{ ACT_RANGE_ATTACK1,	ACT_RANGE_ATTACK_SLAM,	true },
+	{ ACT_HL2MP_IDLE,		ACT_HL2MP_IDLE_MELEE,	false },
+	{ ACT_HL2MP_RUN,		ACT_HL2MP_RUN_MELEE,	false },
+	{ ACT_HL2MP_IDLE_CROUCH,	ACT_HL2MP_IDLE_CROUCH_MELEE,	false },
+	{ ACT_HL2MP_WALK_CROUCH,	ACT_HL2MP_WALK_CROUCH_MELEE,	false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_MELEE,	false },
+	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_MELEE,			false },
+	{ ACT_HL2MP_JUMP,		ACT_HL2MP_JUMP_MELEE,	false },
+};
+
+IMPLEMENT_ACTTABLE(CWeaponKnife);
+
+//-----------------------------------------------------------------------------
+// Constructor
+//-----------------------------------------------------------------------------
+CWeaponKnife::CWeaponKnife( void )
+{
+}
+
+void CWeaponKnife::Precache(void)
+{
+	UTIL_PrecacheOther( "thrown_knife" );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Get the damage amount for the animation we're doing
+// Input  : hitActivity - currently played activity
+// Output : Damage amount
+//-----------------------------------------------------------------------------
+float CWeaponKnife::GetDamageForActivity( Activity hitActivity )
+{
+	if ( ( GetOwner() != NULL ) && ( GetOwner()->IsPlayer() ) )
+		return sk_plr_dmg_knife.GetFloat();
+
+	return sk_npc_dmg_knife.GetFloat();
+}
+
+void CWeaponKnife::ThrowKnife( void )	
+{
+	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+	
+	if ( pOwner == NULL )
+		return;
+
+	Vector vecAiming	= pOwner->GetAutoaimVector( 0 );
+	Vector vecSrc		= pOwner->Weapon_ShootPosition();
+
+	QAngle angAiming;
+	VectorAngles( vecAiming, angAiming );
+	
+	CThrownKnife *pBolt = CThrownKnife::KnifeCreate( vecSrc, angAiming, pOwner );
+
+	if ( pOwner->GetWaterLevel() == 3 )
+	{
+		pBolt->SetAbsVelocity( vecAiming * THROWNKNIFE_WATER_VELOCITY );
+	}
+	else
+	{
+		pBolt->SetAbsVelocity( vecAiming * THROWNKNIFE_AIR_VELOCITY );
+	}
+
+	WeaponSound(WPN_DOUBLE);
+	CSoundEnt::InsertSound( SOUND_COMBAT, GetAbsOrigin(), 200, 0.2 );
+
+	SendWeaponAnim( ACT_VM_SECONDARYATTACK );
+	
+	m_flNextSecondaryAttack	= gpGlobals->curtime + 0.75;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Add in a view kick for this weapon
+//-----------------------------------------------------------------------------
+void CWeaponKnife::AddViewKick( void )
+{
+	CBasePlayer *pPlayer  = ToBasePlayer( GetOwner() );
+	
+	if ( pPlayer == NULL )
+		return;
+
+	QAngle punchAng;
+
+	punchAng.x = random->RandomFloat( 1.0f, 2.0f );
+	punchAng.y = random->RandomFloat( -2.0f, -1.0f );
+	punchAng.z = 0.0f;
+	
+	pPlayer->ViewPunch( punchAng ); 
+}
+
+void CWeaponKnife::SecondaryAttack( void )	
+{
+	ThrowKnife();
+
+	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
+	if ( pPlayer )
+	{
+		m_iSecondaryAttacks++;
+		gamestats->Event_WeaponFired( pPlayer, true, GetClassname() );
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Attempt to lead the target (needed because citizens can't hit manhacks with the knife!)
+//-----------------------------------------------------------------------------
+ConVar sk_knife_lead_time( "sk_knife_lead_time", "0.9" );
+
+int CWeaponKnife::WeaponMeleeAttack1Condition( float flDot, float flDist )
+{
+	// Attempt to lead the target (needed because citizens can't hit manhacks with the knife!)
+	CAI_BaseNPC *pNPC	= GetOwner()->MyNPCPointer();
+	CBaseEntity *pEnemy = pNPC->GetEnemy();
+	if (!pEnemy)
+		return COND_NONE;
+
+	Vector vecVelocity;
+	vecVelocity = pEnemy->GetSmoothedVelocity( );
+
+	// Project where the enemy will be in a little while
+	float dt = sk_knife_lead_time.GetFloat();
+	dt += random->RandomFloat( -0.3f, 0.2f );
+	if ( dt < 0.0f )
+		dt = 0.0f;
+
+	Vector vecExtrapolatedPos;
+	VectorMA( pEnemy->WorldSpaceCenter(), dt, vecVelocity, vecExtrapolatedPos );
+
+	Vector vecDelta;
+	VectorSubtract( vecExtrapolatedPos, pNPC->WorldSpaceCenter(), vecDelta );
+
+	if ( fabs( vecDelta.z ) > 70 )
+	{
+		return COND_TOO_FAR_TO_ATTACK;
+	}
+
+	Vector vecForward = pNPC->BodyDirection2D( );
+	vecDelta.z = 0.0f;
+	float flExtrapolatedDist = Vector2DNormalize( vecDelta.AsVector2D() );
+	if ((flDist > 64) && (flExtrapolatedDist > 64))
+	{
+		return COND_TOO_FAR_TO_ATTACK;
+	}
+
+	float flExtrapolatedDot = DotProduct2D( vecDelta.AsVector2D(), vecForward.AsVector2D() );
+	if ((flDot < 0.7) && (flExtrapolatedDot < 0.7))
+	{
+		return COND_NOT_FACING_ATTACK;
+	}
+
+	return COND_CAN_MELEE_ATTACK1;
+}
+
+
+//-----------------------------------------------------------------------------
+// Animation event handlers
+//-----------------------------------------------------------------------------
+void CWeaponKnife::HandleAnimEventMeleeHit( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
+{
+	// Trace up or down based on where the enemy is...
+	// But only if we're basically facing that direction
+	Vector vecDirection;
+	AngleVectors( GetAbsAngles(), &vecDirection );
+
+	CBaseEntity *pEnemy = pOperator->MyNPCPointer() ? pOperator->MyNPCPointer()->GetEnemy() : NULL;
+	if ( pEnemy )
+	{
+		Vector vecDelta;
+		VectorSubtract( pEnemy->WorldSpaceCenter(), pOperator->Weapon_ShootPosition(), vecDelta );
+		VectorNormalize( vecDelta );
+		
+		Vector2D vecDelta2D = vecDelta.AsVector2D();
+		Vector2DNormalize( vecDelta2D );
+		if ( DotProduct2D( vecDelta2D, vecDirection.AsVector2D() ) > 0.8f )
+		{
+			vecDirection = vecDelta;
+		}
+	}
+
+	Vector vecEnd;
+	VectorMA( pOperator->Weapon_ShootPosition(), 50, vecDirection, vecEnd );
+	CBaseEntity *pHurt = pOperator->CheckTraceHullAttack( pOperator->Weapon_ShootPosition(), vecEnd, 
+		Vector(-16,-16,-16), Vector(36,36,36), sk_npc_dmg_knife.GetFloat(), DMG_CLUB, 0.75 );
+	
+	// did I hit someone?
+	if ( pHurt )
+	{
+		// play sound
+		WeaponSound( MELEE_HIT );
+
+		// Fake a trace impact, so the effects work out like a player's crowbaw
+		trace_t traceHit;
+		UTIL_TraceLine( pOperator->Weapon_ShootPosition(), pHurt->GetAbsOrigin(), MASK_SHOT_HULL, pOperator, COLLISION_GROUP_NONE, &traceHit );
+		ImpactEffect( traceHit );
+	}
+	else
+	{
+		WeaponSound( MELEE_MISS );
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+// Animation event
+//-----------------------------------------------------------------------------
+void CWeaponKnife::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
+{
+	switch( pEvent->event )
+	{
+	case EVENT_WEAPON_MELEE_HIT:
+		HandleAnimEventMeleeHit( pEvent, pOperator );
+		break;
+
+	default:
+		BaseClass::Operator_HandleAnimEvent( pEvent, pOperator );
+		break;
+	}
+}

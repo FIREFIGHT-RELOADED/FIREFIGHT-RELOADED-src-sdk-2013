@@ -40,5 +40,5 @@
 	STUB_WEAPON_CLASS( weapon_custom##num, WeaponCustom##num, C_WeaponCustom );
 
 #define CustomWeapon_IMPLEMENT_CustomName( customname )												\
-	STUB_WEAPON_CLASS( weapon_##customname, WeaponCustomNamed##customname, C_WeaponCustom );
+	STUB_WEAPON_CLASS( weapon_custom_##customname, WeaponCustomNamed##customname, C_WeaponCustom );
 #endif // C_WEAPON__STUBS_H

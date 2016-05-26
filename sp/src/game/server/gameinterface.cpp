@@ -742,6 +742,8 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	gamestatsuploader->InitConnection();
 #endif
 
+	//InitCustomWeapon();
+
 	return true;
 }
 

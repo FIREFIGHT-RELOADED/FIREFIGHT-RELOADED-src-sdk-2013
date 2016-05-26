@@ -951,6 +951,15 @@ bool CHud::IsHidden( int iHudFlags )
 	if ( !engine->IsInGame() )
 		return true;
 
+	char mapname[256];
+	Q_strncpy(mapname, engine->GetLevelName(), sizeof(mapname));
+
+	Q_FixSlashes(mapname);
+	Q_strlower(mapname);
+
+	if (V_stristr(mapname, "credits"))
+		return true;
+
 	// No local player yet?
 	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
 	if ( !pPlayer )

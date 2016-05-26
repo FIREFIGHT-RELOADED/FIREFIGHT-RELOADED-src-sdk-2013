@@ -20,6 +20,7 @@
 #include "items.h"
 #include "hl2_gamerules.h"
 #include "gib.h"
+#include "weapon_physcannon.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -588,6 +589,15 @@ void CNPC_MetroPolice::Precache( void )
 	PrecacheModel("models/gibs/police_beheaded.mdl");
 	PrecacheModel("models/gibs/pgib_p3.mdl");
 	PrecacheModel("models/gibs/pgib_p4.mdl");
+
+	//GIBS!
+	PrecacheModel("models/gibs/police_head.mdl");
+	PrecacheModel("models/gibs/police_left_arm.mdl");
+	PrecacheModel("models/gibs/police_right_arm.mdl");
+	PrecacheModel("models/gibs/police_torso.mdl");
+	PrecacheModel("models/gibs/police_pelvis.mdl");
+	PrecacheModel("models/gibs/police_left_leg.mdl");
+	PrecacheModel("models/gibs/police_right_leg.mdl");
 
 	PrecacheParticleSystem("headshotspray");
 
@@ -3120,6 +3130,92 @@ void CNPC_MetroPolice::ReleaseManhack( void )
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::Event_Killed( const CTakeDamageInfo &info )
 {
+	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && info.GetDamageType() & (DMG_BLAST | DMG_CRUSH) && !(info.GetDamageType() & (DMG_DISSOLVE)) && !PlayerHasMegaPhysCannon())
+	{
+		Vector vecDamageDir = info.GetDamageForce();
+		SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
+		DispatchParticleEffect("headshotspray", GetAbsOrigin(), GetAbsAngles(), this);
+		EmitSound("Gore.Headshot");
+		float flFadeTime = 25.0;
+
+		CGib::SpawnSpecificGibs(this, 1, 750, 1500, "models/gibs/police_head.mdl", flFadeTime);
+
+		Vector vecRagForce;
+		vecRagForce.x = random->RandomFloat(-400, 400);
+		vecRagForce.y = random->RandomFloat(-400, 400);
+		vecRagForce.z = random->RandomFloat(0, 250);
+
+		Vector vecRagDmgForce = (vecRagForce + vecDamageDir);
+
+		CBaseEntity *pLeftArmGib = CreateRagGib("models/gibs/police_left_arm.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		if (pLeftArmGib)
+		{
+			color32 color = pLeftArmGib->GetRenderColor();
+			pLeftArmGib->SetRenderColor(color.r, color.g, color.b, color.a);
+		}
+
+		CBaseEntity *pRightArmGib = CreateRagGib("models/gibs/police_right_arm.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		if (pRightArmGib)
+		{
+			color32 color = pRightArmGib->GetRenderColor();
+			pRightArmGib->SetRenderColor(color.r, color.g, color.b, color.a);
+		}
+
+		CBaseEntity *pTorsoGib = CreateRagGib("models/gibs/police_torso.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		if (pTorsoGib)
+		{
+			color32 color = pTorsoGib->GetRenderColor();
+			pTorsoGib->SetRenderColor(color.r, color.g, color.b, color.a);
+		}
+
+		CBaseEntity *pPelvisGib = CreateRagGib("models/gibs/police_pelvis.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		if (pPelvisGib)
+		{
+			color32 color = pPelvisGib->GetRenderColor();
+			pPelvisGib->SetRenderColor(color.r, color.g, color.b, color.a);
+		}
+
+		CBaseEntity *pLeftLegGib = CreateRagGib("models/gibs/police_left_leg.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		if (pLeftLegGib)
+		{
+			color32 color = pLeftLegGib->GetRenderColor();
+			pLeftLegGib->SetRenderColor(color.r, color.g, color.b, color.a);
+		}
+
+		CBaseEntity *pRightLegGib = CreateRagGib("models/gibs/police_right_leg.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		if (pRightLegGib)
+		{
+			color32 color = pRightLegGib->GetRenderColor();
+			pRightLegGib->SetRenderColor(color.r, color.g, color.b, color.a);
+		}
+
+		//now add smaller gibs.
+		CGib::SpawnSpecificGibs(this, 3, 750, 1500, "models/gibs/pgib_p3.mdl", flFadeTime);
+		CGib::SpawnSpecificGibs(this, 3, 750, 1500, "models/gibs/pgib_p4.mdl", flFadeTime);
+
+		Vector forceVector = CalcDamageForceVector(info);
+
+		// Drop any weapon that I own
+		if (VPhysicsGetObject())
+		{
+			Vector weaponForce = forceVector * VPhysicsGetObject()->GetInvMass();
+			Weapon_Drop(m_hActiveWeapon, NULL, &weaponForce);
+		}
+		else
+		{
+			Weapon_Drop(m_hActiveWeapon);
+		}
+
+		if (info.GetAttacker()->IsPlayer())
+		{
+			((CSingleplayRules*)GameRules())->NPCKilled(this, info);
+		}
+
+		UTIL_Remove(this);
+		SetThink(NULL);
+		return;
+	}
+
 	// Release the manhack if we're in the middle of deploying him
 	if ( m_hManhack && m_hManhack->IsAlive() )
 	{
@@ -4240,10 +4336,11 @@ float CNPC_MetroPolice::GetHitgroupDamageMultiplier(int iHitGroup, const CTakeDa
 		int HeadshotRandom = random->RandomInt(0, 4);
 		if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool())
 		{
-			if (isNohead == false && HeadshotRandom == 0 && !(info.GetDamageType() & DMG_NEVERGIB) || isNohead == false && info.GetDamageType() & DMG_SNIPER && !(info.GetDamageType() & DMG_NEVERGIB))
+			if (isNohead == false && HeadshotRandom == 0 && !(info.GetDamageType() & DMG_NEVERGIB) || isNohead == false && (info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB))
 			{
 				SetModel("models/gibs/police_beheaded.mdl");
 				DispatchParticleEffect("headshotspray", PATTACH_POINT_FOLLOW, this, "bloodspurt", true);
+				SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
 				CGib::SpawnSpecificGibs(this, 6, 750, 1500, "models/gibs/pgib_p3.mdl", 6);
 				CGib::SpawnSpecificGibs(this, 6, 750, 1500, "models/gibs/pgib_p4.mdl", 6);
 				EmitSound("Gore.Headshot");

@@ -5818,12 +5818,19 @@ void CBasePlayer::Spawn( void )
 
 	SetMaxArmorValue(sv_player_maxsuitpower.GetInt());
 
-	if (sk_player_weapons.GetBool() && gpGlobals->eLoadType != MapLoad_Background)
+	char mapname[256];
+	Q_snprintf(mapname, sizeof(mapname), "maps/%s", STRING(gpGlobals->mapname));
+
+	Q_FixSlashes(mapname);
+	Q_strlower(mapname);
+
+	if (sk_player_weapons.GetBool() && gpGlobals->eLoadType != MapLoad_Background && !V_stristr(mapname, "credits"))
 	{
 		if (sv_player_hardcoremode.GetBool())
 		{
 			EquipSuit();
 			GiveNamedItem("weapon_physcannon");
+			GiveNamedItem("weapon_knife");
 		}
 		else
 		{
@@ -5834,6 +5841,7 @@ void CBasePlayer::Spawn( void )
 			GiveNamedItem("weapon_crowbar");
 			GiveNamedItem("weapon_pistol");
 			GiveNamedItem("weapon_physcannon");
+			GiveNamedItem("weapon_knife");
 		}
 	}
 
@@ -7012,6 +7020,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveNamedItem("weapon_slam");
 		GiveNamedItem("weapon_oicw");
 		GiveNamedItem("weapon_flaregun");
+		GiveNamedItem("weapon_knife");
 #ifdef HL2_EPISODIC
 		// GiveNamedItem( "weapon_magnade" );
 #endif

@@ -248,7 +248,7 @@ float CNPC_Houndeye::MaxYawSpeed ( void )
 
 	switch ( GetActivity() )
 	{
-	case ACT_CROUCHIDLE://sleeping!
+	case ACT_CROUCHIDLE: //sleeping!
 		ys = 0;
 		break;
 	case ACT_IDLE:	

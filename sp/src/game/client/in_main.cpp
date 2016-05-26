@@ -146,6 +146,7 @@ static	kbutton_t	in_attack3;
 static	kbutton_t	in_kick;
 static	kbutton_t	in_ironsight;
 static	kbutton_t	in_bullettime;
+static  kbutton_t	in_jetpack;
 kbutton_t	in_ducktoggle;
 
 /*
@@ -499,6 +500,8 @@ void IN_IronsightDown(const CCommand &args) { KeyDown(&in_ironsight, args[1]); }
 void IN_IronsightUp(const CCommand &args) { KeyUp(&in_ironsight, args[1]); }
 void IN_BullettimeDown(const CCommand &args) { KeyDown(&in_bullettime, args[1]); }
 void IN_BullettimeUp(const CCommand &args) { KeyUp(&in_bullettime, args[1]); }
+void IN_JetpackDown(const CCommand &args) { KeyDown(&in_jetpack, args[1]); }
+void IN_JetpackUp(const CCommand &args) { KeyUp(&in_jetpack, args[1]); }
 
 void IN_DuckToggle( const CCommand &args ) 
 { 
@@ -1481,6 +1484,7 @@ int CInput::GetButtonBits( int bResetState )
 	CalcButtonBits(bits, IN_KICK, s_ClearInputState, &in_kick, bResetState);
 	CalcButtonBits(bits, IN_IRONSIGHT, s_ClearInputState, &in_ironsight, bResetState);
 	CalcButtonBits(bits, IN_BULLETTIME, s_ClearInputState, &in_bullettime, bResetState);
+	CalcButtonBits(bits, IN_JETPACK, s_ClearInputState, &in_jetpack, bResetState);
 
 	if ( KeyState(&in_ducktoggle) )
 	{
@@ -1644,6 +1648,8 @@ static ConCommand startironsight("+ironsight", IN_IronsightDown);
 static ConCommand endironsight("-ironsight", IN_IronsightUp);
 static ConCommand startbullettime("+bullettime", IN_BullettimeDown);
 static ConCommand endbullettime("-bullettime", IN_BullettimeUp);
+static ConCommand startjetpack("+jetpack", IN_JetpackDown);
+static ConCommand endjetpack("-jetpack", IN_JetpackUp);
 
 #ifdef TF_CLIENT_DLL
 static ConCommand toggle_duck( "toggle_duck", IN_DuckToggle );

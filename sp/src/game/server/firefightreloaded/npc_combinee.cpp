@@ -111,6 +111,14 @@ void CNPC_CombineE::Precache()
 	PrecacheModel("models/gibs/pgib_p3.mdl");
 	PrecacheModel("models/gibs/pgib_p4.mdl");
 
+	PrecacheModel("models/gibs/soldier_elite_head.mdl");
+	PrecacheModel("models/gibs/soldier_elite_left_arm.mdl");
+	PrecacheModel("models/gibs/soldier_elite_right_arm.mdl");
+	PrecacheModel("models/gibs/soldier_elite_torso.mdl");
+	PrecacheModel("models/gibs/soldier_elite_pelvis.mdl");
+	PrecacheModel("models/gibs/soldier_elite_left_leg.mdl");
+	PrecacheModel("models/gibs/soldier_elite_right_leg.mdl");
+
 	PrecacheParticleSystem("headshotspray");
 
 	UTIL_PrecacheOther( "item_healthvial" );
@@ -219,10 +227,11 @@ float CNPC_CombineE::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDama
 		int HeadshotRandom = random->RandomInt(0, 4);
 		if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool())
 		{
-			if (isNohead == false && HeadshotRandom == 0 && !(info.GetDamageType() & DMG_NEVERGIB) || isNohead == false && info.GetDamageType() & DMG_SNIPER && !(info.GetDamageType() & DMG_NEVERGIB))
+			if (isNohead == false && HeadshotRandom == 0 && !(info.GetDamageType() & DMG_NEVERGIB) || isNohead == false && (info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB))
 			{
 				SetModel("models/gibs/combine_super_soldier_beheaded.mdl");
 				DispatchParticleEffect("headshotspray", PATTACH_POINT_FOLLOW, this, "bloodspurt", true);
+				SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
 				CGib::SpawnSpecificGibs(this, 6, 750, 1500, "models/gibs/pgib_p3.mdl", 6);
 				CGib::SpawnSpecificGibs(this, 6, 750, 1500, "models/gibs/pgib_p4.mdl", 6);
 				EmitSound("Gore.Headshot");
@@ -318,6 +327,92 @@ void CNPC_CombineE::OnListened()
 //-----------------------------------------------------------------------------
 void CNPC_CombineE::Event_Killed( const CTakeDamageInfo &info )
 {
+	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && info.GetDamageType() & (DMG_BLAST | DMG_CRUSH) && !(info.GetDamageType() & (DMG_DISSOLVE)) && !PlayerHasMegaPhysCannon())
+	{
+		Vector vecDamageDir = info.GetDamageForce();
+		SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
+		DispatchParticleEffect("headshotspray", GetAbsOrigin(), GetAbsAngles(), this);
+		EmitSound("Gore.Headshot");
+		float flFadeTime = 25.0;
+
+		CGib::SpawnSpecificGibs(this, 1, 750, 1500, "models/gibs/soldier_elite_head.mdl", flFadeTime);
+
+		Vector vecRagForce;
+		vecRagForce.x = random->RandomFloat(-400, 400);
+		vecRagForce.y = random->RandomFloat(-400, 400);
+		vecRagForce.z = random->RandomFloat(0, 250);
+
+		Vector vecRagDmgForce = (vecRagForce + vecDamageDir);
+
+		CBaseEntity *pLeftArmGib = CreateRagGib("models/gibs/soldier_elite_left_arm.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		if (pLeftArmGib)
+		{
+			color32 color = pLeftArmGib->GetRenderColor();
+			pLeftArmGib->SetRenderColor(color.r, color.g, color.b, color.a);
+		}
+
+		CBaseEntity *pRightArmGib = CreateRagGib("models/gibs/soldier_elite_right_arm.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		if (pRightArmGib)
+		{
+			color32 color = pRightArmGib->GetRenderColor();
+			pRightArmGib->SetRenderColor(color.r, color.g, color.b, color.a);
+		}
+
+		CBaseEntity *pTorsoGib = CreateRagGib("models/gibs/soldier_elite_torso.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		if (pTorsoGib)
+		{
+			color32 color = pTorsoGib->GetRenderColor();
+			pTorsoGib->SetRenderColor(color.r, color.g, color.b, color.a);
+		}
+
+		CBaseEntity *pPelvisGib = CreateRagGib("models/gibs/soldier_elite_pelvis.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		if (pPelvisGib)
+		{
+			color32 color = pPelvisGib->GetRenderColor();
+			pPelvisGib->SetRenderColor(color.r, color.g, color.b, color.a);
+		}
+
+		CBaseEntity *pLeftLegGib = CreateRagGib("models/gibs/soldier_elite_left_leg.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		if (pLeftLegGib)
+		{
+			color32 color = pLeftLegGib->GetRenderColor();
+			pLeftLegGib->SetRenderColor(color.r, color.g, color.b, color.a);
+		}
+
+		CBaseEntity *pRightLegGib = CreateRagGib("models/gibs/soldier_elite_right_leg.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		if (pRightLegGib)
+		{
+			color32 color = pRightLegGib->GetRenderColor();
+			pRightLegGib->SetRenderColor(color.r, color.g, color.b, color.a);
+		}
+
+		//now add smaller gibs.
+		CGib::SpawnSpecificGibs(this, 3, 750, 1500, "models/gibs/pgib_p3.mdl", flFadeTime);
+		CGib::SpawnSpecificGibs(this, 3, 750, 1500, "models/gibs/pgib_p4.mdl", flFadeTime);
+
+		Vector forceVector = CalcDamageForceVector(info);
+
+		// Drop any weapon that I own
+		if (VPhysicsGetObject())
+		{
+			Vector weaponForce = forceVector * VPhysicsGetObject()->GetInvMass();
+			Weapon_Drop(m_hActiveWeapon, NULL, &weaponForce);
+		}
+		else
+		{
+			Weapon_Drop(m_hActiveWeapon);
+		}
+
+		if (info.GetAttacker()->IsPlayer())
+		{
+			((CSingleplayRules*)GameRules())->NPCKilled(this, info);
+		}
+
+		UTIL_Remove(this);
+		SetThink(NULL);
+		return;
+	}
+
 	// Don't bother if we've been told not to, or the player has a megaphyscannon
 	if ( combine_guard_spawn_health.GetBool() == false || PlayerHasMegaPhysCannon() )
 	{

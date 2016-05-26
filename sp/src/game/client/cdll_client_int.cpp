@@ -1085,6 +1085,8 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 	HookHapticMessages(); // Always hook the messages
 #endif
 
+	//InitCustomWeapon();
+
 	return true;
 }
 

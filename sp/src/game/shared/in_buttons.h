@@ -40,5 +40,6 @@
 #define	IN_IRONSIGHT	(1 << 26)
 #define	IN_KICK			(1 << 27)
 #define	IN_BULLETTIME	(1 << 28)
+#define	IN_JETPACK		(1 << 29)
 
 #endif // IN_BUTTONS_H

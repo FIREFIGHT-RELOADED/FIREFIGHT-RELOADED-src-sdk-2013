@@ -507,6 +507,7 @@ void CHL2_Player::Precache( void )
 	PrecacheScriptSound( "HL2Player.TrainUse" );
 	PrecacheScriptSound( "HL2Player.Use" );
 	PrecacheScriptSound( "HL2Player.BurnPain" );
+	PrecacheScriptSound( "HL2Player.Jetpack" );
 	PrecacheModel(PLAYER_MODEL);
 }
 
@@ -1030,7 +1031,8 @@ void CHL2_Player::KickAttack(void)
 			// Trace up or down based on where the enemy is...
 			// But only if we're basically facing that direction
 			Vector vecDirection;
-			AngleVectors(QAngle(clamp(EyeAngles().x, 20, 80), EyeAngles().y, EyeAngles().z), &vecDirection);
+			int kick_maxrange = 120;
+			AngleVectors(QAngle(clamp(EyeAngles().x, 20, kick_maxrange), EyeAngles().y, EyeAngles().z), &vecDirection);
 
 			CBaseEntity *pEnemy = MyNPCPointer() ? MyNPCPointer()->GetEnemy() : NULL;
 			if (pEnemy)
@@ -1103,6 +1105,17 @@ void CHL2_Player::KickAttack(void)
 	}
 }
 
+void CHL2_Player::FlyJetpack(void)
+{
+	if (!IsDead())
+	{
+		SetGroundEntity(NULL);
+		Vector up;
+		AngleVectors(GetLocalAngles(), NULL, NULL, &up);
+		ApplyAbsVelocityImpulse(up * 10);
+	}
+}
+
 void CHL2_Player::PostThink( void )
 {
 	BaseClass::PostThink();
@@ -1126,6 +1139,16 @@ void CHL2_Player::PostThink( void )
 		{
 			KickAttack();
 			m_bIsKicking = true;
+		}
+
+		if (m_nButtons & IN_JETPACK)
+		{
+			FlyJetpack();
+			EmitSound("HL2Player.Jetpack");
+		}
+		else
+		{
+			StopSound("HL2Player.Jetpack");
 		}
 	}
 

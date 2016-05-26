@@ -214,43 +214,55 @@ void RegisterScriptedWeapon(const char *className)
 	// they don't appear as valid registered entities.
 	// static CPrecacheRegister precache_weapon_(&CPrecacheRegister::PrecacheFn_Other, className);
 }
-void InitCustomWeapon()
+void InitCustomWeapon(void)
 {
 	FileFindHandle_t findHandle; // note: FileFINDHandle
 
-	const char *pFilename = filesystem->FindFirstEx("scripts/customweapons/*.txt", "MOD", &findHandle);
+	const char *pFilename = filesystem->FindFirstEx("scripts/*.txt", "MOD", &findHandle);
 	while (pFilename)
 	{
-		Msg("%s added to custom weapon list!\n", pFilename);
+		if (Q_strncmp(pFilename, "weapon_custom_", strlen("weapon_custom_")) == 0)
+		{
+#ifdef CLIENT_DLL
+			Msg("'%s' added to Custom Weapon list on Client!\n", pFilename);
+#else
+			Msg("'%s' added to Custom Weapon list on Server!\n", pFilename);
+#endif
 
 #if !defined(CLIENT_DLL)
-		//	CEntityFactory<CWeaponCustom> weapon_custom( pFilename );
-		//	UTIL_PrecacheOther(pFilename);
+			//	CEntityFactory<CWeaponCustom> weapon_custom( pFilename );
+			//	UTIL_PrecacheOther(pFilename);
 #endif
-		char fileBase[512] = "";
-		Q_FileBase(pFilename, fileBase, sizeof(fileBase));
-		RegisterScriptedWeapon(fileBase);
-		//CEntityFactory<CWeaponCustom>(CEntityFactory<CWeaponCustom> &);
-		//LINK_ENTITY_TO_CLASS2(pFilename,CWeaponCustom);
+			char fileBase[512] = "";
+			Q_FileBase(pFilename, fileBase, sizeof(fileBase));
+			RegisterScriptedWeapon(fileBase);
+			//CEntityFactory<CWeaponCustom>(CEntityFactory<CWeaponCustom> &);
+			//LINK_ENTITY_TO_CLASS2(pFilename,CWeaponCustom);
 
-		WEAPON_FILE_INFO_HANDLE tmp;
+			WEAPON_FILE_INFO_HANDLE tmp;
 #ifdef CLIENT_DLL
-		if (ReadWeaponDataFromFileForSlot(filesystem, fileBase, &tmp))
-		{
-			gWR.LoadWeaponSprites(tmp, true);
-		}
+			if (ReadWeaponDataFromFileForSlot(filesystem, fileBase, &tmp))
+			{
+				gWR.LoadWeaponSprites(tmp);
+			}
 #else
-		ReadWeaponDataFromFileForSlot(filesystem, fileBase, &tmp);
+			ReadWeaponDataFromFileForSlot(filesystem, fileBase, &tmp);
 #endif
 
 
-		pFilename = filesystem->FindNext(findHandle);
+			pFilename = filesystem->FindNext(findHandle);
+		}
+		else
+		{
+			pFilename = filesystem->FindNext(findHandle);
+		}
 	}
 
 	filesystem->FindClose(findHandle);
 
 }
 */
+
 void PrecacheFileWeaponInfoDatabase( IFileSystem *filesystem, const unsigned char *pICEKey )
 {
 	if ( m_WeaponInfoDatabase.Count() )
@@ -358,25 +370,25 @@ KeyValues* ReadEncryptedKVFile( IFileSystem *filesystem, const char *szFilenameW
 //			false - if data load fails
 //-----------------------------------------------------------------------------
 
-bool ReadWeaponDataFromFileForSlot( IFileSystem* filesystem, const char *szWeaponName, WEAPON_FILE_INFO_HANDLE *phandle, const unsigned char *pICEKey )
+bool ReadWeaponDataFromFileForSlot(IFileSystem* filesystem, const char *szWeaponName, WEAPON_FILE_INFO_HANDLE *phandle, const unsigned char *pICEKey)
 {
-	if ( !phandle )
+	if (!phandle)
 	{
-		Assert( 0 );
+		Assert(0);
 		return false;
 	}
-	
-	*phandle = FindWeaponInfoSlot( szWeaponName );
-	FileWeaponInfo_t *pFileInfo = GetFileWeaponInfoFromHandle( *phandle );
-	Assert( pFileInfo );
 
-	if ( pFileInfo->bParsedScript )
+	*phandle = FindWeaponInfoSlot(szWeaponName);
+	FileWeaponInfo_t *pFileInfo = GetFileWeaponInfoFromHandle(*phandle);
+	Assert(pFileInfo);
+
+	if (pFileInfo->bParsedScript)
 		return true;
 
-	char sz[128];
-	Q_snprintf( sz, sizeof( sz ), "scripts/%s", szWeaponName );
+	char sz[1024];
+	Q_snprintf(sz, sizeof(sz), "scripts/%s", szWeaponName);
 
-	KeyValues *pKV = ReadEncryptedKVFile( filesystem, sz, pICEKey,
+	KeyValues *pKV = ReadEncryptedKVFile(filesystem, sz, pICEKey,
 #if defined( DOD_DLL )
 		true			// Only read .ctx files!
 #else
@@ -384,10 +396,10 @@ bool ReadWeaponDataFromFileForSlot( IFileSystem* filesystem, const char *szWeapo
 #endif
 		);
 
-	if ( !pKV )
+	if (!pKV)
 		return false;
 
-	pFileInfo->Parse( pKV, szWeaponName );
+	pFileInfo->Parse(pKV, szWeaponName);
 
 	pKV->deleteThis();
 
@@ -592,6 +604,8 @@ void FileWeaponInfo_t::Parse( KeyValues *pKeyValuesData, const char *szWeaponNam
 			m_sWeaponOptions = true;
 			m_sCanReloadSingly = (pWeaponOptions->GetInt("CanReloadSingly", 1) != 0) ? true : false;
 			m_sDualWeapons = (pWeaponOptions->GetInt("DualWeapons", 1) != 0) ? true : false;
+			m_sCustomMelee = (pWeaponOptions->GetInt("IsMelee", 1) != 0) ? true : false;
+			m_sCustomMeleeSecondary = (pWeaponOptions->GetInt("SecondaryCanMelee", 1) != 0) ? true : false;
 		}
 		else
 		{
@@ -850,6 +864,32 @@ void FileWeaponInfo_t::Parse( KeyValues *pKeyValuesData, const char *szWeaponNam
 		else
 		{
 			m_sHasSecondaryFire = false;
+		}
+
+		KeyValues *pMeleeOptions = pWeaponSpec->FindKey("Melee");
+		if (pMeleeOptions)
+		{
+			m_sHasMeleeOptions = true;
+			m_sMeleeDamage = pMeleeOptions->GetFloat("Damage", 0);
+			m_sMeleeRange = pMeleeOptions->GetFloat("Range", 0);
+
+			KeyValues *pRecoilM = pMeleeOptions->FindKey("Kick");
+			if (pRecoilM) //No params yet, but setting this will enable missles
+			{
+				m_sMeleeKickEasyDampen = pRecoilM->GetFloat("EasyDampen", 0);
+				m_sMeleeKickDegrees = pRecoilM->GetFloat("Degrees", 0);
+				m_sMeleeKickSeconds = pRecoilM->GetFloat("Seconds", 0);
+			}
+			else
+			{
+				m_sMeleeKickEasyDampen = 0.0;
+				m_sMeleeKickDegrees = 0.0;
+				m_sMeleeKickSeconds = 0.0;
+			}
+		}
+		else
+		{
+			m_sHasMeleeOptions = false;
 		}
 
 		

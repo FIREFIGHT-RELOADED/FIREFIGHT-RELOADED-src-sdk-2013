@@ -917,6 +917,8 @@ private:
 	bool				m_bWakeSquad;
 	int					m_nWakeTick;
 
+	float				m_fIdleTime;
+
 public:
 	//-----------------------------------------------------
 	//
