@@ -40,7 +40,7 @@ enum MouseState
 //-----------------------------------------------------------------------------
 class CFRMainMenuButtonBase : public CExButton
 {
-	friend CFRButtonBase;
+	friend class CFRButtonBase;
 public:
 	DECLARE_CLASS_SIMPLE(CFRMainMenuButtonBase, CExButton);
 
