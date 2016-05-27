@@ -2,8 +2,8 @@
 #include "fr_mainmenupanel.h"
 #include "fr_mainmenu.h"
 #include "fr_tips.h"
-#include "gameui\SingleplayerAdvancedDialog.h"
-#include "gameui\NewSingleplayerGameDialog.h"
+#include "gameui/SingleplayerAdvancedDialog.h"
+#include "gameui/NewSingleplayerGameDialog.h"
 
 using namespace vgui;
 // memdbgon must be the last include file in a .cpp file!!!

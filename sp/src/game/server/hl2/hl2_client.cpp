@@ -33,7 +33,7 @@ void Host_Say( edict_t *pEdict, bool teamonly );
 
 extern CBaseEntity*	FindPickerEntityClass( CBasePlayer *pPlayer, char *classname );
 extern bool			g_fGameOver;
-const char			*szModelName = NULL;
+//const char			*szModelName = NULL; //already declared?
 
 /*
 ===========
