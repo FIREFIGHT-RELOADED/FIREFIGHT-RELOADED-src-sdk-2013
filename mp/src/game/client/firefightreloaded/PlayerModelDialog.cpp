@@ -14,7 +14,7 @@ using namespace vgui;
 
 #include <vgui/ILocalize.h>
 
-#include "FileSystem.h"
+#include "filesystem.h"
 #include <KeyValues.h>
 #include <vgui_controls/ComboBox.h>
 #include <vgui_controls/BitmapImagePanel.h>

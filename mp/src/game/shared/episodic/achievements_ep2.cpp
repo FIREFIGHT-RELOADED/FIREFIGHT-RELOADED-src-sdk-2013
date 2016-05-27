@@ -13,7 +13,7 @@
 #include "baseachievement.h"
 #include "iservervehicle.h"
 #include "npc_antlion.h"
-#include "episodic\npc_hunter.h"
+#include "episodic/npc_hunter.h"
 
 
 class CAchievementEp2KillPoisonAntlion : public CBaseAchievement

@@ -1,6 +1,6 @@
 #include "cbase.h"
 #include "fr_rendertargets.h"
-#include "materialsystem\imaterialsystem.h"
+#include "materialsystem/imaterialsystem.h"
 #include "rendertexture.h"
 
 ITexture* CFRRenderTargets::CreateScopeTexture(IMaterialSystem* pMaterialSystem)

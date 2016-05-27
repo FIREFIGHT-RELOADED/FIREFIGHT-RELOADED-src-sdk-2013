@@ -19,7 +19,7 @@
 
 #ifdef HL2_EPISODIC
 #include "ai_behavior_operator.h"
-#include "episodic\ai_behavior_passenger_companion.h"
+#include "episodic/ai_behavior_passenger_companion.h"
 #endif
 
 #if defined( _WIN32 )
