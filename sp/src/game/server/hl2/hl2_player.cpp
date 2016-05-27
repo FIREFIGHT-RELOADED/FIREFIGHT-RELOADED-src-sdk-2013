@@ -46,7 +46,7 @@
 #include "gamestats.h"
 #include "filters.h"
 #include "tier0/icommandline.h"
-#include "basepropdoor.h"
+#include "BasePropDoor.h"
 #include "doors.h"
 #include "grenade_frag.h"
 
