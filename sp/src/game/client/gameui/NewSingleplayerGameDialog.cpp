@@ -14,7 +14,7 @@ using namespace vgui;
 
 #include <vgui/ILocalize.h>
 
-#include "FileSystem.h"
+#include "filesystem.h"
 #include <KeyValues.h>
 #include <vgui_controls/ComboBox.h>
 #include "tier1/convar.h"
@@ -115,10 +115,10 @@ void CNewSingleplayerGameDialog::LoadMaps(const char *pszPathID)
 		// FindFirst ignores the pszPathID, so check it here
 		// TODO: this doesn't find maps in fallback dirs
 		Q_snprintf( mapname, sizeof(mapname), "maps/%s", pszFilename );
-		if ( !g_pFullFileSystem->FileExists( mapname, pszPathID ) )
-		{
-			goto nextFile;
-		}
+		//if ( !g_pFullFileSystem->FileExists( mapname, pszPathID ) )
+		//{
+		//	goto nextFile; //causes 'crosses initialization of' error
+		//}
 
 		// remove the text 'maps/' and '.bsp' from the file name to get the map name
 		
