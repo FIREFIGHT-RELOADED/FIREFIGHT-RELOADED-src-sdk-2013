@@ -88,8 +88,8 @@ ConVar	g_antlionguardian_hemorrhage( "g_antlionguardian_hemorrhage", "1", FCVAR_
 
 ConVar	sk_antlionguardian_health( "sk_antlionguardian_health", "0" );
 
-int	g_interactionAntlionGuardFoundPhysicsObject = 0;	// We're moving to a physics object to shove it, don't all choose the same object
-int	g_interactionAntlionGuardShovedPhysicsObject = 0;	// We've punted an object, it is now clear to be chosen by others
+int	g_interactionAntlionGuardianFoundPhysicsObject = 0;	// We're moving to a physics object to shove it, don't all choose the same object
+int	g_interactionAntlionGuardianShovedPhysicsObject = 0;	// We've punted an object, it is now clear to be chosen by others
 
 //==================================================
 // AntlionGuardSchedules
@@ -932,7 +932,7 @@ int CNPC_AntlionGuardian::SelectUnreachableSchedule( void )
 		// Tell any squadmates I'm going for this item so they don't as well
 		if ( GetSquad() != NULL )
 		{
-			GetSquad()->BroadcastInteraction( g_interactionAntlionGuardFoundPhysicsObject, (void *)((CBaseEntity *)m_hPhysicsTarget), this );
+			GetSquad()->BroadcastInteraction( g_interactionAntlionGuardianFoundPhysicsObject, (void *)((CBaseEntity *)m_hPhysicsTarget), this );
 		}
 
 		return SCHED_ANTLIONGUARDIAN_PHYSICS_ATTACK;
@@ -1797,7 +1797,7 @@ void CNPC_AntlionGuardian::HandleAnimEvent( animevent_t *pEvent )
 		// Notify any squad members that we're no longer monopolizing this object
 		if ( GetSquad() != NULL )
 		{
-			GetSquad()->BroadcastInteraction( g_interactionAntlionGuardShovedPhysicsObject, (void *)((CBaseEntity *)m_hPhysicsTarget), this );
+			GetSquad()->BroadcastInteraction( g_interactionAntlionGuardianShovedPhysicsObject, (void *)((CBaseEntity *)m_hPhysicsTarget), this );
 		}
 
 		m_hPhysicsTarget = NULL;
@@ -4527,14 +4527,14 @@ bool CNPC_AntlionGuardian::RememberFailedPhysicsTarget( CBaseEntity *pTarget )
 bool CNPC_AntlionGuardian::HandleInteraction( int interactionType, void *data, CBaseCombatCharacter *sender )
 {
 	// Don't chase targets that other guards in our squad may be going after!
-	if ( interactionType == g_interactionAntlionGuardFoundPhysicsObject )
+	if ( interactionType == g_interactionAntlionGuardianFoundPhysicsObject )
 	{
 		RememberFailedPhysicsTarget( (CBaseEntity *) data );
 		return true;
 	}
 
 	// Mark a shoved object as being free to pursue again
-	if ( interactionType == g_interactionAntlionGuardShovedPhysicsObject )
+	if ( interactionType == g_interactionAntlionGuardianShovedPhysicsObject )
 	{
 		CBaseEntity *pObject = (CBaseEntity *) data;
 		m_FailedPhysicsTargets.FindAndRemove( pObject );
@@ -4591,8 +4591,8 @@ unsigned char CNPC_AntlionGuardian::GetBleedingLevel( void ) const
 AI_BEGIN_CUSTOM_NPC( npc_antlionguardian, CNPC_AntlionGuardian )
 
 	// Interactions	
-	DECLARE_INTERACTION( g_interactionAntlionGuardFoundPhysicsObject )
-	DECLARE_INTERACTION( g_interactionAntlionGuardShovedPhysicsObject )
+	DECLARE_INTERACTION( g_interactionAntlionGuardianFoundPhysicsObject )
+	DECLARE_INTERACTION( g_interactionAntlionGuardianShovedPhysicsObject )
 
 	// Squadslots	
 	DECLARE_SQUADSLOT( SQUAD_SLOT_ANTLIONGUARDIAN_CHARGE )

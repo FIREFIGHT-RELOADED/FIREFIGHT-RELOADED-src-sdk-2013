@@ -21,10 +21,10 @@
 #include "eventqueue.h"
 #include "gamestats.h"
 #include "ai_basenpc.h"
-#include "basepropdoor.h"
+#include "BasePropDoor.h"
 #include "doors.h"
 #include "cdll_int.h"
-#include "FileSystem.h"
+#include "filesystem.h"
 
 #include "engine/IEngineSound.h"
 #include "SoundEmitterSystem/isoundemittersystembase.h"

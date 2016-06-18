@@ -13,7 +13,7 @@
 #include <stdlib.h>
 //#include "EngineInterface.h"
 #include <vgui_controls/Label.h>
-#include "FileSystem.h"
+#include "filesystem.h"
 #include "tier1/convar.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -334,18 +334,18 @@ void CScriptObject::WriteToFile(FileHandle_t fp)
 		break;
 	case O_NUMBER:
 		fVal = fcurValue;
-		if (fMin != -1.0)
-			fVal = __max(fVal, fMin);
-		if (fMax != -1.0)
-			fVal = __min(fVal, fMax);
+		if ((fMin != -1.0) && (fMin > fVal))
+			fVal = fMin;
+		if ((fMax != -1.0) && (fMax < fVal))
+			fVal = fMax;
 		g_pFullFileSystem->FPrintf(fp, "\"%f\"\r\n", fVal);
 		break;
 	case O_SLIDER:
 		fVal = fcurValue;
-		if (fMin != -1.0)
-			fVal = __max(fVal, fMin);
-		if (fMax != -1.0)
-			fVal = __min(fVal, fMax);
+		if ((fMin != -1.0) && (fMin > fVal))
+			fVal = fMin;
+		if ((fMax != -1.0) && (fMax < fVal))
+			fVal = fMax;
 		g_pFullFileSystem->FPrintf(fp, "\"%f\"\r\n", fVal);
 		break;
 	case O_STRING:
@@ -398,18 +398,18 @@ void CScriptObject::WriteToConfig(void)
 		break;
 	case O_NUMBER:
 		fVal = fcurValue;
-		if (fMin != -1.0)
-			fVal = __max(fVal, fMin);
-		if (fMax != -1.0)
-			fVal = __min(fVal, fMax);
+		if ((fMin != -1.0) && (fMin > fVal))
+			fVal = fMin;
+		if ((fMax != -1.0) && (fMax < fVal))
+			fVal = fMax;
 		Q_snprintf(szValue, sizeof(szValue), "%f", fVal);
 		break;
 	case O_SLIDER:
 		fVal = fcurValue;
-		if (fMin != -1.0)
-			fVal = __max(fVal, fMin);
-		if (fMax != -1.0)
-			fVal = __min(fVal, fMax);
+		if ((fMin != -1.0) && (fMin > fVal))
+			fVal = fMin;
+		if ((fMax != -1.0) && (fMax < fVal))
+			fVal = fMax;
 		Q_snprintf(szValue, sizeof(szValue), "%f", fVal);
 		break;
 	case O_STRING:

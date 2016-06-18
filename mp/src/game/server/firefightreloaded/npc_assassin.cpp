@@ -6,14 +6,14 @@
 
 #include "cbase.h"
 #include "ammodef.h"
-#include "AI_Hint.h"
-#include "AI_Navigator.h"
-#include "npc_Assassin.h"
+#include "ai_hint.h"
+#include "ai_navigator.h"
+#include "npc_assassin.h"
 #include "game.h"
-#include "NPCEvent.h"
+#include "npcevent.h"
 #include "engine/IEngineSound.h"
-#include "AI_Squad.h"
-#include "AI_SquadSlot.h"
+#include "ai_squad.h"
+#include "ai_squadslot.h"
 #include "ai_moveprobe.h"
 
 // memdbgon must be the last include file in a .cpp file!!!

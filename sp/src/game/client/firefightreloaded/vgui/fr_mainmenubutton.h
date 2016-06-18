@@ -17,7 +17,7 @@ class CFRButton;
 //-----------------------------------------------------------------------------
 class CFRMainMenuButton : public CFRMainMenuButtonBase
 {
-	friend CFRButton;
+	friend class CFRButton;
 public:
 	DECLARE_CLASS_SIMPLE(CFRMainMenuButton, CFRMainMenuButtonBase);
 

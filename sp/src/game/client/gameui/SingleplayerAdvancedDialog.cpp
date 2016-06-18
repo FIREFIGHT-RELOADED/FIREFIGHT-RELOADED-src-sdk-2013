@@ -24,7 +24,7 @@
 #include "PanelListPanel.h"
 #include <vgui/IInput.h>
 
-#include "FileSystem.h"
+#include "filesystem.h"
 
 #include <tier0/vcrmode.h>
 

@@ -92,8 +92,8 @@ int AE_WNTLION_WORKER_DONT_EXPLODE;
 #define	ANTLION_MIN_BUGBAIT_GOAL_TARGET_RADIUS	512
 
 //Interaction IDs
-int g_interactionAntlionFoundTarget = 0;
-int g_interactionAntlionFiredAtTarget = 0;
+int g_interactionAntlionWorkerFoundTarget = 0;
+int g_interactionAntlionWorkerFiredAtTarget = 0;
 
 #define ANTLION_WORKER_MODEL	"models/wntlion_worker.mdl"
 
@@ -990,7 +990,7 @@ void CNPC_AntlionWorker::DelaySquadAttack( float flDuration )
 	{
 		// Reduce the duration by as much as 50% of the total time to make this less robotic
 		float flAdjDuration = flDuration - random->RandomFloat( 0.0f, (flDuration*0.5f) );
-		GetSquad()->BroadcastInteraction( g_interactionAntlionFiredAtTarget, (void *)&flAdjDuration, this );
+		GetSquad()->BroadcastInteraction( g_interactionAntlionWorkerFiredAtTarget, (void *)&flAdjDuration, this );
 	}
 }
 
@@ -2911,7 +2911,7 @@ int CNPC_AntlionWorker::MeleeAttack2Conditions( float flDot, float flDist )
 bool CNPC_AntlionWorker::HandleInteraction( int interactionType, void *data, CBaseCombatCharacter *sender )
 {
 	//Check for a target found while burrowed
-	if ( interactionType == g_interactionAntlionFoundTarget )
+	if ( interactionType == g_interactionAntlionWorkerFoundTarget )
 	{
 		CBaseEntity	*pOther = (CBaseEntity *) data;
 		
@@ -2925,7 +2925,7 @@ bool CNPC_AntlionWorker::HandleInteraction( int interactionType, void *data, CBa
 	// fixed for episodic: allow interactions to fall through in the base class. ifdefed away
 	// for mainline in case anything depends on this bug.
 	
-	if ( interactionType == g_interactionAntlionFiredAtTarget )
+	if ( interactionType == g_interactionAntlionWorkerFiredAtTarget )
 	{
 		float flDuration = *((float *)data);
 		SetNextAttack(gpGlobals->curtime + flDuration);
@@ -4333,8 +4333,8 @@ bool CNPC_AntlionWorker::CanRunAScriptedNPCInteraction( bool bForced /*= false*/
 AI_BEGIN_CUSTOM_NPC( npc_antlionworker, CNPC_AntlionWorker )
 
 	//Register our interactions
-	DECLARE_INTERACTION( g_interactionAntlionFoundTarget )
-	DECLARE_INTERACTION( g_interactionAntlionFiredAtTarget )
+	DECLARE_INTERACTION( g_interactionAntlionWorkerFoundTarget )
+	DECLARE_INTERACTION( g_interactionAntlionWorkerFiredAtTarget )
 
 	//Conditions
 	DECLARE_CONDITION( COND_ANTLIONWORKER_FLIPPED )

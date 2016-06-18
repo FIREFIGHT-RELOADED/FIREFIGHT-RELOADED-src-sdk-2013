@@ -30,7 +30,7 @@ extern IVModelInfo* modelinfo;
 
 	#include "hl2mp_player.h"
 	#include "vphysics/constraints.h"
-	#include "AI_BaseNPC.h" 
+	#include "ai_basenpc.h" 
 
 #endif
 
