@@ -71,7 +71,7 @@ ConVar viewmodel_adjust_pitch("viewmodel_adjust_pitch", "0", FCVAR_REPLICATED);
 ConVar viewmodel_adjust_yaw("viewmodel_adjust_yaw", "0", FCVAR_REPLICATED);
 ConVar viewmodel_adjust_roll("viewmodel_adjust_roll", "0", FCVAR_REPLICATED);
 ConVar viewmodel_adjust_fov("viewmodel_adjust_fov", "0", FCVAR_REPLICATED, "Note: this feature is not available during any kind of zoom", vm_adjust_fov_callback);
-ConVar viewmodel_adjust_enabled("viewmodel_adjust_enabled", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "enabled viewmodel adjusting", vm_adjust_enable_callback);
+ConVar viewmodel_adjust_enabled("viewmodel_adjust_enabled", "0", FCVAR_REPLICATED, "enabled viewmodel adjusting", vm_adjust_enable_callback);
 ConVar viewmodel_lower_on_sprint("viewmodel_lower_on_sprint", "0", FCVAR_ARCHIVE);
 ConVar weapon_magazinestyledreloads("weapon_magazinestyledreloads", "0", FCVAR_ARCHIVE);
 

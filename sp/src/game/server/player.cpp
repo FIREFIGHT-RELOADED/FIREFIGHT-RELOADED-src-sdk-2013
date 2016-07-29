@@ -7846,6 +7846,54 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		}
 		return true;
 	}
+	else if (stricmp(cmd, "moddingmenu") == 0)
+	{
+		KeyValues *data = new KeyValues("data");
+		data->SetString("type", "1");			// show userdata from stringtable entry
+		ShowViewPortPanel(PANEL_MODDING_MAIN, true, data);
+		return true;
+	}
+	else if (stricmp(cmd, "moddingmenumapping") == 0)
+	{
+		KeyValues *data = new KeyValues("data");
+		data->SetString("type", "1");			// show userdata from stringtable entry
+		ShowViewPortPanel(PANEL_MODDING_MAPPING, true, data);
+		return true;
+	}
+	else if (stricmp(cmd, "moddingmenumappingmapadd") == 0)
+	{
+		KeyValues *data = new KeyValues("data");
+		data->SetString("type", "1");			// show userdata from stringtable entry
+		ShowViewPortPanel(PANEL_MODDING_MAPADD, true, data);
+		return true;
+	}
+	else if (stricmp(cmd, "moddingmenumappingnoding") == 0)
+	{
+		KeyValues *data = new KeyValues("data");
+		data->SetString("type", "1");			// show userdata from stringtable entry
+		ShowViewPortPanel(PANEL_MODDING_NODING, true, data);
+		return true;
+	}
+	else if (stricmp(cmd, "moddingmenuweapons") == 0)
+	{
+		KeyValues *data = new KeyValues("data");
+		data->SetString("type", "1");			// show userdata from stringtable entry
+		ShowViewPortPanel(PANEL_MODDING_WEAPONS, true, data);
+		return true;
+	}
+	else if (stricmp(cmd, "givemapadditems") == 0)
+	{
+		GiveNamedItem("weapon_positiongrabber");
+		g_pGameRules->SetGamemode(FIREFIGHT_PRIMARY_DISABLED);
+		return true;
+	}
+	else if (stricmp(cmd, "ironsightedit") == 0)
+	{
+		engine->ServerCommand("exec ironsite_cfg.cfg\n");
+		CFmtStr hint;
+		hint.sprintf("#FIREFIGHTRELOADED_Modding_IronsightHint");
+		UTIL_HudHintText(this, hint.Access());
+	}
 
 	return false;
 }

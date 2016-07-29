@@ -141,7 +141,7 @@ void CNewSingleplayerGameDialog::LoadMaps(const char *pszPathID)
 		m_pMapList->AddItem( mapname, new KeyValues( "data", "mapname", mapname ) );
 
 		// get the next file
-	nextFile:
+	//nextFile:
 		pszFilename = g_pFullFileSystem->FindNext( findHandle );
 	}
 	g_pFullFileSystem->FindClose( findHandle );

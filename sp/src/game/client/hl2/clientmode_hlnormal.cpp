@@ -17,6 +17,11 @@
 #include "firefightreloaded/fr_storemenu_ammo.h"
 #include "firefightreloaded/fr_storemenu_supplies.h"
 #include "firefightreloaded/fr_storemenu_weapons.h"
+#include "firefightreloaded/fr_moddingmenu.h"
+#include "firefightreloaded/fr_moddingmenu_mapping.h"
+#include "firefightreloaded/fr_moddingmenu_mapping_mapadd.h"
+#include "firefightreloaded/fr_moddingmenu_mapping_noding.h"
+#include "firefightreloaded/fr_moddingmenu_weapons.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -82,6 +87,31 @@ IViewPortPanel* CHudViewport::CreatePanelByName(const char *szPanelName)
 	else if (Q_strcmp(PANEL_BUY_AMMO, szPanelName) == 0)
 	{
 		newpanel = new CFRStoreMenuAmmo(this);
+		return newpanel;
+	}
+	else if (Q_strcmp(PANEL_MODDING_MAIN, szPanelName) == 0)
+	{
+		newpanel = new CFRModdingMenu(this);
+		return newpanel;
+	}
+	else if (Q_strcmp(PANEL_MODDING_MAPPING, szPanelName) == 0)
+	{
+		newpanel = new CFRModdingMenu_Mapping(this);
+		return newpanel;
+	}
+	else if (Q_strcmp(PANEL_MODDING_MAPADD, szPanelName) == 0)
+	{
+		newpanel = new CFRModdingMenu_Mapping_Mapadd(this);
+		return newpanel;
+	}
+	else if (Q_strcmp(PANEL_MODDING_NODING, szPanelName) == 0)
+	{
+		newpanel = new CFRModdingMenu_Mapping_Noding(this);
+		return newpanel;
+	}
+	else if (Q_strcmp(PANEL_MODDING_WEAPONS, szPanelName) == 0)
+	{
+		newpanel = new CFRModdingMenu_Weapons(this);
 		return newpanel;
 	}
 

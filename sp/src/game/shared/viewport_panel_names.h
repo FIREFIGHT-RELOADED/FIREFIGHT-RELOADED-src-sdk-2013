@@ -34,6 +34,11 @@
 #define PANEL_BUYPRESET_MAIN	"buypreset_main"
 #define PANEL_BUYPRESET_EDIT	"buypreset_edit"
 #define PANEL_INTRO			"intro"
+#define PANEL_MODDING_MAIN	"modding_main"
+#define PANEL_MODDING_MAPPING	"modding_mapping"
+#define PANEL_MODDING_MAPADD	"modding_mapadd"
+#define PANEL_MODDING_NODING	"modding_noding"
+#define PANEL_MODDING_WEAPONS	"modding_weapons"
 
 
 #define PANEL_COMMENTARY_MODELVIEWER	"commentary_modelviewer"

@@ -3164,7 +3164,7 @@ void CC_StartNodes(void)
 	Msg("Entered node placement mode. Use the 'ai_nodes_add' and 'ai_nodes_undo' commands to place/remove nodes at your feet.\n");
 	Msg("Use the 'ai_nodes_save' command to finish.\n");
 }
-static ConCommand cc_startnodes("ai_nodes_start", CC_StartNodes, "Start manually placing nodegraph elements, with 'ai_nodes_add' and 'ai_nodes_undo' commands. Finish with 'ai_nodes_save'.", FCVAR_CHEAT);
+static ConCommand cc_startnodes("ai_nodes_start", CC_StartNodes, "Start manually placing nodegraph elements, with 'ai_nodes_add' and 'ai_nodes_undo' commands. Finish with 'ai_nodes_save'.");
 
 
 void CC_SaveNodes(void)
@@ -3191,7 +3191,7 @@ void CC_SaveNodes(void)
 	bInNodePlacement = false;
 	Msg("Saved nodes & exited node placement mode. Reload map to build the AI nodegraph.\n");
 }
-static ConCommand cc_savenodes("ai_nodes_save", CC_SaveNodes, "Finish manually placing nodegraph elements, and save the .txt. First, use 'ai_nodes_start'.", FCVAR_CHEAT);
+static ConCommand cc_savenodes("ai_nodes_save", CC_SaveNodes, "Finish manually placing nodegraph elements, and save the .txt. First, use 'ai_nodes_start'.");
 
 
 void CC_AddNode(void)
@@ -3204,7 +3204,7 @@ void CC_AddNode(void)
 	CreateNode(vecOrigin);
 	Msg("Added node at: X: %f, Y: %f, Z: %f\n", vecOrigin.x, vecOrigin.y, vecOrigin.z);
 }
-static ConCommand cc_addnode("ai_nodes_add", CC_AddNode, "Manually place a nodegraph element at your feet. First, use 'ai_nodes_start'.", FCVAR_CHEAT);
+static ConCommand cc_addnode("ai_nodes_add", CC_AddNode, "Manually place a nodegraph element at your feet. First, use 'ai_nodes_start'.");
 
 
 void CC_UndoNode(void)
@@ -3222,5 +3222,5 @@ void CC_UndoNode(void)
 	else
 		Msg("Node list is empty\n");
 }
-static ConCommand cc_delnode("ai_nodes_undo", CC_UndoNode, "Delete the last placed node. First, use 'ai_nodes_start'.", FCVAR_CHEAT);
+static ConCommand cc_delnode("ai_nodes_undo", CC_UndoNode, "Delete the last placed node. First, use 'ai_nodes_start'.");
 #endif

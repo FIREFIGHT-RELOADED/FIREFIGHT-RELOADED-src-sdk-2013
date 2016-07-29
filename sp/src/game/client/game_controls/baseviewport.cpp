@@ -238,6 +238,11 @@ void CBaseViewport::CreateDefaultPanels( void )
 	AddNewPanel(CreatePanelByName(PANEL_BUY_WEAPONS), "PANEL_BUY_WEAPONS");
 	AddNewPanel(CreatePanelByName(PANEL_BUY_SUPPLIES), "PANEL_BUY_SUPPLIES");
 	AddNewPanel(CreatePanelByName(PANEL_BUY_AMMO), "PANEL_BUY_AMMO");
+	AddNewPanel(CreatePanelByName(PANEL_MODDING_MAIN), "PANEL_MODDING_MAIN");
+	AddNewPanel(CreatePanelByName(PANEL_MODDING_MAPPING), "PANEL_MODDING_MAPPING");
+	AddNewPanel(CreatePanelByName(PANEL_MODDING_MAPADD), "PANEL_MODDING_MAPADD");
+	AddNewPanel(CreatePanelByName(PANEL_MODDING_NODING), "PANEL_MODDING_NODING");
+	AddNewPanel(CreatePanelByName(PANEL_MODDING_WEAPONS), "PANEL_MODDING_WEAPONS");
 #endif
 }
 
