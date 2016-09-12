@@ -1,1090 +1,957 @@
-#include	"cbase.h"
-#include	"npc_cremator.h"
-#include	"particle_parse.h"
+//========= Copyright © 2015, Dark Interval.  =================================//
+//
+// Purpose: Keep it clean. OR... HE... WILL!..
+//
+// $NoKeywords: $
+//=============================================================================//
+#pragma warning(disable:4706)
+#include "cbase.h"
+#include "npc_cremator.h"
 
-	LINK_ENTITY_TO_CLASS( npc_cremator, CNPC_Cremator );
+/*------------Feb 25th '15 code revision------------*/
+/*================CNPC_Cremator===============*/
+/*--------------------------------------------*/
+#define SF_CREMATOR_NO_GRENADES					1<<23
+#define SF_CREMATOR_NO_FUEL_SPILLING			1<<24 
+#define SF_CREMATOR_NO_PATROL_BEHAVIOUR			1<<25
+#define CREMATOR_SKIN_ALERT				0 // yellow eyes
+#define CREMATOR_SKIN_CALM				1 // blue eyes
+#define CREMATOR_SKIN_ANGRY				2 // red eyes
+#define CREMATOR_SKIN_DEAD				3 // black eyes
+#define CREMATOR_IMMOLATOR_RANGE		300
+#define	CREMATOR_AE_IMMO_START			( 6 )
+#define	CREMATOR_AE_IMMO_PARTICLE		( 7 )
+#define	CREMATOR_AE_IMMO_PARTICLEOFF	( 8 )
+#define CREMATOR_AE_THROWGRENADE		( 9 )
+#define CREMATOR_AE_SPECIAL_START		( 10 )
+#define CREMATOR_AE_SPECIAL_MIDDLE		( 11 ) // bad name?
+#define CREMATOR_AE_SPECIAL_END			( 12 )
+#define CREMATOR_AE_RELOAD				( 15 )
+#define CREMATOR_AE_FLLEFT				( 98 )
+#define CREMATOR_AE_FLRIGHT				( 99 )
+#define	CREMATOR_BEAM_ATTACH			1
+#define CREMATOR_BURN_TIME				20
+#define CREMATOR_DETECT_CORPSE_RANGE	300.0
 
-int ACT_FIREINOUT;
+enum
+{
+	SCHED_CREMATOR_RANGE_ATTACK1 = LAST_SHARED_SCHEDULE + 100,
+	SCHED_CREMATOR_RANGE_ATTACK2,
+	SCHED_CREMATOR_CHASE_ENEMY,
+	SCHED_CREMATOR_PATROL,
+	SCHED_CREMATOR_INVESTIGATE_CORPSE,
+};
+enum
+{
+	TASK_CREMATOR_RANGE_ATTACK1 = LAST_SHARED_TASK + 1,
+	TASK_CREMATOR_RANGE_ATTACK2,
+	TASK_CREMATOR_RELOAD,
+	TASK_CREMATOR_INVESTIGATE_CORPSE,
+	TASK_CREMATOR_BURN_CORPSE,
+};
+enum
+{
+	COND_CREMATOR_OUT_OF_AMMO = LAST_SHARED_CONDITION + 1,
+	COND_CREMATOR_ENEMY_WITH_HIGHER_PRIORITY,
+	COND_CREMATOR_FOUND_CORPSE, // Cremator was patrolling the streets and found a corpse
+};
+
+CSound *pInterestSound;
+CBaseEntity *pCorpse;
+
+LINK_ENTITY_TO_CLASS(npc_cremator, CNPC_Cremator);
+
+ConVar	sk_cremator_health("sk_cremator_health", "180");
+ConVar	sk_cremator_firedamage("sk_cremator_firedamage", "0");
+ConVar	sk_cremator_radiusdamage("sk_cremator_radiusdamage", "0");
+ConVar  sk_cremator_corpse_search_radius("sk_cremator_corpse_search_radius", "320");
+ConVar  sk_cremator_attackplayeronsight("sk_cremator_attackplayeronsight", "0");
+
+Activity ACT_FIRESPREAD;
 Activity ACT_CREMATOR_ARM;
 Activity ACT_CREMATOR_DISARM;
 Activity ACT_CREMATOR_RELOAD;
 
-	BEGIN_DATADESC( CNPC_Cremator )
+BEGIN_DATADESC(CNPC_Cremator)
+DEFINE_FIELD(m_iAmmo, FIELD_INTEGER),
+DEFINE_FIELD(m_bHeadshot, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bIsPlayerEnemy, FIELD_BOOLEAN),
+//DEFINE_FIELD(m_bIsNPCEnemy, FIELD_BOOLEAN),
+END_DATADESC();
 
-	DEFINE_FIELD( m_flNextIdleSoundTime, FIELD_TIME ),
-	DEFINE_FIELD( m_flImmoRadius, FIELD_FLOAT ),
-	DEFINE_FIELD( m_bHeadshot, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bCanisterShot, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flNextRangeAttack2Time, FIELD_TIME ),
-	DEFINE_FIELD( m_iAmmo, FIELD_INTEGER ),
-	DEFINE_FIELD( m_iMaxAmmo, FIELD_INTEGER ),
-//
-	END_DATADESC()
-
-// Кэширование разнообразных ассетов для нпц.
 void CNPC_Cremator::Precache()
 {
+	PrecacheModel("models/Cremator.mdl");
+	PrecacheModel("models/Cremator_headprop.mdl");
+
+	PrecacheParticleSystem("vapor_ray");
+
+	PrecacheScriptSound("NPC_Cremator.NPCAlert");
+	PrecacheScriptSound("NPC_Cremator.PlayerAlert");
+	PrecacheScriptSound("NPC_Cremator.BreathingAmb");
+	PrecacheScriptSound("NPC_Cremator.AngryAmb");
+	PrecacheScriptSound("NPC_Cremator.DeathAmb");
+	PrecacheScriptSound("Weapon_Immolator.Single");
+	PrecacheScriptSound("Weapon_Immolator.Stop");
+
+	//	PrecacheModel( "sprites/glow02.vmt" );
+
+	//	UTIL_PrecacheOther( "env_sprite" );
+	//	UTIL_PrecacheOther( "crematorlight" );
+
 	BaseClass::Precache();
-	PrecacheModel( "models/cremator_test2.mdl" ); // common low-poly model обычная модель
-	PrecacheModel( "models/crematorhead.mdl" ); // отдельная модель головы
-
-	enginesound->PrecacheSound("npc/cremator/amb_loop.wav");
-	enginesound->PrecacheSound("npc/cremator/amb1.wav");
-	enginesound->PrecacheSound("npc/cremator/amb2.wav");
-	enginesound->PrecacheSound("npc/cremator/amb3.wav");
-	enginesound->PrecacheSound("npc/cremator/crem_die.wav");
-	enginesound->PrecacheSound("npc/cremator/alert_object.wav");
-	enginesound->PrecacheSound("npc/cremator/alert_player.wav");
-	PrecacheScriptSound( "NPC_Cremator.FootstepLeft" );	
-	PrecacheScriptSound( "NPC_Cremator.FootstepRight" );
-	PrecacheScriptSound( "Weapon_Immolator.Single" );
-	PrecacheScriptSound( "Weapon_Immolator.Stop" );
-
-	//UTIL_PrecacheOther( "grenade_molotov" );
-
-	PrecacheParticleSystem( "flamethrower" ); // зеленое пламя для Интервала.
-
-	engine->PrecacheModel("sprites/crystal_beam1.vmt"); // for the beam attack
 }
-void CNPC_Cremator::Spawn()
-{	
+void CNPC_Cremator::Spawn(void)
+{
 	Precache();
-	SetModel( "models/cremator_test2.mdl" ); // a model with a bit of a tesselation (tesselated head and collar)
-	
-	SetHullType(HULL_HUMAN); // отключено, т.к. это новый введенный тип хулла, и вряд ли есть смысл возиться с его введением. 
-
-	//SetHullType( HULL_MEDIUM_TALL ); // данный стандартный тип подходит для большинства ситуаций, однако крематор не сможет проходить в двери, если они ненамного выше его
-	
-	/*that hull type is made special for a cremator since HULL_MEDIUM is not high enough but HULL_LARGE is too big
-	and a cremator cannot fit in Borealis maps with it. The hull type is enumarated in ai_hull.h under the HULL_MEDIUM_TALL
-	and then MUST be enumeraten in Hull_Bits_t, again, UNDER HULL_MEDIUM_TALL with the adress of 0x00000400,
-	so that the definitions in ai_hull.cpp will then find the corresponding hull type.*/
+	SetModel("models/Cremator.mdl");
+	SetHullType(HULL_MEDIUM_TALL);
 	SetHullSizeNormal();
-	
-	SetBodygroup( 1, 0 ); // the gun
-	SetBodygroup( 2, 0 ); // the head
 
-	SetSolid( SOLID_BBOX );
-	AddSolidFlags( FSOLID_NOT_STANDABLE );
-	SetMoveType( MOVETYPE_STEP );
+	SetBodygroup(1, 0); // the gun
+	SetBodygroup(2, 0); // the head
 
-	m_bloodColor		= DONT_BLEED;//BLOOD_COLOR_YELLOW;
-	m_iHealth			= sk_cremator_health.GetFloat();
-	m_flFieldOfView		= VIEW_FIELD_WIDE;// indicates the width of this NPC's forward view cone ( as a dotproduct result )
-	m_NPCState			= NPC_STATE_NONE;
-	m_nSkin				= CREMATOR_SKIN_ALERT; // original yellow-eyes skin // Если надо спаунить крематора с иным цветом глаз, подставь значение из npc_cremator_h. 
-	m_iAmmo				= m_iMaxAmmo = 54;
+	SetSolid(SOLID_BBOX);
+	AddSolidFlags(FSOLID_NOT_STANDABLE);
+	SetMoveType(MOVETYPE_STEP);
+
+	m_bloodColor = BLOOD_COLOR_MECH; // TODO: basically turns blood into sparks. Need something more special.
+	m_iHealth = sk_cremator_health.GetFloat();
+	m_flFieldOfView = VIEW_FIELD_WIDE;
+
+	m_NPCState = NPC_STATE_NONE;
+
+	CapabilitiesClear();
+	CapabilitiesAdd(bits_CAP_MOVE_GROUND | bits_CAP_INNATE_RANGE_ATTACK1 | bits_CAP_DOORS_GROUP); // TODO: cremator thus can open doors but he is too tall to fit normal doors?
 
 	NPCInit();
 
-	m_flDistTooFar		= 6000.0;
-	GetSenses()->SetDistLook( 6000.0 -1 );
-	
-	m_flNextIdleSoundTime	= gpGlobals->curtime; // + random->RandomFloat( 14.0f, 28.0f );
-	m_flNextRangeAttack2Time = gpGlobals->curtime; // + random->RandomFloat( 10.0f, 20.0f );
+	SetDistLook(1280);
 
-	m_MuzzleAttachment	= LookupAttachment( "muzzle" );
-	m_HeadAttachment	= LookupAttachment( "headattachment" );
-		
-	CapabilitiesAdd( bits_CAP_MOVE_GROUND | bits_CAP_TURN_HEAD );
-	CapabilitiesAdd( bits_CAP_INNATE_RANGE_ATTACK1 ); // flamethrower
-	CapabilitiesAdd( bits_CAP_INNATE_RANGE_ATTACK2 );
-
-	CapabilitiesAdd( bits_CAP_MOVE_SHOOT ); // TODO: Melee?
+	pCorpse = NULL;
 }
-Class_T	CNPC_Cremator::Classify ( void )
-{
-	return	CLASS_COMBINE; // Крематор наследует общие правила для всех нпц Альянса. 
-}
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-#define CREM_ATTN_IDLE	(float) 4.5
 
-// Звук в «простое» — дыхание, шелест плаща.
-void CNPC_Cremator::IdleSound( void ) // TODO: replace with modern script-based system
+Disposition_t CNPC_Cremator::IRelationType(CBaseEntity *pTarget)
 {
-	CPASAttenuationFilter filter( this, CREM_ATTN_IDLE );
-	switch ( random->RandomInt(0,2) )
+	Disposition_t disp = BaseClass::IRelationType(pTarget);
+
+	if (pTarget == NULL)
+		return disp;
+	if (pTarget->Classify() == CLASS_PLAYER)
 	{
-	case 0:	
-		enginesound->EmitSound( filter, entindex(), CHAN_VOICE, "npc/cremator/amb1.wav", 1, CREM_ATTN_IDLE );	
-		break;
-	case 1:	
-		enginesound->EmitSound( filter, entindex(), CHAN_VOICE, "npc/cremator/amb2.wav", 1, CREM_ATTN_IDLE );	
-		break;
-	case 2:	
-		enginesound->EmitSound( filter, entindex(), CHAN_VOICE, "npc/cremator/amb3.wav", 1, CREM_ATTN_IDLE );	
+		if (sk_cremator_attackplayeronsight.GetBool() || g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE))
+		{
+			return D_HT;
+		}
+		else
+		{
+			return m_bIsPlayerEnemy ? D_HT : D_NU;
+		}
+	}
+	/*
+	else if (pTarget->Classify() != CLASS_PLAYER)
+	{
+		return m_bIsNPCEnemy ? D_HT : D_NU;
+	}
+	*/
+	return disp;
+}
+#if 0
+void CNPC_Cremator::OnListened(void)
+{
+	AISoundIter_t iter;
+
+	CSound *pCurrentSound = GetSenses()->GetFirstHeardSound(&iter);
+
+	static int ConditionsToClear[] =
+	{
+		COND_CREMATOR_DETECT_INTEREST,
+		COND_CREMATOR_DETECT_NEW_INTEREST,
+	};
+
+	ClearConditions(ConditionsToClear, ARRAYSIZE(ConditionsToClear));
+
+	while (pCurrentSound)
+	{
+		if (!pCurrentSound->FIsSound())
+		{
+			if (pCurrentSound->m_iType & SOUND_CARCASS | SOUND_MEAT)
+			{
+				pInterestSound = pCurrentSound;
+				Msg("Cremator smells a carcass\n");
+				SetCondition(COND_CREMATOR_FOUND_CORPSE);
+			}
+		}
+
+		pCurrentSound = GetSenses()->GetNextHeardSound(&iter);
+	}
+
+	BaseClass::OnListened();
+}
+#endif
+void CNPC_Cremator::SelectSkin(void)
+{
+	switch (m_NPCState)
+	{
+	case NPC_STATE_COMBAT:
+	{
+		m_nSkin = CREMATOR_SKIN_ANGRY;
 		break;
 	}
-	enginesound->EmitSound( filter, entindex(), CHAN_VOICE, "npc/cremator/amb_loop.wav", 1, ATTN_NORM );
-
-	m_flNextIdleSoundTime = gpGlobals->curtime + random->RandomFloat( 14.0f, 28.0f );
-}
-// Звук при встревоженности.
-void CNPC_Cremator::AlertSound( void )
-{
-	int iPitch = random->RandomInt( 90, 105 );
-
-	CPASAttenuationFilter filter( this );
-	switch ( random->RandomInt ( 0, 1  ) )
+	case NPC_STATE_ALERT:
 	{
-	case 0:
-		enginesound->EmitSound( filter, entindex(), CHAN_VOICE, "npc/cremator/alert_object.wav", 1, ATTN_NORM, 0, iPitch );	
+		m_nSkin = CREMATOR_SKIN_ALERT;
 		break;
-	case 1:
-		enginesound->EmitSound( filter, entindex(), CHAN_VOICE, "npc/cremator/alert_player.wav", 1, ATTN_NORM, 0, iPitch );	
+	}
+	case NPC_STATE_IDLE:
+	{
+		m_nSkin = CREMATOR_SKIN_CALM;
+		break;
+	}
+	case NPC_STATE_DEAD:
+	{
+		m_nSkin = CREMATOR_SKIN_DEAD;
+		break;
+	}
+	default:
+		m_nSkin = CREMATOR_SKIN_CALM;
 		break;
 	}
 }
-// Шипение пара при смерти.
-void CNPC_Cremator::DeathSound( const CTakeDamageInfo &info )
-{
-	CPASAttenuationFilter filter( this );
-	int iPitch = random->RandomInt( 90, 105 );
-	enginesound->EmitSound( filter, entindex(), CHAN_VOICE, "npc/cremator/crem_die.wav", 1, ATTN_NORM, 0, iPitch );
-}
-//-----------------------------------------------------------------------------
-// Определяет скорость разворота при ходьбе и атаке.
-//-----------------------------------------------------------------------------
-float CNPC_Cremator::MaxYawSpeed( void )
+float CNPC_Cremator::MaxYawSpeed(void)
 {
 	float flYS = 0;
 
-	switch ( GetActivity() )
+	switch (GetActivity())
 	{
-	case	ACT_WALK_HURT:		flYS = 60;	break;
-	case	ACT_RUN:			flYS = 120;	break;
+	case	ACT_WALK_HURT:		flYS = 30;	break;
+	case	ACT_RUN:			flYS = 90;	break;
 	case	ACT_IDLE:			flYS = 90;	break;
-	case	ACT_RANGE_ATTACK1:	flYS = 60;	break;
+	case	ACT_RANGE_ATTACK1:	flYS = 30;	break;
 	default:
 		flYS = 90;
 		break;
 	}
 	return flYS;
 }
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-// отдельная модель головы
-const char *CNPC_Cremator::GetHeadpropModel( void )
+void CNPC_Cremator::AlertSound(void)
 {
-	return "models/crematorhead.mdl";
-}
-// ф-ция вызывается при смерти крематора; «выключает» глаза, убирает иммолатор и опционально отрывает голову.
-void CNPC_Cremator::Event_Killed( const CTakeDamageInfo &info  )
-{	
-	CTakeDamageInfo Info = info;
-
-	if( (Info.GetAmmoType() == GetAmmoDef()->Index( ".50BMG" ))
-		|| (Info.GetAmmoType() == GetAmmoDef()->Index( "Buckshot" ))
-		|| (Info.GetAmmoType() == GetAmmoDef()->Index( "Gauss" ))
-		|| (Info.GetAmmoType() == GetAmmoDef()->Index( "XBowBolt" ))
-		|| (Info.GetAmmoType() == GetAmmoDef()->Index( "357" ))
-		&& ( m_bHeadshot == 1 ) )
-	{		
-		SetBodygroup (2, 1); // turn the head off
-		DropHead ( 65 );
-	}
-	else if( Info.GetDamageType() == DMG_BLAST )
+	switch (random->RandomInt(0, 1))
 	{
-		SetBodygroup( 2,1 );
-		DropHead( 300 );
+	case 0:
+		EmitSound("NPC_Cremator.NPCAlert");
+		break;
+	case 1:
+		EmitSound("NPC_Cremator.PlayerAlert");
+		break;
 	}
-	m_nSkin = CREMATOR_SKIN_DEAD; // turn the eyes black
-
-	SetBodygroup (1, 1); // turn the gun off
-	BaseClass::Event_Killed( info );
 }
-// функция отрывания и выбрасывания головы
-// Cremator's head is separated from the body and dropped on death. 
-// Input: head's velocity.
-// TODO: make it part of brickbat ammo list.
-void CNPC_Cremator::DropHead( int iVelocity ) 
+void CNPC_Cremator::IdleSound(void)
 {
-	CPhysicsProp *pGib = assert_cast<CPhysicsProp*>(CreateEntityByName( "prop_physics" ));
-	pGib->SetAbsOrigin( GetAbsOrigin() );
-	pGib->SetAbsAngles( GetAbsAngles() );
-	pGib->SetAbsVelocity( GetAbsVelocity() );
-	pGib->SetModel( GetHeadpropModel() );
+	int randSay = random->RandomInt(0, 2);
+	if (randSay == 2)
+	{
+		EmitSound("NPC_Cremator.BreathingAmb");
+	}
+	EmitSound("NPC_Cremator.ClothAmb");
+}
+void CNPC_Cremator::DeathSound(const CTakeDamageInfo &info)
+{
+	EmitSound("NPC_Cremator.DeathAmb");
+}
+
+int CNPC_Cremator::OnTakeDamage_Alive( const CTakeDamageInfo &info )
+{
+	if (info.GetAttacker())
+	{
+		if (info.GetAttacker()->IsPlayer())
+		{
+			m_bIsPlayerEnemy = true;
+			EmitSound("NPC_Cremator.AngryAmb");
+		}
+		/*
+		else if (info.GetAttacker()->IsNPC())
+		{
+			m_bIsNPCEnemy = true;
+			EmitSound("NPC_Cremator.AngryAmb");
+		}
+		*/
+	}
+
+	return BaseClass::OnTakeDamage_Alive(info);
+}
+
+void CNPC_Cremator::TraceAttack(const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator)
+{
+	CTakeDamageInfo infoCopy = info;
+
+	if (ptr->hitgroup == HITGROUP_HEAD)
+	{
+		m_bHeadshot = true;
+	}
+
+	if (infoCopy.GetDamageType() & DMG_BUCKSHOT)
+	{
+		infoCopy.ScaleDamage(0.625);
+	}
+
+	BaseClass::TraceAttack(infoCopy, vecDir, ptr, pAccumulator);
+}
+void CNPC_Cremator::Event_Killed(const CTakeDamageInfo &info)
+{
+	if (m_bHeadshot && ((info.GetAmmoType() == GetAmmoDef()->Index(".50BMG")) // sniper ammo
+		|| (info.GetAmmoType() == GetAmmoDef()->Index("Buckshot")) // shotgun ammo
+		|| (info.GetAmmoType() == GetAmmoDef()->Index("Gauss")) // gauss ammo
+		|| (info.GetAmmoType() == GetAmmoDef()->Index("XBowBolt")) // crossbow ammo
+		|| (info.GetAmmoType() == GetAmmoDef()->Index("357")))) // revolver ammo
+	{
+		SetBodygroup(2, 1); // turn the head off
+		Vector vecDamageDir = info.GetDamageForce();
+		VectorNormalize(vecDamageDir);
+		DropHead(50, vecDamageDir); // spawn headprop
+	}
+
+	else if (info.GetDamageType() == DMG_BLAST) // blown up
+	{
+		SetBodygroup(2, 1);
+		DropHead(300, Vector(0, 0, 1)); // spawn headprop
+	}
+	StopParticleEffects(this);
+	m_nSkin = CREMATOR_SKIN_DEAD; // turn the eyes black
+	SetBodygroup(1, 1); // turn the gun off
+
+	BaseClass::Event_Killed(info);
+}
+const char *CNPC_Cremator::GetHeadpropModel(void)
+{
+	return "models/cremator_headprop.mdl";
+}
+void CNPC_Cremator::DropHead(int iVelocity, Vector &vecVelocity)
+{
+	CPhysicsProp *pGib = assert_cast<CPhysicsProp*>(CreateEntityByName("prop_physics"));
+	pGib->SetModel(GetHeadpropModel());
+	pGib->SetAbsOrigin(EyePosition());
+	pGib->SetAbsAngles(EyeAngles());
+	pGib->SetMoveType(MOVETYPE_VPHYSICS);
+	pGib->SetCollisionGroup(COLLISION_GROUP_INTERACTIVE);
+	pGib->SetOwnerEntity(this);
 	pGib->Spawn();
-	pGib->SetMoveType( MOVETYPE_VPHYSICS );
-
-	Vector vecVelocity;
-	pGib->GetMassCenter( &vecVelocity );
-	vecVelocity -= WorldSpaceCenter();
-	vecVelocity.z = fabs(vecVelocity.z);
-	VectorNormalize( vecVelocity );
-
-	float flRandomVel = random->RandomFloat( 35, 75 );
-	vecVelocity *= (iVelocity * flRandomVel) / 15;
-	vecVelocity.z += 100.0f;
+	pGib->SetAbsVelocity(vecVelocity * (iVelocity + RandomFloat(-10, 10)));
+	/*
+	float flRandomVel = random->RandomFloat( -10, 10 );
+	pGib->GetMassCenter( &vecDir );
+	vecDir *= (iVelocity + flRandomVel) / 15;
+	vecDir.z += 30.0f;
 	AngularImpulse angImpulse = RandomAngularImpulse( -500, 500 );
-			
+
 	IPhysicsObject *pObj = pGib->VPhysicsGetObject();
 	if ( pObj != NULL )
 	{
-		pObj->AddVelocity( &vecVelocity, &angImpulse );
+	pObj->AddVelocity( &vecDir, &angImpulse );
 	}
-	pGib->SetCollisionGroup( COLLISION_GROUP_INTERACTIVE );
+	*/
 }
-// Звук шага и пыль от поступи крематора, левый шаг.
-Vector CNPC_Cremator::LeftFootHit( float eventtime )
-{	
-	Vector footPosition;
-	
-	GetAttachment( "footleft", footPosition );
-	CPASAttenuationFilter filter( this );
-	EmitSound( filter, entindex(), "NPC_Cremator.FootstepLeft", &footPosition, eventtime );
+void CNPC_Cremator::HandleAnimEvent(animevent_t *pEvent)
+{
+	switch (pEvent->event)
+	{
+	case CREMATOR_AE_FLLEFT:
+	{
+		LeftFootHit(pEvent->eventtime);
+	}
+	break;
+	case CREMATOR_AE_FLRIGHT:
+	{
+		RightFootHit(pEvent->eventtime);
+	}
+	break;
+	case CREMATOR_AE_IMMO_START: // for combat
+	{
+		CBaseEntity *pEnemy = GetEnemyCombatCharacterPointer();
+		Assert(pEnemy != NULL);
+		DispatchSpray(pEnemy);
+		DevMsg("%i ammo left\n", m_iAmmo);
 
-	FootstepEffect( footPosition );
+		Vector flEnemyLKP = GetEnemyLKP();
+		GetMotor()->SetIdealYawToTargetAndUpdate(flEnemyLKP);
+	}
+	break;
+	case CREMATOR_AE_IMMO_PARTICLE: // Маркер для запуска системы частиц огнемета
+	{
+		DispatchParticleEffect("vapor_ray", PATTACH_POINT_FOLLOW, this, "muzzle");
+		EmitSound("Weapon_Immolator.Single");
+	}
+	break;
+	case CREMATOR_AE_IMMO_PARTICLEOFF:
+	{
+		StopParticleEffects(this);
+		StopSound("Weapon_Immolator.Single");
+		EmitSound("Weapon_Immolator.Stop");
+	}
+	break;
+	case CREMATOR_AE_RELOAD:
+	{
+		ClearCondition(COND_CREMATOR_OUT_OF_AMMO);
+
+		// Put your own ints here. This defines for how long a cremator would be able to fire at an enemy
+		// Cremator gets shorter bursts on lower difficulty. On Hard, it can continously fire 60 attack cycles (1 ammo per cycle)
+		if (g_pGameRules->IsSkillLevel(SKILL_EASY)) { m_iAmmo += 15; }
+		else if (g_pGameRules->IsSkillLevel(SKILL_MEDIUM)) { m_iAmmo += 25; }
+		else if (g_pGameRules->IsSkillLevel(SKILL_HARD)) { m_iAmmo += 60; }
+		else if (g_pGameRules->IsSkillLevel(SKILL_VERYHARD)) { m_iAmmo += 75; }
+		else if (g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE)) { m_iAmmo += 100; }
+	}
+	break;
+	case CREMATOR_AE_SPECIAL_START: // for corpse removal routine
+	{
+		DispatchParticleEffect("vapor_ray", PATTACH_POINT_FOLLOW, this, "muzzle");
+		EmitSound("Weapon_Immolator.Single");
+	}
+	break;
+	case CREMATOR_AE_SPECIAL_MIDDLE:
+	{
+		if (pCorpse && pCorpse != NULL) // double, triple, quadruple check!
+		{
+			IncinerateCorpse(pCorpse); // start the corpse burn
+		}
+	}
+	break;
+	case CREMATOR_AE_SPECIAL_END:
+	{
+		StopParticleEffects(this);
+		StopSound("Weapon_Immolator.Single");
+		EmitSound("Weapon_Immolator.Stop");
+	}
+	break;
+#if 0
+	case CREMATOR_AE_THROWGRENADE:
+	{
+		//	DevMsg( "Throwing incendiary grenade!\n" );
+		ThrowIncendiaryGrenade();
+
+		if (g_pGameRules->IsSkillLevel(SKILL_EASY))
+		{
+			m_flNextRangeAttack2Time = gpGlobals->curtime + random->RandomFloat(15.0f, 30.0f);
+		}
+		else if (g_pGameRules->IsSkillLevel(SKILL_HARD))
+		{
+			m_flNextRangeAttack2Time = gpGlobals->curtime + random->RandomFloat(5.0f, 10.0f);
+		}
+		else
+		{
+			m_flNextRangeAttack2Time = gpGlobals->curtime + random->RandomFloat(10.0f, 20.0f);
+		}
+	}
+	break;
+#endif
+	default:
+		BaseClass::HandleAnimEvent(pEvent);
+		break;
+	}
+}
+Vector CNPC_Cremator::LeftFootHit(float eventtime)
+{
+	Vector footPosition;
+
+	GetAttachment("footleft", footPosition);
+	CPASAttenuationFilter filter(this);
+	EmitSound(filter, entindex(), "NPC_Cremator.FootstepLeft", &footPosition, eventtime);
+
+	FootstepEffect(footPosition);
 	return footPosition;
 }
-// Звук шага и пыль от поступи крематора, правый шаг.
-Vector CNPC_Cremator::RightFootHit( float eventtime )
-{	
+Vector CNPC_Cremator::RightFootHit(float eventtime)
+{
 	Vector footPosition;
 
-	GetAttachment( "footright", footPosition );
-	CPASAttenuationFilter filter( this );
-	EmitSound( filter, entindex(), "NPC_Cremator.FootstepRight", &footPosition, eventtime );
+	GetAttachment("footright", footPosition);
+	CPASAttenuationFilter filter(this);
+	EmitSound(filter, entindex(), "NPC_Cremator.FootstepRight", &footPosition, eventtime);
 
-	FootstepEffect( footPosition );
+	FootstepEffect(footPosition);
 	return footPosition;
 }
-// Эффект пыли для шагов крематора (аналогично шагам страйдера или охотника, но в меньших масштабах
-void CNPC_Cremator::FootstepEffect( const Vector &origin )
+void CNPC_Cremator::FootstepEffect(const Vector &origin)
 {
 	trace_t tr;
-	AI_TraceLine( origin, origin - Vector(0,0,0), MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &tr );
-	float yaw = random->RandomInt(0,0);
-	for ( int i = 0; i < 2; i++ )
+	AI_TraceLine(origin, origin - Vector(0, 0, 0), MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &tr);
+	float yaw = random->RandomInt(0, 0);
+	for (int i = 0; i < 2; i++)
 	{
-		if ( UTIL_PointContents( tr.endpos + Vector( 0, 0, 1 ) ) & MASK_WATER )
+		if (UTIL_PointContents(tr.endpos + Vector(0, 0, 1)) & MASK_WATER)
 		{
-			float flWaterZ = UTIL_FindWaterSurface( tr.endpos, tr.endpos.z, tr.endpos.z + 100.0f );
+			float flWaterZ = UTIL_FindWaterSurface(tr.endpos, tr.endpos.z, tr.endpos.z + 100.0f);
 
 			CEffectData	data;
 			data.m_fFlags = 0;
 			data.m_vOrigin = tr.endpos;
 			data.m_vOrigin.z = flWaterZ;
-			data.m_vNormal = Vector( 0, 0, 1 );
-			data.m_flScale = random->RandomFloat( 10.0, 14.0 );
+			data.m_vNormal = Vector(0, 0, 1);
+			data.m_flScale = random->RandomFloat(10.0, 14.0);
 
-			// Если крематор идет по неглубокой воде, образуются всплески.
-			DispatchEffect( "watersplash", data );
+			DispatchEffect("watersplash", data);
 		}
-		
 		else
 		{
-			Vector dir = UTIL_YawToVector( yaw + i*180 ) * 10;
-			VectorNormalize( dir );
+			Vector dir = UTIL_YawToVector(yaw + i * 180) * 10;
+			VectorNormalize(dir);
 			dir.z = 0.25;
-			VectorNormalize( dir );
-			g_pEffects->Dust( tr.endpos, dir, 12, 50 );
-
-			/*g_pEffects->FootprintDecal( tr.endpos, dir, 12, 50 );
-
-			virtual void FootprintDecal( IRecipientFilter& filer, float delay, const Vector *origin, const Vector* right, 
-		int entity, int index, unsigned char materialType ) = 0;
-			virtual void Dust( IRecipientFilter& filer, float delay,
-				 const Vector &pos, const Vector &dir, float size, float speed ) = 0;*/
+			VectorNormalize(dir);
+			g_pEffects->Dust(tr.endpos, dir, 12, 50);
 		}
 	}
 }
-// Крематор игнорирует урон огнем
-int CNPC_Cremator::OnTakeDamage_Alive( const CTakeDamageInfo &info )
+void CNPC_Cremator::DispatchSpray(CBaseEntity *pEntity)
 {
-	CTakeDamageInfo newInfo = info;
-	if( newInfo.GetDamageType() & DMG_BURN)
-	{
-		newInfo.ScaleDamage( 0 );
-		DevMsg( "Fire damage; no actual damage is taken\n" );
-	}	
-
-	int nDamageTaken = BaseClass::OnTakeDamage_Alive( newInfo );
-
-//	m_bHeadshot = false;
-//	m_bCanisterShot = false;
-
-	return nDamageTaken;
-}
-// Далее следует массивая таблица просчета повреждений и урона от разных типов вооружения.
-void CNPC_Cremator::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr )
-{	
-	CTakeDamageInfo newInfo = info;
-	// the head and the abdomen sphere are the only vulnerable parts,
-	// the legs, arms and stuff under the cloak is likely just some machinery,
-	// and the C. is encountered in City after the lab and in Canals when
-	// the player doesn't have weapon apart from crowbar, pistol and SMG
-	// TODO: torn clothes with bullets, exposing underlying machinery
-	if( (newInfo.GetDamageType() & DMG_BULLET || DMG_CLUB || DMG_BUCKSHOT || DMG_ENERGYBEAM ) ) 
-	{			
-		// the multipliers here are so small because of the innate 
-		// headshot multiplayer which makes killing a cremator with headshots
-		// ridiculously easy even on Hard. So all of them were divided by 6.
-		if( ptr->hitgroup == HITGROUP_HEAD ) 
-		{			
-			m_bHeadshot = 1;
-
-			if( g_pGameRules->IsSkillLevel(SKILL_EASY) )
-			{
-				if( newInfo.GetAmmoType() == GetAmmoDef()->Index(".50BMG") ) // base damage 100
-				{
-					newInfo.ScaleDamage( 1.0 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("357") ) // base damage 40
-				{
-					newInfo.ScaleDamage( 0.6 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("9x19") )
-				{
-					newInfo.ScaleDamage( 0.1 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("10mm") )
-				{
-					newInfo.ScaleDamage( 0.75 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index(".556x45") )
-				{
-					newInfo.ScaleDamage( 1.0 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("Buckshot") )
-				{
-					newInfo.ScaleDamage( 0.5 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("Uranium") )
-				{
-					newInfo.ScaleDamage( 0.192 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("CombineRounds") )
-				{
-					newInfo.ScaleDamage( 1.5 );
-				}
-			}
-			else if( g_pGameRules->IsSkillLevel(SKILL_HARD) )
-			{
-				if( newInfo.GetAmmoType() == GetAmmoDef()->Index(".50BMG") ) // base damage 100
-				{
-					newInfo.ScaleDamage( 0.33 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("357") ) // base damage 40
-				{
-					newInfo.ScaleDamage( 0.33 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("9x19") )
-				{
-					newInfo.ScaleDamage( 0.1 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("10mm") )
-				{
-					newInfo.ScaleDamage( 0.5 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index(".556x45") )
-				{
-					newInfo.ScaleDamage( 0.65 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("Buckshot") )
-				{
-					newInfo.ScaleDamage( 0.45 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("Uranium") )
-				{
-					newInfo.ScaleDamage( 0.146 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("CombineRounds") )
-				{
-					newInfo.ScaleDamage( 2.5 );
-				}
-			}			
-			else
-			{
-				if( newInfo.GetAmmoType() == GetAmmoDef()->Index(".50BMG") )
-				{
-					newInfo.ScaleDamage( 0.66  );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("357") )
-				{
-					newInfo.ScaleDamage( 0.5  );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("9x19") )
-				{
-					newInfo.ScaleDamage( 0.1  );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("10mm") )
-				{
-					newInfo.ScaleDamage( 0.66 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index(".556x45") )
-				{
-					newInfo.ScaleDamage( 0.75 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("Buckshot") )
-				{
-					newInfo.ScaleDamage( 0.4 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("Uranium") )
-				{
-					newInfo.ScaleDamage( 0.16 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("CombineRounds") )
-				{
-					newInfo.ScaleDamage( 2.0 );
-				}
-			}
-		}
-		else if( ptr->hitgroup == CREMATOR_CANISTER )
-		{
-			m_bCanisterShot = 1; // попадание в канистру на животе.
-
-			if( g_pGameRules->IsSkillLevel(SKILL_EASY) )
-			{
-				if( newInfo.GetAmmoType() == GetAmmoDef()->Index(".50BMG") )
-				{
-					newInfo.ScaleDamage( 1.5 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("357") )
-				{
-					newInfo.ScaleDamage( 2.0 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("9x19") )
-				{
-					newInfo.ScaleDamage( 0.66 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index(".556x45") )
-				{
-					newInfo.ScaleDamage( 1.15 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("Buckshot") )
-				{
-					newInfo.ScaleDamage( 1.15 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("Uranium") )
-				{
-					newInfo.ScaleDamage( 1.15 );
-				}
-			}
-			else if( g_pGameRules->IsSkillLevel(SKILL_HARD) )
-			{
-				if( newInfo.GetAmmoType() == GetAmmoDef()->Index(".50BMG") )
-				{
-					newInfo.ScaleDamage( 1.15 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("357") )
-				{
-					newInfo.ScaleDamage( 1.75 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("9x19") )
-				{
-					newInfo.ScaleDamage( 0.33 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index(".556x45") )
-				{
-					newInfo.ScaleDamage( 0.75 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("Buckshot") )
-				{
-					newInfo.ScaleDamage( 0.75 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("Uranium") )
-				{
-					newInfo.ScaleDamage( 0.875 );
-				}
-			}
-			else if (g_pGameRules->IsSkillLevel(SKILL_VERYHARD))
-			{
-				if (newInfo.GetAmmoType() == GetAmmoDef()->Index(".50BMG"))
-				{
-					newInfo.ScaleDamage(1.05);
-				}
-				else if (newInfo.GetAmmoType() == GetAmmoDef()->Index("357"))
-				{
-					newInfo.ScaleDamage(1.50);
-				}
-				else if (newInfo.GetAmmoType() == GetAmmoDef()->Index("9x19"))
-				{
-					newInfo.ScaleDamage(0.25);
-				}
-				else if (newInfo.GetAmmoType() == GetAmmoDef()->Index(".556x45"))
-				{
-					newInfo.ScaleDamage(0.50);
-				}
-				else if (newInfo.GetAmmoType() == GetAmmoDef()->Index("Buckshot"))
-				{
-					newInfo.ScaleDamage(0.50);
-				}
-				else if (newInfo.GetAmmoType() == GetAmmoDef()->Index("Uranium"))
-				{
-					newInfo.ScaleDamage(0.65);
-				}
-			}
-			else if (g_pGameRules->IsSkillLevel(SKILL_HARD))
-			{
-				if (newInfo.GetAmmoType() == GetAmmoDef()->Index(".50BMG"))
-				{
-					newInfo.ScaleDamage(0.85);
-				}
-				else if (newInfo.GetAmmoType() == GetAmmoDef()->Index("357"))
-				{
-					newInfo.ScaleDamage(1.25);
-				}
-				else if (newInfo.GetAmmoType() == GetAmmoDef()->Index("9x19"))
-				{
-					newInfo.ScaleDamage(0.15);
-				}
-				else if (newInfo.GetAmmoType() == GetAmmoDef()->Index(".556x45"))
-				{
-					newInfo.ScaleDamage(0.25);
-				}
-				else if (newInfo.GetAmmoType() == GetAmmoDef()->Index("Buckshot"))
-				{
-					newInfo.ScaleDamage(0.25);
-				}
-				else if (newInfo.GetAmmoType() == GetAmmoDef()->Index("Uranium"))
-				{
-					newInfo.ScaleDamage(0.50);
-				}
-			}
-			else
-			{
-				if( newInfo.GetAmmoType() == GetAmmoDef()->Index(".50BMG") )
-				{
-					newInfo.ScaleDamage( 1.25 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("357") )
-				{
-					newInfo.ScaleDamage( 1.5 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("9x19") )
-				{
-					newInfo.ScaleDamage( 0.5 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index(".556x45") )
-				{
-					newInfo.ScaleDamage( 1.0 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("Buckshot") )
-				{
-					newInfo.ScaleDamage( 1.0 );
-				}
-				else if( newInfo.GetAmmoType() == GetAmmoDef()->Index("Uranium") )
-				{
-					newInfo.ScaleDamage( 1.0 );
-				}
-			}
-		}
-/*		// however, if the sprayer is damaged, something unpleasant may happen
-		else if (ptr->hitgroup == CREMATOR_GUN )
-		{
-		// well, right now I can't think of any specific effect
-			DevMsg( "Cremator: gear is damaged\n");
-		}*/
-
-		else
-		{
-			newInfo.ScaleDamage( 0.75 ); // В общем случае, крематор получает толко 25% урона (т.е. имеет сопротивление 75)
-			DevMsg( "Generic 0.25 Non-specified\n" );
-		}
-	}
-//	BaseClass::TraceAttack( newInfo, vecDir, ptr );
-}
-void CNPC_Cremator::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize, bool bCalledByLevelDesigner )
-{
-	BaseClass::Ignite( CREMATOR_BURN_TIME, bNPCOnly, flSize, bCalledByLevelDesigner );
-	//if( IsOnFire() && di_dynamic_lighting_npconfire.GetBool() == 1 )
-	// NOT NEEDED ANYMORE SINCE ANY BURNING NPC WILL 
-	// EMIT EF_DIMLIGHT
-	//{
-	//	GetEffectEntity()->AddEffects( EF_DIMLIGHT );
-	//}
-}
-//-----------------------------------------------------------------------------
-// 
-//-----------------------------------------------------------------------------
-void CNPC_Cremator::StartTask( const Task_t *pTask )
-{
-	switch ( pTask->iTask )
-	{
-	case TASK_CREMATOR_IDLE:
-		{
-			SetActivity( ACT_IDLE );
-			if( IsActivityFinished() )
-			{
-				TaskComplete();
-			}
-			break;
-		}
-	case TASK_CREMATOR_RANGE_ATTACK1:
-		{
-			Vector flEnemyLKP = GetEnemyLKP();
-			GetMotor()->SetIdealYawToTarget( flEnemyLKP );
-			break;
-		}
-		default:
-		BaseClass::StartTask( pTask );
-		break;
-	}
-}
-void CNPC_Cremator::RunTask( const Task_t *pTask )
-{
-	switch ( pTask->iTask )
-	{
-	case TASK_CREMATOR_RANGE_ATTACK1:
-		{
-			SetActivity( ACT_RANGE_ATTACK1 );
-
-			Vector flEnemyLKP = GetEnemyLKP();
-			GetMotor()->SetIdealYawToTargetAndUpdate( flEnemyLKP );
-
-			if( m_iAmmo < 1 && IsActivityFinished() )
-			{
-				SetCondition( COND_CREMATOR_OUT_OF_AMMO );
-								
-				DevMsg( "NO PRIMARY AMMO\n" );
-
-				StopParticleEffects(this);
-				StopSound( "Weapon_Immolator.Single" );
-				EmitSound( "Weapon_Immolator.Stop" );
-				
-				TaskComplete();
-				SetNextThink( gpGlobals->curtime + 0.1f );
-			}
-
-			// THIS fixes the combat issue with the Cremator continuing to fire at a target that moved out of his reach
-			if( GetEnemyLKP().DistTo( GetAbsOrigin()) > CREMATOR_MAX_RANGE )
-			{
-				// Cremator stops firing and attempts to close the distance.
-				SetActivity( ACT_CREMATOR_DISARM );
-				TaskComplete();
-				Msg( "Enemy is too far\n" );
-
-				SetNextThink( gpGlobals->curtime + 0.1f );
-				return;
-			}
-	/*		// This is bugged and shouldn't be used. Necessary checks are made below, in OnChangeActivity( ).	
-			if( IsActivityMovementPhased( ACT_WALK ) || IsActivityMovementPhased( ACT_RUN ) )
-			{
-				TaskFail( NULL );
-				SetActivity( ACT_CREMATOR_DISARM );
-				
-				DevMsg( "ACT_CREMATOR_DISARM\n" );
-				return;
-			}
-	*/
-			break;
-		}
-		default:
-		BaseClass::RunTask( pTask );
-		break;
-	}
-}
-// Если крематор начинает двигаться к удаляющейся от него цели, он прекращает атаку.
-// If target moves out of reach and a cremator starts going after it, put the flame off.
-void CNPC_Cremator::OnChangeActivity( Activity eNewActivity ) 
-{
-	if ( eNewActivity == ACT_WALK || eNewActivity == ACT_RUN )
-	{
-		StopParticleEffects( this );
-		StopSound( "Weapon_Immolator.Single" );
-		EmitSound( "Weapon_Immolator.Stop" );
-		DevMsg( "Activity Changed\n" );
-	}
-}
-// Здесь происходит назначение различных ф-ций во время анимации. Аним-ивенты назначаются в .qc.
-void CNPC_Cremator::HandleAnimEvent( animevent_t *pEvent )
-{
-	switch( pEvent->event )
-	{
-		case CREMATOR_AE_FLLEFT: // левый шаг
-			{	
-				LeftFootHit( pEvent->eventtime );
-			}
-			break;
-
-		case CREMATOR_AE_FLRIGHT: // правый шаг
-			{				
-				RightFootHit( pEvent->eventtime );
-			}
-			break;
-
-		case CREMATOR_AE_IMMO_START: // начало анимации атаки
-			{
-				//CBaseEntity *pEntity;
-
-				DispatchSpray( this );
-				DevMsg( "%i ammo left\n", m_iAmmo );
-
-				Vector flEnemyLKP = GetEnemyLKP();
-				GetMotor()->SetIdealYawToTargetAndUpdate( flEnemyLKP );
-			}
-			break;
-
-		case CREMATOR_AE_IMMO_PARTICLE: // Маркер для запуска системы частиц огнемета
-			{				
-				DispatchParticleEffect( "flamethrower", PATTACH_POINT_FOLLOW, this, "muzzle" ); 
-				// Если нужно заменить зеленый огонь оранжевым, замени "flamethrower" на "flamethrower_orange".
-				EmitSound( "Weapon_Immolator.Single" );
-			}
-			break;
-
-		case CREMATOR_AE_IMMO_PARTICLEOFF: // Маркер для отключения системы частиц огнемета
-			{				
-				StopParticleEffects( this );
-				StopSound( "Weapon_Immolator.Single" );
-				EmitSound( "Weapon_Immolator.Stop" );
-			}
-			break;
-
-		case CREMATOR_AE_RELOAD:
-			{
-				ClearCondition( COND_CREMATOR_OUT_OF_AMMO );
-				ClearCondition( COND_NO_PRIMARY_AMMO );
-				m_iAmmo += 54; // Put your own int here. This defines for how long a cremator would be able to fire at an enemy.
-				
-				DevMsg( "AE_RELOAD\n" );
-			}
-			break;
-
-		case CREMATOR_AE_THROWGRENADE: // Маркер для броска гранаты
-			{				
-				DevMsg( "Throwing incendiary grenade!\n" );
-				ThrowIncendiaryGrenade();
-
-				if( g_pGameRules->IsSkillLevel(SKILL_EASY) )
-				{
-					m_flNextRangeAttack2Time = gpGlobals->curtime + random->RandomFloat( 15.0f, 30.0f );
-				}
-				else if( g_pGameRules->IsSkillLevel(SKILL_HARD) )
-				{
-					m_flNextRangeAttack2Time = gpGlobals->curtime + random->RandomFloat( 5.0f, 10.0f );
-				}
-				else if (g_pGameRules->IsSkillLevel(SKILL_VERYHARD))
-				{
-					m_flNextRangeAttack2Time = gpGlobals->curtime + random->RandomFloat(3.0f, 5.0f);
-				}
-				else if (g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE))
-				{
-					m_flNextRangeAttack2Time = gpGlobals->curtime + random->RandomFloat(1.0f, 3.0f);
-				}
-				else
-				{
-					m_flNextRangeAttack2Time = gpGlobals->curtime + random->RandomFloat( 10.0f, 20.0f );
-				}
-			}
-			break;
-
-		default:
-			BaseClass::HandleAnimEvent( pEvent );
-			break;
-	}
-}
-// Атака зажигательными гранатами. Отключена. Для включения см. комментарий в ф-ции Spawn()
-// See the function and the and of npc_cremator.h
-void CNPC_Cremator::ThrowIncendiaryGrenade( void )
-{
-	Vector vecStart;
-	GetAttachment( "anim_attachment_LH", vecStart );
-
-	Vector forward, up, right, vecThrow;
-
-	GetVectors( &forward, &right, &up );
-	vecThrow = forward * 450 + up * 175 + right * random->RandomFloat(-15, 5);
-	
-	CGrenadeIncendiary *pIncendiary = (CGrenadeIncendiary*)Create( "grenade_incendiary", vecStart, vec3_angle, this );
-
-	pIncendiary->SetAbsVelocity( vecThrow );
-	pIncendiary->SetGravity( 1.5f );
-	pIncendiary->SetLocalAngularVelocity( RandomAngle( -400, 400 ) );
-	pIncendiary->SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_CUSTOM ); 
-}
-// Основная атака огнеметом
-// This is the cremator's main attack, or more precisely, its damage function.
-void CNPC_Cremator::DispatchSpray( CBaseEntity *pEntity )
-{ 
 	Vector vecSrc, vecAim;
-	trace_t tr;	
-
-	//const char *entityname = pEntity->GetClassname();
+	trace_t tr;
 
 	Vector forward, right, up;
-	AngleVectors( GetAbsAngles(), &forward, &right, &up );
+	AngleVectors(GetAbsAngles(), &forward, &right, &up);
 
-	vecSrc = GetAbsOrigin() + up * 36;
-	vecAim = GetShootEnemyDir( vecSrc );
-	float deflection = 0.01;	
-	vecAim = vecAim + 1 * right * random->RandomFloat( 0, deflection ) + up * random->RandomFloat( -deflection, deflection );
-	UTIL_TraceLine ( vecSrc, vecSrc + vecAim * 512, MASK_SOLID, this, COLLISION_GROUP_NONE, &tr);
-			
-/*	if ( tr.DidHitWorld() ) // spawn flames on solid surfaces. 
-							// It's not very important since it is extremely rare for a cremator to
-							// hit brush geometry but might be a nice feature for a close-space combat
-							// it also works fine but again is EXTREMELY hard to get in-game
-	{
-		Vector	ofsDir = ( tr.endpos - GetAbsOrigin() );
-		float	offset = VectorNormalize( ofsDir );
-
-		if ( offset > 128 )
-			offset = 128;
-
-		float scale	 = 0.1f + ( 0.75f * ( 1.0f - ( offset / 128.0f ) ) );
-		float growth = 0.1f + ( 0.75f * (offset / 128.0f ) );
-
-		if ( tr.surface.flags & CONTENTS_GRATE ) // get smaller flames on grates since they have a smaller burning area
-		{
-			scale = 0.1f + ( 0.15f * ( 1.0f - ( offset / 128.0f ) ) );
-		}
-		else
-		{
-			scale = 0.1f + ( 0.75f * ( 1.0f - ( offset / 128.0f ) ) );
-		}
-		FireSystem_StartFire( tr.endpos, scale, growth, 8.0, 10.0f, (SF_FIRE_START_ON|SF_FIRE_START_FULL), (CBaseEntity*) this, FIRE_NATURAL );
-
-	}	
-*/
+	vecSrc = GetAbsOrigin() + up * 36; // hardcode FTW!!
+	vecAim = GetShootEnemyDir(vecSrc);
+	float deflection = 0.01;
+	vecAim = vecAim + 1 * right * random->RandomFloat(0, deflection) + up * random->RandomFloat(-deflection, deflection);
+	UTIL_TraceLine(vecSrc, vecSrc + vecAim * CREMATOR_IMMOLATOR_RANGE * 1.5, MASK_SOLID, this, COLLISION_GROUP_NONE, &tr);
 
 	pEntity = tr.m_pEnt;
 
-	if ( pEntity != NULL && m_takedamage )
+	if (pEntity != NULL && m_takedamage)
 	{
-		CTakeDamageInfo firedamage( this, this, sk_cremator_firedamage.GetFloat(), DMG_BURN );
-		CTakeDamageInfo radiusdamage( this, this, sk_cremator_radiusdamage.GetFloat(), DMG_PLASMA ); 
-		CalculateMeleeDamageForce( &firedamage, vecAim, tr.endpos );
-		RadiusDamage ( CTakeDamageInfo ( this, this, 2, DMG_PLASMA ), // AOE; this stuff makes cremators absurdly powerfull sometimes btw
+		CTakeDamageInfo firedamage(this, this, sk_cremator_firedamage.GetFloat(), DMG_BURN);
+		CTakeDamageInfo radiusdamage(this, this, sk_cremator_radiusdamage.GetFloat(), DMG_PLASMA);
+		CalculateMeleeDamageForce(&firedamage, vecAim, tr.endpos);
+		RadiusDamage(CTakeDamageInfo(this, this, 2, DMG_PLASMA), // AOE; this makes cremators absurdly powerfull sometimes btw
 			tr.endpos,
 			64.0f,
 			CLASS_NONE,
-			NULL );
+			NULL);
 
-		pEntity->DispatchTraceAttack( ( firedamage ), vecAim, &tr );
-		
-		Vector flEnemyLKP = pEntity->GetAbsOrigin();
-		GetMotor()->SetIdealYawToTargetAndUpdate( flEnemyLKP );
+		pEntity->DispatchTraceAttack((firedamage), vecAim, &tr);
+
+		// This is bugged. This screenfades combines with default 'pain' screenfade and makes the screen go darker.
+		//	if( pEntity->IsPlayer() )
+		//	{
+		//		color32 flamescreen = {250,200,40,50};
+		//		UTIL_ScreenFade( pEntity, flamescreen, 0.5f, 0.1f, FFADE_IN|FFADE_PURGE );
+		//	}
 
 		ClearMultiDamage();
-	}	
+	}
+#if 0	
+	if (m_flFireDropletTimer < gpGlobals->curtime)
+	{
+		FireDroplet(100, 400, 25, -30, 30, random->RandomFloat(2.0, 6.0), 1);
+		m_flFireDropletTimer = gpGlobals->curtime + random->RandomFloat(0.2f, 0.8f);
+	}
+#endif
+	m_iAmmo--;
+}
+void CNPC_Cremator::RunAI(void)
+{
+	if (!HasCondition(COND_CREMATOR_FOUND_CORPSE))
+		SearchForCorpses(); // FIXME: is it the best place for it?
+	if (this->IsCurSchedule(SCHED_CREMATOR_INVESTIGATE_CORPSE) && pCorpse->WorldSpaceCenter().DistToSqr(WorldSpaceCenter()) <= 128 * 128)
+	{
+		GetNavigator()->StopMoving();
+	}
+	BaseClass::RunAI();
+}
+void CNPC_Cremator::StartTask(const Task_t *pTask)
+{
+	switch (pTask->iTask)
+	{
+	case TASK_CREMATOR_INVESTIGATE_CORPSE:
+	{
+		DevMsg("Cremator is investigating a corpse he saw\n");
 
-	m_iAmmo --;
+		AssertMsg(pCorpse != NULL, "The corpse the cremator was after, it's gone!\n");
+
+		if (pCorpse != NULL)
+		{
+			GetNavigator()->SetGoal(pCorpse->WorldSpaceCenter());
+
+			if (IsUnreachable(pCorpse))
+			{
+				DevMsg("The corpse is unreachable, marked as such\n");
+				pCorpse->SetOwnerEntity(this);	//HACKHACK: set the owner to prevent this unreachable corpse from being detected again. 
+												//TODO: find a better solution. How to do it other than implementing a new EFlag?
+
+				pCorpse = NULL;						//forget about this corpse.
+				ClearCondition(COND_CREMATOR_FOUND_CORPSE);
+				TaskFail(FAIL_NO_ROUTE);
+			}
+			TaskComplete();
+		}
+		break;
+	}
+	case TASK_CREMATOR_BURN_CORPSE:
+	{
+		if (!pCorpse)
+		{
+			TaskFail(FAIL_NO_TARGET);
+			ClearCondition(COND_CREMATOR_FOUND_CORPSE);
+			DevMsg("The corpse has been dealt with.\n");
+		}
+		else
+		{
+			GetMotor()->SetIdealYawToTarget(pCorpse->GetAbsOrigin(), 0, 0);
+			SetActivity(ACT_FIRESPREAD);
+
+			// IncinerateCorpse( pCorpse ); // Moved to HandleAnimEvent( ... )
+
+			// TODO: Handle multiple corpses in a pile at once
+		}
+		break;
+	}
+	default:
+		BaseClass::StartTask(pTask);
+		break;
+	}
 }
-// Выбор скина для глаз крематора в зависимости от обстановки (уместно сравнить с Большими Папочками в Bioshock). В настоящее время не работает.
-void CNPC_Cremator::SelectSkin( void ) // doesn't quite work, it can turn eyes red ("combat" skin) when combating an enemy, but will not return to calm/alert skin when an enemy is dead
+void CNPC_Cremator::RunTask(const Task_t *pTask)
 {
-	if(m_NPCState == NPC_STATE_COMBAT)
+	switch (pTask->iTask)
 	{
-		m_nSkin = 3;
-		if ( HasCondition( COND_ENEMY_DEAD ) )
+	case TASK_CREMATOR_INVESTIGATE_CORPSE: // FIXME: that never runs!
+	{
+		Msg("Running TASK_CREMATOR_INVESTIGATE_CORPSE\n");
+		if (WorldSpaceCenter().DistToSqr(pCorpse->WorldSpaceCenter()) <= pTask->flTaskData * pTask->flTaskData) // Stop when we're close enough to the corpse.
 		{
-			m_nSkin = 0;
+			GetNavigator()->StopMoving();
+			DevMsg("Close enough to the corpse\n");
+			TaskComplete();
 		}
-		if ( GetEnemy() == NULL )
-		{
-			m_nSkin = 1;
-		}
+		break;
 	}
-	if(m_NPCState == NPC_STATE_ALERT)
+	case TASK_CREMATOR_BURN_CORPSE:
 	{
-		m_nSkin = 3;
-		if ( GetEnemy() == NULL )
+		if (IsActivityFinished())
 		{
-			m_nSkin = 1;
+			TaskComplete();
+			ClearCondition(COND_CREMATOR_FOUND_CORPSE);
 		}
+		break;
 	}
-	if(m_NPCState == NPC_STATE_NONE)
+	case TASK_CREMATOR_RANGE_ATTACK1:
 	{
-		m_nSkin = 1;
+		Assert(GetEnemy() != NULL);
+		SetActivity(ACT_RANGE_ATTACK1);
+
+		Vector flEnemyLKP = GetEnemyLKP();
+		GetMotor()->SetIdealYawToTargetAndUpdate(flEnemyLKP);
+
+		if (m_iAmmo < 1 && IsActivityFinished())
+		{
+			SetCondition(COND_CREMATOR_OUT_OF_AMMO);
+			StopParticleEffects(this);
+			StopSound("Weapon_Immolator.Single");
+			EmitSound("Weapon_Immolator.Stop");
+
+			SetActivity(ACT_CREMATOR_RELOAD);
+			TaskComplete();
+			SetNextThink(gpGlobals->curtime + 0.1f);
+		}
+		break;
+	}
+	default:
+		BaseClass::RunTask(pTask);
+		break;
 	}
 }
-NPC_STATE CNPC_Cremator::SelectIdealState( void )
+int CNPC_Cremator::RangeAttack1Conditions(float flDot, float flDist)
 {
-	switch( m_NPCState )
+	if (flDot < 0.7)
+	{
+		return COND_NOT_FACING_ATTACK;
+	}
+
+	else if (flDist > CREMATOR_IMMOLATOR_RANGE - 100) // create a buffer between us and the target
+	{
+		return COND_TOO_FAR_TO_ATTACK;
+	}
+
+	return COND_CAN_RANGE_ATTACK1;
+}
+NPC_STATE CNPC_Cremator::SelectIdealState(void)
+{
+	switch (m_NPCState)
 	{
 	case NPC_STATE_COMBAT:
-		{
-			if ( GetEnemy() == NULL )
-			{
-				if ( !HasCondition( COND_ENEMY_DEAD ) )
-				{
-					SetCondition( COND_ENEMY_DEAD ); // TODO: patrolling
-
-				}
-				return NPC_STATE_ALERT;
-			}
-			else if ( HasCondition( COND_ENEMY_DEAD ) )
-			{
-				//AnnounceEnemyKill(GetEnemy());
-			}
-		}
-	default:
-		{
-			return BaseClass::SelectIdealState();
-		}
-	}
-
-	return GetIdealState();
-}
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-#if 0
-Activity CNPC_Cremator::NPC_TranslateActivity( Activity baseAct )
-{
-	if ( baseAct == ACT_WALK || ACT_RUN )
 	{
-		if ( m_iHealth < ( sk_cremator_health.GetBool() * 0.5 ) )
+		// COMBAT goes to ALERT upon death of enemy
+		if (GetEnemy() == NULL)
 		{
-			//return (Activity)ACT_WALK_HURT; // the animaton is broken, don't use it
+			return NPC_STATE_IDLE;
+		}
+		break;
+	}
+	case NPC_STATE_IDLE:
+	{
+		if (HasCondition(COND_CREMATOR_FOUND_CORPSE))
+		{
+			return NPC_STATE_ALERT;
+		}
+		break;
+	}
+	}
+	return BaseClass::SelectIdealState();
+}
+Activity CNPC_Cremator::TranslateActivity(Activity activity)
+{
+	Assert(activity != ACT_INVALID);
+
+	switch (activity)
+	{
+		case ACT_RUN:
+		{
+			return (Activity)ACT_WALK;
 		}
 	}
-	//return BaseClass::NPC_TranslateActivity( baseAct );
-	return baseAct;
+
+	return activity;
 }
-#endif
-// Условия для основной атаки.
-int CNPC_Cremator::RangeAttack1Conditions( float flDot, float flDist )
+int CNPC_Cremator::TranslateSchedule(int scheduleType)
 {
-	if ( flDist > CREMATOR_MAX_RANGE )
-		return COND_TOO_FAR_TO_ATTACK; // если цель слишком далеко, не атаковать.
-
-	if ( flDist <= CREMATOR_INITIAL_RANGE )
-		return COND_CAN_RANGE_ATTACK1;
-
-	if ( flDot < 0.7f )
-		return COND_NOT_FACING_ATTACK; // если цель вне поля зрения, не атаковать.
-
-	if ( m_iAmmo < 1 )
-		return COND_CREMATOR_OUT_OF_AMMO;
-
-	return COND_NONE; // в противном случае, атака разрешается.
+	switch (scheduleType)
+	{
+	case SCHED_RANGE_ATTACK1:
+	{
+		return SCHED_CREMATOR_RANGE_ATTACK1;
+		break;
+	}
+	case SCHED_RANGE_ATTACK2:
+	{
+		return SCHED_CREMATOR_RANGE_ATTACK2;
+		break;
+	}
+	case SCHED_MOVE_TO_WEAPON_RANGE:
+	{
+		return SCHED_CREMATOR_CHASE_ENEMY;
+		break;
+	}
+	}
+	return BaseClass::TranslateSchedule(scheduleType);
 }
-// Условия для вторичной атаки.
-int CNPC_Cremator::RangeAttack2Conditions( float flDot, float flDist )
+int CNPC_Cremator::SelectSchedule(void)
 {
-	if ( flDist < CREMATOR_MAX_RANGE / 2 )
-		return 0;
-
-	if ( flDot < 0.7 )
-		return 0;
-
-	if ( HasCondition( COND_CREMATOR_HAS_THROWN_GRENADE ))
-		return 0;
-
-	return COND_CAN_RANGE_ATTACK2;
-}
-int CNPC_Cremator::SelectSchedule( void )
-{
-	switch	( m_NPCState )
+	switch (m_NPCState)
 	{
 	case NPC_STATE_IDLE:
-	case NPC_STATE_ALERT:
-		{				
-			if ( HasCondition ( COND_HEAR_COMBAT || COND_HEAR_PLAYER || COND_HEAR_BULLET_IMPACT ) )
-				return SCHED_INVESTIGATE_SOUND;
-
+	{
+		if (!HasSpawnFlags(SF_CREMATOR_NO_PATROL_BEHAVIOUR))
+			return SCHED_CREMATOR_PATROL;
+		else
 			return SCHED_PATROL_WALK_LOOP;
-		}
-		break;
-	case NPC_STATE_COMBAT:
+	}
+	case NPC_STATE_ALERT:
+	{
+		if (HasCondition(COND_CREMATOR_FOUND_CORPSE) && !HasCondition(COND_LIGHT_DAMAGE | COND_HEAVY_DAMAGE) && GetEnemy() == NULL)
 		{
-			if( HasCondition ( COND_CAN_RANGE_ATTACK1 ) && m_iAmmo > 0 )
-			{
-				return SCHED_RANGE_ATTACK1;
-			}
-			if( HasCondition( COND_TOO_FAR_TO_ATTACK && COND_SEE_ENEMY ) )
-			{
-				if( m_flNextRangeAttack2Time < gpGlobals->curtime )
-				{
-					return SCHED_RANGE_ATTACK2; // Это атака зажигательными гранатами. Они могут привести к вылету на дисплейсментах; в таком случае, закомментируй эту строку.
-				}
-				else
-				{
-					return SCHED_CREMATOR_CHASE;
-				}
-			}
-			if( HasCondition( COND_TOO_FAR_TO_ATTACK && COND_ENEMY_OCCLUDED )) //&& HasCondition( COND_CREMATOR_HAS_THROWN_GRENADE ))
-			{
-				return SCHED_CREMATOR_CHASE;
-				StopParticleEffects( this );
-			}
+			return SCHED_CREMATOR_INVESTIGATE_CORPSE;
 		}
-		break;
+		if (!HasSpawnFlags(SF_CREMATOR_NO_PATROL_BEHAVIOUR))
+			return SCHED_CREMATOR_PATROL;
+		else
+			return SCHED_PATROL_WALK_LOOP;
+	}
+	case NPC_STATE_COMBAT:
+	{
+		if (HasCondition(COND_CAN_RANGE_ATTACK1))
+		{
+			return SCHED_RANGE_ATTACK1;
+		}
+		else
+		{
+			return SCHED_CREMATOR_CHASE_ENEMY;
+		}
+#if 0
+		if (HasCondition(COND_CAN_RANGE_ATTACK2))
+		{
+			return SCHED_CREMATOR_RANGE_ATTACK2;
+		}
+		if (HasCondition(COND_ENEMY_UNREACHABLE))
+		{
+			return SCHED_CREMATOR_RANGE_ATTACK2;
+		}
+#endif
+		if (HasCondition(COND_ENEMY_DEAD))
+		{
+			m_nSkin = CREMATOR_SKIN_CALM;
+			return BaseClass::SelectSchedule();
+		}
+	}
 	}
 	return BaseClass::SelectSchedule();
 }
-int CNPC_Cremator::TranslateSchedule( int type ) 
+void CNPC_Cremator::OnScheduleChange(void)
 {
-	switch( type )
+	SelectSkin();
+	StopParticleEffects(this);
+	StopSound("Weapon_Immolator.Single");
+	BaseClass::OnScheduleChange();
+}
+void CNPC_Cremator::PrescheduleThink(void)
+{
+	BaseClass::PrescheduleThink();
+#if 0
+	if (pInterestSound && pInterestSound->m_iType & GetSoundInterests())
 	{
-	case SCHED_RANGE_ATTACK1:
-		return SCHED_CREMATOR_RANGE_ATTACK1;
-		break;
-	case SCHED_CHASE_ENEMY:
-		return SCHED_CREMATOR_CHASE;
+		if (!HasCondition(COND_CREMATOR_FOUND_CORPSE))
+			SetCondition(COND_CREMATOR_FOUND_CORPSE);
+	}
+#endif
+
+	switch (m_NPCState)
+	{
+	case NPC_STATE_ALERT:
+	{
+		if (HasCondition(COND_CREMATOR_FOUND_CORPSE))
+		{
+			if (HasCondition(COND_LIGHT_DAMAGE | COND_HEAVY_DAMAGE | COND_REPEATED_DAMAGE))
+			{
+				ClearCondition(COND_CREMATOR_FOUND_CORPSE); // stop caring about stinks if we've been hit
+			}
+		}
 		break;
 	}
-	return BaseClass::TranslateSchedule( type );
+	}
 }
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-int CNPC_Cremator::GetSoundInterests( void )
+
+
+void CNPC_Cremator::SearchForCorpses(void)
 {
-	return	SOUND_WORLD	|
-			SOUND_COMBAT	|
-			SOUND_BULLET_IMPACT |
-		    SOUND_CARCASS	|
-			SOUND_MEAT		|
-			SOUND_GARBAGE	|
-			SOUND_PLAYER	|
-			SOUND_MOVE_AWAY;
+//	float flSearchRadius = CREMATOR_DETECT_CORPSE_RANGE;
+
+	// I had to do this by making the cremator look through entlist because OnListened() (stink) method is flawed. 
+	// Originally this search was done with gEntList.FindEntityByClassnameNearest( "prop_ragdoll", GetAbsOrigin(), flSearchRadius ).
+	// Naturally, a check for prop_ragdoll would return any prop_ragdoll and we know that it can include things like cars and matrasses...
+	// For now I don't see a better way for it. Other than naming and/or flagging entities. I suppose I'll have to use scripted corpses after all.
+
+	// TODO: it's better to have the cremator search the names provided by a filter_name entity associated with it, akin to enemy filters.
+	CBaseEntity *pEnt = gEntList.FindEntityGenericWithin(this, "corpse", GetLocalOrigin(), sk_cremator_corpse_search_radius.GetFloat());
+
+	//NDebugOverlay::Circle(GetLocalOrigin(), sk_cremator_corpse_search_radius.GetFloat(), 255, 255, 0, 150, true, 0.1f);
+
+	if (pEnt && pEnt->GetOwnerEntity() != this)
+	{
+		DevMsg("Cremator has found a corpse\n");
+		pCorpse = pEnt;
+
+		//NDebugOverlay::Sphere(pEnt->GetLocalOrigin(), 72.0f, 0, 255, 50, true, 3.0f);
+
+		SetCondition(COND_CREMATOR_FOUND_CORPSE);
+	}
 }
-AI_BEGIN_CUSTOM_NPC( npc_cremator, CNPC_Cremator )
+void CNPC_Cremator::IncinerateCorpse(CBaseEntity *pTarget)
+{
+	if (pTarget)
+	{
+		CEntityFlame *pFlame = CEntityFlame::Create(this);
 
-	DECLARE_CONDITION( COND_CREMATOR_OUT_OF_AMMO )
-	DECLARE_TASK( TASK_CREMATOR_RANGE_ATTACK1 )
-	DECLARE_TASK( TASK_CREMATOR_RELOAD )
-	DECLARE_TASK( TASK_CREMATOR_IDLE )
-	DECLARE_ACTIVITY( ACT_FIREINOUT )
-	DECLARE_ACTIVITY( ACT_CREMATOR_ARM )
-	DECLARE_ACTIVITY( ACT_CREMATOR_DISARM )
-	DECLARE_ACTIVITY( ACT_CREMATOR_RELOAD )
+		if (pFlame)
+		{
+			SetEffectEntity(NULL);
+			pFlame->SetAbsOrigin(pTarget->GetAbsOrigin());
+			pFlame->AttachToEntity(pTarget);
+			pFlame->AddEFlags(EFL_FORCE_CHECK_TRANSMIT);
+			pFlame->AddEffects(EF_BRIGHTLIGHT); // create light from the fire
+			pFlame->SetLifetime(20.0); // burn for 20 seconds
 
-	DEFINE_SCHEDULE
-	(
-		SCHED_CREMATOR_RANGE_ATTACK1,
+			pTarget->AddFlag(FL_ONFIRE);
+			pTarget->SetEffectEntity(pFlame);
+			pTarget->SetRenderColor(50, 50, 50);
 
-		"	Tasks"
-		"		TASK_STOP_MOVING			0"
-		"		TASK_FACE_ENEMY				0"
-		"		TASK_ANNOUNCE_ATTACK		1"
-		"		TASK_PLAY_SEQUENCE			ACTIVITY:ACT_CREMATOR_ARM"
-		"		TASK_CREMATOR_RANGE_ATTACK1	0"
-		"		TASK_PLAY_SEQUENCE			ACTIVITY:ACT_CREMATOR_RELOAD"
-		"	"
-		"	Interrupts"
-		"		COND_NEW_ENEMY"
-		"		COND_ENEMY_DEAD"
-		"		COND_TOO_FAR_TO_ATTACK"
-	)
-	DEFINE_SCHEDULE
-	(
-		SCHED_CREMATOR_CHASE,
+			pTarget->SetOwnerEntity(this); // HACKHACK - we're marking this corpse so that it won't be picked again in the future.
+			DevMsg("This corpse has been handled. Moving on\n");
+		}
+	}
+}
 
-		"	Tasks"
-		"		TASK_SET_TOLERANCE_DISTANCE		200"
-		"		 TASK_GET_CHASE_PATH_TO_ENEMY	3072"
-		"		 TASK_RUN_PATH					1"
-		"		 TASK_WAIT_FOR_MOVEMENT			0"
-		"		 TASK_FACE_ENEMY				0"
-		"	"
-		"	Interrupts"
-		"		COND_ENEMY_DEAD"
-		"		COND_NEW_ENEMY"
-		"		COND_CAN_RANGE_ATTACK1"
-		"		COND_CAN_RANGE_ATTACK2"
-	)
-	DEFINE_SCHEDULE
-	(
-		SCHED_CREMATOR_IDLE,
+AI_BEGIN_CUSTOM_NPC(npc_cremator, CNPC_Cremator)
 
-		"	Tasks"
-		"	TASK_PLAY_SEQUENCE			ACTIVITY:ACT_IDLE"
-		"	"
-		"	Interrupts"
-		"		COND_NEW_ENEMY"
-	)	
+DECLARE_ACTIVITY(ACT_FIRESPREAD)
+DECLARE_ACTIVITY(ACT_CREMATOR_ARM)
+DECLARE_ACTIVITY(ACT_CREMATOR_DISARM)
+DECLARE_ACTIVITY(ACT_CREMATOR_RELOAD)
+
+DECLARE_CONDITION(COND_CREMATOR_OUT_OF_AMMO)
+DECLARE_CONDITION(COND_CREMATOR_ENEMY_WITH_HIGHER_PRIORITY)
+DECLARE_CONDITION(COND_CREMATOR_FOUND_CORPSE)
+
+DECLARE_TASK(TASK_CREMATOR_RANGE_ATTACK1)
+DECLARE_TASK(TASK_CREMATOR_RELOAD)
+DECLARE_TASK(TASK_CREMATOR_INVESTIGATE_CORPSE)
+DECLARE_TASK(TASK_CREMATOR_BURN_CORPSE)
+
+DEFINE_SCHEDULE(
+	SCHED_CREMATOR_CHASE_ENEMY,
+	"	Tasks"
+	"	TASK_GET_CHASE_PATH_TO_ENEMY 1024"
+	"	TASK_SET_TOLERANCE_DISTANCE 250"
+	"	TASK_WALK_PATH 0"
+	"	TASK_WAIT_FOR_MOVEMENT 0"
+	"	TASK_FACE_ENEMY 0"
+	""
+	"	Interrupts"
+	"	COND_CAN_RANGE_ATTACK1"
+	"	COND_ENEMY_DEAD"
+	"	COND_LOST_ENEMY"
+	"	COND_CREMATOR_ENEMY_WITH_HIGHER_PRIORITY"
+)
+
+DEFINE_SCHEDULE(
+	SCHED_CREMATOR_RANGE_ATTACK1,
+	"	Tasks"
+	"	TASK_STOP_MOVING 0"
+	"	TASK_FACE_ENEMY 0"
+	"	TASK_ANNOUNCE_ATTACK 1"
+	"	TASK_PLAY_SEQUENCE ACTIVITY:ACT_CREMATOR_ARM"
+	"	TASK_CREMATOR_RANGE_ATTACK1 0"
+	"	TASK_PLAY_SEQUENCE ACTIVITY:ACT_CREMATOR_RELOAD"
+	""
+	"	Interrupts"
+	"	COND_HEAVY_DAMAGE"
+	"	COND_REPEATED_DAMAGE"
+	"	COND_ENEMY_DEAD"
+	"	COND_TOO_FAR_TO_ATTACK"
+	"	COND_CREMATOR_ENEMY_WITH_HIGHER_PRIORITY"
+)
+
+DEFINE_SCHEDULE(
+	SCHED_CREMATOR_PATROL,
+	"	Tasks"
+	"	TASK_STOP_MOVING 0"
+	"	TASK_GET_PATH_TO_RANDOM_NODE 1024"
+	"	TASK_WALK_PATH 0"
+	"	TASK_WAIT_FOR_MOVEMENT 0"
+	"	TASK_WAIT 5"
+	"	TASK_SET_SCHEDULE SCHEDULE:SCHED_CREMATOR_PATROL"
+	""
+	"	Interrupts"
+	"	COND_CREMATOR_FOUND_CORPSE"
+	"	COND_NEW_ENEMY"
+	"	COND_LIGHT_DAMAGE"
+	"	COND_HEAVY_DAMAGE"
+)
+DEFINE_SCHEDULE(
+	SCHED_CREMATOR_INVESTIGATE_CORPSE, // we're here because we have COND_CREMATOR_FOUND_CORPSE.
+	"	Tasks"
+	"	TASK_WAIT_FOR_MOVEMENT 0"
+	"	TASK_SOUND_WAKE 0" // Play the alert sound
+	"	TASK_CREMATOR_INVESTIGATE_CORPSE 64" // analogous to TASK_GET_PATH_TO_BESTSCENT
+											 //"	TASK_WALK_PATH 0"
+	"	TASK_WAIT_FOR_MOVEMENT 0"
+	"	TASK_CREMATOR_BURN_CORPSE 0" // Play the firespread animation
+	"	TASK_WAIT 3"
+	//"	TASK_SET_FAIL_SCHEDULE SCHEDULE:SCHED_CREMATOR_INVESTIGATE_CORPSE"
+	"	TASK_SET_SCHEDULE SCHEDULE:SCHED_CREMATOR_PATROL" // resume patroling
+	""
+	"	Interrupts"
+	"	COND_NEW_ENEMY"
+	"	COND_SEE_ENEMY"
+	"	COND_LIGHT_DAMAGE"
+	"	COND_HEAVY_DAMAGE"
+)
 AI_END_CUSTOM_NPC()

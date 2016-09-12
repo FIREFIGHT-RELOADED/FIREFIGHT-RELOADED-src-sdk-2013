@@ -23,7 +23,6 @@
 	#include "globalstate.h"
 	#include "ai_basenpc.h"
 	#include "weapon_physcannon.h"
-	#include "SMMOD/mapadd.h"
 	#include "Sprite.h"
 	#include "utlbuffer.h"
 	#include "filesystem.h"
@@ -337,175 +336,6 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 	//-----------------------------------------------------------------------------
 	void CHalfLife2::PlayerSpawn( CBasePlayer *pPlayer )
 	{
-		CMapAdd *pMapadd = GetMapAddEntity();
-		char szMapadd[128];
-		Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
-		if (!pMapadd)
-		{
-			pMapadd = CreateMapAddEntity();
-			pMapadd->RunLabel(szMapadd, "Init");
-		}
-		else
-		{
-			pMapadd->RunLabel(szMapadd, "Init");
-		}
-
-		if (g_pGameRules->bHasRandomized)
-		{
-			if (g_pGameRules->iRandomGamemode == FIREFIGHT_PRIMARY_COMBINEFIREFIGHT)
-			{
-				CMapAdd *pMapadd = GetMapAddEntity();
-				char szMapadd[128];
-				Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
-				if (!pMapadd)
-				{
-					pMapadd = CreateMapAddEntity();
-					pMapadd->RunLabel(szMapadd, "CombineFirefight");
-				}
-				else
-				{
-					pMapadd->RunLabel(szMapadd, "CombineFirefight");
-				}
-			}
-			else if (g_pGameRules->iRandomGamemode == FIREFIGHT_PRIMARY_XENINVASION)
-			{
-				CMapAdd *pMapadd = GetMapAddEntity();
-				char szMapadd[128];
-				Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
-				if (!pMapadd)
-				{
-					pMapadd = CreateMapAddEntity();
-					pMapadd->RunLabel(szMapadd, "XenInvasion");
-				}
-				else
-				{
-					pMapadd->RunLabel(szMapadd, "XenInvasion");
-				}
-			}
-			else if (g_pGameRules->iRandomGamemode == FIREFIGHT_PRIMARY_ANTLIONASSAULT)
-			{
-				CMapAdd *pMapadd = GetMapAddEntity();
-				char szMapadd[128];
-				Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
-				if (!pMapadd)
-				{
-					pMapadd = CreateMapAddEntity();
-					pMapadd->RunLabel(szMapadd, "AntlionAssault");
-				}
-				else
-				{
-					pMapadd->RunLabel(szMapadd, "AntlionAssault");
-				}
-			}
-			else if (g_pGameRules->iRandomGamemode == FIREFIGHT_PRIMARY_ZOMBIESURVIVAL)
-			{
-				CMapAdd *pMapadd = GetMapAddEntity();
-				char szMapadd[128];
-				Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
-				if (!pMapadd)
-				{
-					pMapadd = CreateMapAddEntity();
-					pMapadd->RunLabel(szMapadd, "ZombieSurvival");
-				}
-				else
-				{
-					pMapadd->RunLabel(szMapadd, "ZombieSurvival");
-				}
-			}
-			else if (g_pGameRules->iRandomGamemode == FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE)
-			{
-				CMapAdd *pMapadd = GetMapAddEntity();
-				char szMapadd[128];
-				Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
-				if (!pMapadd)
-				{
-					pMapadd = CreateMapAddEntity();
-					pMapadd->RunLabel(szMapadd, "FirefightRumble");
-				}
-				else
-				{
-					pMapadd->RunLabel(szMapadd, "FirefightRumble");
-				}
-			}
-		}
-		else
-		{
-			if (GetGamemode() == FIREFIGHT_PRIMARY_COMBINEFIREFIGHT)
-			{
-				CMapAdd *pMapadd = GetMapAddEntity();
-				char szMapadd[128];
-				Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
-				if (!pMapadd)
-				{
-					pMapadd = CreateMapAddEntity();
-					pMapadd->RunLabel(szMapadd, "CombineFirefight");
-				}
-				else
-				{
-					pMapadd->RunLabel(szMapadd, "CombineFirefight");
-				}
-			}
-			else if (GetGamemode() == FIREFIGHT_PRIMARY_XENINVASION)
-			{
-				CMapAdd *pMapadd = GetMapAddEntity();
-				char szMapadd[128];
-				Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
-				if (!pMapadd)
-				{
-					pMapadd = CreateMapAddEntity();
-					pMapadd->RunLabel(szMapadd, "XenInvasion");
-				}
-				else
-				{
-					pMapadd->RunLabel(szMapadd, "XenInvasion");
-				}
-			}
-			else if (GetGamemode() == FIREFIGHT_PRIMARY_ANTLIONASSAULT)
-			{
-				CMapAdd *pMapadd = GetMapAddEntity();
-				char szMapadd[128];
-				Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
-				if (!pMapadd)
-				{
-					pMapadd = CreateMapAddEntity();
-					pMapadd->RunLabel(szMapadd, "AntlionAssault");
-				}
-				else
-				{
-					pMapadd->RunLabel(szMapadd, "AntlionAssault");
-				}
-			}
-			else if (GetGamemode() == FIREFIGHT_PRIMARY_ZOMBIESURVIVAL)
-			{
-				CMapAdd *pMapadd = GetMapAddEntity();
-				char szMapadd[128];
-				Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
-				if (!pMapadd)
-				{
-					pMapadd = CreateMapAddEntity();
-					pMapadd->RunLabel(szMapadd, "ZombieSurvival");
-				}
-				else
-				{
-					pMapadd->RunLabel(szMapadd, "ZombieSurvival");
-				}
-			}
-			else if (GetGamemode() == FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE)
-			{
-				CMapAdd *pMapadd = GetMapAddEntity();
-				char szMapadd[128];
-				Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
-				if (!pMapadd)
-				{
-					pMapadd = CreateMapAddEntity();
-					pMapadd->RunLabel(szMapadd, "FirefightRumble");
-				}
-				else
-				{
-					pMapadd->RunLabel(szMapadd, "FirefightRumble");
-				}
-			}
-		}
 	}
 
 	//-----------------------------------------------------------------------------
@@ -2461,11 +2291,11 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 		{
 			m_bMegaPhysgun = true;
 		}
-		else
-		{
+		//else
+		//{
 			// FIXME: Is there a better place for this?
-			m_bMegaPhysgun = ( GlobalEntity_GetState("super_phys_gun") == GLOBAL_ON );
-		}
+			//m_bMegaPhysgun = ( GlobalEntity_GetState("super_phys_gun") == GLOBAL_ON );
+		//}
 	}
 
 	//-----------------------------------------------------------------------------
@@ -2609,6 +2439,11 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 	void CHalfLife2::NPC_DroppedGrenade( void )
 	{
 		m_flLastGrenadeDropTime = gpGlobals->curtime + sk_plr_grenade_drop_time.GetFloat();
+	}
+
+	void CHalfLife2::SetMegaPhyscannonActive(void)
+	{
+		m_bMegaPhysgun = true;
 	}
 
 #endif //} !CLIENT_DLL

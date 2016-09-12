@@ -866,6 +866,7 @@ enum FirefightUpgradeIDs
 {
 	FIREFIGHT_UPGRADE_MAXHEALTH,
 	FIREFIGHT_UPGRADE_MAXARMOR,
+	FIREFIGHT_UPGRADE_MEGAPHYSCANNON
 };
 
 //-----------------------------------------------------------------------------

@@ -1009,6 +1009,7 @@ void CHL2_Player::PreThink(void)
 	}
 }
 
+
 void CHL2_Player::KickAttack(void)
 {
 	MDLCACHE_CRITICAL_SECTION();
@@ -1083,8 +1084,30 @@ void CHL2_Player::KickAttack(void)
 						pDoor->KickFail();
 						return;
 					}
+					CBaseEntity *pProp = this->CheckTraceHullAttack(Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), 5, DMG_CRUSH, KickThrowForceMult, false);
+					if (pProp && !pProp->IsNPC())
+					{
+						IPhysicsObject *pPhysicsObject = pProp->VPhysicsGetObject();
+						if (pPhysicsObject == NULL)
+						{
+							return;
+						}
+						CTakeDamageInfo info(this, this, 5, DMG_CRUSH);
+						Vector hitDirection;
+						EyeVectors(&hitDirection, NULL, NULL);
+						VectorNormalize(hitDirection);
+						info.SetDamagePosition(hitDirection);
+						float flForceScale = info.GetBaseDamage() * ImpulseScale(250, 10);
+						Vector vecForce = hitDirection;
+						VectorNormalize(vecForce);
+						vecForce *= flForceScale;
+						info.SetDamageForce(vecForce);
+						pPhysicsObject->SetVelocity(&vecForce, NULL);
+						EmitSound("HL2Player.kick_wall");
+						return;
+					}
 					CBaseEntity *Victim = this->CheckTraceHullAttack(Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), KickDamageMult, DMG_CRUSH, KickThrowForceMult, true);
-					if (Victim)
+					if (Victim && Victim->IsNPC())
 					{
 						EmitSound("HL2Player.kick_body");
 						return;

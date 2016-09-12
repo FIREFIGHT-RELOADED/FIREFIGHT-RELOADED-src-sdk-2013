@@ -1041,6 +1041,10 @@ ConVarRef suitcharger( "sk_suitcharger" );
 		{
 			name = "Combine Manhack";
 		}
+		else if (Q_stristr(entityClassname, "npc_cremator"))
+		{
+			name = "Combine Cremator Unit";
+		}
 		else
 		{
 			name = entityClassname;

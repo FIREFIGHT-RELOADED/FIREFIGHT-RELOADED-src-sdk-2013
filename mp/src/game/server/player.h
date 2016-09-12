@@ -295,6 +295,10 @@ public:
 
 	virtual void			PlayerDeathThink( void );
 
+	//we are only doing this just so our spectate camera still works. only problem is that the cremator 
+	//will not see the player's corpse, but it's better to cause a small bug instead of cause a major gameplay issue. -Bitl
+	virtual bool			CanBecomeServerRagdoll(void) { return false; }
+
 	virtual void			Jump( void );
 	virtual void			Duck( void );
 

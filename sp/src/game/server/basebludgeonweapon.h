@@ -46,9 +46,9 @@ public:
 
 protected:
 	virtual	void	ImpactEffect( trace_t &trace );
+	bool			ImpactWater(const Vector &start, const Vector &end);
 
 private:
-	bool			ImpactWater( const Vector &start, const Vector &end );
 	void			Swing( int bIsSecondary );
 	void			Hit( trace_t &traceHit, Activity nHitActivity, bool bIsSecondary );
 	Activity		ChooseIntersectionPointAndActivity( trace_t &hitTrace, const Vector &mins, const Vector &maxs, CBasePlayer *pOwner );

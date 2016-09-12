@@ -77,6 +77,7 @@
 
 // NVNT haptic utils
 #include "haptics/haptic_utils.h"
+#include "hl2_gamerules.h"
 
 #ifdef HL2_DLL
 #include "combine_mine.h"
@@ -223,6 +224,12 @@ ConVar sv_store_denynotifications("sv_store_denynotifications", "1", FCVAR_ARCHI
 ConVar sv_store_buysounds("sv_store_buysounds", "1", FCVAR_ARCHIVE);
 ConVar sv_store_denysounds("sv_store_denysounds", "1", FCVAR_ARCHIVE);
 
+ConVar sv_fr_perks("sv_fr_perks", "1", FCVAR_ARCHIVE);
+ConVar sv_fr_perks_healthregeneration("sv_fr_perks_healthregeneration", "1", FCVAR_ARCHIVE);
+ConVar sv_fr_perks_infiniteauxpower("sv_fr_perks_infiniteauxpower", "1", FCVAR_ARCHIVE);
+ConVar sv_fr_perks_infiniteammo("sv_fr_perks_infiniteammo", "1", FCVAR_ARCHIVE);
+ConVar sv_fr_perks_healthregenerationrate("sv_fr_perks_healthregenerationrate", "1", FCVAR_ARCHIVE);
+
 #define MAX_LEVEL 50
 
 void CC_GiveCurrentAmmo( void )
@@ -301,48 +308,51 @@ void CC_GiveRandomPerk(void)
 
 	if (pPlayer)
 	{
-		pPlayer->GiveRandomPerk();
+		if (sv_fr_perks.GetBool())
+		{
+			pPlayer->GiveRandomPerk();
 
-		if (sv_player_voice.GetBool() && sv_player_voice_perk.GetBool())
-		{
-			pPlayer->EmitSound("Player.VoicePerk");
-		}
+			if (sv_player_voice.GetBool() && sv_player_voice_perk.GetBool())
+			{
+				pPlayer->EmitSound("Player.VoicePerk");
+			}
 
-		if (pPlayer->GetPerkValue() == FIREFIGHT_PERK_HEALTHREGENERATION)
-		{
-			CFmtStr hint;
-			hint.sprintf("#Valve_Hud_HEALTHREGENERATION_classic");
-			pPlayer->ShowPerkMessage(hint.Access());
-		}
-		else if (pPlayer->GetPerkValue() == FIREFIGHT_PERK_INFINITEAUXPOWER)
-		{
-			CFmtStr hint;
-			hint.sprintf("#Valve_Hud_INFINITEAUXPOWER_classic");
-			pPlayer->ShowPerkMessage(hint.Access());
-		}
-		else if (pPlayer->GetPerkValue() == FIREFIGHT_PERK_INFINITEAMMO)
-		{
-			CFmtStr hint;
-			hint.sprintf("#Valve_Hud_INFINITEAMMO_classic");
-			pPlayer->ShowPerkMessage(hint.Access());
-		}
-		else if (pPlayer->GetPerkValue() == FIREFIGHT_PERK_MOREHEALTH)
-		{
-			CFmtStr hint;
-			hint.sprintf("#Valve_Hud_MOREHEALTH_classic");
-			pPlayer->ShowPerkMessage(hint.Access());
-		}
-		else if (pPlayer->GetPerkValue() == FIREFIGHT_PERK_MOREARMOR)
-		{
-			CFmtStr hint;
-			hint.sprintf("#Valve_Hud_MOREARMOR_classic");
-			pPlayer->ShowPerkMessage(hint.Access());
-		}
-		else if (pPlayer->GetPerkValue() == FIREFIGHT_PERK_HEALTHREGENERATIONRATE)
-		{
-			CFmtStr hint;
-			hint.sprintf("#Valve_Hud_HEALTHREGENERATIONRATE_classic");
-			pPlayer->ShowPerkMessage(hint.Access());
+			if (pPlayer->GetPerkValue() == FIREFIGHT_PERK_HEALTHREGENERATION && sv_fr_perks_healthregeneration.GetBool())
+			{
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_HEALTHREGENERATION_classic");
+				pPlayer->ShowPerkMessage(hint.Access());
+			}
+			else if (pPlayer->GetPerkValue() == FIREFIGHT_PERK_INFINITEAUXPOWER && sv_fr_perks_infiniteauxpower.GetBool())
+			{
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_INFINITEAUXPOWER_classic");
+				pPlayer->ShowPerkMessage(hint.Access());
+			}
+			else if (pPlayer->GetPerkValue() == FIREFIGHT_PERK_INFINITEAMMO && sv_fr_perks_infiniteammo.GetBool())
+			{
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_INFINITEAMMO_classic");
+				pPlayer->ShowPerkMessage(hint.Access());
+			}
+			else if (pPlayer->GetPerkValue() == FIREFIGHT_PERK_MOREHEALTH)
+			{
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_MOREHEALTH_classic");
+				pPlayer->ShowPerkMessage(hint.Access());
+			}
+			else if (pPlayer->GetPerkValue() == FIREFIGHT_PERK_MOREARMOR)
+			{
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_MOREARMOR_classic");
+				pPlayer->ShowPerkMessage(hint.Access());
+			}
+			else if (pPlayer->GetPerkValue() == FIREFIGHT_PERK_HEALTHREGENERATIONRATE && sv_fr_perks_healthregeneration.GetBool() && sv_fr_perks_healthregenerationrate.GetBool())
+			{
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_HEALTHREGENERATIONRATE_classic");
+				pPlayer->ShowPerkMessage(hint.Access());
+			}
 		}
 	}
 }
@@ -1016,45 +1026,48 @@ void CBasePlayer::CheckLevel()
 			bShouldLevel = true;
 			m_iLevel++;
 			LevelUp();
-			if (sv_player_voice.GetBool() && sv_player_voice_perk.GetBool())
+			if (sv_fr_perks.GetBool())
 			{
-				EmitSound("Player.VoicePerk");
-			}
-			if (m_Perk == FIREFIGHT_PERK_HEALTHREGENERATION)
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_Hud_HEALTHREGENERATION");
-				ShowPerkMessage(hint.Access());
-			}
-			else if (m_Perk == FIREFIGHT_PERK_INFINITEAUXPOWER)
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_Hud_INFINITEAUXPOWER");
-				ShowPerkMessage(hint.Access());
-			}
-			else if (m_Perk == FIREFIGHT_PERK_INFINITEAMMO)
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_Hud_INFINITEAMMO");
-				ShowPerkMessage(hint.Access());
-			}
-			else if (m_Perk == FIREFIGHT_PERK_MOREHEALTH)
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_Hud_MOREHEALTH");
-				ShowPerkMessage(hint.Access());
-			}
-			else if (m_Perk == FIREFIGHT_PERK_MOREARMOR)
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_Hud_MOREARMOR");
-				ShowPerkMessage(hint.Access());
-			}
-			else if (m_Perk == FIREFIGHT_PERK_HEALTHREGENERATIONRATE)
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_Hud_HEALTHREGENERATIONRATE");
-				ShowPerkMessage(hint.Access());
+				if (sv_player_voice.GetBool() && sv_player_voice_perk.GetBool())
+				{
+					EmitSound("Player.VoicePerk");
+				}
+				if (m_Perk == FIREFIGHT_PERK_HEALTHREGENERATION && sv_fr_perks_healthregeneration.GetBool())
+				{
+					CFmtStr hint;
+					hint.sprintf("#Valve_Hud_HEALTHREGENERATION");
+					ShowPerkMessage(hint.Access());
+				}
+				else if (m_Perk == FIREFIGHT_PERK_INFINITEAUXPOWER && sv_fr_perks_infiniteauxpower.GetBool())
+				{
+					CFmtStr hint;
+					hint.sprintf("#Valve_Hud_INFINITEAUXPOWER");
+					ShowPerkMessage(hint.Access());
+				}
+				else if (m_Perk == FIREFIGHT_PERK_INFINITEAMMO && sv_fr_perks_infiniteammo.GetBool())
+				{
+					CFmtStr hint;
+					hint.sprintf("#Valve_Hud_INFINITEAMMO");
+					ShowPerkMessage(hint.Access());
+				}
+				else if (m_Perk == FIREFIGHT_PERK_MOREHEALTH)
+				{
+					CFmtStr hint;
+					hint.sprintf("#Valve_Hud_MOREHEALTH");
+					ShowPerkMessage(hint.Access());
+				}
+				else if (m_Perk == FIREFIGHT_PERK_MOREARMOR)
+				{
+					CFmtStr hint;
+					hint.sprintf("#Valve_Hud_MOREARMOR");
+					ShowPerkMessage(hint.Access());
+				}
+				else if (m_Perk == FIREFIGHT_PERK_HEALTHREGENERATIONRATE && sv_fr_perks_healthregeneration.GetBool() && sv_fr_perks_healthregenerationrate.GetBool())
+				{
+					CFmtStr hint;
+					hint.sprintf("#Valve_Hud_HEALTHREGENERATIONRATE");
+					ShowPerkMessage(hint.Access());
+				}
 			}
 			ResetXPAlt();
 		}
@@ -1080,27 +1093,57 @@ void CBasePlayer::LevelUp()
 			AddMoney(GetLevel());
 		}
 
-		int randomperk = random->RandomInt(0, 5);
-		//int CurrentLevel = GetLevel();
-
-		if (randomperk == FIREFIGHT_PERK_HEALTHREGENERATION)
+		if (sv_fr_perks.GetBool())
 		{
-			if (!m_bAlreadyHasRegeneratePerk && GetLevel() >= 20)
+			int randomperk = random->RandomInt(0, 5);
+			//int CurrentLevel = GetLevel();
+
+			if (randomperk == FIREFIGHT_PERK_HEALTHREGENERATION && sv_fr_perks_healthregeneration.GetBool())
 			{
-				m_iPerkRegenerate = 1;
-				m_bAlreadyHasRegeneratePerk = true;
-			}
-			else
-			{
-				if (!m_bAlreadyHasInfiniteAuxPowerPerk && GetLevel() >= 10)
+				if (!m_bAlreadyHasRegeneratePerk && GetLevel() >= 20 && sv_fr_perks_healthregeneration.GetBool())
 				{
-					randomperk = FIREFIGHT_PERK_INFINITEAUXPOWER;
+					m_iPerkRegenerate = 1;
+					m_bAlreadyHasRegeneratePerk = true;
+				}
+				else
+				{
+					if (!m_bAlreadyHasInfiniteAuxPowerPerk && GetLevel() >= 10 && sv_fr_perks_infiniteauxpower.GetBool())
+					{
+						randomperk = FIREFIGHT_PERK_INFINITEAUXPOWER;
+						m_iPerkInfiniteAuxPower = 1;
+						m_bAlreadyHasInfiniteAuxPowerPerk = true;
+					}
+					else
+					{
+						if (!m_bAlreadyHasInfiniteAmmoPerk && GetLevel() >= 15 && sv_fr_perks_infiniteammo.GetBool())
+						{
+							randomperk = FIREFIGHT_PERK_INFINITEAMMO;
+							m_iPerkInfiniteAmmo = 1;
+							m_bAlreadyHasInfiniteAmmoPerk = true;
+						}
+						else
+						{
+							randomperk = FIREFIGHT_PERK_MOREHEALTH;
+							int CurrentMaxHealth = (GetMaxHealth() + 10);
+							int CurrentHealth = (GetHealth() + 10);
+							SetMaxHealth(CurrentMaxHealth);
+							SetHealth(CurrentHealth);
+							m_iHealth = CurrentHealth;
+							m_iMaxHealth = CurrentMaxHealth;
+						}
+					}
+				}
+			}
+			else if (randomperk == FIREFIGHT_PERK_INFINITEAUXPOWER && sv_fr_perks_infiniteauxpower.GetBool())
+			{
+				if (!m_bAlreadyHasInfiniteAuxPowerPerk && GetLevel() >= 10 && sv_fr_perks_infiniteauxpower.GetBool())
+				{
 					m_iPerkInfiniteAuxPower = 1;
 					m_bAlreadyHasInfiniteAuxPowerPerk = true;
 				}
 				else
 				{
-					if (!m_bAlreadyHasInfiniteAmmoPerk && GetLevel() >= 15)
+					if (!m_bAlreadyHasInfiniteAmmoPerk && GetLevel() >= 15 && sv_fr_perks_infiniteammo.GetBool())
 					{
 						randomperk = FIREFIGHT_PERK_INFINITEAMMO;
 						m_iPerkInfiniteAmmo = 1;
@@ -1118,19 +1161,10 @@ void CBasePlayer::LevelUp()
 					}
 				}
 			}
-		}
-		else if (randomperk == FIREFIGHT_PERK_INFINITEAUXPOWER)
-		{
-			if (!m_bAlreadyHasInfiniteAuxPowerPerk && GetLevel() >= 10)
+			else if (randomperk == FIREFIGHT_PERK_INFINITEAMMO && sv_fr_perks_infiniteammo.GetBool())
 			{
-				m_iPerkInfiniteAuxPower = 1;
-				m_bAlreadyHasInfiniteAuxPowerPerk = true;
-			}
-			else
-			{
-				if (!m_bAlreadyHasInfiniteAmmoPerk && GetLevel() >= 15)
+				if (!m_bAlreadyHasInfiniteAmmoPerk && GetLevel() >= 15 && sv_fr_perks_infiniteammo.GetBool())
 				{
-					randomperk = FIREFIGHT_PERK_INFINITEAMMO;
 					m_iPerkInfiniteAmmo = 1;
 					m_bAlreadyHasInfiniteAmmoPerk = true;
 				}
@@ -1145,17 +1179,8 @@ void CBasePlayer::LevelUp()
 					m_iMaxHealth = CurrentMaxHealth;
 				}
 			}
-		}
-		else if (randomperk == FIREFIGHT_PERK_INFINITEAMMO)
-		{
-			if (!m_bAlreadyHasInfiniteAmmoPerk && GetLevel() >= 15)
+			else if (randomperk == FIREFIGHT_PERK_MOREHEALTH)
 			{
-				m_iPerkInfiniteAmmo = 1;
-				m_bAlreadyHasInfiniteAmmoPerk = true;
-			}
-			else
-			{
-				randomperk = FIREFIGHT_PERK_MOREHEALTH;
 				int CurrentMaxHealth = (GetMaxHealth() + 10);
 				int CurrentHealth = (GetHealth() + 10);
 				SetMaxHealth(CurrentMaxHealth);
@@ -1163,61 +1188,52 @@ void CBasePlayer::LevelUp()
 				m_iHealth = CurrentHealth;
 				m_iMaxHealth = CurrentMaxHealth;
 			}
-		}
-		else if (randomperk == FIREFIGHT_PERK_MOREHEALTH)
-		{
-			int CurrentMaxHealth = (GetMaxHealth() + 10);
-			int CurrentHealth = (GetHealth() + 10);
-			SetMaxHealth(CurrentMaxHealth);
-			SetHealth(CurrentHealth);
-			m_iHealth = CurrentHealth;
-			m_iMaxHealth = CurrentMaxHealth;
-		}
-		else if (randomperk == FIREFIGHT_PERK_MOREARMOR)
-		{
-			int CurrentMaxArmor = (GetMaxArmorValue() + 10);
-			int CurrentArmor = (ArmorValue() + 10);
-			SetMaxArmorValue(CurrentMaxArmor);
-			SetArmorValue(CurrentArmor);
-			m_ArmorValue = CurrentArmor;
-			m_MaxArmorValue = CurrentMaxArmor;
-		}
-		else if (randomperk == FIREFIGHT_PERK_HEALTHREGENERATIONRATE)
-		{
-			if (m_bAlreadyHasRegeneratePerk && GetLevel() >= 25)
+			else if (randomperk == FIREFIGHT_PERK_MOREARMOR)
 			{
-				m_fRegenRate = m_fRegenRate + 0.5f;
+				int CurrentMaxArmor = (GetMaxArmorValue() + 10);
+				int CurrentArmor = (ArmorValue() + 10);
+				SetMaxArmorValue(CurrentMaxArmor);
+				SetArmorValue(CurrentArmor);
+				m_ArmorValue = CurrentArmor;
+				m_MaxArmorValue = CurrentMaxArmor;
 			}
-			else
+			else if (randomperk == FIREFIGHT_PERK_HEALTHREGENERATIONRATE && sv_fr_perks_healthregeneration.GetBool() && sv_fr_perks_healthregenerationrate.GetBool())
 			{
-				int randAltPerk = random->RandomInt(0, 1);
-
-				if (randAltPerk == 1)
+				if (m_bAlreadyHasRegeneratePerk && GetLevel() >= 25 && sv_fr_perks_healthregeneration.GetBool() && sv_fr_perks_healthregenerationrate.GetBool())
 				{
-					randomperk = FIREFIGHT_PERK_MOREARMOR;
-					int CurrentMaxArmor = (GetMaxArmorValue() + 10);
-					int CurrentArmor = (ArmorValue() + 10);
-					SetMaxArmorValue(CurrentMaxArmor);
-					SetArmorValue(CurrentArmor);
-					m_ArmorValue = CurrentArmor;
-					m_MaxArmorValue = CurrentMaxArmor;
+					m_fRegenRate = m_fRegenRate + 0.5f;
 				}
 				else
 				{
-					randomperk = FIREFIGHT_PERK_MOREHEALTH;
-					int CurrentMaxHealth = (GetMaxHealth() + 10);
-					int CurrentHealth = (GetHealth() + 10);
-					SetMaxHealth(CurrentMaxHealth);
-					SetHealth(CurrentHealth);
-					m_iHealth = CurrentHealth;
-					m_iMaxHealth = CurrentMaxHealth;
+					int randAltPerk = random->RandomInt(0, 1);
+
+					if (randAltPerk == 1)
+					{
+						randomperk = FIREFIGHT_PERK_MOREARMOR;
+						int CurrentMaxArmor = (GetMaxArmorValue() + 10);
+						int CurrentArmor = (ArmorValue() + 10);
+						SetMaxArmorValue(CurrentMaxArmor);
+						SetArmorValue(CurrentArmor);
+						m_ArmorValue = CurrentArmor;
+						m_MaxArmorValue = CurrentMaxArmor;
+					}
+					else
+					{
+						randomperk = FIREFIGHT_PERK_MOREHEALTH;
+						int CurrentMaxHealth = (GetMaxHealth() + 10);
+						int CurrentHealth = (GetHealth() + 10);
+						SetMaxHealth(CurrentMaxHealth);
+						SetHealth(CurrentHealth);
+						m_iHealth = CurrentHealth;
+						m_iMaxHealth = CurrentMaxHealth;
+					}
 				}
 			}
+
+			m_Perk = randomperk;
+
+			DevMsg("Perk Number: %d\n", m_Perk);
 		}
-
-		m_Perk = randomperk;
-
-		DevMsg("Perk Number: %d\n", m_Perk);
 	}
 }
 
@@ -1267,22 +1283,57 @@ void CBasePlayer::Market_SetMaxArmor()
 	IncrementMaxArmorValue(CurrentMaxArmor);
 }
 
+void CBasePlayer::Market_SetMegaGravityGun()
+{
+	HL2GameRules()->SetMegaPhyscannonActive();
+}
+
 void CBasePlayer::GiveRandomPerk()
 {
-	int randomperk = random->RandomInt(0, 5);
-
-	if (randomperk == FIREFIGHT_PERK_HEALTHREGENERATION)
+	if (sv_fr_perks.GetBool())
 	{
-		if (!m_bAlreadyHasRegeneratePerk)
+		int randomperk = random->RandomInt(0, 5);
+
+		if (randomperk == FIREFIGHT_PERK_HEALTHREGENERATION && sv_fr_perks_healthregeneration.GetBool())
 		{
-			m_iPerkRegenerate = 1;
-			m_bAlreadyHasRegeneratePerk = true;
-		}
-		else
-		{
-			if (!m_bAlreadyHasInfiniteAuxPowerPerk)
+			if (!m_bAlreadyHasRegeneratePerk && sv_fr_perks_healthregeneration.GetBool())
 			{
-				randomperk = FIREFIGHT_PERK_INFINITEAUXPOWER;
+				m_iPerkRegenerate = 1;
+				m_bAlreadyHasRegeneratePerk = true;
+			}
+			else
+			{
+				if (!m_bAlreadyHasInfiniteAuxPowerPerk && sv_fr_perks_infiniteauxpower.GetBool())
+				{
+					randomperk = FIREFIGHT_PERK_INFINITEAUXPOWER;
+					m_iPerkInfiniteAuxPower = 1;
+					m_bAlreadyHasInfiniteAuxPowerPerk = true;
+				}
+				else
+				{
+					if (!m_bAlreadyHasInfiniteAmmoPerk)
+					{
+						randomperk = FIREFIGHT_PERK_INFINITEAMMO;
+						m_iPerkInfiniteAmmo = 1;
+						m_bAlreadyHasInfiniteAmmoPerk = true;
+					}
+					else
+					{
+						randomperk = FIREFIGHT_PERK_MOREHEALTH;
+						int CurrentMaxHealth = (GetMaxHealth() + 10);
+						int CurrentHealth = (GetHealth() + 10);
+						SetMaxHealth(CurrentMaxHealth);
+						SetHealth(CurrentHealth);
+						m_iHealth = CurrentHealth;
+						m_iMaxHealth = CurrentMaxHealth;
+					}
+				}
+			}
+		}
+		else if (randomperk == FIREFIGHT_PERK_INFINITEAUXPOWER  && sv_fr_perks_infiniteauxpower.GetBool())
+		{
+			if (!m_bAlreadyHasInfiniteAuxPowerPerk  && sv_fr_perks_infiniteauxpower.GetBool())
+			{
 				m_iPerkInfiniteAuxPower = 1;
 				m_bAlreadyHasInfiniteAuxPowerPerk = true;
 			}
@@ -1306,19 +1357,10 @@ void CBasePlayer::GiveRandomPerk()
 				}
 			}
 		}
-	}
-	else if (randomperk == FIREFIGHT_PERK_INFINITEAUXPOWER)
-	{
-		if (!m_bAlreadyHasInfiniteAuxPowerPerk)
-		{
-			m_iPerkInfiniteAuxPower = 1;
-			m_bAlreadyHasInfiniteAuxPowerPerk = true;
-		}
-		else
+		else if (randomperk == FIREFIGHT_PERK_INFINITEAMMO)
 		{
 			if (!m_bAlreadyHasInfiniteAmmoPerk)
 			{
-				randomperk = FIREFIGHT_PERK_INFINITEAMMO;
 				m_iPerkInfiniteAmmo = 1;
 				m_bAlreadyHasInfiniteAmmoPerk = true;
 			}
@@ -1333,17 +1375,8 @@ void CBasePlayer::GiveRandomPerk()
 				m_iMaxHealth = CurrentMaxHealth;
 			}
 		}
-	}
-	else if (randomperk == FIREFIGHT_PERK_INFINITEAMMO)
-	{
-		if (!m_bAlreadyHasInfiniteAmmoPerk)
+		else if (randomperk == FIREFIGHT_PERK_MOREHEALTH)
 		{
-			m_iPerkInfiniteAmmo = 1;
-			m_bAlreadyHasInfiniteAmmoPerk = true;
-		}
-		else
-		{
-			randomperk = FIREFIGHT_PERK_MOREHEALTH;
 			int CurrentMaxHealth = (GetMaxHealth() + 10);
 			int CurrentHealth = (GetHealth() + 10);
 			SetMaxHealth(CurrentMaxHealth);
@@ -1351,61 +1384,52 @@ void CBasePlayer::GiveRandomPerk()
 			m_iHealth = CurrentHealth;
 			m_iMaxHealth = CurrentMaxHealth;
 		}
-	}
-	else if (randomperk == FIREFIGHT_PERK_MOREHEALTH)
-	{
-		int CurrentMaxHealth = (GetMaxHealth() + 10);
-		int CurrentHealth = (GetHealth() + 10);
-		SetMaxHealth(CurrentMaxHealth);
-		SetHealth(CurrentHealth);
-		m_iHealth = CurrentHealth;
-		m_iMaxHealth = CurrentMaxHealth;
-	}
-	else if (randomperk == FIREFIGHT_PERK_MOREARMOR)
-	{
-		int CurrentMaxArmor = (GetMaxArmorValue() + 10);
-		int CurrentArmor = (ArmorValue() + 10);
-		SetMaxArmorValue(CurrentMaxArmor);
-		SetArmorValue(CurrentArmor);
-		m_ArmorValue = CurrentArmor;
-		m_MaxArmorValue = CurrentMaxArmor;
-	}
-	else if (randomperk == FIREFIGHT_PERK_HEALTHREGENERATIONRATE)
-	{
-		if (m_bAlreadyHasRegeneratePerk)
+		else if (randomperk == FIREFIGHT_PERK_MOREARMOR)
 		{
-			m_fRegenRate = m_fRegenRate + 0.5f;
+			int CurrentMaxArmor = (GetMaxArmorValue() + 10);
+			int CurrentArmor = (ArmorValue() + 10);
+			SetMaxArmorValue(CurrentMaxArmor);
+			SetArmorValue(CurrentArmor);
+			m_ArmorValue = CurrentArmor;
+			m_MaxArmorValue = CurrentMaxArmor;
 		}
-		else
+		else if (randomperk == FIREFIGHT_PERK_HEALTHREGENERATIONRATE)
 		{
-			int randAltPerk = random->RandomInt(0, 1);
-
-			if (randAltPerk == 1)
+			if (m_bAlreadyHasRegeneratePerk)
 			{
-				randomperk = FIREFIGHT_PERK_MOREARMOR;
-				int CurrentMaxArmor = (GetMaxArmorValue() +  10);
-				int CurrentArmor = (ArmorValue() + 10);
-				SetMaxArmorValue(CurrentMaxArmor);
-				SetArmorValue(CurrentArmor);
-				m_ArmorValue = CurrentArmor;
-				m_MaxArmorValue = CurrentMaxArmor;
+				m_fRegenRate = m_fRegenRate + 0.5f;
 			}
 			else
 			{
-				randomperk = FIREFIGHT_PERK_MOREHEALTH;
-				int CurrentMaxHealth = (GetMaxHealth() + 10);
-				int CurrentHealth = (GetHealth() + 10);
-				SetMaxHealth(CurrentMaxHealth);
-				SetHealth(CurrentHealth);
-				m_iHealth = CurrentHealth;
-				m_iMaxHealth = CurrentMaxHealth;
+				int randAltPerk = random->RandomInt(0, 1);
+
+				if (randAltPerk == 1)
+				{
+					randomperk = FIREFIGHT_PERK_MOREARMOR;
+					int CurrentMaxArmor = (GetMaxArmorValue() + 10);
+					int CurrentArmor = (ArmorValue() + 10);
+					SetMaxArmorValue(CurrentMaxArmor);
+					SetArmorValue(CurrentArmor);
+					m_ArmorValue = CurrentArmor;
+					m_MaxArmorValue = CurrentMaxArmor;
+				}
+				else
+				{
+					randomperk = FIREFIGHT_PERK_MOREHEALTH;
+					int CurrentMaxHealth = (GetMaxHealth() + 10);
+					int CurrentHealth = (GetHealth() + 10);
+					SetMaxHealth(CurrentMaxHealth);
+					SetHealth(CurrentHealth);
+					m_iHealth = CurrentHealth;
+					m_iMaxHealth = CurrentMaxHealth;
+				}
 			}
 		}
+
+		m_Perk = randomperk;
+
+		DevMsg("Perk Number: %d\n", m_Perk);
 	}
-
-	m_Perk = randomperk;
-
-	DevMsg("Perk Number: %d\n", m_Perk);
 }
 
 void CBasePlayer::LevelUpClassic()
@@ -1419,41 +1443,44 @@ void CBasePlayer::LevelUpClassic()
 			EmitSound("Player.VoicePerk");
 		}
 
-		if (m_Perk == FIREFIGHT_PERK_HEALTHREGENERATION)
+		if (sv_fr_perks.GetBool())
 		{
-			CFmtStr hint;
-			hint.sprintf("#Valve_Hud_HEALTHREGENERATION_classic");
-			ShowPerkMessage(hint.Access());
-		}
-		else if (m_Perk == FIREFIGHT_PERK_INFINITEAUXPOWER)
-		{
-			CFmtStr hint;
-			hint.sprintf("#Valve_Hud_INFINITEAUXPOWER_classic");
-			ShowPerkMessage(hint.Access());
-		}
-		else if (m_Perk == FIREFIGHT_PERK_INFINITEAMMO)
-		{
-			CFmtStr hint;
-			hint.sprintf("#Valve_Hud_INFINITEAMMO_classic");
-			ShowPerkMessage(hint.Access());
-		}
-		else if (m_Perk == FIREFIGHT_PERK_MOREHEALTH)
-		{
-			CFmtStr hint;
-			hint.sprintf("#Valve_Hud_MOREHEALTH_classic");
-			ShowPerkMessage(hint.Access());
-		}
-		else if (m_Perk == FIREFIGHT_PERK_MOREARMOR)
-		{
-			CFmtStr hint;
-			hint.sprintf("#Valve_Hud_MOREARMOR_classic");
-			ShowPerkMessage(hint.Access());
-		}
-		else if (m_Perk == FIREFIGHT_PERK_HEALTHREGENERATIONRATE)
-		{
-			CFmtStr hint;
-			hint.sprintf("#Valve_Hud_HEALTHREGENERATIONRATE_classic");
-			ShowPerkMessage(hint.Access());
+			if (m_Perk == FIREFIGHT_PERK_HEALTHREGENERATION && sv_fr_perks_healthregeneration.GetBool())
+			{
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_HEALTHREGENERATION_classic");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (m_Perk == FIREFIGHT_PERK_INFINITEAUXPOWER && sv_fr_perks_infiniteauxpower.GetBool())
+			{
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_INFINITEAUXPOWER_classic");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (m_Perk == FIREFIGHT_PERK_INFINITEAMMO && sv_fr_perks_infiniteammo.GetBool())
+			{
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_INFINITEAMMO_classic");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (m_Perk == FIREFIGHT_PERK_MOREHEALTH)
+			{
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_MOREHEALTH_classic");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (m_Perk == FIREFIGHT_PERK_MOREARMOR)
+			{
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_MOREARMOR_classic");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (m_Perk == FIREFIGHT_PERK_HEALTHREGENERATIONRATE)
+			{
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_HEALTHREGENERATIONRATE_classic");
+				ShowPerkMessage(hint.Access());
+			}
 		}
 	}
 }
@@ -7638,6 +7665,26 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 				else if (upgradeID == FIREFIGHT_UPGRADE_MAXARMOR)
 				{
 					Market_SetMaxArmor();
+				}
+				else if (upgradeID == FIREFIGHT_UPGRADE_MEGAPHYSCANNON)
+				{
+					if (!HL2GameRules()->MegaPhyscannonActive())
+					{
+						Market_SetMegaGravityGun();
+					}
+					else
+					{
+						if (sv_store_denynotifications.GetBool())
+						{
+							CFmtStr hint;
+							hint.sprintf("#Valve_StoreBuyDenyAlreadyHasItem");
+							ShowLevelMessage(hint.Access());
+						}
+						if (sv_store_denysounds.GetBool())
+						{
+							EmitSound("Store.InsufficientFunds");
+						}
+					}
 				}
 				RemoveMoney(moneyAmount);
 				if (sv_store_buysounds.GetBool())

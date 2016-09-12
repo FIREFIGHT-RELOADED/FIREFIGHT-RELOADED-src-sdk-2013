@@ -136,6 +136,8 @@ public:
 	void			HitPhysicsObject( CBaseEntity *pOther );
 	virtual void	ClampMotorForces( Vector &linear, AngularImpulse &angular );
 	unsigned int	PhysicsSolidMaskForEntity( void ) const;
+	
+	virtual bool	CanBecomeServerRagdoll(void) { return false; }
 
 	// Create smoke trail!
 	void CreateSmokeTrail();

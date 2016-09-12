@@ -2237,7 +2237,7 @@ void CWeaponPhysCannon::PrimaryAttack( void )
 		if( GetOwner()->IsPlayer() && !IsMegaPhysCannon() )
 		{
 			// Don't let the player zap any NPC's except regular antlions and headcrabs.
-			if (pEntity->IsNPC() && pEntity->Classify() != CLASS_HEADCRAB && !FClassnameIs(pEntity, "npc_antlion") && !FClassnameIs(pEntity, "npc_antlionworker"))
+			if (pEntity->IsNPC())
 			{
 				DryFire();
 				return;

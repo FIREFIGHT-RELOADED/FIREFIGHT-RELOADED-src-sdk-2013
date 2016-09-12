@@ -85,6 +85,7 @@ public:
 	void	NPC_DroppedHealth( void );
 	void	NPC_DroppedGrenade( void );
 	bool	MegaPhyscannonActive( void ) { return m_bMegaPhysgun;	}
+	void	SetMegaPhyscannonActive(void);
 	
 	virtual bool IsAlyxInDarknessMode();
 

@@ -209,3 +209,17 @@ void CWeaponKnife::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCha
 		break;
 	}
 }
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CWeaponKnife::ImpactEffect(trace_t &traceHit)
+{
+	// See if we hit water (we don't do the other impact effects in this case)
+	if (ImpactWater(traceHit.startpos, traceHit.endpos))
+		return;
+
+	//FIXME: need new decals
+	UTIL_ImpactTrace(&traceHit, DMG_SLASH);
+	//UTIL_DecalTrace(&traceHit, "ManhackCut");
+}
