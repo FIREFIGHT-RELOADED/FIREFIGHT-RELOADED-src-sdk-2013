@@ -2929,6 +2929,13 @@ void CBasePlayer::IncrementFragCount( int nCount )
 	pl.frags = m_iFrags;
 }
 
+void CBasePlayer::DecrementFragCount(int nCount)
+{
+	m_iFrags -= nCount;
+	pl.frags = m_iFrags;
+}
+
+
 void CBasePlayer::ResetDeathCount()
 {
 	m_iDeaths = 0;

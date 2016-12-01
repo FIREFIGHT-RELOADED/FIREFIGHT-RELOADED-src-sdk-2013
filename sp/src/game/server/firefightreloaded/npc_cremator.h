@@ -71,7 +71,7 @@ class CNPC_Cremator : public CAI_BaseNPC
 	DECLARE_CLASS(CNPC_Cremator, CAI_BaseNPC);
 	DECLARE_DATADESC();
 public:
-	Class_T Classify(void) { return CLASS_COMBINE; }
+	Class_T Classify(void) { return CLASS_COMBINE_CREMATOR; }
 	virtual void Precache(void);
 	virtual void Spawn(void);
 
@@ -116,7 +116,8 @@ public:
 protected:
 	bool m_bHeadshot;
 	bool m_bIsPlayerEnemy;
-	//bool m_bIsNPCEnemy;
+	bool m_bIsNPCEnemy;
+	bool m_bPlayAngrySound;
 	int m_iAmmo;
 private:
 	Disposition_t IRelationType(CBaseEntity *pTarget);

@@ -65,13 +65,13 @@ LINK_ENTITY_TO_CLASS(combine_armor_piece, CArmorPiece);
 
 //ACE BELOW.
 
-ConVar sk_combine_ace_health( "sk_combine_ace_health", "0");
-ConVar sk_combine_ace_kick( "sk_combine_ace_kick", "0");
+ConVar sk_combine_ace_health( "sk_combine_ace_health", "100");
+ConVar sk_combine_ace_kick( "sk_combine_ace_kick", "20");
  
 // Whether or not the combine guard should spawn health on death
 ConVar combine_ace_spawn_health("combine_ace_spawn_health", "1");
-ConVar combine_ace_spawnwithgrenades("combine_ace_spawnwithgrenades", "1");
-ConVar combine_ace_shieldspawnmode("combine_ace_shieldspawnmode", "2");
+ConVar combine_ace_spawnwithgrenades("combine_ace_spawnwithgrenades", "1", FCVAR_ARCHIVE);
+ConVar combine_ace_shieldspawnmode("combine_ace_shieldspawnmode", "2", FCVAR_ARCHIVE);
 
 extern ConVar sk_plr_dmg_buckshot;	
 extern ConVar sk_plr_num_shotgun_pellets;
@@ -94,14 +94,11 @@ void CNPC_CombineAce::Spawn( void )
 
 	SetModel( "models/combine_ace_soldier.mdl" );
 
-	//Give him a random amount of grenades on spawn
-	if (combine_ace_spawnwithgrenades.GetBool())
-	{
-		m_iNumGrenades = random->RandomInt(2, 3);
-	}
+	m_iNumGrenades = random->RandomInt(2, 3);
 
 	m_fIsElite = true;
 	m_fIsAce = true;
+	m_iUseMarch = true;
 
 	// Stronger, tougher.
 	SetHealth(sk_combine_ace_health.GetFloat());
@@ -163,12 +160,14 @@ void CNPC_CombineAce::Spawn( void )
 
 	BaseClass::Spawn();
 
+	/*
 #if HL2_EPISODIC
 	if (m_iUseMarch && !HasSpawnFlags(SF_NPC_START_EFFICIENT))
 	{
 		Msg( "Soldier %s is set to use march anim, but is not an efficient AI. The blended march anim can only be used for dead-ahead walks!\n", GetDebugName() );
 	}
 #endif
+	*/
 }
 
 //-----------------------------------------------------------------------------
@@ -394,14 +393,10 @@ void CNPC_CombineAce::OnChangeActivity( Activity eNewActivity )
 
 	BaseClass::OnChangeActivity( eNewActivity );
 
-#if HL2_EPISODIC
-	// Give each trooper a varied look for his march. Done here because if you do it earlier (eg Spawn, StartTask), the
-	// pose param gets overwritten.
 	if (m_iUseMarch)
 	{
-		SetPoseParameter("casual", RandomFloat());
+		SetPoseParameter("casual", 1.0);
 	}
-#endif
 }
 
 void CNPC_CombineAce::OnListened()

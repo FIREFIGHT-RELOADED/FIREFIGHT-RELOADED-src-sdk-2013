@@ -158,6 +158,7 @@ public:
 	virtual void DeathNoticeNPC(CBaseEntity *pVictim, const CTakeDamageInfo &info);
 	CBasePlayer *GetDeathScorer( CBaseEntity *pKiller, CBaseEntity *pInflictor );									// old version of method - kept for backward compat
 	virtual CBasePlayer *GetDeathScorer( CBaseEntity *pKiller, CBaseEntity *pInflictor, CBaseEntity *pVictim );		// new version of method
+	virtual void GiveReward(CBasePlayer *pPlayer);
 
 // Weapon retrieval
 	virtual bool CanHavePlayerItem( CBasePlayer *pPlayer, CBaseCombatWeapon *pWeapon );// The player is touching an CBaseCombatWeapon, do I give it to him?

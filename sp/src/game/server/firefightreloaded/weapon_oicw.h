@@ -78,6 +78,8 @@ protected:
 
 	bool			m_bZoomed;
 
+	int				m_iFireMode;
+
 	float	m_flSoonestPrimaryAttack;
 
 	static const char *pShootSounds[];

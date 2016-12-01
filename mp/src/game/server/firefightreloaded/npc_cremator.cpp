@@ -62,8 +62,8 @@ CBaseEntity *pCorpse;
 LINK_ENTITY_TO_CLASS(npc_cremator, CNPC_Cremator);
 
 ConVar	sk_cremator_health("sk_cremator_health", "180");
-ConVar	sk_cremator_firedamage("sk_cremator_firedamage", "0");
-ConVar	sk_cremator_radiusdamage("sk_cremator_radiusdamage", "0");
+ConVar	sk_cremator_firedamage("sk_cremator_firedamage", "15");
+ConVar	sk_cremator_radiusdamage("sk_cremator_radiusdamage", "5");
 ConVar  sk_cremator_corpse_search_radius("sk_cremator_corpse_search_radius", "320");
 ConVar  sk_cremator_attackplayeronsight("sk_cremator_attackplayeronsight", "0");
 
@@ -76,7 +76,8 @@ BEGIN_DATADESC(CNPC_Cremator)
 DEFINE_FIELD(m_iAmmo, FIELD_INTEGER),
 DEFINE_FIELD(m_bHeadshot, FIELD_BOOLEAN),
 DEFINE_FIELD(m_bIsPlayerEnemy, FIELD_BOOLEAN),
-//DEFINE_FIELD(m_bIsNPCEnemy, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bIsNPCEnemy, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bPlayAngrySound, FIELD_BOOLEAN),
 END_DATADESC();
 
 void CNPC_Cremator::Precache()
@@ -148,12 +149,10 @@ Disposition_t CNPC_Cremator::IRelationType(CBaseEntity *pTarget)
 			return m_bIsPlayerEnemy ? D_HT : D_NU;
 		}
 	}
-	/*
-	else if (pTarget->Classify() != CLASS_PLAYER)
+	else if (pTarget->Classify() != (CLASS_PLAYER && Classify()))
 	{
 		return m_bIsNPCEnemy ? D_HT : D_NU;
 	}
-	*/
 	return disp;
 }
 #if 0
@@ -251,7 +250,14 @@ void CNPC_Cremator::IdleSound(void)
 	int randSay = random->RandomInt(0, 2);
 	if (randSay == 2)
 	{
-		EmitSound("NPC_Cremator.BreathingAmb");
+		if (m_bPlayAngrySound)
+		{
+			EmitSound("NPC_Cremator.AngryAmb");
+		}
+		else
+		{
+			EmitSound("NPC_Cremator.BreathingAmb");
+		}
 	}
 	EmitSound("NPC_Cremator.ClothAmb");
 }
@@ -267,15 +273,13 @@ int CNPC_Cremator::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		if (info.GetAttacker()->IsPlayer())
 		{
 			m_bIsPlayerEnemy = true;
-			EmitSound("NPC_Cremator.AngryAmb");
+			m_bPlayAngrySound = true;
 		}
-		/*
-		else if (info.GetAttacker()->IsNPC())
+		else if (info.GetAttacker()->IsNPC() && info.GetAttacker()->Classify() != Classify())
 		{
 			m_bIsNPCEnemy = true;
-			EmitSound("NPC_Cremator.AngryAmb");
+			m_bPlayAngrySound = true;
 		}
-		*/
 	}
 
 	return BaseClass::OnTakeDamage_Alive(info);
@@ -393,6 +397,8 @@ void CNPC_Cremator::HandleAnimEvent(animevent_t *pEvent)
 	{
 		ClearCondition(COND_CREMATOR_OUT_OF_AMMO);
 
+		// Put your own ints here. This defines for how long a cremator would be able to fire at an enemy
+		// Cremator gets shorter bursts on lower difficulty. On Hard, it can continously fire 60 attack cycles (1 ammo per cycle)
 		m_iAmmo += 100;
 	}
 	break;
@@ -677,6 +683,8 @@ NPC_STATE CNPC_Cremator::SelectIdealState(void)
 		// COMBAT goes to ALERT upon death of enemy
 		if (GetEnemy() == NULL)
 		{
+			m_bPlayAngrySound = false;
+			m_nSkin = CREMATOR_SKIN_CALM;
 			return NPC_STATE_IDLE;
 		}
 		break;
@@ -772,6 +780,7 @@ int CNPC_Cremator::SelectSchedule(void)
 #endif
 		if (HasCondition(COND_ENEMY_DEAD))
 		{
+			m_bPlayAngrySound = false;
 			m_nSkin = CREMATOR_SKIN_CALM;
 			return BaseClass::SelectSchedule();
 		}

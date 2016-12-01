@@ -55,6 +55,7 @@ const char *g_charNPCSSpawnerList[] =
 	"npc_vortigaunt",
 	"npc_assassin",
 	"npc_cremator",
+	"npc_elitepolice",
 };
 
 const char *g_charNPCSCombineFirefightCommon[] =
@@ -64,6 +65,7 @@ const char *g_charNPCSCombineFirefightCommon[] =
 	"npc_combine_e",
 	"npc_combine_p",
 	"npc_combine_shot",
+	"npc_elitepolice",
 };
 
 const char *g_charNPCSCombineFirefightRare[] =
@@ -86,6 +88,13 @@ const char *g_charNPCSCombineFirefightMetropoliceWeapons[] =
 	"weapon_smg1",
 	"weapon_pistol",
 	"weapon_stunstick",
+};
+
+const char *g_charNPCSCombineFirefightEliteMetropoliceWeapons[] =
+{
+	"weapon_smg1",
+	"weapon_ar2",
+	"weapon_pistol",
 };
 
 //TODO: Add more weapons to ace
@@ -119,9 +128,10 @@ const char *g_charNPCSZombieSurvivalRare[] =
 
 const char *g_charNPCSXenInvasionCommon[] =
 {
-	"npc_headcrab",
 	"npc_houndeye",
 	"npc_bullsquid",
+	"npc_agrunt",
+	"npc_acontroller",
 };
 
 const char *g_charNPCSXenInvasionRare[] =
@@ -129,6 +139,7 @@ const char *g_charNPCSXenInvasionRare[] =
 	"npc_headcrab_fast",
 	"npc_headcrab_poison",
 	"npc_vortigaunt",
+	"npc_headcrab",
 };
 
 const char *g_charNPCSFirefightRumbleCommon[] =
@@ -143,9 +154,11 @@ const char *g_charNPCSFirefightRumbleCommon[] =
 	"npc_zombie_torso",
 	"npc_fastzombie",
 	"npc_fastzombie_torso",
-	"npc_headcrab",
+	"npc_agrunt",
 	"npc_houndeye",
 	"npc_bullsquid",
+	"npc_elitepolice",
+	"npc_acontroller",
 };
 
 const char *g_charNPCSFirefightRumbleRare[] =
@@ -162,6 +175,7 @@ const char *g_charNPCSFirefightRumbleRare[] =
 	"npc_vortigaunt",
 	"npc_assassin",
 	"npc_cremator",
+	"npc_headcrab",
 };
 
 static void DispatchActivate( CBaseEntity *pEntity )
@@ -553,11 +567,32 @@ void CNPCMakerFirefight::MakeNPC(void)
 				pent->AddSpawnFlags(SF_METROPOLICE_ALLOWED_TO_RESPOND);
 				pent->AddSpawnFlags(SF_METROPOLICE_MID_RANGE_ATTACK);
 			}
+			else if (Q_stristr(pRandomName, "npc_elitepolice"))
+			{
+				int nWeaponsElitePolice = ARRAYSIZE(g_charNPCSCombineFirefightEliteMetropoliceWeapons);
+				int randomChoiceElitePolice = rand() % nWeaponsElitePolice;
+				const char *pRandomNameElitePolice = g_charNPCSCombineFirefightEliteMetropoliceWeapons[randomChoiceElitePolice];
+				pent->m_spawnEquipment = MAKE_STRING(pRandomNameElitePolice);
+			}
 			else if (Q_stristr(pRandomName, "npc_combine_shot"))
 			{
 				pent->m_spawnEquipment = MAKE_STRING("weapon_shotgun");
 			}
-			else
+			else if (Q_stristr(pRandomName, "npc_combine_s"))
+			{
+				int nWeaponsSoldier = ARRAYSIZE(g_charNPCSCombineFirefightSoldierWeapons);
+				int randomChoiceSoldier = rand() % nWeaponsSoldier;
+				const char *pRandomNameSoldier = g_charNPCSCombineFirefightSoldierWeapons[randomChoiceSoldier];
+				pent->m_spawnEquipment = MAKE_STRING(pRandomNameSoldier);
+			}
+			else if (Q_stristr(pRandomName, "npc_combine_e"))
+			{
+				int nWeaponsSoldier = ARRAYSIZE(g_charNPCSCombineFirefightSoldierWeapons);
+				int randomChoiceSoldier = rand() % nWeaponsSoldier;
+				const char *pRandomNameSoldier = g_charNPCSCombineFirefightSoldierWeapons[randomChoiceSoldier];
+				pent->m_spawnEquipment = MAKE_STRING(pRandomNameSoldier);
+			}
+			else if (Q_stristr(pRandomName, "npc_combine_p"))
 			{
 				int nWeaponsSoldier = ARRAYSIZE(g_charNPCSCombineFirefightSoldierWeapons);
 				int randomChoiceSoldier = rand() % nWeaponsSoldier;
@@ -786,6 +821,13 @@ void CNPCMakerFirefight::MakeNPC(void)
 				pent->AddSpawnFlags(SF_METROPOLICE_ALLOWED_TO_RESPOND);
 				pent->AddSpawnFlags(SF_METROPOLICE_MID_RANGE_ATTACK);
 			}
+			else if (Q_stristr(pRandomName, "npc_elitepolice"))
+			{
+				int nWeaponsElitePolice = ARRAYSIZE(g_charNPCSCombineFirefightEliteMetropoliceWeapons);
+				int randomChoiceElitePolice = rand() % nWeaponsElitePolice;
+				const char *pRandomNameElitePolice = g_charNPCSCombineFirefightEliteMetropoliceWeapons[randomChoiceElitePolice];
+				pent->m_spawnEquipment = MAKE_STRING(pRandomNameElitePolice);
+			}
 			else if (Q_stristr(pRandomName, "npc_combine_shot"))
 			{
 				pent->m_spawnEquipment = MAKE_STRING("weapon_shotgun");
@@ -929,11 +971,32 @@ void CNPCMakerFirefight::MakeNPC(void)
 				pent->AddSpawnFlags(SF_METROPOLICE_ALLOWED_TO_RESPOND);
 				pent->AddSpawnFlags(SF_METROPOLICE_MID_RANGE_ATTACK);
 			}
+			else if (Q_stristr(pRandomName, "npc_elitepolice"))
+			{
+				int nWeaponsElitePolice = ARRAYSIZE(g_charNPCSCombineFirefightEliteMetropoliceWeapons);
+				int randomChoiceElitePolice = rand() % nWeaponsElitePolice;
+				const char *pRandomNameElitePolice = g_charNPCSCombineFirefightEliteMetropoliceWeapons[randomChoiceElitePolice];
+				pent->m_spawnEquipment = MAKE_STRING(pRandomNameElitePolice);
+			}
 			else if (Q_stristr(pRandomName, "npc_combine_shot"))
 			{
 				pent->m_spawnEquipment = MAKE_STRING("weapon_shotgun");
 			}
-			else
+			else if (Q_stristr(pRandomName, "npc_combine_s"))
+			{
+				int nWeaponsSoldier = ARRAYSIZE(g_charNPCSCombineFirefightSoldierWeapons);
+				int randomChoiceSoldier = rand() % nWeaponsSoldier;
+				const char *pRandomNameSoldier = g_charNPCSCombineFirefightSoldierWeapons[randomChoiceSoldier];
+				pent->m_spawnEquipment = MAKE_STRING(pRandomNameSoldier);
+			}
+			else if (Q_stristr(pRandomName, "npc_combine_e"))
+			{
+				int nWeaponsSoldier = ARRAYSIZE(g_charNPCSCombineFirefightSoldierWeapons);
+				int randomChoiceSoldier = rand() % nWeaponsSoldier;
+				const char *pRandomNameSoldier = g_charNPCSCombineFirefightSoldierWeapons[randomChoiceSoldier];
+				pent->m_spawnEquipment = MAKE_STRING(pRandomNameSoldier);
+			}
+			else if (Q_stristr(pRandomName, "npc_combine_p"))
 			{
 				int nWeaponsSoldier = ARRAYSIZE(g_charNPCSCombineFirefightSoldierWeapons);
 				int randomChoiceSoldier = rand() % nWeaponsSoldier;
@@ -1161,6 +1224,13 @@ void CNPCMakerFirefight::MakeNPC(void)
 				pent->m_spawnEquipment = MAKE_STRING(pRandomNamePolice);
 				pent->AddSpawnFlags(SF_METROPOLICE_ALLOWED_TO_RESPOND);
 				pent->AddSpawnFlags(SF_METROPOLICE_MID_RANGE_ATTACK);
+			}
+			else if (Q_stristr(pRandomName, "npc_elitepolice"))
+			{
+				int nWeaponsElitePolice = ARRAYSIZE(g_charNPCSCombineFirefightEliteMetropoliceWeapons);
+				int randomChoiceElitePolice = rand() % nWeaponsElitePolice;
+				const char *pRandomNameElitePolice = g_charNPCSCombineFirefightEliteMetropoliceWeapons[randomChoiceElitePolice];
+				pent->m_spawnEquipment = MAKE_STRING(pRandomNameElitePolice);
 			}
 			else if (Q_stristr(pRandomName, "npc_combine_shot"))
 			{

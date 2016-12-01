@@ -79,6 +79,7 @@ void CNPC_CombineP::Spawn( void )
 
 	m_fIsElite = false;
 	m_fIsAce = false;
+	m_iUseMarch = true;
 
 	SetHealth( sk_combine_p_health.GetFloat() );
 	SetMaxHealth( sk_combine_p_health.GetFloat() );
@@ -89,13 +90,14 @@ void CNPC_CombineP::Spawn( void )
 	CapabilitiesAdd( bits_CAP_DOORS_GROUP );
 
 	BaseClass::Spawn();
-
+	/*
 #if HL2_EPISODIC
 	if (m_iUseMarch && !HasSpawnFlags(SF_NPC_START_EFFICIENT))
 	{
 		Msg( "Soldier %s is set to use march anim, but is not an efficient AI. The blended march anim can only be used for dead-ahead walks!\n", GetDebugName() );
 	}
 #endif
+	*/
 }
 
 //-----------------------------------------------------------------------------
@@ -286,14 +288,10 @@ void CNPC_CombineP::OnChangeActivity( Activity eNewActivity )
 
 	BaseClass::OnChangeActivity( eNewActivity );
 
-#if HL2_EPISODIC
-	// Give each trooper a varied look for his march. Done here because if you do it earlier (eg Spawn, StartTask), the
-	// pose param gets overwritten.
 	if (m_iUseMarch)
 	{
-		SetPoseParameter("casual", RandomFloat());
+		SetPoseParameter("casual", 1.0);
 	}
-#endif
 }
 
 void CNPC_CombineP::OnListened()

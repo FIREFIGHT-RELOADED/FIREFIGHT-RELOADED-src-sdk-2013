@@ -31,8 +31,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar	sk_combine_s_health( "sk_combine_s_health","0");
-ConVar	sk_combine_s_kick( "sk_combine_s_kick","0");
+ConVar	sk_combine_s_health( "sk_combine_s_health","50");
+ConVar	sk_combine_s_kick( "sk_combine_s_kick","10");
 
 extern ConVar sk_plr_dmg_buckshot;	
 extern ConVar sk_plr_num_shotgun_pellets;
@@ -57,14 +57,11 @@ void CNPC_CombineS::Spawn( void )
 	Precache();
 	SetModel( "models/combine_soldier.mdl" );
 
-	//Give him a random amount of grenades on spawn
-	if (combine_soldier_spawnwithgrenades.GetBool())
-	{
-		m_iNumGrenades = random->RandomInt(2, 3);
-	}
+	m_iNumGrenades = random->RandomInt(2, 3);
 
 	m_fIsElite = false;
 	m_fIsAce = false;
+	m_iUseMarch = true;
 
 	SetHealth( sk_combine_s_health.GetFloat() );
 	SetMaxHealth( sk_combine_s_health.GetFloat() );
@@ -76,12 +73,14 @@ void CNPC_CombineS::Spawn( void )
 
 	BaseClass::Spawn();
 
+	/*
 #if HL2_EPISODIC
 	if (m_iUseMarch && !HasSpawnFlags(SF_NPC_START_EFFICIENT))
 	{
 		Msg( "Soldier %s is set to use march anim, but is not an efficient AI. The blended march anim can only be used for dead-ahead walks!\n", GetDebugName() );
 	}
 #endif
+	*/
 }
 
 //-----------------------------------------------------------------------------
@@ -263,14 +262,10 @@ void CNPC_CombineS::OnChangeActivity( Activity eNewActivity )
 
 	BaseClass::OnChangeActivity( eNewActivity );
 
-#if HL2_EPISODIC
-	// Give each trooper a varied look for his march. Done here because if you do it earlier (eg Spawn, StartTask), the
-	// pose param gets overwritten.
 	if (m_iUseMarch)
 	{
-		SetPoseParameter("casual", RandomFloat());
+		SetPoseParameter("casual", 1.0);
 	}
-#endif
 }
 
 void CNPC_CombineS::OnListened()

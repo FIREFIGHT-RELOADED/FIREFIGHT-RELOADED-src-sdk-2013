@@ -336,11 +336,13 @@ $Project "Server (Episodic)"
 			$File	"firefightreloaded\grenade_tripmine.h"
 			$File	"firefightreloaded\weapon_oicw.cpp"
 			$File	"firefightreloaded\weapon_oicw.h"
-			//soon
 			$File	"firefightreloaded\npc_cremator.cpp"
 			$File	"firefightreloaded\npc_cremator.h"
 			$File "firefightreloaded\weapon_knife.cpp"
 			$File "firefightreloaded\weapon_knife.h"
+			$File "firefightreloaded\npc_elitepolice.cpp"
+			$File "firefightreloaded\npc_elitepolice.h"
+			$File	"firefightreloaded\weapon_mp5.cpp"
 
 			$Folder	"HL2 Imported"
 			{
@@ -348,6 +350,17 @@ $Project "Server (Episodic)"
 				$File	"hl2\npc_bullsquid.h"
 				$File	"hl2\npc_houndeye.cpp"
 				$File	"hl2\npc_houndeye.h"
+				$File	"firefightreloaded\weapon_gauss.cpp"
+				$File	"firefightreloaded\weapon_gauss.h"
+			}
+			
+			$Folder	"HL1 Imported"
+			{
+				$File	"firefightreloaded\npc_agrunt.cpp"
+				$File	"firefightreloaded\npc_hornet.cpp"
+				$File	"firefightreloaded\npc_hornet.h"
+				$File	"firefightreloaded\npc_acontroller.cpp"
+				$File	"firefightreloaded\weapon_egon.cpp"
 			}
 		}
 		

@@ -39,6 +39,7 @@ BEGIN_DATADESC(CWeaponOICW)
 DEFINE_FIELD(m_nShotsFired, FIELD_INTEGER),
 DEFINE_FIELD(m_bZoomed, FIELD_BOOLEAN),
 DEFINE_FIELD(m_flSoonestPrimaryAttack, FIELD_TIME),
+DEFINE_FIELD(m_iFireMode, FIELD_INTEGER),
 
 END_DATADESC()
 
@@ -119,6 +120,7 @@ CWeaponOICW::CWeaponOICW()
 	m_fMaxRange2 = 1024;
 
 	m_nShotsFired = 0;
+	m_iFireMode = 0;
 
 	m_bAltFiresUnderwater = false;
 
@@ -166,30 +168,59 @@ void CWeaponOICW::ItemPostFrame(void)
 	//Zoom in
 	if (pOwner->m_afButtonPressed & IN_ATTACK2)
 	{
-		Zoom();
+		if (m_iFireMode == 0)
+		{
+			Zoom();
+		}
+		else if (m_iFireMode == 1)
+		{
+			if (m_flNextSecondaryAttack <= gpGlobals->curtime)
+			{
+				if (pOwner->GetAmmoCount(m_iSecondaryAmmoType) <= 0)
+				{
+					if (m_flNextEmptySoundTime < gpGlobals->curtime)
+					{
+						WeaponSound(EMPTY);
+						m_flNextSecondaryAttack = m_flNextEmptySoundTime = gpGlobals->curtime + 0.5;
+					}
+				}
+				else if (pOwner->GetWaterLevel() == 3 && m_bAltFiresUnderwater == false)
+				{
+					// This weapon doesn't fire underwater
+					WeaponSound(EMPTY);
+					m_flNextPrimaryAttack = gpGlobals->curtime + 0.2;
+					return;
+				}
+				else
+				{
+					GrenadeAttack();
+				}
+			}
+		}
 	}
 
 	//Throw a grenade.
-	if (pOwner->m_afButtonPressed & IN_ATTACK3 && (m_flNextSecondaryAttack <= gpGlobals->curtime))
+	if (pOwner->m_afButtonPressed & IN_ATTACK3)
 	{
-		if (pOwner->GetAmmoCount(m_iSecondaryAmmoType) <= 0)
+		if (m_iFireMode == 0)
 		{
-			if (m_flNextEmptySoundTime < gpGlobals->curtime)
+			if (m_bZoomed)
 			{
-				WeaponSound(EMPTY);
-				m_flNextSecondaryAttack = m_flNextEmptySoundTime = gpGlobals->curtime + 0.5;
+				Zoom();
 			}
-		}
-		else if (pOwner->GetWaterLevel() == 3 && m_bAltFiresUnderwater == false)
-		{
-			// This weapon doesn't fire underwater
+			CFmtStr hint;
+			hint.sprintf("#Valve_OICW_Grenades");
+			pOwner->ShowLevelMessage(hint.Access());
+			m_iFireMode = 1;
 			WeaponSound(EMPTY);
-			m_flNextPrimaryAttack = gpGlobals->curtime + 0.2;
-			return;
 		}
-		else
+		else if (m_iFireMode == 1)
 		{
-			GrenadeAttack();
+			CFmtStr hint;
+			hint.sprintf("#Valve_OICW_Scope");
+			pOwner->ShowLevelMessage(hint.Access());
+			m_iFireMode = 0;
+			WeaponSound(EMPTY);
 		}
 	}
 

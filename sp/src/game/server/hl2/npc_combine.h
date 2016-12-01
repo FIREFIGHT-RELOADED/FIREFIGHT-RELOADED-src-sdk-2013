@@ -148,6 +148,8 @@ public:
 	void			OnStartSchedule( int scheduleType );
 
 	virtual bool	ShouldPickADeathPose( void );
+	// Select the combat schedule
+	int SelectCombatSchedule();
 
 protected:
 	void			SetKickDamage( int nDamage ) { m_nKickDamage = nDamage; }
@@ -228,8 +230,6 @@ private:
 	};
 
 private:
-	// Select the combat schedule
-	int SelectCombatSchedule();
 
 	// Should we charge the player?
 	bool ShouldChargePlayer();
@@ -263,18 +263,13 @@ private:
 	bool			m_bFirstEncounter;// only put on the handsign show in the squad's first encounter.
 
 	// Time Variables
-	float			m_flNextPainSoundTime;
-	float			m_flNextAlertSoundTime;
 	float			m_flNextGrenadeCheck;	
-	float			m_flNextLostSoundTime;
 	float			m_flAlertPatrolTime;		// When to stop doing alert patrol
 	float			m_flNextAltFireTime;		// Elites only. Next time to begin considering alt-fire attack.
 
 	int				m_nShots;
 	float			m_flShotDelay;
 	float			m_flStopMoveShootTime;
-
-	CAI_Sentence< CNPC_Combine > m_Sentences;
 	
 	CAI_AssaultBehavior			m_AssaultBehavior;
 	CCombineStandoffBehavior	m_StandoffBehavior;
@@ -287,10 +282,17 @@ public:
 	int				m_iLastAnimEventHandled;
 	bool			m_fIsElite;
 	bool			m_fIsAce;
+	bool			m_fIsPoliceRank;
 	Vector			m_vecAltFireTarget;
+
+	float			m_flNextPainSoundTime;
+	float			m_flNextAlertSoundTime;
+	float			m_flNextLostSoundTime;
 
 	int				m_iTacticalVariant;
 	int				m_iPathfindingVariant;
+
+	CAI_Sentence< CNPC_Combine > m_Sentences;
 
 	CAI_FollowBehavior			m_FollowBehavior;
 };

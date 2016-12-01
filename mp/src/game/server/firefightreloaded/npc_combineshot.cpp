@@ -31,8 +31,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar	sk_combine_shot_health( "sk_combine_shot_health","0");
-ConVar	sk_combine_shot_kick( "sk_combine_shot_kick","0");
+ConVar	sk_combine_shot_health( "sk_combine_shot_health","50");
+ConVar	sk_combine_shot_kick( "sk_combine_shot_kick","10");
 
 extern ConVar sk_plr_dmg_buckshot;	
 extern ConVar sk_plr_num_shotgun_pellets;
@@ -40,7 +40,7 @@ extern ConVar sk_plr_num_shotgun_pellets;
 //Whether or not the combine should spawn health on death
 ConVar	combine_shot_spawn_health( "combine_shot_spawn_health", "1" );
 
-ConVar	combine_shot_spawnwithgrenades("combine_shot_spawnwithgrenades", "1");
+ConVar	combine_shot_spawnwithgrenades("combine_shot_spawnwithgrenades", "1", FCVAR_ARCHIVE);
 
 LINK_ENTITY_TO_CLASS( npc_combine_shot, CNPC_CombineShot );
 
@@ -58,14 +58,11 @@ void CNPC_CombineShot::Spawn(void)
 	Precache();
 	SetModel( "models/combine_soldier_shotgunner.mdl" );
 
-	//Give him a random amount of grenades on spawn
-	if (combine_shot_spawnwithgrenades.GetBool())
-	{
-		m_iNumGrenades = random->RandomInt(2, 3);
-	}
+	m_iNumGrenades = random->RandomInt(2, 3);
 
 	m_fIsElite = false;
 	m_fIsAce = false;
+	m_iUseMarch = true;
 
 	SetHealth( sk_combine_shot_health.GetFloat() );
 	SetMaxHealth( sk_combine_shot_health.GetFloat() );
@@ -77,12 +74,14 @@ void CNPC_CombineShot::Spawn(void)
 
 	BaseClass::Spawn();
 
+	/*
 #if HL2_EPISODIC
 	if (m_iUseMarch && !HasSpawnFlags(SF_NPC_START_EFFICIENT))
 	{
 		Msg( "Soldier %s is set to use march anim, but is not an efficient AI. The blended march anim can only be used for dead-ahead walks!\n", GetDebugName() );
 	}
 #endif
+	*/
 }
 
 //-----------------------------------------------------------------------------
@@ -263,14 +262,10 @@ void CNPC_CombineShot::OnChangeActivity(Activity eNewActivity)
 
 	BaseClass::OnChangeActivity( eNewActivity );
 
-#if HL2_EPISODIC
-	// Give each trooper a varied look for his march. Done here because if you do it earlier (eg Spawn, StartTask), the
-	// pose param gets overwritten.
 	if (m_iUseMarch)
 	{
-		SetPoseParameter("casual", RandomFloat());
+		SetPoseParameter("casual", 1.0);
 	}
-#endif
 }
 
 void CNPC_CombineShot::OnListened()
@@ -307,7 +302,7 @@ void CNPC_CombineShot::Event_Killed(const CTakeDamageInfo &info)
 		SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
 		DispatchParticleEffect("headshotspray", GetAbsOrigin(), GetAbsAngles(), this);
 		EmitSound("Gore.Headshot");
-		float flFadeTime = 25.0;
+		float flFadeTime = 5.0;
 
 		CGib::SpawnSpecificGibs(this, 1, 750, 1500, "models/gibs/soldier_shotgunner_head.mdl", flFadeTime);
 

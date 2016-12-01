@@ -819,7 +819,10 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 				{
 					m_flLastAttackTime = gpGlobals->curtime;
 
-					m_Sentences.Speak( "COMBINE_ANNOUNCE", SENTENCE_PRIORITY_HIGH );
+					if (!m_fIsPoliceRank)
+					{
+						m_Sentences.Speak("COMBINE_ANNOUNCE", SENTENCE_PRIORITY_HIGH);
+					}
 
 					// Wait two seconds
 					SetWait( 2.0 );
@@ -843,7 +846,10 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 			}
 			else
 			{
-				m_Sentences.Speak( "COMBINE_THROW_GRENADE", SENTENCE_PRIORITY_MEDIUM );
+				if (!m_fIsPoliceRank)
+				{
+					m_Sentences.Speak("COMBINE_THROW_GRENADE", SENTENCE_PRIORITY_MEDIUM);
+				}
 				SetActivity(ACT_IDLE);
 
 				// Wait two seconds
@@ -979,7 +985,10 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 							m_pSquad->SquadRemember(bits_MEMORY_PLAYER_HURT);
 						}
 
-						m_Sentences.Speak( "COMBINE_PLAYERHIT", SENTENCE_PRIORITY_INVALID );
+						if (!m_fIsPoliceRank)
+						{
+							m_Sentences.Speak("COMBINE_PLAYERHIT", SENTENCE_PRIORITY_INVALID);
+						}
 						JustMadeSound( SENTENCE_PRIORITY_HIGH );
 					}
 					if ( pEntity->MyNPCPointer() )
@@ -1438,7 +1447,10 @@ void CNPC_Combine::AnnounceAssault(void)
 	// Make sure player can see me
 	if ( FVisible( pBCC ) )
 	{
-		m_Sentences.Speak( "COMBINE_ASSAULT" );
+		if (!m_fIsPoliceRank)
+		{
+			m_Sentences.Speak("COMBINE_ASSAULT");
+		}
 	}
 }
 
@@ -1814,24 +1826,27 @@ int CNPC_Combine::SelectSchedule( void )
 					if (pSound->m_iType & SOUND_DANGER)
 					{
 						// I hear something dangerous, probably need to take cover.
-						// dangerous sound nearby!, call it out
-						const char *pSentenceName = "COMBINE_DANGER";
-
-						CBaseEntity *pSoundOwner = pSound->m_hOwner;
-						if ( pSoundOwner )
+						// dangerous sound nearby!, call it out if we are not elite metropolice
+						if (!m_fIsPoliceRank)
 						{
-							CBaseGrenade *pGrenade = dynamic_cast<CBaseGrenade *>(pSoundOwner);
-							if ( pGrenade && pGrenade->GetThrower() )
+							const char *pSentenceName = "COMBINE_DANGER";
+
+							CBaseEntity *pSoundOwner = pSound->m_hOwner;
+							if (pSoundOwner)
 							{
-								if ( IRelationType( pGrenade->GetThrower() ) != D_LI )
+								CBaseGrenade *pGrenade = dynamic_cast<CBaseGrenade *>(pSoundOwner);
+								if (pGrenade && pGrenade->GetThrower())
 								{
-									// special case call out for enemy grenades
-									pSentenceName = "COMBINE_GREN";
+									if (IRelationType(pGrenade->GetThrower()) != D_LI)
+									{
+										// special case call out for enemy grenades
+										pSentenceName = "COMBINE_GREN";
+									}
 								}
 							}
-						}
 
-						m_Sentences.Speak( pSentenceName, SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL );
+							m_Sentences.Speak(pSentenceName, SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL);
+						}
 
 						// If the sound is approaching danger, I have no enemy, and I don't see it, turn to face.
 						if( !GetEnemy() && pSound->IsSoundType(SOUND_CONTEXT_DANGER_APPROACH) && pSound->m_hOwner && !FInViewCone(pSound->GetSoundReactOrigin()) )
@@ -2095,17 +2110,26 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 				// Have to explicitly check innate range attack condition as may have weapon with range attack 2
 				if (g_pGameRules->IsSkillLevel(SKILL_HARD) && HasCondition(COND_CAN_RANGE_ATTACK2) && OccupyStrategySlot( SQUAD_SLOT_GRENADE1 ) )
 				{
-					m_Sentences.Speak( "COMBINE_THROW_GRENADE" );
+					if (!m_fIsPoliceRank)
+					{
+						m_Sentences.Speak("COMBINE_THROW_GRENADE");
+					}
 					return SCHED_COMBINE_TOSS_GRENADE_COVER1;
 				}
 				else if (g_pGameRules->IsSkillLevel(SKILL_VERYHARD) && HasCondition(COND_CAN_RANGE_ATTACK2) && OccupyStrategySlot(SQUAD_SLOT_GRENADE1))
 				{
-					m_Sentences.Speak("COMBINE_THROW_GRENADE");
+					if (!m_fIsPoliceRank)
+					{
+						m_Sentences.Speak("COMBINE_THROW_GRENADE");
+					}
 					return SCHED_COMBINE_TOSS_GRENADE_COVER1;
 				}
 				else if (g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE) && HasCondition(COND_CAN_RANGE_ATTACK2) && OccupyStrategySlot(SQUAD_SLOT_GRENADE1))
 				{
-					m_Sentences.Speak("COMBINE_THROW_GRENADE");
+					if (!m_fIsPoliceRank)
+					{
+						m_Sentences.Speak("COMBINE_THROW_GRENADE");
+					}
 					return SCHED_COMBINE_TOSS_GRENADE_COVER1;
 				}
 				else
@@ -2532,13 +2556,19 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 					}
 				}			
 
-				m_Sentences.Speak( "COMBINE_KICK" );
+				if (!m_fIsPoliceRank)
+				{
+					m_Sentences.Speak("COMBINE_KICK");
+				}
 				handledEvent = true;
 				break;
 			}
 
 		case COMBINE_AE_CAUGHT_ENEMY:
-			m_Sentences.Speak( "COMBINE_ALERT" );
+			if (!m_fIsPoliceRank)
+			{
+				m_Sentences.Speak("COMBINE_ALERT");
+			}
 			handledEvent = true;
 			break;
 
@@ -2625,7 +2655,10 @@ void CNPC_Combine::SpeakSentence( int sentenceType )
 		// If I'm moving more than 20ft, I need to talk about it
 		if ( GetNavigator()->GetPath()->GetPathLength() > 20 * 12.0f )
 		{
-			m_Sentences.Speak( "COMBINE_FLANK" );
+			if (!m_fIsPoliceRank)
+			{
+				m_Sentences.Speak("COMBINE_FLANK");
+			}
 		}
 		break;
 	}
@@ -2723,16 +2756,19 @@ void CNPC_Combine::AlertSound( void)
 //=========================================================
 void CNPC_Combine::NotifyDeadFriend ( CBaseEntity* pFriend )
 {
-	if ( GetSquad()->NumMembers() < 2 )
+	if (!m_fIsPoliceRank)
 	{
-		m_Sentences.Speak( "COMBINE_LAST_OF_SQUAD", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_NORMAL );
-		JustMadeSound();
-		return;
-	}
-	// relaxed visibility test so that guys say this more often
-	//if( FInViewCone( pFriend ) && FVisible( pFriend ) )
-	{
-		m_Sentences.Speak( "COMBINE_MAN_DOWN" );
+		if (GetSquad()->NumMembers() < 2)
+		{
+			m_Sentences.Speak("COMBINE_LAST_OF_SQUAD", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_NORMAL);
+			JustMadeSound();
+			return;
+		}
+		// relaxed visibility test so that guys say this more often
+		//if( FInViewCone( pFriend ) && FVisible( pFriend ) )
+		{
+			m_Sentences.Speak("COMBINE_MAN_DOWN");
+		}
 	}
 	BaseClass::NotifyDeadFriend(pFriend);
 }
@@ -2757,48 +2793,51 @@ void CNPC_Combine::DeathSound ( void )
 //=========================================================
 void CNPC_Combine::IdleSound( void )
 {
-	if (g_fCombineQuestion || random->RandomInt(0,1))
+	if (!m_fIsPoliceRank)
 	{
-		if (!g_fCombineQuestion)
+		if (g_fCombineQuestion || random->RandomInt(0, 1))
 		{
-			// ask question or make statement
-			switch (random->RandomInt(0,2))
+			if (!g_fCombineQuestion)
 			{
-			case 0: // check in
-				if ( m_Sentences.Speak( "COMBINE_CHECK" ) >= 0 )
+				// ask question or make statement
+				switch (random->RandomInt(0, 2))
 				{
-					g_fCombineQuestion = 1;
-				}
-				break;
+				case 0: // check in
+					if (m_Sentences.Speak("COMBINE_CHECK") >= 0)
+					{
+						g_fCombineQuestion = 1;
+					}
+					break;
 
-			case 1: // question
-				if ( m_Sentences.Speak( "COMBINE_QUEST" ) >= 0 )
-				{
-					g_fCombineQuestion = 2;
-				}
-				break;
+				case 1: // question
+					if (m_Sentences.Speak("COMBINE_QUEST") >= 0)
+					{
+						g_fCombineQuestion = 2;
+					}
+					break;
 
-			case 2: // statement
-				m_Sentences.Speak( "COMBINE_IDLE" );
-				break;
+				case 2: // statement
+					m_Sentences.Speak("COMBINE_IDLE");
+					break;
+				}
 			}
-		}
-		else
-		{
-			switch (g_fCombineQuestion)
+			else
 			{
-			case 1: // check in
-				if ( m_Sentences.Speak( "COMBINE_CLEAR" ) >= 0 )
+				switch (g_fCombineQuestion)
 				{
-					g_fCombineQuestion = 0;
+				case 1: // check in
+					if (m_Sentences.Speak("COMBINE_CLEAR") >= 0)
+					{
+						g_fCombineQuestion = 0;
+					}
+					break;
+				case 2: // question 
+					if (m_Sentences.Speak("COMBINE_ANSWER") >= 0)
+					{
+						g_fCombineQuestion = 0;
+					}
+					break;
 				}
-				break;
-			case 2: // question 
-				if ( m_Sentences.Speak( "COMBINE_ANSWER" ) >= 0 )
-				{
-					g_fCombineQuestion = 0;
-				}
-				break;
 			}
 		}
 	}

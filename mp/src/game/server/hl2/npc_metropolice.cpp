@@ -123,7 +123,7 @@ ConVar	metropolice_chase_use_follow( "metropolice_chase_use_follow", "0" );
 ConVar  metropolice_move_and_melee("metropolice_move_and_melee", "1" );
 ConVar  metropolice_charge("metropolice_charge", "1" );
 
-ConVar	metropolice_spawnwithmanhacks("metropolice_spawnwithmanhacks", "1");
+ConVar	metropolice_spawnwithmanhacks("metropolice_spawnwithmanhacks", "1", FCVAR_ARCHIVE);
 
 // How many clips of pistol ammo a metropolice carries.
 #define METROPOLICE_NUM_CLIPS			10
@@ -743,16 +743,11 @@ void CNPC_MetroPolice::Spawn( void )
 
 	SetUse( &CNPC_MetroPolice::PrecriminalUse );
 
-	// Start us with a visible manhack if we have one
-	if ( m_iManhacks )
-	{
-		SetBodygroup( METROPOLICE_BODYGROUP_MANHACK, true );
-	}
+	m_iManhacks = random->RandomInt(2, 3);
 
-	//Give him a random number of manhacks on spawn.
-	if (metropolice_spawnwithmanhacks.GetBool())
+	if (m_iManhacks)
 	{
-		m_iManhacks = random->RandomInt(2, 3);
+		SetBodygroup(METROPOLICE_BODYGROUP_MANHACK, true);
 	}
 }
 
@@ -5780,7 +5775,6 @@ DEFINE_SCHEDULE
 	SCHED_METROPOLICE_SMG_NORMAL_ATTACK,
 
 	"	Tasks"
-	"		TASK_STOP_MOVING		0"
 	"		TASK_FACE_ENEMY			0"
 	"		TASK_ANNOUNCE_ATTACK	1"	// 1 = primary attack
 	"		TASK_METROPOLICE_STOP_FIRE_BURST	0"
@@ -5806,7 +5800,6 @@ DEFINE_SCHEDULE
 	SCHED_METROPOLICE_SMG_BURST_ATTACK,
 
 	"	Tasks"
-	"		TASK_STOP_MOVING		0"
 	"		TASK_FACE_ENEMY			0"
 	"		TASK_ANNOUNCE_ATTACK	1"	// 1 = primary attack
 	"		TASK_METROPOLICE_RELOAD_FOR_BURST	1.4"
@@ -5830,7 +5823,6 @@ DEFINE_SCHEDULE
 	SCHED_METROPOLICE_AIM_STITCH_TIGHTLY,
 
 	"	Tasks"
-	"		TASK_STOP_MOVING		0"
 	"		TASK_FACE_ENEMY			0"
 	"		TASK_ANNOUNCE_ATTACK	1"	// 1 = primary attack
 	"		TASK_METROPOLICE_RELOAD_FOR_BURST	1.0"
@@ -5855,7 +5847,6 @@ DEFINE_SCHEDULE
 	SCHED_METROPOLICE_AIM_STITCH_AT_AIRBOAT,
 
 	"	Tasks"
-	"		TASK_STOP_MOVING		0"
 	"		TASK_FACE_ENEMY			0"
 	"		TASK_ANNOUNCE_ATTACK	1"	// 1 = primary attack
 	"		TASK_METROPOLICE_RELOAD_FOR_BURST		2.5"
@@ -5879,7 +5870,6 @@ DEFINE_SCHEDULE
 	SCHED_METROPOLICE_AIM_STITCH_IN_FRONT_OF_AIRBOAT,
 
 	"	Tasks"
-	"		TASK_STOP_MOVING		0"
 	"		TASK_FACE_ENEMY			0"
 	"		TASK_ANNOUNCE_ATTACK	1"	// 1 = primary attack
 	"		TASK_METROPOLICE_RELOAD_FOR_BURST		2.5"
@@ -5903,7 +5893,6 @@ DEFINE_SCHEDULE
 	SCHED_METROPOLICE_AIM_STITCH_ALONG_SIDE_OF_AIRBOAT,
 
 	"	Tasks"
-	"		TASK_STOP_MOVING		0"
 	"		TASK_FACE_ENEMY			0"
 	"		TASK_ANNOUNCE_ATTACK	1"	// 1 = primary attack
 	"		TASK_METROPOLICE_RELOAD_FOR_BURST		2.5"
@@ -5927,7 +5916,6 @@ DEFINE_SCHEDULE
 	SCHED_METROPOLICE_AIM_STITCH_BEHIND_AIRBOAT,
 
 	"	Tasks"
-	"		TASK_STOP_MOVING		0"
 	"		TASK_FACE_ENEMY			0"
 	"		TASK_ANNOUNCE_ATTACK	1"	// 1 = primary attack
 	"		TASK_METROPOLICE_RELOAD_FOR_BURST		2.5"

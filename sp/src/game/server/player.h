@@ -841,6 +841,12 @@ public:
 	void Market_SetMaxArmor( void );
 	void Market_SetMegaGravityGun(void);
 
+	void DetermineReward(void);
+
+	void Reward_GivePerk(void);
+	void Reward_GiveItem(void);
+	void Reward_GiveKashBonus(void);
+
 	void GiveRandomPerk( void );
 	void LevelUpClassic( void);
 

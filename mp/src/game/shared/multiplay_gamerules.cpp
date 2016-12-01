@@ -927,12 +927,20 @@ ConVarRef suitcharger( "sk_suitcharger" );
 	//=========================================================
 	int CMultiplayRules::IPointsForKill( CBasePlayer *pAttacker, CBasePlayer *pKilled )
 	{
+		//team killing dumbasses
 		return 1;
 	}
 
 	int CMultiplayRules::IPointsForKillNPC(CBasePlayer *pAttacker, CBaseEntity *pKilled)
 	{
-		return 1;
+		if (pKilled->m_isRareEntity == true)
+		{
+			return 2;
+		}
+		else
+		{
+			return 1;
+		}
 	}
 
 	const char *CMultiplayRules::GetNPCName(CBaseEntity *pVictim)
@@ -1045,6 +1053,22 @@ ConVarRef suitcharger( "sk_suitcharger" );
 		{
 			name = "Combine Cremator Unit";
 		}
+		else if (Q_stristr(entityClassname, "npc_elitepolice"))
+		{
+			name = "Elite Civil Protection Officer";
+		}
+		else if (Q_stristr(entityClassname, "npc_agrunt"))
+		{
+			name = "Alien Grunt";
+		}
+		else if (Q_stristr(entityClassname, "npc_acontroller"))
+		{
+			name = "Alien Controller";
+		}
+		else if (Q_stristr(entityClassname, "npc_hornet"))
+		{
+			name = "Hornet";
+		}
 		else
 		{
 			name = entityClassname;
@@ -1128,7 +1152,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 			else if (pScorer)
 			{
 				// if a player dies in a deathmatch game and the killer is a client, award the killer some points
-				pScorer->IncrementFragCount(IPointsForKill(pScorer, pVictim));
+				pScorer->DecrementFragCount(IPointsForKill(pScorer, pVictim));
 
 				// Allow the scorer to immediately paint a decal
 				pScorer->AllowImmediateDecalPainting();
@@ -1179,6 +1203,9 @@ ConVarRef suitcharger( "sk_suitcharger" );
 				// Allow the scorer to immediately paint a decal
 				pScorer->AllowImmediateDecalPainting();
 
+				//reward a random item/weapon to all players if we have the random chance to. coming soon later
+				//GiveReward(pPlayer);
+
 				// dvsents2: uncomment when removing all FireTargets
 				//variant_t value;
 				//g_EventQueue.AddEvent( "game_playerkill", "Use", value, 0, pScorer, pScorer );
@@ -1189,6 +1216,22 @@ ConVarRef suitcharger( "sk_suitcharger" );
 		{
 			FireTargets("game_npckill", pKiller, pKiller, USE_TOGGLE, 0);
 		}
+	}
+
+	void CMultiplayRules::GiveReward(CBasePlayer *pPlayer)
+	{
+		/*
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
+
+			if (!pPlayer)
+				continue;
+
+			//insert planned rewards here
+
+		}
+		*/
 	}
 
 	//=========================================================

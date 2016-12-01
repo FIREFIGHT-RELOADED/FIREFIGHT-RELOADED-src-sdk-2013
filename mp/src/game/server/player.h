@@ -691,6 +691,8 @@ public:
 	void	ResetFragCount();
 	void	IncrementFragCount( int nCount );
 
+	void	DecrementFragCount(int nCount);
+
 	void	ResetDeathCount();
 	void	IncrementDeathCount( int nCount );
 

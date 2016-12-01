@@ -23,6 +23,7 @@ const char *g_charNPCSXenInvasionSupport[] =
 {
 	"npc_houndeye",
 	"npc_bullsquid",
+	"npc_agrunt",
 };
 
 static void DispatchActivate( CBaseEntity *pEntity )

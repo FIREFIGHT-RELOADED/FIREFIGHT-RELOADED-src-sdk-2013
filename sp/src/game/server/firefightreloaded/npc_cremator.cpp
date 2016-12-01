@@ -7,6 +7,7 @@
 #pragma warning(disable:4706)
 #include "cbase.h"
 #include "npc_cremator.h"
+#include "weapon_physcannon.h"
 
 /*------------Feb 25th '15 code revision------------*/
 /*================CNPC_Cremator===============*/
@@ -76,7 +77,8 @@ BEGIN_DATADESC(CNPC_Cremator)
 DEFINE_FIELD(m_iAmmo, FIELD_INTEGER),
 DEFINE_FIELD(m_bHeadshot, FIELD_BOOLEAN),
 DEFINE_FIELD(m_bIsPlayerEnemy, FIELD_BOOLEAN),
-//DEFINE_FIELD(m_bIsNPCEnemy, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bIsNPCEnemy, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bPlayAngrySound, FIELD_BOOLEAN),
 END_DATADESC();
 
 void CNPC_Cremator::Precache()
@@ -148,12 +150,10 @@ Disposition_t CNPC_Cremator::IRelationType(CBaseEntity *pTarget)
 			return m_bIsPlayerEnemy ? D_HT : D_NU;
 		}
 	}
-	/*
-	else if (pTarget->Classify() != CLASS_PLAYER)
+	else if (pTarget->IsNPC() && pTarget->Classify() != Classify() && pTarget->Classify() != CLASS_COMBINE && pTarget->Classify() != CLASS_COMBINE_HUNTER && pTarget->Classify() != CLASS_COMBINE_GUNSHIP && pTarget->Classify() != CLASS_MANHACK && pTarget->Classify() != CLASS_METROPOLICE && pTarget->Classify() != CLASS_SCANNER)
 	{
 		return m_bIsNPCEnemy ? D_HT : D_NU;
 	}
-	*/
 	return disp;
 }
 #if 0
@@ -251,7 +251,14 @@ void CNPC_Cremator::IdleSound(void)
 	int randSay = random->RandomInt(0, 2);
 	if (randSay == 2)
 	{
-		EmitSound("NPC_Cremator.BreathingAmb");
+		if (m_bPlayAngrySound)
+		{
+			EmitSound("NPC_Cremator.AngryAmb");
+		}
+		else
+		{
+			EmitSound("NPC_Cremator.BreathingAmb");
+		}
 	}
 	EmitSound("NPC_Cremator.ClothAmb");
 }
@@ -267,15 +274,13 @@ int CNPC_Cremator::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		if (info.GetAttacker()->IsPlayer())
 		{
 			m_bIsPlayerEnemy = true;
-			EmitSound("NPC_Cremator.AngryAmb");
+			m_bPlayAngrySound = true;
 		}
-		/*
-		else if (info.GetAttacker()->IsNPC())
+		else if (info.GetAttacker()->IsNPC() && info.GetAttacker()->Classify() != Classify())
 		{
 			m_bIsNPCEnemy = true;
-			EmitSound("NPC_Cremator.AngryAmb");
+			m_bPlayAngrySound = true;
 		}
-		*/
 	}
 
 	return BaseClass::OnTakeDamage_Alive(info);
@@ -299,6 +304,15 @@ void CNPC_Cremator::TraceAttack(const CTakeDamageInfo &info, const Vector &vecDi
 }
 void CNPC_Cremator::Event_Killed(const CTakeDamageInfo &info)
 {
+	if (PlayerHasMegaPhysCannon())
+	{
+		StopParticleEffects(this);
+		m_nSkin = CREMATOR_SKIN_DEAD; // turn the eyes black
+		SetBodygroup(1, 1); // turn the gun off
+		BaseClass::Event_Killed(info);
+		return;
+	}
+
 	if (m_bHeadshot && ((info.GetAmmoType() == GetAmmoDef()->Index(".50BMG")) // sniper ammo
 		|| (info.GetAmmoType() == GetAmmoDef()->Index("Buckshot")) // shotgun ammo
 		|| (info.GetAmmoType() == GetAmmoDef()->Index("Gauss")) // gauss ammo
@@ -683,6 +697,8 @@ NPC_STATE CNPC_Cremator::SelectIdealState(void)
 		// COMBAT goes to ALERT upon death of enemy
 		if (GetEnemy() == NULL)
 		{
+			m_bPlayAngrySound = false;
+			m_nSkin = CREMATOR_SKIN_CALM;
 			return NPC_STATE_IDLE;
 		}
 		break;
@@ -778,6 +794,7 @@ int CNPC_Cremator::SelectSchedule(void)
 #endif
 		if (HasCondition(COND_ENEMY_DEAD))
 		{
+			m_bPlayAngrySound = false;
 			m_nSkin = CREMATOR_SKIN_CALM;
 			return BaseClass::SelectSchedule();
 		}

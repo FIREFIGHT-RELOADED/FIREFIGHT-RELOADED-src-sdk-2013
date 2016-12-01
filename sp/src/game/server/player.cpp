@@ -230,6 +230,8 @@ ConVar sv_fr_perks_infiniteauxpower("sv_fr_perks_infiniteauxpower", "1", FCVAR_A
 ConVar sv_fr_perks_infiniteammo("sv_fr_perks_infiniteammo", "1", FCVAR_ARCHIVE);
 ConVar sv_fr_perks_healthregenerationrate("sv_fr_perks_healthregenerationrate", "1", FCVAR_ARCHIVE);
 
+ConVar sv_fr_perks_oldperkbehavior("sv_fr_perks_oldperkbehavior", "0", FCVAR_ARCHIVE);
+
 #define MAX_LEVEL 50
 
 void CC_GiveCurrentAmmo( void )
@@ -401,7 +403,7 @@ void CC_PlayerXP(const CCommand &args)
 		pPlayer->AddXP(XPAmount);
 	}
 }
-static ConCommand player_givexp("player_givexp", CC_PlayerXP, "Gives the player XP points.\n", FCVAR_CHEAT);
+static ConCommand player_givexp("givexp", CC_PlayerXP, "Gives the player XP points.\n", FCVAR_CHEAT);
 
 void CC_PlayerLevel(const CCommand &args)
 {
@@ -412,13 +414,14 @@ void CC_PlayerLevel(const CCommand &args)
 	if (pPlayer && LevelNum <= MAX_LEVEL)
 	{
 		pPlayer->SetLevel(LevelNum);
+		pPlayer->LevelUp();
 	}
 	else
 	{
 		Warning("You are already at the maximum level possible!");
 	}
 }
-static ConCommand player_setlevel("player_setlevel", CC_PlayerLevel, "Increases the player's level.\n", FCVAR_CHEAT);
+static ConCommand player_setlevel("givelevel", CC_PlayerLevel, "Increases the player's level.\n", FCVAR_CHEAT);
 
 void CC_PlayerMoney(const CCommand &args)
 {
@@ -431,7 +434,7 @@ void CC_PlayerMoney(const CCommand &args)
 		pPlayer->AddMoney(MoneyAmount);
 	}
 }
-static ConCommand player_givemoney("player_givemoney", CC_PlayerMoney, "Gives the player money. DOSH!\n", FCVAR_CHEAT);
+static ConCommand player_givemoney("givemoney", CC_PlayerMoney, "Gives the player money. DOSH!\n", FCVAR_CHEAT);
 
 
 // pl
@@ -856,7 +859,7 @@ CBasePlayer::CBasePlayer( )
 	m_iExp = 0;
 	m_iMaxExp = 0;
 	m_iLevel = 1;
-	LevelUp();
+	//LevelUp();
 
 	m_iPerkRegenerate = 0;
 	m_iPerkInfiniteAuxPower = 0;
@@ -1026,49 +1029,6 @@ void CBasePlayer::CheckLevel()
 			bShouldLevel = true;
 			m_iLevel++;
 			LevelUp();
-			if (sv_fr_perks.GetBool())
-			{
-				if (sv_player_voice.GetBool() && sv_player_voice_perk.GetBool())
-				{
-					EmitSound("Player.VoicePerk");
-				}
-				if (m_Perk == FIREFIGHT_PERK_HEALTHREGENERATION && sv_fr_perks_healthregeneration.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_Hud_HEALTHREGENERATION");
-					ShowPerkMessage(hint.Access());
-				}
-				else if (m_Perk == FIREFIGHT_PERK_INFINITEAUXPOWER && sv_fr_perks_infiniteauxpower.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_Hud_INFINITEAUXPOWER");
-					ShowPerkMessage(hint.Access());
-				}
-				else if (m_Perk == FIREFIGHT_PERK_INFINITEAMMO && sv_fr_perks_infiniteammo.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_Hud_INFINITEAMMO");
-					ShowPerkMessage(hint.Access());
-				}
-				else if (m_Perk == FIREFIGHT_PERK_MOREHEALTH)
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_Hud_MOREHEALTH");
-					ShowPerkMessage(hint.Access());
-				}
-				else if (m_Perk == FIREFIGHT_PERK_MOREARMOR)
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_Hud_MOREARMOR");
-					ShowPerkMessage(hint.Access());
-				}
-				else if (m_Perk == FIREFIGHT_PERK_HEALTHREGENERATIONRATE && sv_fr_perks_healthregeneration.GetBool() && sv_fr_perks_healthregenerationrate.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_Hud_HEALTHREGENERATIONRATE");
-					ShowPerkMessage(hint.Access());
-				}
-			}
 			ResetXPAlt();
 		}
 
@@ -1093,51 +1053,67 @@ void CBasePlayer::LevelUp()
 			AddMoney(GetLevel());
 		}
 
-		if (sv_fr_perks.GetBool())
-		{
-			int randomperk = random->RandomInt(0, 5);
-			//int CurrentLevel = GetLevel();
+		DetermineReward();
+	}
+}
 
-			if (randomperk == FIREFIGHT_PERK_HEALTHREGENERATION && sv_fr_perks_healthregeneration.GetBool())
+void CBasePlayer::DetermineReward(void)
+{
+	if (sv_fr_perks_oldperkbehavior.GetBool())
+	{
+		Reward_GivePerk();
+	}
+	else
+	{
+		int rewardtogive = random->RandomInt(0, 2);
+		if (rewardtogive == FIREFIGHT_REWARD_PERKS)
+		{
+			Reward_GivePerk();
+		}
+		else if (rewardtogive == FIREFIGHT_REWARD_ITEM)
+		{
+			Reward_GiveItem();
+		}
+		else if (rewardtogive == FIREFIGHT_REWARD_KASHBONUS)
+		{
+			if (g_fr_economy.GetBool())
 			{
-				if (!m_bAlreadyHasRegeneratePerk && GetLevel() >= 20 && sv_fr_perks_healthregeneration.GetBool())
+				if (GetLevel() >= 10)
 				{
-					m_iPerkRegenerate = 1;
-					m_bAlreadyHasRegeneratePerk = true;
+					Reward_GiveKashBonus();
 				}
 				else
 				{
-					if (!m_bAlreadyHasInfiniteAuxPowerPerk && GetLevel() >= 10 && sv_fr_perks_infiniteauxpower.GetBool())
-					{
-						randomperk = FIREFIGHT_PERK_INFINITEAUXPOWER;
-						m_iPerkInfiniteAuxPower = 1;
-						m_bAlreadyHasInfiniteAuxPowerPerk = true;
-					}
-					else
-					{
-						if (!m_bAlreadyHasInfiniteAmmoPerk && GetLevel() >= 15 && sv_fr_perks_infiniteammo.GetBool())
-						{
-							randomperk = FIREFIGHT_PERK_INFINITEAMMO;
-							m_iPerkInfiniteAmmo = 1;
-							m_bAlreadyHasInfiniteAmmoPerk = true;
-						}
-						else
-						{
-							randomperk = FIREFIGHT_PERK_MOREHEALTH;
-							int CurrentMaxHealth = (GetMaxHealth() + 10);
-							int CurrentHealth = (GetHealth() + 10);
-							SetMaxHealth(CurrentMaxHealth);
-							SetHealth(CurrentHealth);
-							m_iHealth = CurrentHealth;
-							m_iMaxHealth = CurrentMaxHealth;
-						}
-					}
+					Reward_GiveItem();
 				}
 			}
-			else if (randomperk == FIREFIGHT_PERK_INFINITEAUXPOWER && sv_fr_perks_infiniteauxpower.GetBool())
+			else
+			{
+				Reward_GiveItem();
+			}
+		}
+	}
+}
+
+void CBasePlayer::Reward_GivePerk(void)
+{
+	if (sv_fr_perks.GetBool())
+	{
+		int randomperk = random->RandomInt(0, 5);
+		//int CurrentLevel = GetLevel();
+
+		if (randomperk == FIREFIGHT_PERK_HEALTHREGENERATION && sv_fr_perks_healthregeneration.GetBool())
+		{
+			if (!m_bAlreadyHasRegeneratePerk && GetLevel() >= 20 && sv_fr_perks_healthregeneration.GetBool())
+			{
+				m_iPerkRegenerate = 1;
+				m_bAlreadyHasRegeneratePerk = true;
+			}
+			else
 			{
 				if (!m_bAlreadyHasInfiniteAuxPowerPerk && GetLevel() >= 10 && sv_fr_perks_infiniteauxpower.GetBool())
 				{
+					randomperk = FIREFIGHT_PERK_INFINITEAUXPOWER;
 					m_iPerkInfiniteAuxPower = 1;
 					m_bAlreadyHasInfiniteAuxPowerPerk = true;
 				}
@@ -1161,10 +1137,19 @@ void CBasePlayer::LevelUp()
 					}
 				}
 			}
-			else if (randomperk == FIREFIGHT_PERK_INFINITEAMMO && sv_fr_perks_infiniteammo.GetBool())
+		}
+		else if (randomperk == FIREFIGHT_PERK_INFINITEAUXPOWER && sv_fr_perks_infiniteauxpower.GetBool())
+		{
+			if (!m_bAlreadyHasInfiniteAuxPowerPerk && GetLevel() >= 10 && sv_fr_perks_infiniteauxpower.GetBool())
+			{
+				m_iPerkInfiniteAuxPower = 1;
+				m_bAlreadyHasInfiniteAuxPowerPerk = true;
+			}
+			else
 			{
 				if (!m_bAlreadyHasInfiniteAmmoPerk && GetLevel() >= 15 && sv_fr_perks_infiniteammo.GetBool())
 				{
+					randomperk = FIREFIGHT_PERK_INFINITEAMMO;
 					m_iPerkInfiniteAmmo = 1;
 					m_bAlreadyHasInfiniteAmmoPerk = true;
 				}
@@ -1179,8 +1164,17 @@ void CBasePlayer::LevelUp()
 					m_iMaxHealth = CurrentMaxHealth;
 				}
 			}
-			else if (randomperk == FIREFIGHT_PERK_MOREHEALTH)
+		}
+		else if (randomperk == FIREFIGHT_PERK_INFINITEAMMO && sv_fr_perks_infiniteammo.GetBool())
+		{
+			if (!m_bAlreadyHasInfiniteAmmoPerk && GetLevel() >= 15 && sv_fr_perks_infiniteammo.GetBool())
 			{
+				m_iPerkInfiniteAmmo = 1;
+				m_bAlreadyHasInfiniteAmmoPerk = true;
+			}
+			else
+			{
+				randomperk = FIREFIGHT_PERK_MOREHEALTH;
 				int CurrentMaxHealth = (GetMaxHealth() + 10);
 				int CurrentHealth = (GetHealth() + 10);
 				SetMaxHealth(CurrentMaxHealth);
@@ -1188,53 +1182,1211 @@ void CBasePlayer::LevelUp()
 				m_iHealth = CurrentHealth;
 				m_iMaxHealth = CurrentMaxHealth;
 			}
-			else if (randomperk == FIREFIGHT_PERK_MOREARMOR)
+		}
+		else if (randomperk == FIREFIGHT_PERK_MOREHEALTH)
+		{
+			int CurrentMaxHealth = (GetMaxHealth() + 10);
+			int CurrentHealth = (GetHealth() + 10);
+			SetMaxHealth(CurrentMaxHealth);
+			SetHealth(CurrentHealth);
+			m_iHealth = CurrentHealth;
+			m_iMaxHealth = CurrentMaxHealth;
+		}
+		else if (randomperk == FIREFIGHT_PERK_MOREARMOR)
+		{
+			int CurrentMaxArmor = (GetMaxArmorValue() + 10);
+			int CurrentArmor = (ArmorValue() + 10);
+			SetMaxArmorValue(CurrentMaxArmor);
+			SetArmorValue(CurrentArmor);
+			m_ArmorValue = CurrentArmor;
+			m_MaxArmorValue = CurrentMaxArmor;
+		}
+		else if (randomperk == FIREFIGHT_PERK_HEALTHREGENERATIONRATE && sv_fr_perks_healthregeneration.GetBool() && sv_fr_perks_healthregenerationrate.GetBool())
+		{
+			if (m_bAlreadyHasRegeneratePerk && GetLevel() >= 25 && sv_fr_perks_healthregeneration.GetBool() && sv_fr_perks_healthregenerationrate.GetBool())
 			{
-				int CurrentMaxArmor = (GetMaxArmorValue() + 10);
-				int CurrentArmor = (ArmorValue() + 10);
-				SetMaxArmorValue(CurrentMaxArmor);
-				SetArmorValue(CurrentArmor);
-				m_ArmorValue = CurrentArmor;
-				m_MaxArmorValue = CurrentMaxArmor;
+				m_fRegenRate = m_fRegenRate + 0.5f;
 			}
-			else if (randomperk == FIREFIGHT_PERK_HEALTHREGENERATIONRATE && sv_fr_perks_healthregeneration.GetBool() && sv_fr_perks_healthregenerationrate.GetBool())
+			else
 			{
-				if (m_bAlreadyHasRegeneratePerk && GetLevel() >= 25 && sv_fr_perks_healthregeneration.GetBool() && sv_fr_perks_healthregenerationrate.GetBool())
+				int randAltPerk = random->RandomInt(0, 1);
+
+				if (randAltPerk == 1)
 				{
-					m_fRegenRate = m_fRegenRate + 0.5f;
+					randomperk = FIREFIGHT_PERK_MOREARMOR;
+					int CurrentMaxArmor = (GetMaxArmorValue() + 10);
+					int CurrentArmor = (ArmorValue() + 10);
+					SetMaxArmorValue(CurrentMaxArmor);
+					SetArmorValue(CurrentArmor);
+					m_ArmorValue = CurrentArmor;
+					m_MaxArmorValue = CurrentMaxArmor;
 				}
 				else
 				{
-					int randAltPerk = random->RandomInt(0, 1);
-
-					if (randAltPerk == 1)
-					{
-						randomperk = FIREFIGHT_PERK_MOREARMOR;
-						int CurrentMaxArmor = (GetMaxArmorValue() + 10);
-						int CurrentArmor = (ArmorValue() + 10);
-						SetMaxArmorValue(CurrentMaxArmor);
-						SetArmorValue(CurrentArmor);
-						m_ArmorValue = CurrentArmor;
-						m_MaxArmorValue = CurrentMaxArmor;
-					}
-					else
-					{
-						randomperk = FIREFIGHT_PERK_MOREHEALTH;
-						int CurrentMaxHealth = (GetMaxHealth() + 10);
-						int CurrentHealth = (GetHealth() + 10);
-						SetMaxHealth(CurrentMaxHealth);
-						SetHealth(CurrentHealth);
-						m_iHealth = CurrentHealth;
-						m_iMaxHealth = CurrentMaxHealth;
-					}
+					randomperk = FIREFIGHT_PERK_MOREHEALTH;
+					int CurrentMaxHealth = (GetMaxHealth() + 10);
+					int CurrentHealth = (GetHealth() + 10);
+					SetMaxHealth(CurrentMaxHealth);
+					SetHealth(CurrentHealth);
+					m_iHealth = CurrentHealth;
+					m_iMaxHealth = CurrentMaxHealth;
 				}
 			}
+		}
 
-			m_Perk = randomperk;
+		m_Perk = randomperk;
+		DevMsg("Perk Number: %d\n", m_Perk);
 
-			DevMsg("Perk Number: %d\n", m_Perk);
+		// print our messages after -Bitl
+		if (sv_player_voice.GetBool() && sv_player_voice_perk.GetBool())
+		{
+			EmitSound("Player.VoicePerk");
+		}
+		if (m_Perk == FIREFIGHT_PERK_HEALTHREGENERATION && sv_fr_perks_healthregeneration.GetBool())
+		{
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_HEALTHREGENERATION");
+			ShowPerkMessage(hint.Access());
+		}
+		else if (m_Perk == FIREFIGHT_PERK_INFINITEAUXPOWER && sv_fr_perks_infiniteauxpower.GetBool())
+		{
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_INFINITEAUXPOWER");
+			ShowPerkMessage(hint.Access());
+		}
+		else if (m_Perk == FIREFIGHT_PERK_INFINITEAMMO && sv_fr_perks_infiniteammo.GetBool())
+		{
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_INFINITEAMMO");
+			ShowPerkMessage(hint.Access());
+		}
+		else if (m_Perk == FIREFIGHT_PERK_MOREHEALTH)
+		{
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_MOREHEALTH");
+			ShowPerkMessage(hint.Access());
+		}
+		else if (m_Perk == FIREFIGHT_PERK_MOREARMOR)
+		{
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_MOREARMOR");
+			ShowPerkMessage(hint.Access());
+		}
+		else if (m_Perk == FIREFIGHT_PERK_HEALTHREGENERATIONRATE && sv_fr_perks_healthregeneration.GetBool() && sv_fr_perks_healthregenerationrate.GetBool())
+		{
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_HEALTHREGENERATIONRATE");
+			ShowPerkMessage(hint.Access());
 		}
 	}
+}
+
+void CBasePlayer::Reward_GiveItem(void)
+{
+	int randomitemdrop = random->RandomInt(0, 29);
+	if (randomitemdrop == FIREFIGHT_ITEMREWARD_HEALTHKIT)
+	{
+		AddHealth(25);
+		CFmtStr hint;
+		hint.sprintf("#Valve_Hud_Reward_Healthkit");
+		ShowPerkMessage(hint.Access());
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_SUITBATTERY)
+	{
+		IncrementArmorValue(30, GetMaxArmorValue());
+		CFmtStr hint;
+		hint.sprintf("#Valve_Hud_Reward_Battery");
+		ShowPerkMessage(hint.Access());
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_AMMO_357)
+	{
+		if (Weapon_OwnsThisType("weapon_357"))
+		{
+			GiveNamedItem("item_ammo_357");
+			GiveNamedItem("item_ammo_357");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_357Ammo");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 2);
+			if (randalt == 0)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_AMMO_AR2)
+	{
+		if (Weapon_OwnsThisType("weapon_ar2"))
+		{
+			GiveNamedItem("item_ammo_ar2");
+			GiveNamedItem("item_ammo_ar2");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_AR2Ammo");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 2);
+			if (randalt == 0)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_AMMO_CROSSBOW)
+	{
+		if (Weapon_OwnsThisType("weapon_crossbow"))
+		{
+			GiveNamedItem("item_ammo_crossbow");
+			GiveNamedItem("item_ammo_crossbow");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_CrossbowAmmo");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 2);
+			if (randalt == 0)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_AMMO_PISTOL)
+	{
+		if (Weapon_OwnsThisType("weapon_pistol"))
+		{
+			GiveNamedItem("item_ammo_pistol");
+			GiveNamedItem("item_ammo_pistol");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_PistolAmmo");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 2);
+			if (randalt == 0)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_AMMO_SMG1)
+	{
+		if (Weapon_OwnsThisType("weapon_smg1"))
+		{
+			GiveNamedItem("item_ammo_smg1");
+			GiveNamedItem("item_ammo_smg1");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_SMG1Ammo");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 2);
+			if (randalt == 0)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_AMMO_SHOTGUN)
+	{
+		if (Weapon_OwnsThisType("weapon_shotgun"))
+		{
+			GiveNamedItem("item_box_buckshot");
+			GiveNamedItem("item_box_buckshot");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_ShotgunAmmo");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 2);
+			if (randalt == 0)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_AMMO_SMG1GRENADE)
+	{
+		if (Weapon_OwnsThisType("weapon_smg1"))
+		{
+			GiveNamedItem("item_ammo_smg1_grenade");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_SMG1Grenade");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 2);
+			if (randalt == 0)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_AMMO_AR2BALL)
+	{
+		if (Weapon_OwnsThisType("weapon_ar2"))
+		{
+			GiveNamedItem("item_ammo_ar2_altfire");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_AR2Ball");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 2);
+			if (randalt == 0)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_AMMO_FRAGGRENADE)
+	{
+		GiveNamedItem("item_ammo_grenade");
+		CFmtStr hint;
+		hint.sprintf("#Valve_Hud_Reward_FragGrenade");
+		ShowPerkMessage(hint.Access());
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_AMMO_RPGROCKET)
+	{
+		if (Weapon_OwnsThisType("weapon_rpg"))
+		{
+			GiveNamedItem("item_rpg_round");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_RPGRocket");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 2);
+			if (randalt == 0)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_AMMO_SNIPERRIFLE)
+	{
+		if (Weapon_OwnsThisType("weapon_sniper_rifle"))
+		{
+			GiveNamedItem("item_ammo_sniperrifle");
+			GiveNamedItem("item_ammo_sniperrifle");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_SniperRifleAmmo");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 2);
+			if (randalt == 0)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_AMMO_DEAGLE)
+	{
+		if (Weapon_OwnsThisType("weapon_deagle"))
+		{
+			GiveNamedItem("item_ammo_deagle");
+			GiveNamedItem("item_ammo_deagle");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_DeagleAmmo");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 2);
+			if (randalt == 0)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_AMMO_M249PARA)
+	{
+		if (Weapon_OwnsThisType("weapon_m249para"))
+		{
+			GiveNamedItem("item_ammo_m249para");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_M249ParaAmmo");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 2);
+			if (randalt == 0)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_AMMO_OCIW)
+	{
+		if (Weapon_OwnsThisType("weapon_oicw"))
+		{
+			GiveNamedItem("item_ammo_oicw");
+			GiveNamedItem("item_ammo_oicw");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_OICWAmmo");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 2);
+			if (randalt == 0)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_AMMO_OCIWGRENADE)
+	{
+		if (Weapon_OwnsThisType("weapon_oicw"))
+		{
+			GiveNamedItem("item_oicw_grenade");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_OICWGrenade");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 2);
+			if (randalt == 0)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_AMMO_SLAM)
+	{
+		GiveNamedItem("item_slam_ammo");
+		CFmtStr hint;
+		hint.sprintf("#Valve_Hud_Reward_SLAMAmmo");
+		ShowPerkMessage(hint.Access());
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_AMMO_FLAREGUN)
+	{
+		if (Weapon_OwnsThisType("weapon_flaregun"))
+		{
+			GiveNamedItem("item_box_flare_rounds");
+			GiveNamedItem("item_box_flare_rounds");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_FlareGunAmmo");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 2);
+			if (randalt == 0)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_WEAPON_357)
+	{
+		if (!Weapon_OwnsThisType("weapon_357"))
+		{
+			GiveNamedItem("weapon_357");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_Weapon_357");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 3);
+			if (randalt == 0)
+			{
+				GiveNamedItem("item_ammo_357");
+				GiveNamedItem("item_ammo_357");
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_357Ammo");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 3)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_WEAPON_AR2)
+	{
+		if (!Weapon_OwnsThisType("weapon_ar2"))
+		{
+			GiveNamedItem("weapon_ar2");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_Weapon_AR2");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 3);
+			if (randalt == 0)
+			{
+				GiveNamedItem("item_ammo_ar2");
+				GiveNamedItem("item_ammo_ar2");
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_AR2Ammo");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 3)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_WEAPON_CROSSBOW)
+	{
+		if (!Weapon_OwnsThisType("weapon_crossbow"))
+		{
+			GiveNamedItem("weapon_crossbow");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_Weapon_Crossbow");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 3);
+			if (randalt == 0)
+			{
+				GiveNamedItem("item_ammo_crossbow");
+				GiveNamedItem("item_ammo_crossbow");
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_CrossbowAmmo");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 3)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_WEAPON_SHOTGUN)
+	{
+		if (!Weapon_OwnsThisType("weapon_shotgun"))
+		{
+			GiveNamedItem("weapon_shotgun");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_Weapon_Shotgun");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 3);
+			if (randalt == 0)
+			{
+				GiveNamedItem("item_box_buckshot");
+				GiveNamedItem("item_box_buckshot");
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_ShotgunAmmo");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 3)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_WEAPON_RPG)
+	{
+		if (!Weapon_OwnsThisType("weapon_rpg"))
+		{
+			GiveNamedItem("weapon_rpg");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_Weapon_RPG");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 3);
+			if (randalt == 0)
+			{
+				GiveNamedItem("item_rpg_round");
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_RPGRocket");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 3)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_WEAPON_SNIPERRIFLE)
+	{
+		if (!Weapon_OwnsThisType("weapon_sniper_rifle"))
+		{
+			GiveNamedItem("weapon_sniper_rifle");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_Weapon_Sniper_Rifle");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 3);
+			if (randalt == 0)
+			{
+				GiveNamedItem("item_ammo_sniperrifle");
+				GiveNamedItem("item_ammo_sniperrifle");
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_SniperRifleAmmo");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 3)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_WEAPON_DEAGLE)
+	{
+		if (!Weapon_OwnsThisType("weapon_deagle"))
+		{
+			GiveNamedItem("weapon_deagle");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_Weapon_Deagle");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 3);
+			if (randalt == 0)
+			{
+				GiveNamedItem("item_ammo_deagle");
+				GiveNamedItem("item_ammo_deagle");
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_DeagleAmmo");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 3)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_WEAPON_M249PARA)
+	{
+		if (!Weapon_OwnsThisType("weapon_m249para"))
+		{
+			GiveNamedItem("weapon_m249para");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_Weapon_M249Para");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 3);
+			if (randalt == 0)
+			{
+				GiveNamedItem("item_ammo_m249para");
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_M249ParaAmmo");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 3)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_WEAPON_OCIW)
+	{
+		if (!Weapon_OwnsThisType("weapon_oicw"))
+		{
+			GiveNamedItem("weapon_oicw");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_Weapon_OCIW");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 3);
+			if (randalt == 0)
+			{
+				GiveNamedItem("item_ammo_oicw");
+				GiveNamedItem("item_ammo_oicw");
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_OICWAmmo");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 3)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_WEAPON_FLAREGUN)
+	{
+		if (!Weapon_OwnsThisType("weapon_flaregun"))
+		{
+			GiveNamedItem("weapon_flaregun");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_Weapon_FlareGun");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 3);
+			if (randalt == 0)
+			{
+				GiveNamedItem("item_box_flare_rounds");
+				GiveNamedItem("item_box_flare_rounds");
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_FlareGunAmmo");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 3)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_WEAPON_GAUSS)
+	{
+		if (!Weapon_OwnsThisType("weapon_gauss"))
+		{
+			GiveNamedItem("weapon_gauss");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_Weapon_Gauss");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 3);
+			if (randalt == 0)
+			{
+				GiveNamedItem("item_ammo_gauss");
+				GiveNamedItem("item_ammo_gauss");
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_GaussAmmo");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 3)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_WEAPON_EGON)
+	{
+		if (!Weapon_OwnsThisType("weapon_egon"))
+		{
+			GiveNamedItem("weapon_egon");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_Weapon_Egon");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 3);
+			if (randalt == 0)
+			{
+				GiveNamedItem("item_ammo_egon");
+				GiveNamedItem("item_ammo_egon");
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_EgonAmmo");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 3)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_AMMO_GAUSS)
+	{
+		if (Weapon_OwnsThisType("weapon_gauss"))
+		{
+			GiveNamedItem("item_ammo_gauss");
+			GiveNamedItem("item_ammo_gauss");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_GaussAmmo");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 2);
+			if (randalt == 0)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_AMMO_EGON)
+	{
+		if (Weapon_OwnsThisType("weapon_egon"))
+		{
+			GiveNamedItem("item_ammo_egon");
+			GiveNamedItem("item_ammo_egon");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_Reward_Weapon_Egon");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 2);
+			if (randalt == 0)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_AMMO_MP5)
+	{
+		if (Weapon_OwnsThisType("weapon_mp5"))
+		{
+			GiveNamedItem("item_ammo_mp5");
+			GiveNamedItem("item_ammo_mp5");
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_RewardMP5Ammo");
+			ShowPerkMessage(hint.Access());
+		}
+		else
+		{
+			int randalt = random->RandomInt(0, 2);
+			if (randalt == 0)
+			{
+				AddHealth(25);
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Healthkit");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 1)
+			{
+				IncrementArmorValue(30, GetMaxArmorValue());
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_Reward_Battery");
+				ShowPerkMessage(hint.Access());
+			}
+			else if (randalt == 2)
+			{
+				Reward_GivePerk();
+			}
+		}
+	}
+}
+
+void CBasePlayer::Reward_GiveKashBonus(void)
+{
+	AddMoney(GetLevel() * 10);
+	CFmtStr hint;
+	hint.sprintf("#Valve_Hud_Reward_KashBonus");
+	ShowPerkMessage(hint.Access());
 }
 
 void CBasePlayer::ShowLevelMessage(const char *pMessage)
@@ -5864,7 +7016,9 @@ void CBasePlayer::Spawn( void )
 			EquipSuit();
 			GiveAmmo(120, "Pistol");
 			GiveAmmo(220, "SMG1");
+			GiveAmmo(60, "MP5Ammo");
 			GiveNamedItem("weapon_smg1");
+			GiveNamedItem("weapon_mp5");
 			GiveNamedItem("weapon_crowbar");
 			GiveNamedItem("weapon_pistol");
 			GiveNamedItem("weapon_physcannon");
@@ -7027,6 +8181,9 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveAmmo(999, "OICW");
 		GiveAmmo(999, "OICW_Grenade");
 		GiveAmmo(999, "FlareRound");
+		GiveAmmo(999, "EgonEnergy");
+		GiveAmmo(999, "GaussEnergy");
+		GiveAmmo(999, "MP5Ammo");
 //#ifdef HL2_EPISODIC
 		//GiveAmmo( 999, "Hopwire" );
 //#endif		
@@ -7048,6 +8205,9 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveNamedItem("weapon_oicw");
 		GiveNamedItem("weapon_flaregun");
 		GiveNamedItem("weapon_knife");
+		GiveNamedItem("weapon_egon");
+		GiveNamedItem("weapon_gauss");
+		GiveNamedItem("weapon_mp5");
 #ifdef HL2_EPISODIC
 		// GiveNamedItem( "weapon_magnade" );
 #endif
