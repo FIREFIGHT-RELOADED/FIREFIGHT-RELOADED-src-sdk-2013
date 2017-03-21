@@ -340,7 +340,7 @@ void CNPC_Dog::SetPlayerAvoidState( void )
 		physfollower_t *pBone;
 		int i;
 
-		CBasePlayer *pLocalPlayer = AI_GetSinglePlayer();
+		CBasePlayer *pLocalPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 
 		if ( pLocalPlayer )
 		{
@@ -832,7 +832,7 @@ void CNPC_Dog::ThrowObject( const char *pAttachmentName )
 			}
 				
 			if ( m_hThrowTarget == NULL )
-				 m_hThrowTarget = AI_GetSinglePlayer();
+				m_hThrowTarget = UTIL_GetNearestVisiblePlayer(this);
 
 			Vector vThrowDirection;
 
@@ -1385,7 +1385,7 @@ void CNPC_Dog::RunTask( const Task_t *pTask )
 
 				SetAim( m_hPhysicsEnt->WorldSpaceCenter() - GetAbsOrigin() );
 
-				CBasePlayer *pPlayer = AI_GetSinglePlayer();
+				CBasePlayer *pPlayer = UTIL_GetNearestVisiblePlayer(this);
 
 				float flDistanceToPlayer = flDistance;
 
@@ -1519,7 +1519,7 @@ void CNPC_Dog::SetupThrowTarget( void )
 {
 	if ( m_hThrowTarget == NULL )
 	{
-		m_hThrowTarget = AI_GetSinglePlayer();
+		m_hThrowTarget = UTIL_GetNearestVisiblePlayer(this);
 	}
 
 	SetTarget( m_hThrowTarget );
@@ -1674,7 +1674,7 @@ void CNPC_Dog::StartTask( const Task_t *pTask )
 		m_flNextSwat = gpGlobals->curtime + pTask->flTaskData;
 
 		if ( m_hThrowTarget == NULL )
-			m_hThrowTarget = AI_GetSinglePlayer();
+			m_hThrowTarget = UTIL_GetNearestVisiblePlayer(this);
 
 		TaskComplete();
 		break;

@@ -22,6 +22,7 @@
 #include "firefightreloaded/fr_moddingmenu_mapping_mapadd.h"
 #include "firefightreloaded/fr_moddingmenu_mapping_noding.h"
 #include "firefightreloaded/fr_moddingmenu_weapons.h"
+#include "firefightreloaded/ui/frclientscoreboard.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -112,6 +113,11 @@ IViewPortPanel* CHudViewport::CreatePanelByName(const char *szPanelName)
 	else if (Q_strcmp(PANEL_MODDING_WEAPONS, szPanelName) == 0)
 	{
 		newpanel = new CFRModdingMenu_Weapons(this);
+		return newpanel;
+	}
+	else if (Q_strcmp(PANEL_SCOREBOARD, szPanelName) == 0)
+	{
+		newpanel = new CFRClientScoreBoardDialog(this);
 		return newpanel;
 	}
 

@@ -6,7 +6,6 @@
 
 #include "cbase.h"
 
-#if 0
 #include "mp3player.h"
 #include "KeyValues.h"
 #include "filesystem.h"
@@ -2461,15 +2460,3 @@ public:
 };
 
 static CMP3PlayerGameSystem g_MP3Helper;
-
-#else
-
-void MP3Player_Create( vgui::VPANEL parent )
-{
-}
-
-void MP3Player_Destroy()
-{
-}
-
-#endif

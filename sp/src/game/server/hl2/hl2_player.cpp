@@ -49,6 +49,8 @@
 #include "BasePropDoor.h"
 #include "doors.h"
 #include "grenade_frag.h"
+#include "filesystem.h"
+#include "cdll_int.h"
 
 #ifdef HL2_EPISODIC
 #include "npc_alyx_episodic.h"
@@ -136,8 +138,8 @@ ConVar sv_player_shootinzoom("sv_player_shootinzoom", "1", FCVAR_ARCHIVE);
 
 #define	FLASH_DRAIN_TIME	 1.1111	// 100 units / 90 secs
 #define	FLASH_CHARGE_TIME	 50.0f	// 100 units / 2 secs
-const char *szModelName = NULL;
-#define PLAYER_MODEL	"models/player/player.mdl"
+//const char *szModelName = NULL;
+//#define PLAYER_MODEL	"models/player/player.mdl"
 
 
 //==============================================================================================
@@ -457,6 +459,8 @@ CHL2_Player::CHL2_Player()
 
 	m_flArmorReductionTime = 0.0f;
 	m_iArmorReductionFrom = 0;
+	m_bIsPlayerADev = false;
+	m_bIsPlayerAVIP = false;
 }
 
 //
@@ -482,6 +486,7 @@ CSuitPowerDevice SuitDeviceBulletTime(bits_SUIT_DEVICE_BULLETTIME, 6.7f);
 IMPLEMENT_SERVERCLASS_ST(CHL2_Player, DT_HL2_Player)
 	SendPropDataTable(SENDINFO_DT(m_HL2Local), &REFERENCE_SEND_TABLE(DT_HL2Local), SendProxy_SendLocalDataTable),
 	SendPropBool( SENDINFO(m_fIsSprinting) ),
+	SendPropEHandle(SENDINFO(m_hRagdoll)),
 END_SEND_TABLE()
 
 
@@ -508,7 +513,32 @@ void CHL2_Player::Precache( void )
 	PrecacheScriptSound( "HL2Player.Use" );
 	PrecacheScriptSound( "HL2Player.BurnPain" );
 	PrecacheScriptSound( "HL2Player.Jetpack" );
-	PrecacheModel(PLAYER_MODEL);
+	//PrecacheModel(PLAYER_MODEL);
+
+	//when the MP cums out :ok: - bitl
+	FileFindHandle_t findHandle = NULL;
+
+	const char *pszFilename = g_pFullFileSystem->FindFirst("models/player/playermodels/*.mdl", &findHandle);
+	while (pszFilename)
+	{
+		//"models/player/playermodels/" + pszFilename;
+		char szModelName[2048];
+		Q_snprintf(szModelName, sizeof(szModelName), "models/player/playermodels/%s", pszFilename);
+		PrecacheModel(szModelName);
+		pszFilename = g_pFullFileSystem->FindNext(findHandle);
+	}
+	g_pFullFileSystem->FindClose(findHandle);
+}
+
+void CHL2_Player::UpdateOnRemove(void)
+{
+	if (m_hRagdoll)
+	{
+		UTIL_RemoveImmediate(m_hRagdoll);
+		m_hRagdoll = NULL;
+	}
+
+	BaseClass::UpdateOnRemove();
 }
 
 //-----------------------------------------------------------------------------
@@ -1139,6 +1169,13 @@ void CHL2_Player::FlyJetpack(void)
 	}
 }
 
+void CHL2_Player::SetPlayerModel(void)
+{
+	const char *szModelName = NULL;
+	szModelName = engine->GetClientConVarValue(engine->IndexOfEdict(edict()), "cl_playermodel");
+	SetModel(szModelName);
+}
+
 void CHL2_Player::PostThink( void )
 {
 	BaseClass::PostThink();
@@ -1415,6 +1452,17 @@ void CHL2_Player::PlayerRunCommand(CUserCmd *ucmd, IMoveHelper *moveHelper)
 }
 
 //-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CHL2_Player::InitialSpawn(void)
+{
+	BaseClass::InitialSpawn();
+
+	m_bIsPlayerADev = CheckIfDev();
+	m_bIsPlayerAVIP = CheckIfVIP();
+}
+
+//-----------------------------------------------------------------------------
 // Purpose: Sets HL2 specific defaults.
 //-----------------------------------------------------------------------------
 void CHL2_Player::Spawn(void)
@@ -1422,7 +1470,7 @@ void CHL2_Player::Spawn(void)
 
 #ifndef HL2MP
 #ifndef PORTAL
-	SetModel(PLAYER_MODEL);
+	SetPlayerModel();
 #endif
 #endif
 
@@ -1475,7 +1523,7 @@ void CHL2_Player::Spawn(void)
 	Leg->SetWeaponModel("models/weapons/v_kick.mdl", NULL);
 
 	//if we are in coop treat us like hl2mp_player.
-	if (gpGlobals->coop || gpGlobals->deathmatch)
+	if (g_pGameRules->IsMultiplayer())
 	{
 		if (!IsObserver())
 		{
@@ -1496,6 +1544,17 @@ void CHL2_Player::Spawn(void)
 		m_Local.m_bDucked = false;
 
 		SetPlayerUnderwater(false);
+
+		if (HL2GameRules()->IsIntermission())
+		{
+			AddFlag(FL_FROZEN);
+			AddFlag(FL_NOTARGET);
+		}
+		else
+		{
+			RemoveFlag(FL_FROZEN);
+			RemoveFlag(FL_NOTARGET);
+		}
 	}
 }
 
@@ -1730,6 +1789,9 @@ bool CHL2_Player::IsZooming( void )
 
 void CHL2_Player::StartBullettime(void)
 {
+	if (g_pGameRules->IsMultiplayer())
+		return;
+	
 	if (m_HL2Local.m_flSuitPower < 10)
 	{
 		EmitSound("HL2Player.SprintNoPower");
@@ -1749,6 +1811,9 @@ void CHL2_Player::StartBullettime(void)
 
 void CHL2_Player::StopBullettime(bool bPlaySound, bool bFlashScreen)
 {
+	if (g_pGameRules->IsMultiplayer())
+		return;
+	
 	if (m_HL2Local.m_bitsActiveDevices & SuitDeviceBulletTime.GetDeviceID())
 	{
 		SuitPower_RemoveDevice(SuitDeviceBulletTime);
@@ -1776,6 +1841,11 @@ void CHL2_Player::InitBullettime(void)
 
 void CHL2_Player::CheckBullettime(void)
 {
+	if (g_pGameRules->IsMultiplayer())
+	{
+		StopBullettime(false, false);
+	}
+	
 	if (IsSuitEquipped())
 	{
 		if (m_afButtonReleased & IN_BULLETTIME)
@@ -1791,6 +1861,9 @@ void CHL2_Player::CheckBullettime(void)
 
 void CHL2_Player::ToggleBullettime(void)
 {
+	if (g_pGameRules->IsMultiplayer())
+		return;
+	
 	if (IsInBullettime())
 	{
 		StopBullettime();
@@ -3061,8 +3134,26 @@ void CHL2_Player::Event_Killed( const CTakeDamageInfo &info )
 {
 	BaseClass::Event_Killed( info );
 
-	FirePlayerProxyOutput( "PlayerDied", variant_t(), this, this );
-	NotifyScriptsOfDeath();
+	CreateRagdollEntity();
+
+	if (info.GetDamageType() & DMG_DISSOLVE)
+	{
+		if (m_hRagdoll)
+		{
+			m_hRagdoll->GetBaseAnimating()->Dissolve(NULL, gpGlobals->curtime, false, ENTITY_DISSOLVE_NORMAL);
+		}
+	}
+
+	m_lifeState = LIFE_DEAD;
+
+	RemoveEffects(EF_NODRAW);	// still draw player body
+	StopZooming();
+
+	if (!g_pGameRules->IsMultiplayer())
+	{
+		FirePlayerProxyOutput("PlayerDied", variant_t(), this, this);
+		NotifyScriptsOfDeath();
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -4085,6 +4176,79 @@ Vector CHL2_Player::EyeDirection3D( void )
 	return vecForward;
 }
 
+bool CHL2_Player::BecomeRagdollOnClient(const Vector &force)
+{
+	return true;
+}
+
+// -------------------------------------------------------------------------------- //
+// Ragdoll entities.
+// -------------------------------------------------------------------------------- //
+
+class CHL2MPRagdoll : public CBaseAnimatingOverlay
+{
+public:
+	DECLARE_CLASS(CHL2MPRagdoll, CBaseAnimatingOverlay);
+	DECLARE_SERVERCLASS();
+
+	// Transmit ragdolls to everyone.
+	virtual int UpdateTransmitState()
+	{
+		return SetTransmitState(FL_EDICT_ALWAYS);
+	}
+
+public:
+	// In case the client has the player entity, we transmit the player index.
+	// In case the client doesn't have it, we transmit the player's model index, origin, and angles
+	// so they can create a ragdoll in the right place.
+	CNetworkHandle(CBaseEntity, m_hPlayer);	// networked entity handle 
+	CNetworkVector(m_vecRagdollVelocity);
+	CNetworkVector(m_vecRagdollOrigin);
+};
+
+LINK_ENTITY_TO_CLASS(hl2mp_ragdoll, CHL2MPRagdoll);
+
+IMPLEMENT_SERVERCLASS_ST_NOBASE(CHL2MPRagdoll, DT_HL2MPRagdoll)
+SendPropVector(SENDINFO(m_vecRagdollOrigin), -1, SPROP_COORD),
+SendPropEHandle(SENDINFO(m_hPlayer)),
+SendPropModelIndex(SENDINFO(m_nModelIndex)),
+SendPropInt(SENDINFO(m_nForceBone), 8, 0),
+SendPropVector(SENDINFO(m_vecForce), -1, SPROP_NOSCALE),
+SendPropVector(SENDINFO(m_vecRagdollVelocity))
+END_SEND_TABLE()
+
+
+void CHL2_Player::CreateRagdollEntity(void)
+{
+	if (m_hRagdoll)
+	{
+		UTIL_RemoveImmediate(m_hRagdoll);
+		m_hRagdoll = NULL;
+	}
+
+	// If we already have a ragdoll, don't make another one.
+	CHL2MPRagdoll *pRagdoll = dynamic_cast< CHL2MPRagdoll* >(m_hRagdoll.Get());
+
+	if (!pRagdoll)
+	{
+		// create a new one
+		pRagdoll = dynamic_cast< CHL2MPRagdoll* >(CreateEntityByName("hl2mp_ragdoll"));
+	}
+
+	if (pRagdoll)
+	{
+		pRagdoll->m_hPlayer = this;
+		pRagdoll->m_vecRagdollOrigin = GetAbsOrigin();
+		pRagdoll->m_vecRagdollVelocity = GetAbsVelocity();
+		pRagdoll->m_nModelIndex = m_nModelIndex;
+		pRagdoll->m_nForceBone = m_nForceBone;
+		pRagdoll->m_vecForce = m_vecForce;
+		pRagdoll->SetAbsOrigin(GetAbsOrigin());
+	}
+
+	// ragdolls will be removed on round restart automatically
+	m_hRagdoll = pRagdoll;
+}
 
 //---------------------------------------------------------
 //---------------------------------------------------------
@@ -4471,6 +4635,83 @@ void CHL2_Player::ModifyOrAppendPlayerCriteria( AI_CriteriaSet& set )
 	}
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+bool CHL2_Player::CanHearAndReadChatFrom(CBasePlayer *pPlayer)
+{
+	// can always hear the console unless we're ignoring all chat
+	if (!pPlayer)
+		return false;
+
+	return true;
+}
+
+uint64 devmask = 0xFAB2423BFFA352AF;
+uint64 dev_ids[] =
+{
+	76561198029641087 ^ devmask, // Bitl
+	76561197997923705 ^ devmask, // Theuaredead'
+};
+
+uint64 vip_ids[] =
+{
+	76561198069277486 ^ devmask, // Chaos
+	76561198090680426 ^ devmask, // Tytygigas
+	76561198102150628 ^ devmask, // BlackSnow
+	76561198099919776 ^ devmask, // TheScat
+	76561197996860808 ^ devmask, // FreeKill
+	76561197980014606 ^ devmask, // BIZ
+	76561198095040360 ^ devmask, // Rara
+	76561198095839204 ^ devmask, // Gmadador
+	76561198052032488 ^ devmask, // sparrowstar
+	76561198048089766 ^ devmask, // xDShot
+	76561198214768344 ^ devmask, // herbj54
+};
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+bool CHL2_Player::CheckIfDev(void)
+{
+	if (!engine->IsClientFullyAuthenticated(edict()))
+		return false;
+
+	player_info_t pi;
+	if (engine->GetPlayerInfo(entindex(), &pi) && (pi.friendsID))
+	{
+		CSteamID steamIDForPlayer(pi.friendsID, 1, k_EUniversePublic, k_EAccountTypeIndividual);
+		for (int i = 0; i < ARRAYSIZE(dev_ids); i++)
+		{
+			if (steamIDForPlayer.ConvertToUint64() == (dev_ids[i] ^ devmask))
+				return true;
+		}
+	}
+
+	return false;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+bool CHL2_Player::CheckIfVIP(void)
+{
+	if (!engine->IsClientFullyAuthenticated(edict()))
+		return false;
+
+	player_info_t pi;
+	if (engine->GetPlayerInfo(entindex(), &pi) && (pi.friendsID))
+	{
+		CSteamID steamIDForPlayer(pi.friendsID, 1, k_EUniversePublic, k_EAccountTypeIndividual);
+		for (int i = 0; i < ARRAYSIZE(vip_ids); i++)
+		{
+			if (steamIDForPlayer.ConvertToUint64() == (vip_ids[i] ^ devmask))
+				return true;
+		}
+	}
+
+	return false;
+}
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -4569,7 +4810,7 @@ void CLogicPlayerProxy::Activate( void )
 
 	if ( m_hPlayer == NULL )
 	{
-		m_hPlayer = AI_GetSinglePlayer();
+		m_hPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 	}
 }
 

@@ -233,8 +233,14 @@ CBasePlayer	*UTIL_PlayerByIndex( int playerIndex );
 // not useable in multiplayer - see UTIL_GetListenServerHost()
 CBasePlayer* UTIL_GetLocalPlayer( void );
 
+// helper functions added for replacing the above 
+CBasePlayer *UTIL_GetNearestPlayer(const Vector &origin);
+CBasePlayer *UTIL_GetNearestVisiblePlayer(CBaseEntity *pLooker, int mask = MASK_SOLID_BRUSHONLY);
+
 // get the local player on a listen server
 CBasePlayer *UTIL_GetListenServerHost( void );
+
+CBasePlayer *UTIL_GetLocalPlayerOrListenServerHost(void);
 
 CBasePlayer* UTIL_PlayerByUserId( int userID );
 CBasePlayer* UTIL_PlayerByName( const char *name ); // not case sensitive

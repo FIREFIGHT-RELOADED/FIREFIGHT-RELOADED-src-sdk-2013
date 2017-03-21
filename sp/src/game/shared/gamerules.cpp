@@ -355,6 +355,48 @@ const char *CGameRules::GetGamemodeName(bool localServer)
 	return gamemodeName;
 }
 
+const char *CGameRules::GetGamemodeName_ServerBrowser(bool localServer)
+{
+	int gamemodeVal = NULL;
+	const char *gamemodeName = "";
+
+	if (localServer)
+	{
+		gamemodeVal = iRandomGamemode;
+	}
+	else
+	{
+		gamemodeVal = g_gamemode.GetInt();
+	}
+
+	if (gamemodeVal == FIREFIGHT_PRIMARY_COMBINEFIREFIGHT)
+	{
+		gamemodeName = "COMBINE FIREFIGHT";
+	}
+	else if (gamemodeVal == FIREFIGHT_PRIMARY_XENINVASION)
+	{
+		gamemodeName = "XEN INVASION";
+	}
+	else if (gamemodeVal == FIREFIGHT_PRIMARY_ANTLIONASSAULT)
+	{
+		gamemodeName = "ANTLION ASSAULT";
+	}
+	else if (gamemodeVal == FIREFIGHT_PRIMARY_ZOMBIESURVIVAL)
+	{
+		gamemodeName = "ZOMBIE SURVIVAL";
+	}
+	else if (gamemodeVal == FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE)
+	{
+		gamemodeName = "FIREFIGHT RUMBLE";
+	}
+	else
+	{
+		gamemodeName = "FIREFIGHT RELOADED";
+	}
+
+	return gamemodeName;
+}
+
 void CGameRules::SetGamemodeRandom(int x, int y, bool localServer)
 {
 	int randomGm = random->RandomInt(x, y);
@@ -874,7 +916,7 @@ float CGameRules::GetAmmoDamage( CBaseEntity *pAttacker, CBaseEntity *pVictim, i
 	float flDamage = 0;
 	CAmmoDef *pAmmoDef = GetAmmoDef();
 
-	if ( pAttacker->IsPlayer() )
+	if (pAttacker && pAttacker->IsPlayer())
 	{
 		flDamage = pAmmoDef->PlrDamage( nAmmoType );
 	}

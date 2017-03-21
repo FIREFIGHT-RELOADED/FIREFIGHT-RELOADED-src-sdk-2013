@@ -33,6 +33,7 @@ void Host_Say( edict_t *pEdict, bool teamonly );
 
 extern CBaseEntity*	FindPickerEntityClass( CBasePlayer *pPlayer, char *classname );
 extern bool			g_fGameOver;
+extern ConVar sv_player_hardcoremode;
 //const char			*szModelName = NULL; //already declared?
 
 /*
@@ -130,19 +131,17 @@ void ClientGamePrecache( void )
 // called by ClientKill and DeadThink
 void respawn( CBaseEntity *pEdict, bool fCopyCorpse )
 {
-	if (gpGlobals->coop || gpGlobals->deathmatch)
+	if (g_pGameRules->IsMultiplayer())
 	{
-		if ( fCopyCorpse )
-		{
-			// make a copy of the dead body for appearances sake
-			((CHL2_Player *)pEdict)->CreateCorpse();
-		}
+		CHL2_Player *pPlayer = (CHL2_Player *)pEdict;
 
-		// respawn player
-		((CHL2_Player *)pEdict)->Spawn();
+		if (pPlayer)
+		{
+			pPlayer->Spawn();
+		}
 	}
 	else
-	{       // restart the entire server
+	{      
 		engine->ServerCommand("reload\n");
 	}
 }

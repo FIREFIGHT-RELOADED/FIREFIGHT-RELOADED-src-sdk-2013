@@ -85,6 +85,7 @@ void CNPC_Cremator::Precache()
 {
 	PrecacheModel("models/Cremator.mdl");
 	PrecacheModel("models/Cremator_headprop.mdl");
+	PrecacheModel("models/cremator_gunprop.mdl");
 
 	PrecacheParticleSystem("vapor_ray");
 
@@ -333,6 +334,7 @@ void CNPC_Cremator::Event_Killed(const CTakeDamageInfo &info)
 	StopParticleEffects(this);
 	m_nSkin = CREMATOR_SKIN_DEAD; // turn the eyes black
 	SetBodygroup(1, 1); // turn the gun off
+	DropGun(25, Vector(0, 0, 1));
 
 	BaseClass::Event_Killed(info);
 }
@@ -347,7 +349,38 @@ void CNPC_Cremator::DropHead(int iVelocity, Vector &vecVelocity)
 	pGib->SetAbsOrigin(EyePosition());
 	pGib->SetAbsAngles(EyeAngles());
 	pGib->SetMoveType(MOVETYPE_VPHYSICS);
-	pGib->SetCollisionGroup(COLLISION_GROUP_INTERACTIVE);
+	pGib->SetCollisionGroup(COLLISION_GROUP_INTERACTIVE_DEBRIS);
+	pGib->SetOwnerEntity(this);
+	pGib->Spawn();
+	pGib->SetAbsVelocity(vecVelocity * (iVelocity + RandomFloat(-10, 10)));
+	/*
+	float flRandomVel = random->RandomFloat( -10, 10 );
+	pGib->GetMassCenter( &vecDir );
+	vecDir *= (iVelocity + flRandomVel) / 15;
+	vecDir.z += 30.0f;
+	AngularImpulse angImpulse = RandomAngularImpulse( -500, 500 );
+
+	IPhysicsObject *pObj = pGib->VPhysicsGetObject();
+	if ( pObj != NULL )
+	{
+	pObj->AddVelocity( &vecDir, &angImpulse );
+	}
+	*/
+}
+
+const char *CNPC_Cremator::GetGunpropModel(void)
+{
+	return "models/cremator_gunprop.mdl";
+}
+
+void CNPC_Cremator::DropGun(int iVelocity, Vector &vecVelocity)
+{
+	CPhysicsProp *pGib = assert_cast<CPhysicsProp*>(CreateEntityByName("prop_physics"));
+	pGib->SetModel(GetGunpropModel());
+	pGib->SetAbsOrigin(EyePosition());
+	pGib->SetAbsAngles(EyeAngles());
+	pGib->SetMoveType(MOVETYPE_VPHYSICS);
+	pGib->SetCollisionGroup(COLLISION_GROUP_INTERACTIVE_DEBRIS);
 	pGib->SetOwnerEntity(this);
 	pGib->Spawn();
 	pGib->SetAbsVelocity(vecVelocity * (iVelocity + RandomFloat(-10, 10)));

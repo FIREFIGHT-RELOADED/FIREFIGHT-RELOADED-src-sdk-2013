@@ -930,7 +930,7 @@ void CFastZombie::DeathSound( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 void CFastZombie::AlertSound( void )
 {
-	CBaseEntity *pPlayer = AI_GetSinglePlayer();
+	CBaseEntity *pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 
 	if( pPlayer )
 	{

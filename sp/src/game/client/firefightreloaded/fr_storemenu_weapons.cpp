@@ -130,7 +130,6 @@ void CFRStoreMenuWeapons::ShowPanel(bool bShow)
 		SetVisible( false );
 		SetMouseInputEnabled( false );
 	}
-
 	m_pViewPort->ShowBackGround( bShow );
 }
 

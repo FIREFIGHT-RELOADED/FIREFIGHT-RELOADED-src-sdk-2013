@@ -76,7 +76,7 @@ void CNewSingleplayerGameDialog::OnCommand(const char *command)
 		char szMapCommand[1024];
 
 		// create the command to execute
-		Q_snprintf(szMapCommand, sizeof( szMapCommand ), "disconnect\nprogress_enable\nmap %s\n", szMapName);
+		Q_snprintf(szMapCommand, sizeof( szMapCommand ), "disconnect\nmaxplayers 1\nmap %s\nprogress_enable\n", szMapName);
 
 		// exec
 		engine->ClientCmd_Unrestricted(szMapCommand);

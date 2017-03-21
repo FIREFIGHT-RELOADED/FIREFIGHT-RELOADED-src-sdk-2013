@@ -1552,16 +1552,9 @@ void CBasePlayer::CalcView( Vector &eyeOrigin, QAngle &eyeAngles, float &zNear, 
 		{
 			CalcObserverView( eyeOrigin, eyeAngles, fov );
 		}
-		//commented for now. - bitl
-		#if defined( CLIENT_DLL )
-		else if (!this->IsAlive())
-		{
-			CalcThirdPersonDeathView(eyeOrigin, eyeAngles, fov);
-		}
-		#endif
 		else
 		{
-			CalcPlayerView( eyeOrigin, eyeAngles, fov );
+			CalcPlayerView(eyeOrigin, eyeAngles, fov);
 		}
 	}
 	else

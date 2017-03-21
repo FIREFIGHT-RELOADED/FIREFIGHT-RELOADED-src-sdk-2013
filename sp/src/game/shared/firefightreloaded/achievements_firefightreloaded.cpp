@@ -6,17 +6,16 @@
 
 
 #include "cbase.h"
-
-#ifdef GAME_DLL
-
 #include "achievementmgr.h"
 #include "baseachievement.h"
+
+#ifdef GAME_DLL
 #include "basegrenade_shared.h"
 #include "basehlcombatweapon_shared.h"
 #include "ammodef.h"
 
 #ifndef MOD_VER
-CAchievementMgr g_AchievementMgrFIREFIGHTRELOADED;
+CAchievementMgr AchievementMgr;
 #endif
 
 class CAchievementKill20CombineSoldier : public CBaseAchievement
@@ -28,18 +27,22 @@ protected:
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter( "firefightreloaded" );
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal( 20 );
 	}
 
 	virtual void Event_EntityKilled( CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event ) 
 	{
-		if (FClassnameIs(pVictim, "npc_combine_s") || FClassnameIs(pVictim, "npc_combine_e") || FClassnameIs(pVictim, "npc_combine_p") || FClassnameIs(pVictim, "npc_combine_shot") || FClassnameIs(pVictim, "npc_combine_ace") || FClassnameIs(pVictim, "npc_metropolice") || FClassnameIs(pVictim, "npc_assassin"))
+		if (FClassnameIs(pVictim, "npc_combine_s") || FClassnameIs(pVictim, "npc_combine_e") || FClassnameIs(pVictim, "npc_combine_p") || FClassnameIs(pVictim, "npc_combine_shot") || FClassnameIs(pVictim, "npc_combine_ace") || FClassnameIs(pVictim, "npc_metropolice") || FClassnameIs(pVictim, "npc_assassin") || FClassnameIs(pVictim, "npc_manhack") || FClassnameIs(pVictim, "npc_cremator") || FClassnameIs(pVictim, "npc_elitepolice") || FClassnameIs(pVictim, "npc_combineguard"))
 		{
 			IncrementCount();
 		}
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return false; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKill20CombineSoldier, ACHIEVEMENT_FIREFIGHTRELOADED_KILL20COMBINE, "FIREFIGHTRELOADED_KILL20COMBINE", 5);
 
@@ -52,18 +55,22 @@ protected:
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal(50);
 	}
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_combine_s") || FClassnameIs(pVictim, "npc_combine_e") || FClassnameIs(pVictim, "npc_combine_p") || FClassnameIs(pVictim, "npc_combine_shot") || FClassnameIs(pVictim, "npc_combine_ace") || FClassnameIs(pVictim, "npc_metropolice") || FClassnameIs(pVictim, "npc_assassin"))
+		if (FClassnameIs(pVictim, "npc_combine_s") || FClassnameIs(pVictim, "npc_combine_e") || FClassnameIs(pVictim, "npc_combine_p") || FClassnameIs(pVictim, "npc_combine_shot") || FClassnameIs(pVictim, "npc_combine_ace") || FClassnameIs(pVictim, "npc_metropolice") || FClassnameIs(pVictim, "npc_assassin") || FClassnameIs(pVictim, "npc_manhack") || FClassnameIs(pVictim, "npc_cremator") || FClassnameIs(pVictim, "npc_elitepolice") || FClassnameIs(pVictim, "npc_combineguard"))
 		{
 			IncrementCount();
 		}
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return false; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKill50CombineSoldier, ACHIEVEMENT_FIREFIGHTRELOADED_KILL50COMBINE, "FIREFIGHTRELOADED_KILL50COMBINE", 10);
 
@@ -76,18 +83,22 @@ protected:
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal(100);
 	}
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_combine_s") || FClassnameIs(pVictim, "npc_combine_e") || FClassnameIs(pVictim, "npc_combine_p") || FClassnameIs(pVictim, "npc_combine_shot") || FClassnameIs(pVictim, "npc_combine_ace") || FClassnameIs(pVictim, "npc_metropolice") || FClassnameIs(pVictim, "npc_assassin"))
+		if (FClassnameIs(pVictim, "npc_combine_s") || FClassnameIs(pVictim, "npc_combine_e") || FClassnameIs(pVictim, "npc_combine_p") || FClassnameIs(pVictim, "npc_combine_shot") || FClassnameIs(pVictim, "npc_combine_ace") || FClassnameIs(pVictim, "npc_metropolice") || FClassnameIs(pVictim, "npc_assassin") || FClassnameIs(pVictim, "npc_manhack") || FClassnameIs(pVictim, "npc_cremator") || FClassnameIs(pVictim, "npc_elitepolice") || FClassnameIs(pVictim, "npc_combineguard"))
 		{
 			IncrementCount();
 		}
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return true; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKill100CombineSoldier, ACHIEVEMENT_FIREFIGHTRELOADED_KILL100COMBINE, "FIREFIGHTRELOADED_KILL100COMBINE", 15);
 
@@ -101,10 +112,14 @@ protected:
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal(20);
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return false; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKill20Hunters, ACHIEVEMENT_FIREFIGHTRELOADED_KILL20HUNTERS, "FIREFIGHTRELOADED_KILL20HUNTERS", 10);
 
@@ -118,10 +133,14 @@ protected:
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal(50);
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return false; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKill50Hunters, ACHIEVEMENT_FIREFIGHTRELOADED_KILL50HUNTERS, "FIREFIGHTRELOADED_KILL50HUNTERS", 15);
 
@@ -135,10 +154,14 @@ protected:
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal(100);
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return true; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKill100Hunters, ACHIEVEMENT_FIREFIGHTRELOADED_KILL100HUNTERS, "FIREFIGHTRELOADED_KILL100HUNTERS", 20);
 
@@ -174,10 +197,10 @@ protected:
 
 	virtual void Init()
 	{
-		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
+		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal(100);
 	}
@@ -189,6 +212,10 @@ protected:
 			IncrementCount();
 		}
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return true; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKill100Enemies, ACHIEVEMENT_FIREFIGHTRELOADED_KILL100ENEMIES, "FIREFIGHTRELOADED_KILL100ENEMIES", 10);
 
@@ -201,10 +228,14 @@ protected:
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal(1000);
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return true; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKillThousandEnemies, ACHIEVEMENT_FIREFIGHTRELOADED_KILLTHOUSANDENEMIES, "FIREFIGHTRELOADED_KILLTHOUSANDENEMIES", 25);
 
@@ -217,10 +248,14 @@ protected:
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal(1000000);
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return true; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKillMillionEnemies, ACHIEVEMENT_FIREFIGHTRELOADED_KILLMILLIONENEMIES, "FIREFIGHTRELOADED_KILLMILLIONENEMIES", 50);
 
@@ -256,10 +291,14 @@ protected:
 		SetInflictorFilter("hunter_flechette");
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal(10);
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return true; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKill10HuntersWithFlechette, ACHIEVEMENT_FIREFIGHTRELOADED_KILL10HUNTERSWITHFLECHETTE, "FIREFIGHTRELOADED_KILL10HUNTERSWITHFLECHETTE", 20);
 
@@ -270,9 +309,6 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
 		SetGameDirFilter("firefightreloaded");
-#ifndef MOD_VER
-		SetStoreProgressInSteam(true);
-#endif
 		SetGoal(100);
 	}
 
@@ -295,7 +331,7 @@ protected:
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal(20);
 	}
@@ -307,6 +343,10 @@ protected:
 			IncrementCount();
 		}
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return false; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKill20Antlion, ACHIEVEMENT_FIREFIGHTRELOADED_KILL20ANTLIONS, "FIREFIGHTRELOADED_KILL20ANTLIONS", 5);
 
@@ -319,7 +359,7 @@ protected:
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal(50);
 	}
@@ -331,6 +371,10 @@ protected:
 			IncrementCount();
 		}
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return false; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKill50Antlion, ACHIEVEMENT_FIREFIGHTRELOADED_KILL50ANTLIONS, "FIREFIGHTRELOADED_KILL50ANTLIONS", 10);
 
@@ -343,7 +387,7 @@ protected:
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal(100);
 	}
@@ -355,6 +399,10 @@ protected:
 			IncrementCount();
 		}
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return true; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKill100Antlion, ACHIEVEMENT_FIREFIGHTRELOADED_KILL100ANTLIONS, "FIREFIGHTRELOADED_KILL100ANTLIONS", 15);
 
@@ -367,7 +415,7 @@ protected:
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal(20);
 	}
@@ -379,6 +427,10 @@ protected:
 			IncrementCount();
 		}
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return false; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKill20AntlionGuard, ACHIEVEMENT_FIREFIGHTRELOADED_KILL20ANTLIONGUARDS, "FIREFIGHTRELOADED_KILL20ANTLIONGUARDS", 10);
 
@@ -391,7 +443,7 @@ protected:
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal(50);
 	}
@@ -403,6 +455,10 @@ protected:
 			IncrementCount();
 		}
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return false; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKill50AntlionGuard, ACHIEVEMENT_FIREFIGHTRELOADED_KILL50ANTLIONGUARDS, "FIREFIGHTRELOADED_KILL50ANTLIONGUARDS", 15);
 
@@ -415,7 +471,7 @@ protected:
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal(100);
 	}
@@ -427,6 +483,10 @@ protected:
 			IncrementCount();
 		}
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return true; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKill100AntlionGuard, ACHIEVEMENT_FIREFIGHTRELOADED_KILL100ANTLIONGUARDS, "FIREFIGHTRELOADED_KILL100ANTLIONGUARDS", 20);
 
@@ -439,7 +499,7 @@ protected:
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal(20);
 	}
@@ -451,6 +511,10 @@ protected:
 			IncrementCount();
 		}
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return false; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKill20Zombies, ACHIEVEMENT_FIREFIGHTRELOADED_KILL20ZOMBIES, "FIREFIGHTRELOADED_KILL20ZOMBIES", 5);
 
@@ -463,7 +527,7 @@ protected:
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal(50);
 	}
@@ -475,6 +539,10 @@ protected:
 			IncrementCount();
 		}
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return false; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKill50Zombies, ACHIEVEMENT_FIREFIGHTRELOADED_KILL50ZOMBIES, "FIREFIGHTRELOADED_KILL50ZOMBIES", 10);
 
@@ -487,7 +555,7 @@ protected:
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal(100);
 	}
@@ -499,6 +567,10 @@ protected:
 			IncrementCount();
 		}
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return true; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKill100Zombies, ACHIEVEMENT_FIREFIGHTRELOADED_KILL100ZOMBIES, "FIREFIGHTRELOADED_KILL100ZOMBIES", 15);
 
@@ -511,7 +583,7 @@ protected:
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal(20);
 	}
@@ -523,6 +595,10 @@ protected:
 			IncrementCount();
 		}
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return false; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKill20Headcrabs, ACHIEVEMENT_FIREFIGHTRELOADED_KILL20HEADCRABS, "FIREFIGHTRELOADED_KILL20HEADCRABS", 5);
 
@@ -535,7 +611,7 @@ protected:
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal(50);
 	}
@@ -547,6 +623,10 @@ protected:
 			IncrementCount();
 		}
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return false; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKill50Headcrabs, ACHIEVEMENT_FIREFIGHTRELOADED_KILL50HEADCRABS, "FIREFIGHTRELOADED_KILL50HEADCRABS", 10);
 
@@ -559,7 +639,7 @@ protected:
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal(100);
 	}
@@ -571,6 +651,10 @@ protected:
 			IncrementCount();
 		}
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return true; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKill100Headcrabs, ACHIEVEMENT_FIREFIGHTRELOADED_KILL100HEADCRABS, "FIREFIGHTRELOADED_KILL100HEADCRABS", 15);
 
@@ -583,18 +667,22 @@ protected:
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal(20);
 	}
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_houndeye") || FClassnameIs(pVictim, "npc_bullsquid") || FClassnameIs(pVictim, "npc_vortigaunt"))
+		if (FClassnameIs(pVictim, "npc_houndeye") || FClassnameIs(pVictim, "npc_bullsquid") || FClassnameIs(pVictim, "npc_vortigaunt") || FClassnameIs(pVictim, "npc_agrunt") || FClassnameIs(pVictim, "npc_acontroller"))
 		{
 			IncrementCount();
 		}
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return false; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKill20XenCreatures, ACHIEVEMENT_FIREFIGHTRELOADED_KILL20XENCREATURES, "FIREFIGHTRELOADED_KILL20XENCREATURES", 5);
 
@@ -607,18 +695,22 @@ protected:
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal(50);
 	}
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_houndeye") || FClassnameIs(pVictim, "npc_bullsquid") || FClassnameIs(pVictim, "npc_vortigaunt"))
+		if (FClassnameIs(pVictim, "npc_houndeye") || FClassnameIs(pVictim, "npc_bullsquid") || FClassnameIs(pVictim, "npc_vortigaunt") || FClassnameIs(pVictim, "npc_agrunt") || FClassnameIs(pVictim, "npc_acontroller"))
 		{
 			IncrementCount();
 		}
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return false; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKill50XenCreatures, ACHIEVEMENT_FIREFIGHTRELOADED_KILL50XENCREATURES, "FIREFIGHTRELOADED_KILL50XENCREATURES", 10);
 
@@ -631,18 +723,22 @@ protected:
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
-		SetStoreProgressInSteam(true);
+		m_bStoreProgressInSteam = true;
 #endif
 		SetGoal(100);
 	}
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_houndeye") || FClassnameIs(pVictim, "npc_bullsquid") || FClassnameIs(pVictim, "npc_vortigaunt"))
+		if (FClassnameIs(pVictim, "npc_houndeye") || FClassnameIs(pVictim, "npc_bullsquid") || FClassnameIs(pVictim, "npc_vortigaunt") || FClassnameIs(pVictim, "npc_agrunt") || FClassnameIs(pVictim, "npc_acontroller"))
 		{
 			IncrementCount();
 		}
 	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return true; }
+#endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKill100XenCreatures, ACHIEVEMENT_FIREFIGHTRELOADED_KILL100XENCREATURES, "FIREFIGHTRELOADED_KILL100XENCREATURES", 15);
 
@@ -654,9 +750,6 @@ protected:
 		SetInflictorFilter("grenade_ar2");
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
 		SetGameDirFilter("firefightreloaded");
-#ifndef MOD_VER
-		SetStoreProgressInSteam(true);
-#endif
 		SetGoal(10);
 	}
 };
@@ -673,9 +766,6 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_MAP_EVENTS | ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
 		SetGameDirFilter("firefightreloaded");
-#ifndef MOD_VER
-		SetStoreProgressInSteam(true);
-#endif
 		SetGoal(10);
 	}
 
@@ -707,9 +797,6 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_MAP_EVENTS | ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
 		SetGameDirFilter("firefightreloaded");
-#ifndef MOD_VER
-		SetStoreProgressInSteam(true);
-#endif
 		SetGoal(20);
 	}
 
@@ -739,9 +826,6 @@ protected:
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
 		SetGameDirFilter("firefightreloaded");
-#ifndef MOD_VER
-		SetStoreProgressInSteam(true);
-#endif
 		SetGoal(10);
 	}
 
@@ -789,9 +873,6 @@ protected:
 		SetFlags(ACH_LISTEN_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
 		SetInflictorFilter("npc_grenade_frag");
 		SetGameDirFilter("firefightreloaded");
-#ifndef MOD_VER
-		SetStoreProgressInSteam(true);
-#endif
 		SetGoal(10);
 	}
 
@@ -802,9 +883,8 @@ protected:
 		{
 			CBaseEntity *pThrower = pGrenade->GetThrower();
 			CBaseEntity *pOriginalThrower = pGrenade->GetOriginalThrower();
-			CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
 			// check if player was most recent thrower, but the victim was the original thrower
-			if ((pPlayer == pThrower) && (pOriginalThrower == pVictim))
+			if (pThrower->IsPlayer() && (pOriginalThrower == pVictim))
 			{
 				IncrementCount();
 			}

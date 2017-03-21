@@ -18,9 +18,16 @@
 #include "npcevent.h"
 #include "ai_basenpc.h"
 #include "weapon_knife.h"
+#include "rumble_shared.h"
+#include "gamestats.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+#define BLUDGEON_HULL_DIM		16
+
+static const Vector g_bludgeonMins(-BLUDGEON_HULL_DIM, -BLUDGEON_HULL_DIM, -BLUDGEON_HULL_DIM);
+static const Vector g_bludgeonMaxs(BLUDGEON_HULL_DIM, BLUDGEON_HULL_DIM, BLUDGEON_HULL_DIM);
 
 ConVar    sk_plr_dmg_knife		( "sk_plr_dmg_knife","0");
 ConVar    sk_npc_dmg_knife		( "sk_npc_dmg_knife","0");
@@ -71,7 +78,69 @@ float CWeaponKnife::GetDamageForActivity( Activity hitActivity )
 	if ( ( GetOwner() != NULL ) && ( GetOwner()->IsPlayer() ) )
 		return sk_plr_dmg_knife.GetFloat();
 
+	if ((GetOwner() != NULL) && (GetOwner()->IsPlayer()))
+		return sk_plr_dmg_knife.GetFloat();
+
 	return sk_npc_dmg_knife.GetFloat();
+}
+
+//------------------------------------------------------------------------------
+// Purpose: Implement impact function
+//------------------------------------------------------------------------------
+void CWeaponKnife::Hit(trace_t &traceHit, Activity nHitActivity, bool bIsSecondary)
+{
+	CBasePlayer *pPlayer = ToBasePlayer(GetOwner());
+
+	//Do view kick
+	AddViewKick();
+
+	//Make sound for the AI
+	CSoundEnt::InsertSound(SOUND_BULLET_IMPACT, traceHit.endpos, 400, 0.2f, pPlayer);
+
+	// This isn't great, but it's something for when the crowbar hits.
+	pPlayer->RumbleEffect(RUMBLE_AR2, 0, RUMBLE_FLAG_RESTART);
+
+	CBaseEntity	*pHitEntity = traceHit.m_pEnt;
+
+	//Apply damage to a hit target
+	if (pHitEntity != NULL)
+	{
+		Vector hitDirection;
+		pPlayer->EyeVectors(&hitDirection, NULL, NULL);
+		VectorNormalize(hitDirection);
+
+		CTakeDamageInfo info(GetOwner(), GetOwner(), GetDamageForActivity(nHitActivity), DMG_CLUB);
+
+		if (pPlayer && pHitEntity->IsNPC())
+		{
+			// If bonking an NPC, adjust damage.
+			if (FClassnameIs(pHitEntity, "npc_headcrab") || FClassnameIs(pHitEntity, "npc_headcrab_fast") || FClassnameIs(pHitEntity, "npc_headcrab_poison"))
+			{
+				info.CopyDamageToBaseDamage();
+				info.SetDamage(pHitEntity->GetHealth());
+			}
+			else
+			{
+				info.AdjustPlayerDamageInflictedForSkillLevel();
+			}
+		}
+
+		CalculateMeleeDamageForce(&info, hitDirection, traceHit.endpos);
+
+		pHitEntity->DispatchTraceAttack(info, hitDirection, &traceHit);
+		ApplyMultiDamage();
+
+		// Now hit all triggers along the ray that... 
+		TraceAttackToTriggers(info, traceHit.startpos, traceHit.endpos, hitDirection);
+
+		if (ToBaseCombatCharacter(pHitEntity))
+		{
+			gamestats->Event_WeaponHit(pPlayer, !bIsSecondary, GetClassname(), info);
+		}
+	}
+
+	// Apply an impact effect
+	ImpactEffect(traceHit);
 }
 
 //-----------------------------------------------------------------------------

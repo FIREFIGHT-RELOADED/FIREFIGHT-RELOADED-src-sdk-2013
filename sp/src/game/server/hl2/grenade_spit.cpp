@@ -238,7 +238,7 @@ void CGrenadeSpit::Think( void )
 		return;
 	
 	// Add a doppler effect to the balls as they travel
-	CBaseEntity *pPlayer = AI_GetSinglePlayer();
+	CBaseEntity *pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 	if ( pPlayer != NULL )
 	{
 		Vector dir;

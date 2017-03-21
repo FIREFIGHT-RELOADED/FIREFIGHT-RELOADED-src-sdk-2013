@@ -137,6 +137,7 @@ $Project "Client (Episodic)"
 			$File	"$SRCDIR\game\shared\firefightreloaded\singleplayer_animstate.h"
 			$File 	"firefightreloaded\fr_rendertargets.cpp"
 			$File 	"firefightreloaded\fr_rendertargets.h"
+			$File	"firefightreloaded\c_combineguard.cpp"
 
 			$Folder	"GameUI"
 			{
@@ -148,6 +149,8 @@ $Project "Client (Episodic)"
 				$File	"gameui\SingleplayerAdvancedDialog.h"
 				$File	"gameui\NewSingleplayerGameDialog.cpp"
 				$File	"gameui\NewSingleplayerGameDialog.h"
+				$File	"gameui\PlayerModelDialog.cpp"
+				$File	"gameui\PlayerModelDialog.h"
 			}
 			
 			$Folder "Store Menu"
@@ -197,6 +200,8 @@ $Project "Client (Episodic)"
 				$File	"firefightreloaded\hud_money_classic.cpp"
 				$File	"firefightreloaded\hud_perkhintdisplay.cpp"
 				$File 	"firefightreloaded\hud_timer.cpp"
+				$File	"firefightreloaded\ui\frclientscoreboard.cpp"
+				$File	"firefightreloaded\ui\frclientscoreboard.h"
 			}
 			
 			$Folder	"Modding Menu"

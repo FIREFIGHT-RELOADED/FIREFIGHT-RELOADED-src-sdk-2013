@@ -446,6 +446,8 @@ float ChangeDistance( float flInterval, float flGoalDistance, float flGoalVeloci
 //
 //=============================================================================
 
+#define MAX_AIS	256 
+
 class CAI_Manager
 {
 public:
@@ -454,16 +456,12 @@ public:
 	CAI_BaseNPC **	AccessAIs();
 	int				NumAIs();
 	
-	void AddAI( CAI_BaseNPC *pAI );
+	int AddAI(CAI_BaseNPC *pAI);
 	void RemoveAI( CAI_BaseNPC *pAI );
 
 	bool FindAI( CAI_BaseNPC *pAI )	{ return ( m_AIs.Find( pAI ) != m_AIs.InvalidIndex() ); }
 	
 private:
-	enum
-	{
-		MAX_AIS = 256
-	};
 	
 	typedef CUtlVector<CAI_BaseNPC *> CAIArray;
 	
@@ -2125,6 +2123,12 @@ public:
 	void				GetPlayerAvoidBounds( Vector *pMins, Vector *pMaxs );
 
 	void				StartPingEffect( void ) { m_flTimePingEffect = gpGlobals->curtime + 2.0f; DispatchUpdateTransmitState(); }
+
+	// used by lag compensation to be able to refer to & track specific NPCs, and detect changes in the AI list 
+	void				SetAIIndex(int i) { m_iAIIndex = i; }
+	int					GetAIIndex() { return m_iAIIndex; }
+private:
+	int					m_iAIIndex;
 };
 
 

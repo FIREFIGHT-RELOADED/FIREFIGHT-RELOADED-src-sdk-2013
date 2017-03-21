@@ -26,14 +26,7 @@ CBaseEntity* MoveToRandomSpot( CBaseEntity *pEnt )
 {
 	if ( pEnt )
 	{
-		CBasePlayer *pLocalPlayer = UTIL_GetLocalPlayer();
-		if ( pLocalPlayer )
-		{			
-			Vector vForward;
-			pLocalPlayer->EyeVectors(&vForward );
-
-			UTIL_SetOrigin( pEnt, GetRandomSpot() );
-		}
+		UTIL_SetOrigin(pEnt, GetRandomSpot());
 	}
 
 	return pEnt;

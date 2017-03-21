@@ -97,6 +97,7 @@ public:
 
 	virtual void		Precache( void );
 	virtual void		Spawn(void);
+	virtual void		InitialSpawn(void);
 	virtual void		Activate( void );
 	virtual void		CheatImpulseCommands( int iImpulse );
 	virtual void		PlayerRunCommand( CUserCmd *ucmd, IMoveHelper *moveHelper);
@@ -244,6 +245,15 @@ public:
 	bool				IsIlluminatedByFlashlight( CBaseEntity *pEntity, float *flReturnDot );
 	void				SetFlashlightPowerDrainScale( float flScale ) { m_flFlashlightPowerDrainScale = flScale; }
 
+	void		KickAttack(void);
+	void		FlyJetpack(void);
+	void		SetPlayerModel(void);
+
+	bool	m_bIsPlayerADev;
+	bool	CheckIfDev(void);
+	bool	m_bIsPlayerAVIP;
+	bool	CheckIfVIP(void);
+
 	CNetworkVar(float, m_flNextKickAttack);
 	CNetworkVar(bool, m_bIsKicking);
 
@@ -262,6 +272,8 @@ public:
 
 	virtual void		Event_Killed( const CTakeDamageInfo &info );
 	void				NotifyScriptsOfDeath( void );
+	virtual void		UpdateOnRemove(void);
+	virtual bool		BecomeRagdollOnClient(const Vector &force);
 
 	// override the test for getting hit
 	virtual bool		TestHitboxes( const Ray_t &ray, unsigned int fContentsMask, trace_t& tr );
@@ -292,6 +304,7 @@ public:
 
 	inline void EnableCappedPhysicsDamage();
 	inline void DisableCappedPhysicsDamage();
+	void CreateRagdollEntity();
 
 	// HUD HINTS
 	void DisplayLadderHudHint();
@@ -301,10 +314,13 @@ public:
 
 	void SetAnimation(PLAYER_ANIM playerAnim);
 
+	// Tracks our ragdoll entity.
+	CNetworkHandle(CBaseEntity, m_hRagdoll);	// networked entity handle 
+
+	virtual bool	CanHearAndReadChatFrom(CBasePlayer *pPlayer);
+
 protected:
 	virtual void		PreThink( void );
-	virtual void		KickAttack(void);
-	virtual void		FlyJetpack(void);
 	virtual	void		PostThink( void );
 	virtual bool		HandleInteraction(int interactionType, void *data, CBaseCombatCharacter* sourceEnt);
 
@@ -401,6 +417,14 @@ void CHL2_Player::EnableCappedPhysicsDamage()
 void CHL2_Player::DisableCappedPhysicsDamage()
 {
 	m_bUseCappedPhysicsDamageTable = false;
+}
+
+inline CHL2_Player *ToHL2Player(CBaseEntity *pEntity)
+{
+	if (!pEntity || !pEntity->IsPlayer())
+		return NULL;
+
+	return dynamic_cast<CHL2_Player*>(pEntity);
 }
 
 

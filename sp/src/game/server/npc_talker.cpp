@@ -228,14 +228,15 @@ void CNPCSimpleTalker::RunTask( const Task_t *pTask )
 	case TASK_TALKER_CLIENT_STARE:
 	case TASK_TALKER_LOOK_AT_CLIENT:
 
-		if ( pTask->iTask == TASK_TALKER_CLIENT_STARE && AI_IsSinglePlayer() )
+		if (pTask->iTask == TASK_TALKER_CLIENT_STARE)
 		{
 			// Get edict for one player
-			CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
-			Assert( pPlayer );
+			//CBasePlayer *pPlayer = UTIL_GetLocalPlayer(); 
+			//Assert( pPlayer ); 
+			CBasePlayer *pPlayer = UTIL_GetNearestVisiblePlayer(this);
 
 			// fail out if the player looks away or moves away.
-			if ( ( pPlayer->GetAbsOrigin() - GetAbsOrigin() ).Length2D() > TALKER_STARE_DIST )
+			if (!pPlayer || (pPlayer->GetAbsOrigin() - GetAbsOrigin()).Length2D() > TALKER_STARE_DIST)
 			{
 				// player moved away.
 				TaskFail("Player moved away");
@@ -822,7 +823,7 @@ int CNPCSimpleTalker::SelectNonCombatSpeechSchedule()
 	}
 	
 	// failed to speak, so look at the player if he's around
-	if ( AI_IsSinglePlayer() && GetExpresser()->CanSpeak() && HasCondition ( COND_SEE_PLAYER ) && random->RandomInt( 0, 6 ) == 0 )
+	if (GetExpresser()->CanSpeak() && HasCondition(COND_SEE_PLAYER) && random->RandomInt(0, 6) == 0)
 	{
 		CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
 		Assert( pPlayer );

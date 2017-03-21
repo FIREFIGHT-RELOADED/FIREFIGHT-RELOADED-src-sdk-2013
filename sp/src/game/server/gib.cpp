@@ -15,6 +15,7 @@
 #include "vstdlib/random.h"
 #include "ai_utils.h"
 #include "EntityFlame.h"
+#include "physics_prop_ragdoll.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -400,7 +401,7 @@ bool CGib::SUB_AllowedToFade( void )
 			return false;
 	}
 
-	CBasePlayer *pPlayer = ( AI_IsSinglePlayer() ) ? UTIL_GetLocalPlayer() : NULL;
+	CBasePlayer *pPlayer = UTIL_GetNearestVisiblePlayer(this);
 
 	if ( pPlayer && pPlayer->FInViewCone( this ) && m_bForceRemove == false )
 	{
@@ -611,7 +612,7 @@ void CGib::Spawn( const char *szGibModel )
     m_bForceRemove = false;
 
 	m_material = matNone;
-	m_cBloodDecals = 5;// how many blood decals this gib can place (1 per bounce until none remain). 
+	m_cBloodDecals = 10;// how many blood decals this gib can place (1 per bounce until none remain). 
 
 }
 

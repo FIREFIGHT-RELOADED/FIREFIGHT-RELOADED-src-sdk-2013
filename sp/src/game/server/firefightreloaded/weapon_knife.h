@@ -45,13 +45,11 @@ public:
 
 	// Animation event
 	virtual void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+	void			Hit(trace_t &traceHit, Activity nHitActivity, bool bIsSecondary);
+	void			HandleAnimEventMeleeHit(animevent_t *pEvent, CBaseCombatCharacter *pOperator);
 
 protected:
 	virtual	void	ImpactEffect(trace_t &trace);
-
-private:
-	// Animation event handlers
-	void HandleAnimEventMeleeHit( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
 };
 
 #endif // WEAPON_KNIFE_H

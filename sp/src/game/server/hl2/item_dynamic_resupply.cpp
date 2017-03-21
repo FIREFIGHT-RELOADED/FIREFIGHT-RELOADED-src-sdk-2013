@@ -291,8 +291,10 @@ void CItem_DynamicResupply::InputKill( inputdata_t &data )
 //-----------------------------------------------------------------------------
 void CItem_DynamicResupply::InputCalculateType( inputdata_t &data )
 {
-	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
-	SpawnDynamicItem( pPlayer );
+	// spawn gear for the nearest player 
+	CBasePlayer *pNearest = UTIL_GetNearestPlayer(GetAbsOrigin()); 
+	if ( pNearest != NULL ) 
+		SpawnDynamicItem( pNearest );
 }
 
 //-----------------------------------------------------------------------------

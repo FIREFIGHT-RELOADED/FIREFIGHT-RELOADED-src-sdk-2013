@@ -640,7 +640,11 @@ void CAchievementMgr::DownloadUserData()
 		if ( steamapicontext->SteamUserStats() )
 		{
 			// request stat download; will get called back at OnUserStatsReceived when complete
-			steamapicontext->SteamUserStats()->RequestCurrentStats();
+			bool bReqStats = steamapicontext->SteamUserStats()->RequestCurrentStats();
+			if (!bReqStats)
+			{
+				DevMsg("SteamUserStats::RequestCurrentStats() - Cannot aquire stats from Steam.");
+			}
 		}
 #endif
 	}

@@ -22,15 +22,16 @@ extern ConVar cl_backspeed;
 extern ConVar cl_sidespeed;
 
 extern ConVar zoom_sensitivity_ratio;
-extern ConVar default_fov;
 extern ConVar sensitivity;
 
 ConVar cl_npc_speedmod_intime( "cl_npc_speedmod_intime", "0.25", FCVAR_CLIENTDLL | FCVAR_ARCHIVE );
 ConVar cl_npc_speedmod_outtime( "cl_npc_speedmod_outtime", "1.5", FCVAR_CLIENTDLL | FCVAR_ARCHIVE );
+static ConVar cl_playermodel("cl_playermodel", "models/player/playermodels/gordon.mdl", FCVAR_USERINFO | FCVAR_ARCHIVE | FCVAR_SERVER_CAN_EXECUTE, "Default Player Model");
 
 IMPLEMENT_CLIENTCLASS_DT(C_BaseHLPlayer, DT_HL2_Player, CHL2_Player)
 	RecvPropDataTable( RECVINFO_DT(m_HL2Local),0, &REFERENCE_RECV_TABLE(DT_HL2Local) ),
 	RecvPropBool( RECVINFO( m_fIsSprinting ) ),
+	RecvPropEHandle(RECVINFO(m_hRagdoll)),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_BaseHLPlayer )
@@ -97,7 +98,7 @@ float C_BaseHLPlayer::GetFOV()
 	float flFOVOffset = BaseClass::GetFOV() + GetZoom();
 
 	// Clamp FOV in MP
-	int min_fov = ( gpGlobals->maxClients == 1 ) ? 5 : default_fov.GetInt();
+	int min_fov = GetMinFOV();
 	
 	// Don't let it go too low
 	flFOVOffset = MAX( min_fov, flFOVOffset );
@@ -645,5 +646,371 @@ void C_BaseHLPlayer::BuildTransformations( CStudioHdr *hdr, Vector *pos, Quatern
 {
 	BaseClass::BuildTransformations( hdr, pos, q, cameraTransform, boneMask, boneComputed );
 	BuildFirstPersonMeathookTransformations( hdr, pos, q, cameraTransform, boneMask, boneComputed, "ValveBiped.Bip01_Head1" );
+}
+
+const QAngle& C_BaseHLPlayer::GetRenderAngles()
+{
+	if (IsRagdoll())
+	{
+		return vec3_angle;
+	}
+	else
+	{
+		return BaseClass::GetRenderAngles();
+	}
+}
+
+C_BaseAnimating *C_BaseHLPlayer::BecomeRagdollOnClient()
+{
+	// Let the C_CSRagdoll entity do this.
+	// m_builtRagdoll = true;
+	return NULL;
+}
+
+bool C_BaseHLPlayer::ShouldDraw(void)
+{
+	// If we're dead, our ragdoll will be drawn for us instead.
+	if (!IsAlive())
+		return false;
+
+	//	if( GetTeamNumber() == TEAM_SPECTATOR )
+	//		return false;
+
+	if (IsLocalPlayer() && IsRagdoll())
+		return true;
+
+	if (IsRagdoll())
+		return false;
+
+	return BaseClass::ShouldDraw();
+}
+
+void C_BaseHLPlayer::CalcView(Vector &eyeOrigin, QAngle &eyeAngles, float &zNear, float &zFar, float &fov)
+{
+	if (m_lifeState != LIFE_ALIVE && !IsObserver())
+	{
+		Vector origin = EyePosition();
+
+		IRagdoll *pRagdoll = GetRepresentativeRagdoll();
+
+		if (pRagdoll)
+		{
+			origin = pRagdoll->GetRagdollOrigin();
+			origin.z += VEC_DEAD_VIEWHEIGHT_SCALED(this).z; // look over ragdoll, not through
+		}
+
+		BaseClass::CalcView(eyeOrigin, eyeAngles, zNear, zFar, fov);
+
+		eyeOrigin = origin;
+
+		Vector vForward;
+		AngleVectors(eyeAngles, &vForward);
+
+		VectorNormalize(vForward);
+		VectorMA(origin, -CHASE_CAM_DISTANCE_MAX, vForward, eyeOrigin);
+
+		Vector WALL_MIN(-WALL_OFFSET, -WALL_OFFSET, -WALL_OFFSET);
+		Vector WALL_MAX(WALL_OFFSET, WALL_OFFSET, WALL_OFFSET);
+
+		trace_t trace; // clip against world
+		C_BaseEntity::PushEnableAbsRecomputations(false); // HACK don't recompute positions while doing RayTrace
+		UTIL_TraceHull(origin, eyeOrigin, WALL_MIN, WALL_MAX, MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &trace);
+		C_BaseEntity::PopEnableAbsRecomputations();
+
+		if (trace.fraction < 1.0)
+		{
+			eyeOrigin = trace.endpos;
+		}
+
+		fov = GetFOV();
+
+		return;
+	}
+
+	BaseClass::CalcView(eyeOrigin, eyeAngles, zNear, zFar, fov);
+	fov = GetFOV();
+}
+
+//-----------------------------------------------------------------------------
+// Should this object receive shadows?
+//-----------------------------------------------------------------------------
+bool C_BaseHLPlayer::ShouldReceiveProjectedTextures(int flags)
+{
+	Assert(flags & SHADOW_FLAGS_PROJECTED_TEXTURE_TYPE_MASK);
+
+	if (IsEffectActive(EF_NODRAW))
+		return false;
+
+	if (flags & SHADOW_FLAGS_FLASHLIGHT)
+	{
+		return true;
+	}
+
+	return BaseClass::ShouldReceiveProjectedTextures(flags);
+}
+
+void C_BaseHLPlayer::DoImpactEffect(trace_t &tr, int nDamageType)
+{
+	if (GetActiveWeapon())
+	{
+		GetActiveWeapon()->DoImpactEffect(tr, nDamageType);
+		return;
+	}
+
+	BaseClass::DoImpactEffect(tr, nDamageType);
+}
+
+ShadowType_t C_BaseHLPlayer::ShadowCastType(void)
+{
+	if (!IsVisible())
+		return SHADOWS_NONE;
+
+	return SHADOWS_RENDER_TO_TEXTURE_DYNAMIC;
+}
+
+IRagdoll* C_BaseHLPlayer::GetRepresentativeRagdoll() const
+{
+	if (m_hRagdoll.Get())
+	{
+		C_HL2MPRagdoll *pRagdoll = (C_HL2MPRagdoll*)m_hRagdoll.Get();
+
+		return pRagdoll->GetIRagdoll();
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+//HL2MPRAGDOLL
+
+
+IMPLEMENT_CLIENTCLASS_DT_NOBASE(C_HL2MPRagdoll, DT_HL2MPRagdoll, CHL2MPRagdoll)
+RecvPropVector(RECVINFO(m_vecRagdollOrigin)),
+RecvPropEHandle(RECVINFO(m_hPlayer)),
+RecvPropInt(RECVINFO(m_nModelIndex)),
+RecvPropInt(RECVINFO(m_nForceBone)),
+RecvPropVector(RECVINFO(m_vecForce)),
+RecvPropVector(RECVINFO(m_vecRagdollVelocity))
+END_RECV_TABLE()
+
+
+
+C_HL2MPRagdoll::C_HL2MPRagdoll()
+{
+
+}
+
+C_HL2MPRagdoll::~C_HL2MPRagdoll()
+{
+	PhysCleanupFrictionSounds(this);
+
+	if (m_hPlayer)
+	{
+		m_hPlayer->CreateModelInstance();
+	}
+}
+
+void C_HL2MPRagdoll::Interp_Copy(C_BaseAnimatingOverlay *pSourceEntity)
+{
+	if (!pSourceEntity)
+		return;
+
+	VarMapping_t *pSrc = pSourceEntity->GetVarMapping();
+	VarMapping_t *pDest = GetVarMapping();
+
+	// Find all the VarMapEntry_t's that represent the same variable.
+	for (int i = 0; i < pDest->m_Entries.Count(); i++)
+	{
+		VarMapEntry_t *pDestEntry = &pDest->m_Entries[i];
+		const char *pszName = pDestEntry->watcher->GetDebugName();
+		for (int j = 0; j < pSrc->m_Entries.Count(); j++)
+		{
+			VarMapEntry_t *pSrcEntry = &pSrc->m_Entries[j];
+			if (!Q_strcmp(pSrcEntry->watcher->GetDebugName(), pszName))
+			{
+				pDestEntry->watcher->Copy(pSrcEntry->watcher);
+				break;
+			}
+		}
+	}
+}
+
+void C_HL2MPRagdoll::ImpactTrace(trace_t *pTrace, int iDamageType, const char *pCustomImpactName)
+{
+	IPhysicsObject *pPhysicsObject = VPhysicsGetObject();
+
+	if (!pPhysicsObject)
+		return;
+
+	Vector dir = pTrace->endpos - pTrace->startpos;
+
+	if (iDamageType == DMG_BLAST)
+	{
+		dir *= 4000;  // adjust impact strenght
+
+		// apply force at object mass center
+		pPhysicsObject->ApplyForceCenter(dir);
+	}
+	else
+	{
+		Vector hitpos;
+
+		VectorMA(pTrace->startpos, pTrace->fraction, dir, hitpos);
+		VectorNormalize(dir);
+
+		dir *= 4000;  // adjust impact strenght
+
+		// apply force where we hit it
+		pPhysicsObject->ApplyForceOffset(dir, hitpos);
+
+		// Blood spray!
+		//		FX_CS_BloodSpray( hitpos, dir, 10 );
+	}
+
+	m_pRagdoll->ResetRagdollSleepAfterTime();
+}
+
+
+void C_HL2MPRagdoll::CreateHL2MPRagdoll(void)
+{
+	// First, initialize all our data. If we have the player's entity on our client,
+	// then we can make ourselves start out exactly where the player is.
+	C_BaseHLPlayer *pPlayer = dynamic_cast< C_BaseHLPlayer* >(m_hPlayer.Get());
+
+	if (pPlayer && !pPlayer->IsDormant())
+	{
+		// move my current model instance to the ragdoll's so decals are preserved.
+		pPlayer->SnatchModelInstance(this);
+
+		VarMapping_t *varMap = GetVarMapping();
+
+		// Copy all the interpolated vars from the player entity.
+		// The entity uses the interpolated history to get bone velocity.
+		bool bRemotePlayer = (pPlayer != C_BasePlayer::GetLocalPlayer());
+		if (bRemotePlayer)
+		{
+			Interp_Copy(pPlayer);
+
+			SetAbsAngles(pPlayer->GetRenderAngles());
+			GetRotationInterpolator().Reset();
+
+			m_flAnimTime = pPlayer->m_flAnimTime;
+			SetSequence(pPlayer->GetSequence());
+			m_flPlaybackRate = pPlayer->GetPlaybackRate();
+		}
+		else
+		{
+			// This is the local player, so set them in a default
+			// pose and slam their velocity, angles and origin
+			SetAbsOrigin(m_vecRagdollOrigin);
+
+			SetAbsAngles(pPlayer->GetRenderAngles());
+
+			SetAbsVelocity(m_vecRagdollVelocity);
+
+			int iSeq = pPlayer->GetSequence();
+			if (iSeq == -1)
+			{
+				Assert(false);	// missing walk_lower?
+				iSeq = 0;
+			}
+
+			SetSequence(iSeq);	// walk_lower, basic pose
+			SetCycle(0.0);
+
+			Interp_Reset(varMap);
+		}
+	}
+	else
+	{
+		// overwrite network origin so later interpolation will
+		// use this position
+		SetNetworkOrigin(m_vecRagdollOrigin);
+
+		SetAbsOrigin(m_vecRagdollOrigin);
+		SetAbsVelocity(m_vecRagdollVelocity);
+
+		Interp_Reset(GetVarMapping());
+
+	}
+
+	SetModelIndex(m_nModelIndex);
+
+	// Make us a ragdoll..
+	m_nRenderFX = kRenderFxRagdoll;
+
+	matrix3x4_t boneDelta0[MAXSTUDIOBONES];
+	matrix3x4_t boneDelta1[MAXSTUDIOBONES];
+	matrix3x4_t currentBones[MAXSTUDIOBONES];
+	const float boneDt = 0.05f;
+
+	if (pPlayer && !pPlayer->IsDormant())
+	{
+		pPlayer->GetRagdollInitBoneArrays(boneDelta0, boneDelta1, currentBones, boneDt);
+	}
+	else
+	{
+		GetRagdollInitBoneArrays(boneDelta0, boneDelta1, currentBones, boneDt);
+	}
+
+	InitAsClientRagdoll(boneDelta0, boneDelta1, currentBones, boneDt);
+}
+
+
+void C_HL2MPRagdoll::OnDataChanged(DataUpdateType_t type)
+{
+	BaseClass::OnDataChanged(type);
+
+	if (type == DATA_UPDATE_CREATED)
+	{
+		CreateHL2MPRagdoll();
+	}
+}
+
+IRagdoll* C_HL2MPRagdoll::GetIRagdoll() const
+{
+	return m_pRagdoll;
+}
+
+void C_HL2MPRagdoll::UpdateOnRemove(void)
+{
+	VPhysicsSetObject(NULL);
+
+	BaseClass::UpdateOnRemove();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: clear out any face/eye values stored in the material system
+//-----------------------------------------------------------------------------
+void C_HL2MPRagdoll::SetupWeights(const matrix3x4_t *pBoneToWorld, int nFlexWeightCount, float *pFlexWeights, float *pFlexDelayedWeights)
+{
+	BaseClass::SetupWeights(pBoneToWorld, nFlexWeightCount, pFlexWeights, pFlexDelayedWeights);
+
+	static float destweight[128];
+	static bool bIsInited = false;
+
+	CStudioHdr *hdr = GetModelPtr();
+	if (!hdr)
+		return;
+
+	int nFlexDescCount = hdr->numflexdesc();
+	if (nFlexDescCount)
+	{
+		Assert(!pFlexDelayedWeights);
+		memset(pFlexWeights, 0, nFlexWeightCount * sizeof(float));
+	}
+
+	if (m_iEyeAttachment > 0)
+	{
+		matrix3x4_t attToWorld;
+		if (GetAttachment(m_iEyeAttachment, attToWorld))
+		{
+			Vector local, tmp;
+			local.Init(1000.0f, 0.0f, 0.0f);
+			VectorTransform(local, attToWorld, tmp);
+			modelrender->SetViewTarget(GetModelPtr(), GetBody(), tmp);
+		}
+	}
 }
 

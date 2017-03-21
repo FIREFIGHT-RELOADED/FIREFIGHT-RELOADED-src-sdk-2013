@@ -15,6 +15,7 @@
 
 #include "c_baseplayer.h"
 #include "c_hl2_playerlocaldata.h"
+#include "firefightreloaded/singleplayer_animstate.h"
 
 class C_BaseHLPlayer : public C_BasePlayer
 {
@@ -52,6 +53,17 @@ public:
 	void			PerformClientSideNPCSpeedModifiers( float flFrameTime, CUserCmd *pCmd );
 
 	bool				IsWeaponLowered( void ) { return m_HL2Local.m_bWeaponLowered; }
+	IRagdoll* GetRepresentativeRagdoll() const;
+	virtual void CalcView(Vector &eyeOrigin, QAngle &eyeAngles, float &zNear, float &zFar, float &fov);
+	virtual const QAngle& GetRenderAngles();
+	virtual bool ShouldDraw(void);
+	virtual C_BaseAnimating *BecomeRagdollOnClient();
+	virtual ShadowType_t		ShadowCastType(void);
+	virtual void DoImpactEffect(trace_t &tr, int nDamageType);
+	virtual bool ShouldReceiveProjectedTextures(int flags);
+
+	CSinglePlayerAnimState *m_pPlayerAnimState;
+	QAngle m_angEyeAngles;
 
 public:
 
@@ -73,9 +85,42 @@ private:
 	bool				m_bPlayUseDenySound;		// Signaled by PlayerUse, but can be unset by HL2 ladder code...
 	float				m_flSpeedMod;
 	float				m_flExitSpeedMod;
+	EHANDLE	m_hRagdoll;
 
 
 friend class CHL2GameMovement;
+};
+
+class C_HL2MPRagdoll : public C_BaseAnimatingOverlay
+{
+public:
+	DECLARE_CLASS(C_HL2MPRagdoll, C_BaseAnimatingOverlay);
+	DECLARE_CLIENTCLASS();
+
+	C_HL2MPRagdoll();
+	~C_HL2MPRagdoll();
+
+	virtual void OnDataChanged(DataUpdateType_t type);
+
+	int GetPlayerEntIndex() const;
+	IRagdoll* GetIRagdoll() const;
+
+	void ImpactTrace(trace_t *pTrace, int iDamageType, const char *pCustomImpactName);
+	void UpdateOnRemove(void);
+	virtual void SetupWeights(const matrix3x4_t *pBoneToWorld, int nFlexWeightCount, float *pFlexWeights, float *pFlexDelayedWeights);
+
+private:
+
+	C_HL2MPRagdoll(const C_HL2MPRagdoll &) {}
+
+	void Interp_Copy(C_BaseAnimatingOverlay *pDestinationEntity);
+	void CreateHL2MPRagdoll(void);
+
+private:
+
+	EHANDLE	m_hPlayer;
+	CNetworkVector(m_vecRagdollVelocity);
+	CNetworkVector(m_vecRagdollOrigin);
 };
 
 

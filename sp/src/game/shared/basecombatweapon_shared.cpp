@@ -892,11 +892,14 @@ void CBaseCombatWeapon::ToggleIronsights()
 
 void CBaseCombatWeapon::EnableIronsights()
 {
-/*
+
 #ifdef CLIENT_DLL
-	if( !prediction->IsFirstTimePredicted() )
-		return;
-#endif*/
+	if (g_pGameRules->IsMultiplayer())
+	{
+		if( !prediction->IsFirstTimePredicted() )
+			return;
+	}
+#endif
 	if (!HasIronsights() || IsIronsighted())
 		return;
 
@@ -921,11 +924,13 @@ void CBaseCombatWeapon::EnableIronsights()
 
 void CBaseCombatWeapon::DisableIronsights()
 {
-/*
 #ifdef CLIENT_DLL
-	if( !prediction->IsFirstTimePredicted() )
-		return;
-#endif*/
+	if (g_pGameRules->IsMultiplayer())
+	{
+		if (!prediction->IsFirstTimePredicted())
+			return;
+	}
+#endif
 	if (!HasIronsights() || !IsIronsighted())
 		return;
 
@@ -1260,7 +1265,8 @@ void CBaseCombatWeapon::SetActivity( Activity act, float duration )
 
 	//Adrian: Oh man again...
 #if !defined( CLIENT_DLL ) && (defined( HL2MP ) || defined( PORTAL ))
-	SetModel( GetViewModel() );
+	if ( GetOwner()->IsPlayer() ) 
+		SetModel( GetViewModel() );
 #endif
 
 	if ( sequence != ACTIVITY_NOT_AVAILABLE )

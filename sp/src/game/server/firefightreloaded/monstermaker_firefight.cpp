@@ -22,6 +22,7 @@
 ConVar sk_initialspawnertime("sk_initialspawnertime", "5", FCVAR_CHEAT);
 ConVar sk_spawnrareenemies("sk_spawnrareenemies", "1", FCVAR_ARCHIVE);
 ConVar sk_spawnerhidefromplayer("sk_spawnerhidefromplayer", "1", FCVAR_ARCHIVE);
+ConVar sk_spawnerminclientstospawn("sk_spawnerminclientstospawn", "2", FCVAR_NOTIFY);
 
 //we need these for the metropolice since they are on the cpp file. -Bitl
 #define SF_METROPOLICE_ALLOWED_TO_RESPOND	0x01000000
@@ -55,6 +56,7 @@ const char *g_charNPCSSpawnerList[] =
 	"npc_assassin",
 	"npc_cremator",
 	"npc_elitepolice",
+	"npc_combineguard",
 };
 
 const char *g_charNPCSCombineFirefightCommon[] =
@@ -73,6 +75,7 @@ const char *g_charNPCSCombineFirefightRare[] =
 	"npc_hunter",
 	"npc_assassin",
 	"npc_cremator",
+	"npc_combineguard",
 };
 
 const char *g_charNPCSCombineFirefightSoldierWeapons[] =
@@ -175,6 +178,7 @@ const char *g_charNPCSFirefightRumbleRare[] =
 	"npc_assassin",
 	"npc_cremator",
 	"npc_headcrab",
+	"npc_combineguard",
 };
 
 static void DispatchActivate( CBaseEntity *pEntity )
@@ -387,6 +391,19 @@ bool CNPCMakerFirefight::HumanHullFits(const Vector &vecLocation)
 //-----------------------------------------------------------------------------
 bool CNPCMakerFirefight::CanMakeNPC(bool bIgnoreSolidEntities)
 {
+	int iMinPlayersToSpawn = 0;
+
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBasePlayer	*pPlayer = UTIL_PlayerByIndex(i);
+		if (pPlayer != NULL)
+		{
+			iMinPlayersToSpawn++;
+		}
+	}
+
+	if (iMinPlayersToSpawn < sk_spawnerminclientstospawn.GetInt() && g_pGameRules->IsMultiplayer())
+		return false;
 
 	if ( m_nMaxLiveChildren > 0 && m_nLiveChildren >= m_nMaxLiveChildren )
 	{// not allowed to make a new one yet. Too many live ones out right now.

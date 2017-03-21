@@ -501,7 +501,7 @@ void CNPC_MetroPolice::PrescheduleThink( void )
 	m_bPlayerIsNear = false;
 	if ( PlayerIsCriminal() == false )
 	{
-		CBasePlayer *pPlayer = UTIL_PlayerByIndex( 1 );
+		CBasePlayer *pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 		
 		if ( pPlayer && ( pPlayer->WorldSpaceCenter() - WorldSpaceCenter() ).LengthSqr() < (128*128) )
 		{
@@ -4024,7 +4024,7 @@ void CNPC_MetroPolice::AnnounceHarrassment( void )
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::IncrementPlayerCriminalStatus( void )
 {
-	CBasePlayer *pPlayer = UTIL_PlayerByIndex( 1 );
+	CBasePlayer *pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 
 	if ( pPlayer )
 	{
@@ -4076,9 +4076,6 @@ float CNPC_MetroPolice::GetIdealAccel( void ) const
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::AdministerJustice( void )
 {
-	if ( !AI_IsSinglePlayer() )
-		return;
-
 	// If we're allowed to chase the player, do so. Otherwise, just threaten.
 	if ( !IsInAScript() && (m_NPCState != NPC_STATE_SCRIPT) && HasSpawnFlags( SF_METROPOLICE_ALLOWED_TO_RESPOND ) )
 	{
@@ -4090,7 +4087,9 @@ void CNPC_MetroPolice::AdministerJustice( void )
 		m_flChasePlayerTime = gpGlobals->curtime + RandomFloat( 3, 7 );
 
 		// Attack the target
-		CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
+		CBasePlayer *pPlayer = UTIL_GetNearestVisiblePlayer(this);
+		if (!pPlayer)
+			pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 		SetEnemy( pPlayer );
 		SetState( NPC_STATE_COMBAT );
 		UpdateEnemyMemory( pPlayer, pPlayer->GetAbsOrigin() );
@@ -4113,8 +4112,8 @@ void CNPC_MetroPolice::AdministerJustice( void )
 				CNPC_MetroPolice *pNPC = assert_cast<CNPC_MetroPolice*>(ppAIs[i]);
 				if ( pNPC->HasSpawnFlags( SF_METROPOLICE_ALLOWED_TO_RESPOND ) )
 				{
-					// Is he within site & range?
-					if ( FVisible(pNPC) && pNPC->FVisible( UTIL_PlayerByIndex(1) ) && 
+					CBasePlayer *pPlayer = UTIL_GetNearestVisiblePlayer(this);
+					if (pPlayer && FVisible(pNPC) && pNPC->FVisible(pPlayer) &&
 						UTIL_DistApprox( WorldSpaceCenter(), pNPC->WorldSpaceCenter() ) < 512 )
 					{
 						pNPC->AdministerJustice();
@@ -4131,7 +4130,8 @@ void CNPC_MetroPolice::AdministerJustice( void )
 //-----------------------------------------------------------------------------
 int CNPC_MetroPolice::SelectSchedule( void )
 {
-	if ( !GetEnemy() && HasCondition( COND_IN_PVS ) && AI_GetSinglePlayer() && !AI_GetSinglePlayer()->IsAlive() )
+	CBasePlayer *pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
+	if (!GetEnemy() && HasCondition(COND_IN_PVS) && pPlayer && !pPlayer->IsAlive())
 	{
 		return SCHED_PATROL_WALK;
 	}
@@ -5155,7 +5155,7 @@ void CNPC_MetroPolice::GatherConditions( void )
 		ClearCondition( COND_METROPOLICE_PLAYER_TOO_CLOSE );
 	}
 
-	CBasePlayer *pPlayer = UTIL_PlayerByIndex( 1 );
+	CBasePlayer *pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 	
 	// FIXME: Player can be NULL here during level transitions.
 	if ( !pPlayer )
@@ -5288,7 +5288,7 @@ void CNPC_MetroPolice::VPhysicsCollision( int index, gamevcollisionevent_t *pEve
 
 	if ( pEvent->pObjects[otherIndex]->GetGameFlags() & FVPHYSICS_PLAYER_HELD )
 	{
-		CHL2_Player *pPlayer = dynamic_cast<CHL2_Player *>(UTIL_PlayerByIndex( 1 ));
+		CHL2_Player *pPlayer = dynamic_cast<CHL2_Player *>(UTIL_GetNearestPlayer(pHitEntity->GetAbsOrigin()));
 
 		// See if it's being held by the player
 		if ( pPlayer != NULL && pPlayer->IsHoldingEntity( pHitEntity ) )

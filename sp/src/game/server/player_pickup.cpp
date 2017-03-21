@@ -24,7 +24,7 @@ void Pickup_ForcePlayerToDropThisObject( CBaseEntity *pTarget )
 
 	if ( pPhysics->GetGameFlags() & FVPHYSICS_PLAYER_HELD )
 	{
-		CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+		CBasePlayer *pPlayer = UTIL_GetNearestPlayer(pTarget->GetAbsOrigin());
 		pPlayer->ForceDropOfCarriedPhysObjects( pTarget );
 	}
 }
@@ -48,15 +48,11 @@ void Pickup_OnPhysGunPickup( CBaseEntity *pPickedUpObject, CBasePlayer *pPlayer,
 		pPickup->OnPhysGunPickup( pPlayer, reason );
 	}
 
-	// send phys gun pickup item event, but only in single player
-	if ( !g_pGameRules->IsMultiplayer() )
+	IGameEvent *event = gameeventmanager->CreateEvent("physgun_pickup");
+	if (event)
 	{
-		IGameEvent *event = gameeventmanager->CreateEvent( "physgun_pickup" );
-		if ( event )
-		{
-			event->SetInt( "entindex", pPickedUpObject->entindex() );
-			gameeventmanager->FireEvent( event );
-		}
+		event->SetInt("entindex", pPickedUpObject->entindex());
+		gameeventmanager->FireEvent(event);
 	}
 }
 

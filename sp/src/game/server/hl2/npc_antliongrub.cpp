@@ -208,7 +208,7 @@ int CAntlionGrub::GetNuggetDenomination( void )
 	// Find the desired health perc we want to be at
 	float flDesiredHealthPerc = DynamicResupply_GetDesiredHealthPercentage();
 	
-	CBasePlayer *pPlayer = AI_GetSinglePlayer();
+	CBasePlayer *pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 	if ( pPlayer == NULL )
 		return -1;
 
@@ -347,7 +347,7 @@ inline bool CAntlionGrub::InPVS( void )
 //-----------------------------------------------------------------------------
 void CAntlionGrub::SetNextThinkByDistance( void )
 {
-	CBasePlayer *pPlayer = AI_GetSinglePlayer();
+	CBasePlayer *pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 	if ( pPlayer == NULL )
 	{
 		SetNextThink( gpGlobals->curtime + random->RandomFloat( 0.5f, 3.0f ) );
@@ -583,7 +583,7 @@ void CAntlionGrub::IdleThink( void )
 	}
 
 	// See how close the player is
-	CBasePlayer *pPlayerEnt = AI_GetSinglePlayer();
+	CBasePlayer *pPlayerEnt = UTIL_GetNearestPlayer(GetAbsOrigin());
 	float flDistToPlayerSqr = ( GetAbsOrigin() - pPlayerEnt->GetAbsOrigin() ).LengthSqr();
 
 	bool bFlinching = ( m_flFlinchTime > gpGlobals->curtime );

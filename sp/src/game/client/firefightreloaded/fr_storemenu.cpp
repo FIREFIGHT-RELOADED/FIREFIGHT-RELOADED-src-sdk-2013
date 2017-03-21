@@ -130,16 +130,12 @@ void CFRStoreMenu::ShowPanel(bool bShow)
 		SetVisible( false );
 		SetMouseInputEnabled( false );
 	}
-
 	m_pViewPort->ShowBackGround( bShow );
 }
 
 void CFRStoreMenu::OnCommand(const char *command)
 {
-	if (Q_stricmp(command, "storecancel"))
-	{
-		engine->ClientCmd(const_cast<char *>(command));
-	}
+	engine->ClientCmd(const_cast<char *>(command));
 	Close();
 	gViewPortInterface->ShowBackGround(false);
 	BaseClass::OnCommand(command);

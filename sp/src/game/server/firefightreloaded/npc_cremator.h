@@ -98,6 +98,8 @@ public:
 	void Event_Killed(const CTakeDamageInfo &info);
 	virtual const char *GetHeadpropModel(void);
 	void DropHead(int iVelocity, Vector &vecVelocity);
+	virtual const char *GetGunpropModel(void);
+	void DropGun(int iVelocity, Vector &vecVelocity);
 
 	void DispatchSpray(CBaseEntity *pEntity);
 

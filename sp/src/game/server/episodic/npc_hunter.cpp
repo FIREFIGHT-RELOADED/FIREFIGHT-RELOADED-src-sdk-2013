@@ -818,7 +818,7 @@ void CHunterFlechette::SeekThink()
 //-----------------------------------------------------------------------------
 void CHunterFlechette::DopplerThink()
 {
-	CBasePlayer *pPlayer = AI_GetSinglePlayer();
+	CBasePlayer *pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 	if ( !pPlayer )
 		return;
 
@@ -2188,7 +2188,7 @@ void CNPC_Hunter::NPCThink()
 
 	CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
 
-	if (hunter_laugh.GetBool() && !pPlayer->IsDead())
+	if (hunter_laugh.GetBool() && !pPlayer->IsDead() && !m_bIsLaughing)
 	{
 		if (random->RandomInt(0, hunter_laugh_frequency.GetInt()) == 0 && pPlayer->GetHealth() < hunter_laugh_healthvalue.GetInt() && !m_bIsLaughing)
 		{
@@ -2200,6 +2200,10 @@ void CNPC_Hunter::NPCThink()
 		{
 			m_bIsLaughing = false;
 		}
+	}
+	else
+	{
+		m_bIsLaughing = false;
 	}
 }
 
@@ -2431,7 +2435,7 @@ void CNPC_Hunter::ManageSiegeTargets()
 	}
 
 	m_flTimeNextSiegeTargetAttack = gpGlobals->curtime + (hunter_siege_frequency.GetFloat() * RandomFloat( 0.8f, 1.2f) );
-	CBasePlayer *pPlayer = AI_GetSinglePlayer();
+	CBasePlayer *pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 
 	// Start by assuming we are not going to create a siege target
 	bool bCreateSiegeTarget = false;

@@ -236,7 +236,7 @@ ConVar sv_fr_perks_oldperkbehavior("sv_fr_perks_oldperkbehavior", "0", FCVAR_ARC
 
 void CC_GiveCurrentAmmo( void )
 {
-	CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
+	CBasePlayer *pPlayer = UTIL_GetCommandClient();
 
 	if( pPlayer )
 	{
@@ -961,22 +961,33 @@ int CBasePlayer::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 }
 
 
-bool CBasePlayer::WantsLagCompensationOnEntity( const CBasePlayer *pPlayer, const CUserCmd *pCmd, const CBitVec<MAX_EDICTS> *pEntityTransmitBits ) const
+bool CBasePlayer::WantsLagCompensationOnEntity(const CBaseEntity *pEntity, const CUserCmd *pCmd, const CBitVec<MAX_EDICTS> *pEntityTransmitBits) const
 {
-	// Team members shouldn't be adjusted unless friendly fire is on.
-	if ( !friendlyfire.GetInt() && pPlayer->GetTeamNumber() == GetTeamNumber() )
-		return false;
+	//Tony; only check teams in teamplay
+	if (gpGlobals->teamplay)
+	{
+		// Team members shouldn't be adjusted unless friendly fire is on.
+		if (!friendlyfire.GetInt() && pEntity->GetTeamNumber() == GetTeamNumber())
+			return false;
+	}
 
 	// If this entity hasn't been transmitted to us and acked, then don't bother lag compensating it.
-	if ( pEntityTransmitBits && !pEntityTransmitBits->Get( pPlayer->entindex() ) )
+	if (pEntityTransmitBits && !pEntityTransmitBits->Get(pEntity->entindex()))
 		return false;
 
 	const Vector &vMyOrigin = GetAbsOrigin();
-	const Vector &vHisOrigin = pPlayer->GetAbsOrigin();
+	const Vector &vHisOrigin = pEntity->GetAbsOrigin();
 
 	// get max distance player could have moved within max lag compensation time, 
 	// multiply by 1.5 to to avoid "dead zones"  (sqrt(2) would be the exact value)
-	float maxDistance = 1.5 * pPlayer->MaxSpeed() * sv_maxunlag.GetFloat();
+	//float maxDistance = 1.5 * pPlayer->MaxSpeed() * sv_maxunlag.GetFloat(); 
+	float maxspeed;
+	CBasePlayer *pPlayer = ToBasePlayer((CBaseEntity*)pEntity);
+	if (pPlayer)
+		maxspeed = pPlayer->MaxSpeed();
+	else
+		maxspeed = 600;
+	float maxDistance = 1.5 * maxspeed * sv_maxunlag.GetFloat();
 
 	// If the player is within this distance, lag compensate them in case they're running past us.
 	if ( vHisOrigin.DistTo( vMyOrigin ) < maxDistance )
@@ -2988,11 +2999,13 @@ int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 		flRatio = FR_ARMOR_RATIO;
 	}
 
+	/*
 	if ( ( info.GetDamageType() & DMG_BLAST ) && g_pGameRules->IsMultiplayer() )
 	{
 		// blasts damage armor more.
 		flBonus *= 2;
 	}
+	*/
 
 	// Already dead
 	if ( !IsAlive() )
@@ -8343,7 +8356,6 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 #endif	// HLDEMO_BUILD
 }
 
-
 bool CBasePlayer::ClientCommand( const CCommand &args )
 {
 	const char *cmd = args[0];
@@ -8621,6 +8633,10 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 			KeyValues *data = new KeyValues("data");
 			data->SetString("type", "1");			// show userdata from stringtable entry
 			ShowViewPortPanel(PANEL_BUY_WEAPONS, true, data);
+			if (!g_pGameRules->IsMultiplayer())
+			{
+				engine->ServerCommand("sv_cheats 1; host_timescale 0.05\n");
+			}
 		}
 		else
 		{
@@ -8644,6 +8660,10 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 			KeyValues *data = new KeyValues("data");
 			data->SetString("type", "1");			// show userdata from stringtable entry
 			ShowViewPortPanel(PANEL_BUY_AMMO, true, data);
+			if (!g_pGameRules->IsMultiplayer())
+			{
+				engine->ServerCommand("sv_cheats 1; host_timescale 0.05\n");
+			}
 		}
 		else
 		{
@@ -8667,6 +8687,10 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 			KeyValues *data = new KeyValues("data");
 			data->SetString("type", "1");			// show userdata from stringtable entry
 			ShowViewPortPanel(PANEL_BUY_SUPPLIES, true, data);
+			if (!g_pGameRules->IsMultiplayer())
+			{
+				engine->ServerCommand("sv_cheats 1; host_timescale 0.05\n");
+			}
 		}
 		else
 		{
@@ -8690,6 +8714,10 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 			KeyValues *data = new KeyValues("data");
 			data->SetString("type", "1");			// show userdata from stringtable entry
 			ShowViewPortPanel(PANEL_BUY, true, data);
+			if (!g_pGameRules->IsMultiplayer())
+			{
+				engine->ServerCommand("sv_cheats 1; host_timescale 0.05\n");
+			}
 		}
 		else
 		{
@@ -8703,6 +8731,14 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 			{
 				EmitSound("Store.InsufficientFunds");
 			}
+		}
+		return true;
+	}
+	else if (stricmp(cmd, "storecancel") == 0)
+	{
+		if (!g_pGameRules->IsMultiplayer())
+		{
+			engine->ServerCommand("sv_cheats 1; host_timescale 1\n");
 		}
 		return true;
 	}
@@ -10153,7 +10189,14 @@ void CStripWeapons::StripWeapons(inputdata_t &data, bool stripSuit)
 	}
 	else if ( !g_pGameRules->IsDeathmatch() )
 	{
-		pPlayer = UTIL_GetLocalPlayer();
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
+			if (pPlayer)
+			{
+				pPlayer->RemoveAllItems(stripSuit);
+			}
+		}
 	}
 
 	if ( pPlayer )
@@ -10249,17 +10292,22 @@ void CRevertSaved::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 	SetNextThink( gpGlobals->curtime + LoadTime() );
 	SetThink( &CRevertSaved::LoadThink );
 
-	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
-
-	if ( pPlayer )
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		//Adrian: Setting this flag so we can't move or save a game.
-		pPlayer->pl.deadflag = true;
-		pPlayer->AddFlag( (FL_NOTARGET|FL_FROZEN) );
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
+		if (!pPlayer)
+			continue;
 
-		// clear any pending autosavedangerous
-		g_ServerGameDLL.m_fAutoSaveDangerousTime = 0.0f;
-		g_ServerGameDLL.m_fAutoSaveDangerousMinHealthToCommit = 0.0f;
+		if (pPlayer)
+		{
+			//Adrian: Setting this flag so we can't move or save a game.
+			pPlayer->pl.deadflag = true;
+			pPlayer->AddFlag((FL_NOTARGET | FL_FROZEN));
+
+			// clear any pending autosavedangerous
+			g_ServerGameDLL.m_fAutoSaveDangerousTime = 0.0f;
+			g_ServerGameDLL.m_fAutoSaveDangerousMinHealthToCommit = 0.0f;
+		}
 	}
 }
 
@@ -10310,6 +10358,13 @@ void CRevertSaved::LoadThink( void )
 	if ( !gpGlobals->deathmatch )
 	{
 		engine->ServerCommand("reload\n");
+	}
+	else
+	{
+		char *szDefaultMapName = new char[32];
+		Q_strncpy(szDefaultMapName, STRING(gpGlobals->mapname), 32);
+		engine->ChangeLevel(szDefaultMapName, NULL);
+		return;
 	}
 }
 
@@ -10387,7 +10442,7 @@ void CMovementSpeedMod::InputSpeedMod(inputdata_t &data)
 	}
 	else if ( !g_pGameRules->IsDeathmatch() )
 	{
-		pPlayer = UTIL_GetLocalPlayer();
+		pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 	}
 
 	if ( pPlayer )
@@ -11497,8 +11552,8 @@ void CBasePlayer::HandleAnimEvent( animevent_t *pEvent )
 		if ( pEvent->event == AE_RAGDOLL )
 		{
 			// Convert to ragdoll immediately
-			CreateRagdollEntity();
-			BecomeRagdollOnClient( vec3_origin );
+			//CreateRagdollEntity();
+			//BecomeRagdollOnClient( vec3_origin );
  
 			// Force the player to start death thinking
 			SetThink(&CBasePlayer::PlayerDeathThink);

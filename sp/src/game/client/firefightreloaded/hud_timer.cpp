@@ -35,6 +35,8 @@ using namespace vgui;
 
 #include "engine/IEngineSound.h"
 
+#include "hl2/hl2_gamerules.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -74,6 +76,7 @@ CHudTimer::CHudTimer( const char *pElementName ) : CHudElement( pElementName ), 
 void CHudTimer::Init()
 {
 	Reset();
+	g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("TimerInit");
 }
 
 //-----------------------------------------------------------------------------
@@ -98,7 +101,7 @@ void CHudTimer::VidInit()
 //-----------------------------------------------------------------------------
 void CHudTimer::OnThink()
 {
-	if (cl_fr_usetimer.GetBool())
+	if (!g_pGameRules->IsMultiplayer() && cl_fr_usetimer.GetBool())
 	{
 		int iRemain = (int)gpGlobals->curtime;
 		int iMinutes, iSeconds;
@@ -107,6 +110,25 @@ void CHudTimer::OnThink()
 		SetMinutes(iMinutes);
 		SetSeconds(iSeconds);
 		SetAlpha(255);
+	}
+	else if (g_pGameRules->IsMultiplayer() && HL2GameRules()->GetMapRemainingTime() > 0)
+	{
+		SetAlpha(255);
+		int iRemain = (int)HL2GameRules()->GetMapRemainingTime();
+		int iMinutes, iSeconds;
+		iMinutes = iRemain / 60;
+		iSeconds = iRemain % 60;
+		SetMinutes(iMinutes);
+		SetSeconds(iSeconds);
+
+		if (iMinutes == 0 && iSeconds < 30)
+		{
+			g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("TimerBelow30");
+		}
+		else
+		{
+			g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("TimerAbove30");
+		}
 	}
 	else
 	{

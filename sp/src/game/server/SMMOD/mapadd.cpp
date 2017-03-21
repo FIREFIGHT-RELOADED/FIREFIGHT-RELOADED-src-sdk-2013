@@ -126,7 +126,7 @@ bool CMapAdd::HandlePlayerEntity( KeyValues *playerEntityKV, bool initLevel)
 	//	{
 	//		return true; //Just pretend we did
 	//	}
-		CBasePlayer *playerEnt =UTIL_GetLocalPlayer();
+		CBasePlayer *playerEnt = UTIL_GetLocalPlayer();
 		if(!playerEnt) //He doesn't exist, just pretend
 			return true;
 		Vector SpawnVector = playerEnt->GetAbsOrigin();

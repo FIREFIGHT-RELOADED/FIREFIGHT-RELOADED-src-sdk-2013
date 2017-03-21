@@ -40,11 +40,13 @@ public:
 	
 	virtual bool			ShouldCollide( int collisionGroup0, int collisionGroup1 );
 	virtual bool			ShouldUseRobustRadiusDamage(CBaseEntity *pEntity);
+	float GetMapRemainingTime();
 #ifndef CLIENT_DLL
 	virtual bool			ShouldAutoAim( CBasePlayer *pPlayer, edict_t *target );
 	virtual float			GetAutoAimScale( CBasePlayer *pPlayer );
 	virtual float			GetAmmoQuantityScale( int iAmmoIndex );
 	virtual void			LevelInitPreEntity();
+	const char				*GetChatFormat(bool bTeamOnly, CBasePlayer *pPlayer);
 #endif
 
 private:
@@ -69,7 +71,7 @@ private:
 
 	virtual void			InitDefaultAIRelationships( void );
 	virtual const char*		AIClassText(int classType);
-	virtual const char *GetGameDescription( void ) { return "Half-Life 2"; }
+	virtual const char *GetGameDescription(void);
 
 	// Ammo
 	virtual void			PlayerThink( CBasePlayer *pPlayer );
@@ -86,13 +88,39 @@ public:
 	void	NPC_DroppedGrenade( void );
 	bool	MegaPhyscannonActive( void ) { return m_bMegaPhysgun;	}
 	void	SetMegaPhyscannonActive(void);
+
+	int	GetNumberOfPlayers(void);
 	
 	virtual bool IsAlyxInDarknessMode();
+
+	//mp shit
+	bool IsIntermission(void);
+	void PlayerKilled(CBasePlayer *pVictim, const CTakeDamageInfo &info);
+	virtual void GoToIntermission(void);
+	void LoadMapCycleFile(void);
+	void ChangeLevelToMap(const char *pszMap);
+	virtual void ChangeLevel(void);
+	virtual void GetNextLevelName(char *szNextMap, int bufsize, bool bRandom = false);
+	static void DetermineMapCycleFilename(char *pszResult, int nSizeResult, bool bForceSpew);
+	static void LoapMapCycleFileIntoVector(const char *pszMapCycleFile, CUtlVector<char *> &mapList);
+	static void FreeMapCycleFileVector(CUtlVector<char *> &mapList);
+	bool IsMapInMapCycle(const char *pszName);
+	void IncrementMapCycleIndex();
+	void SkipNextMapInCycle();
+	virtual void FrameUpdatePostEntityThink();
 
 private:
 
 	float	m_flLastHealthDropTime;
 	float	m_flLastGrenadeDropTime;
+	float m_flIntermissionEndTime;
+
+	int m_nMapCycleTimeStamp;
+	int m_nMapCycleindex;
+	CUtlVector<char*> m_MapList;
+	float m_tmNextPeriodicThink;
+
+	float m_flTimeLastMapChangeOrPlayerWasConnected;
 
 	void AdjustPlayerDamageTaken( CTakeDamageInfo *pInfo );
 	void AdjustPlayerDamageTakenCombineAce(CTakeDamageInfo *pInfo);

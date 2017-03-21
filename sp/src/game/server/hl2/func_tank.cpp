@@ -1550,7 +1550,7 @@ void CFuncTank::Think( void )
 		}
 
 #ifdef FUNCTANK_AUTOUSE
-		CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
+		CBasePlayer *pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 		bool bThinkFast = false;
 
 		if( pPlayer )
@@ -2243,7 +2243,7 @@ void CFuncTank::Fire( int bulletCount, const Vector &barrelEnd, const Vector &fo
 	{
 		if ( IsX360() )
 		{
-			UTIL_PlayerByIndex(1)->RumbleEffect( RUMBLE_AR2, 0, RUMBLE_FLAG_RESTART | RUMBLE_FLAG_RANDOM_AMPLITUDE );
+			UTIL_GetNearestPlayer(GetAbsOrigin())->RumbleEffect(RUMBLE_AR2, 0, RUMBLE_FLAG_RESTART | RUMBLE_FLAG_RANDOM_AMPLITUDE);
 		}
 		else
 		{
@@ -3482,7 +3482,7 @@ enum
 
 void UTIL_VisualizeCurve( int type, int steps, float bias )
 {
-	CBasePlayer *pPlayer = UTIL_PlayerByIndex( 1 );
+	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
 	Vector vForward, vRight, vUp;
 	
 	pPlayer->EyeVectors( &vForward, &vRight, &vUp );
@@ -4215,7 +4215,7 @@ void CFuncTankCombineCannon::FuncTankPostThink()
 			AddSpawnFlags( SF_TANK_AIM_AT_POS );
 
 			Vector vecTargetPosition = GetTargetPosition();
-			CBasePlayer *pPlayer = AI_GetSinglePlayer();
+			CBasePlayer *pPlayer = UTIL_GetNearestVisiblePlayer(this);
 			Vector vecToPlayer = pPlayer->WorldSpaceCenter() - GetAbsOrigin();
 			vecToPlayer.NormalizeInPlace();
 
@@ -4362,19 +4362,21 @@ void CFuncTankCombineCannon::Fire( int bulletCount, const Vector &barrelEnd, con
 void CFuncTankCombineCannon::MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType )
 {
 	// If the shot passed near the player, shake the screen.
-	if( AI_IsSinglePlayer() )
+	CBasePlayer *pPlayer = UTIL_GetNearestVisiblePlayer(this);
+	if (pPlayer == NULL)
 	{
-		Vector vecPlayer = AI_GetSinglePlayer()->EyePosition();
+		return;
+	}
+	Vector vecPlayer = pPlayer->EyePosition();
 
-		Vector vecNearestPoint = PointOnLineNearestPoint( vecTracerSrc, tr.endpos, vecPlayer );
+	Vector vecNearestPoint = PointOnLineNearestPoint( vecTracerSrc, tr.endpos, vecPlayer );
 
-		float flDist = vecPlayer.DistTo( vecNearestPoint );
+	float flDist = vecPlayer.DistTo( vecNearestPoint );
 
-		if( flDist >= 10.0f && flDist <= 120.0f )
-		{
-			// Don't shake the screen if we're hit (within 10 inches), but do shake if a shot otherwise comes within 10 feet.
-			UTIL_ScreenShake( vecNearestPoint, 10, 60, 0.3, 120.0f, SHAKE_START, false );
-		}
+	if( flDist >= 10.0f && flDist <= 120.0f )
+	{
+		// Don't shake the screen if we're hit (within 10 inches), but do shake if a shot otherwise comes within 10 feet.
+		UTIL_ScreenShake( vecNearestPoint, 10, 60, 0.3, 120.0f, SHAKE_START, false );
 	}
 
 	// Send the railgun effect

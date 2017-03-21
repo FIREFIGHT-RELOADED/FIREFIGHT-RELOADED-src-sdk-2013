@@ -4,6 +4,7 @@
 #include "fr_tips.h"
 #include "gameui/SingleplayerAdvancedDialog.h"
 #include "gameui/NewSingleplayerGameDialog.h"
+#include "gameui/PlayerModelDialog.h"
 
 using namespace vgui;
 // memdbgon must be the last include file in a .cpp file!!!
@@ -82,6 +83,11 @@ void CFRMainMenuPanel::OnCommand(const char* command)
 	{
 		CNewSingleplayerGameDialog* pCNewSingleplayerGameDialog = new CNewSingleplayerGameDialog(this);
 		pCNewSingleplayerGameDialog->Activate();
+	}
+	else if (!Q_strcmp(command, "playermodeldialog"))
+	{
+		CPlayerModelDialog* pCPlayerModelDialog = new CPlayerModelDialog(this);
+		pCPlayerModelDialog->Activate();
 	}
 	else
 	{

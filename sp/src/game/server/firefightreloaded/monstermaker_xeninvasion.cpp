@@ -177,6 +177,20 @@ bool CNPCMakerXenInvasion::HumanHullFits(const Vector &vecLocation)
 //-----------------------------------------------------------------------------
 bool CNPCMakerXenInvasion::CanMakeNPC(bool bIgnoreSolidEntities)
 {
+	int iMinPlayersToSpawn = 0;
+
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBasePlayer	*pPlayer = UTIL_PlayerByIndex(i);
+		if (pPlayer != NULL)
+		{
+			iMinPlayersToSpawn++;
+		}
+	}
+
+	ConVar *sk_spawnerminclientstospawn = cvar->FindVar("sk_spawnerminclientstospawn");
+	if (iMinPlayersToSpawn < sk_spawnerminclientstospawn->GetInt() && g_pGameRules->IsMultiplayer())
+		return false;
 
 	if ( m_nMaxLiveChildren > 0 && m_nLiveChildren >= m_nMaxLiveChildren )
 	{// not allowed to make a new one yet. Too many live ones out right now.

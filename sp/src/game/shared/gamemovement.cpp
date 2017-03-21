@@ -53,6 +53,7 @@ ConVar player_limit_jump_speed( "player_limit_jump_speed", "1", FCVAR_REPLICATED
 //Used for bunnyhopping
 ConVar fr_enable_bunnyhop("fr_enable_bunnyhop", "1", FCVAR_ARCHIVE);
 ConVar fr_autojump("fr_autojump", "1", FCVAR_ARCHIVE);
+ConVar fr_doublejump("fr_doublejump", "1", FCVAR_ARCHIVE);
 
 // option_duck_method is a carrier convar. Its sole purpose is to serve an easy-to-flip
 // convar which is ONLY set by the X360 controller menu to tell us which way to bind the
@@ -83,6 +84,8 @@ bool g_bMovementOptimizations = true;
 #define CHECK_LADDER_TICK_INTERVAL		( (int)( CHECK_LADDER_INTERVAL / TICK_INTERVAL ) )
 
 #define	NUM_CROUCH_HINTS	3
+
+#define AIRDASH_MAXJUMPCOUNT 1
 
 extern IGameMovement *g_pGameMovement;
 
@@ -625,6 +628,8 @@ CGameMovement::CGameMovement( void )
 	m_nOldWaterLevel	= WL_NotInWater;
 	m_flWaterEntryTime	= 0;
 	m_nOnLadder			= 0;
+
+	m_1AirDashes		= 0;
 
 	mv					= NULL;
 
@@ -1834,7 +1839,7 @@ void CGameMovement::Accelerate( Vector& wishdir, float wishspeed, float accel )
 		return;
 
 	// See if we are changing direction a bit
-	currentspeed = mv->m_vecVelocity.Dot(wishdir);
+	currentspeed = sqrt(DotProduct(mv->m_vecVelocity, mv->m_vecVelocity));
 
 	// Reduce wishspeed by the amount of veer.
 	addspeed = wishspeed - currentspeed;
@@ -2394,11 +2399,28 @@ bool CGameMovement::CheckJumpButton( void )
 		return false;
 	}
 
+	bool bOnGround = (player->GetGroundEntity() != NULL);
+	bool bAirDash = false;
+
 	// No more effect
- 	if (player->GetGroundEntity() == NULL)
+	if (!bOnGround)
 	{
-		mv->m_nOldButtons |= IN_JUMP;
-		return false;		// in air, so no effect
+		if (fr_doublejump.GetBool())
+		{
+			bAirDash = true;
+		}
+		else
+		{
+			mv->m_nOldButtons |= IN_JUMP;
+			return false;
+		}
+	}
+
+	// Check for an air dash as long as we are not holding the button.
+	if (bAirDash)
+	{
+		AirDash();
+		return true;
 	}
 
 	// Don't allow jumping when the player is in a stasis field.
@@ -2468,52 +2490,60 @@ bool CGameMovement::CheckJumpButton( void )
 
 	// Add a little forward velocity based on your current forward velocity - if you are not sprinting.
 #if defined( HL2_DLL ) || defined( HL2_CLIENT_DLL )
-	if ( gpGlobals->maxClients == 1 )
+	//allow us to bunnyhop regardless if we have more than 1 player.
+	CHLMoveData *pMoveData = (CHLMoveData*)mv;
+	if (fr_enable_bunnyhop.GetBool())
 	{
-		CHLMoveData *pMoveData = ( CHLMoveData* )mv;
-		Vector vecForward;
-		AngleVectors( mv->m_vecViewAngles, &vecForward );
-		vecForward.z = 0;
-		VectorNormalize( vecForward );
-		if (fr_enable_bunnyhop.GetBool())
+		Vector vecForward, vecRight;
+		AngleVectors(mv->m_vecViewAngles, &vecForward, &vecRight, NULL);
+		vecForward.z = 0.0f;
+		vecRight.z = 0.0f;
+		VectorNormalize(vecForward);
+		VectorNormalize(vecRight);
+		if (!pMoveData->m_bIsSprinting && !player->m_Local.m_bDucked)
 		{
-			if (!pMoveData->m_bIsSprinting && !player->m_Local.m_bDucked)
+			for (int iAxis = 0; iAxis < 2; ++iAxis)
 			{
-				for (int iAxis = 0; iAxis < 2; ++iAxis)
-				{
-					vecForward[iAxis] *= (mv->m_flForwardMove * 0.5f);
-				}
+				vecForward[iAxis] *= (mv->m_flForwardMove * 0.5f);
+				vecRight[iAxis] *= (mv->m_flSideMove * 0.5f);
 			}
-			else
-			{
-				for (int iAxis = 0; iAxis < 2; ++iAxis)
-				{
-					vecForward[iAxis] *= (mv->m_flForwardMove * 0.1f);
-				}
-			}
-			VectorAdd(vecForward, mv->m_vecVelocity, mv->m_vecVelocity);
 		}
 		else
 		{
-			// We give a certain percentage of the current forward movement as a bonus to the jump speed.  That bonus is clipped
-			// to not accumulate over time.
-			float flSpeedBoostPerc = (!pMoveData->m_bIsSprinting && !player->m_Local.m_bDucked) ? 0.5f : 0.1f;
-			float flSpeedAddition = fabs(mv->m_flForwardMove * flSpeedBoostPerc);
-			float flMaxSpeed = mv->m_flMaxSpeed + (mv->m_flMaxSpeed * flSpeedBoostPerc);
-			float flNewSpeed = (flSpeedAddition + mv->m_vecVelocity.Length2D());
-
-			// If we're over the maximum, we want to only boost as much as will get us to the goal speed
-			if (flNewSpeed > flMaxSpeed)
+			for (int iAxis = 0; iAxis < 2; ++iAxis)
 			{
-				flSpeedAddition -= flNewSpeed - flMaxSpeed;
+				vecForward[iAxis] *= (mv->m_flForwardMove * 0.1f);
+				vecRight[iAxis] *= (mv->m_flSideMove * 0.1f);
 			}
-
-			if (mv->m_flForwardMove < 0.0f)
-				flSpeedAddition *= -1.0f;
-
-			// Add it on
-			VectorAdd((vecForward*flSpeedAddition), mv->m_vecVelocity, mv->m_vecVelocity);
 		}
+		VectorAdd(vecForward, mv->m_vecVelocity, mv->m_vecVelocity);
+		VectorAdd(vecRight, mv->m_vecVelocity, mv->m_vecVelocity);
+	}
+	else
+	{
+		Vector vecForward;
+		AngleVectors(mv->m_vecViewAngles, &vecForward);
+		vecForward.z = 0;
+		VectorNormalize(vecForward);
+		
+		// We give a certain percentage of the current forward movement as a bonus to the jump speed.  That bonus is clipped
+		// to not accumulate over time.
+		float flSpeedBoostPerc = (!pMoveData->m_bIsSprinting && !player->m_Local.m_bDucked) ? 0.5f : 0.1f;
+		float flSpeedAddition = fabs(mv->m_flForwardMove * flSpeedBoostPerc);
+		float flMaxSpeed = mv->m_flMaxSpeed + (mv->m_flMaxSpeed * flSpeedBoostPerc);
+		float flNewSpeed = (flSpeedAddition + mv->m_vecVelocity.Length2D());
+
+		// If we're over the maximum, we want to only boost as much as will get us to the goal speed
+		if (flNewSpeed > flMaxSpeed)
+		{
+			flSpeedAddition -= flNewSpeed - flMaxSpeed;
+		}
+
+		if (mv->m_flForwardMove < 0.0f)
+			flSpeedAddition *= -1.0f;
+
+		// Add it on
+		VectorAdd((vecForward*flSpeedAddition), mv->m_vecVelocity, mv->m_vecVelocity);
 	}
 #endif
 
@@ -2527,11 +2557,11 @@ bool CGameMovement::CheckJumpButton( void )
 	OnJump(mv->m_outJumpVel.z);
 
 	// Set jump time.
-	if ( gpGlobals->maxClients == 1 )
-	{
-		player->m_Local.m_flJumpTime = GAMEMOVEMENT_JUMP_TIME;
-		player->m_Local.m_bInDuckJump = true;
-	}
+	//if ( gpGlobals->maxClients == 1 )
+	//{
+	player->m_Local.m_flJumpTime = GAMEMOVEMENT_JUMP_TIME;
+	player->m_Local.m_bInDuckJump = true;
+	//}
 
 #if defined( HL2_DLL )
 
@@ -2551,6 +2581,49 @@ bool CGameMovement::CheckJumpButton( void )
 	return true;
 }
 
+void CGameMovement::AirDash(void)
+{
+	// if we are pogojumping, don't do anything. please.
+	if (mv->m_nOldButtons & IN_JUMP)
+		return;
+
+	if (m_1AirDashes == AIRDASH_MAXJUMPCOUNT)
+		return;
+	
+	float flDashZ = 0.0f;
+
+	// Apply approx. the jump velocity added to an air dash.
+#if defined(HL2_DLL) || defined(HL2_CLIENT_DLL)
+	Assert(GetCurrentGravity() == 600.0f);
+	flDashZ = 160.0f;
+#else
+	Assert(GetCurrentGravity() == 800.0f);
+	flDashZ = 268.3281572999747f;
+#endif
+
+	// Get the wish direction.
+	Vector vecForward, vecRight;
+	AngleVectors(mv->m_vecViewAngles, &vecForward, &vecRight, NULL);
+	vecForward.z = 0.0f;
+	vecRight.z = 0.0f;
+	VectorNormalize(vecForward);
+	VectorNormalize(vecRight);
+
+	// Copy movement amounts
+	float flForwardMove = mv->m_flForwardMove;
+	float flSideMove = mv->m_flSideMove;
+
+	// Find the direction,velocity in the x,y plane.
+	Vector vecWishDirection(((vecForward.x * flForwardMove) + (vecRight.x * flSideMove)),
+		((vecForward.y * flForwardMove) + (vecRight.y * flSideMove)),
+		0.0f);
+
+	// Update the velocity on the scout.
+	mv->m_vecVelocity = mv->m_vecVelocity + vecWishDirection;
+	mv->m_vecVelocity.z += flDashZ;
+
+	m_1AirDashes += 1;
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -3649,6 +3722,12 @@ void CGameMovement::SetGroundEntity( trace_t *pm )
 		}
 
 		mv->m_vecVelocity.z = 0.0f;
+	}
+
+
+	if (pm != NULL)
+	{
+		m_1AirDashes = 0;
 	}
 }
 

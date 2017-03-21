@@ -418,7 +418,7 @@ void CNPC_Zombine::GatherGrenadeConditions( void )
 	if ( m_ActBusyBehavior.IsActive() )
 		return;
 
-	CBasePlayer *pPlayer = AI_GetSinglePlayer();
+	CBasePlayer *pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 
 	if ( pPlayer && pPlayer->FVisible( this ) )
 	{
@@ -623,7 +623,7 @@ bool CNPC_Zombine::AllowedToSprint( void )
 
 	int iChance = SPRINT_CHANCE_VALUE;
 
-	CHL2_Player *pPlayer = dynamic_cast <CHL2_Player*> ( AI_GetSinglePlayer() );
+	CHL2_Player *pPlayer = dynamic_cast <CHL2_Player*> (UTIL_GetNearestPlayer(GetAbsOrigin()));
 
 	if ( pPlayer )
 	{

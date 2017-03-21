@@ -26,6 +26,7 @@
 	#include "Sprite.h"
 	#include "utlbuffer.h"
 	#include "filesystem.h"
+	#include "cdll_int.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -244,6 +245,10 @@ ConVar	sk_max_mp5("sk_max_mp5", "0", FCVAR_REPLICATED);
 ConVar	sk_npc_dmg_gunship			( "sk_npc_dmg_gunship", "0", FCVAR_REPLICATED );
 ConVar	sk_npc_dmg_gunship_to_plr	( "sk_npc_dmg_gunship_to_plr", "0", FCVAR_REPLICATED );
 
+extern ConVar mp_chattime;
+extern ConVar mp_mapcycle_empty_timeout_seconds;
+extern ConVar mp_timelimit;
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : iDmgType - m_flInitialSpawnerTime
@@ -273,6 +278,22 @@ bool CHalfLife2::Damage_IsTimeBased( int iDmgType )
 #else
 	return BaseClass::Damage_IsTimeBased( iDmgType );
 #endif
+}
+
+float CHalfLife2::GetMapRemainingTime()
+{
+	// if timelimit is disabled, return 0
+	if (mp_timelimit.GetInt() <= 0)
+		return -1;
+
+	// timelimit is in minutes
+
+	float timeleft = (mp_timelimit.GetInt() * 60.0f) - gpGlobals->curtime;
+
+	if (timeleft <= 0)
+		return 0;
+
+	return timeleft;
 }
 
 #ifdef CLIENT_DLL
@@ -313,9 +334,46 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 	CHalfLife2::CHalfLife2()
 	{
 		m_bMegaPhysgun = false;
+		m_flIntermissionEndTime = 0.0f;
+		m_tmNextPeriodicThink = 0;
 		
 		m_flLastHealthDropTime = 0.0f;
 		m_flLastGrenadeDropTime = 0.0f;
+
+		if (IsMultiplayer())
+		{
+			if (engine->IsDedicatedServer())
+			{
+				// dedicated server
+				const char *cfgfile = servercfgfile.GetString();
+
+				if (cfgfile && cfgfile[0])
+				{
+					char szCommand[256];
+
+					Log("Executing dedicated server config file %s\n", cfgfile);
+					Q_snprintf(szCommand, sizeof(szCommand), "exec %s\n", cfgfile);
+					engine->ServerCommand(szCommand);
+				}
+			}
+			else
+			{
+				// listen server
+				const char *cfgfile = lservercfgfile.GetString();
+
+				if (cfgfile && cfgfile[0])
+				{
+					char szCommand[256];
+
+					Log("Executing listen server config file %s\n", cfgfile);
+					Q_snprintf(szCommand, sizeof(szCommand), "exec %s\n", cfgfile);
+					engine->ServerCommand(szCommand);
+				}
+			}
+		}
+
+		nextlevel.SetValue("");
+		LoadMapCycleFile();
 	}
 
 	//-----------------------------------------------------------------------------
@@ -611,11 +669,391 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 		{
 			m_bMegaPhysgun = true;
 		}
-		//else
-		//{
-			// FIXME: Is there a better place for this?
-			//m_bMegaPhysgun = ( GlobalEntity_GetState("super_phys_gun") == GLOBAL_ON );
-		//}
+
+		if (IsMultiplayer())
+		{
+			if (GetMapRemainingTime() == 0)
+			{
+				GoToIntermission();
+			}
+
+			if (g_fGameOver)   // someone else quit the game already
+			{
+				// check to see if we should change levels now
+				if (m_flIntermissionEndTime < gpGlobals->curtime)
+				{
+					ChangeLevel();
+				}
+
+				return;
+			}
+		}
+	}
+
+	int CHalfLife2::GetNumberOfPlayers(void)
+	{
+		int num = 0;
+		
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CHL2_Player *pPlayer = (CHL2_Player*)UTIL_PlayerByIndex(i);
+
+			if (!pPlayer || !pPlayer->IsConnected())
+				continue;
+
+			num++;
+		}
+
+		return num;
+	}
+
+	bool CHalfLife2::IsIntermission(void)
+	{
+		return m_flIntermissionEndTime > gpGlobals->curtime;
+	}
+
+	void CHalfLife2::PlayerKilled(CBasePlayer *pVictim, const CTakeDamageInfo &info)
+	{
+		if (IsIntermission() && IsMultiplayer())
+			return;
+
+		BaseClass::PlayerKilled(pVictim, info);
+	}
+
+	void CHalfLife2::GoToIntermission(void)
+	{
+		if (g_fGameOver)
+			return;
+
+		g_fGameOver = true;
+
+		m_flIntermissionEndTime = gpGlobals->curtime + mp_chattime.GetInt();
+
+		for (int i = 0; i < MAX_PLAYERS; i++)
+		{
+			CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
+
+			if (!pPlayer)
+				continue;
+
+			//no scoreboard yet
+			pPlayer->ShowViewPortPanel(PANEL_SCOREBOARD);
+			pPlayer->AddFlag(FL_FROZEN);
+			pPlayer->AddFlag(FL_NOTARGET);
+		}
+	}
+
+	void StripCharMP(char *szBuffer, const char cWhiteSpace)
+	{
+		while (char *pSpace = strchr(szBuffer, cWhiteSpace))
+		{
+			char *pNextChar = pSpace + sizeof(char);
+			V_strcpy(pSpace, pNextChar);
+		}
+	}
+
+	void CHalfLife2::GetNextLevelName(char *pszNextMap, int bufsize, bool bRandom /* = false */)
+	{
+		char mapcfile[256];
+		DetermineMapCycleFilename(mapcfile, sizeof(mapcfile), false);
+
+		// Check the time of the mapcycle file and re-populate the list of level names if the file has been modified
+		const int nMapCycleTimeStamp = filesystem->GetPathTime(mapcfile, "GAME");
+
+		if (0 == nMapCycleTimeStamp)
+		{
+			// Map cycle file does not exist, make a list containing only the current map
+			char *szCurrentMapName = new char[MAX_MAP_NAME];
+			Q_strncpy(szCurrentMapName, STRING(gpGlobals->mapname), MAX_MAP_NAME);
+			m_MapList.AddToTail(szCurrentMapName);
+		}
+		else
+		{
+			// If map cycle file has changed or this is the first time through ...
+			if (m_nMapCycleTimeStamp != nMapCycleTimeStamp)
+			{
+				// Reset map index and map cycle timestamp
+				m_nMapCycleTimeStamp = nMapCycleTimeStamp;
+				m_nMapCycleindex = 0;
+
+				LoadMapCycleFile();
+			}
+		}
+
+		// If somehow we have no maps in the list then add the current one
+		if (0 == m_MapList.Count())
+		{
+			char *szDefaultMapName = new char[MAX_MAP_NAME];
+			Q_strncpy(szDefaultMapName, STRING(gpGlobals->mapname), MAX_MAP_NAME);
+			m_MapList.AddToTail(szDefaultMapName);
+		}
+
+		if (bRandom)
+		{
+			m_nMapCycleindex = RandomInt(0, m_MapList.Count() - 1);
+		}
+
+		// Here's the return value
+		Q_strncpy(pszNextMap, m_MapList[m_nMapCycleindex], bufsize);
+	}
+
+	void CHalfLife2::DetermineMapCycleFilename(char *pszResult, int nSizeResult, bool bForceSpew)
+	{
+		static char szLastResult[256];
+
+		const char *pszVar = mapcyclefile.GetString();
+		if (*pszVar == '\0')
+		{
+			if (bForceSpew || V_stricmp(szLastResult, "__novar"))
+			{
+				Msg("mapcyclefile convar not set.\n");
+				V_strcpy_safe(szLastResult, "__novar");
+			}
+			*pszResult = '\0';
+			return;
+		}
+
+		char szRecommendedName[256];
+		V_sprintf_safe(szRecommendedName, "cfg/%s", pszVar);
+
+		// First, look for a mapcycle file in the cfg directory, which is preferred
+		V_strncpy(pszResult, szRecommendedName, nSizeResult);
+		if (filesystem->FileExists(pszResult, "GAME"))
+		{
+			if (bForceSpew || V_stricmp(szLastResult, pszResult))
+			{
+				Msg("Using map cycle file '%s'.\n", pszResult);
+				V_strcpy_safe(szLastResult, pszResult);
+			}
+			return;
+		}
+
+		// Nope?  Try the root.
+		V_strncpy(pszResult, pszVar, nSizeResult);
+		if (filesystem->FileExists(pszResult, "GAME"))
+		{
+			if (bForceSpew || V_stricmp(szLastResult, pszResult))
+			{
+				Msg("Using map cycle file '%s'.  ('%s' was not found.)\n", pszResult, szRecommendedName);
+				V_strcpy_safe(szLastResult, pszResult);
+			}
+			return;
+		}
+
+		// Nope?  Use the default.
+		if (!V_stricmp(pszVar, "mapcycle.txt"))
+		{
+			V_strncpy(pszResult, "cfg/mapcycle_default.txt", nSizeResult);
+			if (filesystem->FileExists(pszResult, "GAME"))
+			{
+				if (bForceSpew || V_stricmp(szLastResult, pszResult))
+				{
+					Msg("Using map cycle file '%s'.  ('%s' was not found.)\n", pszResult, szRecommendedName);
+					V_strcpy_safe(szLastResult, pszResult);
+				}
+				return;
+			}
+		}
+
+		// Failed
+		*pszResult = '\0';
+		if (bForceSpew || V_stricmp(szLastResult, "__notfound"))
+		{
+			Msg("Map cycle file '%s' was not found.\n", szRecommendedName);
+			V_strcpy_safe(szLastResult, "__notfound");
+		}
+	}
+
+	void CHalfLife2::LoapMapCycleFileIntoVector(const char *pszMapCycleFile, CUtlVector<char *> &mapList)
+	{
+		CUtlBuffer buf;
+		if (!filesystem->ReadFile(pszMapCycleFile, "GAME", buf))
+			return;
+		buf.PutChar(0);
+		V_SplitString((char*)buf.Base(), "\n", mapList);
+
+		for (int i = 0; i < mapList.Count(); i++)
+		{
+			bool bIgnore = false;
+
+			// Strip out the spaces in the name
+			StripCharMP(mapList[i], '\r');
+			StripCharMP(mapList[i], ' ');
+
+			if (!Q_strncmp(mapList[i], "//", 2) || mapList[i][0] == '\0')
+			{
+				bIgnore = true;
+			}
+			else if (!engine->IsMapValid(mapList[i]))
+			{
+				bIgnore = true;
+
+				// If the engine doesn't consider it a valid map remove it from the lists
+				Warning("Invalid map '%s' included in map cycle file. Ignored.\n", mapList[i]);
+			}
+
+			if (bIgnore)
+			{
+				delete[] mapList[i];
+				mapList.Remove(i);
+				--i;
+			}
+		}
+	}
+
+	void CHalfLife2::FreeMapCycleFileVector(CUtlVector<char *> &mapList)
+	{
+		// Clear out existing map list. Not using Purge() or PurgeAndDeleteAll() because they won't delete [] each element.
+		for (int i = 0; i < mapList.Count(); i++)
+		{
+			delete[] mapList[i];
+		}
+
+		mapList.RemoveAll();
+	}
+
+	bool CHalfLife2::IsMapInMapCycle(const char *pszName)
+	{
+		for (int i = 0; i < m_MapList.Count(); i++)
+		{
+			if (V_stricmp(pszName, m_MapList[i]) == 0)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	void CHalfLife2::ChangeLevel(void)
+	{
+		char szNextMap[MAX_MAP_NAME];
+
+		if (nextlevel.GetString() && *nextlevel.GetString() && engine->IsMapValid(nextlevel.GetString()))
+		{
+			Q_strncpy(szNextMap, nextlevel.GetString(), sizeof(szNextMap));
+		}
+		else
+		{
+			GetNextLevelName(szNextMap, sizeof(szNextMap));
+			IncrementMapCycleIndex();
+		}
+
+		ChangeLevelToMap(szNextMap);
+	}
+
+	void CHalfLife2::LoadMapCycleFile(void)
+	{
+		char mapcfile[256];
+		DetermineMapCycleFilename(mapcfile, sizeof(mapcfile), false);
+
+		FreeMapCycleFileVector(m_MapList);
+
+		// Repopulate map list from mapcycle file
+		LoapMapCycleFileIntoVector(mapcfile, m_MapList);
+
+		// Load server's mapcycle into network string table for client-side voting
+		if (g_pStringTableServerMapCycle)
+		{
+			CUtlString sFileList;
+			for (int i = 0; i < m_MapList.Count(); i++)
+			{
+				sFileList += m_MapList[i];
+				sFileList += '\n';
+			}
+
+			g_pStringTableServerMapCycle->AddString(CBaseEntity::IsServer(), "ServerMapCycle", sFileList.Length() + 1, sFileList.String());
+		}
+
+		// If the current map selection is in the list, set m_nMapCycleindex to the map that follows it.
+		for (int i = 0; i < m_MapList.Count(); i++)
+		{
+			if (V_strcmp(STRING(gpGlobals->mapname), m_MapList[i]) == 0)
+			{
+				m_nMapCycleindex = i;
+				IncrementMapCycleIndex();
+				break;
+			}
+		}
+	}
+
+	void CHalfLife2::ChangeLevelToMap(const char *pszMap)
+	{
+		g_fGameOver = true;
+		m_flTimeLastMapChangeOrPlayerWasConnected = 0.0f;
+		Msg("CHANGE LEVEL: %s\n", pszMap);
+		engine->ChangeLevel(pszMap, NULL);
+	}
+
+	void CHalfLife2::SkipNextMapInCycle()
+	{
+		char szSkippedMap[MAX_MAP_NAME];
+		char szNextMap[MAX_MAP_NAME];
+
+		GetNextLevelName(szSkippedMap, sizeof(szSkippedMap));
+		IncrementMapCycleIndex();
+		GetNextLevelName(szNextMap, sizeof(szNextMap));
+
+		Msg("Skipping: %s\tNext map: %s\n", szSkippedMap, szNextMap);
+
+		if (nextlevel.GetString() && *nextlevel.GetString() && engine->IsMapValid(nextlevel.GetString()))
+		{
+			Msg("Warning! \"nextlevel\" is set to \"%s\" and will override the next map to be played.\n", nextlevel.GetString());
+		}
+	}
+
+	void CHalfLife2::IncrementMapCycleIndex()
+	{
+		// Reset index if we've passed the end of the map list
+		if (++m_nMapCycleindex >= m_MapList.Count())
+		{
+			m_nMapCycleindex = 0;
+		}
+	}
+
+	//=========================================================
+	//=========================================================
+	void CHalfLife2::FrameUpdatePostEntityThink()
+	{
+		BaseClass::FrameUpdatePostEntityThink();
+
+		float flNow = Plat_FloatTime();
+
+		// Update time when client was last connected
+		if (m_flTimeLastMapChangeOrPlayerWasConnected <= 0.0f)
+		{
+			m_flTimeLastMapChangeOrPlayerWasConnected = flNow;
+		}
+		else
+		{
+			for (int iPlayerIndex = 1; iPlayerIndex <= MAX_PLAYERS; iPlayerIndex++)
+			{
+				player_info_t pi;
+				if (!engine->GetPlayerInfo(iPlayerIndex, &pi))
+					continue;
+#if defined( REPLAY_ENABLED )
+				if (pi.ishltv || pi.isreplay || pi.fakeplayer)
+#else
+				if (pi.ishltv || pi.fakeplayer)
+#endif
+					continue;
+
+				m_flTimeLastMapChangeOrPlayerWasConnected = flNow;
+				break;
+			}
+		}
+
+		// Check if we should cycle the map because we've been empty
+		// for long enough
+		if (mp_mapcycle_empty_timeout_seconds.GetInt() > 0)
+		{
+			int iIdleSeconds = (int)(flNow - m_flTimeLastMapChangeOrPlayerWasConnected);
+			if (iIdleSeconds >= mp_mapcycle_empty_timeout_seconds.GetInt())
+			{
+				Log("Server has been empty for %d seconds on this map, cycling map as per mp_mapcycle_empty_timeout_seconds\n", iIdleSeconds);
+				ChangeLevel();
+			}
+		}
 	}
 
 	//-----------------------------------------------------------------------------
@@ -678,10 +1116,12 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 		{
 			// A physics object has struck a player ally. Don't allow damage if it
 			// came from the player's physcannon. 
-			CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
-
-			if( pPlayer )
+			for (int i = 1; i <= gpGlobals->maxClients; i++)//
 			{
+				CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
+				if (!pPlayer)//AI Patch Removal
+					continue;
+
 				CBaseEntity *pWeapon = pPlayer->HasNamedPlayerItem("weapon_physcannon");
 
 				if( pWeapon )
@@ -766,8 +1206,12 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 		m_bMegaPhysgun = true;
 	}
 
-#endif //} !CLIENT_DLL
+	const char *CHalfLife2::GetGameDescription(void)
+	{
+		return GetGamemodeName_ServerBrowser(bHasRandomized);
+	}
 
+#endif //} !CLIENT_DLL
 
 // ------------------------------------------------------------------------------------ //
 // Shared CHalfLife2 implementation.
@@ -1079,6 +1523,57 @@ void CHalfLife2::LevelInitPreEntity()
 #endif
 
 	BaseClass::LevelInitPreEntity();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+const char *CHalfLife2::GetChatFormat(bool bTeamOnly, CBasePlayer *pPlayer)
+{
+	if (!pPlayer)  // dedicated server output
+	{
+		return "FR_Chat_DS";
+	}
+
+	CHL2_Player *pHL2MPPlayer = ToHL2Player(pPlayer);
+	const char *pszFormat = NULL;
+
+	// team only
+	if (pHL2MPPlayer->m_bIsPlayerADev)
+	{
+		if (pHL2MPPlayer->IsDead())
+		{
+			pszFormat = "FR_Chat_DevDead";
+		}
+		else
+		{
+			pszFormat = "FR_Chat_Dev";
+		}
+	}
+	else if (pHL2MPPlayer->m_bIsPlayerAVIP)
+	{
+		if (pHL2MPPlayer->IsDead())
+		{
+			pszFormat = "FR_Chat_VIPDead";
+		}
+		else
+		{
+			pszFormat = "FR_Chat_VIP";
+		}
+	}
+	else
+	{
+		if (pHL2MPPlayer->IsDead())
+		{
+			pszFormat = "FR_Chat_AllDead";
+		}
+		else
+		{
+			pszFormat = "FR_Chat_All";
+		}
+	}
+
+	return pszFormat;
 }
 
 //-----------------------------------------------------------------------------

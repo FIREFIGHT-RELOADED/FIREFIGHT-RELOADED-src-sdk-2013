@@ -261,6 +261,7 @@ public:
 	virtual void SetGamemode(int name, bool localServer = false);
 	virtual int GetGamemode();
 	virtual const char *GetGamemodeName(bool localServer = false);
+	virtual const char *GetGamemodeName_ServerBrowser(bool localServer = false);
 	bool bHasRandomized;
 	int iRandomGamemode;
 
@@ -271,7 +272,7 @@ public:
 	virtual bool IsDeathmatch( void ) = 0;//is this a deathmatch game?
 	virtual bool IsTeamplay( void ) { return FALSE; };// is this deathmatch game being played with team rules?
 	virtual bool IsCoOp( void ) = 0;// is this a coop game?
-	virtual const char *GetGameDescription( void ) { return "Half-Life 2"; }  // this is the game name that gets seen in the server browser
+	virtual const char *GetGameDescription( void ) { return "FIREFIGHT RELOADED"; }  // this is the game name that gets seen in the server browser
 	
 // Client connection/disconnection
 	virtual bool ClientConnected( edict_t *pEntity, const char *pszName, const char *pszAddress, char *reject, int maxrejectlen ) = 0;// a client just connected to the server (player hasn't spawned yet)

@@ -159,7 +159,7 @@ void CNPC_Assassin::Spawn( void )
 	SetBloodColor( BLOOD_COLOR_RED );
 	
 	m_iHealth			= sk_assassin_health.GetFloat();
-	m_flFieldOfView		= 0.1;
+	m_flFieldOfView		= 0.2; // indicates the width of this NPC's forward view cone ( as a dotproduct result )
 	m_NPCState			= NPC_STATE_NONE;
 
 	CapabilitiesClear();

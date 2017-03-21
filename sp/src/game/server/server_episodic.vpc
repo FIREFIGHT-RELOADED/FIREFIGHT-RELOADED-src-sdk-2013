@@ -343,6 +343,7 @@ $Project "Server (Episodic)"
 			$File "firefightreloaded\npc_elitepolice.cpp"
 			$File "firefightreloaded\npc_elitepolice.h"
 			$File	"firefightreloaded\weapon_mp5.cpp"
+			$File "firefightreloaded\npc_combineguard.cpp"
 
 			$Folder	"HL2 Imported"
 			{

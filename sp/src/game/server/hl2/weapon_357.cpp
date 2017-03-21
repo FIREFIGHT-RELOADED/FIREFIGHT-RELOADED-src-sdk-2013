@@ -39,6 +39,18 @@ public:
 
 	float	WeaponAutoAimScale()	{ return 0.6f; }
 
+	virtual const Vector& GetBulletSpread(void)
+	{
+		static const Vector cone = VECTOR_CONE_3DEGREES;
+		static const Vector ironsightCone = VECTOR_CONE_1DEGREES;
+		if (IsIronsighted())
+		{
+			return ironsightCone;
+		}
+
+		return cone;
+	}
+
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 	DECLARE_ACTTABLE();
