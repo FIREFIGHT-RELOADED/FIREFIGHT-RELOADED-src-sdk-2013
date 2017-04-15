@@ -1,4 +1,4 @@
-<img src="http://dl.dropboxusercontent.com/u/81688479/FIREFIGHTRELOADED/images/logo.png">
+<img src="http://i.imgur.com/Br6jx36.png">
 
 FIREFIGHT RELOADED is a (now open source) Source SDK 2013 modification with the goal to combine gameplay elements from Half-Life 2, SMOD, old-school first-person shooters like Quake and Unreal Tournament, and the RPG-styled horde-mode gameplay that ties this mod together. 
 
