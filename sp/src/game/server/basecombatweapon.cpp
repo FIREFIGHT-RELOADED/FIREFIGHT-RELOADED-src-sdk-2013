@@ -76,9 +76,9 @@ void W_Precache(void)
 	g_sModelIndexBubbles = CBaseEntity::PrecacheModel ("sprites/bubble.vmt");//bubbles
 	g_sModelIndexLaser = CBaseEntity::PrecacheModel( (char *)g_pModelNameLaser );
 
-	PrecacheParticleSystem( "blood_impact_red_01" );
-	PrecacheParticleSystem( "blood_impact_green_01" );
-	PrecacheParticleSystem( "blood_impact_yellow_01" );
+	PrecacheParticleSystem("smod_drip_r");
+	PrecacheParticleSystem("smod_drip_g");
+	PrecacheParticleSystem("smod_drip_y");
 
 	CBaseEntity::PrecacheModel ("effects/bubble.vmt");//bubble trails
 

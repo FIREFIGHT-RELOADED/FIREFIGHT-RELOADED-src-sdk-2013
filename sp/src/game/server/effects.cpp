@@ -536,7 +536,7 @@ CBaseEntity *CGibShooter::SpawnGib( const Vector &vecShootDir, float flSpeed )
 		{
 			// UNDONE: Assume a mass of 200 for now
 			Vector force = vecShootDir * flSpeed * 200;
-			return CreateRagGib( STRING( GetModelName() ), GetAbsOrigin(), GetAbsAngles(), force, m_flGibLife );
+			return CreateRagGib( this, STRING( GetModelName() ), GetAbsOrigin(), GetAbsAngles(), force, m_flGibLife );
 		}
 
 		case GIB_SIMULATE_PHYSICS:

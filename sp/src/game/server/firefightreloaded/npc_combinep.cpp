@@ -120,7 +120,8 @@ void CNPC_CombineP::Precache()
 	PrecacheModel("models/gibs/soldier_prisonguard_left_leg.mdl");
 	PrecacheModel("models/gibs/soldier_prisonguard_right_leg.mdl");
 
-	PrecacheParticleSystem("headshotspray");
+	PrecacheParticleSystem("smod_headshot_r");
+	PrecacheParticleSystem("smod_blood_decap_r");
 
 	UTIL_PrecacheOther( "item_healthvial" );
 	UTIL_PrecacheOther( "weapon_frag" );
@@ -219,24 +220,24 @@ int CNPC_CombineP::SelectSchedule ( void )
 //-----------------------------------------------------------------------------
 float CNPC_CombineP::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDamageInfo &info )
 {
-	bool isNohead = false;
 	switch (iHitGroup)
 	{
 	case HITGROUP_HEAD:
-		int HeadshotRandom = random->RandomInt(0, 4);
 		if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool())
 		{
-			if (isNohead == false && HeadshotRandom == 0 && !(info.GetDamageType() & DMG_NEVERGIB) || isNohead == false && (info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB))
+			if ((info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB))
 			{
 				SetModel("models/gibs/combine_prisonguard_beheaded.mdl");
-				DispatchParticleEffect("headshotspray", PATTACH_POINT_FOLLOW, this, "bloodspurt", true);
+				DispatchParticleEffect("smod_headshot_r", PATTACH_POINT_FOLLOW, this, "bloodspurt", true);
 				SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
-				CGib::SpawnSpecificGibs(this, 6, 750, 1500, "models/gibs/pgib_p3.mdl", 6);
-				CGib::SpawnSpecificGibs(this, 6, 750, 1500, "models/gibs/pgib_p4.mdl", 6);
+				CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p3.mdl", 6);
+				CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p4.mdl", 6);
+				CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p3.mdl", 6);
+				CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p4.mdl", 6);
 				EmitSound("Gore.Headshot");
 				m_iHealth = 0;
+				Event_Killed(info);
 				g_pGameRules->iHeadshotCount += 1;
-				isNohead = true;
 				CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
 				if (g_fr_economy.GetBool())
 				{
@@ -245,6 +246,26 @@ float CNPC_CombineP::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDama
 				if (!g_fr_classic.GetBool())
 				{
 					pPlayer->AddXP(7);
+				}
+			}
+			else if ((info.GetDamageType() & (DMG_SLASH)) && !(info.GetDamageType() & DMG_NEVERGIB))
+			{
+				SetModel("models/gibs/combine_prisonguard_beheaded.mdl");
+				DispatchParticleEffect("smod_blood_decap_r", PATTACH_POINT_FOLLOW, this, "bloodspurt", true);
+				SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
+				CGib::SpawnSpecificGibs(this, 1, 150, 450, "models/gibs/soldier_prisonguard_head.mdl", 6);
+				CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p4.mdl", 6);
+				EmitSound("Gore.Headshot");
+				m_iHealth = 0;
+				Event_Killed(info);
+				CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
+				if (g_fr_economy.GetBool())
+				{
+					pPlayer->AddMoney(7);
+				}
+				if (!g_fr_classic.GetBool())
+				{
+					pPlayer->AddXP(9);
 				}
 			}
 			else
@@ -339,42 +360,42 @@ void CNPC_CombineP::Event_Killed( const CTakeDamageInfo &info )
 
 		Vector vecRagDmgForce = (vecRagForce + vecDamageDir);
 
-		CBaseEntity *pLeftArmGib = CreateRagGib("models/gibs/soldier_prisonguard_left_arm.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		CBaseEntity *pLeftArmGib = CreateRagGib(this, "models/gibs/soldier_prisonguard_left_arm.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
 		if (pLeftArmGib)
 		{
 			color32 color = pLeftArmGib->GetRenderColor();
 			pLeftArmGib->SetRenderColor(color.r, color.g, color.b, color.a);
 		}
 
-		CBaseEntity *pRightArmGib = CreateRagGib("models/gibs/soldier_prisonguard_right_arm.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		CBaseEntity *pRightArmGib = CreateRagGib(this, "models/gibs/soldier_prisonguard_right_arm.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
 		if (pRightArmGib)
 		{
 			color32 color = pRightArmGib->GetRenderColor();
 			pRightArmGib->SetRenderColor(color.r, color.g, color.b, color.a);
 		}
 
-		CBaseEntity *pTorsoGib = CreateRagGib("models/gibs/soldier_prisonguard_torso.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		CBaseEntity *pTorsoGib = CreateRagGib(this, "models/gibs/soldier_prisonguard_torso.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
 		if (pTorsoGib)
 		{
 			color32 color = pTorsoGib->GetRenderColor();
 			pTorsoGib->SetRenderColor(color.r, color.g, color.b, color.a);
 		}
 
-		CBaseEntity *pPelvisGib = CreateRagGib("models/gibs/soldier_prisonguard_pelvis.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		CBaseEntity *pPelvisGib = CreateRagGib(this, "models/gibs/soldier_prisonguard_pelvis.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
 		if (pPelvisGib)
 		{
 			color32 color = pPelvisGib->GetRenderColor();
 			pPelvisGib->SetRenderColor(color.r, color.g, color.b, color.a);
 		}
 
-		CBaseEntity *pLeftLegGib = CreateRagGib("models/gibs/soldier_prisonguard_left_leg.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		CBaseEntity *pLeftLegGib = CreateRagGib(this, "models/gibs/soldier_prisonguard_left_leg.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
 		if (pLeftLegGib)
 		{
 			color32 color = pLeftLegGib->GetRenderColor();
 			pLeftLegGib->SetRenderColor(color.r, color.g, color.b, color.a);
 		}
 
-		CBaseEntity *pRightLegGib = CreateRagGib("models/gibs/soldier_prisonguard_right_leg.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		CBaseEntity *pRightLegGib = CreateRagGib(this, "models/gibs/soldier_prisonguard_right_leg.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
 		if (pRightLegGib)
 		{
 			color32 color = pRightLegGib->GetRenderColor();

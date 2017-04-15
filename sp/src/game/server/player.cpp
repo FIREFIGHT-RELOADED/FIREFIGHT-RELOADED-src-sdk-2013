@@ -7023,6 +7023,7 @@ void CBasePlayer::Spawn( void )
 			EquipSuit();
 			GiveNamedItem("weapon_physcannon");
 			GiveNamedItem("weapon_knife");
+			GiveNamedItem("weapon_katana");
 		}
 		else
 		{
@@ -7036,6 +7037,7 @@ void CBasePlayer::Spawn( void )
 			GiveNamedItem("weapon_pistol");
 			GiveNamedItem("weapon_physcannon");
 			GiveNamedItem("weapon_knife");
+			GiveNamedItem("weapon_katana");
 		}
 	}
 

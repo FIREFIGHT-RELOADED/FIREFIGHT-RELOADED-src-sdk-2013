@@ -24,6 +24,7 @@ extern ConVar	xeninvasioncfgfile;
 extern ConVar	antlionassaultcfgfile;
 extern ConVar	zombiesurvivalcfgfile;
 extern ConVar	firefightrumblecfgfile;
+extern ConVar	resistanceretributioncfgfile;
 
 // multiplayer server rules
 extern ConVar	teamplay;

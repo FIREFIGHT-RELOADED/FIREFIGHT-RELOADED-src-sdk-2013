@@ -351,6 +351,10 @@ const char *CGameRules::GetGamemodeName(bool localServer)
 	{
 		gamemodeName = "firefight_rumble";
 	}
+	else if (gamemodeVal == FIREFIGHT_PRIMARY_RESISTANCERETRIBUTION)
+	{
+		gamemodeName = "resistance_retribution";
+	}
 
 	return gamemodeName;
 }
@@ -388,6 +392,10 @@ const char *CGameRules::GetGamemodeName_ServerBrowser(bool localServer)
 	else if (gamemodeVal == FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE)
 	{
 		gamemodeName = "FIREFIGHT RUMBLE";
+	}
+	else if (gamemodeVal == FIREFIGHT_PRIMARY_RESISTANCERETRIBUTION)
+	{
+		gamemodeName = "RESISTANCE RETRIBUTION";
 	}
 	else
 	{

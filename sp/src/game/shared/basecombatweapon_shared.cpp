@@ -432,6 +432,22 @@ int CBaseCombatWeapon::GetMaxClip2( void ) const
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
+const char *CBaseCombatWeapon::GetPrimaryAmmoTypeName(void) const
+{
+	return GetWpnData().cAmmoType;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+const char *CBaseCombatWeapon::GetSecondaryAmmoTypeName(void) const
+{
+	return GetWpnData().cAmmo2Type;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 int CBaseCombatWeapon::GetDefaultClip1( void ) const
 {
 	return GetWpnData().iDefaultClip1;

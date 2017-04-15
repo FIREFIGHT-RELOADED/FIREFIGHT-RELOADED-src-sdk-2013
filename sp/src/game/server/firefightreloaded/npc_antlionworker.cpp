@@ -386,9 +386,7 @@ void CNPC_AntlionWorker::Precache( void )
 	PrecacheModel( ANTLION_WORKER_MODEL );
 	PropBreakablePrecacheAll( MAKE_STRING( ANTLION_WORKER_MODEL ) );
 	UTIL_PrecacheOther( "grenade_spit" );
-	PrecacheParticleSystem( "blood_impact_antlion_worker_01" );
 	PrecacheParticleSystem( "antlion_gib_02" );
-	PrecacheParticleSystem( "blood_impact_yellow_01" );
 
 	for ( int i = 0; i < NUM_ANTLION_GIBS_UNIQUE; ++i )
 	{
@@ -1092,7 +1090,7 @@ void CNPC_AntlionWorker::HandleAnimEvent( animevent_t *pEvent )
 
 			for ( int i = 0; i < 8; i++ )
 			{
-				DispatchParticleEffect( "blood_impact_yellow_01", vSpitPos + RandomVector( -12.0f, 12.0f ), RandomAngle( 0, 360 ) );
+				DispatchParticleEffect("smod_drip_y", vSpitPos + RandomVector(-12.0f, 12.0f), RandomAngle(0, 360));
 			}
 
 			EmitSound( "NPC_Antlion.PoisonShoot" );

@@ -540,20 +540,20 @@ void FileWeaponInfo_t::Parse( KeyValues *pKeyValuesData, const char *szWeaponNam
 	}
 #endif
 
-	// Primary ammo used
-	const char *pAmmo = pKeyValuesData->GetString( "primary_ammo", "None" );
-	if ( strcmp("None", pAmmo) == 0 )
+	// Primary ammo used 
+	cAmmoType = pKeyValuesData->GetString("primary_ammo", "None");
+	if (strcmp("None", cAmmoType) == 0)
 		Q_strncpy( szAmmo1, "", sizeof( szAmmo1 ) );
 	else
-		Q_strncpy( szAmmo1, pAmmo, sizeof( szAmmo1 )  );
+		Q_strncpy(szAmmo1, cAmmoType, sizeof(szAmmo1));
 	iAmmoType = GetAmmoDef()->Index( szAmmo1 );
 	
 	// Secondary ammo used
-	pAmmo = pKeyValuesData->GetString( "secondary_ammo", "None" );
-	if ( strcmp("None", pAmmo) == 0)
+	cAmmo2Type = pKeyValuesData->GetString("secondary_ammo", "None");
+	if (strcmp("None", cAmmo2Type) == 0)
 		Q_strncpy( szAmmo2, "", sizeof( szAmmo2 ) );
 	else
-		Q_strncpy( szAmmo2, pAmmo, sizeof( szAmmo2 )  );
+		Q_strncpy(szAmmo2, cAmmo2Type, sizeof(szAmmo2));
 	iAmmo2Type = GetAmmoDef()->Index( szAmmo2 );
 
 	//ironsights

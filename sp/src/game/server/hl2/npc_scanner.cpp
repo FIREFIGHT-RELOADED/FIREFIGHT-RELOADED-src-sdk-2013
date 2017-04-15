@@ -45,6 +45,9 @@ extern IMaterialSystemHardwareConfig *g_pMaterialSystemHardwareConfig;
 #define SCANNER_SOUND_INSPECT_LENGTH	5		// How long does the inspection last
 
 #define SCANNER_HINT_INSPECT_DELAY		15		// Check for hint nodes this often
+
+#define SCANNER_MINE_RESPAWN_DELAY		8
+#define SCANNER_MINE_REDEPLOY_DELAY		2
 	
 #define	SPOTLIGHT_WIDTH					32
 
@@ -125,6 +128,8 @@ BEGIN_DATADESC( CNPC_CScanner )
 	DEFINE_FIELD( m_fInspectEndTime,		FIELD_TIME ),
 	DEFINE_FIELD( m_fCheckCitizenTime,		FIELD_TIME ),
 	DEFINE_FIELD( m_fCheckHintTime,			FIELD_TIME ),
+	DEFINE_FIELD( m_fMineRespawnTime,		FIELD_TIME ),
+	DEFINE_FIELD(m_fMineRedeployTime, FIELD_TIME),
 	DEFINE_KEYFIELD( m_bShouldInspect,		FIELD_BOOLEAN,	"ShouldInspect" ),
 	DEFINE_KEYFIELD( m_bOnlyInspectPlayers, FIELD_BOOLEAN,  "OnlyInspectPlayers" ),
 	DEFINE_KEYFIELD( m_bNeverInspectPlayers,FIELD_BOOLEAN,  "NeverInspectPlayers" ),
@@ -148,7 +153,6 @@ BEGIN_DATADESC( CNPC_CScanner )
 	DEFINE_FIELD( m_nPoseFaceVert,			FIELD_INTEGER ),
 	DEFINE_FIELD( m_nPoseFaceHoriz,			FIELD_INTEGER ),
 
-	DEFINE_FIELD( m_bIsClawScanner,			FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bIsOpen,				FIELD_BOOLEAN ),
 
 	// DEFINE_FIELD( m_bHasSpoken,			FIELD_BOOLEAN ),
@@ -207,16 +211,6 @@ CNPC_CScanner::CNPC_CScanner()
 	char szMapName[256];
 	Q_strncpy(szMapName, STRING(gpGlobals->mapname), sizeof(szMapName) );
 	Q_strlower(szMapName);
-
-	if( !Q_strnicmp( szMapName, "d3_c17", 6 ) )
-	{
-		// Streetwar scanners are claw scanners
-		m_bIsClawScanner = true;
-	}
-	else
-	{
-		m_bIsClawScanner = false;
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -245,14 +239,7 @@ void CNPC_CScanner::Spawn(void)
 
 	Precache();
 
-	if( m_bIsClawScanner )
-	{
-		SetModel( "models/shield_scanner.mdl");
-	}
-	else
-	{
-		SetModel( "models/combine_scanner.mdl");
-	}
+	SetModel("models/shield_scanner.mdl");
 
 	m_iHealth				= sk_scanner_health.GetFloat();
 	m_iMaxHealth = m_iHealth;
@@ -264,6 +251,8 @@ void CNPC_CScanner::Spawn(void)
 	m_fInspectEndTime		= 0;
 	m_fCheckCitizenTime		= gpGlobals->curtime + SCANNER_CIT_INSPECT_DELAY;
 	m_fCheckHintTime		= gpGlobals->curtime + SCANNER_HINT_INSPECT_DELAY;
+	m_fMineRespawnTime		= gpGlobals->curtime + 1.0f;
+	m_fMineRedeployTime		= 0;
 	m_fNextPhotographTime	= 0;
 
 	m_vSpotlightTargetPos	= vec3_origin;
@@ -292,6 +281,12 @@ void CNPC_CScanner::Spawn(void)
 	CapabilitiesAdd( bits_CAP_INNATE_MELEE_ATTACK1 );
 
 	m_bPhotoTaken = false;
+
+	if (g_pGameRules->IsSkillLevel(SKILL_EASY)) { m_bNoLight = true; }
+	else if (g_pGameRules->IsSkillLevel(SKILL_MEDIUM)) { m_bNoLight = true; }
+	else if (g_pGameRules->IsSkillLevel(SKILL_HARD)) { m_bNoLight = true; }
+	else if (g_pGameRules->IsSkillLevel(SKILL_VERYHARD)) { m_bNoLight = false; }
+	else if (g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE)) { m_bNoLight = false; }
 
 	BaseClass::Spawn();
 
@@ -340,22 +335,12 @@ void CNPC_CScanner::Gib( void )
 		return;
 
 	// Spawn all gibs
-	if( m_bIsClawScanner )
-	{
-		CGib::SpawnSpecificGibs( this, 1, 500, 250, "models/gibs/Shield_Scanner_Gib1.mdl");
-		CGib::SpawnSpecificGibs( this, 1, 500, 250, "models/gibs/Shield_Scanner_Gib2.mdl");
-		CGib::SpawnSpecificGibs( this, 1, 500, 250, "models/gibs/Shield_Scanner_Gib3.mdl");
-		CGib::SpawnSpecificGibs( this, 1, 500, 250, "models/gibs/Shield_Scanner_Gib4.mdl");
-		CGib::SpawnSpecificGibs( this, 1, 500, 250, "models/gibs/Shield_Scanner_Gib5.mdl");
-		CGib::SpawnSpecificGibs( this, 1, 500, 250, "models/gibs/Shield_Scanner_Gib6.mdl");
-	}
-	else
-	{
-		CGib::SpawnSpecificGibs( this, 1, 500, 250, "models/gibs/scanner_gib01.mdl" );
-		CGib::SpawnSpecificGibs( this, 1, 500, 250, "models/gibs/scanner_gib02.mdl" );
-		CGib::SpawnSpecificGibs( this, 1, 500, 250, "models/gibs/scanner_gib04.mdl" );
-		CGib::SpawnSpecificGibs( this, 1, 500, 250, "models/gibs/scanner_gib05.mdl" );
-	}
+	CGib::SpawnSpecificGibs(this, 1, 500, 250, "models/gibs/Shield_Scanner_Gib1.mdl");
+	CGib::SpawnSpecificGibs(this, 1, 500, 250, "models/gibs/Shield_Scanner_Gib2.mdl");
+	CGib::SpawnSpecificGibs(this, 1, 500, 250, "models/gibs/Shield_Scanner_Gib3.mdl");
+	CGib::SpawnSpecificGibs(this, 1, 500, 250, "models/gibs/Shield_Scanner_Gib4.mdl");
+	CGib::SpawnSpecificGibs(this, 1, 500, 250, "models/gibs/Shield_Scanner_Gib5.mdl");
+	CGib::SpawnSpecificGibs(this, 1, 500, 250, "models/gibs/Shield_Scanner_Gib6.mdl");
 
 	// Add a random chance of spawning a battery...
 	if ( !HasSpawnFlags(SF_NPC_NO_WEAPON_DROP) && random->RandomFloat( 0.0f, 1.0f) < 0.3f )
@@ -404,7 +389,7 @@ void CNPC_CScanner::Event_Killed( const CTakeDamageInfo &info )
 	m_pEyeFlash = NULL;
 
 	// If I have an enemy and I'm up high, do a dive bomb (unless dissolved)
-	if ( !m_bIsClawScanner && GetEnemy() != NULL && (info.GetDamageType() & DMG_DISSOLVE) == false )
+	if ( GetEnemy() != NULL && (info.GetDamageType() & DMG_DISSOLVE) == false )
 	{
 		Vector vecDelta = GetLocalOrigin() - GetEnemy()->GetLocalOrigin();
 		if ( ( vecDelta.z > 120 ) && ( vecDelta.Length() > 360 ) )
@@ -458,11 +443,6 @@ int CNPC_CScanner::TranslateSchedule( int scheduleType )
 //-----------------------------------------------------------------------------
 Activity CNPC_CScanner::NPC_TranslateActivity( Activity eNewActivity )
 {
-	if( !m_bIsClawScanner )
-	{
-		return BaseClass::NPC_TranslateActivity( eNewActivity );
-	}
-
 	// The claw scanner came along a little late and doesn't have the activities
 	// of the city scanner. So Just pick between these three
 	if( eNewActivity == ACT_DISARM )
@@ -500,10 +480,7 @@ void CNPC_CScanner::HandleAnimEvent( animevent_t *pEvent )
 //-----------------------------------------------------------------------------
 char *CNPC_CScanner::GetEngineSound( void )
 {
-	if( m_bIsClawScanner )
-		return "NPC_SScanner.FlyLoop";
-
-	return "NPC_CScanner.FlyLoop";
+	return "NPC_SScanner.FlyLoop";
 }
 
 //-----------------------------------------------------------------------------
@@ -521,9 +498,103 @@ void CNPC_CScanner::NPCThink(void)
 	{
 		BaseClass::NPCThink();
 		SpotlightUpdate();
+		MineBehavior();
 	}
 }
 
+void CNPC_CScanner::MineBehavior(void)
+{
+	if (gpGlobals->curtime > m_fMineRespawnTime)
+	{
+		EquipMine();
+		m_fMineRespawnTime = gpGlobals->curtime + SCANNER_MINE_RESPAWN_DELAY;
+		m_fMineRedeployTime = gpGlobals->curtime + SCANNER_MINE_REDEPLOY_DELAY;
+	}
+
+	if (gpGlobals->curtime > m_fMineRedeployTime)
+	{
+		//first off, make sure the players are not facing us.
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
+			if (pPlayer)
+			{
+				// Only spawn if the player's looking away from me
+				if (pPlayer->FInViewCone(GetAbsOrigin()) && pPlayer->FVisible(GetAbsOrigin()))
+				{
+					if ((pPlayer->GetFlags() & FL_NOTARGET))
+						return;
+
+					CBaseEntity *child;
+					for (child = FirstMoveChild(); child != NULL; child = child->NextMovePeer())
+					{
+						if (FClassnameIs(child, "combine_mine"))
+						{
+							DeployMine();
+						}
+					}
+					m_fMineRedeployTime = gpGlobals->curtime + SCANNER_MINE_REDEPLOY_DELAY;
+				}
+				else
+				{
+					m_fMineRedeployTime = gpGlobals->curtime + SCANNER_MINE_REDEPLOY_DELAY;
+				}
+			}
+		}
+	}
+}
+
+void CNPC_CScanner::EquipMine(void)
+{
+	CBaseEntity *child;
+	// iterate through all children
+	for (child = FirstMoveChild(); child != NULL; child = child->NextMovePeer())
+	{
+		if (FClassnameIs(child, "combine_mine"))
+		{
+			// Already have a mine!
+			return;
+		}
+	}
+
+	CBaseEntity *pEnt;
+
+	pEnt = CreateEntityByName("combine_mine");
+	bool bPlacedMine = false;
+
+	Vector	vecOrigin;
+	QAngle	angles;
+	int		attachment;
+
+	attachment = LookupAttachment("claw");
+
+	if (attachment > -1)
+	{
+		GetAttachment(attachment, vecOrigin, angles);
+
+		pEnt->SetAbsOrigin(vecOrigin);
+		pEnt->SetAbsAngles(angles);
+		pEnt->SetOwnerEntity(this);
+		pEnt->SetParent(this, attachment);
+
+		m_bIsOpen = true;
+		SetActivity(ACT_IDLE_ANGRY);
+		bPlacedMine = true;
+	}
+
+	if (!bPlacedMine)
+	{
+		Vector vecMineLocation = GetAbsOrigin();
+		vecMineLocation.z -= 32.0;
+
+		pEnt->SetAbsOrigin(vecMineLocation);
+		pEnt->SetAbsAngles(GetAbsAngles());
+		pEnt->SetOwnerEntity(this);
+		pEnt->SetParent(this);
+	}
+
+	pEnt->Spawn();
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -531,56 +602,29 @@ void CNPC_CScanner::NPCThink(void)
 void CNPC_CScanner::Precache(void)
 {
 	// Model
-	if( m_bIsClawScanner )
-	{
-		PrecacheModel("models/shield_scanner.mdl");
+	PrecacheModel("models/shield_scanner.mdl");
 
-		PrecacheModel("models/gibs/Shield_Scanner_Gib1.mdl");
-		PrecacheModel("models/gibs/Shield_Scanner_Gib2.mdl");
-		PrecacheModel("models/gibs/Shield_Scanner_Gib3.mdl");
-		PrecacheModel("models/gibs/Shield_Scanner_Gib4.mdl");
-		PrecacheModel("models/gibs/Shield_Scanner_Gib5.mdl");
-		PrecacheModel("models/gibs/Shield_Scanner_Gib6.mdl");
+	PrecacheModel("models/gibs/Shield_Scanner_Gib1.mdl");
+	PrecacheModel("models/gibs/Shield_Scanner_Gib2.mdl");
+	PrecacheModel("models/gibs/Shield_Scanner_Gib3.mdl");
+	PrecacheModel("models/gibs/Shield_Scanner_Gib4.mdl");
+	PrecacheModel("models/gibs/Shield_Scanner_Gib5.mdl");
+	PrecacheModel("models/gibs/Shield_Scanner_Gib6.mdl");
 
-		PrecacheScriptSound( "NPC_SScanner.Shoot");
-		PrecacheScriptSound( "NPC_SScanner.Alert" );
-		PrecacheScriptSound( "NPC_SScanner.Die" );
-		PrecacheScriptSound( "NPC_SScanner.Combat" );
-		PrecacheScriptSound( "NPC_SScanner.Idle" );
-		PrecacheScriptSound( "NPC_SScanner.Pain" );
-		PrecacheScriptSound( "NPC_SScanner.TakePhoto" );
-		PrecacheScriptSound( "NPC_SScanner.AttackFlash" );
-		PrecacheScriptSound( "NPC_SScanner.DiveBombFlyby" );
-		PrecacheScriptSound( "NPC_SScanner.DiveBomb" );
-		PrecacheScriptSound( "NPC_SScanner.DeployMine" );
+	PrecacheScriptSound("NPC_SScanner.Shoot");
+	PrecacheScriptSound("NPC_SScanner.Alert");
+	PrecacheScriptSound("NPC_SScanner.Die");
+	PrecacheScriptSound("NPC_SScanner.Combat");
+	PrecacheScriptSound("NPC_SScanner.Idle");
+	PrecacheScriptSound("NPC_SScanner.Pain");
+	PrecacheScriptSound("NPC_SScanner.TakePhoto");
+	PrecacheScriptSound("NPC_SScanner.AttackFlash");
+	PrecacheScriptSound("NPC_SScanner.DiveBombFlyby");
+	PrecacheScriptSound("NPC_SScanner.DiveBomb");
+	PrecacheScriptSound("NPC_SScanner.DeployMine");
 
-		PrecacheScriptSound( "NPC_SScanner.FlyLoop" );
-		UTIL_PrecacheOther( "combine_mine" );
-	}
-	else
-	{
-		PrecacheModel("models/combine_scanner.mdl");
-
-		PrecacheModel("models/gibs/scanner_gib01.mdl" );
-		PrecacheModel("models/gibs/scanner_gib02.mdl" );	
-		PrecacheModel("models/gibs/scanner_gib02.mdl" );
-		PrecacheModel("models/gibs/scanner_gib04.mdl" );
-		PrecacheModel("models/gibs/scanner_gib05.mdl" );
-
-		PrecacheScriptSound( "NPC_CScanner.Shoot");
-		PrecacheScriptSound( "NPC_CScanner.Alert" );
-		PrecacheScriptSound( "NPC_CScanner.Die" );
-		PrecacheScriptSound( "NPC_CScanner.Combat" );
-		PrecacheScriptSound( "NPC_CScanner.Idle" );
-		PrecacheScriptSound( "NPC_CScanner.Pain" );
-		PrecacheScriptSound( "NPC_CScanner.TakePhoto" );
-		PrecacheScriptSound( "NPC_CScanner.AttackFlash" );
-		PrecacheScriptSound( "NPC_CScanner.DiveBombFlyby" );
-		PrecacheScriptSound( "NPC_CScanner.DiveBomb" );
-		PrecacheScriptSound( "NPC_CScanner.DeployMine" );
-
-		PrecacheScriptSound( "NPC_CScanner.FlyLoop" );
-	}
+	PrecacheScriptSound("NPC_SScanner.FlyLoop");
+	UTIL_PrecacheOther("combine_mine");
 
 	// Sprites
 	m_nHaloSprite = PrecacheModel("sprites/light_glow03.vmt");
@@ -942,11 +986,7 @@ void CNPC_CScanner::DeployMine()
 				pPhysObj->Wake();
 			}
 
-			if( m_bIsClawScanner )
-			{
-				// Fold up.
-				SetActivity( ACT_DISARM );
-			}
+			SetActivity(ACT_DISARM);
 
 			return;
 		}
@@ -996,29 +1036,25 @@ void CNPC_CScanner::InputEquipMine(inputdata_t &inputdata)
 	pEnt = CreateEntityByName( "combine_mine" );
 	bool bPlacedMine = false;
 
-	if( m_bIsClawScanner )
+	Vector	vecOrigin;
+	QAngle	angles;
+	int		attachment;
+
+	attachment = LookupAttachment("claw");
+
+	if (attachment > -1)
 	{
-		Vector	vecOrigin;
-		QAngle	angles;
-		int		attachment;
+		GetAttachment(attachment, vecOrigin, angles);
 
-		attachment = LookupAttachment( "claw" );
+		pEnt->SetAbsOrigin(vecOrigin);
+		pEnt->SetAbsAngles(angles);
+		pEnt->SetOwnerEntity(this);
+		pEnt->SetParent(this, attachment);
 
-		if( attachment > -1 )
-		{
-			GetAttachment( attachment, vecOrigin, angles );
-			
-			pEnt->SetAbsOrigin( vecOrigin );
-			pEnt->SetAbsAngles( angles );
-			pEnt->SetOwnerEntity( this );
-			pEnt->SetParent( this, attachment );
-
-			m_bIsOpen = true;
-			SetActivity( ACT_IDLE_ANGRY );
-			bPlacedMine = true;
-		}
+		m_bIsOpen = true;
+		SetActivity(ACT_IDLE_ANGRY);
+		bPlacedMine = true;
 	}
-
 
 	if( !bPlacedMine )
 	{
@@ -2263,10 +2299,7 @@ void CNPC_CScanner::StartTask( const Task_t *pTask )
 //-----------------------------------------------------------------------------
 char *CNPC_CScanner::GetScannerSoundPrefix( void )
 {
-	if( m_bIsClawScanner )
-		return "NPC_SScanner";
-
-	return "NPC_CScanner";
+	return "NPC_SScanner";
 }
 
 //------------------------------------------------------------------------------
@@ -2287,10 +2320,7 @@ float CNPC_CScanner::MinGroundDist( void )
 //-----------------------------------------------------------------------------
 void CNPC_CScanner::AdjustScannerVelocity( void )
 {
-	if ( m_bIsClawScanner )
-	{
-		m_vCurrentVelocity *= ( 1 + sin( ( gpGlobals->curtime + m_flFlyNoiseBase ) * 2.5f ) * .1 );
-	}
+	m_vCurrentVelocity *= (1 + sin((gpGlobals->curtime + m_flFlyNoiseBase) * 2.5f) * .1);
 }
 
 //-----------------------------------------------------------------------------
@@ -2997,33 +3027,3 @@ AI_BEGIN_CUSTOM_NPC( npc_cscanner, CNPC_CScanner )
 	)
 	
 AI_END_CUSTOM_NPC()
-
-//-----------------------------------------------------------------------------
-// Claw Scanner
-//
-// Scanner that always spawns as a claw scanner
-//-----------------------------------------------------------------------------
-	
-class CNPC_ClawScanner : public CNPC_CScanner
-{
-DECLARE_CLASS( CNPC_ClawScanner, CNPC_CScanner );
-
-public:
-	CNPC_ClawScanner();
-	DECLARE_DATADESC();
-};
-
-BEGIN_DATADESC( CNPC_ClawScanner )
-END_DATADESC()
-
-
-LINK_ENTITY_TO_CLASS(npc_clawscanner, CNPC_ClawScanner);
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-CNPC_ClawScanner::CNPC_ClawScanner()
-{
-	// override our superclass's setting
-	BecomeClawScanner();
-}

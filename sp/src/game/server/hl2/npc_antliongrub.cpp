@@ -707,7 +707,7 @@ void CAntlionGrub::SpawnSquashedGrub( void )
 
 	Vector vecUp;
 	GetVectors( NULL, NULL, &vecUp );
-	CBaseEntity *pGib = CreateRagGib( ANTLIONGRUB_SQUASHED_MODEL, GetAbsOrigin(), GetAbsAngles(), vecUp * 16.0f );
+	CBaseEntity *pGib = CreateRagGib(this, ANTLIONGRUB_SQUASHED_MODEL, GetAbsOrigin(), GetAbsAngles(), vecUp * 16.0f);
 	if ( pGib )
 	{
 		pGib->AddEffects( EF_NOSHADOW );

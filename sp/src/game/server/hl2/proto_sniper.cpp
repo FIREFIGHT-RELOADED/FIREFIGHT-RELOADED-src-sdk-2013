@@ -1342,7 +1342,7 @@ void CProtoSniper::Event_Killed( const CTakeDamageInfo &info )
 
 		CBaseEntity *pGib;
 		bool bShouldIgnite = IsOnFire() || hl2_episodic.GetBool();
-		pGib = CreateRagGib( "models/combine_soldier.mdl", GetLocalOrigin(), GetLocalAngles(), (vecForward * flForce) + Vector(0, 0, 600), flFadeTime, bShouldIgnite );
+		pGib = CreateRagGib(this, "models/combine_soldier.mdl", GetLocalOrigin(), GetLocalAngles(), (vecForward * flForce) + Vector(0, 0, 600), flFadeTime, bShouldIgnite);
 
 	}
 

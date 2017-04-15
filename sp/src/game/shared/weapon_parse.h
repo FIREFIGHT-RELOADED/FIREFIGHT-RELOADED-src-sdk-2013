@@ -220,7 +220,9 @@ public:
 	char					aShootSounds[NUM_SHOOT_SOUND_TYPES][MAX_WEAPON_STRING];	
 
 	int						iAmmoType;
+	const char	*cAmmoType;
 	int						iAmmo2Type;
+	const char	*cAmmo2Type;
 	bool					m_bMeleeWeapon;		// Melee weapons can always "fire" regardless of ammo.
 
 	// This tells if the weapon was built right-handed (defaults to true).

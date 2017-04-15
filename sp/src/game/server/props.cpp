@@ -499,27 +499,19 @@ void CBreakableProp::HandleFirstCollisionInteractions( int index, gamevcollision
 
 		if ( tr.m_pEnt )
 		{
-#ifdef HL2_DLL
-			// Don't paintsplat friendlies
-			int iClassify = tr.m_pEnt->Classify();
-			if ( iClassify != CLASS_PLAYER_ALLY_VITAL && iClassify != CLASS_PLAYER_ALLY && 
-				 iClassify != CLASS_CITIZEN_PASSIVE && iClassify != CLASS_CITIZEN_REBEL ) 
-#endif
+			switch( entindex() % 3 )
 			{
-				switch( entindex() % 3 )
-				{
-				case 0:
-					UTIL_DecalTrace( &tr, "PaintSplatBlue" );
-					break;
+			case 0:
+				UTIL_DecalTrace( &tr, "PaintSplatBlue" );
+				break;
 
-				case 1:
-					UTIL_DecalTrace( &tr, "PaintSplatGreen" );
-					break;
+			case 1:
+				UTIL_DecalTrace( &tr, "PaintSplatGreen" );
+				break;
 
-				case 2:
-					UTIL_DecalTrace( &tr, "PaintSplatPink" );
-					break;
-				}
+			case 2:
+				UTIL_DecalTrace( &tr, "PaintSplatPink" );
+				break;
 			}
 		}
 	}

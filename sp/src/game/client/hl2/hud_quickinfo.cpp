@@ -361,7 +361,7 @@ void CHUDQuickInfo::Paint()
 	{
 		float ammoPerc;
 
-		if ( pWeapon->GetMaxClip1() <= 0 )
+		if (pWeapon->GetMaxClip1() <= 0 || pWeapon->IsMeleeWeapon())
 		{
 			ammoPerc = 0.0f;
 		}

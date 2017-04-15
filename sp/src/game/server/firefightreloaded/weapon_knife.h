@@ -17,7 +17,7 @@
 #error weapon_knife.h must not be included in hl2mp. The windows compiler will use the wrong class elsewhere if it is.
 #endif
 
-#define	KNIFE_RANGE	75.0f
+#define	KNIFE_RANGE	50.0f
 #define	KNIFE_REFIRE	0.2f
 
 //-----------------------------------------------------------------------------

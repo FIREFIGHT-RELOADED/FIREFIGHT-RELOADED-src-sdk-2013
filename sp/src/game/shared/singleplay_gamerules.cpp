@@ -238,6 +238,11 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 			SetGamemode(FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE);
 			Log("Automatically setting the gamemode to FIREFIGHT RUMBLE due to mapname.\n");
 		}
+		else if (V_stristr(mapname, "rr"))
+		{
+			SetGamemode(FIREFIGHT_PRIMARY_RESISTANCERETRIBUTION);
+			Log("Automatically setting the gamemode to RESISTANCE RETRIBUTION due to mapname.\n");
+		}
 
 		if (GetGamemode() == FIREFIGHT_PRIMARY_DEFAULT)
 		{
@@ -247,7 +252,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 				iRandomGamemode = 0;
 			}
 			Log("No gamemode defined! Randomizing gamemodes.\n");
-			SetGamemodeRandom(FIREFIGHT_PRIMARY_COMBINEFIREFIGHT, FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE, true);
+			SetGamemodeRandom(FIREFIGHT_PRIMARY_COMBINEFIREFIGHT, FIREFIGHT_PRIMARY_RESISTANCERETRIBUTION, true);
 			bHasRandomized = true;
 		}
 
@@ -323,6 +328,20 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 					engine->ServerCommand(szCommand);
 				}
 			}
+			else if (iRandomGamemode == FIREFIGHT_PRIMARY_RESISTANCERETRIBUTION)
+			{
+				// listen server
+				const char *cfgfilerr = resistanceretributioncfgfile.GetString();
+
+				if (cfgfilerr && cfgfilerr[0])
+				{
+					char szCommand[256];
+
+					Log("Executing RESISTANCE RETRIBUTION gamemode config file %s\n", cfgfilerr);
+					Q_snprintf(szCommand, sizeof(szCommand), "exec %s\n", cfgfilerr);
+					engine->ServerCommand(szCommand);
+				}
+			}
 		}
 		else
 		{
@@ -393,6 +412,20 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 
 					Log("Executing FIREFIGHT RUMBLE gamemode config file %s\n", cfgfilefr);
 					Q_snprintf(szCommand, sizeof(szCommand), "exec %s\n", cfgfilefr);
+					engine->ServerCommand(szCommand);
+				}
+			}
+			else if (GetGamemode() == FIREFIGHT_PRIMARY_RESISTANCERETRIBUTION)
+			{
+				// listen server
+				const char *cfgfilerr = resistanceretributioncfgfile.GetString();
+
+				if (cfgfilerr && cfgfilerr[0])
+				{
+					char szCommand[256];
+
+					Log("Executing RESISTANCE RETRIBUTION gamemode config file %s\n", cfgfilerr);
+					Q_snprintf(szCommand, sizeof(szCommand), "exec %s\n", cfgfilerr);
 					engine->ServerCommand(szCommand);
 				}
 			}

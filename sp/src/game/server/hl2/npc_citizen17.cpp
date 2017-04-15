@@ -478,9 +478,9 @@ void CNPC_Citizen::Spawn()
 	
 	m_bRPGAvoidPlayer = false;
 
-	m_bShouldPatrol = false;
+	m_bShouldPatrol = true;
 	m_iHealth = sk_citizen_health.GetFloat();
-	
+
 	// Are we on a train? Used in trainstation to have NPCs on trains.
 	if ( GetMoveParent() && FClassnameIs( GetMoveParent(), "func_tracktrain" ) )
 	{
@@ -824,7 +824,14 @@ Class_T	CNPC_Citizen::Classify()
 	if (GlobalEntity_GetState("citizens_passive") == GLOBAL_ON)
 		return CLASS_CITIZEN_PASSIVE;
 
-	return CLASS_PLAYER_ALLY;
+	if (m_Type == CT_REBEL)
+	{
+		return CLASS_PLAYER_ALLY;
+	}
+	else
+	{
+		return CLASS_PLAYER_ALLY;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -928,6 +935,7 @@ void CNPC_Citizen::GatherConditions()
 
 	// If the player is standing near a medic and can see the medic, 
 	// assume the player is 'staring' and wants health.
+#if HL2_LEGACY_CITIZENS
 	if( CanHeal() )
 	{
 		CBasePlayer *pPlayer = UTIL_GetNearestVisiblePlayer(this);
@@ -977,6 +985,7 @@ void CNPC_Citizen::GatherConditions()
 			m_flTimePlayerStare = FLT_MAX;
 		}
 	}
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -1436,12 +1445,15 @@ bool CNPC_Citizen::ShouldDeferToFollowBehavior()
 //-----------------------------------------------------------------------------
 int CNPC_Citizen::TranslateSchedule( int scheduleType ) 
 {
+#if HL2_LEGACY_CITIZENS
 	CBasePlayer *pLocalPlayer = UTIL_GetNearestVisiblePlayer(this);
+#endif
 
 	switch( scheduleType )
 	{
 	case SCHED_IDLE_STAND:
 	case SCHED_ALERT_STAND:
+#if HL2_LEGACY_CITIZENS
 		if( m_NPCState != NPC_STATE_COMBAT && pLocalPlayer && !pLocalPlayer->IsAlive() && CanJoinPlayerSquad() )
 		{
 			// Player is dead! 
@@ -1455,6 +1467,7 @@ int CNPC_Citizen::TranslateSchedule( int scheduleType )
 			}
 		}
 		break;
+#endif
 
 	case SCHED_ESTABLISH_LINE_OF_FIRE:
 	case SCHED_MOVE_TO_WEAPON_RANGE:
@@ -1764,6 +1777,7 @@ void CNPC_Citizen::RunTask( const Task_t *pTask )
 					}
 
 					Vector vecEnemyPos = GetEnemy()->BodyTarget(GetAbsOrigin(), false);
+#if HL2_LEGACY_CITIZENS
 					CBasePlayer *pPlayer = UTIL_GetNearestPlayer(GetEnemy()->GetAbsOrigin());
 					if ( pPlayer && ( ( vecEnemyPos - pPlayer->GetAbsOrigin() ).LengthSqr() < RPG_SAFE_DISTANCE * RPG_SAFE_DISTANCE ) )
 					{
@@ -1779,6 +1793,14 @@ void CNPC_Citizen::RunTask( const Task_t *pTask )
 							distToMove = 90;
 						vecLaserPos += vecToTarget * distToMove;
 					}
+#else
+					// Pull the laserdot towards the target
+					Vector vecToTarget = (vecEnemyPos - vecLaserPos);
+					float distToMove = VectorNormalize(vecToTarget);
+					if (distToMove > 90)
+						distToMove = 90;
+					vecLaserPos += vecToTarget * distToMove;
+#endif
 				}
 
 				if ( m_bRPGAvoidPlayer )

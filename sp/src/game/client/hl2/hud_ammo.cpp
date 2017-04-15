@@ -126,7 +126,7 @@ void CHudAmmo::UpdatePlayerAmmo( C_BasePlayer *player )
 	hudlcd->SetGlobalStat( "(weapon_print_name)", wpn ? wpn->GetPrintName() : " " );
 	hudlcd->SetGlobalStat( "(weapon_name)", wpn ? wpn->GetName() : " " );
 
-	if ( !wpn || !player || !wpn->UsesPrimaryAmmo() )
+	if (!wpn || !player || !wpn->UsesPrimaryAmmo() || wpn->IsMeleeWeapon())
 	{
 		hudlcd->SetGlobalStat( "(ammo_primary)", "n/a" );
         hudlcd->SetGlobalStat( "(ammo_secondary)", "n/a" );
@@ -453,7 +453,7 @@ protected:
 		C_BaseCombatWeapon *wpn = GetActiveWeapon();
 		C_BasePlayer *player = C_BasePlayer::GetLocalPlayer();
 		IClientVehicle *pVehicle = player ? player->GetVehicle() : NULL;
-		if (!wpn || !player || pVehicle)
+		if (!wpn || !player || pVehicle || wpn->IsMeleeWeapon())
 		{
 			m_hCurrentActiveWeapon = NULL;
 			SetPaintEnabled(false);

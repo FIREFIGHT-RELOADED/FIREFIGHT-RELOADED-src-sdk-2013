@@ -44,9 +44,10 @@
 #define ROLLERMINE_MAX_TORQUE_FACTOR	5
 extern short g_sModelIndexWExplosion;
 
-ConVar	sk_rollermine_shock( "sk_rollermine_shock","0");
+ConVar	sk_rollermine_shock( "sk_rollermine_shock","1");
 ConVar	sk_rollermine_stun_delay("sk_rollermine_stun_delay", "1");
 ConVar	sk_rollermine_vehicle_intercept( "sk_rollermine_vehicle_intercept","1");
+ConVar	sk_rollermine_health("sk_rollermine_health", "0");
 
 enum
 {
@@ -327,6 +328,7 @@ protected:
 	float	m_flShockTime;
 	float	m_flForwardSpeed;
 	int		m_iSoundEventFlags;
+	int		m_iRollerHealth;
 	rollingsoundstate_t m_rollingSoundState;
 
 	CNetworkVar( bool, m_bIsOpen );
@@ -393,6 +395,8 @@ BEGIN_DATADESC( CNPC_RollerMine )
 	DEFINE_FIELD( m_bPowerDown,	FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_flPowerDownTime,	FIELD_TIME ),
 	DEFINE_FIELD( m_flPowerDownDetonateTime,	FIELD_TIME ),
+
+	DEFINE_FIELD(m_iRollerHealth, FIELD_INTEGER),
 
 	DEFINE_PHYSPTR( m_pConstraint ),
 
@@ -557,6 +561,7 @@ void CNPC_RollerMine::Spawn( void )
 	m_flFieldOfView		= -1.0f;
 	m_flForwardSpeed	= -1200;
 	m_bloodColor		= DONT_BLEED;
+	m_iRollerHealth		= sk_rollermine_health.GetInt();
 
 	SetHullType(HULL_SMALL_CENTERED);
 
@@ -929,7 +934,9 @@ int CNPC_RollerMine::SelectSchedule( void )
 int CNPC_RollerMine::GetHackedIdleSchedule( void )
 {
 	// If we've been hacked, return to the player
-	if ( !m_bHackedByAlyx || m_bHeld )
+	// in FIREFIGHT we need to find the best path to the player to attack him.
+	//if ( !m_bHackedByAlyx || m_bHeld )
+	if (m_bHeld)
 		return SCHED_NONE;
 
 	// Are we near the player?
@@ -2469,6 +2476,14 @@ int CNPC_RollerMine::OnTakeDamage( const CTakeDamageInfo &info )
 		}
 	}
 
+	m_iRollerHealth -= info.GetDamage();
+
+	if (m_iRollerHealth <= 0)
+	{
+		SetThink(&CNPC_RollerMine::PreDetonate);
+		SetNextThink(gpGlobals->curtime + random->RandomFloat(0.1f, 0.5f));
+	}
+
 	return 0;
 }
 
@@ -2538,7 +2553,7 @@ void CNPC_RollerMine::Explode( void )
 		ExplosionCreate( WorldSpaceCenter(), GetLocalAngles(), this, expDamage, 128, true );
 	}
 
-	CTakeDamageInfo	info( this, this, 1, DMG_GENERIC );
+	CTakeDamageInfo	info( this, this, 1, DMG_GENERIC | DMG_REMOVENORAGDOLL );
 	Event_Killed( info );
 
 	// Remove myself a frame from now to avoid doing it in the middle of running AI

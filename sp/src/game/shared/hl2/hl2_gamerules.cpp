@@ -241,6 +241,9 @@ ConVar	sk_plr_dmg_mp5("sk_plr_dmg_mp5", "0", FCVAR_REPLICATED);
 ConVar	sk_npc_dmg_mp5("sk_npc_dmg_mp5", "0", FCVAR_REPLICATED);
 ConVar	sk_max_mp5("sk_max_mp5", "0", FCVAR_REPLICATED);
 
+ConVar    sk_plr_dmg_katana("sk_plr_dmg_katana", "0");
+ConVar    sk_npc_dmg_katana("sk_npc_dmg_katana", "0");
+
 // Gunship & Dropship cannons
 ConVar	sk_npc_dmg_gunship			( "sk_npc_dmg_gunship", "0", FCVAR_REPLICATED );
 ConVar	sk_npc_dmg_gunship_to_plr	( "sk_npc_dmg_gunship_to_plr", "0", FCVAR_REPLICATED );
@@ -530,6 +533,8 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 			CBaseCombatCharacter::SetDefaultRelationship(CLASS_SCANNER, CLASS_PLAYER, D_HT, 0);
 			CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_CREMATOR, CLASS_PLAYER, D_NU, 0);
 			CBaseCombatCharacter::SetDefaultRelationship(CLASS_ZOMBIE, CLASS_PLAYER, D_HT, 0);
+			CBaseCombatCharacter::SetDefaultRelationship(CLASS_CITIZEN_PASSIVE, CLASS_PLAYER, D_HT, 0);
+			CBaseCombatCharacter::SetDefaultRelationship(CLASS_CITIZEN_REBEL, CLASS_PLAYER, D_HT, 0);
 			//fixed the ALL HAIL CREMATOR bug.
 			CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_ANTLION, D_HT, 0);
 			CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_BARNACLE, D_HT, 0);
@@ -544,6 +549,8 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 			CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_ALIEN_MILITARY, D_HT, 0);
 			CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_SCANNER, D_HT, 0);
 			CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_ZOMBIE, D_HT, 0);
+			CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_CITIZEN_PASSIVE, D_HT, 0);
+			CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_CITIZEN_REBEL, D_HT, 0);
 			//compile the code and remove this comment. get alien controller working.
 		}
 		else
@@ -612,6 +619,11 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 			CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_CREMATOR, CLASS_COMBINE_HUNTER, D_LI, 0);
 			CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_CREMATOR, CLASS_MANHACK, D_LI, 0);
 			CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_CREMATOR, CLASS_SCANNER, D_LI, 0);
+			//zombies shouldn't attack headcrabs.
+			CBaseCombatCharacter::SetDefaultRelationship(CLASS_HEADCRAB, CLASS_ZOMBIE, D_LI, 0);
+			CBaseCombatCharacter::SetDefaultRelationship(CLASS_ZOMBIE, CLASS_HEADCRAB, D_LI, 0);
+			CBaseCombatCharacter::SetDefaultRelationship(CLASS_CITIZEN_PASSIVE, CLASS_CITIZEN_REBEL, D_LI, 0);
+			CBaseCombatCharacter::SetDefaultRelationship(CLASS_CITIZEN_REBEL, CLASS_CITIZEN_PASSIVE, D_LI, 0);
 		}
 	}
 
@@ -1712,6 +1724,7 @@ CAmmoDef *GetAmmoDef()
 		def.AddAmmoType("FlareRound",		DMG_BURN, TRACER_LINE, "sk_plr_dmg_flare_round", "sk_npc_dmg_flare_round", "sk_max_flare_round", BULLET_IMPULSE(1500, 600), 0);
 		def.AddAmmoType("EgonEnergy",		DMG_SHOCK | DMG_ALWAYSGIB, TRACER_NONE, "sk_plr_dmg_egon_narrow", "sk_plr_dmg_egon_narrow", "sk_max_egon_round", BULLET_IMPULSE(650, 8000), 0);
 		def.AddAmmoType("MP5Ammo", DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_mp5", "sk_npc_dmg_mp5", "sk_max_mp5", BULLET_IMPULSE(200, 1225), 0);
+		def.AddAmmoType("Katana", DMG_SLASH, TRACER_NONE, "sk_plr_dmg_katana", "sk_npc_dmg_katana", 1, BULLET_IMPULSE(200, 1225), 0);
 		//CUSTOM AMMO TYPES HERE.
 		def.AddAmmoType("CustomBullet1_Normal", DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_custom_normal", "sk_npc_dmg_custom_normal", "sk_max_custom_normal", BULLET_IMPULSE(800, 5000), 0);
 		def.AddAmmoType("CustomBullet2_NormalBurn", DMG_BULLET | DMG_BURN, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_custom_normal", "sk_npc_dmg_custom_normal", "sk_max_custom_normal", BULLET_IMPULSE(800, 5000), 0);

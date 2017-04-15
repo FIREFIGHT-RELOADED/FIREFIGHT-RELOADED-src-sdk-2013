@@ -272,6 +272,36 @@ void CAmmoDef::AddAmmoType(char const* name, int damageType, int tracerType,
 	m_nAmmoIndex++;
 }
 
+void CAmmoDef::AddAmmoType(char const* name, int damageType, int tracerType,
+	char const* plr_cvar, char const* npc_cvar, int carry,
+	float physicsForceImpulse, int nFlags, int minSplashSize, int maxSplashSize)
+{
+	if (AddAmmoType(name, damageType, tracerType, nFlags, minSplashSize, maxSplashSize) == false)
+		return;
+
+	if (plr_cvar)
+	{
+		m_AmmoType[m_nAmmoIndex].pPlrDmgCVar = cvar->FindVar(plr_cvar);
+		if (!m_AmmoType[m_nAmmoIndex].pPlrDmgCVar)
+		{
+			Msg("ERROR: Ammo (%s) found no CVar named (%s)\n", name, plr_cvar);
+		}
+		m_AmmoType[m_nAmmoIndex].pPlrDmg = USE_CVAR;
+	}
+	if (npc_cvar)
+	{
+		m_AmmoType[m_nAmmoIndex].pNPCDmgCVar = cvar->FindVar(npc_cvar);
+		if (!m_AmmoType[m_nAmmoIndex].pNPCDmgCVar)
+		{
+			Msg("ERROR: Ammo (%s) found no CVar named (%s)\n", name, npc_cvar);
+		}
+		m_AmmoType[m_nAmmoIndex].pNPCDmg = USE_CVAR;
+	}
+	m_AmmoType[m_nAmmoIndex].pMaxCarry = carry;
+	m_AmmoType[m_nAmmoIndex].physicsForceImpulse = physicsForceImpulse;
+	m_nAmmoIndex++;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 // Input  :

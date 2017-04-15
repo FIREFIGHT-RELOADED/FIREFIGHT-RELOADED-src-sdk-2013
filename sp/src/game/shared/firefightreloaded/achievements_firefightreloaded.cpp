@@ -893,4 +893,70 @@ protected:
 };
 DECLARE_ACHIEVEMENT(CAchievementKill10EnemiesWithOwnGrenade, ACHIEVEMENT_FIREFIGHTRELOADED_KILL10ENEMIESWITHOWNGRENADE, "FIREFIGHTRELOADED_KILL10ENEMIESWITHOWNGRENADE", 35);
 
+// we need names/icons for these.
+/*
+class CAchievementKill20Citizens : public CBaseAchievement
+{
+protected:
+
+	virtual void Init()
+	{
+		SetVictimFilter("npc_citizen");
+		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
+		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		m_bStoreProgressInSteam = true;
+#endif
+		SetGoal(20);
+	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return false; }
+#endif
+};
+DECLARE_ACHIEVEMENT(CAchievementKill20Citizens, ACHIEVEMENT_FIREFIGHTRELOADED_KILL20CITIZENS, "FIREFIGHTRELOADED_KILL20CITIZENS", 10);
+
+class CAchievementKill50Citizens : public CBaseAchievement
+{
+protected:
+
+	virtual void Init()
+	{
+		SetVictimFilter("npc_citizen");
+		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
+		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		m_bStoreProgressInSteam = true;
+#endif
+		SetGoal(50);
+	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return false; }
+#endif
+};
+DECLARE_ACHIEVEMENT(CAchievementKill50Citizens, ACHIEVEMENT_FIREFIGHTRELOADED_KILL50CITIZENS, "FIREFIGHTRELOADED_KILL50CITIZENS", 15);
+
+class CAchievementKill100Citizens : public CBaseAchievement
+{
+protected:
+
+	virtual void Init()
+	{
+		SetVictimFilter("npc_citizen");
+		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
+		SetGameDirFilter("firefightreloaded");
+#ifndef MOD_VER
+		m_bStoreProgressInSteam = true;
+#endif
+		SetGoal(100);
+	}
+
+#ifndef MOD_VER
+	virtual bool ShouldShowProgressNotification() { return true; }
+#endif
+};
+DECLARE_ACHIEVEMENT(CAchievementKill100Citizens, ACHIEVEMENT_FIREFIGHTRELOADED_KILL100CITIZENS, "FIREFIGHTRELOADED_KILL100CITIZENS", 20);
+*/
+
 #endif // GAME_DLL

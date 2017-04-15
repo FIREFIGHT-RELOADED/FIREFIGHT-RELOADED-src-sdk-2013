@@ -57,6 +57,9 @@ public:
 	float			GetMaxSpeed();
 	virtual void	Gib( void );
 
+	void			MineBehavior(void);
+	void			EquipMine(void);
+
 	void			HandleAnimEvent( animevent_t *pEvent );
 	Activity		NPC_TranslateActivity( Activity eNewActivity );
 
@@ -90,6 +93,8 @@ public:
 	float			m_fInspectEndTime;
 	float			m_fCheckCitizenTime;	// Time to look for citizens to harass
 	float			m_fCheckHintTime;		// Time to look for hints to inspect
+	float			m_fMineRespawnTime;
+	float			m_fMineRedeployTime;
 	bool			m_bShouldInspect;
 	bool			m_bOnlyInspectPlayers;
 	bool			m_bNeverInspectPlayers;
@@ -136,14 +141,10 @@ public:
 	void			SpotlightCreate(void);
 	void			SpotlightDestroy(void);
 
-protected:
-	void			BecomeClawScanner( void ) { m_bIsClawScanner = true; }
-
 private:
 	bool			MovingToInspectTarget( void );
 	virtual float	GetGoalDistance( void );
 
-	bool m_bIsClawScanner;	// Formerly the shield scanner.
 	bool m_bIsOpen;			// Only for claw scanner
 
 	COutputEvent		m_OnPhotographPlayer;

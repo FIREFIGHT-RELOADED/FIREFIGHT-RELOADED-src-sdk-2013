@@ -34,6 +34,7 @@ ConVar  xeninvasioncfgfile("xeninvasioncfgfile", "gamemode_xeninvasion.cfg");
 ConVar  antlionassaultcfgfile("antlionassaultcfgfile", "gamemode_antlionassault.cfg");
 ConVar  zombiesurvivalcfgfile("zombiesurvivalcfgfile", "gamemode_zombiesurvival.cfg");
 ConVar  firefightrumblecfgfile("firefightrumblecfgfile", "gamemode_firefightrumble.cfg");
+ConVar  resistanceretributioncfgfile("resistanceretributioncfgfile", "gamemode_resistanceretribution.cfg");
 
 // multiplayer server rules
 ConVar	teamplay( "mp_teamplay","0", FCVAR_NOTIFY );

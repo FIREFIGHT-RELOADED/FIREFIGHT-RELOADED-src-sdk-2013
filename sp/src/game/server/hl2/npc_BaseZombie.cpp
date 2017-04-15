@@ -1151,7 +1151,7 @@ void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info )
 		vecLegsForce.z *= -10;
 	}
 
-	CBaseEntity *pLegGib = CreateRagGib( GetLegsModel(), GetAbsOrigin(), GetAbsAngles(), vecLegsForce, flFadeTime, ShouldIgniteZombieGib() );
+	CBaseEntity *pLegGib = CreateRagGib(this, GetLegsModel(), GetAbsOrigin(), GetAbsAngles(), vecLegsForce, flFadeTime, ShouldIgniteZombieGib() );
 	if ( pLegGib )
 	{
 		CopyRenderColorTo( pLegGib );
@@ -1170,7 +1170,7 @@ void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info )
 	QAngle TorsoAngles;
 	TorsoAngles = GetAbsAngles();
 	TorsoAngles.x -= 90.0f;
-	CBaseEntity *pTorsoGib = CreateRagGib( GetTorsoModel(), GetAbsOrigin() + Vector( 0, 0, 64 ), TorsoAngles, forceVector, flFadeTime, ShouldIgniteZombieGib() );
+	CBaseEntity *pTorsoGib = CreateRagGib(this, GetTorsoModel(), GetAbsOrigin() + Vector(0, 0, 64), TorsoAngles, forceVector, flFadeTime, ShouldIgniteZombieGib());
 	if ( pTorsoGib )
 	{
 		CBaseAnimating *pAnimating = dynamic_cast<CBaseAnimating*>(pTorsoGib);
@@ -1257,7 +1257,7 @@ void CNPC_BaseZombie::DieChoppedNoBurn(const CTakeDamageInfo &info)
 		vecLegsForce.z *= -10;
 	}
 
-	CBaseEntity *pLegGib = CreateRagGib(GetLegsModel(), GetAbsOrigin(), GetAbsAngles(), vecLegsForce, flFadeTime, false);
+	CBaseEntity *pLegGib = CreateRagGib(this, GetLegsModel(), GetAbsOrigin(), GetAbsAngles(), vecLegsForce, flFadeTime, false);
 	if (pLegGib)
 	{
 		CopyRenderColorTo(pLegGib);
@@ -1276,7 +1276,7 @@ void CNPC_BaseZombie::DieChoppedNoBurn(const CTakeDamageInfo &info)
 	QAngle TorsoAngles;
 	TorsoAngles = GetAbsAngles();
 	TorsoAngles.x -= 90.0f;
-	CBaseEntity *pTorsoGib = CreateRagGib(GetTorsoModel(), GetAbsOrigin() + Vector(0, 0, 64), TorsoAngles, forceVector, flFadeTime, false);
+	CBaseEntity *pTorsoGib = CreateRagGib(this, GetTorsoModel(), GetAbsOrigin() + Vector(0, 0, 64), TorsoAngles, forceVector, flFadeTime, false);
 	if (pTorsoGib)
 	{
 		CBaseAnimating *pAnimating = dynamic_cast<CBaseAnimating*>(pTorsoGib);
@@ -2422,7 +2422,7 @@ void CNPC_BaseZombie::BecomeTorso( const Vector &vecTorsoForce, const Vector &ve
 	if ( m_fIsTorso == true )
 	{
 		// -40 on Z to make up for the +40 on Z that we did above. This stops legs spawning above the head.
-		CBaseEntity *pGib = CreateRagGib( GetLegsModel(), GetAbsOrigin() - Vector(0, 0, 40), GetAbsAngles(), vecLegsForce, flFadeTime );
+		CBaseEntity *pGib = CreateRagGib(this, GetLegsModel(), GetAbsOrigin() - Vector(0, 0, 40), GetAbsAngles(), vecLegsForce, flFadeTime);
 
 		// don't collide with this thing ever
 		if ( pGib )
@@ -2566,7 +2566,7 @@ void CNPC_BaseZombie::ReleaseHeadcrab(const Vector &vecOrigin, const Vector &vec
 	if( fRagdollCrab )
 	{
 		//Vector vecForce = Vector( 0, 0, random->RandomFloat( 700, 1100 ) );
-		CBaseEntity *pGib = CreateRagGib( GetHeadcrabModel(), vecOrigin, GetLocalAngles(), vecVelocity, 15, ShouldIgniteZombieGib() );
+		CBaseEntity *pGib = CreateRagGib(this, GetHeadcrabModel(), vecOrigin, GetLocalAngles(), vecVelocity, 15, ShouldIgniteZombieGib());
 
 		if ( pGib )
 		{

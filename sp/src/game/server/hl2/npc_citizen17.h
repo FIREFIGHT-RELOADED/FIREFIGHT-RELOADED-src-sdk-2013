@@ -250,6 +250,8 @@ public:
 
 	virtual void	OnChangeRunningBehavior( CAI_BehaviorBase *pOldBehavior,  CAI_BehaviorBase *pNewBehavior );
 
+	CitizenType_t	m_Type;
+
 private:
 	//-----------------------------------------------------
 	// Conditions, Schedules, Tasks
@@ -307,7 +309,6 @@ private:
 	CSimpleSimTimer	m_AutoSummonTimer;
 	Vector			m_vAutoSummonAnchor;
 
-	CitizenType_t	m_Type;
 	CitizenExpressionTypes_t	m_ExpressionType;
 
 	int				m_iHead;

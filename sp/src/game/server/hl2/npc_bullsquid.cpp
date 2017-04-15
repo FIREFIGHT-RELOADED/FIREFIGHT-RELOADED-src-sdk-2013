@@ -479,7 +479,7 @@ void CNPC_Bullsquid::HandleAnimEvent( animevent_t *pEvent )
 
 			for (int i = 0; i < 8; i++)
 			{
-				DispatchParticleEffect("blood_impact_yellow_01", vSpitPos + RandomVector(-12.0f, 12.0f), RandomAngle(0, 360));
+				DispatchParticleEffect("smod_drip_y", vSpitPos + RandomVector(-12.0f, 12.0f), RandomAngle(0, 360));
 			}
 
 			EmitSound("NPC_Antlion.PoisonShoot");

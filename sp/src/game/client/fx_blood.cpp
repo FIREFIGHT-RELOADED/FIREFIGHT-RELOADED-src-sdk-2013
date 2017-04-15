@@ -474,13 +474,13 @@ struct ParticleForBlood_t
 
 ParticleForBlood_t	bloodCallbacks[] =
 {
-	{ BLOOD_COLOR_RED,		"blood_impact_red_01" },
-	{ BLOOD_COLOR_GREEN,	"blood_impact_green_01" },
-	{ BLOOD_COLOR_YELLOW,	"blood_impact_yellow_01" },
+	{ BLOOD_COLOR_RED, "smod_drip_r" },
+	{ BLOOD_COLOR_GREEN, "smod_drip_g" },
+	{ BLOOD_COLOR_YELLOW, "smod_drip_y" },
 #if defined( HL2_EPISODIC )
-	{ BLOOD_COLOR_ANTLION,			"blood_impact_antlion_01" },		// FIXME: Move to Base HL2
-	{ BLOOD_COLOR_ZOMBIE,			"blood_impact_zombie_01" },			// FIXME: Move to Base HL2
-	{ BLOOD_COLOR_ANTLION_WORKER,	"blood_impact_antlion_worker_01" },
+	{ BLOOD_COLOR_ANTLION, "smod_drip_y" },		// FIXME: Move to Base HL2
+	{ BLOOD_COLOR_ZOMBIE, "smod_drip_y" },			// FIXME: Move to Base HL2
+	{ BLOOD_COLOR_ANTLION_WORKER, "smod_drip_g" },
 #endif // HL2_EPISODIC
 };
 

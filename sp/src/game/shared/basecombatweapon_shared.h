@@ -388,6 +388,8 @@ public:
 
 	virtual int				GetPrimaryAmmoType( void )  const { return m_iPrimaryAmmoType; }
 	virtual int				GetSecondaryAmmoType( void )  const { return m_iSecondaryAmmoType; }
+	virtual const char				*GetPrimaryAmmoTypeName(void) const;
+	virtual const char				*GetSecondaryAmmoTypeName(void) const;
 	virtual int				Clip1() { return m_iClip1; }
 	virtual int				Clip2() { return m_iClip2; }
 

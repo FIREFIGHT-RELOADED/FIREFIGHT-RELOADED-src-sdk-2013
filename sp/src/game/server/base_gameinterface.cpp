@@ -119,6 +119,21 @@ void CServerGameDLL::LevelInit_ParseAllEntities( const char *pMapEntities )
 				pMapadd->RunLabel(szMapadd, "FirefightRumble");
 			}
 		}
+		else if (g_pGameRules->iRandomGamemode == FIREFIGHT_PRIMARY_RESISTANCERETRIBUTION)
+		{
+			CMapAdd *pMapadd = GetMapAddEntity();
+			char szMapadd[128];
+			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
+			if (!pMapadd)
+			{
+				pMapadd = CreateMapAddEntity();
+				pMapadd->RunLabel(szMapadd, "ResistanceRetribution");
+			}
+			else
+			{
+				pMapadd->RunLabel(szMapadd, "ResistanceRetribution");
+			}
+		}
 	}
 	else
 	{
@@ -195,6 +210,21 @@ void CServerGameDLL::LevelInit_ParseAllEntities( const char *pMapEntities )
 			else
 			{
 				pMapadd->RunLabel(szMapadd, "FirefightRumble");
+			}
+		}
+		else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_RESISTANCERETRIBUTION)
+		{
+			CMapAdd *pMapadd = GetMapAddEntity();
+			char szMapadd[128];
+			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
+			if (!pMapadd)
+			{
+				pMapadd = CreateMapAddEntity();
+				pMapadd->RunLabel(szMapadd, "ResistanceRetribution");
+			}
+			else
+			{
+				pMapadd->RunLabel(szMapadd, "ResistanceRetribution");
 			}
 		}
 	}

@@ -43,6 +43,7 @@ STUB_WEAPON_CLASS(weapon_knife, WeaponKnife, C_BaseHLBludgeonWeapon);
 STUB_WEAPON_CLASS(weapon_gauss, WeaponGaussGun, C_BaseHLCombatWeapon);
 STUB_WEAPON_CLASS(weapon_egon, WeaponEgon, C_BaseHLCombatWeapon);
 STUB_WEAPON_CLASS(weapon_mp5, WeaponMP5, C_BaseHLCombatWeapon);
+STUB_WEAPON_CLASS(weapon_katana, WeaponKatana, C_BaseHLBludgeonWeapon);
 #ifdef HL2_EPISODIC
 STUB_WEAPON_CLASS( weapon_hopwire, WeaponHopwire, C_BaseHLCombatWeapon );
 //STUB_WEAPON_CLASS( weapon_proto1, WeaponProto1, C_BaseHLCombatWeapon );
