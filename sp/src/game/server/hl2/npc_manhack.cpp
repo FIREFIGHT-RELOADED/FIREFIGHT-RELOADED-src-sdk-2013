@@ -395,19 +395,8 @@ void CNPC_Manhack::Event_Killed( const CTakeDamageInfo &info )
 		SoundInit();
 	}
 
-	// Always gib when clubbed or blasted or crushed, or just randomly
-	if ( ( info.GetDamageType() & (DMG_CLUB|DMG_CRUSH|DMG_BLAST) ) || ( random->RandomInt( 0, 1 ) ) )
-	{
-		m_bGib = true;
-	}
-	else
-	{
-		m_bGib = false;
-		
-		//FIXME: These don't stay with the ragdolls currently -- jdw
-		// Long fadeout on the sprites!!
-		KillSprites( 0.0f );
-	}
+	// Always gib.
+	m_bGib = true;
 
 	BaseClass::Event_Killed( info );
 }

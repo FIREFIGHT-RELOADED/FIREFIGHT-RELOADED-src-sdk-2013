@@ -1025,7 +1025,7 @@ void CNPC_MiniStrider::Precache()
 	PrecacheScriptSound("NPC_Hunter.Footstep");
 	PrecacheScriptSound("NPC_Hunter.BackFootstep");
 	PrecacheScriptSound("NPC_Hunter.FlechetteVolleyWarn");
-	PrecacheScriptSound("NPC_Hunter.FlechetteShoot");
+	PrecacheScriptSound("NPC_Ministrider.Shoot");
 	PrecacheScriptSound("NPC_Hunter.FlechetteShootLoop");
 	PrecacheScriptSound("NPC_Hunter.FlankAnnounce");
 	PrecacheScriptSound("NPC_Hunter.MeleeAnnounce");
@@ -4586,7 +4586,7 @@ void CNPC_MiniStrider::MakeTracer( const Vector &vecTracerSrc, const trace_t &tr
 
 	int nAttachment = LookupAttachment( "MiniGun" );
 
-	UTIL_Tracer( vecTracerSrc, tr.endpos, nAttachment, TRACER_FLAG_USEATTACHMENT, 5000, true, "MiniStriderTracer" );
+	UTIL_Tracer( vecTracerSrc, tr.endpos, nAttachment, TRACER_FLAG_USEATTACHMENT, 5000, true, "AR2Tracer" );
 }
 
 
@@ -4763,7 +4763,7 @@ void CNPC_MiniStrider::PhysicsDamageEffect( const Vector &vecPos, const Vector &
 	CEffectData data;
 	data.m_vOrigin = vecPos;
 	data.m_vNormal = vecDir;
-	DispatchEffect( "MiniStriderDamage", data );
+	DispatchEffect( "HunterDamage", data );
 
 	if ( random->RandomInt( 0, 1 ) == 0 )
 	{
@@ -5280,7 +5280,7 @@ void CNPC_MiniStrider::DoMuzzleFlash( int nAttachment )
 	CEffectData data;
 	data.m_nAttachmentIndex = nAttachment;
 	data.m_nEntIndex = entindex();
-	DispatchEffect( "MiniStriderMuzzleFlash", data );
+	DispatchEffect( "HunterMuzzleFlash", data );
 }
 
 
@@ -5342,7 +5342,7 @@ void CNPC_MiniStrider::GetShootDir( Vector &vecDir, const Vector &vecSrc, CBaseE
 {
 	//RestartGesture( ACT_MINTER_GESTURE_SHOOT );
 
-	EmitSound( "NPC_Hunter.FlechetteShoot" );
+	EmitSound( "NPC_Ministrider.Shoot" );
 
 	Vector vecBodyTarget;
 
@@ -5579,7 +5579,7 @@ bool CNPC_MiniStrider::ShootFlechette(CBaseEntity *pTargetEntity, bool bSingleSh
 	DispatchEffect("AR2Impact", data);
 	BaseClass::DoImpactEffect(tr, DMG_DISSOLVE);
 	
-	UTIL_Tracer(vecSrc, tr.endpos, 0, TRACER_DONT_USE_ATTACHMENT, 5000, true, "StriderTracer");
+	UTIL_Tracer(vecSrc, tr.endpos, 0, TRACER_DONT_USE_ATTACHMENT, 5000, true, "AR2Tracer");
 
 	CTakeDamageInfo damageInfo(this, this, sk_ministrider_dmg_ar2round.GetFloat(), DMG_GENERIC | DMG_DISSOLVE); //tr.m_pEnt->GetHealth()
 	Vector force(0, 0, 1.0f);

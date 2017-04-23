@@ -601,6 +601,7 @@ void CNPC_MetroPolice::Precache( void )
 
 	PrecacheParticleSystem("smod_headshot_r");
 	PrecacheParticleSystem("smod_blood_decap_r");
+	PrecacheParticleSystem("smod_blood_gib_r");
 
 	UTIL_PrecacheOther( "npc_manhack" );
 
@@ -3134,7 +3135,7 @@ void CNPC_MetroPolice::Event_Killed( const CTakeDamageInfo &info )
 	{
 		Vector vecDamageDir = info.GetDamageForce();
 		SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
-		DispatchParticleEffect("headshotspray", GetAbsOrigin(), GetAbsAngles(), this);
+		DispatchParticleEffect("smod_blood_gib_r", GetAbsOrigin(), GetAbsAngles(), this);
 		EmitSound("Gore.Headshot");
 		float flFadeTime = 25.0;
 

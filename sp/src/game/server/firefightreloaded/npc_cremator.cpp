@@ -599,10 +599,13 @@ void CNPC_Cremator::RunAI(void)
 {
 	if (!HasCondition(COND_CREMATOR_FOUND_CORPSE))
 		SearchForCorpses(); // FIXME: is it the best place for it?
-	if (this->IsCurSchedule(SCHED_CREMATOR_INVESTIGATE_CORPSE) && pCorpse->WorldSpaceCenter().DistToSqr(WorldSpaceCenter()) <= 128 * 128)
+	//currently some crashes with this function.
+	/*
+	if (IsCurSchedule(SCHED_CREMATOR_INVESTIGATE_CORPSE) && pCorpse->WorldSpaceCenter().DistToSqr(WorldSpaceCenter()) <= 128 * 128)
 	{
 		GetNavigator()->StopMoving();
 	}
+	*/
 	BaseClass::RunAI();
 }
 void CNPC_Cremator::StartTask(const Task_t *pTask)
