@@ -49,6 +49,8 @@
 
 ConVar	cc_achievement_debug( "achievement_debug", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Turn on achievement debug msgs." );
 
+ConVar	achievement_showlegacymsgs( "achievement_showlegacymsgs", "0", FCVAR_REPLICATED|FCVAR_ARCHIVE);
+
 #ifdef CSTRIKE_DLL
 //=============================================================================
 // HPE_BEGIN:
@@ -950,11 +952,13 @@ void CAchievementMgr::AwardAchievement( int iAchievementID )
 	if (!pEntity)
 		return;
 
-#ifdef MOD_VER
-	CFmtStr hint;
-	hint.sprintf("#%s_ACHIEVED", pAchievement->GetName());
-	ShowAchievementMessage(pEntity, hint.Access());
-#endif
+	if (achievement_showlegacymsgs.GetBool())
+	{
+		CFmtStr hint;
+		hint.sprintf("#%s_ACHIEVED", pAchievement->GetName());
+		ShowAchievementMessage(pEntity, hint.Access());
+	}
+
 	pEntity->AddXP(pAchievement->GetPointValue());
 	pEntity->AddMoney(pAchievement->GetPointValue());
 #endif

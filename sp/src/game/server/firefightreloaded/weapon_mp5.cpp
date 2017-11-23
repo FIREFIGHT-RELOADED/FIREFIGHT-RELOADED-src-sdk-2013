@@ -21,6 +21,8 @@
 #include "tier0/memdbgon.h"	
 
 #define	MP5_FASTEST_REFIRE_TIME		0.1f
+#define MP5_MAX_BURST 3
+#define MP5_MAX_CYCLE_RATE 0.5f;
 
 class CWeaponMP5 : public CBaseHLCombatWeapon
 {
@@ -36,6 +38,9 @@ public:
 	void	Precache(void);
 	void	Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatCharacter *pOperator);
 	float	GetFireRate(void);
+	virtual void	FireModeLogic(int burstsize, float firerate, int firemode);
+	void AddViewKick(void);
+	void DoMachineGunKick(CBasePlayer *pPlayer, float dampEasy, float maxVerticleKickAngle, float fireDurationTime, float slideLimitTime);
 
 	float	WeaponAutoAimScale()	{ return 0.6f; }
 
@@ -45,14 +50,7 @@ public:
 
 		if (GetOwner() && GetOwner()->IsPlayer())
 		{
-			if (m_iFireMode == 1)
-			{
-				cone = VECTOR_CONE_1DEGREES;
-			}
-			else
-			{
-				cone = VECTOR_CONE_3DEGREES;
-			}
+			cone = VECTOR_CONE_3DEGREES;
 		}
 		else
 		{
@@ -67,7 +65,6 @@ public:
 protected:
 	int				m_iFireMode;
 	int				m_nShotsFired;
-	float	m_flSoonestPrimaryAttack;
 	
 	DECLARE_DATADESC();
 	DECLARE_ACTTABLE();
@@ -82,7 +79,6 @@ PRECACHE_WEAPON_REGISTER(weapon_mp5);
 BEGIN_DATADESC( CWeaponMP5 )
 DEFINE_FIELD(m_iFireMode, FIELD_INTEGER),
 DEFINE_FIELD(m_nShotsFired, FIELD_INTEGER),
-DEFINE_FIELD(m_flSoonestPrimaryAttack, FIELD_TIME),
 END_DATADESC()
 
 acttable_t	CWeaponMP5::m_acttable[] =
@@ -157,8 +153,6 @@ CWeaponMP5::CWeaponMP5( )
 	m_iFireMode = 0;
 
 	m_bFiresUnderwater = false;
-
-	m_flSoonestPrimaryAttack = gpGlobals->curtime;
 }
 
 void CWeaponMP5::Precache(void)
@@ -203,72 +197,30 @@ void CWeaponMP5::Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatCharac
 
 void CWeaponMP5::PrimaryAttack(void)
 {
-	// Only the player fires this way so we can cast
-	CBasePlayer *pPlayer = ToBasePlayer(GetOwner());
-
-	if (!pPlayer)
+	if (m_bFireOnEmpty)
 	{
 		return;
 	}
 
-	if (m_iClip1 <= 0)
+	switch (m_iFireMode)
 	{
-		if (!m_bFireOnEmpty)
-		{
-			Reload();
-		}
-		else
-		{
-			WeaponSound(EMPTY);
-			m_flNextPrimaryAttack = 0.15;
-		}
+		case 0:
+			FireModeLogic(1, GetFireRate(), 0);
+			SetWeaponIdleTime(gpGlobals->curtime + 3.0f);
+			break;
 
-		return;
+		case 1:
+			FireModeLogic(MP5_MAX_BURST, GetFireRate(), 1);
+			SetWeaponIdleTime(gpGlobals->curtime + 3.0f);
+			break;
 	}
 
-	m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
-	m_flNextSecondaryAttack = gpGlobals->curtime + GetFireRate();
-
-	m_iPrimaryAttacks++;
-	gamestats->Event_WeaponFired(pPlayer, true, GetClassname());
-
-	WeaponSound(SINGLE);
-	pPlayer->DoMuzzleFlash();
-
-	SendWeaponAnim(ACT_VM_PRIMARYATTACK);
-	pPlayer->SetAnimation(PLAYER_ATTACK1);
-
-	if (GetWpnData().m_bUseMuzzleSmoke)
+	CBasePlayer *pOwner = ToBasePlayer(GetOwner());
+	if (pOwner)
 	{
-		DispatchParticleEffect("weapon_muzzle_smoke", PATTACH_POINT_FOLLOW, pPlayer->GetViewModel(), "muzzle");
+		m_iPrimaryAttacks++;
+		gamestats->Event_WeaponFired(pOwner, true, GetClassname());
 	}
-
-	m_iClip1--;
-
-	Vector vecSrc = pPlayer->Weapon_ShootPosition();
-	Vector vecAiming = pPlayer->GetAutoaimVector(AUTOAIM_SCALE_DEFAULT);
-
-	pPlayer->FireBullets(1, vecSrc, vecAiming, vec3_origin, MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 0);
-
-	pPlayer->SetMuzzleFlashTime(gpGlobals->curtime + 0.5);
-
-	QAngle vecScratch;
-
-	vecScratch.x = random->RandomInt(0, 1);
-	vecScratch.y = random->RandomInt(0, 1);
-	vecScratch.z = 0;
-
-	pPlayer->ViewPunch(vecScratch);
-
-	CSoundEnt::InsertSound(SOUND_COMBAT, GetAbsOrigin(), 600, 0.2, GetOwner());
-
-	if (!m_iClip1 && pPlayer->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
-	{
-		// HEV suit - indicate out of ammo condition
-		pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
-	}
-
-	m_flSoonestPrimaryAttack = gpGlobals->curtime + MP5_FASTEST_REFIRE_TIME;
 }
 
 //-----------------------------------------------------------------------------
@@ -276,8 +228,6 @@ void CWeaponMP5::PrimaryAttack(void)
 //-----------------------------------------------------------------------------
 bool CWeaponMP5::Deploy(void)
 {
-	m_nShotsFired = 0;
-
 	return BaseClass::Deploy();
 }
 
@@ -300,7 +250,7 @@ void CWeaponMP5::ItemPostFrame(void)
 		if (m_iFireMode == 0)
 		{
 			CFmtStr hint;
-			hint.sprintf("#Valve_MP5_Semiautomatic");
+			hint.sprintf("#Valve_MP5_3RndBurst");
 			pOwner->ShowLevelMessage(hint.Access());
 			m_iFireMode = 1;
 			WeaponSound(EMPTY);
@@ -314,13 +264,144 @@ void CWeaponMP5::ItemPostFrame(void)
 			WeaponSound(EMPTY);
 		}
 	}
-
-	if ((m_iFireMode == 1) && ((pOwner->m_nButtons & IN_ATTACK) == false) && (m_flSoonestPrimaryAttack < gpGlobals->curtime))
-	{
-		m_flNextPrimaryAttack = gpGlobals->curtime - 0.1f;
-	}
 	
 	BaseClass::ItemPostFrame();
+}
+
+void CWeaponMP5::FireModeLogic(int burstsize, float firerate, int firemode)
+{
+	if (m_flNextPrimaryAttack > gpGlobals->curtime)
+		return;
+
+	// Only the player fires this way so we can cast
+	CBasePlayer *pPlayer = ToBasePlayer(GetOwner());
+	if (!pPlayer)
+		return;
+
+	// Abort here to handle burst and auto fire modes
+	if ((UsesClipsForAmmo1() && m_iClip1 == 0) || (!UsesClipsForAmmo1() && !pPlayer->GetAmmoCount(m_iPrimaryAmmoType)))
+		return;
+
+	m_nShotsFired++;
+
+	pPlayer->DoMuzzleFlash();
+
+	// To make the firing framerate independent, we may have to fire more than one bullet here on low-framerate systems, 
+	// especially if the weapon we're firing has a really fast rate of fire.
+	int iBulletsToFire = 0;
+	float fireRate = firerate;
+
+	while (m_flNextPrimaryAttack <= gpGlobals->curtime)
+	{
+		// MUST call sound before removing a round from the clip of a CHLMachineGun
+		WeaponSound(SINGLE, m_flNextPrimaryAttack);
+		m_flNextPrimaryAttack = m_flNextPrimaryAttack + fireRate;
+		iBulletsToFire++;
+	}
+
+	// Make sure we don't fire more than the amount in the clip, if this weapon uses clips
+	if (UsesClipsForAmmo1())
+	{
+		if (iBulletsToFire > burstsize)
+			iBulletsToFire = burstsize;
+
+		if (iBulletsToFire > m_iClip1)
+			iBulletsToFire = m_iClip1;
+
+		m_iClip1 -= iBulletsToFire;
+	}
+
+	// Fire the bullets
+	FireBulletsInfo_t info;
+	info.m_iShots = iBulletsToFire;
+	info.m_vecSrc = pPlayer->Weapon_ShootPosition();
+	info.m_vecDirShooting = pPlayer->GetAutoaimVector(AUTOAIM_5DEGREES);
+	info.m_vecSpread = pPlayer->GetAttackSpread(this);
+	info.m_flDistance = MAX_TRACE_LENGTH;
+	info.m_iAmmoType = m_iPrimaryAmmoType;
+	info.m_iTracerFreq = 1;
+	FireBullets(info);
+
+	//Factor in the view kick
+	AddViewKick();
+
+	if (!m_iClip1 && pPlayer->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
+	{
+		// HEV suit - indicate out of ammo condition
+		pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
+	}
+
+	SendWeaponAnim(GetPrimaryAttackActivity());
+	pPlayer->SetAnimation(PLAYER_ATTACK1);
+
+	if (firemode == 1)
+	{
+		if (m_nShotsFired == burstsize)
+		{
+			m_flNextPrimaryAttack = gpGlobals->curtime + MP5_MAX_CYCLE_RATE;
+			m_nShotsFired = 0;
+		}
+	}
+}
+
+void CWeaponMP5::AddViewKick(void)
+{
+	#define	EASY_DAMPEN			0.5f
+	#define	MAX_VERTICAL_KICK	1.2f	//Degrees
+	#define	SLIDE_LIMIT			2.0f	//Seconds
+
+	//Get the view kick
+	CBasePlayer *pPlayer = ToBasePlayer(GetOwner());
+
+	if (pPlayer == NULL)
+		return;
+
+	DoMachineGunKick(pPlayer, EASY_DAMPEN, MAX_VERTICAL_KICK, m_fFireDuration, SLIDE_LIMIT);
+}
+
+void CWeaponMP5::DoMachineGunKick(CBasePlayer *pPlayer, float dampEasy, float maxVerticleKickAngle, float fireDurationTime, float slideLimitTime)
+{
+	#define	KICK_MIN_X			0.2f	//Degrees
+	#define	KICK_MIN_Y			0.2f	//Degrees
+	#define	KICK_MIN_Z			0.1f	//Degrees
+
+	QAngle vecScratch;
+
+	//Find how far into our accuracy degradation we are
+	float duration = (fireDurationTime > slideLimitTime) ? slideLimitTime : fireDurationTime;
+	float kickPerc = duration / slideLimitTime;
+
+	// do this to get a hard discontinuity, clear out anything under 10 degrees punch
+	pPlayer->ViewPunchReset(10);
+
+	//Apply this to the view angles as well
+	vecScratch.x = -(KICK_MIN_X + (maxVerticleKickAngle * kickPerc));
+	vecScratch.y = -(KICK_MIN_Y + (maxVerticleKickAngle * kickPerc)) / 3;
+	vecScratch.z = KICK_MIN_Z + (maxVerticleKickAngle * kickPerc) / 8;
+
+	//Wibble left and right
+	if (random->RandomInt(-1, 1) >= 0)
+		vecScratch.y *= -1;
+
+	//Wobble up and down
+	if (random->RandomInt(-1, 1) >= 0)
+		vecScratch.z *= -1;
+
+	//If we're in easy, dampen the effect a bit
+	if (g_pGameRules->IsSkillLevel(SKILL_EASY))
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			vecScratch[i] *= dampEasy;
+		}
+	}
+
+	//Clip this to our desired min/max
+	UTIL_ClipPunchAngleOffset(vecScratch, pPlayer->m_Local.m_vecPunchAngle, QAngle(24.0f, 3.0f, 1.0f));
+
+	//Add it to the view punch
+	// NOTE: 0.5 is just tuned to match the old effect before the punch became simulated
+	pPlayer->ViewPunch(vecScratch * 0.5);
 }
 
 //-----------------------------------------------------------------------------
@@ -329,12 +410,5 @@ void CWeaponMP5::ItemPostFrame(void)
 //-----------------------------------------------------------------------------
 float CWeaponMP5::GetFireRate(void)
 {
-	if (m_iFireMode == 1)
-	{
-		return 0.6f;
-	}
-	else
-	{
-		return 0.085f;
-	}
+	return 0.085f;
 }

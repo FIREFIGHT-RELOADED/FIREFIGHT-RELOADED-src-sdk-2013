@@ -147,6 +147,9 @@
 #include "fbxsystem/fbxsystem.h"
 #endif
 
+//discord
+#include "discord-rpc.h"
+
 extern vgui::IInputInternal *g_InputInternal;
 
 //=============================================================================
@@ -330,11 +333,11 @@ void DispatchHudText( const char *pszName );
 static ConVar s_CV_ShowParticleCounts("showparticlecounts", "0", 0, "Display number of particles drawn per frame");
 static ConVar s_cl_team("cl_team", "default", FCVAR_USERINFO|FCVAR_ARCHIVE, "Default team when joining a game");
 static ConVar s_cl_class("cl_class", "default", FCVAR_USERINFO|FCVAR_ARCHIVE, "Default class when joining a game");
+static ConVar cl_discord_appid("cl_discord_appid", "382336881758568448", FCVAR_DEVELOPMENTONLY|FCVAR_CHEAT);
 
 #ifdef HL1MP_CLIENT_DLL
 static ConVar s_cl_load_hl1_content("cl_load_hl1_content", "0", FCVAR_ARCHIVE, "Mount the content from Half-Life: Source if possible");
 #endif
-
 
 // Physics system
 bool g_bLevelInitialized;
@@ -832,6 +835,33 @@ bool IsEngineThreaded()
 	return false;
 }
 
+static void handleDiscordReady()
+{
+	DevMsg("Discord: Ready\n");
+}
+
+static void handleDiscordDisconnected(int errcode, const char* message)
+{
+	DevMsg("Discord: Disconnected (%d: %s)\n", errcode, message);
+}
+
+static void handleDiscordError(int errcode, const char* message)
+{
+	DevMsg("Discord: Error (%d: %s)\n", errcode, message);
+}
+
+static void handleDiscordJoin(const char* secret)
+{
+}
+
+static void handleDiscordSpectate(const char* secret)
+{
+}
+
+static void handleDiscordJoinRequest(const DiscordJoinRequest* request)
+{
+}
+
 //-----------------------------------------------------------------------------
 // Constructor
 //-----------------------------------------------------------------------------
@@ -1085,6 +1115,28 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 	HookHapticMessages(); // Always hook the messages
 #endif
 
+	DiscordEventHandlers handlers;
+	memset(&handlers, 0, sizeof(handlers));
+	handlers.ready = handleDiscordReady;
+	handlers.disconnected = handleDiscordDisconnected;
+	handlers.errored = handleDiscordError;
+	handlers.joinGame = handleDiscordJoin;
+	handlers.spectateGame = handleDiscordSpectate;
+	handlers.joinRequest = handleDiscordJoinRequest;
+	char appid[255];
+	sprintf(appid, "%d", engine->GetAppID());
+	Discord_Initialize(cl_discord_appid.GetString(), &handlers, 1, appid);
+
+	if (!g_bTextMode)
+	{
+		DiscordRichPresence discordPresence;
+		memset(&discordPresence, 0, sizeof(discordPresence));
+		discordPresence.state = "In-Game";
+		discordPresence.details = "Main Menu";
+		discordPresence.largeImageKey = "fr_large";
+		Discord_UpdatePresence(&discordPresence);
+	}
+
 	//InitCustomWeapon();
 
 	return true;
@@ -1211,6 +1263,8 @@ void CHLClient::Shutdown( void )
 	DisconnectDataModel();
 	ShutdownFbx();
 #endif
+
+	Discord_Shutdown();
 	
 	// This call disconnects the VGui libraries which we rely on later in the shutdown path, so don't do it
 //	DisconnectTier3Libraries( );
@@ -1624,6 +1678,18 @@ void CHLClient::LevelInitPreEntity( char const* pMapName )
 	}
 #endif
 
+	if (!g_bTextMode)
+	{
+		char buffer[256];
+		DiscordRichPresence discordPresence;
+		memset(&discordPresence, 0, sizeof(discordPresence));
+		discordPresence.state = "In-Game";
+		sprintf(buffer, "Map: %s", pMapName);
+		discordPresence.details = buffer;
+		discordPresence.largeImageKey = "fr_large";
+		Discord_UpdatePresence(&discordPresence);
+	}
+
 	// Check low violence settings for this map
 	g_RagdollLVManager.SetLowViolence( pMapName );
 
@@ -1714,6 +1780,16 @@ void CHLClient::LevelShutdown( void )
 	StopAllRumbleEffects();
 
 	gHUD.LevelShutdown();
+
+	if (!g_bTextMode)
+	{
+		DiscordRichPresence discordPresence;
+		memset(&discordPresence, 0, sizeof(discordPresence));
+		discordPresence.state = "In-Game";
+		discordPresence.details = "Main Menu";
+		discordPresence.largeImageKey = "fr_large";
+		Discord_UpdatePresence(&discordPresence);
+	}
 
 	internalCenterPrint->Clear();
 

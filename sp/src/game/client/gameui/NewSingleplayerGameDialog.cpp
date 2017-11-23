@@ -121,6 +121,13 @@ void CNewSingleplayerGameDialog::LoadMaps(const char *pszPathID)
 		//}
 
 		// remove the text 'maps/' and '.bsp' from the file name to get the map name
+
+		//skip credits.bsp
+		const char *creditsstr = Q_strstr(pszFilename, "credits");
+		if (creditsstr)
+		{
+			pszFilename = g_pFullFileSystem->FindNext(findHandle);
+		}
 		
 		const char *str = Q_strstr( pszFilename, "maps" );
 		if ( str )

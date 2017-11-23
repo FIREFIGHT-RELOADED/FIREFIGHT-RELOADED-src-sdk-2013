@@ -157,12 +157,7 @@ const char *g_charNPCSResistanceRetributionCommonWeapons[] =
 {
 	"weapon_smg1",
 	"weapon_crowbar",
-};
-
-const char *g_charNPCSResistanceRetributionRareWeapons[] =
-{
 	"weapon_shotgun",
-	"weapon_rpg",
 	"weapon_ar2",
 };
 
@@ -904,24 +899,15 @@ void CNPCMakerFirefight::MakeNPC(void)
 				int randomChoiceCitizen = rand() % nWeaponsCitizen;
 				const char *pRandomNameCitizen = g_charNPCSResistanceRetributionCommonWeapons[randomChoiceCitizen];
 				pent->m_spawnEquipment = MAKE_STRING(pRandomNameCitizen);
-
-				CNPC_Citizen *citizen = dynamic_cast<CNPC_Citizen *>(pent);
-				if (!FClassnameIs(citizen, "npc_citizen"))
-					return;
-
-				int iRandomType = random->RandomInt(0, 2);
-				if (iRandomType == 0)
+				if (pent->m_spawnEquipment == MAKE_STRING("weapon_shotgun"))
 				{
-					citizen->m_Type = CT_DEFAULT;
+					pent->AddSpawnFlags(SF_CITIZEN_RANDOM_HEAD_FEMALE);
 				}
-				else if (iRandomType == 1)
+				else
 				{
-					citizen->m_Type = CT_UNIQUE;
+					pent->AddSpawnFlags(SF_CITIZEN_RANDOM_HEAD);
 				}
-				else if (iRandomType == 2)
-				{
-					citizen->m_Type = CT_REBEL;
-				}
+				pent->KeyValue("citizentype", "3");
 			}
 
 			pent->m_isRareEntity = false;
@@ -978,8 +964,14 @@ void CNPCMakerFirefight::MakeNPC(void)
 			int randomChoiceCitizen = rand() % nWeaponsCitizen;
 			const char *pRandomNameCitizen = g_charNPCSResistanceRetributionCommonWeapons[randomChoiceCitizen];
 			pent->m_spawnEquipment = MAKE_STRING(pRandomNameCitizen);
-
-			pent->AddSpawnFlags(SF_CITIZEN_RANDOM_HEAD);
+			if (pent->m_spawnEquipment == MAKE_STRING("weapon_shotgun"))
+			{
+				pent->AddSpawnFlags(SF_CITIZEN_RANDOM_HEAD_FEMALE);
+			}
+			else
+			{
+				pent->AddSpawnFlags(SF_CITIZEN_RANDOM_HEAD);
+			}
 			pent->KeyValue("citizentype", "3");
 			pent->m_isRareEntity = false;
 			pent->SetSquadName(m_SquadName);
@@ -1390,24 +1382,15 @@ void CNPCMakerFirefight::MakeNPC(void)
 				int randomChoiceCitizen = rand() % nWeaponsCitizen;
 				const char *pRandomNameCitizen = g_charNPCSResistanceRetributionCommonWeapons[randomChoiceCitizen];
 				pent->m_spawnEquipment = MAKE_STRING(pRandomNameCitizen);
-
-				CNPC_Citizen *citizen = dynamic_cast<CNPC_Citizen *>(pent);
-				if (!FClassnameIs(citizen, "npc_citizen"))
-					return;
-
-				int iRandomType = random->RandomInt(0, 2);
-				if (iRandomType == 0)
+				if (pent->m_spawnEquipment == MAKE_STRING("weapon_shotgun"))
 				{
-					citizen->m_Type = CT_DEFAULT;
+					pent->AddSpawnFlags(SF_CITIZEN_RANDOM_HEAD_FEMALE);
 				}
-				else if (iRandomType == 1)
+				else
 				{
-					citizen->m_Type = CT_UNIQUE;
+					pent->AddSpawnFlags(SF_CITIZEN_RANDOM_HEAD);
 				}
-				else if (iRandomType == 2)
-				{
-					citizen->m_Type = CT_REBEL;
-				}
+				pent->KeyValue("citizentype", "3");
 			}
 
 			pent->m_isRareEntity = false;
@@ -1464,8 +1447,14 @@ void CNPCMakerFirefight::MakeNPC(void)
 			int randomChoiceCitizen = rand() % nWeaponsCitizen;
 			const char *pRandomNameCitizen = g_charNPCSResistanceRetributionCommonWeapons[randomChoiceCitizen];
 			pent->m_spawnEquipment = MAKE_STRING(pRandomNameCitizen);
-
-			pent->AddSpawnFlags(SF_CITIZEN_RANDOM_HEAD);
+			if (pent->m_spawnEquipment == MAKE_STRING("weapon_shotgun"))
+			{
+				pent->AddSpawnFlags(SF_CITIZEN_RANDOM_HEAD_FEMALE);
+			}
+			else
+			{
+				pent->AddSpawnFlags(SF_CITIZEN_RANDOM_HEAD);
+			}
 			pent->KeyValue("citizentype", "3");
 			pent->m_isRareEntity = false;
 			pent->SetSquadName(m_SquadName);
@@ -1819,17 +1808,19 @@ void CNPCMakerFirefight::MakeRareNPC(void)
 			}
 			else if (Q_stristr(pRandomName, "npc_citizen"))
 			{
-				int nWeaponsCitizen = ARRAYSIZE(g_charNPCSResistanceRetributionRareWeapons);
+				int nWeaponsCitizen = ARRAYSIZE(g_charNPCSResistanceRetributionCommonWeapons);
 				int randomChoiceCitizen = rand() % nWeaponsCitizen;
-				const char *pRandomNameCitizen = g_charNPCSResistanceRetributionRareWeapons[randomChoiceCitizen];
+				const char *pRandomNameCitizen = g_charNPCSResistanceRetributionCommonWeapons[randomChoiceCitizen];
 				pent->m_spawnEquipment = MAKE_STRING(pRandomNameCitizen);
-
-				CNPC_Citizen *citizen = dynamic_cast<CNPC_Citizen *>(pent);
-				if (!FClassnameIs(citizen, "npc_citizen"))
-					return;
-
-				//rare citizens are always rebels.
-				citizen->m_Type = CT_REBEL;
+				if (pent->m_spawnEquipment == MAKE_STRING("weapon_shotgun"))
+				{
+					pent->AddSpawnFlags(SF_CITIZEN_RANDOM_HEAD_FEMALE);
+				}
+				else
+				{
+					pent->AddSpawnFlags(SF_CITIZEN_RANDOM_HEAD);
+				}
+				pent->KeyValue("citizentype", "3");
 			}
 
 			pent->m_isRareEntity = true;
@@ -1882,12 +1873,18 @@ void CNPCMakerFirefight::MakeRareNPC(void)
 				pent->AddSpawnFlags(SF_NPC_FADE_CORPSE);
 			}
 
-			int nWeaponsCitizen = ARRAYSIZE(g_charNPCSResistanceRetributionRareWeapons);
+			int nWeaponsCitizen = ARRAYSIZE(g_charNPCSResistanceRetributionCommonWeapons);
 			int randomChoiceCitizen = rand() % nWeaponsCitizen;
-			const char *pRandomNameCitizen = g_charNPCSResistanceRetributionRareWeapons[randomChoiceCitizen];
+			const char *pRandomNameCitizen = g_charNPCSResistanceRetributionCommonWeapons[randomChoiceCitizen];
 			pent->m_spawnEquipment = MAKE_STRING(pRandomNameCitizen);
-
-			pent->AddSpawnFlags(SF_CITIZEN_RANDOM_HEAD);
+			if (pent->m_spawnEquipment == MAKE_STRING("weapon_shotgun"))
+			{
+				pent->AddSpawnFlags(SF_CITIZEN_RANDOM_HEAD_FEMALE);
+			}
+			else
+			{
+				pent->AddSpawnFlags(SF_CITIZEN_RANDOM_HEAD);
+			}
 			pent->KeyValue("citizentype", "3");
 			pent->m_isRareEntity = true;
 			pent->SetSquadName(m_SquadName);
@@ -2230,17 +2227,19 @@ void CNPCMakerFirefight::MakeRareNPC(void)
 			}
 			else if (Q_stristr(pRandomName, "npc_citizen"))
 			{
-				int nWeaponsCitizen = ARRAYSIZE(g_charNPCSResistanceRetributionRareWeapons);
+				int nWeaponsCitizen = ARRAYSIZE(g_charNPCSResistanceRetributionCommonWeapons);
 				int randomChoiceCitizen = rand() % nWeaponsCitizen;
-				const char *pRandomNameCitizen = g_charNPCSResistanceRetributionRareWeapons[randomChoiceCitizen];
+				const char *pRandomNameCitizen = g_charNPCSResistanceRetributionCommonWeapons[randomChoiceCitizen];
 				pent->m_spawnEquipment = MAKE_STRING(pRandomNameCitizen);
-
-				CNPC_Citizen *citizen = dynamic_cast<CNPC_Citizen *>(pent);
-				if (!FClassnameIs(citizen, "npc_citizen"))
-					return;
-
-				//rare citizens are always rebels.
-				citizen->m_Type = CT_REBEL;
+				if (pent->m_spawnEquipment == MAKE_STRING("weapon_shotgun"))
+				{
+					pent->AddSpawnFlags(SF_CITIZEN_RANDOM_HEAD_FEMALE);
+				}
+				else
+				{
+					pent->AddSpawnFlags(SF_CITIZEN_RANDOM_HEAD);
+				}
+				pent->KeyValue("citizentype", "3");
 			}
 
 			pent->m_isRareEntity = true;
@@ -2293,12 +2292,18 @@ void CNPCMakerFirefight::MakeRareNPC(void)
 				pent->AddSpawnFlags(SF_NPC_FADE_CORPSE);
 			}
 
-			int nWeaponsCitizen = ARRAYSIZE(g_charNPCSResistanceRetributionRareWeapons);
+			int nWeaponsCitizen = ARRAYSIZE(g_charNPCSResistanceRetributionCommonWeapons);
 			int randomChoiceCitizen = rand() % nWeaponsCitizen;
-			const char *pRandomNameCitizen = g_charNPCSResistanceRetributionRareWeapons[randomChoiceCitizen];
+			const char *pRandomNameCitizen = g_charNPCSResistanceRetributionCommonWeapons[randomChoiceCitizen];
 			pent->m_spawnEquipment = MAKE_STRING(pRandomNameCitizen);
-
-			pent->AddSpawnFlags(SF_CITIZEN_RANDOM_HEAD);
+			if (pent->m_spawnEquipment == MAKE_STRING("weapon_shotgun"))
+			{
+				pent->AddSpawnFlags(SF_CITIZEN_RANDOM_HEAD_FEMALE);
+			}
+			else
+			{
+				pent->AddSpawnFlags(SF_CITIZEN_RANDOM_HEAD);
+			}
 			pent->KeyValue("citizentype", "3");
 			pent->m_isRareEntity = true;
 			pent->SetSquadName(m_SquadName);

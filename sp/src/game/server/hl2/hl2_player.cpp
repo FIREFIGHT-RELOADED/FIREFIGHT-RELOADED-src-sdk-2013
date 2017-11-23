@@ -1172,7 +1172,15 @@ void CHL2_Player::FlyJetpack(void)
 void CHL2_Player::SetPlayerModel(void)
 {
 	const char *szModelName = NULL;
-	szModelName = engine->GetClientConVarValue(engine->IndexOfEdict(edict()), "cl_playermodel");
+	const char *szPlayerModelVal = engine->GetClientConVarValue(engine->IndexOfEdict(edict()), "cl_playermodel");
+	if (Q_strcmp(szPlayerModelVal, "none") == 0)
+	{
+		szModelName = "models/player/playermodels/gordon.mdl";
+	}
+	else
+	{
+		szModelName = szPlayerModelVal;
+	}
 	SetModel(szModelName);
 }
 
@@ -4656,7 +4664,6 @@ uint64 dev_ids[] =
 
 uint64 vip_ids[] =
 {
-	76561198069277486 ^ devmask, // Chaos
 	76561198090680426 ^ devmask, // Tytygigas
 	76561198102150628 ^ devmask, // BlackSnow
 	76561198099919776 ^ devmask, // TheScat
@@ -4667,6 +4674,8 @@ uint64 vip_ids[] =
 	76561198052032488 ^ devmask, // sparrowstar
 	76561198048089766 ^ devmask, // xDShot
 	76561198214768344 ^ devmask, // herbj54
+	76561198249408984 ^ devmask, // bfbc2143
+	76561198070739495 ^ devmask, // Real Beb
 };
 
 //-----------------------------------------------------------------------------
