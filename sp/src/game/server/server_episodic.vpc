@@ -9,6 +9,7 @@ $Macro GAMENAME 	"episodic" [!$SOURCESDK]
 $Macro GAMENAME 	"mod_episodic" [$SOURCESDK]
 
 $Include "$SRCDIR\game\server\server_base.vpc"
+$Include "$SRCDIR\game\server\nav_mesh.vpc"
 
 $Configuration
 {
@@ -367,6 +368,12 @@ $Project "Server (Episodic)"
 				$File	"firefightreloaded\npc_acontroller.cpp"
 				$File	"firefightreloaded\weapon_egon.cpp"
 			}
+		}
+		
+		$Folder	"InSource DLL"
+		{
+			$File	"in\nodes_generation.cpp"
+			$File	"in\nodes_generation.h"
 		}
 		
 		$Folder	"SMMOD DLL"

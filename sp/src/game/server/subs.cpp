@@ -66,6 +66,10 @@ LINK_ENTITY_TO_CLASS(info_player_deathmatch, CPointEntity);
 LINK_ENTITY_TO_CLASS(info_player_start,CPointEntity);
 LINK_ENTITY_TO_CLASS(info_player_combine, CPointEntity);
 LINK_ENTITY_TO_CLASS(info_player_rebel, CPointEntity);
+LINK_ENTITY_TO_CLASS(info_player_allies, CPointEntity);
+LINK_ENTITY_TO_CLASS(info_player_axis, CPointEntity);
+LINK_ENTITY_TO_CLASS(info_player_terrorist, CPointEntity);
+LINK_ENTITY_TO_CLASS(info_player_counterterrorist, CPointEntity);
 LINK_ENTITY_TO_CLASS(info_landmark,CPointEntity);
 
 /*

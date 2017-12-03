@@ -202,8 +202,6 @@ ConVar sv_regeneration_rate("sv_regeneration_rate", "2.5", FCVAR_REPLICATED | FC
 
 ConVar sk_player_weapons("sk_player_weapons", "1");
 
-ConVar sk_player_deathmatch_spawn("sk_player_deathmatch_spawn", "0", FCVAR_ARCHIVE);
-
 ConVar sv_player_maxsuitpower("sv_player_maxsuitpower", "200", FCVAR_REPLICATED);
 
 ConVar sv_player_health("sv_player_health", "200", FCVAR_REPLICATED);
@@ -6743,87 +6741,137 @@ USES AND SETS GLOBAL g_pLastSpawn
 CBaseEntity *CBasePlayer::EntSelectSpawnPoint()
 {
 	CBaseEntity *pSpot;
+	CBaseEntity *pSpotFinder;
 	edict_t		*player;
 
 	player = edict();
 
-// choose a info_player_deathmatch point
-	/*
-	if (g_pGameRules->IsCoOp())
+	pSpot = g_pLastSpawn;
+	pSpotFinder = NULL;
+
+	int TeamSpawnAttempt1 = random->RandomInt(1, 2);
+
+	if (TeamSpawnAttempt1 == 1)
 	{
-		pSpot = gEntList.FindEntityByClassname( g_pLastSpawn, "info_player_coop");
-		if ( pSpot )
-			goto ReturnSpot;
-		pSpot = gEntList.FindEntityByClassname( g_pLastSpawn, "info_player_start");
-		if ( pSpot ) 
-			goto ReturnSpot;
+		pSpotFinder = gEntList.FindEntityByClassname(pSpot, "info_player_rebel");
 	}
-	*/
-	//else if ( g_pGameRules->IsDeathmatch() )
-	if (sk_player_deathmatch_spawn.GetBool() || g_pGameRules->IsCoOp())
+	else if (TeamSpawnAttempt1 == 2)
 	{
-		pSpot = g_pLastSpawn;
-		// Randomize the start spot
-		for ( int i = random->RandomInt(1,5); i > 0; i-- )
-			pSpot = gEntList.FindEntityByClassname( pSpot, "info_player_deathmatch" );
-		if ( !pSpot )  // skip over the null point
-			pSpot = gEntList.FindEntityByClassname( pSpot, "info_player_deathmatch" );
-
-		CBaseEntity *pFirstSpot = pSpot;
-
-		do 
-		{
-			if ( pSpot )
-			{
-				// check if pSpot is valid
-				if ( g_pGameRules->IsSpawnPointValid( pSpot, this ) )
-				{
-					if ( pSpot->GetLocalOrigin() == vec3_origin )
-					{
-						pSpot = gEntList.FindEntityByClassname( pSpot, "info_player_deathmatch" );
-						continue;
-					}
-
-					// if so, go to pSpot
-					goto ReturnSpot;
-				}
-			}
-			// increment pSpot
-			pSpot = gEntList.FindEntityByClassname( pSpot, "info_player_deathmatch" );
-		} while ( pSpot != pFirstSpot ); // loop if we're not back to the start
-
-		// we haven't found a place to spawn yet,  so kill any guy at the first spawn point and spawn there
-		if ( pSpot )
-		{
-			CBaseEntity *ent = NULL;
-			for ( CEntitySphereQuery sphere( pSpot->GetAbsOrigin(), 128 ); (ent = sphere.GetCurrentEntity()) != NULL; sphere.NextEntity() )
-			{
-				// if ent is a client, kill em (unless they are ourselves)
-				if ( ent->IsPlayer() && !(ent->edict() == player) )
-					ent->TakeDamage( CTakeDamageInfo( GetContainingEntity(INDEXENT(0)), GetContainingEntity(INDEXENT(0)), 300, DMG_GENERIC ) );
-			}
-			goto ReturnSpot;
-		}
+		pSpotFinder = gEntList.FindEntityByClassname(pSpot, "info_player_combine");
 	}
-
-	// If startspot is set, (re)spawn there.
-	if ( !gpGlobals->startspot || !strlen(STRING(gpGlobals->startspot)))
+	
+	if (pSpotFinder)
 	{
-		pSpot = FindPlayerStart( "info_player_start" );
-		if ( pSpot )
-			goto ReturnSpot;
+		goto SelectRandomSpot;
 	}
 	else
 	{
-		pSpot = gEntList.FindEntityByName( NULL, gpGlobals->startspot );
-		if ( pSpot )
-			goto ReturnSpot;
+		int TeamSpawnAttempt2 = random->RandomInt(1, 2);
+
+		if (TeamSpawnAttempt2 == 1)
+		{
+			pSpotFinder = gEntList.FindEntityByClassname(pSpot, "info_player_terrorist");
+		}
+		else if (TeamSpawnAttempt2 == 2)
+		{
+			pSpotFinder = gEntList.FindEntityByClassname(pSpot, "info_player_counterterrorist");
+		}
+
+		if (pSpotFinder)
+		{
+			goto SelectRandomSpot;
+		}
+		else
+		{
+			int TeamSpawnAttempt3 = random->RandomInt(1, 2);
+
+			if (TeamSpawnAttempt3 == 1)
+			{
+				pSpotFinder = gEntList.FindEntityByClassname(pSpot, "info_player_axis");
+			}
+			else if (TeamSpawnAttempt3 == 2)
+			{
+				pSpotFinder = gEntList.FindEntityByClassname(pSpot, "info_player_allies");
+			}
+
+			if (pSpotFinder)
+			{
+				goto SelectRandomSpot;
+			}
+			else
+			{
+				pSpotFinder = gEntList.FindEntityByClassname(pSpot, "info_player_deathmatch");
+
+				if (pSpotFinder)
+				{
+					goto SelectRandomSpot;
+				}
+				else
+				{
+					pSpotFinder = gEntList.FindEntityByClassname(pSpot, "info_player_start");
+
+					if (pSpotFinder)
+					{
+						goto SelectRandomSpot;
+					}
+					else
+					{
+						pSpot = gEntList.FindEntityByName(NULL, gpGlobals->startspot);
+						if (pSpot)
+							goto ReturnSpot;
+					}
+				}
+			}
+		}
+	}
+
+SelectRandomSpot:
+	// Randomize the start spot
+	for (int i = random->RandomInt(1, 5); i > 0; i--)
+		pSpot = gEntList.FindEntityByClassname(pSpot, pSpotFinder->GetClassname());
+	if (!pSpot)  // skip over the null point
+		pSpot = gEntList.FindEntityByClassname(pSpot, pSpotFinder->GetClassname());
+
+	CBaseEntity *pFirstSpot = pSpot;
+
+	do
+	{
+		if (pSpot)
+		{
+			// check if pSpot is valid
+			if (g_pGameRules->IsSpawnPointValid(pSpot, this))
+			{
+				if (pSpot->GetLocalOrigin() == vec3_origin)
+				{
+					pSpot = gEntList.FindEntityByClassname(pSpot, pSpotFinder->GetClassname());
+					continue;
+				}
+
+				// if so, go to pSpot
+				goto ReturnSpot;
+			}
+		}
+		// increment pSpot
+		pSpot = gEntList.FindEntityByClassname(pSpot, pSpotFinder->GetClassname());
+	} while (pSpot != pFirstSpot); // loop if we're not back to the start
+
+	// we haven't found a place to spawn yet,  so kill any guy at the first spawn point and spawn there
+	if (pSpot)
+	{
+		CBaseEntity *ent = NULL;
+		for (CEntitySphereQuery sphere(pSpot->GetAbsOrigin(), 128); (ent = sphere.GetCurrentEntity()) != NULL; sphere.NextEntity())
+		{
+			// if ent is a client, kill em (unless they are ourselves)
+			if (ent->IsPlayer() && !(ent->edict() == player))
+				ent->TakeDamage(CTakeDamageInfo(GetContainingEntity(INDEXENT(0)), GetContainingEntity(INDEXENT(0)), 300, DMG_GENERIC));
+		}
+		goto ReturnSpot;
 	}
 
 ReturnSpot:
 	if ( !pSpot  )
 	{
-		Warning( "PutClientInServer: no info_player_start on level\n");
+		Warning( "PutClientInServer: no player spawn on level. Navigation mesh generation will not work!\n");
 		return CBaseEntity::Instance( INDEXENT( 0 ) );
 	}
 
@@ -9226,17 +9274,13 @@ bool CBasePlayer::BumpWeapon( CBaseCombatWeapon *pWeapon )
 				UTIL_HudHintText( this, hint.Access() );
 			}
 
-			// Always switch to a newly-picked up weapon
-			if ( !PlayerHasMegaPhysCannon() )
+			// If it uses clips, load it full. (this is the first time you've picked up this type of weapon)
+			if (pWeapon->UsesClipsForAmmo1())
 			{
-				// If it uses clips, load it full. (this is the first time you've picked up this type of weapon)
-				if ( pWeapon->UsesClipsForAmmo1() )
-				{
-					pWeapon->m_iClip1 = pWeapon->GetMaxClip1();
-				}
-
-				Weapon_Switch( pWeapon );
+				pWeapon->m_iClip1 = pWeapon->GetMaxClip1();
 			}
+
+			Weapon_Switch(pWeapon);
 #endif
 		}
 		return true;

@@ -3404,20 +3404,6 @@ void CNavMesh::BeginGeneration( bool incremental )
 		gameeventmanager->FireEvent( event );
 	}
 
-#ifdef TERROR
-	engine->ServerCommand( "director_stop\nnb_delete_all\n" );
-	if ( !incremental && !engine->IsDedicatedServer() )
-	{
-		CBasePlayer *host = UTIL_GetListenServerHost();
-		if ( host )
-		{
-			host->ChangeTeam( TEAM_SPECTATOR );
-		}
-	}
-#else
-	engine->ServerCommand( "bot_kick\n" );
-#endif
-
 	// Right now, incrementally-generated areas won't connect to existing areas automatically.
 	// Since this means hand-editing will be necessary, don't do a full analyze.
 	if ( incremental )
@@ -3454,7 +3440,7 @@ void CNavMesh::BeginGeneration( bool incremental )
 	if (m_walkableSeeds.Count() == 0)
 	{
 		m_generationMode = GENERATE_NONE;
-		Msg( "No valid walkable seed positions.  Cannot generate Navigation Mesh.\n" );
+		Warning( "No valid walkable seed positions.  Cannot generate Navigation Mesh.\n" );
 		return;
 	}
 

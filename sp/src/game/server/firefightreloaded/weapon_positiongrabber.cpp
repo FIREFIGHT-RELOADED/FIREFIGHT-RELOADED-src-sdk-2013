@@ -123,6 +123,5 @@ void CWeaponPositionGrabber::PrimaryAttack( void )
 	QAngle angAiming;
 	VectorAngles(vecAiming, angAiming);
 
-	Msg("Player eye angle XYZ Coords: X: %f Y: %f Z: %f\n", angAiming.x, angAiming.y, angAiming.z);
 	Msg("Player position XYZ Coords: X: %f Y: %f Z: %f\n", vecOrigin.x, vecOrigin.y, vecOrigin.z);
 }

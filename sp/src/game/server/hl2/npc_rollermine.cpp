@@ -38,6 +38,7 @@
 #include "mapentities.h"
 #include "RagdollBoogie.h"
 #include "physics_collisionevent.h"
+#include "hl2_gamerules.h"
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -287,6 +288,8 @@ public:
 	void		PreventUnstickUntil( float flTime ) { m_flPreventUnstickUntil = flTime; }
 
 	virtual unsigned int	PhysicsSolidMaskForEntity( void ) const;
+
+	virtual bool			CanBecomeServerRagdoll(void) { return false; }
 
 	void		SetRollerSkin( void );
 
@@ -547,6 +550,7 @@ void CNPC_RollerMine::Spawn( void )
 	BaseClass::Spawn();
 
 	AddEFlags( EFL_NO_DISSOLVE );
+	AddEFlags( EFL_NO_MEGAPHYSCANNON_RAGDOLL );
 
 	CapabilitiesClear();
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND | bits_CAP_INNATE_RANGE_ATTACK1 | bits_CAP_SQUAD );
@@ -2397,8 +2401,17 @@ void CNPC_RollerMine::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_
 	// Are we just being punted?
 	if ( reason == PUNTED_BY_CANNON )
 	{
-		// Be stunned
-		m_flActiveTime = gpGlobals->curtime + GetStunDelay();
+		if (HL2GameRules()->MegaPhyscannonActive() == true)
+		{
+			SetThink(&CNPC_RollerMine::PreDetonate);
+			SetNextThink(gpGlobals->curtime + random->RandomFloat(0.1f, 0.5f));
+		}
+		else
+		{
+			// Be stunned
+			m_flActiveTime = gpGlobals->curtime + GetStunDelay();
+		}
+		
 		return;
 	}
 
@@ -2411,6 +2424,15 @@ void CNPC_RollerMine::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_
 	m_bHeld = true;
 	m_RollerController.Off();
 	EmitSound( "NPC_RollerMine.Held" );
+
+	if (HL2GameRules()->MegaPhyscannonActive() == true)
+	{
+		if (g_pGameRules->IsSkillLevel(SKILL_VERYHARD) || g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE))
+		{
+			SetThink(&CNPC_RollerMine::PreDetonate);
+			SetNextThink(gpGlobals->curtime + random->RandomFloat(0.1f, 0.5f));
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------

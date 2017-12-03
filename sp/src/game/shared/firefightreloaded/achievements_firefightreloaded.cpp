@@ -957,6 +957,19 @@ protected:
 #endif
 };
 DECLARE_ACHIEVEMENT(CAchievementKill100Citizens, ACHIEVEMENT_FIREFIGHTRELOADED_KILL100CITIZENS, "FIREFIGHTRELOADED_KILL100CITIZENS", 20);
+
+class CAchievementKill10EnemiesWithManhacks : public CBaseAchievement
+{
+protected:
+	void Init()
+	{
+		SetInflictorFilter("npc_manhack");
+		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
+		SetGameDirFilter("firefightreloaded");
+		SetGoal(10);
+	}
+};
+DECLARE_ACHIEVEMENT(CAchievementKill10EnemiesWithManhacks, ACHIEVEMENT_FIREFIGHTRELOADED_KILL10ENEMIESWITHMANHACKS, "FIREFIGHTRELOADED_KILL10ENEMIESWITHMANHACKS", 35);
 */
 
 #endif // GAME_DLL

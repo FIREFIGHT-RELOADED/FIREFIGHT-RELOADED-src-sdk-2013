@@ -1541,14 +1541,8 @@ bool CBaseCombatCharacter::BecomeRagdoll( const CTakeDamageInfo &info, const Vec
 #endif
 
 #ifdef HL2_DLL	
-
-	bool bMegaPhyscannonActive = false;
-#if !defined( HL2MP )
-	bMegaPhyscannonActive = HL2GameRules()->MegaPhyscannonActive();
-#endif // !HL2MP
-
 	// Mega physgun requires everything to be a server-side ragdoll
-	if (m_bForceServerRagdoll == true || ((bMegaPhyscannonActive == true) && !IsPlayer() && Classify() != CLASS_PLAYER_ALLY_VITAL && Classify() != CLASS_PLAYER_ALLY))
+	if (m_bForceServerRagdoll == true )
 	{
 		if ( CanBecomeServerRagdoll() == false )
 			return false;
@@ -1645,15 +1639,6 @@ void CBaseCombatCharacter::Event_Killed( const CTakeDamageInfo &info )
 				pDroppedWeapon->Dissolve( NULL, gpGlobals->curtime, false, nDissolveType );
 			}
 		}
-#ifdef HL2_DLL
-		else if ( PlayerHasMegaPhysCannon() )
-		{
-			if ( pDroppedWeapon )
-			{
-				pDroppedWeapon->Dissolve( NULL, gpGlobals->curtime, false, ENTITY_DISSOLVE_NORMAL );
-			}
-		}
-#endif
 
 		if ( !bRagdollCreated && ( info.GetDamageType() & DMG_REMOVENORAGDOLL ) == 0 )
 		{
