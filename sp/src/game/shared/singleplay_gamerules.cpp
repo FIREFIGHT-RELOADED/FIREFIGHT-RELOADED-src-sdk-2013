@@ -631,18 +631,104 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 	{
 		return 1;
 	}
+	
+	//-----------------------------------------------------------------------------
+	// Purpose: 
+	//-----------------------------------------------------------------------------
+	CBasePlayer *CSingleplayRules::GetDeathScorer( CBaseEntity *pKiller, CBaseEntity *pInflictor )
+	{
+		if ( pKiller)
+		{
+			if ( pKiller->Classify() == CLASS_PLAYER )
+				return (CBasePlayer*)pKiller;
+
+			// Killing entity might be specifying a scorer player
+			IScorer *pScorerInterface = dynamic_cast<IScorer*>( pKiller );
+			if ( pScorerInterface )
+			{
+				CBasePlayer *pPlayer = pScorerInterface->GetScorer();
+				if ( pPlayer )
+					return pPlayer;
+			}
+
+			// Inflicting entity might be specifying a scoring player
+			pScorerInterface = dynamic_cast<IScorer*>( pInflictor );
+			if ( pScorerInterface )
+			{
+				CBasePlayer *pPlayer = pScorerInterface->GetScorer();
+				if ( pPlayer )
+					return pPlayer;
+			}
+		}
+
+		return NULL;
+	}
+
+	//-----------------------------------------------------------------------------
+	// Purpose: Returns player who should receive credit for kill
+	//-----------------------------------------------------------------------------
+	CBasePlayer *CSingleplayRules::GetDeathScorer( CBaseEntity *pKiller, CBaseEntity *pInflictor, CBaseEntity *pVictim )
+	{
+		// if this method not overridden by subclass, just call our default implementation
+		return GetDeathScorer( pKiller, pInflictor );
+	}
 
 	//=========================================================
 	// PlayerKilled - someone/something killed this player
 	//=========================================================
 	void CSingleplayRules::PlayerKilled( CBasePlayer *pVictim, const CTakeDamageInfo &info )
 	{
-		//just increase the death count for right now until we add the killicon system
-		pVictim->IncrementDeathCount(1);
+		//DeathNotice( pVictim, info );
+
+		// Find the killer & the scorer
+		CBaseEntity *pInflictor = info.GetInflictor();
+		CBaseEntity *pKiller = info.GetAttacker();
+		CBasePlayer *pScorer = GetDeathScorer( pKiller, pInflictor, pVictim );
+		
+		pVictim->IncrementDeathCount( 1 );
+
+		// dvsents2: uncomment when removing all FireTargets
+		// variant_t value;
+		// g_EventQueue.AddEvent( "game_playerdie", "Use", value, 0, pVictim, pVictim );
+		FireTargets( "game_playerdie", pVictim, pVictim, USE_TOGGLE, 0 );
+		
+		//add NPC check
+
+		// Did the player kill himself?
+		if ( pVictim == pScorer )  
+		{			
+			if ( UseSuicidePenalty() )
+			{
+				// Players lose a frag for killing themselves
+				pVictim->IncrementFragCount( -1 );
+			}			
+		}
+		else if ( pScorer )
+		{
+			// if a player dies in a deathmatch game and the killer is a client, award the killer some points
+			pScorer->IncrementFragCount( IPointsForKill( pScorer, pVictim ) );
+			
+			// Allow the scorer to immediately paint a decal
+			//pScorer->AllowImmediateDecalPainting();
+
+			// dvsents2: uncomment when removing all FireTargets
+			//variant_t value;
+			//g_EventQueue.AddEvent( "game_playerkill", "Use", value, 0, pScorer, pScorer );
+			FireTargets( "game_playerkill", pScorer, pScorer, USE_TOGGLE, 0 );
+		}
+		else
+		{  
+			if ( UseSuicidePenalty() )
+			{
+				// Players lose a frag for letting the world kill them			
+				pVictim->IncrementFragCount( -1 );
+			}					
+		}
 	}
 
 	void CSingleplayRules::NPCKilled(CBaseEntity *pVictim, const CTakeDamageInfo &info)
 	{
+		//change this for MP.
 		CBasePlayer *pEntity = UTIL_GetLocalPlayer();
 		if (pVictim->m_isRareEntity)
 		{
