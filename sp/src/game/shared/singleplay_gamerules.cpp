@@ -937,7 +937,8 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 			return -1;
 		}
 	}
-
+	
+	#define ENTITY_INTOLERANCE	100
 	//=========================================================
 	// FlWeaponRespawnTime - Returns 0 if the weapon can respawn 
 	// now,  otherwise it returns the time at which it can try
@@ -945,7 +946,11 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 	//=========================================================
 	float CSingleplayRules::FlWeaponTryRespawn( CBaseCombatWeapon *pWeapon )
 	{
-		return FlWeaponRespawnTime(pWeapon);
+		if ( gEntList.NumberOfEntities() < (gpGlobals->maxEntities - ENTITY_INTOLERANCE) )
+			return 0;
+
+		// we're past the entity tolerance level,  so delay the respawn
+		return FlWeaponRespawnTime( pWeapon );
 	}
 
 	//=========================================================
