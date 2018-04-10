@@ -514,8 +514,7 @@ void CHL2_Player::Precache( void )
 	PrecacheScriptSound( "HL2Player.BurnPain" );
 	PrecacheScriptSound( "HL2Player.Jetpack" );
 	//PrecacheModel(PLAYER_MODEL);
-
-	//when the MP cums out :ok: - bitl
+	
 	FileFindHandle_t findHandle = NULL;
 
 	const char *pszFilename = g_pFullFileSystem->FindFirst("models/player/playermodels/*.mdl", &findHandle);
@@ -4660,6 +4659,8 @@ uint64 dev_ids[] =
 {
 	76561198029641087 ^ devmask, // Bitl
 	76561197997923705 ^ devmask, // Theuaredead'
+	76561198009315760 ^ devmask, // LeonelC
+	76561198092604516 ^ devmask, // Slartibarty
 };
 
 uint64 vip_ids[] =
