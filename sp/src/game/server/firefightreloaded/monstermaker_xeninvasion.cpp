@@ -172,11 +172,16 @@ bool CNPCMakerXenInvasion::HumanHullFits(const Vector &vecLocation)
 	return false;
 }
 
+#define ENTITY_INTOLERANCE	100
+
 //-----------------------------------------------------------------------------
 // Purpose: Returns whether or not it is OK to make an NPC at this instant.
 //-----------------------------------------------------------------------------
 bool CNPCMakerXenInvasion::CanMakeNPC(bool bIgnoreSolidEntities)
 {
+	if ( gEntList.NumberOfEntities() >= (gpGlobals->maxEntities - ENTITY_INTOLERANCE) )
+		return false;
+	
 	int iMinPlayersToSpawn = 0;
 
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
