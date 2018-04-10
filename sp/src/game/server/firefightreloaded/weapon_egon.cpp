@@ -481,7 +481,6 @@ void CWeaponEgon::EndAttack( void )
 bool CWeaponEgon::Holster( CBaseCombatWeapon *pSwitchingTo )
 {
     EndAttack();
-	DestroyEffect();
 
 	return BaseClass::Holster( pSwitchingTo );
 }
