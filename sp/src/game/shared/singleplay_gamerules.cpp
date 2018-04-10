@@ -49,7 +49,7 @@ ConVar sv_weapon_respawn_time("sv_weapon_respawn_time", "180", FCVAR_CHEAT);
 
 ConVar sv_player_dropweaponsondeath("sv_player_dropweaponsondeath", "1", FCVAR_ARCHIVE);
 
-ConVar sv_mp_pvp("sv_mp_pvp", "1", FCVAR_NOTIFY);
+ConVar sv_mp_pvp("sv_mp_pvp", "0", FCVAR_NOTIFY);
 
 extern ConVar sv_player_voice;
 extern ConVar sv_player_voice_kill_freq;
@@ -691,8 +691,6 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 		// variant_t value;
 		// g_EventQueue.AddEvent( "game_playerdie", "Use", value, 0, pVictim, pVictim );
 		FireTargets( "game_playerdie", pVictim, pVictim, USE_TOGGLE, 0 );
-		
-		//add NPC check
 
 		// Did the player kill himself?
 		if ( pVictim == pScorer )  
@@ -705,12 +703,15 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 		}
 		else if ( pScorer )
 		{
-			// if a player dies in a deathmatch game and the killer is a client, award the killer some points
-			pScorer->IncrementFragCount( IPointsForKill( pScorer, pVictim ) );
+			if (!pScorer->IsNPC())
+			{
+				// if a player dies in a deathmatch game and the killer is a client, award the killer some points
+				pScorer->IncrementFragCount( IPointsForKill( pScorer, pVictim ) );
 			
-			// Allow the scorer to immediately paint a decal
-			//pScorer->AllowImmediateDecalPainting();
-
+				// Allow the scorer to immediately paint a decal
+				//pScorer->AllowImmediateDecalPainting();
+			}
+			
 			// dvsents2: uncomment when removing all FireTargets
 			//variant_t value;
 			//g_EventQueue.AddEvent( "game_playerkill", "Use", value, 0, pScorer, pScorer );
@@ -1205,14 +1206,21 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 	int CSingleplayRules::PlayerRelationship( CBaseEntity *pPlayer, CBaseEntity *pTarget )
 	{
 		// why would a single player in half life need this? 
-		return GR_TEAMMATE;
+		if (sv_mp_pvp.GetBool())
+		{
+			return GR_NOTTEAMMATE;
+		}
+		else
+		{
+			return GR_TEAMMATE;
+		}
 	}
 
 	//=========================================================
 	//=========================================================
 	bool CSingleplayRules::PlayerCanHearChat( CBasePlayer *pListener, CBasePlayer *pSpeaker )
 	{
-		return ( PlayerRelationship( pListener, pSpeaker ) == GR_TEAMMATE );
+		return true;
 	}
 
 	//=========================================================
