@@ -7767,6 +7767,13 @@ CBaseEntity	*CBasePlayer::GiveNamedItem( const char *pszName, int iSubType )
 	{
 		pWeapon->SetSubType( iSubType );
 	}
+	
+	CBaseCombatWeapon *pWeaponOld = GetActiveWeapon();
+
+	if( pWeaponOld )
+	{
+		pWeaponOld->Holster(pWeapon);
+	}
 
 	DispatchSpawn( pent );
 
