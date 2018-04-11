@@ -20,6 +20,7 @@
 #include "tier0/memdbgon.h"
 
 extern Vector			g_vecAttackDir;		// In globals.cpp
+#define ENTITY_INTOLERANCE	100
 
 BEGIN_DATADESC(CGib)
 
@@ -64,6 +65,11 @@ void CGib::LimitVelocity(void)
 
 void CGib::SpawnStickyGibs(CBaseEntity *pVictim, Vector vecOrigin, int cGibs)
 {
+	if ( gEntList.NumberOfEntities() >= (gpGlobals->maxEntities - ENTITY_INTOLERANCE) )
+	{
+		return;
+	}
+	
 	int i;
 
 	if (g_Language.GetInt() == LANGUAGE_GERMAN)
@@ -117,6 +123,11 @@ void CGib::SpawnStickyGibs(CBaseEntity *pVictim, Vector vecOrigin, int cGibs)
 
 void CGib::SpawnHeadGib(CBaseEntity *pVictim)
 {
+	if ( gEntList.NumberOfEntities() >= (gpGlobals->maxEntities - ENTITY_INTOLERANCE) )
+	{
+		return;
+	}
+	
 	CGib *pGib = CREATE_ENTITY(CGib, "gib");
 
 	if (g_Language.GetInt() == LANGUAGE_GERMAN)
@@ -273,6 +284,11 @@ void CGib::SpawnSpecificGibs(CBaseEntity*	pVictim,
 	const char*		cModelName,
 	float			flLifetime)
 {
+	if ( gEntList.NumberOfEntities() >= (gpGlobals->maxEntities - ENTITY_INTOLERANCE) )
+	{
+		return;
+	}
+	
 	for (int i = 0; i<nNumGibs; i++)
 	{
 		CGib *pGib = CREATE_ENTITY(CGib, "gib");
@@ -296,6 +312,11 @@ void CGib::SpawnSpecificStickyGibs(CBaseEntity*	pVictim,
 	const char*		cModelName,
 	float			flLifetime)
 {
+	if ( gEntList.NumberOfEntities() >= (gpGlobals->maxEntities - ENTITY_INTOLERANCE) )
+	{
+		return;
+	}
+	
 	for (int i = 0; i<nNumGibs; i++)
 	{
 		CGib *pGib = CREATE_ENTITY(CGib, "gib");
@@ -350,6 +371,11 @@ void CGib::SpawnSpecificStickyGibs(CBaseEntity*	pVictim,
 //------------------------------------------------------------------------------
 void CGib::SpawnRandomGibs(CBaseEntity *pVictim, int cGibs, GibType_e eGibType)
 {
+	if ( gEntList.NumberOfEntities() >= (gpGlobals->maxEntities - ENTITY_INTOLERANCE) )
+	{
+		return;
+	}
+	
 	int cSplat;
 
 	for (cSplat = 0; cSplat < cGibs; cSplat++)
@@ -704,6 +730,11 @@ LINK_ENTITY_TO_CLASS(gib, CGib);
 
 CBaseEntity *CreateRagGib(CBaseEntity *pVictim, const char *szModel, const Vector &vecOrigin, const QAngle &vecAngles, const Vector &vecForce, float flFadeTime, bool bShouldIgnite)
 {
+	if ( gEntList.NumberOfEntities() >= (gpGlobals->maxEntities - ENTITY_INTOLERANCE) )
+	{
+		return;
+	}
+	
 	CRagGib *pGib;
 
 	pGib = (CRagGib*)CreateEntityByName("raggib");
