@@ -108,6 +108,21 @@ CBaseEntity* FindEntity( edict_t *pEdict, char *classname)
 void ClientGamePrecache( void )
 {
 	CBaseEntity::PrecacheModel( "models/player.mdl");
+	
+	FileFindHandle_t findHandle = NULL;
+
+	const char *pszFilename = g_pFullFileSystem->FindFirst("models/player/playermodels/*.mdl", &findHandle);
+	while (pszFilename)
+	{
+		//"models/player/playermodels/" + pszFilename;
+		char szModelName[2048];
+		Q_snprintf(szModelName, sizeof(szModelName), "models/player/playermodels/%s", pszFilename);
+		CBaseEntity::PrecacheModel(szModelName);
+		DevMsg("Precached Player Model %s", szModelName);
+		pszFilename = g_pFullFileSystem->FindNext(findHandle);
+	}
+	g_pFullFileSystem->FindClose(findHandle);
+	
 	CBaseEntity::PrecacheModel( "models/gibs/agibs.mdl" );
 	CBaseEntity::PrecacheModel ("models/weapons/v_hands.mdl");
 
