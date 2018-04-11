@@ -344,6 +344,13 @@ void CC_ToggleDuck( void )
 
 static ConCommand toggle_duck("toggle_duck", CC_ToggleDuck, "Toggles duck" );
 
+void CC_EntityCount( void )
+{
+	Msg( "%d/%d\n", gEntList.NumberOfEntities(), gpGlobals->maxEntities );
+}
+
+static ConCommand entitycount("entitycount", CC_EntityCount, "Shows map entity count" );
+
 #ifndef HL2MP
 #ifndef PORTAL
 LINK_ENTITY_TO_CLASS( player, CHL2_Player );
