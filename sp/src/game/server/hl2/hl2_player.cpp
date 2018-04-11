@@ -514,19 +514,6 @@ void CHL2_Player::Precache( void )
 	PrecacheScriptSound( "HL2Player.BurnPain" );
 	PrecacheScriptSound( "HL2Player.Jetpack" );
 	//PrecacheModel(PLAYER_MODEL);
-	
-	FileFindHandle_t findHandle = NULL;
-
-	const char *pszFilename = g_pFullFileSystem->FindFirst("models/player/playermodels/*.mdl", &findHandle);
-	while (pszFilename)
-	{
-		//"models/player/playermodels/" + pszFilename;
-		char szModelName[2048];
-		Q_snprintf(szModelName, sizeof(szModelName), "models/player/playermodels/%s", pszFilename);
-		PrecacheModel(szModelName);
-		pszFilename = g_pFullFileSystem->FindNext(findHandle);
-	}
-	g_pFullFileSystem->FindClose(findHandle);
 }
 
 void CHL2_Player::UpdateOnRemove(void)
