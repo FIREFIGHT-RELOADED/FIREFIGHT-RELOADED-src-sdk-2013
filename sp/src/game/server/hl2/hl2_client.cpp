@@ -118,7 +118,7 @@ void ClientGamePrecache( void )
 		char szModelName[2048];
 		Q_snprintf(szModelName, sizeof(szModelName), "models/player/playermodels/%s", pszFilename);
 		CBaseEntity::PrecacheModel(szModelName);
-		DevMsg("Precached Player Model %s", szModelName);
+		DevMsg("Precached Player Model %s\n", szModelName);
 		pszFilename = g_pFullFileSystem->FindNext(findHandle);
 	}
 	g_pFullFileSystem->FindClose(findHandle);
