@@ -71,6 +71,17 @@ void CPlayerModelDialog::DialogInit()
 //-----------------------------------------------------------------------------
 void CPlayerModelDialog::OnClose()
 {
+	char szModelName[64];
+	Q_strncpy(szModelName, GetModelName(), sizeof(szModelName));
+
+	char szModelCommand[1024];
+
+	// create the command to execute
+	Q_snprintf(szModelCommand, sizeof(szModelCommand), "cl_playermodel models/player/playermodels/%s\n", szModelName);
+
+	// exec
+	engine->ClientCmd_Unrestricted(szModelCommand);
+	
 	BaseClass::OnClose();
 	MarkForDeletion();
 }
@@ -83,16 +94,6 @@ void CPlayerModelDialog::OnCommand(const char *command)
 {
 	if ( !stricmp( command, "Ok" ) )
 	{
-		char szModelName[64];
-		Q_strncpy(szModelName, GetModelName(), sizeof( szModelName ));
-
-		char szModelCommand[1024];
-
-		// create the command to execute
-		Q_snprintf(szModelCommand, sizeof( szModelCommand ), "cl_playermodel models/player/playermodels/%s\n", szModelName);
-
-		// exec
-		engine->ClientCmd_Unrestricted(szModelCommand);
 		OnClose();
 		return;
 	}

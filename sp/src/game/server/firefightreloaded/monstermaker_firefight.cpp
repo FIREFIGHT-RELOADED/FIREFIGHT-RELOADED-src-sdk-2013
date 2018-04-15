@@ -447,6 +447,9 @@ bool CNPCMakerFirefight::CanMakeNPC(bool bIgnoreSolidEntities)
 	if (iMinPlayersToSpawn < sk_spawnerminclientstospawn.GetInt() && g_pGameRules->IsMultiplayer())
 		return false;
 
+	if (g_iNPCLimit >= g_fr_npclimit.GetInt() && g_fr_npclimit.GetInt() != 0)
+		return false;
+
 	if ( m_nMaxLiveChildren > 0 && m_nLiveChildren >= m_nMaxLiveChildren )
 	{// not allowed to make a new one yet. Too many live ones out right now.
 		return false;
@@ -530,6 +533,9 @@ bool CNPCMakerFirefight::CanMakeRareNPC()
 	if (gEntList.NumberOfEntities() >= (gpGlobals->maxEntities - ENTITY_INTOLERANCE))
 		return false;
 
+	if (g_iNPCLimit >= g_fr_npclimit.GetInt() && g_fr_npclimit.GetInt() != 0)
+		return false;
+
 	if (m_nMaxLiveRareNPCs > 0 && m_nLiveRareNPCs >= m_nMaxLiveRareNPCs)
 	{
 		return false;
@@ -546,6 +552,7 @@ void CNPCMakerFirefight::DeathNotice(CBaseEntity *pVictim)
 {
 	// ok, we've gotten the deathnotice from our child, now clear out its owner if we don't want it to fade.
 	m_nLiveChildren--;
+	g_iNPCLimit--;
 
 	// If we're here, we're getting erroneous death messages from children we haven't created
 	AssertMsg(m_nLiveChildren >= 0, "npc_maker_firefight receiving child death notice but thinks has no children\n");
@@ -1536,6 +1543,7 @@ void CNPCMakerFirefight::MakeNPC(void)
 	}
 
 	m_nLiveChildren++;// count this NPC
+	g_iNPCLimit++;
 }
 
 //-----------------------------------------------------------------------------
@@ -2386,6 +2394,7 @@ void CNPCMakerFirefight::MakeRareNPC(void)
 
 	m_nLiveChildren++;// count this NPC
 	m_nLiveRareNPCs++;
+	g_iNPCLimit++;
 }
 
 //-----------------------------------------------------------------------------

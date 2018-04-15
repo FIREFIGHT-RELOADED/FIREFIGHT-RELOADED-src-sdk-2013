@@ -446,6 +446,7 @@ extern ConVar g_Language;
 extern ConVar g_fr_classic;
 extern ConVar g_fr_headshotgore;
 extern ConVar g_fr_economy;
+extern ConVar g_fr_npclimit;
 
 //-----------------------------------------------------------------------------
 // Gets us at the game rules

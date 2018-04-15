@@ -172,6 +172,9 @@ bool CBaseNPCMaker::CanMakeNPC( bool bIgnoreSolidEntities )
 	if( ai_inhibit_spawners.GetBool() )
 		return false;
 
+	if (g_iNPCLimit >= g_fr_npclimit.GetInt() && g_fr_npclimit.GetInt() != 0)
+		return false;
+
 	if ( m_nMaxLiveChildren > 0 && m_nLiveChildren >= m_nMaxLiveChildren )
 	{// not allowed to make a new one yet. Too many live ones out right now.
 		return false;
@@ -468,6 +471,7 @@ void CNPCMaker::MakeNPC( void )
 	ChildPostSpawn( pent );
 
 	m_nLiveChildren++;// count this NPC
+	g_iNPCLimit++;
 
 	if (!(m_spawnflags & SF_NPCMAKER_INF_CHILD))
 	{
@@ -535,6 +539,7 @@ void CBaseNPCMaker::DeathNotice( CBaseEntity *pVictim )
 {
 	// ok, we've gotten the deathnotice from our child, now clear out its owner if we don't want it to fade.
 	m_nLiveChildren--;
+	g_iNPCLimit--;
 
 	// If we're here, we're getting erroneous death messages from children we haven't created
 	AssertMsg( m_nLiveChildren >= 0, "npc_maker receiving child death notice but thinks has no children\n" );
