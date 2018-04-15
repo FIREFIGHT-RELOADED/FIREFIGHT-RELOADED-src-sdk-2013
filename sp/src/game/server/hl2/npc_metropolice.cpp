@@ -587,8 +587,6 @@ void CNPC_MetroPolice::Precache( void )
 
 	PrecacheModel( STRING( GetModelName() ) );
 	PrecacheModel("models/gibs/police_beheaded.mdl");
-	PrecacheModel("models/gibs/pgib_p3.mdl");
-	PrecacheModel("models/gibs/pgib_p4.mdl");
 
 	//GIBS!
 	PrecacheModel("models/gibs/police_head.mdl");
@@ -599,16 +597,11 @@ void CNPC_MetroPolice::Precache( void )
 	PrecacheModel("models/gibs/police_left_leg.mdl");
 	PrecacheModel("models/gibs/police_right_leg.mdl");
 
-	PrecacheParticleSystem("smod_headshot_r");
-	PrecacheParticleSystem("smod_blood_decap_r");
-	PrecacheParticleSystem("smod_blood_gib_r");
-
 	UTIL_PrecacheOther( "npc_manhack" );
 
 	PrecacheScriptSound( "NPC_Metropolice.Shove" );
 	PrecacheScriptSound( "NPC_MetroPolice.WaterSpeech" );
 	PrecacheScriptSound( "NPC_MetroPolice.HidingSpeech" );
-	PrecacheScriptSound( "Gore.Headshot" );
 	enginesound->PrecacheSentenceGroup( "METROPOLICE" );
 
 	BaseClass::Precache();

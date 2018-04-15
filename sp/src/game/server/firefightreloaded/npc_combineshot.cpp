@@ -110,8 +110,6 @@ void CNPC_CombineShot::Precache()
 {
 	PrecacheModel( "models/combine_soldier_shotgunner.mdl" );
 	PrecacheModel("models/gibs/combine_shotgunner_beheaded.mdl");
-	PrecacheModel("models/gibs/pgib_p3.mdl");
-	PrecacheModel("models/gibs/pgib_p4.mdl");
 
 	PrecacheModel("models/gibs/soldier_shotgunner_head.mdl");
 	PrecacheModel("models/gibs/soldier_shotgunner_left_arm.mdl");
@@ -121,14 +119,8 @@ void CNPC_CombineShot::Precache()
 	PrecacheModel("models/gibs/soldier_shotgunner_left_leg.mdl");
 	PrecacheModel("models/gibs/soldier_shotgunner_right_leg.mdl");
 
-	PrecacheParticleSystem("smod_headshot_r");
-	PrecacheParticleSystem("smod_blood_decap_r");
-	PrecacheParticleSystem("smod_blood_gib_r");
-
 	UTIL_PrecacheOther( "item_healthvial" );
 	UTIL_PrecacheOther( "weapon_frag" );
-
-	PrecacheScriptSound("Gore.Headshot");
 
 	BaseClass::Precache();
 }

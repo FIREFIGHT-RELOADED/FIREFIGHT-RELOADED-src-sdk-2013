@@ -93,8 +93,6 @@ void CNPC_ElitePolice::Precache()
 {
 	PrecacheModel("models/elitepolice.mdl");
 	PrecacheModel("models/gibs/elitepolice_beheaded.mdl");
-	PrecacheModel("models/gibs/pgib_p3.mdl");
-	PrecacheModel("models/gibs/pgib_p4.mdl");
 
 	//GIBS!
 	PrecacheModel("models/gibs/elitepolice_head.mdl");
@@ -105,14 +103,8 @@ void CNPC_ElitePolice::Precache()
 	PrecacheModel("models/gibs/elitepolice_left_leg.mdl");
 	PrecacheModel("models/gibs/elitepolice_right_leg.mdl");
 
-	PrecacheParticleSystem("smod_headshot_r");
-	PrecacheParticleSystem("smod_blood_decap_r");
-	PrecacheParticleSystem("smod_blood_gib_r");
-
 	UTIL_PrecacheOther("item_healthvial");
 	UTIL_PrecacheOther("weapon_frag");
-
-	PrecacheScriptSound("Gore.Headshot");
 	enginesound->PrecacheSentenceGroup("METROPOLICE");
 
 	BaseClass::Precache();

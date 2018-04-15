@@ -23,6 +23,7 @@
 #include "game.h"
 #include "player_resource.h"
 #include "engine/IEngineSound.h"
+#include "filesystem.h"
 
 #include "tier0/vprof.h"
 
@@ -35,6 +36,13 @@ extern CBaseEntity*	FindPickerEntityClass( CBasePlayer *pPlayer, char *classname
 extern bool			g_fGameOver;
 extern ConVar sv_player_hardcoremode;
 //const char			*szModelName = NULL; //already declared?
+
+void CC_EntityCount(void)
+{
+	Msg("%d/%d\n", gEntList.NumberOfEntities(), gpGlobals->maxEntities);
+}
+
+static ConCommand entitycount("entitycount", CC_EntityCount, "Shows map entity count");
 
 /*
 ===========
@@ -126,6 +134,23 @@ void ClientGamePrecache( void )
 	CBaseEntity::PrecacheModel( "models/gibs/agibs.mdl" );
 	CBaseEntity::PrecacheModel ("models/weapons/v_hands.mdl");
 
+	CBaseEntity::PrecacheModel("models/weapons/v_kick.mdl");
+	CBaseEntity::PrecacheModel("models/gibs/pgib_p3.mdl");
+	CBaseEntity::PrecacheModel("models/gibs/pgib_p4.mdl");
+	CBaseEntity::PrecacheModel("models/gibs/agib_p3.mdl");
+	CBaseEntity::PrecacheModel("models/gibs/agib_p4.mdl");
+
+	PrecacheParticleSystem("smod_headshot_r");
+	PrecacheParticleSystem("smod_headshot_g");
+	PrecacheParticleSystem("smod_headshot_y");
+	PrecacheParticleSystem("smod_blood_decap_r");
+	PrecacheParticleSystem("smod_blood_decap_g");
+	PrecacheParticleSystem("smod_blood_decap_y");
+	PrecacheParticleSystem("smod_blood_gib_r");
+	PrecacheParticleSystem("smod_blood_gib_g");
+	PrecacheParticleSystem("smod_blood_gib_y");
+	PrecacheParticleSystem("weapon_muzzle_smoke");
+
 	CBaseEntity::PrecacheScriptSound( "HUDQuickInfo.LowAmmo" );
 	CBaseEntity::PrecacheScriptSound( "HUDQuickInfo.LowHealth" );
 
@@ -137,6 +162,8 @@ void ClientGamePrecache( void )
 
 	CBaseEntity::PrecacheScriptSound( "Player.IronSightIn" );
 	CBaseEntity::PrecacheScriptSound( "Player.IronSightOut" );
+
+	CBaseEntity::PrecacheScriptSound("Gore.Headshot");
 	
 	CBaseEntity::PrecacheScriptSound( "Geiger.BeepHigh" );
 	CBaseEntity::PrecacheScriptSound( "Geiger.BeepLow" );

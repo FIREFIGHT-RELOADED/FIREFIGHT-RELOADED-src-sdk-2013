@@ -353,11 +353,6 @@ void CBaseCombatWeapon::Precache(void)
 		Warning("Error reading weapon data file for: %s\n", GetClassname());
 		//	Remove( );	//don't remove, this gets released soon!
 	}
-
-	if (GetWpnData().m_bUseMuzzleSmoke)
-	{
-		PrecacheParticleSystem("weapon_muzzle_smoke");
-	}
 }
 
 //-----------------------------------------------------------------------------

@@ -527,6 +527,9 @@ bool CNPCMakerFirefight::CanMakeNPC(bool bIgnoreSolidEntities)
 //-----------------------------------------------------------------------------
 bool CNPCMakerFirefight::CanMakeRareNPC()
 {
+	if (gEntList.NumberOfEntities() >= (gpGlobals->maxEntities - ENTITY_INTOLERANCE))
+		return false;
+
 	if (m_nMaxLiveRareNPCs > 0 && m_nLiveRareNPCs >= m_nMaxLiveRareNPCs)
 	{
 		return false;

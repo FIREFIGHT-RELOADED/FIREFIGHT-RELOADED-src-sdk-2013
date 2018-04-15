@@ -18,6 +18,7 @@
 	#include "game.h"
 	#include "items.h"
 	#include "SMMOD/mapadd.h"
+	#include "iscorer.h"
 
 #endif
 
@@ -442,7 +443,6 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 	}
 
 	//=========================================================
-	//TODO: add PvPvE mode.
 	//=========================================================
 	bool CSingleplayRules::IsDeathmatch ( void )
 	{
@@ -627,7 +627,12 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 	// IPointsForKill - how many points awarded to anyone
 	// that kills this player?
 	//=========================================================
-	int CSingleplayRules::IPointsForKill( CBasePlayer *pAttacker, CBasePlayer *pKilled )
+	int CSingleplayRules::IPointsForKill(CBasePlayer *pAttacker, CBasePlayer *pKilled)
+	{
+		return 1;
+	}
+
+	int CSingleplayRules::IPointsForKillEntity(CBasePlayer *pAttacker, CBaseEntity *pKilled)
 	{
 		return 1;
 	}
@@ -642,22 +647,25 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 			if ( pKiller->Classify() == CLASS_PLAYER )
 				return (CBasePlayer*)pKiller;
 
-			// Killing entity might be specifying a scorer player
-			IScorer *pScorerInterface = dynamic_cast<IScorer*>( pKiller );
-			if ( pScorerInterface )
+			if (!pKiller->IsNPC())
 			{
-				CBasePlayer *pPlayer = pScorerInterface->GetScorer();
-				if ( pPlayer )
-					return pPlayer;
-			}
+				// Killing entity might be specifying a scorer player
+				IScorer *pScorerInterface = dynamic_cast<IScorer*>(pKiller);
+				if (pScorerInterface)
+				{
+					CBasePlayer *pPlayer = pScorerInterface->GetScorer();
+					if (pPlayer)
+						return pPlayer;
+				}
 
-			// Inflicting entity might be specifying a scoring player
-			pScorerInterface = dynamic_cast<IScorer*>( pInflictor );
-			if ( pScorerInterface )
-			{
-				CBasePlayer *pPlayer = pScorerInterface->GetScorer();
-				if ( pPlayer )
-					return pPlayer;
+				// Inflicting entity might be specifying a scoring player
+				pScorerInterface = dynamic_cast<IScorer*>(pInflictor);
+				if (pScorerInterface)
+				{
+					CBasePlayer *pPlayer = pScorerInterface->GetScorer();
+					if (pPlayer)
+						return pPlayer;
+				}
 			}
 		}
 
@@ -673,186 +681,6 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 		return GetDeathScorer( pKiller, pInflictor );
 	}
 
-	//=========================================================
-	// PlayerKilled - someone/something killed this player
-	//=========================================================
-	void CSingleplayRules::PlayerKilled( CBasePlayer *pVictim, const CTakeDamageInfo &info )
-	{
-		//DeathNotice( pVictim, info );
-
-		// Find the killer & the scorer
-		CBaseEntity *pInflictor = info.GetInflictor();
-		CBaseEntity *pKiller = info.GetAttacker();
-		CBasePlayer *pScorer = GetDeathScorer( pKiller, pInflictor, pVictim );
-		
-		pVictim->IncrementDeathCount( 1 );
-
-		// dvsents2: uncomment when removing all FireTargets
-		// variant_t value;
-		// g_EventQueue.AddEvent( "game_playerdie", "Use", value, 0, pVictim, pVictim );
-		FireTargets( "game_playerdie", pVictim, pVictim, USE_TOGGLE, 0 );
-
-		// Did the player kill himself?
-		if ( pVictim == pScorer )  
-		{			
-			if ( UseSuicidePenalty() )
-			{
-				// Players lose a frag for killing themselves
-				pVictim->IncrementFragCount( -1 );
-			}			
-		}
-		else if ( pScorer )
-		{
-			if (!pScorer->IsNPC())
-			{
-				// if a player dies in a deathmatch game and the killer is a client, award the killer some points
-				pScorer->IncrementFragCount( IPointsForKill( pScorer, pVictim ) );
-			
-				// Allow the scorer to immediately paint a decal
-				//pScorer->AllowImmediateDecalPainting();
-			}
-			
-			// dvsents2: uncomment when removing all FireTargets
-			//variant_t value;
-			//g_EventQueue.AddEvent( "game_playerkill", "Use", value, 0, pScorer, pScorer );
-			FireTargets( "game_playerkill", pScorer, pScorer, USE_TOGGLE, 0 );
-		}
-		else
-		{  
-			if ( UseSuicidePenalty() )
-			{
-				// Players lose a frag for letting the world kill them			
-				pVictim->IncrementFragCount( -1 );
-			}					
-		}
-	}
-
-	void CSingleplayRules::NPCKilled(CBaseEntity *pVictim, const CTakeDamageInfo &info)
-	{
-		//change this for MP.
-		CBasePlayer *pEntity = UTIL_GetLocalPlayer();
-		if (pVictim->m_isRareEntity)
-		{
-			switch (GetSkillLevel())
-			{
-			case SKILL_EASY:
-				if (g_fr_economy.GetBool())
-				{
-					pEntity->AddMoney(3 * sk_money_multiplier1.GetInt());
-				}
-				if (!g_fr_classic.GetBool())
-				{
-					pEntity->AddXP(5 * sk_exp_multiplier1.GetInt());
-				}
-				break;
-
-			case SKILL_MEDIUM:
-				if (g_fr_economy.GetBool())
-				{
-					pEntity->AddMoney(3 * sk_money_multiplier2.GetInt());
-				}
-				if (!g_fr_classic.GetBool())
-				{
-					pEntity->AddXP(5 * sk_exp_multiplier2.GetInt());
-				}
-				break;
-
-			case SKILL_HARD:
-				if (g_fr_economy.GetBool())
-				{
-					pEntity->AddMoney(3 * sk_money_multiplier3.GetInt());
-				}
-				if (!g_fr_classic.GetBool())
-				{
-					pEntity->AddXP(5 * sk_exp_multiplier3.GetInt());
-				}
-				break;
-
-			case SKILL_VERYHARD:
-				if (g_fr_economy.GetBool())
-				{
-					pEntity->AddMoney(3 * sk_money_multiplier4.GetInt());
-				}
-				if (!g_fr_classic.GetBool())
-				{
-					pEntity->AddXP(5 * sk_exp_multiplier4.GetInt());
-				}
-				break;
-
-			case SKILL_NIGHTMARE:
-				if (g_fr_economy.GetBool())
-				{
-					pEntity->AddMoney(3 * sk_money_multiplier5.GetInt());
-				}
-				if (!g_fr_classic.GetBool())
-				{
-					pEntity->AddXP(5 * sk_exp_multiplier5.GetInt());
-				}
-				break;
-			}
-		}
-		else
-		{
-			switch (GetSkillLevel())
-			{
-			case SKILL_EASY:
-				if (g_fr_economy.GetBool())
-				{
-					pEntity->AddMoney(2 * sk_money_multiplier1.GetInt());
-				}
-				if (!g_fr_classic.GetBool())
-				{
-					pEntity->AddXP(3 * sk_exp_multiplier1.GetInt());
-				}
-				break;
-
-			case SKILL_MEDIUM:
-				if (g_fr_economy.GetBool())
-				{
-					pEntity->AddMoney(2 * sk_money_multiplier2.GetInt());
-				}
-				if (!g_fr_classic.GetBool())
-				{
-					pEntity->AddXP(3 * sk_exp_multiplier2.GetInt());
-				}
-				break;
-
-			case SKILL_HARD:
-				if (g_fr_economy.GetBool())
-				{
-					pEntity->AddMoney(2 * sk_money_multiplier3.GetInt());
-				}
-				if (!g_fr_classic.GetBool())
-				{
-					pEntity->AddXP(3 * sk_exp_multiplier3.GetInt());
-				}
-				break;
-
-			case SKILL_VERYHARD:
-				if (g_fr_economy.GetBool())
-				{
-					pEntity->AddMoney(2 * sk_money_multiplier4.GetInt());
-				}
-				if (!g_fr_classic.GetBool())
-				{
-					pEntity->AddXP(3 * sk_exp_multiplier4.GetInt());
-				}
-				break;
-
-			case SKILL_NIGHTMARE:
-				if (g_fr_economy.GetBool())
-				{
-					pEntity->AddMoney(2 * sk_money_multiplier5.GetInt());
-				}
-				if (!g_fr_classic.GetBool())
-				{
-					pEntity->AddXP(3 * sk_exp_multiplier5.GetInt());
-				}
-				break;
-			}
-		}
-		pEntity->IncrementFragCount(1);
-
 #define KILLING_SPREE_AMOUNT	5
 #define KILLING_FRENZY_AMOUNT	10
 #define OVERKILL_AMOUNT	15
@@ -862,144 +690,483 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 #define INVINCIBLE_AMOUNT	35
 #define GODLIKE_AMOUNT	40
 
-		if (info.GetInflictor() == pEntity)
+	//=========================================================
+	// PlayerKilled - someone/something killed this player
+	//=========================================================
+	void CSingleplayRules::PlayerKilled( CBasePlayer *pVictim, const CTakeDamageInfo &info )
+	{
+		if (sv_mp_pvp.GetBool())
 		{
-			if (sv_player_voice.GetBool())
+			//DeathNotice( pVictim, info );
+
+			// Find the killer & the scorer
+			CBaseEntity *pInflictor = info.GetInflictor();
+			CBaseEntity *pKiller = info.GetAttacker();
+			CBasePlayer *pScorer = GetDeathScorer(pKiller, pInflictor, pVictim);
+
+			pVictim->IncrementDeathCount(1);
+
+			// dvsents2: uncomment when removing all FireTargets
+			// variant_t value;
+			// g_EventQueue.AddEvent( "game_playerdie", "Use", value, 0, pVictim, pVictim );
+			FireTargets("game_playerdie", pVictim, pVictim, USE_TOGGLE, 0);
+
+			// Did the player kill himself?
+			if (pVictim == pScorer)
 			{
-				if (sv_player_voice_kill.GetBool())
+				// Players lose a frag for letting the world kill them			
+				pVictim->IncrementFragCount(-1);
+			}
+			else if (pScorer)
+			{
+				if (!pScorer->IsNPC())
 				{
-					int killvoicerandom = random->RandomInt(0, sv_player_voice_kill_freq.GetInt());
-					if (killvoicerandom == 0)
+					if (g_fr_economy.GetBool())
 					{
-						pEntity->EmitSound("Player.VoiceKill");
+						pScorer->AddMoney(10);
+					}
+					if (!g_fr_classic.GetBool())
+					{
+						pScorer->AddXP(15);
+					}
+
+					// if a player dies in a deathmatch game and the killer is a client, award the killer some points
+					pScorer->IncrementFragCount(IPointsForKill(pScorer, pVictim));
+
+					if (sv_player_voice.GetBool())
+					{
+						if (sv_player_voice_kill.GetBool())
+						{
+							int killvoicerandom = random->RandomInt(0, sv_player_voice_kill_freq.GetInt());
+							if (killvoicerandom == 0)
+							{
+								pScorer->EmitSound("Player.VoiceKill");
+							}
+						}
+					}
+
+					if (sv_killingspree.GetBool())
+					{
+						int m_iKillsInSpree = pScorer->FragCount();
+
+						if (m_iKillsInSpree == KILLING_SPREE_AMOUNT)
+						{
+							CFmtStr hint;
+							hint.sprintf("#Valve_Hud_KILLINGSPREE");
+							pScorer->ShowLevelMessage(hint.Access());
+							if (g_fr_economy.GetBool())
+							{
+								pScorer->AddMoney(2);
+							}
+							if (!g_fr_classic.GetBool())
+							{
+								pScorer->AddXP(3);
+							}
+						}
+						if (m_iKillsInSpree == KILLING_FRENZY_AMOUNT)
+						{
+							CFmtStr hint;
+							hint.sprintf("#Valve_Hud_KILLINGFRENZY");
+							pScorer->ShowLevelMessage(hint.Access());
+							if (g_fr_economy.GetBool())
+							{
+								pScorer->AddMoney(4);
+							}
+							if (!g_fr_classic.GetBool())
+							{
+								pScorer->AddXP(6);
+							}
+						}
+						if (m_iKillsInSpree == OVERKILL_AMOUNT)
+						{
+							CFmtStr hint;
+							hint.sprintf("#Valve_Hud_OVERKILL");
+							pScorer->ShowLevelMessage(hint.Access());
+							if (g_fr_economy.GetBool())
+							{
+								pScorer->AddMoney(6);
+							}
+							if (!g_fr_classic.GetBool())
+							{
+								pScorer->AddXP(9);
+							}
+						}
+						if (m_iKillsInSpree == RAMPAGE_AMOUNT)
+						{
+							CFmtStr hint;
+							hint.sprintf("#Valve_Hud_RAMPAGE");
+							pScorer->ShowLevelMessage(hint.Access());
+							if (g_fr_economy.GetBool())
+							{
+								pScorer->AddMoney(8);
+							}
+							if (!g_fr_classic.GetBool())
+							{
+								pScorer->AddXP(12);
+							}
+						}
+						if (m_iKillsInSpree == UNSTOPPABLE_AMOUNT)
+						{
+							CFmtStr hint;
+							hint.sprintf("#Valve_Hud_UNSTOPPABLE");
+							pScorer->ShowLevelMessage(hint.Access());
+							if (g_fr_economy.GetBool())
+							{
+								pScorer->AddMoney(10);
+							}
+							if (!g_fr_classic.GetBool())
+							{
+								pScorer->AddXP(15);
+							}
+						}
+						if (m_iKillsInSpree == INCONCEIVABLE_AMOUNT)
+						{
+							CFmtStr hint;
+							hint.sprintf("#Valve_Hud_INCONCEIVABLE");
+							pScorer->ShowLevelMessage(hint.Access());
+							if (g_fr_economy.GetBool())
+							{
+								pScorer->AddMoney(12);
+							}
+							if (!g_fr_classic.GetBool())
+							{
+								pScorer->AddXP(18);
+							}
+						}
+						if (m_iKillsInSpree == INVINCIBLE_AMOUNT)
+						{
+							CFmtStr hint;
+							hint.sprintf("#Valve_Hud_INVINCIBLE");
+							pScorer->ShowLevelMessage(hint.Access());
+							if (g_fr_economy.GetBool())
+							{
+								pScorer->AddMoney(14);
+							}
+							if (!g_fr_classic.GetBool())
+							{
+								pScorer->AddXP(21);
+							}
+						}
+						if (m_iKillsInSpree == GODLIKE_AMOUNT)
+						{
+							CFmtStr hint;
+							hint.sprintf("#Valve_Hud_GODLIKE");
+							pScorer->ShowLevelMessage(hint.Access());
+							if (g_fr_economy.GetBool())
+							{
+								pScorer->AddMoney(16);
+							}
+							if (!g_fr_classic.GetBool())
+							{
+								pScorer->AddXP(24);
+							}
+						}
+
+#define CLASSICLEVELUP_AMOUNT	15
+
+						if (g_fr_classic.GetBool())
+						{
+							int m_iKillsInClassicMode = 0;
+
+							m_iKillsInClassicMode++;
+
+							if (m_iKillsInClassicMode == CLASSICLEVELUP_AMOUNT)
+							{
+								pScorer->LevelUpClassic();
+								m_iKillsInClassicMode = 0;
+							}
+						}
+					}
+				}
+
+				// dvsents2: uncomment when removing all FireTargets
+				//variant_t value;
+				//g_EventQueue.AddEvent( "game_playerkill", "Use", value, 0, pScorer, pScorer );
+				FireTargets("game_playerkill", pScorer, pScorer, USE_TOGGLE, 0);
+			}
+			else
+			{
+				// Players lose a frag for letting the world kill them			
+				pVictim->IncrementFragCount(-1);
+			}
+		}
+		else
+		{
+			pVictim->IncrementDeathCount(1);
+		}
+	}
+
+	void CSingleplayRules::NPCKilled(CBaseEntity *pVictim, const CTakeDamageInfo &info)
+	{
+		// Find the killer & the scorer
+		CBaseEntity *pInflictor = info.GetInflictor();
+		CBaseEntity *pKiller = info.GetAttacker();
+		CBasePlayer *pEntity = GetDeathScorer(pKiller, pInflictor, pVictim);
+		
+		if (pEntity)
+		{
+			if (pVictim->m_isRareEntity)
+			{
+				switch (GetSkillLevel())
+				{
+				case SKILL_EASY:
+					if (g_fr_economy.GetBool())
+					{
+						pEntity->AddMoney(3 * sk_money_multiplier1.GetInt());
+					}
+					if (!g_fr_classic.GetBool())
+					{
+						pEntity->AddXP(5 * sk_exp_multiplier1.GetInt());
+					}
+					break;
+
+				case SKILL_MEDIUM:
+					if (g_fr_economy.GetBool())
+					{
+						pEntity->AddMoney(3 * sk_money_multiplier2.GetInt());
+					}
+					if (!g_fr_classic.GetBool())
+					{
+						pEntity->AddXP(5 * sk_exp_multiplier2.GetInt());
+					}
+					break;
+
+				case SKILL_HARD:
+					if (g_fr_economy.GetBool())
+					{
+						pEntity->AddMoney(3 * sk_money_multiplier3.GetInt());
+					}
+					if (!g_fr_classic.GetBool())
+					{
+						pEntity->AddXP(5 * sk_exp_multiplier3.GetInt());
+					}
+					break;
+
+				case SKILL_VERYHARD:
+					if (g_fr_economy.GetBool())
+					{
+						pEntity->AddMoney(3 * sk_money_multiplier4.GetInt());
+					}
+					if (!g_fr_classic.GetBool())
+					{
+						pEntity->AddXP(5 * sk_exp_multiplier4.GetInt());
+					}
+					break;
+
+				case SKILL_NIGHTMARE:
+					if (g_fr_economy.GetBool())
+					{
+						pEntity->AddMoney(3 * sk_money_multiplier5.GetInt());
+					}
+					if (!g_fr_classic.GetBool())
+					{
+						pEntity->AddXP(5 * sk_exp_multiplier5.GetInt());
+					}
+					break;
+				}
+			}
+			else
+			{
+				switch (GetSkillLevel())
+				{
+				case SKILL_EASY:
+					if (g_fr_economy.GetBool())
+					{
+						pEntity->AddMoney(2 * sk_money_multiplier1.GetInt());
+					}
+					if (!g_fr_classic.GetBool())
+					{
+						pEntity->AddXP(3 * sk_exp_multiplier1.GetInt());
+					}
+					break;
+
+				case SKILL_MEDIUM:
+					if (g_fr_economy.GetBool())
+					{
+						pEntity->AddMoney(2 * sk_money_multiplier2.GetInt());
+					}
+					if (!g_fr_classic.GetBool())
+					{
+						pEntity->AddXP(3 * sk_exp_multiplier2.GetInt());
+					}
+					break;
+
+				case SKILL_HARD:
+					if (g_fr_economy.GetBool())
+					{
+						pEntity->AddMoney(2 * sk_money_multiplier3.GetInt());
+					}
+					if (!g_fr_classic.GetBool())
+					{
+						pEntity->AddXP(3 * sk_exp_multiplier3.GetInt());
+					}
+					break;
+
+				case SKILL_VERYHARD:
+					if (g_fr_economy.GetBool())
+					{
+						pEntity->AddMoney(2 * sk_money_multiplier4.GetInt());
+					}
+					if (!g_fr_classic.GetBool())
+					{
+						pEntity->AddXP(3 * sk_exp_multiplier4.GetInt());
+					}
+					break;
+
+				case SKILL_NIGHTMARE:
+					if (g_fr_economy.GetBool())
+					{
+						pEntity->AddMoney(2 * sk_money_multiplier5.GetInt());
+					}
+					if (!g_fr_classic.GetBool())
+					{
+						pEntity->AddXP(3 * sk_exp_multiplier5.GetInt());
+					}
+					break;
+				}
+			}
+
+			pEntity->IncrementFragCount(IPointsForKillEntity(pEntity, pVictim));
+
+			if (info.GetInflictor() == pEntity)
+			{
+				if (sv_player_voice.GetBool())
+				{
+					if (sv_player_voice_kill.GetBool())
+					{
+						int killvoicerandom = random->RandomInt(0, sv_player_voice_kill_freq.GetInt());
+						if (killvoicerandom == 0)
+						{
+							pEntity->EmitSound("Player.VoiceKill");
+						}
 					}
 				}
 			}
-		}
 
-		if (sv_killingspree.GetBool())
-		{
-			int m_iKillsInSpree = pEntity->FragCount();
+			if (sv_killingspree.GetBool())
+			{
+				int m_iKillsInSpree = pEntity->FragCount();
 
-			if (m_iKillsInSpree == KILLING_SPREE_AMOUNT)
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_Hud_KILLINGSPREE");
-				pEntity->ShowLevelMessage(hint.Access());
-				if (g_fr_economy.GetBool())
+				if (m_iKillsInSpree == KILLING_SPREE_AMOUNT)
 				{
-					pEntity->AddMoney(2);
+					CFmtStr hint;
+					hint.sprintf("#Valve_Hud_KILLINGSPREE");
+					pEntity->ShowLevelMessage(hint.Access());
+					if (g_fr_economy.GetBool())
+					{
+						pEntity->AddMoney(2);
+					}
+					if (!g_fr_classic.GetBool())
+					{
+						pEntity->AddXP(3);
+					}
 				}
-				if (!g_fr_classic.GetBool())
+				if (m_iKillsInSpree == KILLING_FRENZY_AMOUNT)
 				{
-					pEntity->AddXP(3);
+					CFmtStr hint;
+					hint.sprintf("#Valve_Hud_KILLINGFRENZY");
+					pEntity->ShowLevelMessage(hint.Access());
+					if (g_fr_economy.GetBool())
+					{
+						pEntity->AddMoney(4);
+					}
+					if (!g_fr_classic.GetBool())
+					{
+						pEntity->AddXP(6);
+					}
+				}
+				if (m_iKillsInSpree == OVERKILL_AMOUNT)
+				{
+					CFmtStr hint;
+					hint.sprintf("#Valve_Hud_OVERKILL");
+					pEntity->ShowLevelMessage(hint.Access());
+					if (g_fr_economy.GetBool())
+					{
+						pEntity->AddMoney(6);
+					}
+					if (!g_fr_classic.GetBool())
+					{
+						pEntity->AddXP(9);
+					}
+				}
+				if (m_iKillsInSpree == RAMPAGE_AMOUNT)
+				{
+					CFmtStr hint;
+					hint.sprintf("#Valve_Hud_RAMPAGE");
+					pEntity->ShowLevelMessage(hint.Access());
+					if (g_fr_economy.GetBool())
+					{
+						pEntity->AddMoney(8);
+					}
+					if (!g_fr_classic.GetBool())
+					{
+						pEntity->AddXP(12);
+					}
+				}
+				if (m_iKillsInSpree == UNSTOPPABLE_AMOUNT)
+				{
+					CFmtStr hint;
+					hint.sprintf("#Valve_Hud_UNSTOPPABLE");
+					pEntity->ShowLevelMessage(hint.Access());
+					if (g_fr_economy.GetBool())
+					{
+						pEntity->AddMoney(10);
+					}
+					if (!g_fr_classic.GetBool())
+					{
+						pEntity->AddXP(15);
+					}
+				}
+				if (m_iKillsInSpree == INCONCEIVABLE_AMOUNT)
+				{
+					CFmtStr hint;
+					hint.sprintf("#Valve_Hud_INCONCEIVABLE");
+					pEntity->ShowLevelMessage(hint.Access());
+					if (g_fr_economy.GetBool())
+					{
+						pEntity->AddMoney(12);
+					}
+					if (!g_fr_classic.GetBool())
+					{
+						pEntity->AddXP(18);
+					}
+				}
+				if (m_iKillsInSpree == INVINCIBLE_AMOUNT)
+				{
+					CFmtStr hint;
+					hint.sprintf("#Valve_Hud_INVINCIBLE");
+					pEntity->ShowLevelMessage(hint.Access());
+					if (g_fr_economy.GetBool())
+					{
+						pEntity->AddMoney(14);
+					}
+					if (!g_fr_classic.GetBool())
+					{
+						pEntity->AddXP(21);
+					}
+				}
+				if (m_iKillsInSpree == GODLIKE_AMOUNT)
+				{
+					CFmtStr hint;
+					hint.sprintf("#Valve_Hud_GODLIKE");
+					pEntity->ShowLevelMessage(hint.Access());
+					if (g_fr_economy.GetBool())
+					{
+						pEntity->AddMoney(16);
+					}
+					if (!g_fr_classic.GetBool())
+					{
+						pEntity->AddXP(24);
+					}
 				}
 			}
-			if (m_iKillsInSpree == KILLING_FRENZY_AMOUNT)
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_Hud_KILLINGFRENZY");
-				pEntity->ShowLevelMessage(hint.Access());
-				if (g_fr_economy.GetBool())
-				{
-					pEntity->AddMoney(4);
-				}
-				if (!g_fr_classic.GetBool())
-				{
-					pEntity->AddXP(6);
-				}
-			}
-			if (m_iKillsInSpree == OVERKILL_AMOUNT)
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_Hud_OVERKILL");
-				pEntity->ShowLevelMessage(hint.Access());
-				if (g_fr_economy.GetBool())
-				{
-					pEntity->AddMoney(6);
-				}
-				if (!g_fr_classic.GetBool())
-				{
-					pEntity->AddXP(9);
-				}
-			}
-			if (m_iKillsInSpree == RAMPAGE_AMOUNT)
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_Hud_RAMPAGE");
-				pEntity->ShowLevelMessage(hint.Access());
-				if (g_fr_economy.GetBool())
-				{
-					pEntity->AddMoney(8);
-				}
-				if (!g_fr_classic.GetBool())
-				{
-					pEntity->AddXP(12);
-				}
-			}
-			if (m_iKillsInSpree == UNSTOPPABLE_AMOUNT)
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_Hud_UNSTOPPABLE");
-				pEntity->ShowLevelMessage(hint.Access());
-				if (g_fr_economy.GetBool())
-				{
-					pEntity->AddMoney(10);
-				}
-				if (!g_fr_classic.GetBool())
-				{
-					pEntity->AddXP(15);
-				}
-			}
-			if (m_iKillsInSpree == INCONCEIVABLE_AMOUNT)
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_Hud_INCONCEIVABLE");
-				pEntity->ShowLevelMessage(hint.Access());
-				if (g_fr_economy.GetBool())
-				{
-					pEntity->AddMoney(12);
-				}
-				if (!g_fr_classic.GetBool())
-				{
-					pEntity->AddXP(18);
-				}
-			}
-			if (m_iKillsInSpree == INVINCIBLE_AMOUNT)
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_Hud_INVINCIBLE");
-				pEntity->ShowLevelMessage(hint.Access());
-				if (g_fr_economy.GetBool())
-				{
-					pEntity->AddMoney(14);
-				}
-				if (!g_fr_classic.GetBool())
-				{
-					pEntity->AddXP(21);
-				}
-			}
-			if (m_iKillsInSpree == GODLIKE_AMOUNT)
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_Hud_GODLIKE");
-				pEntity->ShowLevelMessage(hint.Access());
-				if (g_fr_economy.GetBool())
-				{
-					pEntity->AddMoney(16);
-				}
-				if (!g_fr_classic.GetBool())
-				{
-					pEntity->AddXP(24);
-				}
-			}
-		}
 
-		if (pVictim->m_isRareEntity)
-		{
-			if (g_fr_classic.GetBool())
+			if (pVictim->m_isRareEntity)
 			{
-				pEntity->LevelUpClassic();
+				if (g_fr_classic.GetBool())
+				{
+					pEntity->LevelUpClassic();
+				}
 			}
 		}
 	}
@@ -1184,7 +1351,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 	//=========================================================
 	int CSingleplayRules::DeadPlayerWeapons( CBasePlayer *pPlayer )
 	{
-		if (sv_player_dropweaponsondeath.GetBool())
+		if (sv_player_dropweaponsondeath.GetBool() || sv_mp_pvp.GetBool())
 		{
 			return GR_PLR_DROP_GUN_ACTIVE;
 		}
@@ -1198,7 +1365,14 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 	//=========================================================
 	int CSingleplayRules::DeadPlayerAmmo( CBasePlayer *pPlayer )
 	{
-		return GR_PLR_DROP_AMMO_NO;
+		if (sv_mp_pvp.GetBool())
+		{
+			return GR_PLR_DROP_AMMO_ACTIVE;
+		}
+		else
+		{
+			return GR_PLR_DROP_AMMO_NO;
+		}
 	}
 
 	//=========================================================

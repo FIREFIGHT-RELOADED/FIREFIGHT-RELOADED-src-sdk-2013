@@ -4292,6 +4292,7 @@ void CNPC_AntlionWorker::DoPoisonBurst()
 		RadiusDamage( info, GetAbsOrigin(), sk_antlion_worker_burst_radius->GetFloat(), CLASS_NONE, this );
 
 		DispatchParticleEffect( "antlion_gib_02", WorldSpaceCenter(), GetAbsAngles() );
+		DispatchParticleEffect("smod_blood_gib_y", WorldSpaceCenter(), GetAbsAngles());
 	}
 	else
 	{

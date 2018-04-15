@@ -280,10 +280,6 @@ void CNPC_PoisonZombie::Precache( void )
 	PrecacheScriptSound( "Zombie.AttackHit" );
 	PrecacheScriptSound( "Zombie.AttackMiss" );
 
-	PrecacheScriptSound("Gore.Headshot");
-
-	PrecacheParticleSystem("headshotspray_zombie");
-
 	BaseClass::Precache();
 }
 
@@ -491,7 +487,7 @@ float CNPC_PoisonZombie::GetHitgroupDamageMultiplier(int iHitGroup, const CTakeD
 		{
 			if (!m_fIsHeadless && HeadshotRandom == 0 && !(info.GetDamageType() & DMG_NEVERGIB) || !m_fIsHeadless && info.GetDamageType() & DMG_SNIPER && !(info.GetDamageType() & DMG_NEVERGIB))
 			{
-				DispatchParticleEffect("headshotspray_zombie", PATTACH_POINT_FOLLOW, this, "headcrab1", true);
+				DispatchParticleEffect("smod_headshot_g", PATTACH_POINT_FOLLOW, this, "headcrab1", true);
 				CGib::SpawnSpecificGibs(this, 3, 750, 1500, "models/gibs/agib_p3.mdl", 6);
 				CGib::SpawnSpecificGibs(this, 3, 750, 1500, "models/gibs/agib_p4.mdl", 6);
 				EmitSound("Gore.Headshot");

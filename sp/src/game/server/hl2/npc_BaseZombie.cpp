@@ -664,7 +664,7 @@ float CNPC_BaseZombie::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDa
 			{
 				if (!m_fIsHeadless && HeadshotRandom == 0 && !(info.GetDamageType() & DMG_NEVERGIB) && !FClassnameIs(this, "npc_poisonzombie") || !m_fIsHeadless && info.GetDamageType() & DMG_SNIPER && !(info.GetDamageType() & DMG_NEVERGIB) && !FClassnameIs(this, "npc_poisonzombie"))
 				{
-					DispatchParticleEffect("headshotspray_zombie", PATTACH_POINT_FOLLOW, this, "headcrab", true);
+					DispatchParticleEffect("smod_headshot_y", PATTACH_POINT_FOLLOW, this, "headcrab", true);
 					CGib::SpawnSpecificGibs(this, 3, 750, 1500, "models/gibs/agib_p3.mdl", 6);
 					CGib::SpawnSpecificGibs(this, 3, 750, 1500, "models/gibs/agib_p4.mdl", 6);
 					EmitSound("Gore.Headshot");
@@ -946,6 +946,7 @@ int CNPC_BaseZombie::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 					if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()))
 					{
 						UTIL_BloodSpray(WorldSpaceCenter(), vec3_origin, BLOOD_COLOR_YELLOW, 13, FX_BLOODSPRAY_ALL);
+						DispatchParticleEffect("blood_zombie_split", GetAbsOrigin(), GetAbsAngles(), this);
 					}
 				}
 
@@ -1186,6 +1187,7 @@ void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info )
 
 	if ( UTIL_ShouldShowBlood( BLOOD_COLOR_YELLOW ) )
 	{
+		/*
 		int i;
 		Vector vecSpot;
 		Vector vecDir;
@@ -1216,6 +1218,9 @@ void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info )
 
 			UTIL_BloodImpact( vecSpot, vecDir, BloodColor(), 1 );
 		}
+		*/
+
+		DispatchParticleEffect("blood_zombie_split", GetAbsOrigin(), GetAbsAngles(), this);
 	}
 }
 
@@ -1872,16 +1877,12 @@ void CNPC_BaseZombie::Precache( void )
 	PrecacheScriptSound( "E3_Phystown.Slicer" );
 	PrecacheScriptSound( "NPC_BaseZombie.PoundDoor" );
 	PrecacheScriptSound( "NPC_BaseZombie.Swat" );
-	PrecacheScriptSound("Gore.Headshot");
 
 	PrecacheModel( GetLegsModel() );
 	PrecacheModel( GetTorsoModel() );
 
 	PrecacheParticleSystem( "blood_impact_zombie_01" );
-	PrecacheParticleSystem( "headshotspray_zombie" );
-
-	PrecacheModel("models/gibs/agib_p3.mdl");
-	PrecacheModel("models/gibs/agib_p4.mdl");
+	PrecacheParticleSystem( "blood_zombie_split" );
 
 	BaseClass::Precache();
 }

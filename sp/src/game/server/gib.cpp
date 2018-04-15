@@ -732,7 +732,7 @@ CBaseEntity *CreateRagGib(CBaseEntity *pVictim, const char *szModel, const Vecto
 {
 	if ( gEntList.NumberOfEntities() >= (gpGlobals->maxEntities - ENTITY_INTOLERANCE) )
 	{
-		return;
+		return NULL;
 	}
 	
 	CRagGib *pGib;

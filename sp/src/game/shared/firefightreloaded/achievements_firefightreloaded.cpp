@@ -197,7 +197,7 @@ protected:
 
 	virtual void Init()
 	{
-		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
+		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
 		SetGameDirFilter("firefightreloaded");
 #ifndef MOD_VER
 		m_bStoreProgressInSteam = true;
@@ -870,7 +870,7 @@ class CAchievementKill10EnemiesWithOwnGrenade : public CBaseAchievement
 protected:
 	virtual void Init()
 	{
-		SetFlags(ACH_LISTEN_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
+		SetFlags(ACH_LISTEN_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
 		SetInflictorFilter("npc_grenade_frag");
 		SetGameDirFilter("firefightreloaded");
 		SetGoal(10);
@@ -964,12 +964,13 @@ protected:
 	void Init()
 	{
 		SetInflictorFilter("npc_manhack");
-		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
+		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME | ACH_SAVE_GLOBAL);
 		SetGameDirFilter("firefightreloaded");
 		SetGoal(10);
 	}
 };
 DECLARE_ACHIEVEMENT(CAchievementKill10EnemiesWithManhacks, ACHIEVEMENT_FIREFIGHTRELOADED_KILL10ENEMIESWITHMANHACKS, "FIREFIGHTRELOADED_KILL10ENEMIESWITHMANHACKS", 35);
 */
+
 
 #endif // GAME_DLL

@@ -4034,6 +4034,7 @@ bool CNPC_Antlion::CorpseGib( const CTakeDamageInfo &info )
 		GetBonePosition( s_nBodyBone, vecOrigin, angBone );
 
 		DispatchParticleEffect( "AntlionGib", vecOrigin, QAngle( 0, 0, 0 ) );
+		DispatchParticleEffect("smod_blood_gib_y", WorldSpaceCenter(), GetAbsAngles());
 	}
 
 	Vector velocity = vec3_origin;
@@ -4425,6 +4426,7 @@ void CNPC_Antlion::DoPoisonBurst()
 		RadiusDamage( info, GetAbsOrigin(), sk_antlion_worker_burst_radius.GetFloat(), CLASS_NONE, this );
 
 		DispatchParticleEffect( "antlion_gib_02", WorldSpaceCenter(), GetAbsAngles() );
+		DispatchParticleEffect("smod_blood_gib_y", WorldSpaceCenter(), GetAbsAngles());
 	}
 	else
 	{
