@@ -39,10 +39,10 @@ extern ConVar sv_player_hardcoremode;
 
 void CC_EntityCount(void)
 {
-	Msg("%d/%d\n", gEntList.NumberOfEntities(), gpGlobals->maxEntities);
+	Msg("%d/%d entities, %d/%d NPCs\n", gEntList.NumberOfEntities(), gpGlobals->maxEntities, g_iNPCLimit, g_fr_npclimit.GetInt());
 }
 
-static ConCommand entitycount("entitycount", CC_EntityCount, "Shows map entity count");
+static ConCommand entitycount("entitycount", CC_EntityCount, "Shows map entity and NPC count");
 
 /*
 ===========
