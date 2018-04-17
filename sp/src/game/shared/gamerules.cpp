@@ -47,7 +47,7 @@ ConVar g_gamemode("g_gamemode", "0", FCVAR_ARCHIVE | FCVAR_REPLICATED);
 ConVar g_fr_classic("g_fr_classic", "0", FCVAR_ARCHIVE | FCVAR_REPLICATED);
 ConVar g_fr_headshotgore("g_fr_headshotgore", "1", FCVAR_ARCHIVE | FCVAR_REPLICATED);
 ConVar g_fr_economy("g_fr_economy", "1", FCVAR_ARCHIVE | FCVAR_REPLICATED);
-ConVar g_fr_npclimit("g_fr_npclimit", "200", FCVAR_ARCHIVE | FCVAR_REPLICATED);
+ConVar g_fr_npclimit("g_fr_npclimit", "0", FCVAR_ARCHIVE | FCVAR_REPLICATED);
 
 static CViewVectors g_DefaultViewVectors(
 	Vector( 0, 0, 64 ),			//VEC_VIEW (m_vView)
