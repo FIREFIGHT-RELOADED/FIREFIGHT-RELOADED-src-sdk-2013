@@ -103,8 +103,8 @@ public:
 
 	void DispatchSpray(CBaseEntity *pEntity);
 
-	virtual void RunAI(void);
-	virtual void StartTask(const Task_t *pTask);
+	//virtual void RunAI(void);
+	//virtual void StartTask(const Task_t *pTask);
 	virtual void RunTask(const Task_t *pTask);
 	virtual int RangeAttack1Conditions(float flDot, float flDist);
 	NPC_STATE SelectIdealState(void);

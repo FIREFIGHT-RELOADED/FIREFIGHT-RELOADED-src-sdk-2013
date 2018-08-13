@@ -457,10 +457,12 @@ void CNPC_Cremator::HandleAnimEvent(animevent_t *pEvent)
 	break;
 	case CREMATOR_AE_SPECIAL_MIDDLE:
 	{
+		/*
 		if (pCorpse && pCorpse != NULL) // double, triple, quadruple check!
 		{
 			IncinerateCorpse(pCorpse); // start the corpse burn
 		}
+		*/
 	}
 	break;
 	case CREMATOR_AE_SPECIAL_END:
@@ -595,19 +597,21 @@ void CNPC_Cremator::DispatchSpray(CBaseEntity *pEntity)
 #endif
 	m_iAmmo--;
 }
+/*
 void CNPC_Cremator::RunAI(void)
 {
-	if (!HasCondition(COND_CREMATOR_FOUND_CORPSE))
-		SearchForCorpses(); // FIXME: is it the best place for it?
+	//if (!HasCondition(COND_CREMATOR_FOUND_CORPSE))
+		//SearchForCorpses(); // FIXME: is it the best place for it?
 	//currently some crashes with this function.
-	/*
+	
 	if (IsCurSchedule(SCHED_CREMATOR_INVESTIGATE_CORPSE) && pCorpse->WorldSpaceCenter().DistToSqr(WorldSpaceCenter()) <= 128 * 128)
 	{
 		GetNavigator()->StopMoving();
 	}
-	*/
+	
 	BaseClass::RunAI();
 }
+
 void CNPC_Cremator::StartTask(const Task_t *pTask)
 {
 	switch (pTask->iTask)
@@ -636,6 +640,7 @@ void CNPC_Cremator::StartTask(const Task_t *pTask)
 		}
 		break;
 	}
+	
 	case TASK_CREMATOR_BURN_CORPSE:
 	{
 		if (!pCorpse)
@@ -660,17 +665,23 @@ void CNPC_Cremator::StartTask(const Task_t *pTask)
 		break;
 	}
 }
+*/
 void CNPC_Cremator::RunTask(const Task_t *pTask)
 {
 	switch (pTask->iTask)
 	{
+	/*
 	case TASK_CREMATOR_INVESTIGATE_CORPSE: // FIXME: that never runs!
 	{
 		Msg("Running TASK_CREMATOR_INVESTIGATE_CORPSE\n");
-		if (WorldSpaceCenter().DistToSqr(pCorpse->WorldSpaceCenter()) <= pTask->flTaskData * pTask->flTaskData) // Stop when we're close enough to the corpse.
+		//if (WorldSpaceCenter().DistToSqr(pCorpse->WorldSpaceCenter()) <= pTask->flTaskData * pTask->flTaskData) // Stop when we're close enough to the corpse.
+		//{
+			//GetNavigator()->StopMoving();
+			//DevMsg("Close enough to the corpse\n");
+			//TaskComplete();
+		//}
+		if (IsActivityFinished())
 		{
-			GetNavigator()->StopMoving();
-			DevMsg("Close enough to the corpse\n");
 			TaskComplete();
 		}
 		break;
@@ -684,6 +695,7 @@ void CNPC_Cremator::RunTask(const Task_t *pTask)
 		}
 		break;
 	}
+	*/
 	case TASK_CREMATOR_RANGE_ATTACK1:
 	{
 		Assert(GetEnemy() != NULL);
@@ -739,6 +751,7 @@ NPC_STATE CNPC_Cremator::SelectIdealState(void)
 		}
 		break;
 	}
+	/*
 	case NPC_STATE_IDLE:
 	{
 		if (HasCondition(COND_CREMATOR_FOUND_CORPSE))
@@ -747,6 +760,7 @@ NPC_STATE CNPC_Cremator::SelectIdealState(void)
 		}
 		break;
 	}
+	*/
 	}
 	return BaseClass::SelectIdealState();
 }
@@ -799,10 +813,12 @@ int CNPC_Cremator::SelectSchedule(void)
 	}
 	case NPC_STATE_ALERT:
 	{
+		/*
 		if (HasCondition(COND_CREMATOR_FOUND_CORPSE) && !HasCondition(COND_LIGHT_DAMAGE | COND_HEAVY_DAMAGE) && GetEnemy() == NULL)
 		{
 			return SCHED_CREMATOR_INVESTIGATE_CORPSE;
 		}
+		*/
 		if (!HasSpawnFlags(SF_CREMATOR_NO_PATROL_BEHAVIOUR))
 			return SCHED_CREMATOR_PATROL;
 		else
@@ -856,6 +872,7 @@ void CNPC_Cremator::PrescheduleThink(void)
 	}
 #endif
 
+	/*
 	switch (m_NPCState)
 	{
 	case NPC_STATE_ALERT:
@@ -870,9 +887,10 @@ void CNPC_Cremator::PrescheduleThink(void)
 		break;
 	}
 	}
+	*/
 }
 
-
+/*
 void CNPC_Cremator::SearchForCorpses(void)
 {
 //	float flSearchRadius = CREMATOR_DETECT_CORPSE_RANGE;
@@ -921,6 +939,7 @@ void CNPC_Cremator::IncinerateCorpse(CBaseEntity *pTarget)
 		}
 	}
 }
+*/
 
 AI_BEGIN_CUSTOM_NPC(npc_cremator, CNPC_Cremator)
 
@@ -931,12 +950,12 @@ DECLARE_ACTIVITY(ACT_CREMATOR_RELOAD)
 
 DECLARE_CONDITION(COND_CREMATOR_OUT_OF_AMMO)
 DECLARE_CONDITION(COND_CREMATOR_ENEMY_WITH_HIGHER_PRIORITY)
-DECLARE_CONDITION(COND_CREMATOR_FOUND_CORPSE)
+//DECLARE_CONDITION(COND_CREMATOR_FOUND_CORPSE)
 
 DECLARE_TASK(TASK_CREMATOR_RANGE_ATTACK1)
 DECLARE_TASK(TASK_CREMATOR_RELOAD)
-DECLARE_TASK(TASK_CREMATOR_INVESTIGATE_CORPSE)
-DECLARE_TASK(TASK_CREMATOR_BURN_CORPSE)
+//DECLARE_TASK(TASK_CREMATOR_INVESTIGATE_CORPSE)
+//DECLARE_TASK(TASK_CREMATOR_BURN_CORPSE)
 
 DEFINE_SCHEDULE(
 	SCHED_CREMATOR_CHASE_ENEMY,
@@ -988,6 +1007,7 @@ DEFINE_SCHEDULE(
 	"	COND_LIGHT_DAMAGE"
 	"	COND_HEAVY_DAMAGE"
 )
+/*
 DEFINE_SCHEDULE(
 	SCHED_CREMATOR_INVESTIGATE_CORPSE, // we're here because we have COND_CREMATOR_FOUND_CORPSE.
 	"	Tasks"
@@ -1007,4 +1027,5 @@ DEFINE_SCHEDULE(
 	"	COND_LIGHT_DAMAGE"
 	"	COND_HEAVY_DAMAGE"
 )
+*/
 AI_END_CUSTOM_NPC()

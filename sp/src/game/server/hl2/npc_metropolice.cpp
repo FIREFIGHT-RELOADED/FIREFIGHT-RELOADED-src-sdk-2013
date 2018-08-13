@@ -3190,14 +3190,17 @@ void CNPC_MetroPolice::Event_Killed( const CTakeDamageInfo &info )
 		Vector forceVector = CalcDamageForceVector(info);
 
 		// Drop any weapon that I own
-		if (VPhysicsGetObject())
+		if (m_hActiveWeapon)
 		{
-			Vector weaponForce = forceVector * VPhysicsGetObject()->GetInvMass();
-			Weapon_Drop(m_hActiveWeapon, NULL, &weaponForce);
-		}
-		else
-		{
-			Weapon_Drop(m_hActiveWeapon);
+			if (VPhysicsGetObject())
+			{
+				Vector weaponForce = forceVector * VPhysicsGetObject()->GetInvMass();
+				Weapon_Drop(m_hActiveWeapon, NULL, &weaponForce);
+			}
+			else
+			{
+				Weapon_Drop(m_hActiveWeapon);
+			}
 		}
 
 		if (info.GetAttacker()->IsPlayer())

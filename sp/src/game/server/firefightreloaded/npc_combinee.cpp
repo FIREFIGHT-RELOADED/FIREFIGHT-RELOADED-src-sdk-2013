@@ -405,14 +405,17 @@ void CNPC_CombineE::Event_Killed( const CTakeDamageInfo &info )
 		Vector forceVector = CalcDamageForceVector(info);
 
 		// Drop any weapon that I own
-		if (VPhysicsGetObject())
+		if (m_hActiveWeapon)
 		{
-			Vector weaponForce = forceVector * VPhysicsGetObject()->GetInvMass();
-			Weapon_Drop(m_hActiveWeapon, NULL, &weaponForce);
-		}
-		else
-		{
-			Weapon_Drop(m_hActiveWeapon);
+			if (VPhysicsGetObject())
+			{
+				Vector weaponForce = forceVector * VPhysicsGetObject()->GetInvMass();
+				Weapon_Drop(m_hActiveWeapon, NULL, &weaponForce);
+			}
+			else
+			{
+				Weapon_Drop(m_hActiveWeapon);
+			}
 		}
 
 		if (info.GetAttacker()->IsPlayer())
@@ -445,72 +448,75 @@ void CNPC_CombineE::Event_Killed( const CTakeDamageInfo &info )
 
 	if ( pPlayer != NULL )
 	{
-		// Elites drop alt-fire ammo, so long as they weren't killed by dissolving.
-#ifdef HL2_EPISODIC
-		if (HasSpawnFlags(SF_COMBINE_NO_AR2DROP) == false)
-#endif
+		if (m_hActiveWeapon)
 		{
-			if (FClassnameIs(GetActiveWeapon(), "weapon_ar2"))
+			// Elites drop alt-fire ammo, so long as they weren't killed by dissolving.
+#ifdef HL2_EPISODIC
+			if (HasSpawnFlags(SF_COMBINE_NO_AR2DROP) == false)
+#endif
 			{
-				CBaseEntity *pItem = DropItem("item_ammo_ar2_altfire", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
-
-				if (pItem)
+				if (FClassnameIs(GetActiveWeapon(), "weapon_ar2"))
 				{
-					IPhysicsObject *pObj = pItem->VPhysicsGetObject();
+					CBaseEntity *pItem = DropItem("item_ammo_ar2_altfire", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
 
-					if (pObj)
+					if (pItem)
 					{
-						Vector			vel = RandomVector(-64.0f, 64.0f);
-						AngularImpulse	angImp = RandomAngularImpulse(-300.0f, 300.0f);
+						IPhysicsObject *pObj = pItem->VPhysicsGetObject();
 
-						vel[2] = 0.0f;
-						pObj->AddVelocity(&vel, &angImp);
-					}
-
-					if (info.GetDamageType() & DMG_DISSOLVE)
-					{
-						CBaseAnimating *pAnimating = dynamic_cast<CBaseAnimating*>(pItem);
-
-						if (pAnimating)
+						if (pObj)
 						{
-							pAnimating->Dissolve(NULL, gpGlobals->curtime, false, ENTITY_DISSOLVE_NORMAL);
+							Vector			vel = RandomVector(-64.0f, 64.0f);
+							AngularImpulse	angImp = RandomAngularImpulse(-300.0f, 300.0f);
+
+							vel[2] = 0.0f;
+							pObj->AddVelocity(&vel, &angImp);
 						}
-					}
-					else
-					{
-						WeaponManager_AddManaged(pItem);
+
+						if (info.GetDamageType() & DMG_DISSOLVE)
+						{
+							CBaseAnimating *pAnimating = dynamic_cast<CBaseAnimating*>(pItem);
+
+							if (pAnimating)
+							{
+								pAnimating->Dissolve(NULL, gpGlobals->curtime, false, ENTITY_DISSOLVE_NORMAL);
+							}
+						}
+						else
+						{
+							WeaponManager_AddManaged(pItem);
+						}
 					}
 				}
-			}
-			else if (FClassnameIs(GetActiveWeapon(), "weapon_smg1"))
-			{
-				CBaseEntity *pItem = DropItem("item_ammo_smg1_grenade", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
-
-				if (pItem)
+				else if (FClassnameIs(GetActiveWeapon(), "weapon_smg1"))
 				{
-					IPhysicsObject *pObj = pItem->VPhysicsGetObject();
+					CBaseEntity *pItem = DropItem("item_ammo_smg1_grenade", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
 
-					if (pObj)
+					if (pItem)
 					{
-						Vector			vel = RandomVector(-64.0f, 64.0f);
-						AngularImpulse	angImp = RandomAngularImpulse(-300.0f, 300.0f);
+						IPhysicsObject *pObj = pItem->VPhysicsGetObject();
 
-						vel[2] = 0.0f;
-						pObj->AddVelocity(&vel, &angImp);
-					}
-
-					if (info.GetDamageType() & DMG_DISSOLVE)
-					{
-						CBaseAnimating *pAnimating = dynamic_cast<CBaseAnimating*>(pItem);
-
-						if (pAnimating)
+						if (pObj)
 						{
-							pAnimating->Dissolve(NULL, gpGlobals->curtime, false, ENTITY_DISSOLVE_NORMAL);
+							Vector			vel = RandomVector(-64.0f, 64.0f);
+							AngularImpulse	angImp = RandomAngularImpulse(-300.0f, 300.0f);
+
+							vel[2] = 0.0f;
+							pObj->AddVelocity(&vel, &angImp);
 						}
-					}
-					else
-					{
-						WeaponManager_AddManaged(pItem);
+
+						if (info.GetDamageType() & DMG_DISSOLVE)
+						{
+							CBaseAnimating *pAnimating = dynamic_cast<CBaseAnimating*>(pItem);
+
+							if (pAnimating)
+							{
+								pAnimating->Dissolve(NULL, gpGlobals->curtime, false, ENTITY_DISSOLVE_NORMAL);
+							}
+						}
+						else
+						{
+							WeaponManager_AddManaged(pItem);
+						}
 					}
 				}
 			}

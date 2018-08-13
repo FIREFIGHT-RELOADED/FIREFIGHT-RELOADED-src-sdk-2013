@@ -33,6 +33,7 @@
 #include "IEffects.h"
 #include "vstdlib/random.h"
 #include "engine/IEngineSound.h"
+#include "prop_combine_ball.h"
 
 #define CGUARD_GIB_COUNT			5   //Assuming we get a new modeller who can make these for us.
 
@@ -44,6 +45,9 @@ ConVar sk_combineguard_health( "sk_combineguard_health", "0" );
 class CSprite;
 
 extern void CreateConcussiveBlast( const Vector &origin, const Vector &surfaceNormal, CBaseEntity *pOwner, float magnitude );
+extern ConVar sk_weapon_ar2_alt_fire_mass;
+extern ConVar sk_weapon_ar2_alt_fire_duration;
+extern ConVar sk_weapon_ar2_alt_fire_radius;
 
 #define	COMBINEGUARD_MODEL	"models/combine_guard.mdl"
 
@@ -980,6 +984,17 @@ void CNPC_CombineGuard::FireRangeWeapon( void )
 	QAngle	angShootDir;
 	GetAttachment( LookupAttachment( "muzzle" ), vecShootOrigin, angShootDir );
 
+	float flAmmoRatio = 1.0f;
+	float flDuration = RemapValClamped(flAmmoRatio, 0.0f, 1.0f, 0.5f, sk_weapon_ar2_alt_fire_duration.GetFloat());
+	float flRadius = RemapValClamped(flAmmoRatio, 0.0f, 1.0f, 4.0f, sk_weapon_ar2_alt_fire_radius.GetFloat());
+
+	// Fire the bullets
+	Vector vecVelocity = vecAiming * 1000.0f;
+
+	// Fire the combine ball
+	CreateCombineBall(vecSrc, vecVelocity, flRadius, sk_weapon_ar2_alt_fire_mass.GetFloat(), flDuration, this);
+
+	/*
 	trace_t	tr;
 	AI_TraceLine( vecSrc, impactPoint, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
 // Just using the gunship tracers for a placeholder unless a better effect can be found. Maybe use the strider cannon's tracer or something.
@@ -988,6 +1003,7 @@ void CNPC_CombineGuard::FireRangeWeapon( void )
 	UTIL_Tracer( tr.startpos, tr.endpos, 0, TRACER_DONT_USE_ATTACHMENT, 6000 + random->RandomFloat( 0, 4000 ), true, "GunshipTracer" );
 
 	CreateConcussiveBlast( tr.endpos, tr.plane.normal, this, 1.0 );
+	*/
 }
 
 #define	DEBUG_AIMING 0

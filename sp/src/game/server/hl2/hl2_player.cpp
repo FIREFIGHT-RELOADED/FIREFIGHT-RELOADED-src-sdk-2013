@@ -51,6 +51,7 @@
 #include "grenade_frag.h"
 #include "filesystem.h"
 #include "cdll_int.h"
+#include "predicted_viewmodel.h"
 
 #ifdef HL2_EPISODIC
 #include "npc_alyx_episodic.h"
@@ -4138,6 +4139,24 @@ void CHL2_Player::OnRestore()
 {
 	BaseClass::OnRestore();
 	m_pPlayerAISquad = g_AI_SquadManager.FindCreateSquad(AllocPooledString(PLAYER_SQUADNAME));
+}
+
+void CHL2_Player::CreateViewModel(int index)
+{
+	Assert(index >= 0 && index < MAX_VIEWMODELS);
+	if (GetViewModel(index))
+		return;
+
+	CPredictedViewModel *vm = (CPredictedViewModel *)CreateEntityByName("predicted_viewmodel");
+	if (vm)
+	{
+		vm->SetAbsOrigin(GetAbsOrigin());
+		vm->SetOwner(this);
+		vm->SetIndex(index);
+		DispatchSpawn(vm);
+		vm->FollowEntity(this);
+		m_hViewModel.Set(index, vm);
+	}
 }
 
 //---------------------------------------------------------
