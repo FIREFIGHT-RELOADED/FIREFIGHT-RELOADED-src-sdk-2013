@@ -12,7 +12,7 @@
 #pragma once
 #endif
 
-#include "ai_baseNPC.h"
+#include "ai_basenpc.h"
 #include "ai_hint.h"
 #include "ai_link.h"
 #include "ai_motor.h"

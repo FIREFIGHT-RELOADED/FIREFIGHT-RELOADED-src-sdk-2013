@@ -10,7 +10,7 @@
 #include "basehlcombatweapon.h"
 #include "decals.h"
 #include "beam_shared.h"
-#include "AmmoDef.h"
+#include "ammodef.h"
 #include "IEffects.h"
 #include "engine/IEngineSound.h"
 #include "in_buttons.h"
