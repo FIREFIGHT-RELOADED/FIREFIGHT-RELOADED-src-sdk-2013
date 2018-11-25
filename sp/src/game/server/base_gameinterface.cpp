@@ -31,7 +31,7 @@ void CServerGameDLL::LevelInit_ParseAllEntities( const char *pMapEntities )
 	//after that, spawn all custom entities - Bitl
 	CMapAdd *pMapadd = GetMapAddEntity();
 	char szMapadd[128];
-	Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
+	Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", STRING( gpGlobals->mapname ));
 	if (!pMapadd)
 	{
 		pMapadd = CreateMapAddEntity();
@@ -48,7 +48,7 @@ void CServerGameDLL::LevelInit_ParseAllEntities( const char *pMapEntities )
 		{
 			CMapAdd *pMapadd = GetMapAddEntity();
 			char szMapadd[128];
-			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
+			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", STRING( gpGlobals->mapname ));
 			if (!pMapadd)
 			{
 				pMapadd = CreateMapAddEntity();
@@ -63,7 +63,7 @@ void CServerGameDLL::LevelInit_ParseAllEntities( const char *pMapEntities )
 		{
 			CMapAdd *pMapadd = GetMapAddEntity();
 			char szMapadd[128];
-			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
+			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", STRING( gpGlobals->mapname ));
 			if (!pMapadd)
 			{
 				pMapadd = CreateMapAddEntity();
@@ -78,7 +78,7 @@ void CServerGameDLL::LevelInit_ParseAllEntities( const char *pMapEntities )
 		{
 			CMapAdd *pMapadd = GetMapAddEntity();
 			char szMapadd[128];
-			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
+			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", STRING( gpGlobals->mapname ));
 			if (!pMapadd)
 			{
 				pMapadd = CreateMapAddEntity();
@@ -93,7 +93,7 @@ void CServerGameDLL::LevelInit_ParseAllEntities( const char *pMapEntities )
 		{
 			CMapAdd *pMapadd = GetMapAddEntity();
 			char szMapadd[128];
-			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
+			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", STRING( gpGlobals->mapname ));
 			if (!pMapadd)
 			{
 				pMapadd = CreateMapAddEntity();
@@ -108,7 +108,7 @@ void CServerGameDLL::LevelInit_ParseAllEntities( const char *pMapEntities )
 		{
 			CMapAdd *pMapadd = GetMapAddEntity();
 			char szMapadd[128];
-			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
+			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", STRING( gpGlobals->mapname ));
 			if (!pMapadd)
 			{
 				pMapadd = CreateMapAddEntity();
@@ -123,7 +123,7 @@ void CServerGameDLL::LevelInit_ParseAllEntities( const char *pMapEntities )
 		{
 			CMapAdd *pMapadd = GetMapAddEntity();
 			char szMapadd[128];
-			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
+			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", STRING( gpGlobals->mapname ));
 			if (!pMapadd)
 			{
 				pMapadd = CreateMapAddEntity();
@@ -141,7 +141,7 @@ void CServerGameDLL::LevelInit_ParseAllEntities( const char *pMapEntities )
 		{
 			CMapAdd *pMapadd = GetMapAddEntity();
 			char szMapadd[128];
-			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
+			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", STRING( gpGlobals->mapname ));
 			if (!pMapadd)
 			{
 				pMapadd = CreateMapAddEntity();
@@ -156,7 +156,7 @@ void CServerGameDLL::LevelInit_ParseAllEntities( const char *pMapEntities )
 		{
 			CMapAdd *pMapadd = GetMapAddEntity();
 			char szMapadd[128];
-			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
+			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", STRING( gpGlobals->mapname ));
 			if (!pMapadd)
 			{
 				pMapadd = CreateMapAddEntity();
@@ -171,7 +171,7 @@ void CServerGameDLL::LevelInit_ParseAllEntities( const char *pMapEntities )
 		{
 			CMapAdd *pMapadd = GetMapAddEntity();
 			char szMapadd[128];
-			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
+			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", STRING( gpGlobals->mapname ));
 			if (!pMapadd)
 			{
 				pMapadd = CreateMapAddEntity();
@@ -186,7 +186,7 @@ void CServerGameDLL::LevelInit_ParseAllEntities( const char *pMapEntities )
 		{
 			CMapAdd *pMapadd = GetMapAddEntity();
 			char szMapadd[128];
-			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
+			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", STRING( gpGlobals->mapname ));
 			if (!pMapadd)
 			{
 				pMapadd = CreateMapAddEntity();
@@ -201,7 +201,7 @@ void CServerGameDLL::LevelInit_ParseAllEntities( const char *pMapEntities )
 		{
 			CMapAdd *pMapadd = GetMapAddEntity();
 			char szMapadd[128];
-			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
+			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", STRING( gpGlobals->mapname ));
 			if (!pMapadd)
 			{
 				pMapadd = CreateMapAddEntity();
@@ -216,7 +216,7 @@ void CServerGameDLL::LevelInit_ParseAllEntities( const char *pMapEntities )
 		{
 			CMapAdd *pMapadd = GetMapAddEntity();
 			char szMapadd[128];
-			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
+			Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", STRING( gpGlobals->mapname ));
 			if (!pMapadd)
 			{
 				pMapadd = CreateMapAddEntity();

@@ -12,7 +12,7 @@ void CC_CallLabel(const CCommand &args)
 	CMapAdd *pMapadd = GetMapAddEntity();
 
 	char szMapadd[128];
-	Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", gpGlobals->mapname);
+	Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", STRING(gpGlobals->mapname));
 	if (!pMapadd)
 	{
 		pMapadd = CreateMapAddEntity();
@@ -234,7 +234,7 @@ bool CMapAdd::HandleWeaponManagerEnitity(KeyValues *weaponManagerEntity)
 void CMapAdd::InputRunLabel( inputdata_t &inputData ) //Input this directly!
 {
 	char szMapadd[128];
-	Q_snprintf( szMapadd, sizeof( szMapadd ), "mapadd/%s.txt", gpGlobals->mapname );
+	Q_snprintf( szMapadd, sizeof( szMapadd ), "mapadd/%s.txt", STRING(gpGlobals->mapname) );
 	this->RunLabel( szMapadd, inputData.value.String());
 }
 BEGIN_DATADESC( CMapAdd )
