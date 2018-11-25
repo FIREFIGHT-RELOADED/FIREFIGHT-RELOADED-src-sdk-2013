@@ -97,9 +97,9 @@ public:
 	void TraceAttack(const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator);
 	void Event_Killed(const CTakeDamageInfo &info);
 	virtual const char *GetHeadpropModel(void);
-	void DropHead(int iVelocity, Vector &vecVelocity);
+	void DropHead(int iVelocity, const Vector &vecVelocity);
 	virtual const char *GetGunpropModel(void);
-	void DropGun(int iVelocity, Vector &vecVelocity);
+	void DropGun(int iVelocity, const Vector &vecVelocity);
 
 	void DispatchSpray(CBaseEntity *pEntity);
 
