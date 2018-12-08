@@ -299,7 +299,7 @@ void CNPCMakerFirefight::Precache(void)
 
 	for (i = 0; i < nNPCsPrecache; ++i)
 	{
-		UTIL_PrecacheOther(g_charNPCSSpawnerList[nNPCsPrecache]);
+		UTIL_PrecacheOther(g_charNPCSSpawnerList[i]);
 	}
 
 	/*
