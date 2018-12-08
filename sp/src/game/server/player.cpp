@@ -6749,126 +6749,84 @@ CBaseEntity *CBasePlayer::EntSelectSpawnPoint()
 	pSpot = g_pLastSpawn;
 	pSpotFinder = NULL;
 
-	int TeamSpawnAttempt1 = random->RandomInt(1, 2);
+	static const char* Team1Spawns[] = {
+		"info_player_rebel",
+		"info_player_terrorist",
+		"info_player_axis",
+	};
+	static const char* Team2Spawns[] = {
+		"info_player_combine",
+		"info_player_counterterrorist",
+		"info_player_allies",
+	};
+	COMPILE_TIME_ASSERT( ARRAYSIZE( Team1Spawns ) == ARRAYSIZE( Team2Spawns ) );
+	static const size_t MAX_TEAM_ATTEMPTS = ARRAYSIZE( Team1Spawns );
+	static const char* NonTeamSpawns[] = {
+		"info_player_deathmatch",
+		"info_player_start",
+	};
+	static const size_t MAX_NONTEAM_ATTEMPTS = ARRAYSIZE( NonTeamSpawns );
 
-	if (TeamSpawnAttempt1 == 1)
+	for (int Attempt = 0; !pSpotFinder && Attempt < MAX_TEAM_ATTEMPTS; ++Attempt)
 	{
-		pSpotFinder = gEntList.FindEntityByClassname(pSpot, "info_player_rebel");
+		int TeamSpawn = random->RandomInt(0, 1);
+		const char** Spawns = TeamSpawn ? Team1Spawns : Team2Spawns;
+		
+		pSpotFinder = gEntList.FindEntityByClassname(pSpot, Spawns[Attempt]);
 	}
-	else if (TeamSpawnAttempt1 == 2)
+
+	for (int Attempt = 0; !pSpotFinder && Attempt < MAX_NONTEAM_ATTEMPTS; ++Attempt)
 	{
-		pSpotFinder = gEntList.FindEntityByClassname(pSpot, "info_player_combine");
+		pSpotFinder = gEntList.FindEntityByClassname(pSpot, NonTeamSpawns[Attempt]);
 	}
-	
+
 	if (pSpotFinder)
 	{
-		goto SelectRandomSpot;
+		// Randomize the start spot
+		for (int i = random->RandomInt(1, 5); i > 0; i--)
+			pSpot = gEntList.FindEntityByClassname(pSpot, pSpotFinder->GetClassname());
+		if (!pSpot)  // skip over the null point
+			pSpot = gEntList.FindEntityByClassname(pSpot, pSpotFinder->GetClassname());
+
+		if (pSpot)
+		{
+			CBaseEntity *pFirstSpot = pSpot;
+
+			bool foundValidSpot = false;
+			do
+			{
+				// check if pSpot is valid
+				if (g_pGameRules->IsSpawnPointValid(pSpot, this) && pSpot->GetLocalOrigin() != vec3_origin)
+				{
+					foundValidSpot = true;
+					break;
+				}
+				// increment pSpot
+				pSpot = gEntList.FindEntityByClassname(pSpot, pSpotFinder->GetClassname());
+			} while (pSpot != pFirstSpot); // loop if we're not back to the start
+
+			// we haven't found a place to spawn yet,  so kill any guy at the first spawn point and spawn there
+			if (!foundValidSpot)
+			{
+				CBaseEntity *ent = NULL;
+				for (CEntitySphereQuery sphere(pSpot->GetAbsOrigin(), 128); (ent = sphere.GetCurrentEntity()) != NULL; sphere.NextEntity())
+				{
+					// if ent is a client, kill em (unless they are ourselves)
+					if (ent->IsPlayer() && !(ent->edict() == player))
+						ent->TakeDamage(CTakeDamageInfo(GetContainingEntity(INDEXENT(0)), GetContainingEntity(INDEXENT(0)), 300, DMG_GENERIC));
+				}
+			}
+		}
 	}
 	else
 	{
-		int TeamSpawnAttempt2 = random->RandomInt(1, 2);
-
-		if (TeamSpawnAttempt2 == 1)
+		pSpot = gEntList.FindEntityByName(NULL, gpGlobals->startspot);
+		if (!pSpot)
 		{
-			pSpotFinder = gEntList.FindEntityByClassname(pSpot, "info_player_terrorist");
-		}
-		else if (TeamSpawnAttempt2 == 2)
-		{
-			pSpotFinder = gEntList.FindEntityByClassname(pSpot, "info_player_counterterrorist");
-		}
-
-		if (pSpotFinder)
-		{
-			goto SelectRandomSpot;
-		}
-		else
-		{
-			int TeamSpawnAttempt3 = random->RandomInt(1, 2);
-
-			if (TeamSpawnAttempt3 == 1)
-			{
-				pSpotFinder = gEntList.FindEntityByClassname(pSpot, "info_player_axis");
-			}
-			else if (TeamSpawnAttempt3 == 2)
-			{
-				pSpotFinder = gEntList.FindEntityByClassname(pSpot, "info_player_allies");
-			}
-
-			if (pSpotFinder)
-			{
-				goto SelectRandomSpot;
-			}
-			else
-			{
-				pSpotFinder = gEntList.FindEntityByClassname(pSpot, "info_player_deathmatch");
-
-				if (pSpotFinder)
-				{
-					goto SelectRandomSpot;
-				}
-				else
-				{
-					pSpotFinder = gEntList.FindEntityByClassname(pSpot, "info_player_start");
-
-					if (pSpotFinder)
-					{
-						goto SelectRandomSpot;
-					}
-					else
-					{
-						pSpot = gEntList.FindEntityByName(NULL, gpGlobals->startspot);
-						if (pSpot)
-							goto ReturnSpot;
-					}
-				}
-			}
+			pSpot = g_pLastSpawn;
 		}
 	}
 
-SelectRandomSpot:
-	// Randomize the start spot
-	for (int i = random->RandomInt(1, 5); i > 0; i--)
-		pSpot = gEntList.FindEntityByClassname(pSpot, pSpotFinder->GetClassname());
-	if (!pSpot)  // skip over the null point
-		pSpot = gEntList.FindEntityByClassname(pSpot, pSpotFinder->GetClassname());
-
-	CBaseEntity *pFirstSpot = pSpot;
-
-	do
-	{
-		if (pSpot)
-		{
-			// check if pSpot is valid
-			if (g_pGameRules->IsSpawnPointValid(pSpot, this))
-			{
-				if (pSpot->GetLocalOrigin() == vec3_origin)
-				{
-					pSpot = gEntList.FindEntityByClassname(pSpot, pSpotFinder->GetClassname());
-					continue;
-				}
-
-				// if so, go to pSpot
-				goto ReturnSpot;
-			}
-		}
-		// increment pSpot
-		pSpot = gEntList.FindEntityByClassname(pSpot, pSpotFinder->GetClassname());
-	} while (pSpot != pFirstSpot); // loop if we're not back to the start
-
-	// we haven't found a place to spawn yet,  so kill any guy at the first spawn point and spawn there
-	if (pSpot)
-	{
-		CBaseEntity *ent = NULL;
-		for (CEntitySphereQuery sphere(pSpot->GetAbsOrigin(), 128); (ent = sphere.GetCurrentEntity()) != NULL; sphere.NextEntity())
-		{
-			// if ent is a client, kill em (unless they are ourselves)
-			if (ent->IsPlayer() && !(ent->edict() == player))
-				ent->TakeDamage(CTakeDamageInfo(GetContainingEntity(INDEXENT(0)), GetContainingEntity(INDEXENT(0)), 300, DMG_GENERIC));
-		}
-		goto ReturnSpot;
-	}
-
-ReturnSpot:
 	if ( !pSpot  )
 	{
 		Warning( "PutClientInServer: no player spawn on level. Navigation mesh generation will not work!\n");

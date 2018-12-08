@@ -1313,11 +1313,13 @@ void CMP3Player::PopulateTree()
 	PopulateLists();
 }
 
-// Instead of including windows.h
-extern "C"
-{
-	extern int __stdcall CopyFileA( char *pszSource, char *pszDest, int bFailIfExists );
-};
+#ifdef WIN32
+	// Instead of including windows.h
+	extern "C"
+	{
+		extern int __stdcall CopyFileA( char *pszSource, char *pszDest, int bFailIfExists );
+	};
+#endif
 
 void CMP3Player::GetLocalCopyOfSong( const MP3File_t &mp3, char *outsong, size_t outlen )
 {
@@ -1371,9 +1373,29 @@ void CMP3Player::GetLocalCopyOfSong( const MP3File_t &mp3, char *outsong, size_t
 		Q_snprintf( sourcepath, sizeof( sourcepath ), "%s/%s", sdir->m_Root.String(), fn );
 		Q_FixSlashes( sourcepath );
 
-		// !!!HACK HACK:
-		// Total hack right now, using windows OS calls to copy file to full destination
-		int success = ::CopyFileA( sourcepath, destpath, TRUE );
+		#ifdef WIN32
+			int success = ::CopyFileA( sourcepath, destpath, TRUE );
+		#else
+			FileHandle_t sourcefile = g_pFullFileSystem->Open( sourcepath, "rb" );
+			FileHandle_t destfile   = g_pFullFileSystem->Open( destpath, "wb" );
+
+			int success = sourcefile && destfile;
+			//TODO: determine decent buffer size
+			CUtlVector<char> buf(0, 65536);
+			int read;
+			while ( success && ( read = g_pFullFileSystem->Read( buf.Base(), buf.Count(), sourcefile ) ) )
+			{
+				success = g_pFullFileSystem->Write( buf.Base(), read, sourcefile ) == read;
+			}
+
+			g_pFullFileSystem->Close( sourcefile );
+			g_pFullFileSystem->Close( destfile );
+
+			if ( ! success )
+			{
+				g_pFullFileSystem->RemoveFile( destpath );
+			}
+		#endif
 		if ( success > 0 )
 		{
 			Q_snprintf( outsong, outlen, "_mp3/%s.mp3", hexname );

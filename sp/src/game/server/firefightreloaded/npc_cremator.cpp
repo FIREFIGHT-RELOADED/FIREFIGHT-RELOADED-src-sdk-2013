@@ -342,7 +342,7 @@ const char *CNPC_Cremator::GetHeadpropModel(void)
 {
 	return "models/cremator_headprop.mdl";
 }
-void CNPC_Cremator::DropHead(int iVelocity, Vector &vecVelocity)
+void CNPC_Cremator::DropHead(int iVelocity, const Vector &vecVelocity)
 {
 	CPhysicsProp *pGib = assert_cast<CPhysicsProp*>(CreateEntityByName("prop_physics"));
 	pGib->SetModel(GetHeadpropModel());
@@ -373,7 +373,7 @@ const char *CNPC_Cremator::GetGunpropModel(void)
 	return "models/cremator_gunprop.mdl";
 }
 
-void CNPC_Cremator::DropGun(int iVelocity, Vector &vecVelocity)
+void CNPC_Cremator::DropGun(int iVelocity, const Vector &vecVelocity)
 {
 	CPhysicsProp *pGib = assert_cast<CPhysicsProp*>(CreateEntityByName("prop_physics"));
 	pGib->SetModel(GetGunpropModel());

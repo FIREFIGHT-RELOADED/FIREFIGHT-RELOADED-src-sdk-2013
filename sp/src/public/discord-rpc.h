@@ -1,6 +1,12 @@
 #pragma once
 #include <stdint.h>
 
+#ifdef NO_DISCORD_RPC
+#define DISCORD_FN {}
+#else
+#define DISCORD_FN
+#endif
+
 // clang-format off
 
 #if defined(DISCORD_DYNAMIC_LIB)
@@ -13,6 +19,8 @@
 #  else
 #    define DISCORD_EXPORT __attribute__((visibility("default")))
 #  endif
+#elif defined(NO_DISCORD_RPC)
+#  define DISCORD_EXPORT static inline
 #else
 #  define DISCORD_EXPORT
 #endif
@@ -63,21 +71,23 @@ typedef struct DiscordEventHandlers {
 DISCORD_EXPORT void Discord_Initialize(const char* applicationId,
                                        DiscordEventHandlers* handlers,
                                        int autoRegister,
-                                       const char* optionalSteamId);
-DISCORD_EXPORT void Discord_Shutdown(void);
+                                       const char* optionalSteamId) DISCORD_FN;
+DISCORD_EXPORT void Discord_Shutdown(void) DISCORD_FN;
 
 /* checks for incoming messages, dispatches callbacks */
-DISCORD_EXPORT void Discord_RunCallbacks(void);
+DISCORD_EXPORT void Discord_RunCallbacks(void) DISCORD_FN;
 
 /* If you disable the lib starting its own io thread, you'll need to call this from your own */
 #ifdef DISCORD_DISABLE_IO_THREAD
-DISCORD_EXPORT void Discord_UpdateConnection(void);
+DISCORD_EXPORT void Discord_UpdateConnection(void) DISCORD_FN;
 #endif
 
-DISCORD_EXPORT void Discord_UpdatePresence(const DiscordRichPresence* presence);
+DISCORD_EXPORT void Discord_UpdatePresence(const DiscordRichPresence* presence) DISCORD_FN;
 
-DISCORD_EXPORT void Discord_Respond(const char* userid, /* DISCORD_REPLY_ */ int reply);
+DISCORD_EXPORT void Discord_Respond(const char* userid, /* DISCORD_REPLY_ */ int reply) DISCORD_FN;
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
+
+#undef DISCORD_FN
