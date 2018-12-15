@@ -246,7 +246,8 @@ public:
 	bool				IsIlluminatedByFlashlight( CBaseEntity *pEntity, float *flReturnDot );
 	void				SetFlashlightPowerDrainScale( float flScale ) { m_flFlashlightPowerDrainScale = flScale; }
 
-	void		KickAttack(void);
+	void		InitKickAttack(void);
+	void		DoKickAttack(void);
 	void		FlyJetpack(void);
 	void		SetPlayerModel(void);
 
