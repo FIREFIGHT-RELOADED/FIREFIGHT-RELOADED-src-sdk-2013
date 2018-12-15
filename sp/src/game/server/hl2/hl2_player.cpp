@@ -1049,8 +1049,54 @@ void CHL2_Player::InitKickAttack(void)
 	m_bIsKicking = true;
 }
 
+bool CHL2_Player::KickObject(CBaseEntity *pProp)
+{
+	if (!pProp || pProp->IsNPC())
+	{
+		return false;
+	}
+	
+	IPhysicsObject *pPhysicsObject = pProp->VPhysicsGetObject();
+	if (pPhysicsObject == NULL) return true;
+	
+	Vector hitDirection;
+	EyeVectors(&hitDirection, NULL, NULL);
+	VectorNormalize(hitDirection);
+	
+	float flForceScale = /*info.GetBaseDamage()*/ 5 * ImpulseScale(250, 10);
+	Vector vecForce = hitDirection;
+	VectorNormalize(vecForce);
+	vecForce *= flForceScale;
+	
+#if 0
+	CTakeDamageInfo info(this, this, 5, DMG_CRUSH);
+	info.SetDamagePosition(hitDirection);
+	info.SetDamageForce(vecForce);
+#endif
+	
+	pPhysicsObject->SetVelocity(&vecForce, NULL);
+	
+	EmitSound("HL2Player.kick_wall");
+	
+	return true;
+}
+
 void CHL2_Player::DoKickAttack(void)
 {
+	CBaseEntity *pProp = GetPlayerHeldEntity(this);
+	if (pProp)
+	{
+		//drop entity
+		GetUseEntity()->Use(this, this, USE_OFF, 0);
+		KickObject(pProp);
+	}
+	pProp = PhysCannonGetHeldEntity(GetActiveWeapon());
+	if (pProp)
+	{
+		PhysCannonForceDrop(GetActiveWeapon(), NULL);
+		KickObject(pProp);
+	}
+
 	// Trace up or down based on where the enemy is...
 	// But only if we're basically facing that direction
 	Vector vecDirection;
@@ -1101,28 +1147,8 @@ void CHL2_Player::DoKickAttack(void)
 			pDoor->KickFail();
 			return;
 		}
-		CBaseEntity *pProp = this->CheckTraceHullAttack(Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), 5, DMG_CRUSH, KickThrowForceMult, false);
-		if (pProp && !pProp->IsNPC())
-		{
-			IPhysicsObject *pPhysicsObject = pProp->VPhysicsGetObject();
-			if (pPhysicsObject == NULL)
-			{
-				return;
-			}
-			CTakeDamageInfo info(this, this, 5, DMG_CRUSH);
-			Vector hitDirection;
-			EyeVectors(&hitDirection, NULL, NULL);
-			VectorNormalize(hitDirection);
-			info.SetDamagePosition(hitDirection);
-			float flForceScale = info.GetBaseDamage() * ImpulseScale(250, 10);
-			Vector vecForce = hitDirection;
-			VectorNormalize(vecForce);
-			vecForce *= flForceScale;
-			info.SetDamageForce(vecForce);
-			pPhysicsObject->SetVelocity(&vecForce, NULL);
-			EmitSound("HL2Player.kick_wall");
-			return;
-		}
+		pProp = this->CheckTraceHullAttack(Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), 5, DMG_CRUSH, KickThrowForceMult, false);
+		if (KickObject(pProp)) return;
 		CBaseEntity *Victim = this->CheckTraceHullAttack(Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), KickDamageMult, DMG_CRUSH, KickThrowForceMult, true);
 		if (Victim && Victim->IsNPC())
 		{

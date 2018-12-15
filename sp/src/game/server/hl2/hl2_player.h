@@ -247,6 +247,7 @@ public:
 	void				SetFlashlightPowerDrainScale( float flScale ) { m_flFlashlightPowerDrainScale = flScale; }
 
 	void		InitKickAttack(void);
+	bool		KickObject(CBaseEntity *pProp);
 	void		DoKickAttack(void);
 	void		FlyJetpack(void);
 	void		SetPlayerModel(void);
