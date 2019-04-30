@@ -206,6 +206,8 @@ ConVar sv_regen_interval("sv_regen_interval", "10", FCVAR_REPLICATED | FCVAR_CHE
 ConVar sv_decay_wait_time("sv_decay_wait_time", "0.5", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar sv_decay_rate("sv_decay_rate", "8.5", FCVAR_REPLICATED | FCVAR_CHEAT);
 
+ConVar sv_fr_maxhealthupgrades("sv_fr_maxhealthupgrades", "10", FCVAR_CHEAT);
+
 ConVar sk_player_weapons("sk_player_weapons", "1");
 
 ConVar sv_player_maxsuitpower("sv_player_maxsuitpower", "200", FCVAR_REPLICATED);
@@ -540,6 +542,7 @@ BEGIN_DATADESC( CBasePlayer )
 	DEFINE_FIELD( m_MaxArmorValue, FIELD_INTEGER),
 	DEFINE_FIELD(m_MaxHealthVal, FIELD_INTEGER),
 	DEFINE_FIELD(m_MaxHealthValExtra, FIELD_INTEGER),
+	DEFINE_FIELD(m_iHealthUpgrades, FIELD_INTEGER),
 	DEFINE_FIELD( m_DmgOrigin, FIELD_VECTOR ),
 	DEFINE_FIELD( m_DmgTake, FIELD_FLOAT ),
 	DEFINE_FIELD( m_DmgSave, FIELD_FLOAT ),
@@ -832,6 +835,8 @@ CBasePlayer::CBasePlayer( )
 	m_bAlreadyHasInfiniteAmmoPerk = false;
 
 	m_iMoney = 0;
+
+	m_iHealthUpgrades = 0;
 
 	m_fRegenRate = sv_regeneration_rate_default.GetFloat();
 }
@@ -2324,6 +2329,7 @@ void CBasePlayer::ShowPerkMessage(const char *pMessage)
 void CBasePlayer::Market_SetMaxHealth()
 {
 	IncrementMaxHealthRegenValue(10);
+	m_iHealthUpgrades++;
 }
 
 void CBasePlayer::GiveRandomPerk()
@@ -8627,20 +8633,40 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 			}
 			else
 			{
-				if (sv_store_buynotifications.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_StoreBuySuccessUpgrade");
-					ShowLevelMessage(hint.Access());
-				}
+				//right now we only have the max health upgrade.
 				if (upgradeID == FIREFIGHT_UPGRADE_MAXHEALTH)
 				{
-					Market_SetMaxHealth();
-				}
-				RemoveMoney(moneyAmount);
-				if (sv_store_buysounds.GetBool())
-				{
-					EmitSound("Store.Buy");
+					if (m_iHealthUpgrades < sv_fr_maxhealthupgrades.GetInt())
+					{
+						if (sv_store_buynotifications.GetBool())
+						{
+							CFmtStr hint;
+							hint.sprintf("#Valve_StoreBuySuccessUpgrade");
+							ShowLevelMessage(hint.Access());
+						}
+
+						Market_SetMaxHealth();
+
+						RemoveMoney(moneyAmount);
+						if (sv_store_buysounds.GetBool())
+						{
+							EmitSound("Store.Buy");
+						}
+					}
+					else
+					{
+						if (sv_store_denynotifications.GetBool())
+						{
+							CFmtStr hint;
+							hint.sprintf("#Valve_StoreBuyDenyTooManyUpgrades");
+							ShowLevelMessage(hint.Access());
+						}
+
+						if(sv_store_denysounds.GetBool())
+						{
+							EmitSound("Store.InsufficientFunds");
+						}
+					}
 				}
 			}
 

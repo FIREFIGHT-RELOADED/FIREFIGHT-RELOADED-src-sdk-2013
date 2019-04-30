@@ -1121,6 +1121,7 @@ private:
 	int						m_iPlayerLocked;
 
 	float					m_fRegenRate;
+	int						m_iHealthUpgrades;
 		
 protected:
 	// the player's personal view model
