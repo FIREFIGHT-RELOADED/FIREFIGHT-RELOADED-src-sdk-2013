@@ -334,6 +334,7 @@ static ConVar s_CV_ShowParticleCounts("showparticlecounts", "0", 0, "Display num
 static ConVar s_cl_team("cl_team", "default", FCVAR_USERINFO|FCVAR_ARCHIVE, "Default team when joining a game");
 static ConVar s_cl_class("cl_class", "default", FCVAR_USERINFO|FCVAR_ARCHIVE, "Default class when joining a game");
 static ConVar cl_discord_appid("cl_discord_appid", "382336881758568448", FCVAR_DEVELOPMENTONLY|FCVAR_CHEAT);
+static ConVar cl_discord_devbuild("cl_discord_devbuild", "1", FCVAR_DEVELOPMENTONLY | FCVAR_CHEAT);
 
 #ifdef HL1MP_CLIENT_DLL
 static ConVar s_cl_load_hl1_content("cl_load_hl1_content", "0", FCVAR_ARCHIVE, "Mount the content from Half-Life: Source if possible");
@@ -1133,7 +1134,34 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 		memset(&discordPresence, 0, sizeof(discordPresence));
 		discordPresence.state = "In-Game";
 		discordPresence.details = "Main Menu";
-		discordPresence.largeImageKey = "fr_large";
+		if (cl_discord_devbuild.GetBool())
+		{
+			discordPresence.largeImageKey = "fr_dev_large";
+
+			char verString[30];
+			if (g_pFullFileSystem->FileExists("version.txt"))
+			{
+				FileHandle_t fh = filesystem->Open("version.txt", "r", "MOD");
+				int file_len = filesystem->Size(fh);
+				char* GameInfo = new char[file_len + 1];
+
+				filesystem->Read((void*)GameInfo, file_len, fh);
+				GameInfo[file_len] = 0; // null terminator
+
+				filesystem->Close(fh);
+
+				Q_snprintf(verString, sizeof(verString), "Version: %s", GameInfo + 8);
+
+				delete[] GameInfo;
+			}
+			char buffer[256];
+			sprintf(buffer, "%s | Hi!", verString);
+			discordPresence.largeImageText = buffer;
+		}
+		else
+		{
+			discordPresence.largeImageKey = "fr_large";
+		}
 		Discord_UpdatePresence(&discordPresence);
 	}
 
@@ -1686,7 +1714,34 @@ void CHLClient::LevelInitPreEntity( char const* pMapName )
 		discordPresence.state = "In-Game";
 		sprintf(buffer, "Map: %s", pMapName);
 		discordPresence.details = buffer;
-		discordPresence.largeImageKey = "fr_large";
+		if (cl_discord_devbuild.GetBool())
+		{
+			discordPresence.largeImageKey = "fr_dev_large";
+
+			char verString[30];
+			if (g_pFullFileSystem->FileExists("version.txt"))
+			{
+				FileHandle_t fh = filesystem->Open("version.txt", "r", "MOD");
+				int file_len = filesystem->Size(fh);
+				char* GameInfo = new char[file_len + 1];
+
+				filesystem->Read((void*)GameInfo, file_len, fh);
+				GameInfo[file_len] = 0; // null terminator
+
+				filesystem->Close(fh);
+
+				Q_snprintf(verString, sizeof(verString), "Version: %s", GameInfo + 8);
+
+				delete[] GameInfo;
+			}
+			char buffer[256];
+			sprintf(buffer, "%s | Hi!", verString);
+			discordPresence.largeImageText = buffer;
+		}
+		else
+		{
+			discordPresence.largeImageKey = "fr_large";
+		}
 		Discord_UpdatePresence(&discordPresence);
 	}
 
@@ -1787,7 +1842,34 @@ void CHLClient::LevelShutdown( void )
 		memset(&discordPresence, 0, sizeof(discordPresence));
 		discordPresence.state = "In-Game";
 		discordPresence.details = "Main Menu";
-		discordPresence.largeImageKey = "fr_large";
+		if (cl_discord_devbuild.GetBool())
+		{
+			discordPresence.largeImageKey = "fr_dev_large";
+
+			char verString[30];
+			if (g_pFullFileSystem->FileExists("version.txt"))
+			{
+				FileHandle_t fh = filesystem->Open("version.txt", "r", "MOD");
+				int file_len = filesystem->Size(fh);
+				char* GameInfo = new char[file_len + 1];
+
+				filesystem->Read((void*)GameInfo, file_len, fh);
+				GameInfo[file_len] = 0; // null terminator
+
+				filesystem->Close(fh);
+
+				Q_snprintf(verString, sizeof(verString), "Version: %s", GameInfo + 8);
+
+				delete[] GameInfo;
+			}
+			char buffer[256];
+			sprintf(buffer, "%s | Hi!", verString);
+			discordPresence.largeImageText = buffer;
+		}
+		else
+		{
+			discordPresence.largeImageKey = "fr_large";
+		}
 		Discord_UpdatePresence(&discordPresence);
 	}
 

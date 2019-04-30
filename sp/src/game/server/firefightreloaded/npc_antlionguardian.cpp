@@ -4299,6 +4299,8 @@ void CNPC_AntlionGuardian::Event_Killed( const CTakeDamageInfo &info )
 		}	
 	}
 
+	RemoveEFlags(EFL_NO_DISSOLVE);
+
 	DestroyGlows();
 
 	// If I'm bleeding, stop due to decreased pressure of hemolymph after

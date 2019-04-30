@@ -126,14 +126,12 @@ ConVar sv_leagcy_flashlight("sv_leagcy_flashlight", "0", FCVAR_ARCHIVE);
 
 ConVar sv_hud_hidechat("sv_hud_hidechat", "1");
 
-ConVar sk_kick_throwforce("sk_kick_throwforce", "20");
-ConVar sk_kick_damage("sk_kick_damage", "50");
-
+ConVar sk_kick_throwforce("sk_kick_throwforce", "40");
 ConVar sk_kick_throwforce_mult("sk_kick_throwforce_mult", "1");
-ConVar sk_kick_damage_mult("sk_kick_damage_mult", "1");
-
 ConVar sk_kick_throwforce_div("sk_kick_throwforce_div", "48");
-ConVar sk_kick_damage_div("sk_kick_damage_div", "48");
+ConVar sk_kick_dmg_div("sk_kick_dmg_div", "2");
+ConVar sk_kick_propdmg_div("sk_kick_propdmg_div", "10");
+ConVar sk_kick_shake_propmass("sk_kick_shake_propmass", "150");
 
 ConVar sv_player_shootinzoom("sv_player_shootinzoom", "1", FCVAR_ARCHIVE);
 
@@ -512,7 +510,7 @@ void CHL2_Player::Precache( void )
 	PrecacheScriptSound( "HL2Player.TrainUse" );
 	PrecacheScriptSound( "HL2Player.Use" );
 	PrecacheScriptSound( "HL2Player.BurnPain" );
-	PrecacheScriptSound( "HL2Player.Jetpack" );
+	//PrecacheScriptSound( "HL2Player.Jetpack" );
 	//PrecacheModel(PLAYER_MODEL);
 }
 
@@ -675,6 +673,35 @@ void CHL2_Player::HandleArmorReduction( void )
 	SetArmorValue( iArmor );
 }
 
+void CHL2_Player::HandleGrapple(void)
+{
+	if (m_afButtonPressed & IN_GRAPPLE)
+	{
+		engine->ClientCommand(edict(), "cancelselect");
+		SelectItem("weapon_grapple");
+		CBaseCombatWeapon *pGrapple = GetActiveWeapon();
+		if (pGrapple)
+		{
+			pGrapple->PrimaryAttack();
+		}
+	}
+	else if (!(m_nButtons & IN_GRAPPLE))
+	{
+		CBaseCombatWeapon *pWeapon = GetActiveWeapon();
+		const char *pWeaponClass = "weapon_grapple";
+
+		if (pWeapon)
+		{
+			const char *strWeaponName = pWeapon->GetName();
+
+			if (!Q_stricmp(strWeaponName, pWeaponClass))
+			{
+				SelectLastItem();
+			}
+		}
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Allow pre-frame adjustments on the player
 //-----------------------------------------------------------------------------
@@ -719,6 +746,8 @@ void CHL2_Player::PreThink(void)
 		WaterMove();	
 		return;
 	}
+
+	HandleGrapple();
 
 	// This is an experiment of mine- autojumping! 
 	// only affects you if sv_autojump is nonzero.
@@ -1031,7 +1060,7 @@ void CHL2_Player::KickAttack(void)
 	MDLCACHE_CRITICAL_SECTION();
 	if (!IsDead())
 	{
-		CBaseViewModel *vm = GetViewModel(VM_LEGS);
+		CBaseViewModel *vm = GetViewModel(1);
 
 		if (vm)
 		{
@@ -1042,14 +1071,13 @@ void CHL2_Player::KickAttack(void)
 				vm->SendViewModelMatchingSequence(idealSequence);
 				m_flNextKickAttack = gpGlobals->curtime + vm->SequenceDuration(idealSequence) - 0.5f;
 			}
-			QAngle	recoil = QAngle(random->RandomFloat(1.0f, 2.0f), random->RandomFloat(-1.0f, 1.0f), 0);
+			QAngle	recoil = QAngle(random->RandomFloat(2.0f, 4.0f), random->RandomFloat(-4.0f, 4.0f), 0);
 			this->ViewPunch(recoil);
 
 			// Trace up or down based on where the enemy is...
 			// But only if we're basically facing that direction
 			Vector vecDirection;
-			int kick_maxrange = 120;
-			AngleVectors(QAngle(clamp(EyeAngles().x, 20, kick_maxrange), EyeAngles().y, EyeAngles().z), &vecDirection);
+			AngleVectors(QAngle(clamp(EyeAngles().x, 20, 32), EyeAngles().y, EyeAngles().z), &vecDirection);
 
 			CBaseEntity *pEnemy = MyNPCPointer() ? MyNPCPointer()->GetEnemy() : NULL;
 			if (pEnemy)
@@ -1066,17 +1094,18 @@ void CHL2_Player::KickAttack(void)
 				}
 			}
 
+			float kick_range = 90.0f;
+
 			Vector vecEnd;
 			VectorMA(Weapon_ShootPosition(), 50, vecDirection, vecEnd);
 			trace_t tr;
-			UTIL_TraceHull(Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), MASK_SHOT_HULL, this, COLLISION_GROUP_NONE, &tr);
+			Vector vecAdjustedEnd = vecEnd * kick_range;
+			UTIL_TraceHull(Weapon_ShootPosition(), vecAdjustedEnd, Vector(-16, -16, -16), Vector(16, 16, 16), MASK_SHOT_HULL, this, COLLISION_GROUP_NONE, &tr);
 
 			// did I hit someone?
-			float KickDamageMult = sk_kick_damage.GetFloat() + (sk_kick_damage_mult.GetFloat() * ((fabs(GetAbsVelocity().x) + fabs(GetAbsVelocity().y) + fabs(GetAbsVelocity().z)) / sk_kick_damage_div.GetFloat()));
 			float KickThrowForceMult = sk_kick_throwforce.GetFloat() + (sk_kick_throwforce_mult.GetFloat() * ((fabs(GetAbsVelocity().x) + fabs(GetAbsVelocity().y) + fabs(GetAbsVelocity().z)) / sk_kick_throwforce_div.GetFloat()));
-
-			DevMsg("Kicking at %.2f of damage!\n", KickDamageMult);
-			DevMsg("Kicking at %.2f of force!\n", KickThrowForceMult);
+			float KickDamageMult = KickThrowForceMult / sk_kick_dmg_div.GetFloat();
+			float KickDamageProps = KickThrowForceMult / sk_kick_propdmg_div.GetFloat();
 
 			if (tr.m_pEnt)
 			{
@@ -1108,7 +1137,7 @@ void CHL2_Player::KickAttack(void)
 						{
 							return;
 						}
-						CTakeDamageInfo info(this, this, 5, DMG_CRUSH);
+						CTakeDamageInfo info(this, this, KickDamageProps, DMG_CRUSH);
 						Vector hitDirection;
 						EyeVectors(&hitDirection, NULL, NULL);
 						VectorNormalize(hitDirection);
@@ -1119,12 +1148,20 @@ void CHL2_Player::KickAttack(void)
 						vecForce *= flForceScale;
 						info.SetDamageForce(vecForce);
 						pPhysicsObject->SetVelocity(&vecForce, NULL);
+						if (pPhysicsObject->GetMass() >= sk_kick_shake_propmass.GetFloat())
+						{
+							UTIL_ScreenShake(this->WorldSpaceCenter(), 15.0, 25.0, 0.5, 150, SHAKE_START);
+						}
 						EmitSound("HL2Player.kick_wall");
 						return;
 					}
-					CBaseEntity *Victim = this->CheckTraceHullAttack(Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), KickDamageMult, DMG_CRUSH, KickThrowForceMult, true);
+					CBaseEntity *Victim = this->CheckTraceHullAttack(Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), KickDamageMult, DMG_CLUB, KickThrowForceMult, true);
 					if (Victim && Victim->IsNPC())
 					{
+						Vector hitDirection, up;
+						EyeVectors(&hitDirection, NULL, &up);
+						VectorNormalize(hitDirection);
+						Victim->ApplyAbsVelocityImpulse(hitDirection * 800 + up * 300);
 						EmitSound("HL2Player.kick_body");
 						return;
 					}
@@ -1133,6 +1170,7 @@ void CHL2_Player::KickAttack(void)
 			UTIL_TraceLine(Weapon_ShootPosition(), vecEnd, MASK_SHOT_HULL, this, COLLISION_GROUP_NONE, &tr);//IF we hit anything else
 			if (tr.DidHit())
 			{
+				UTIL_ScreenShake(this->WorldSpaceCenter(), 15.0, 25.0, 0.5, 150, SHAKE_START);
 				EmitSound("HL2Player.kick_wall");
 			}
 			else
@@ -1141,17 +1179,6 @@ void CHL2_Player::KickAttack(void)
 			}
 
 		}
-	}
-}
-
-void CHL2_Player::FlyJetpack(void)
-{
-	if (!IsDead())
-	{
-		SetGroundEntity(NULL);
-		Vector up;
-		AngleVectors(GetLocalAngles(), NULL, NULL, &up);
-		ApplyAbsVelocityImpulse(up * 10);
 	}
 }
 
@@ -1193,16 +1220,6 @@ void CHL2_Player::PostThink( void )
 		{
 			KickAttack();
 			m_bIsKicking = true;
-		}
-
-		if (m_nButtons & IN_JETPACK)
-		{
-			FlyJetpack();
-			EmitSound("HL2Player.Jetpack");
-		}
-		else
-		{
-			StopSound("HL2Player.Jetpack");
 		}
 	}
 
@@ -1516,28 +1533,31 @@ void CHL2_Player::Spawn(void)
 	CBaseViewModel *Leg = GetViewModel(VM_LEGS);
 	Leg->SetWeaponModel("models/weapons/v_kick.mdl", NULL);
 
-	//if we are in coop treat us like hl2mp_player.
+	if (!IsObserver())
+	{
+		pl.deadflag = false;
+		RemoveSolidFlags(FSOLID_NOT_SOLID);
+		RemoveEffects(EF_NODRAW);
+	}
+
+	SetNumAnimOverlays(3);
+
+	m_nRenderFX = kRenderNormal;
+
+	AddFlag(FL_ONGROUND); // set the player on the ground at the start of the round.
+
+	m_Local.m_bDucked = false;
+
+	SetPlayerUnderwater(false);
+
+	if (m_hRagdoll)
+	{
+		m_hRagdoll->Remove();
+	}
+
 	if (g_pGameRules->IsMultiplayer())
 	{
-		if (!IsObserver())
-		{
-			pl.deadflag = false;
-			RemoveSolidFlags(FSOLID_NOT_SOLID);
-
-			RemoveEffects(EF_NODRAW);
-		}
-
-		SetNumAnimOverlays(3);
-
-		m_nRenderFX = kRenderNormal;
-
 		m_Local.m_iHideHUD = 0;
-
-		AddFlag(FL_ONGROUND); // set the player on the ground at the start of the round.
-
-		m_Local.m_bDucked = false;
-
-		SetPlayerUnderwater(false);
 
 		if (HL2GameRules()->IsIntermission())
 		{

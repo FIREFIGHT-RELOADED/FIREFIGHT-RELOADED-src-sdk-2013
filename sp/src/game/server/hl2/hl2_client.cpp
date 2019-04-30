@@ -173,18 +173,26 @@ void ClientGamePrecache( void )
 // called by ClientKill and DeadThink
 void respawn( CBaseEntity *pEdict, bool fCopyCorpse )
 {
-	if (g_pGameRules->IsMultiplayer())
+	CHL2_Player *pPlayer = (CHL2_Player *)pEdict;
+	if (pPlayer)
 	{
-		CHL2_Player *pPlayer = (CHL2_Player *)pEdict;
-
-		if (pPlayer)
+		if (sv_player_hardcoremode.GetBool() && !g_pGameRules->IsMultiplayer())
+		{
+			engine->ServerCommand("reload\n");
+		}
+		/*
+		else if (pPlayer->GetLevel() == MAX_LEVEL && !g_pGameRules->IsMultiplayer())
+		{
+			char szMapCommand[1024];
+			// create the command to execute
+			Q_snprintf(szMapCommand, sizeof(szMapCommand), "map credits\nprogress_enable\n");
+			engine->ServerCommand(szMapCommand);
+		}
+		*/
+		else
 		{
 			pPlayer->Spawn();
 		}
-	}
-	else
-	{      
-		engine->ServerCommand("reload\n");
 	}
 }
 

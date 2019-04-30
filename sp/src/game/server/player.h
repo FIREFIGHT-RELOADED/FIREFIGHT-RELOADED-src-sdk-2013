@@ -662,6 +662,8 @@ public:
 	void					ShowLevelMessage(const char *pMessage);
 	void					ShowPerkMessage(const char *pMessage);
 
+	void					Market_SetMaxHealth();
+
 	// Accessor methods
 	int		FragCount() const		{ return m_iFrags; }
 	int		DeathCount() const		{ return m_iDeaths;}
@@ -704,6 +706,7 @@ public:
 	void	IncrementMaxArmorValue(int nCount);
 	void	IncrementArmorValueNoMax(int nCount);
 	void	IncrementMaxHealthValue(int nCount);
+	void	IncrementMaxHealthRegenValue(int nCount);
 	void	IncrementHealthValue(int nCount);
 
 	void	SetConnected( PlayerConnectedState iConnected ) { m_iConnected = iConnected; }
@@ -820,13 +823,22 @@ public:
 	int GetXP() { return m_iExp; }
 	int GetMaxXP() { return m_iMaxExp; }
 	void SetMaxXP(int add = 1) { m_iMaxExp = add; }
-	void AddXP(int add = 1) { m_iExp += add; CheckLevel(); }
+	void AddXP(int add = 1) 
+	{ 
+		if (m_iLevel != MAX_LEVEL)
+		{
+			m_iExp += add;
+			CheckLevel();
+		}
+	}
 
 	int GetLevel() { return m_iLevel; }
 	int GetXpToLevelUp(int level);
 	void CheckLevel();
 	void LevelUp();
 	void SetLevel(int set = 1) { m_iLevel = set; }
+
+	void DeathCheckLevel();
 
 	void ResetXP() { m_iExp = 0; m_iLevel = 1; LevelUp(); } // calling LevelUp will reset max health, etc
 	void ResetXPAlt() { m_iExp = 0;}
@@ -836,10 +848,6 @@ public:
 	void AddMoney(int add = 1) { m_iMoney += add; }
 	void RemoveMoney(int remove = 1) { m_iMoney -= remove; }
 	void ResetMoney() { m_iMoney = 0; }
-
-	void Market_SetMaxHealth( void );
-	void Market_SetMaxArmor( void );
-	void Market_SetMegaGravityGun(void);
 
 	void DetermineReward(void);
 
@@ -946,10 +954,8 @@ public:
 	int						GetNumWearables( void ) { return m_hMyWearables.Count(); }
 #endif
 
-	int m_iPerkRegenerate;
 	int m_iPerkInfiniteAuxPower;
 	CNetworkVar(int, m_iPerkInfiniteAmmo);
-	bool m_bAlreadyHasRegeneratePerk;
 	bool m_bAlreadyHasInfiniteAuxPowerPerk;
 	bool m_bAlreadyHasInfiniteAmmoPerk;
 
@@ -1104,6 +1110,9 @@ private:
 	// CBasePlayer doesn't send this but CCSPlayer does.
 	CNetworkVarForDerived( int, m_ArmorValue );
 	CNetworkVarForDerived( int, m_MaxArmorValue );
+
+	CNetworkVarForDerived(int, m_MaxHealthVal);
+	CNetworkVarForDerived(int, m_MaxHealthValExtra);
 	int						m_Perk;
 	float					m_AirFinished;
 	float					m_PainFinished;
@@ -1158,6 +1167,8 @@ public:
 	float					m_flSideMove;
 	int						m_nNumCrateHudHints;
 
+	CNetworkVar(CBaseCombatWeaponHandle, m_hLastWeapon);
+
 private:
 
 	// Used in test code to teleport the player to random locations in the map.
@@ -1169,8 +1180,6 @@ private:
 
 	bool					m_bGamePaused;
 	float					m_fLastPlayerTalkTime;
-	
-	CNetworkVar( CBaseCombatWeaponHandle, m_hLastWeapon );
 
 #if !defined( NO_ENTITY_PREDICTION )
 	CUtlVector< CHandle< CBaseEntity > > m_SimulatedByThisPlayer;

@@ -320,6 +320,7 @@ void CNPC_Combine::Spawn( void )
 	m_flNextPainSoundTime	= 0;
 	m_flNextAlertSoundTime	= 0;
 	m_bShouldPatrol			= true;
+	m_bfireGrenadeAsAce		= false;
 
 	//	CapabilitiesAdd( bits_CAP_TURN_HEAD | bits_CAP_MOVE_GROUND | bits_CAP_MOVE_JUMP | bits_CAP_MOVE_CLIMB);
 	// JAY: Disabled jump for now - hard to compare to HL1
@@ -408,9 +409,9 @@ void CNPC_Combine::GatherConditions()
 			// occupy a vacant attack slot, they do so. This holds the slot until their
 			// schedule breaks and schedule selection runs again, essentially reserving this
 			// slot. If they do not select an attack schedule, then they'll release the slot.
-			if( OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
+			if (OccupyStrategySlotRange(SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2))
 			{
-				SetCondition( COND_COMBINE_ATTACK_SLOT_AVAILABLE );
+				SetCondition(COND_COMBINE_ATTACK_SLOT_AVAILABLE);
 			}
 		}
 
@@ -950,7 +951,7 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 	case TASK_FACE_IDEAL:
 	case TASK_FACE_ENEMY:
 		{
-			if( pTask->iTask == TASK_FACE_ENEMY && HasCondition( COND_CAN_RANGE_ATTACK1 ) )
+			if (pTask->iTask == TASK_FACE_ENEMY && (HasCondition(COND_CAN_RANGE_ATTACK1) || HasCondition(COND_CAN_RANGE_ATTACK2)))
 			{
 				TaskComplete();
 				return;
@@ -1007,12 +1008,27 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 		break;
 	case TASK_RANGE_ATTACK1:
 		{
-			m_nShots = GetActiveWeapon()->GetRandomBurst();
-			m_flShotDelay = GetActiveWeapon()->GetFireRate();
+			if (!IsAce())
+			{
+				m_nShots = GetActiveWeapon()->GetRandomBurst();
+				m_flShotDelay = GetActiveWeapon()->GetFireRate();
 
-			m_flNextAttack = gpGlobals->curtime + m_flShotDelay - 0.1;
-			ResetIdealActivity( ACT_RANGE_ATTACK1 );
-			m_flLastAttackTime = gpGlobals->curtime;
+				m_flNextAttack = gpGlobals->curtime + m_flShotDelay - 0.1;
+				ResetIdealActivity(ACT_RANGE_ATTACK1);
+				m_flLastAttackTime = gpGlobals->curtime;
+			}
+			else
+			{
+				if (m_bfireGrenadeAsAce == false)
+				{
+					m_nShots = GetActiveWeapon()->Clip1();
+					m_flShotDelay = GetActiveWeapon()->GetFireRate();
+
+					m_flNextAttack = gpGlobals->curtime + m_flShotDelay - 0.1;
+					ResetIdealActivity(ACT_RANGE_ATTACK1);
+					m_flLastAttackTime = gpGlobals->curtime;
+				}
+			}
 		}
 		break;
 
@@ -1142,39 +1158,42 @@ void CNPC_Combine::RunTask( const Task_t *pTask )
 
 	case TASK_RANGE_ATTACK1:
 		{
-			AutoMovement( );
+			if (IsAce())
+			{
+				AutoMovement();
 
-			Vector vecEnemyLKP = GetEnemyLKP();
-			if (!FInAimCone( vecEnemyLKP ))
-			{
-				GetMotor()->SetIdealYawToTargetAndUpdate( vecEnemyLKP, AI_KEEP_YAW_SPEED );
-			}
-			else
-			{
-				GetMotor()->SetIdealYawAndUpdate( GetMotor()->GetIdealYaw(), AI_KEEP_YAW_SPEED );
-			}
-
-			if ( gpGlobals->curtime >= m_flNextAttack )
-			{
-				if ( IsActivityFinished() )
+				Vector vecEnemyLKP = GetEnemyLKP();
+				if (!FInAimCone(vecEnemyLKP))
 				{
-					if (--m_nShots > 0)
+					GetMotor()->SetIdealYawToTargetAndUpdate(vecEnemyLKP, AI_KEEP_YAW_SPEED);
+				}
+				else
+				{
+					GetMotor()->SetIdealYawAndUpdate(GetMotor()->GetIdealYaw(), AI_KEEP_YAW_SPEED);
+				}
+
+				if (gpGlobals->curtime >= m_flNextAttack)
+				{
+					if (IsActivityFinished())
 					{
-						// DevMsg("ACT_RANGE_ATTACK1\n");
-						ResetIdealActivity( ACT_RANGE_ATTACK1 );
-						m_flLastAttackTime = gpGlobals->curtime;
-						m_flNextAttack = gpGlobals->curtime + m_flShotDelay - 0.1;
-					}
-					else
-					{
-						// DevMsg("TASK_RANGE_ATTACK1 complete\n");
-						TaskComplete();
+						if (--m_nShots > 0)
+						{
+							// DevMsg("ACT_RANGE_ATTACK1\n");
+							ResetIdealActivity(ACT_RANGE_ATTACK1);
+							m_flLastAttackTime = gpGlobals->curtime;
+							m_flNextAttack = gpGlobals->curtime + m_flShotDelay - 0.1;
+						}
+						else
+						{
+							// DevMsg("TASK_RANGE_ATTACK1 complete\n");
+							TaskComplete();
+						}
 					}
 				}
-			}
-			else
-			{
-				// DevMsg("Wait\n");
+				else
+				{
+					// DevMsg("Wait\n");
+				}
 			}
 		}
 		break;
@@ -1561,7 +1580,7 @@ int CNPC_Combine::SelectCombatSchedule()
 				AnnounceEnemyType( pEnemy );
 			}
 
-			if ( HasCondition( COND_CAN_RANGE_ATTACK1 ) && OccupyStrategySlot( SQUAD_SLOT_ATTACK1 ) )
+			if ( HasCondition( COND_CAN_RANGE_ATTACK1 ) && OccupyStrategySlot( SQUAD_SLOT_ATTACK1 ) && !IsAce())
 			{
 				// Start suppressing if someone isn't firing already (SLOT_ATTACK1). This means
 				// I'm the guy who spotted the enemy, I should react immediately.
@@ -1756,7 +1775,7 @@ int CNPC_Combine::SelectSchedule( void )
 		{
 			Vector vecTarget = m_hForcedGrenadeTarget->WorldSpaceCenter();
 
-			if ( IsElite() )
+			if ( IsElite() || IsAce() )
 			{
 				if ( FVisible( m_hForcedGrenadeTarget ) )
 				{
@@ -2264,51 +2283,94 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 		break;
 	case SCHED_RANGE_ATTACK1:
 		{
-			if ( HasCondition( COND_NO_PRIMARY_AMMO ) || HasCondition( COND_LOW_PRIMARY_AMMO ) )
+			if (!IsAce())
 			{
-				// Ditch the strategy slot for attacking (which we just reserved!)
-				VacateStrategySlot();
-				return TranslateSchedule( SCHED_HIDE_AND_RELOAD );
-			}
-
-			if( CanAltFireEnemy(true) && OccupyStrategySlot(SQUAD_SLOT_SPECIAL_ATTACK) )
-			{
-				// Since I'm holding this squadslot, no one else can try right now. If I die before the shot 
-				// goes off, I won't have affected anyone else's ability to use this attack at their nearest
-				// convenience.
-				return SCHED_COMBINE_AR2_ALTFIRE;
-			}
-
-			if ( IsCrouching() || ( CrouchIsDesired() && !HasCondition( COND_HEAVY_DAMAGE ) ) )
-			{
-				// See if we can crouch and shoot
-				if (GetEnemy() != NULL)
+				if (HasCondition(COND_NO_PRIMARY_AMMO) || HasCondition(COND_LOW_PRIMARY_AMMO))
 				{
-					float dist = (GetLocalOrigin() - GetEnemy()->GetLocalOrigin()).Length();
+					// Ditch the strategy slot for attacking (which we just reserved!)
+					VacateStrategySlot();
+					return TranslateSchedule(SCHED_HIDE_AND_RELOAD);
+				}
 
-					// only crouch if they are relatively far away
-					if (dist > COMBINE_MIN_CROUCH_DISTANCE)
+				if (CanAltFireEnemy(true) && OccupyStrategySlot(SQUAD_SLOT_SPECIAL_ATTACK))
+				{
+					// Since I'm holding this squadslot, no one else can try right now. If I die before the shot 
+					// goes off, I won't have affected anyone else's ability to use this attack at their nearest
+					// convenience.
+					return SCHED_COMBINE_AR2_ALTFIRE;
+				}
+
+				if (IsCrouching() || (CrouchIsDesired() && !HasCondition(COND_HEAVY_DAMAGE)))
+				{
+					// See if we can crouch and shoot
+					if (GetEnemy() != NULL)
 					{
-						// try crouching
-						Crouch();
+						float dist = (GetLocalOrigin() - GetEnemy()->GetLocalOrigin()).Length();
 
-						Vector targetPos = GetEnemy()->BodyTarget(GetActiveWeapon()->GetLocalOrigin());
-
-						// if we can't see it crouched, stand up
-						if (!WeaponLOSCondition(GetLocalOrigin(),targetPos,false))
+						// only crouch if they are relatively far away
+						if (dist > COMBINE_MIN_CROUCH_DISTANCE)
 						{
-							Stand();
+							// try crouching
+							Crouch();
+
+							Vector targetPos = GetEnemy()->BodyTarget(GetActiveWeapon()->GetLocalOrigin());
+
+							// if we can't see it crouched, stand up
+							if (!WeaponLOSCondition(GetLocalOrigin(), targetPos, false))
+							{
+								Stand();
+							}
 						}
 					}
 				}
+				else
+				{
+					// always assume standing
+					Stand();
+				}
+
+				return SCHED_COMBINE_RANGE_ATTACK1;
 			}
 			else
 			{
-				// always assume standing
-				Stand();
-			}
+				if (IsCrouching() || (CrouchIsDesired() && !HasCondition(COND_HEAVY_DAMAGE)))
+				{
+					// See if we can crouch and shoot
+					if (GetEnemy() != NULL)
+					{
+						float dist = (GetLocalOrigin() - GetEnemy()->GetLocalOrigin()).Length();
 
-			return SCHED_COMBINE_RANGE_ATTACK1;
+						// only crouch if they are relatively far away
+						if (dist > COMBINE_MIN_CROUCH_DISTANCE)
+						{
+							// try crouching
+							Crouch();
+
+							Vector targetPos = GetEnemy()->BodyTarget(GetActiveWeapon()->GetLocalOrigin());
+
+							// if we can't see it crouched, stand up
+							if (!WeaponLOSCondition(GetLocalOrigin(), targetPos, false))
+							{
+								Stand();
+							}
+						}
+					}
+				}
+				else
+				{
+					// always assume standing
+					Stand();
+				}
+
+				if (m_bfireGrenadeAsAce == true)
+				{
+					return SCHED_COMBINE_AR2_ALTFIRE;
+				}
+				else
+				{
+					return SCHED_COMBINE_RANGE_ATTACK1;
+				}
+			}
 		}
 	case SCHED_RANGE_ATTACK2:
 		{
@@ -2407,7 +2469,7 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 		}
 		else if ( pEvent->event == COMBINE_AE_ALTFIRE )
 		{
-			if( IsElite() )
+			if (IsElite() || IsAce())
 			{
 				animevent_t fakeEvent;
 
@@ -2420,10 +2482,6 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 				{
 					DelaySquadAltFireAttack(10.0f);
 				}
-				else
-				{
-					DelaySquadAltFireAttack(5.0f);
-				}
 
 				// I'm disabling this decrementor. At the time of this change, the elites
 				// don't bother to check if they have grenades anyway. This means that all
@@ -2433,6 +2491,8 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 				// preserve the legacy behavior while making it possible for a designer to prevent
 				// elites from shooting combine balls by setting grenades to '0' in hammer. (sjb) EP2_OUTLAND_10
 				// m_iNumGrenades--;
+
+				m_bfireGrenadeAsAce = false;
 			}
 
 			handledEvent = true;
@@ -2464,6 +2524,7 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 			ClearCondition(COND_NO_PRIMARY_AMMO);
 			ClearCondition(COND_NO_SECONDARY_AMMO);
 			handledEvent = true;
+			m_bfireGrenadeAsAce = true;
 			break;
 
 		case COMBINE_AE_GREN_TOSS:
@@ -2977,7 +3038,7 @@ bool CNPC_Combine::CheckCanThrowGrenade( const Vector &vecTarget )
 //-----------------------------------------------------------------------------
 bool CNPC_Combine::CanAltFireEnemy( bool bUseFreeKnowledge )
 {
-	if (!IsElite() )
+	if (!IsElite() || !IsAce())
 		return false;
 
 	if (IsCrouching())
@@ -3147,7 +3208,7 @@ Vector CNPC_Combine::EyePosition( void )
 //-----------------------------------------------------------------------------
 Vector CNPC_Combine::GetAltFireTarget()
 {
-	Assert( IsElite() );
+	Assert(IsElite() || IsAce());
 
 	return m_vecAltFireTarget;
 }
@@ -3232,6 +3293,9 @@ bool CNPC_Combine::OnBeginMoveAndShoot()
 {
 	if ( BaseClass::OnBeginMoveAndShoot() )
 	{
+		if (IsAce())
+			return false;
+
 		if( HasStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
 			return true; // already have the slot I need
 
@@ -3884,6 +3948,7 @@ DEFINE_SCHEDULE
 
  "	Tasks"
  "		TASK_STOP_MOVING									0"
+ "		TASK_FACE_ENEMY										0"
  "		TASK_ANNOUNCE_ATTACK								1"
  "		TASK_COMBINE_PLAY_SEQUENCE_FACE_ALTFIRE_TARGET		ACTIVITY:ACT_COMBINE_AR2_ALTFIRE"
  ""

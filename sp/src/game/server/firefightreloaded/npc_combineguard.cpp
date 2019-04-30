@@ -34,8 +34,7 @@
 #include "vstdlib/random.h"
 #include "engine/IEngineSound.h"
 #include "prop_combine_ball.h"
-
-#define CGUARD_GIB_COUNT			5   //Assuming we get a new modeller who can make these for us.
+#include "props.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -45,11 +44,9 @@ ConVar sk_combineguard_health( "sk_combineguard_health", "0" );
 class CSprite;
 
 extern void CreateConcussiveBlast( const Vector &origin, const Vector &surfaceNormal, CBaseEntity *pOwner, float magnitude );
-extern ConVar sk_weapon_ar2_alt_fire_mass;
-extern ConVar sk_weapon_ar2_alt_fire_duration;
-extern ConVar sk_weapon_ar2_alt_fire_radius;
 
 #define	COMBINEGUARD_MODEL	"models/combine_guard.mdl"
+#define	COMBINEGUARD_GUN_MODEL	"models/combine_guard_gun.mdl"
 
 #define CGUARD_MSG_SHOT	1
 #define CGUARD_MSG_SHOT_START 2
@@ -123,7 +120,7 @@ public:
 	int	TranslateSchedule( int type );
 	int	MeleeAttack1Conditions( float flDot, float flDist );
 	int	RangeAttack1Conditions( float flDot, float flDist );
-	void Gib(void);
+	void DropGun(int iVelocity, const Vector &vecVelocity);
 
 	void Precache( void );
 	void Spawn( void );
@@ -263,7 +260,7 @@ LINK_ENTITY_TO_CLASS( npc_combineguard, CNPC_CombineGuard );
 void CNPC_CombineGuard::Precache( void )
 {
 	PrecacheModel( COMBINEGUARD_MODEL );
-	PrecacheModel("models/gibs/Antlion_gib_Large_2.mdl"); //Antlion gibs for now
+	PrecacheModel(COMBINEGUARD_GUN_MODEL);
 
 	PrecacheModel( "sprites/blueflare1.vmt" ); //For some reason this appears between his feet.
 
@@ -305,11 +302,10 @@ void CNPC_CombineGuard::Spawn( void )
 	
 	SetNavType( NAV_GROUND );
 	m_NPCState = NPC_STATE_NONE;
-	SetBloodColor( BLOOD_COLOR_YELLOW );
+	SetBloodColor( BLOOD_COLOR_RED );
 
 	m_iHealth = m_iMaxHealth = sk_combineguard_health.GetFloat();
 	m_flFieldOfView = 0.1f;
-
 	
 	SetSolid( SOLID_BBOX );
 	AddSolidFlags( FSOLID_NOT_STANDABLE );
@@ -343,8 +339,6 @@ void CNPC_CombineGuard::Spawn( void )
 	NPCInit();
 	
 	InitArmorPieces();
-	
-	SetBodygroup( 1, true );
 
 	m_YawControl = LookupPoseParameter( "aim_yaw" );
 	m_PitchControl = LookupPoseParameter( "aim_pitch" );
@@ -387,11 +381,6 @@ void CNPC_CombineGuard::PrescheduleThink( void )
 		}
 	}
 
-	if ( GetEnemy() != NULL )
-	{
-		AimGunAt( GetEnemy(), 0.1f );
-	}
-
 	Vector vecDamagePoint;
 	QAngle vecDamageAngles;
 
@@ -422,42 +411,37 @@ void CNPC_CombineGuard::PrescheduleThink( void )
 
 void CNPC_CombineGuard::Event_Killed( const CTakeDamageInfo &info )
 {
-    BaseClass::Event_Killed( info );
+	SetBodygroup(1, 0);
+	DropGun(25, Vector(0, 0, 1));
 
-//	UTIL_Remove(this);
-
-//	ExplosionCreate(GetAbsOrigin(), GetAbsAngles(), NULL, random->RandomInt(30, 40), 0, true);
-
-  //  Gib();
+	BaseClass::Event_Killed(info);
 }
 
-void CNPC_CombineGuard::Gib(void)
+void CNPC_CombineGuard::DropGun(int iVelocity, const Vector &vecVelocity)
 {
-	// Sparks
-	for (int i = 0; i < 4; i++)
+	CPhysicsProp *pGib = assert_cast<CPhysicsProp*>(CreateEntityByName("prop_physics"));
+	pGib->SetModel(COMBINEGUARD_GUN_MODEL);
+	pGib->SetAbsOrigin(EyePosition());
+	pGib->SetAbsAngles(EyeAngles());
+	pGib->SetMoveType(MOVETYPE_VPHYSICS);
+	pGib->SetCollisionGroup(COLLISION_GROUP_INTERACTIVE_DEBRIS);
+	pGib->SetOwnerEntity(this);
+	pGib->Spawn();
+	pGib->SetAbsVelocity(vecVelocity * (iVelocity + RandomFloat(-10, 10)));
+	/*
+	float flRandomVel = random->RandomFloat( -10, 10 );
+	pGib->GetMassCenter( &vecDir );
+	vecDir *= (iVelocity + flRandomVel) / 15;
+	vecDir.z += 30.0f;
+	AngularImpulse angImpulse = RandomAngularImpulse( -500, 500 );
+
+	IPhysicsObject *pObj = pGib->VPhysicsGetObject();
+	if ( pObj != NULL )
 	{
-		Vector sparkPos = GetAbsOrigin();
-		sparkPos.x += random->RandomFloat(-12,12);
-		sparkPos.y += random->RandomFloat(-12,12);
-		sparkPos.z += random->RandomFloat(-12,12);
-		g_pEffects->Sparks(sparkPos);
+	pObj->AddVelocity( &vecDir, &angImpulse );
 	}
-	// Smoke
-	UTIL_Smoke(GetAbsOrigin(), random->RandomInt(10, 15), 10);
-
-	// Light
-	CBroadcastRecipientFilter filter;
-	te->DynamicLight( filter, 0.0,
-			&GetAbsOrigin(), 255, 180, 100, 0, 100, 0.1, 0 );
-
-	// Throw gibs
-	CGib::SpawnSpecificGibs( this, CGUARD_GIB_COUNT, 800, 1000, "models/gibs/Antlion_gib_Large_2.mdl");
-
-//	ExplosionCreate(GetAbsOrigin(), GetAbsAngles(), NULL, random->RandomInt(30, 40), 0, true);
-
-	UTIL_Remove(this);
+	*/
 }
-
 
 void CNPC_CombineGuard::HandleAnimEvent( animevent_t *pEvent )
 {
@@ -486,7 +470,7 @@ void CNPC_CombineGuard::HandleAnimEvent( animevent_t *pEvent )
 
 	case CGUARD_AE_FIRE:
 		{
-			m_flLastRangeTime = gpGlobals->curtime + 6.0f;
+			m_flLastRangeTime = gpGlobals->curtime + 1.5f;
 			FireRangeWeapon();
 			
 			EmitSound( "NPC_CombineGuard.Fire" );
@@ -648,8 +632,10 @@ void CNPC_CombineGuard::RunTask( const Task_t *pTask )
 	{
 	case TASK_CGUARD_RANGE_ATTACK1:
 		{
-			Vector flEnemyLKP = GetEnemyLKP();
-			GetMotor()->SetIdealYawToTargetAndUpdate( flEnemyLKP );
+			if (GetEnemy() != NULL)
+			{
+				AimGunAt(GetEnemy(), 0.1f);
+			}
 
 			if ( IsActivityFinished() )
 			{
@@ -984,26 +970,14 @@ void CNPC_CombineGuard::FireRangeWeapon( void )
 	QAngle	angShootDir;
 	GetAttachment( LookupAttachment( "muzzle" ), vecShootOrigin, angShootDir );
 
-	float flAmmoRatio = 1.0f;
-	float flDuration = RemapValClamped(flAmmoRatio, 0.0f, 1.0f, 0.5f, sk_weapon_ar2_alt_fire_duration.GetFloat());
-	float flRadius = RemapValClamped(flAmmoRatio, 0.0f, 1.0f, 4.0f, sk_weapon_ar2_alt_fire_radius.GetFloat());
-
-	// Fire the bullets
-	Vector vecVelocity = vecAiming * 1000.0f;
-
-	// Fire the combine ball
-	CreateCombineBall(vecSrc, vecVelocity, flRadius, sk_weapon_ar2_alt_fire_mass.GetFloat(), flDuration, this);
-
-	/*
 	trace_t	tr;
 	AI_TraceLine( vecSrc, impactPoint, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
 // Just using the gunship tracers for a placeholder unless a better effect can be found. Maybe use the strider cannon's tracer or something.
-	UTIL_Tracer( tr.startpos, tr.endpos, 0, TRACER_DONT_USE_ATTACHMENT, 6000 + random->RandomFloat( 0, 2000 ), true, "GunshipTracer" );
-	UTIL_Tracer( tr.startpos, tr.endpos, 0, TRACER_DONT_USE_ATTACHMENT, 6000 + random->RandomFloat( 0, 3000 ), true, "GunshipTracer" );
-	UTIL_Tracer( tr.startpos, tr.endpos, 0, TRACER_DONT_USE_ATTACHMENT, 6000 + random->RandomFloat( 0, 4000 ), true, "GunshipTracer" );
+	UTIL_Tracer( tr.startpos, tr.endpos, 0, TRACER_DONT_USE_ATTACHMENT, 6000 + random->RandomFloat( 0, 2000 ), true, "StriderTracer" );
+	UTIL_Tracer( tr.startpos, tr.endpos, 0, TRACER_DONT_USE_ATTACHMENT, 6000 + random->RandomFloat( 0, 3000 ), true, "StriderTracer" );
+	UTIL_Tracer( tr.startpos, tr.endpos, 0, TRACER_DONT_USE_ATTACHMENT, 6000 + random->RandomFloat( 0, 4000 ), true, "StriderTracer" );
 
 	CreateConcussiveBlast( tr.endpos, tr.plane.normal, this, 1.0 );
-	*/
 }
 
 #define	DEBUG_AIMING 0
@@ -1052,8 +1026,6 @@ bool CNPC_CombineGuard::AimGunAt( CBaseEntity *pEntity, float flInterval )
 
 	return false;
 }
-
-
 
 float CNPC_CombineGuard::MaxYawSpeed( void ) 
 { 	

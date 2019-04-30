@@ -1074,26 +1074,6 @@ void CC_Player_PhysSwap( void )
 	}
 }
 static ConCommand physswap("phys_swap", CC_Player_PhysSwap, "Automatically swaps the current weapon for the physcannon and back again." );
-
-void CC_Player_FragSwap(void)
-{
-	CBasePlayer *pPlayer = ToBasePlayer(UTIL_GetCommandClient());
-
-	if (pPlayer)
-	{
-		engine->ClientCommand(UTIL_GetCommandClient()->edict(), "cancelselect");
-
-		if (pPlayer->HasNamedPlayerItem("weapon_frag"))
-		{
-			pPlayer->SelectItem("weapon_frag");
-		}
-		else
-		{
-			pPlayer->SelectLastItem();
-		}
-	}
-}
-static ConCommand fragswap("frag_swap", CC_Player_FragSwap, "Automatically swaps the current weapon for the frag grenade and back again.");
 #endif
 
 //-----------------------------------------------------------------------------

@@ -851,11 +851,14 @@ bool CBasePlayer::Weapon_Switch( CBaseCombatWeapon *pWeapon, int viewmodelindex 
 			Weapon_SetLast( pLastWeapon->GetLastWeapon() );
 		}
 
-		CBaseViewModel *pViewModel = GetViewModel( viewmodelindex );
-		Assert( pViewModel );
-		if ( pViewModel )
-			pViewModel->RemoveEffects( EF_NODRAW );
-		ResetAutoaim( );
+		CBaseViewModel *pViewModel = GetViewModel(viewmodelindex);
+		Assert(pViewModel);
+		if (pViewModel)
+		{
+			pViewModel->RemoveEffects(EF_NODRAW);
+		}
+
+		ResetAutoaim();
 		return true;
 	}
 	return false;
@@ -1827,7 +1830,7 @@ void CBasePlayer::SharedSpawn()
 
 	pl.deadflag	= false;
 	m_lifeState	= LIFE_ALIVE;
-	m_iHealth = 100;
+	m_iHealth = 200;
 	m_takedamage		= DAMAGE_YES;
 
 	m_Local.m_bDrawViewmodel = true;

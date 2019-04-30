@@ -24,9 +24,9 @@
 #define MP5_MAX_BURST 3
 #define MP5_MAX_CYCLE_RATE 0.5f;
 
-class CWeaponMP5 : public CBaseHLCombatWeapon
+class CWeaponMP5 : public CHLMachineGun
 {
-	DECLARE_CLASS(CWeaponMP5, CBaseHLCombatWeapon);
+	DECLARE_CLASS(CWeaponMP5, CHLMachineGun);
 public:
 
 	CWeaponMP5(void);
@@ -165,30 +165,6 @@ void CWeaponMP5::Precache(void)
 //-----------------------------------------------------------------------------
 void CWeaponMP5::Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatCharacter *pOperator)
 {
-	switch (pEvent->event)
-	{
-	case EVENT_WEAPON_PISTOL_FIRE:
-	{
-		Vector vecShootOrigin, vecShootDir;
-		vecShootOrigin = pOperator->Weapon_ShootPosition();
-
-		CAI_BaseNPC *npc = pOperator->MyNPCPointer();
-		ASSERT(npc != NULL);
-
-		vecShootDir = npc->GetActualShootTrajectory(vecShootOrigin);
-
-		CSoundEnt::InsertSound(SOUND_COMBAT | SOUND_CONTEXT_GUNFIRE, pOperator->GetAbsOrigin(), SOUNDENT_VOLUME_PISTOL, 0.2, pOperator, SOUNDENT_CHANNEL_WEAPON, pOperator->GetEnemy());
-
-		WeaponSound(SINGLE_NPC);
-		pOperator->FireBullets(1, vecShootOrigin, vecShootDir, VECTOR_CONE_PRECALCULATED, MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 2);
-		pOperator->DoMuzzleFlash();
-		m_iClip1 = m_iClip1 - 1;
-	}
-	break;
-	default:
-		BaseClass::Operator_HandleAnimEvent(pEvent, pOperator);
-		break;
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -213,13 +189,6 @@ void CWeaponMP5::PrimaryAttack(void)
 			FireModeLogic(MP5_MAX_BURST, GetFireRate(), 1);
 			SetWeaponIdleTime(gpGlobals->curtime + 3.0f);
 			break;
-	}
-
-	CBasePlayer *pOwner = ToBasePlayer(GetOwner());
-	if (pOwner)
-	{
-		m_iPrimaryAttacks++;
-		gamestats->Event_WeaponFired(pOwner, true, GetClassname());
 	}
 }
 
@@ -311,19 +280,24 @@ void CWeaponMP5::FireModeLogic(int burstsize, float firerate, int firemode)
 		m_iClip1 -= iBulletsToFire;
 	}
 
+	m_iPrimaryAttacks++;
+	gamestats->Event_WeaponFired(pPlayer, true, GetClassname());
+
 	// Fire the bullets
 	FireBulletsInfo_t info;
 	info.m_iShots = iBulletsToFire;
 	info.m_vecSrc = pPlayer->Weapon_ShootPosition();
-	info.m_vecDirShooting = pPlayer->GetAutoaimVector(AUTOAIM_5DEGREES);
+	info.m_vecDirShooting = pPlayer->GetAutoaimVector(AUTOAIM_SCALE_DEFAULT);
 	info.m_vecSpread = pPlayer->GetAttackSpread(this);
 	info.m_flDistance = MAX_TRACE_LENGTH;
 	info.m_iAmmoType = m_iPrimaryAmmoType;
-	info.m_iTracerFreq = 1;
+	info.m_iTracerFreq = 2;
 	FireBullets(info);
 
 	//Factor in the view kick
 	AddViewKick();
+
+	CSoundEnt::InsertSound(SOUND_COMBAT, GetAbsOrigin(), SOUNDENT_VOLUME_MACHINEGUN, 0.2, pPlayer);
 
 	if (!m_iClip1 && pPlayer->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
 	{
@@ -333,6 +307,14 @@ void CWeaponMP5::FireModeLogic(int burstsize, float firerate, int firemode)
 
 	SendWeaponAnim(GetPrimaryAttackActivity());
 	pPlayer->SetAnimation(PLAYER_ATTACK1);
+
+	if (GetWpnData().m_bUseMuzzleSmoke)
+	{
+		DispatchParticleEffect("weapon_muzzle_smoke", PATTACH_POINT_FOLLOW, pPlayer->GetViewModel(), "muzzle", true);
+	}
+
+	// Register a muzzleflash for the AI
+	pPlayer->SetMuzzleFlashTime(gpGlobals->curtime + 0.5);
 
 	if (firemode == 1)
 	{

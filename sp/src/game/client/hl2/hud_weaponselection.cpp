@@ -685,10 +685,14 @@ void CHudWeaponSelection::Paint()
 						{
 							if ( !hud_showemptyweaponslots.GetBool() )
 								continue;
+							if (!pSelectedWeapon->VisibleInWeaponSelection())
+								continue;
 							DrawBox( xpos, ypos, largeBoxWide, largeBoxTall, m_EmptyBoxColor, m_flAlphaOverride, bDrawBucketNumber ? i + 1 : -1 );
 						}
 						else
 						{
+							if (!pSelectedWeapon->VisibleInWeaponSelection())
+								continue;
 							bool bSelected = (pWeapon == pSelectedWeapon);
 							DrawLargeWeaponBox( pWeapon, 
 												bSelected, 

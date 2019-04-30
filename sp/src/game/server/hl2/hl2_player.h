@@ -185,6 +185,8 @@ public:
 	void CheckBullettime(void);
 	void ToggleBullettime(void);
 
+	void HandleGrapple(void);
+
 	bool CanZoom( CBaseEntity *pRequester );
 	void ToggleZoom(void);
 	void StartZooming( void );
@@ -247,7 +249,6 @@ public:
 	void				SetFlashlightPowerDrainScale( float flScale ) { m_flFlashlightPowerDrainScale = flScale; }
 
 	void		KickAttack(void);
-	void		FlyJetpack(void);
 	void		SetPlayerModel(void);
 
 	bool	m_bIsPlayerADev;

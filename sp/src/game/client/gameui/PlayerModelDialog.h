@@ -32,6 +32,7 @@ public:
 private:
 	virtual void OnCommand( const char *command );
 	virtual void OnClose();
+	virtual void OnOK();
 	virtual void OnKeyCodeTyped(vgui::KeyCode code);
 	
 	void LoadModelList();

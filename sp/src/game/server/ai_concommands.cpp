@@ -389,22 +389,222 @@ void CC_NPC_Focus( const CCommand &args )
 }
 static ConCommand npc_focus("npc_focus", CC_NPC_Focus, "Displays red line to NPC's enemy (if has one) and blue line to NPC's target entity (if has one)\n\tArguments:   	{npc_name} / {npc class_name} / no argument picks what player is looking at", FCVAR_CHEAT);
 
-ConVar npc_create_equipment("npc_create_equipment", "");
+struct ClassNamePrefix_t
+{
+	ClassNamePrefix_t(const char *pszPrefix, bool bKeepPrefix) : m_pszPrefix(pszPrefix), m_bKeepPrefix(bKeepPrefix)
+	{
+		m_nLength = strlen(pszPrefix);
+	}
+
+	const char *m_pszPrefix;
+	size_t m_nLength;
+	bool m_bKeepPrefix;
+};
+
+
+static ClassNamePrefix_t s_pEquipmentPrefixes[] =
+{
+	ClassNamePrefix_t("weapon_", false),
+};
+
+static ClassNamePrefix_t s_pNPCPrefixes[] =
+{
+	ClassNamePrefix_t("npc_", false),
+};
+
+
+static int StringSortFunc(const void *p1, const void *p2)
+{
+	const char *psz1 = (const char *)p1;
+	const char *psz2 = (const char *)p2;
+
+	return V_stricmp(psz1, psz2);
+}
+
+
+int EquipmentAutocomplete(const char *partial, char commands[COMMAND_COMPLETION_MAXITEMS][COMMAND_COMPLETION_ITEM_LENGTH])
+{
+	// Find the first space in our input
+	const char *firstSpace = V_strstr(partial, " ");
+	if (!firstSpace)
+		return 0;
+
+	int commandLength = firstSpace - partial;
+
+	// Extract the command name from the input
+	char commandName[COMMAND_COMPLETION_ITEM_LENGTH];
+	V_StrSlice(partial, 0, commandLength, commandName, sizeof(commandName));
+
+	// Calculate the length of the command string (minus the command name)
+	partial += commandLength + 1;
+	int partialLength = V_strlen(partial);
+
+	// Grab the factory dictionary
+	if (!EntityFactoryDictionary())
+		return 0;
+
+	const EntityFactoryDict_t &factoryDict = EntityFactoryDictionary()->GetFactoryDictionary();
+	int numMatches = 0;
+
+	// Iterate through all entity factories
+	for (int i = factoryDict.First(); i != factoryDict.InvalidIndex() && numMatches < COMMAND_COMPLETION_MAXITEMS; i = factoryDict.Next(i))
+	{
+		const char *pszClassName = factoryDict.GetElementName(i);
+
+		// See if this entity classname has a prefix that we show in the
+		// autocomplete
+		// TODO: optimise by caching all autocompletable classnames into a hash
+		// table on first run
+		int j;
+		const ClassNamePrefix_t *pPrefix = NULL;
+
+		for (j = 0; j < ARRAYSIZE(s_pEquipmentPrefixes); ++j)
+		{
+			pPrefix = &s_pEquipmentPrefixes[j];
+
+			if (Q_strncmp(pszClassName, pPrefix->m_pszPrefix, pPrefix->m_nLength))
+				continue;
+
+			break;
+		}
+
+		// If this entity factory had no prefixes, we could not find the prefix, skip this entity
+		if (j == ARRAYSIZE(s_pEquipmentPrefixes))
+			continue;
+
+		// Skip past the prefix if it shouldn't be kept
+		if (!pPrefix->m_bKeepPrefix)
+			pszClassName += pPrefix->m_nLength;
+
+		// Does this entity match our partial completion?
+		if (Q_strnicmp(pszClassName, partial, partialLength))
+			continue;
+
+		Q_snprintf(commands[numMatches++], COMMAND_COMPLETION_ITEM_LENGTH, "%s %s", commandName, pszClassName);
+	}
+
+	// Sort the commands alphabetically
+	qsort(commands, numMatches, COMMAND_COMPLETION_ITEM_LENGTH, StringSortFunc);
+
+	return numMatches;
+}
+
+int CreateAutocomplete(const char *partial, char commands[COMMAND_COMPLETION_MAXITEMS][COMMAND_COMPLETION_ITEM_LENGTH])
+{
+	// Find the first space in our input
+	const char *firstSpace = V_strstr(partial, " ");
+	if (!firstSpace)
+		return 0;
+
+	int commandLength = firstSpace - partial;
+
+	// Extract the command name from the input
+	char commandName[COMMAND_COMPLETION_ITEM_LENGTH];
+	V_StrSlice(partial, 0, commandLength, commandName, sizeof(commandName));
+
+	// Calculate the length of the command string (minus the command name)
+	partial += commandLength + 1;
+	int partialLength = V_strlen(partial);
+
+	// Grab the factory dictionary
+	if (!EntityFactoryDictionary())
+		return 0;
+
+	const EntityFactoryDict_t &factoryDict = EntityFactoryDictionary()->GetFactoryDictionary();
+	int numMatches = 0;
+
+	// Iterate through all entity factories
+	for (int i = factoryDict.First(); i != factoryDict.InvalidIndex() && numMatches < COMMAND_COMPLETION_MAXITEMS; i = factoryDict.Next(i))
+	{
+		const char *pszClassName = factoryDict.GetElementName(i);
+
+		// See if this entity classname has a prefix that we show in the
+		// autocomplete
+		// TODO: optimise by caching all autocompletable classnames into a hash
+		// table on first run
+		int j;
+		const ClassNamePrefix_t *pPrefix = NULL;
+
+		for (j = 0; j < ARRAYSIZE(s_pNPCPrefixes); ++j)
+		{
+			pPrefix = &s_pNPCPrefixes[j];
+
+			if (Q_strncmp(pszClassName, pPrefix->m_pszPrefix, pPrefix->m_nLength))
+				continue;
+
+			break;
+		}
+
+		// If this entity factory had no prefixes, we could not find the prefix, skip this entity
+		if (j == ARRAYSIZE(s_pNPCPrefixes))
+			continue;
+
+		// Skip past the prefix if it shouldn't be kept
+		if (!pPrefix->m_bKeepPrefix)
+			pszClassName += pPrefix->m_nLength;
+
+		// Does this entity match our partial completion?
+		if (Q_strnicmp(pszClassName, partial, partialLength))
+			continue;
+
+		Q_snprintf(commands[numMatches++], COMMAND_COMPLETION_ITEM_LENGTH, "%s %s", commandName, pszClassName);
+	}
+
+	// Sort the commands alphabetically
+	qsort(commands, numMatches, COMMAND_COMPLETION_ITEM_LENGTH, StringSortFunc);
+
+	return numMatches;
+}
+
+ConVar npc_create_equipment_cvar("npc_create_equipment_cvar", "", FCVAR_DEVELOPMENTONLY | FCVAR_CHEAT);
+CON_COMMAND_F_COMPLETION(npc_create_equipment, "Equipment for an NPC to be equipped with on create.", FCVAR_CHEAT, EquipmentAutocomplete)
+{
+	if (args.ArgC() != 2)
+		return;
+
+	char pszClassName[64];
+	Q_strncpy(pszClassName, args.Arg(1), sizeof(pszClassName));
+
+	for (int i = 0; i < ARRAYSIZE(s_pEquipmentPrefixes) && !CanCreateEntityClass(pszClassName); ++i)
+	{
+		// If we keep the prefix in the autocomplete, there's no point
+		// checking this prefix
+		if (s_pEquipmentPrefixes[i].m_bKeepPrefix)
+			continue;
+
+		Q_snprintf(pszClassName, sizeof(pszClassName), "%s%s", s_pEquipmentPrefixes[i].m_pszPrefix, args.Arg(1));
+	}
+
+	npc_create_equipment_cvar.SetValue(pszClassName);
+}
 //------------------------------------------------------------------------------
 // Purpose: Create an NPC of the given type
 //------------------------------------------------------------------------------
-void CC_NPC_Create( const CCommand &args )
+CON_COMMAND_F_COMPLETION(npc_create, "Creates an NPC of the given type where the player is looking (if the given NPC can actually stand at that location).  Note that this only works for npc classes that are already in the world.  You can not create an entity that doesn't have an instance in the level.\n\tArguments:	{npc_class_name}", FCVAR_CHEAT, CreateAutocomplete)
 {
 	MDLCACHE_CRITICAL_SECTION();
 
 	bool allowPrecache = CBaseEntity::IsPrecacheAllowed();
 	CBaseEntity::SetAllowPrecache( true );
 
+	char pszClassName[64];
+	Q_strncpy(pszClassName, args.Arg(1), sizeof(pszClassName));
+
+	for (int i = 0; i < ARRAYSIZE(s_pNPCPrefixes) && !CanCreateEntityClass(pszClassName); ++i)
+	{
+		// If we keep the prefix in the autocomplete, there's no point
+		// checking this prefix
+		if (s_pNPCPrefixes[i].m_bKeepPrefix)
+			continue;
+
+		Q_snprintf(pszClassName, sizeof(pszClassName), "%s%s", s_pNPCPrefixes[i].m_pszPrefix, args.Arg(1));
+	}
+
 	// Try to create entity
-	CAI_BaseNPC *baseNPC = dynamic_cast< CAI_BaseNPC * >( CreateEntityByName(args[1]) );
+	CAI_BaseNPC *baseNPC = dynamic_cast< CAI_BaseNPC * >(CreateEntityByName(pszClassName));
 	if (baseNPC)
 	{
-		baseNPC->KeyValue( "additionalequipment", npc_create_equipment.GetString() );
+		baseNPC->KeyValue("additionalequipment", npc_create_equipment_cvar.GetString());
 		baseNPC->Precache();
 
 		if ( args.ArgC() == 3 )
@@ -445,7 +645,7 @@ void CC_NPC_Create( const CCommand &args )
 			if ( tr.startsolid || (tr.fraction < 1.0) )
 			{
 				baseNPC->SUB_Remove();
-				DevMsg("Can't create %s.  Bad Position!\n",args[1]);
+				DevMsg("Can't create %s.  Bad Position!\n", pszClassName);
 				NDebugOverlay::Box(baseNPC->GetAbsOrigin(), baseNPC->GetHullMins(), baseNPC->GetHullMaxs(), 255, 0, 0, 0, 0);
 			}
 		}
@@ -454,24 +654,35 @@ void CC_NPC_Create( const CCommand &args )
 	}
 	CBaseEntity::SetAllowPrecache( allowPrecache );
 }
-static ConCommand npc_create("npc_create", CC_NPC_Create, "Creates an NPC of the given type where the player is looking (if the given NPC can actually stand at that location).  Note that this only works for npc classes that are already in the world.  You can not create an entity that doesn't have an instance in the level.\n\tArguments:	{npc_class_name}", FCVAR_CHEAT);
-
 
 //------------------------------------------------------------------------------
 // Purpose: Create an NPC of the given type
 //------------------------------------------------------------------------------
-void CC_NPC_Create_Aimed( const CCommand &args )
+CON_COMMAND_F_COMPLETION(npc_create_aimed, "Creates an NPC aimed away from the player of the given type where the player is looking (if the given NPC can actually stand at that location).  Note that this only works for npc classes that are already in the world.  You can not create an entity that doesn't have an instance in the level.\n\tArguments:	{npc_class_name}", FCVAR_CHEAT, CreateAutocomplete)
 {
 	MDLCACHE_CRITICAL_SECTION();
 
 	bool allowPrecache = CBaseEntity::IsPrecacheAllowed();
 	CBaseEntity::SetAllowPrecache( true );
 
+	char pszClassName[64];
+	Q_strncpy(pszClassName, args.Arg(1), sizeof(pszClassName));
+
+	for (int i = 0; i < ARRAYSIZE(s_pNPCPrefixes) && !CanCreateEntityClass(pszClassName); ++i)
+	{
+		// If we keep the prefix in the autocomplete, there's no point
+		// checking this prefix
+		if (s_pNPCPrefixes[i].m_bKeepPrefix)
+			continue;
+
+		Q_snprintf(pszClassName, sizeof(pszClassName), "%s%s", s_pNPCPrefixes[i].m_pszPrefix, args.Arg(1));
+	}
+
 	// Try to create entity
-	CAI_BaseNPC *baseNPC = dynamic_cast< CAI_BaseNPC * >( CreateEntityByName(args[1]) );
+	CAI_BaseNPC *baseNPC = dynamic_cast< CAI_BaseNPC * >(CreateEntityByName(pszClassName));
 	if (baseNPC)
 	{
-		baseNPC->KeyValue( "additionalequipment", npc_create_equipment.GetString() );
+		baseNPC->KeyValue("additionalequipment", npc_create_equipment_cvar.GetString());
 		baseNPC->Precache();
 		DispatchSpawn( baseNPC );
 
@@ -512,7 +723,7 @@ void CC_NPC_Create_Aimed( const CCommand &args )
 			if ( tr.startsolid || (tr.fraction < 1.0) )
 			{
 				baseNPC->SUB_Remove();
-				DevMsg("Can't create %s.  Bad Position!\n",args[1]);
+				DevMsg("Can't create %s.  Bad Position!\n", pszClassName);
 				NDebugOverlay::Box(baseNPC->GetAbsOrigin(), baseNPC->GetHullMins(), baseNPC->GetHullMaxs(), 255, 0, 0, 0, 0);
 			}
 		}
@@ -525,7 +736,6 @@ void CC_NPC_Create_Aimed( const CCommand &args )
 	}
 	CBaseEntity::SetAllowPrecache( allowPrecache );
 }
-static ConCommand npc_create_aimed("npc_create_aimed", CC_NPC_Create_Aimed, "Creates an NPC aimed away from the player of the given type where the player is looking (if the given NPC can actually stand at that location).  Note that this only works for npc classes that are already in the world.  You can not create an entity that doesn't have an instance in the level.\n\tArguments:	{npc_class_name}", FCVAR_CHEAT);
 
 //------------------------------------------------------------------------------
 // Purpose: Destroy unselected NPCs

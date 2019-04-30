@@ -38,6 +38,9 @@ private:
 	bool	m_bDelayedFire1;	// Fire primary when finished reloading
 	bool	m_bDelayedFire2;	// Fire secondary when finished reloading
 
+protected:
+	int				m_iFireMode;
+
 public:
 	void	Precache( void );
 
@@ -105,7 +108,7 @@ BEGIN_DATADESC( CWeaponShotgun )
 	DEFINE_FIELD( m_bNeedPump, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bDelayedFire1, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bDelayedFire2, FIELD_BOOLEAN ),
-
+	DEFINE_FIELD(m_iFireMode, FIELD_INTEGER)
 END_DATADESC()
 
 acttable_t	CWeaponShotgun::m_acttable[] = 
@@ -278,7 +281,12 @@ float CWeaponShotgun::GetFireRate()
 		return 0.8f;
 	}
 
-	return 0.7;
+	if (m_iFireMode == 1 && GetOwner()->Classify() == CLASS_PLAYER)
+	{
+		return 0.3f;
+	}
+
+	return 0.7f;
 }
 
 //-----------------------------------------------------------------------------
@@ -304,9 +312,16 @@ bool CWeaponShotgun::StartReload( void )
 	//NOTENOTE: This is kinda lame because the player doesn't get strong feedback on when the reload has finished,
 	//			without the pump.  Technically, it's incorrect, but it's good for feedback...
 
-	if (m_iClip1 <= 0)
+	if (m_iFireMode == 0)
 	{
-		m_bNeedPump = true;
+		if (m_iClip1 <= 0)
+		{
+			m_bNeedPump = true;
+		}
+	}
+	else
+	{
+		m_bNeedPump = false;
 	}
 
 	int j = MIN(1, pOwner->GetAmmoCount(m_iPrimaryAmmoType));
@@ -430,6 +445,9 @@ void CWeaponShotgun::FillClip( void )
 //-----------------------------------------------------------------------------
 void CWeaponShotgun::Pump( void )
 {
+	if (m_iFireMode == 1)
+		return;
+
 	CBaseCombatCharacter *pOwner  = GetOwner();
 
 	if ( pOwner == NULL )
@@ -456,7 +474,14 @@ void CWeaponShotgun::DryFire( void )
 	WeaponSound(EMPTY);
 	SendWeaponAnim( ACT_VM_DRYFIRE );
 	
-	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
+	if (m_iFireMode == 1)
+	{
+		m_flNextPrimaryAttack = gpGlobals->curtime + GetViewModelSequenceDuration() + GetFireRate();
+	}
+	else
+	{
+		m_flNextPrimaryAttack = gpGlobals->curtime + GetViewModelSequenceDuration();
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -490,7 +515,14 @@ void CWeaponShotgun::PrimaryAttack( void )
 	}
 
 	// Don't fire again until fire animation has completed
-	m_flNextPrimaryAttack = gpGlobals->curtime + GetViewModelSequenceDuration();
+	if (m_iFireMode == 1)
+	{
+		m_flNextPrimaryAttack = gpGlobals->curtime + GetViewModelSequenceDuration() + GetFireRate();
+	}
+	else
+	{
+		m_flNextPrimaryAttack = gpGlobals->curtime + GetViewModelSequenceDuration();
+	}
 	m_iClip1 -= 1;
 
 	Vector	vecSrc		= pPlayer->Weapon_ShootPosition( );
@@ -511,10 +543,17 @@ void CWeaponShotgun::PrimaryAttack( void )
 		pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0); 
 	}
 
-	if( m_iClip1 )
+	if (m_iFireMode == 0)
 	{
-		// pump so long as some rounds are left.
-		m_bNeedPump = true;
+		if (m_iClip1)
+		{
+			// pump so long as some rounds are left.
+			m_bNeedPump = true;
+		}
+	}
+	else
+	{
+		m_bNeedPump = false;
 	}
 
 	m_iPrimaryAttacks++;
@@ -553,7 +592,14 @@ void CWeaponShotgun::SecondaryAttack( void )
 	}
 
 	// Don't fire again until fire animation has completed
-	m_flNextPrimaryAttack = gpGlobals->curtime + GetViewModelSequenceDuration();
+	if (m_iFireMode == 1)
+	{
+		m_flNextPrimaryAttack = gpGlobals->curtime + GetViewModelSequenceDuration() + GetFireRate();
+	}
+	else
+	{
+		m_flNextPrimaryAttack = gpGlobals->curtime + GetViewModelSequenceDuration();
+	}
 	m_iClip1 -= 2;	// Shotgun uses same clip for primary and secondary attacks
 
 	Vector vecSrc	 = pPlayer->Weapon_ShootPosition();
@@ -573,10 +619,17 @@ void CWeaponShotgun::SecondaryAttack( void )
 		pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0); 
 	}
 
-	if( m_iClip1 )
+	if (m_iFireMode == 0)
 	{
-		// pump so long as some rounds are left.
-		m_bNeedPump = true;
+		if (m_iClip1)
+		{
+			// pump so long as some rounds are left.
+			m_bNeedPump = true;
+		}
+	}
+	else
+	{
+		m_bNeedPump = false;
 	}
 
 	m_iSecondaryAttacks++;
@@ -592,6 +645,26 @@ void CWeaponShotgun::ItemPostFrame( void )
 	if (!pOwner)
 	{
 		return;
+	}
+
+	if (pOwner->m_afButtonPressed & IN_ATTACK3)
+	{
+		if (m_iFireMode == 0)
+		{
+			CFmtStr hint;
+			hint.sprintf("#Valve_Shotgun_SemiAuto");
+			pOwner->ShowLevelMessage(hint.Access());
+			m_iFireMode = 1;
+			WeaponSound(EMPTY);
+		}
+		else if (m_iFireMode == 1)
+		{
+			CFmtStr hint;
+			hint.sprintf("#Valve_Shotgun_Pump");
+			pOwner->ShowLevelMessage(hint.Access());
+			m_iFireMode = 0;
+			WeaponSound(EMPTY);
+		}
 	}
 
 	ConVar *viewmodel_lower_on_sprint = cvar->FindVar("viewmodel_lower_on_sprint");
@@ -791,7 +864,6 @@ void CWeaponShotgun::ItemPostFrame( void )
 		WeaponIdle( );
 		return;
 	}
-
 }
 
 
@@ -811,6 +883,7 @@ CWeaponShotgun::CWeaponShotgun( void )
 	m_fMaxRange1		= 500;
 	m_fMinRange2		= 0.0;
 	m_fMaxRange2		= 200;
+	m_iFireMode			 = 0;
 }
 
 //-----------------------------------------------------------------------------

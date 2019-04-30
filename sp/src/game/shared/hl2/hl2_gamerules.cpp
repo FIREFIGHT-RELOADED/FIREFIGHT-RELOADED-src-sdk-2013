@@ -1218,6 +1218,11 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 		m_bMegaPhysgun = true;
 	}
 
+	void CHalfLife2::SetMegaPhyscannonInActive(void)
+	{
+		m_bMegaPhysgun = false;
+	}
+
 	const char *CHalfLife2::GetGameDescription(void)
 	{
 		return GetGamemodeName_ServerBrowser(bHasRandomized);

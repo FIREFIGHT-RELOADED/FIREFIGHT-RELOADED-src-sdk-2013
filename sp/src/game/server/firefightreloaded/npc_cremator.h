@@ -1,5 +1,5 @@
-#pragma once
-//========= Copyright © 2015, Dark Interval.  =================================//
+п»ї#pragma once
+//========= Copyright пїЅ 2015, Dark Interval.  =================================//
 //
 // Purpose: Keep it clean. OR... HE... WILL!..
 //
@@ -12,7 +12,7 @@
 #pragma once
 #endif
 
-#include "ai_basenpc.h"
+#include "ai_baseNPC.h"
 #include "ai_hint.h"
 #include "ai_link.h"
 #include "ai_motor.h"
@@ -93,7 +93,7 @@ public:
 	Vector RightFootHit(float eventtime);
 	void FootstepEffect(const Vector &origin);
 
-	int OnTakeDamage_Alive( const CTakeDamageInfo &info );
+	int OnTakeDamage_Alive(const CTakeDamageInfo &info);
 	void TraceAttack(const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator);
 	void Event_Killed(const CTakeDamageInfo &info);
 	virtual const char *GetHeadpropModel(void);
@@ -103,8 +103,8 @@ public:
 
 	void DispatchSpray(CBaseEntity *pEntity);
 
-	//virtual void RunAI(void);
-	//virtual void StartTask(const Task_t *pTask);
+	virtual void RunAI(void);
+	virtual void StartTask(const Task_t *pTask);
 	virtual void RunTask(const Task_t *pTask);
 	virtual int RangeAttack1Conditions(float flDot, float flDist);
 	NPC_STATE SelectIdealState(void);
@@ -134,10 +134,10 @@ private:
 #define SF_CREMATOR_FUEL_SPILLING		1<<3 
 #define SF_CREMATOR_PATROL_BEHAVIOR		1<<4
 
-#define CREMATOR_SKIN_ALERT				0 // yellow eyes // обычные желтые глаза
-#define CREMATOR_SKIN_CALM				1 // blue eyes // голубые глаза
-#define CREMATOR_SKIN_ANGRY				2 // red eyes // красные, «злые» глаза
-#define CREMATOR_SKIN_DEAD				3 // black eyes // отключенные глаза — используется для мертвого крематора.
+#define CREMATOR_SKIN_ALERT				0 // yellow eyes // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+#define CREMATOR_SKIN_CALM				1 // blue eyes // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+#define CREMATOR_SKIN_ANGRY				2 // red eyes // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+#define CREMATOR_SKIN_DEAD				3 // black eyes // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 
 extern ConVar							di_dynamic_lighting_npconfire; // declared in ai_basenpc.cpp
 
@@ -272,7 +272,7 @@ public:
 	void			FoundEnemySound(void);
 	void			DeathSound(const CTakeDamageInfo &info);
 	void			FootstepEffect(const Vector &origin);
-	
+
 	// so we won't be seen by other Cremators.
 	virtual bool			CanBecomeServerRagdoll(void) { return false; }
 

@@ -728,6 +728,9 @@ bool CBaseCombatWeapon::HasAmmo( void )
 //-----------------------------------------------------------------------------
 bool CBaseCombatWeapon::VisibleInWeaponSelection( void )
 {
+	if (GetWeaponFlags() & ITEM_FLAG_HIDESELECTION)
+		return false;
+
 	return true;
 }
 

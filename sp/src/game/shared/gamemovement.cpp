@@ -52,8 +52,9 @@ ConVar player_limit_jump_speed( "player_limit_jump_speed", "1", FCVAR_REPLICATED
 
 //Used for bunnyhopping
 ConVar fr_enable_bunnyhop("fr_enable_bunnyhop", "1", FCVAR_ARCHIVE);
-ConVar fr_autojump("fr_autojump", "1", FCVAR_ARCHIVE);
+ConVar fr_autojump("fr_autojump", "0", FCVAR_ARCHIVE);
 ConVar fr_doublejump("fr_doublejump", "1", FCVAR_ARCHIVE);
+ConVar fr_doublejump_power("fr_doublejump_power", "20", FCVAR_ARCHIVE);
 
 // option_duck_method is a carrier convar. Its sole purpose is to serve an easy-to-flip
 // convar which is ONLY set by the X360 controller menu to tell us which way to bind the
@@ -2500,7 +2501,7 @@ bool CGameMovement::CheckJumpButton( void )
 		vecRight.z = 0.0f;
 		VectorNormalize(vecForward);
 		VectorNormalize(vecRight);
-		if (!pMoveData->m_bIsSprinting && !player->m_Local.m_bDucked)
+		if (!pMoveData->m_bIsSprinting && !player->m_Local.m_bDucked && !bAirDash)
 		{
 			for (int iAxis = 0; iAxis < 2; ++iAxis)
 			{
@@ -2595,7 +2596,7 @@ void CGameMovement::AirDash(void)
 	// Apply approx. the jump velocity added to an air dash.
 #if defined(HL2_DLL) || defined(HL2_CLIENT_DLL)
 	Assert(GetCurrentGravity() == 600.0f);
-	flDashZ = 160.0f;
+	flDashZ = 160.0f;	// approx. 21 units.
 #else
 	Assert(GetCurrentGravity() == 800.0f);
 	flDashZ = 268.3281572999747f;
@@ -2618,8 +2619,11 @@ void CGameMovement::AirDash(void)
 		((vecForward.y * flForwardMove) + (vecRight.y * flSideMove)),
 		0.0f);
 
+	VectorNormalize(vecWishDirection);
+
 	// Update the velocity on the scout.
-	mv->m_vecVelocity = mv->m_vecVelocity + vecWishDirection;
+	
+	mv->m_vecVelocity = mv->m_vecVelocity + (vecWishDirection * fr_doublejump_power.GetFloat());
 	mv->m_vecVelocity.z += flDashZ;
 
 	m_1AirDashes += 1;

@@ -88,6 +88,7 @@ public:
 	void	NPC_DroppedGrenade( void );
 	bool	MegaPhyscannonActive( void ) { return m_bMegaPhysgun;	}
 	void	SetMegaPhyscannonActive(void);
+	void	SetMegaPhyscannonInActive(void);
 
 	int	GetNumberOfPlayers(void);
 	

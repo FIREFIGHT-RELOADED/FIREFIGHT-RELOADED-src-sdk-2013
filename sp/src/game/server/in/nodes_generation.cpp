@@ -96,6 +96,7 @@ void CNodesGeneration::Start()
 		}
 
 		Warning("No Navigation Mesh found. Generating...\n");
+		Warning("NOTE: After generating the nav mesh, restart the node generator.\n");
 
 		TheNavMesh->SetPlayerSpawnName(classname);
 		TheNavMesh->BeginGeneration();

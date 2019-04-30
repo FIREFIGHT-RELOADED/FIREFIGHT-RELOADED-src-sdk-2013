@@ -1,4 +1,4 @@
-//========= Copyright © 2015, Dark Interval.  =================================//
+п»ї//========= Copyright пїЅ 2015, Dark Interval.  =================================//
 //
 // Purpose: Keep it clean. OR... HE... WILL!..
 //
@@ -268,7 +268,7 @@ void CNPC_Cremator::DeathSound(const CTakeDamageInfo &info)
 	EmitSound("NPC_Cremator.DeathAmb");
 }
 
-int CNPC_Cremator::OnTakeDamage_Alive( const CTakeDamageInfo &info )
+int CNPC_Cremator::OnTakeDamage_Alive(const CTakeDamageInfo &info)
 {
 	if (info.GetAttacker())
 	{
@@ -423,7 +423,7 @@ void CNPC_Cremator::HandleAnimEvent(animevent_t *pEvent)
 		GetMotor()->SetIdealYawToTargetAndUpdate(flEnemyLKP);
 	}
 	break;
-	case CREMATOR_AE_IMMO_PARTICLE: // Маркер для запуска системы частиц огнемета
+	case CREMATOR_AE_IMMO_PARTICLE: // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	{
 		DispatchParticleEffect("vapor_ray", PATTACH_POINT_FOLLOW, this, "muzzle");
 		EmitSound("Weapon_Immolator.Single");
@@ -457,12 +457,10 @@ void CNPC_Cremator::HandleAnimEvent(animevent_t *pEvent)
 	break;
 	case CREMATOR_AE_SPECIAL_MIDDLE:
 	{
-		/*
 		if (pCorpse && pCorpse != NULL) // double, triple, quadruple check!
 		{
 			IncinerateCorpse(pCorpse); // start the corpse burn
 		}
-		*/
 	}
 	break;
 	case CREMATOR_AE_SPECIAL_END:
@@ -568,7 +566,7 @@ void CNPC_Cremator::DispatchSpray(CBaseEntity *pEntity)
 
 	if (pEntity != NULL && m_takedamage)
 	{
-		CTakeDamageInfo firedamage(this, this, sk_cremator_firedamage.GetFloat(), DMG_BURN);
+		CTakeDamageInfo firedamage(this, this, sk_cremator_firedamage.GetFloat(), DMG_DISSOLVE);
 		CTakeDamageInfo radiusdamage(this, this, sk_cremator_radiusdamage.GetFloat(), DMG_PLASMA);
 		CalculateMeleeDamageForce(&firedamage, vecAim, tr.endpos);
 		RadiusDamage(CTakeDamageInfo(this, this, 2, DMG_PLASMA), // AOE; this makes cremators absurdly powerfull sometimes btw
@@ -597,21 +595,19 @@ void CNPC_Cremator::DispatchSpray(CBaseEntity *pEntity)
 #endif
 	m_iAmmo--;
 }
-/*
 void CNPC_Cremator::RunAI(void)
 {
-	//if (!HasCondition(COND_CREMATOR_FOUND_CORPSE))
-		//SearchForCorpses(); // FIXME: is it the best place for it?
+	if (!HasCondition(COND_CREMATOR_FOUND_CORPSE))
+		SearchForCorpses(); // FIXME: is it the best place for it?
 	//currently some crashes with this function.
-	
+	/*
 	if (IsCurSchedule(SCHED_CREMATOR_INVESTIGATE_CORPSE) && pCorpse->WorldSpaceCenter().DistToSqr(WorldSpaceCenter()) <= 128 * 128)
 	{
-		GetNavigator()->StopMoving();
+	GetNavigator()->StopMoving();
 	}
-	
+	*/
 	BaseClass::RunAI();
 }
-
 void CNPC_Cremator::StartTask(const Task_t *pTask)
 {
 	switch (pTask->iTask)
@@ -630,7 +626,7 @@ void CNPC_Cremator::StartTask(const Task_t *pTask)
 			{
 				DevMsg("The corpse is unreachable, marked as such\n");
 				pCorpse->SetOwnerEntity(this);	//HACKHACK: set the owner to prevent this unreachable corpse from being detected again. 
-												//TODO: find a better solution. How to do it other than implementing a new EFlag?
+				//TODO: find a better solution. How to do it other than implementing a new EFlag?
 
 				pCorpse = NULL;						//forget about this corpse.
 				ClearCondition(COND_CREMATOR_FOUND_CORPSE);
@@ -640,7 +636,6 @@ void CNPC_Cremator::StartTask(const Task_t *pTask)
 		}
 		break;
 	}
-	
 	case TASK_CREMATOR_BURN_CORPSE:
 	{
 		if (!pCorpse)
@@ -665,23 +660,17 @@ void CNPC_Cremator::StartTask(const Task_t *pTask)
 		break;
 	}
 }
-*/
 void CNPC_Cremator::RunTask(const Task_t *pTask)
 {
 	switch (pTask->iTask)
 	{
-	/*
 	case TASK_CREMATOR_INVESTIGATE_CORPSE: // FIXME: that never runs!
 	{
 		Msg("Running TASK_CREMATOR_INVESTIGATE_CORPSE\n");
-		//if (WorldSpaceCenter().DistToSqr(pCorpse->WorldSpaceCenter()) <= pTask->flTaskData * pTask->flTaskData) // Stop when we're close enough to the corpse.
-		//{
-			//GetNavigator()->StopMoving();
-			//DevMsg("Close enough to the corpse\n");
-			//TaskComplete();
-		//}
-		if (IsActivityFinished())
+		if (WorldSpaceCenter().DistToSqr(pCorpse->WorldSpaceCenter()) <= pTask->flTaskData * pTask->flTaskData) // Stop when we're close enough to the corpse.
 		{
+			GetNavigator()->StopMoving();
+			DevMsg("Close enough to the corpse\n");
 			TaskComplete();
 		}
 		break;
@@ -695,7 +684,6 @@ void CNPC_Cremator::RunTask(const Task_t *pTask)
 		}
 		break;
 	}
-	*/
 	case TASK_CREMATOR_RANGE_ATTACK1:
 	{
 		Assert(GetEnemy() != NULL);
@@ -751,7 +739,6 @@ NPC_STATE CNPC_Cremator::SelectIdealState(void)
 		}
 		break;
 	}
-	/*
 	case NPC_STATE_IDLE:
 	{
 		if (HasCondition(COND_CREMATOR_FOUND_CORPSE))
@@ -760,7 +747,6 @@ NPC_STATE CNPC_Cremator::SelectIdealState(void)
 		}
 		break;
 	}
-	*/
 	}
 	return BaseClass::SelectIdealState();
 }
@@ -770,10 +756,10 @@ Activity CNPC_Cremator::TranslateActivity(Activity activity)
 
 	switch (activity)
 	{
-		case ACT_RUN:
-		{
-			return (Activity)ACT_WALK;
-		}
+	case ACT_RUN:
+	{
+		return (Activity)ACT_WALK;
+	}
 	}
 
 	return activity;
@@ -813,12 +799,10 @@ int CNPC_Cremator::SelectSchedule(void)
 	}
 	case NPC_STATE_ALERT:
 	{
-		/*
 		if (HasCondition(COND_CREMATOR_FOUND_CORPSE) && !HasCondition(COND_LIGHT_DAMAGE | COND_HEAVY_DAMAGE) && GetEnemy() == NULL)
 		{
 			return SCHED_CREMATOR_INVESTIGATE_CORPSE;
 		}
-		*/
 		if (!HasSpawnFlags(SF_CREMATOR_NO_PATROL_BEHAVIOUR))
 			return SCHED_CREMATOR_PATROL;
 		else
@@ -872,7 +856,6 @@ void CNPC_Cremator::PrescheduleThink(void)
 	}
 #endif
 
-	/*
 	switch (m_NPCState)
 	{
 	case NPC_STATE_ALERT:
@@ -887,13 +870,12 @@ void CNPC_Cremator::PrescheduleThink(void)
 		break;
 	}
 	}
-	*/
 }
 
-/*
+
 void CNPC_Cremator::SearchForCorpses(void)
 {
-//	float flSearchRadius = CREMATOR_DETECT_CORPSE_RANGE;
+	//	float flSearchRadius = CREMATOR_DETECT_CORPSE_RANGE;
 
 	// I had to do this by making the cremator look through entlist because OnListened() (stink) method is flawed. 
 	// Originally this search was done with gEntList.FindEntityByClassnameNearest( "prop_ragdoll", GetAbsOrigin(), flSearchRadius ).
@@ -919,27 +901,11 @@ void CNPC_Cremator::IncinerateCorpse(CBaseEntity *pTarget)
 {
 	if (pTarget)
 	{
-		CEntityFlame *pFlame = CEntityFlame::Create(this);
-
-		if (pFlame)
-		{
-			SetEffectEntity(NULL);
-			pFlame->SetAbsOrigin(pTarget->GetAbsOrigin());
-			pFlame->AttachToEntity(pTarget);
-			pFlame->AddEFlags(EFL_FORCE_CHECK_TRANSMIT);
-			pFlame->AddEffects(EF_BRIGHTLIGHT); // create light from the fire
-			pFlame->SetLifetime(20.0); // burn for 20 seconds
-
-			pTarget->AddFlag(FL_ONFIRE);
-			pTarget->SetEffectEntity(pFlame);
-			pTarget->SetRenderColor(50, 50, 50);
-
-			pTarget->SetOwnerEntity(this); // HACKHACK - we're marking this corpse so that it won't be picked again in the future.
-			DevMsg("This corpse has been handled. Moving on\n");
-		}
+		SetEffectEntity(NULL);
+		pTarget->GetBaseAnimating()->Dissolve("", gpGlobals->curtime, false, ENTITY_DISSOLVE_NORMAL);
+		DevMsg("This corpse has been handled. Moving on\n");
 	}
 }
-*/
 
 AI_BEGIN_CUSTOM_NPC(npc_cremator, CNPC_Cremator)
 
@@ -950,12 +916,12 @@ DECLARE_ACTIVITY(ACT_CREMATOR_RELOAD)
 
 DECLARE_CONDITION(COND_CREMATOR_OUT_OF_AMMO)
 DECLARE_CONDITION(COND_CREMATOR_ENEMY_WITH_HIGHER_PRIORITY)
-//DECLARE_CONDITION(COND_CREMATOR_FOUND_CORPSE)
+DECLARE_CONDITION(COND_CREMATOR_FOUND_CORPSE)
 
 DECLARE_TASK(TASK_CREMATOR_RANGE_ATTACK1)
 DECLARE_TASK(TASK_CREMATOR_RELOAD)
-//DECLARE_TASK(TASK_CREMATOR_INVESTIGATE_CORPSE)
-//DECLARE_TASK(TASK_CREMATOR_BURN_CORPSE)
+DECLARE_TASK(TASK_CREMATOR_INVESTIGATE_CORPSE)
+DECLARE_TASK(TASK_CREMATOR_BURN_CORPSE)
 
 DEFINE_SCHEDULE(
 	SCHED_CREMATOR_CHASE_ENEMY,
@@ -971,9 +937,9 @@ DEFINE_SCHEDULE(
 	"	COND_ENEMY_DEAD"
 	"	COND_LOST_ENEMY"
 	"	COND_CREMATOR_ENEMY_WITH_HIGHER_PRIORITY"
-)
+	)
 
-DEFINE_SCHEDULE(
+	DEFINE_SCHEDULE(
 	SCHED_CREMATOR_RANGE_ATTACK1,
 	"	Tasks"
 	"	TASK_STOP_MOVING 0"
@@ -989,9 +955,9 @@ DEFINE_SCHEDULE(
 	"	COND_ENEMY_DEAD"
 	"	COND_TOO_FAR_TO_ATTACK"
 	"	COND_CREMATOR_ENEMY_WITH_HIGHER_PRIORITY"
-)
+	)
 
-DEFINE_SCHEDULE(
+	DEFINE_SCHEDULE(
 	SCHED_CREMATOR_PATROL,
 	"	Tasks"
 	"	TASK_STOP_MOVING 0"
@@ -1006,15 +972,14 @@ DEFINE_SCHEDULE(
 	"	COND_NEW_ENEMY"
 	"	COND_LIGHT_DAMAGE"
 	"	COND_HEAVY_DAMAGE"
-)
-/*
-DEFINE_SCHEDULE(
+	)
+	DEFINE_SCHEDULE(
 	SCHED_CREMATOR_INVESTIGATE_CORPSE, // we're here because we have COND_CREMATOR_FOUND_CORPSE.
 	"	Tasks"
 	"	TASK_WAIT_FOR_MOVEMENT 0"
 	"	TASK_SOUND_WAKE 0" // Play the alert sound
 	"	TASK_CREMATOR_INVESTIGATE_CORPSE 64" // analogous to TASK_GET_PATH_TO_BESTSCENT
-											 //"	TASK_WALK_PATH 0"
+	//"	TASK_WALK_PATH 0"
 	"	TASK_WAIT_FOR_MOVEMENT 0"
 	"	TASK_CREMATOR_BURN_CORPSE 0" // Play the firespread animation
 	"	TASK_WAIT 3"
@@ -1026,6 +991,5 @@ DEFINE_SCHEDULE(
 	"	COND_SEE_ENEMY"
 	"	COND_LIGHT_DAMAGE"
 	"	COND_HEAVY_DAMAGE"
-)
-*/
-AI_END_CUSTOM_NPC()
+	)
+	AI_END_CUSTOM_NPC()

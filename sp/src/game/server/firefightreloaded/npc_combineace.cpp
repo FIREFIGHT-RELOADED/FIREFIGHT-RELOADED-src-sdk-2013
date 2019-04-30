@@ -113,7 +113,6 @@ void CNPC_CombineAce::Spawn( void )
 		}
 	}
 
-	m_fIsElite = true;
 	m_fIsAce = true;
 	m_iUseMarch = true;
 

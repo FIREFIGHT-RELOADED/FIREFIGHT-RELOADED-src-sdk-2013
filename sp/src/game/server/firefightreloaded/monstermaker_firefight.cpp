@@ -107,14 +107,6 @@ const char *g_charNPCSCombineFirefightEliteMetropoliceWeapons[] =
 	"weapon_pistol",
 };
 
-//TODO: Add more weapons to ace
-const char *g_charNPCSCombineFirefightAceWeapons[] =
-{
-	"weapon_smg1",
-	"weapon_ar2",
-	"weapon_shotgun",
-};
-
 const char *g_charNPCSAntlionAssaultRare[] =
 {
 	"npc_antlionworker",
@@ -432,6 +424,9 @@ bool CNPCMakerFirefight::CanMakeNPC(bool bIgnoreSolidEntities)
 {
 	if ( gEntList.NumberOfEntities() >= (gpGlobals->maxEntities - ENTITY_INTOLERANCE) )
 		return false;
+
+	if (g_iNPCLimit >= g_fr_npclimit.GetInt() && g_fr_npclimit.GetInt() != 0)
+		return false;
 	
 	int iMinPlayersToSpawn = 0;
 
@@ -445,9 +440,6 @@ bool CNPCMakerFirefight::CanMakeNPC(bool bIgnoreSolidEntities)
 	}
 
 	if (iMinPlayersToSpawn < sk_spawnerminclientstospawn.GetInt() && g_pGameRules->IsMultiplayer())
-		return false;
-
-	if (g_iNPCLimit >= g_fr_npclimit.GetInt() && g_fr_npclimit.GetInt() != 0)
 		return false;
 
 	if ( m_nMaxLiveChildren > 0 && m_nLiveChildren >= m_nMaxLiveChildren )
@@ -1593,10 +1585,7 @@ void CNPCMakerFirefight::MakeRareNPC(void)
 
 			if (Q_stristr(pRandomName, "npc_combine_ace"))
 			{
-				int nWeaponsAce = ARRAYSIZE(g_charNPCSCombineFirefightAceWeapons);
-				int randomChoiceAce = rand() % nWeaponsAce;
-				const char *pRandomNameAce = g_charNPCSCombineFirefightAceWeapons[randomChoiceAce];
-				pent->m_spawnEquipment = MAKE_STRING(pRandomNameAce);
+				pent->m_spawnEquipment = MAKE_STRING("weapon_smg1");
 			}
 
 			pent->m_isRareEntity = true;
@@ -1817,10 +1806,7 @@ void CNPCMakerFirefight::MakeRareNPC(void)
 
 			if (Q_stristr(pRandomName, "npc_combine_ace"))
 			{
-				int nWeaponsAce = ARRAYSIZE(g_charNPCSCombineFirefightAceWeapons);
-				int randomChoiceAce = rand() % nWeaponsAce;
-				const char *pRandomNameAce = g_charNPCSCombineFirefightAceWeapons[randomChoiceAce];
-				pent->m_spawnEquipment = MAKE_STRING(pRandomNameAce);
+				pent->m_spawnEquipment = MAKE_STRING("weapon_smg1");
 			}
 			else if (Q_stristr(pRandomName, "npc_citizen"))
 			{
@@ -1828,7 +1814,7 @@ void CNPCMakerFirefight::MakeRareNPC(void)
 				int randomChoiceCitizen = rand() % nWeaponsCitizen;
 				const char *pRandomNameCitizen = g_charNPCSResistanceRetributionCommonWeapons[randomChoiceCitizen];
 				pent->m_spawnEquipment = MAKE_STRING(pRandomNameCitizen);
-				if (pent->m_spawnEquipment == MAKE_STRING("weapon_shotgun"))
+				if (pent->m_spawnEquipment == MAKE_STRING("weapon_rpg"))
 				{
 					pent->AddSpawnFlags(SF_CITIZEN_RANDOM_HEAD_FEMALE);
 				}
@@ -1893,7 +1879,7 @@ void CNPCMakerFirefight::MakeRareNPC(void)
 			int randomChoiceCitizen = rand() % nWeaponsCitizen;
 			const char *pRandomNameCitizen = g_charNPCSResistanceRetributionCommonWeapons[randomChoiceCitizen];
 			pent->m_spawnEquipment = MAKE_STRING(pRandomNameCitizen);
-			if (pent->m_spawnEquipment == MAKE_STRING("weapon_shotgun"))
+			if (pent->m_spawnEquipment == MAKE_STRING("weapon_rpg"))
 			{
 				pent->AddSpawnFlags(SF_CITIZEN_RANDOM_HEAD_FEMALE);
 			}
@@ -2012,10 +1998,7 @@ void CNPCMakerFirefight::MakeRareNPC(void)
 
 			if (Q_stristr(pRandomName, "npc_combine_ace"))
 			{
-				int nWeaponsAce = ARRAYSIZE(g_charNPCSCombineFirefightAceWeapons);
-				int randomChoiceAce = rand() % nWeaponsAce;
-				const char *pRandomNameAce = g_charNPCSCombineFirefightAceWeapons[randomChoiceAce];
-				pent->m_spawnEquipment = MAKE_STRING(pRandomNameAce);
+				pent->m_spawnEquipment = MAKE_STRING("weapon_smg1");
 			}
 
 			pent->m_isRareEntity = true;
@@ -2236,10 +2219,7 @@ void CNPCMakerFirefight::MakeRareNPC(void)
 
 			if (Q_stristr(pRandomName, "npc_combine_ace"))
 			{
-				int nWeaponsAce = ARRAYSIZE(g_charNPCSCombineFirefightAceWeapons);
-				int randomChoiceAce = rand() % nWeaponsAce;
-				const char *pRandomNameAce = g_charNPCSCombineFirefightAceWeapons[randomChoiceAce];
-				pent->m_spawnEquipment = MAKE_STRING(pRandomNameAce);
+				pent->m_spawnEquipment = MAKE_STRING("weapon_smg1");
 			}
 			else if (Q_stristr(pRandomName, "npc_citizen"))
 			{
@@ -2247,7 +2227,7 @@ void CNPCMakerFirefight::MakeRareNPC(void)
 				int randomChoiceCitizen = rand() % nWeaponsCitizen;
 				const char *pRandomNameCitizen = g_charNPCSResistanceRetributionCommonWeapons[randomChoiceCitizen];
 				pent->m_spawnEquipment = MAKE_STRING(pRandomNameCitizen);
-				if (pent->m_spawnEquipment == MAKE_STRING("weapon_shotgun"))
+				if (pent->m_spawnEquipment == MAKE_STRING("weapon_rpg"))
 				{
 					pent->AddSpawnFlags(SF_CITIZEN_RANDOM_HEAD_FEMALE);
 				}
@@ -2312,7 +2292,7 @@ void CNPCMakerFirefight::MakeRareNPC(void)
 			int randomChoiceCitizen = rand() % nWeaponsCitizen;
 			const char *pRandomNameCitizen = g_charNPCSResistanceRetributionCommonWeapons[randomChoiceCitizen];
 			pent->m_spawnEquipment = MAKE_STRING(pRandomNameCitizen);
-			if (pent->m_spawnEquipment == MAKE_STRING("weapon_shotgun"))
+			if (pent->m_spawnEquipment == MAKE_STRING("weapon_rpg"))
 			{
 				pent->AddSpawnFlags(SF_CITIZEN_RANDOM_HEAD_FEMALE);
 			}

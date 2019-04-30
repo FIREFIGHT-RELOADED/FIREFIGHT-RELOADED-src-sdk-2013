@@ -1214,12 +1214,7 @@ void CAI_BaseNPC::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir
 
 	if ( subInfo.GetDamage() >= 1.0 && !(subInfo.GetDamageType() & DMG_SHOCK ) )
 	{
-		if( !IsPlayer() || ( IsPlayer() && g_pGameRules->IsMultiplayer() ) )
-		{
-			// NPC's always bleed. Players only bleed in multiplayer.
-			SpawnBlood( ptr->endpos, vecDir, BloodColor(), subInfo.GetDamage() );// a little surface blood.
-		}
-
+		SpawnBlood(ptr->endpos, vecDir, BloodColor(), subInfo.GetDamage());
 		TraceBleed( subInfo.GetDamage(), vecDir, ptr, subInfo.GetDamageType() );
 
 		if ( ptr->hitgroup == HITGROUP_HEAD && m_iHealth - subInfo.GetDamage() > 0 )

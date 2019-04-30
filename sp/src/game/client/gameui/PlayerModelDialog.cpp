@@ -71,6 +71,12 @@ void CPlayerModelDialog::DialogInit()
 //-----------------------------------------------------------------------------
 void CPlayerModelDialog::OnClose()
 {
+	BaseClass::OnClose();
+	MarkForDeletion();
+}
+
+void CPlayerModelDialog::OnOK()
+{
 	char szModelName[64];
 	Q_strncpy(szModelName, GetModelName(), sizeof(szModelName));
 
@@ -81,9 +87,8 @@ void CPlayerModelDialog::OnClose()
 
 	// exec
 	engine->ClientCmd_Unrestricted(szModelCommand);
-	
-	BaseClass::OnClose();
-	MarkForDeletion();
+
+	OnClose();
 }
 
 //-----------------------------------------------------------------------------
@@ -94,7 +99,7 @@ void CPlayerModelDialog::OnCommand(const char *command)
 {
 	if ( !stricmp( command, "Ok" ) )
 	{
-		OnClose();
+		OnOK();
 		return;
 	}
 
