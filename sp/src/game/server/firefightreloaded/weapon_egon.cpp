@@ -41,9 +41,9 @@ ConVar sk_plr_dmg_egon_wide("sk_plr_dmg_egon_wide", "0", FCVAR_REPLICATED);
 // CWeaponEgon
 //-----------------------------------------------------------------------------
 
-class CWeaponEgon : public CBaseCombatWeapon
+class CWeaponEgon : public CBaseHLCombatWeapon
 {
-	DECLARE_CLASS( CWeaponEgon, CBaseCombatWeapon );
+	DECLARE_CLASS( CWeaponEgon, CBaseHLCombatWeapon );
 public:
 
 	DECLARE_NETWORKCLASS(); 

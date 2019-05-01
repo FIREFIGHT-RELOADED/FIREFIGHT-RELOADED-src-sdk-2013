@@ -87,6 +87,7 @@ void CNPC_CombineShot::Spawn(void)
 
 	CapabilitiesAdd( bits_CAP_ANIMATEDFACE );
 	CapabilitiesAdd( bits_CAP_MOVE_SHOOT );
+	CapabilitiesAdd(bits_CAP_MOVE_JUMP);
 	CapabilitiesAdd( bits_CAP_DOORS_GROUP );
 
 	BaseClass::Spawn();

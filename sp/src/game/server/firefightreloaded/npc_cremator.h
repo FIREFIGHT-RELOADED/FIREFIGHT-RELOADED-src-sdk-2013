@@ -12,7 +12,7 @@
 #pragma once
 #endif
 
-#include "ai_baseNPC.h"
+#include "ai_basenpc.h"
 #include "ai_hint.h"
 #include "ai_link.h"
 #include "ai_motor.h"
@@ -100,15 +100,17 @@ public:
 	void DropHead(int iVelocity, const Vector &vecVelocity);
 	virtual const char *GetGunpropModel(void);
 	void DropGun(int iVelocity, const Vector &vecVelocity);
+	float	GetSequenceGroundSpeed(CStudioHdr *pStudioHdr, int iSequence);
 
 	void DispatchSpray(CBaseEntity *pEntity);
 
-	virtual void RunAI(void);
-	virtual void StartTask(const Task_t *pTask);
+	//virtual void RunAI(void);
+	//virtual void StartTask(const Task_t *pTask);
 	virtual void RunTask(const Task_t *pTask);
 	virtual int RangeAttack1Conditions(float flDot, float flDist);
 	NPC_STATE SelectIdealState(void);
 	Activity TranslateActivity(Activity activity);
+	Activity NPC_TranslateActivity(Activity activity);
 	virtual int TranslateSchedule(int scheduleType);
 	virtual int SelectSchedule(void);
 	virtual void OnScheduleChange(void);
@@ -121,6 +123,7 @@ protected:
 	bool m_bIsNPCEnemy;
 	bool m_bPlayAngrySound;
 	int m_iAmmo;
+	float m_flSpeedScale;
 private:
 	Disposition_t IRelationType(CBaseEntity *pTarget);
 	void IncinerateCorpse(CBaseEntity *pTarget);

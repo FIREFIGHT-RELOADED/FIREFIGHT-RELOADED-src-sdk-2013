@@ -66,7 +66,8 @@ ConVar	sk_cremator_health("sk_cremator_health", "180");
 ConVar	sk_cremator_firedamage("sk_cremator_firedamage", "0");
 ConVar	sk_cremator_radiusdamage("sk_cremator_radiusdamage", "0");
 ConVar  sk_cremator_corpse_search_radius("sk_cremator_corpse_search_radius", "320");
-ConVar  sk_cremator_attackplayeronsight("sk_cremator_attackplayeronsight", "0");
+ConVar  sk_cremator_attackplayeronsight("sk_cremator_attackplayeronsight", "0", FCVAR_ARCHIVE);
+ConVar  sk_cremator_chase_speed("sk_cremator_chase_speed", "4.5");
 
 Activity ACT_FIRESPREAD;
 Activity ACT_CREMATOR_ARM;
@@ -79,6 +80,7 @@ DEFINE_FIELD(m_bHeadshot, FIELD_BOOLEAN),
 DEFINE_FIELD(m_bIsPlayerEnemy, FIELD_BOOLEAN),
 DEFINE_FIELD(m_bIsNPCEnemy, FIELD_BOOLEAN),
 DEFINE_FIELD(m_bPlayAngrySound, FIELD_BOOLEAN),
+DEFINE_FIELD(m_flSpeedScale, FIELD_FLOAT),
 END_DATADESC();
 
 void CNPC_Cremator::Precache()
@@ -118,7 +120,7 @@ void CNPC_Cremator::Spawn(void)
 	AddSolidFlags(FSOLID_NOT_STANDABLE);
 	SetMoveType(MOVETYPE_STEP);
 
-	m_bloodColor = BLOOD_COLOR_MECH; // TODO: basically turns blood into sparks. Need something more special.
+	m_bloodColor = BLOOD_COLOR_RED; // TODO: basically turns blood into sparks. Need something more special.
 	m_iHealth = sk_cremator_health.GetFloat();
 	m_flFieldOfView = VIEW_FIELD_WIDE;
 
@@ -140,15 +142,23 @@ Disposition_t CNPC_Cremator::IRelationType(CBaseEntity *pTarget)
 
 	if (pTarget == NULL)
 		return disp;
+
 	if (pTarget->Classify() == CLASS_PLAYER)
 	{
-		if (sk_cremator_attackplayeronsight.GetBool() || g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE))
+		if (!(pTarget->GetFlags() & FL_NOTARGET))
 		{
-			return D_HT;
+			if (sk_cremator_attackplayeronsight.GetBool() || g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE))
+			{
+				return D_HT;
+			}
+			else
+			{
+				return m_bIsPlayerEnemy ? D_HT : D_NU;
+			}
 		}
 		else
 		{
-			return m_bIsPlayerEnemy ? D_HT : D_NU;
+			return D_NU;
 		}
 	}
 	else if (pTarget->IsNPC() && pTarget->Classify() != Classify() && pTarget->Classify() != CLASS_COMBINE && pTarget->Classify() != CLASS_COMBINE_HUNTER && pTarget->Classify() != CLASS_COMBINE_GUNSHIP && pTarget->Classify() != CLASS_MANHACK && pTarget->Classify() != CLASS_METROPOLICE && pTarget->Classify() != CLASS_SCANNER)
@@ -272,7 +282,7 @@ int CNPC_Cremator::OnTakeDamage_Alive(const CTakeDamageInfo &info)
 {
 	if (info.GetAttacker())
 	{
-		if (info.GetAttacker()->IsPlayer())
+		if (info.GetAttacker()->IsPlayer() && !(info.GetAttacker()->GetFlags() & FL_NOTARGET))
 		{
 			m_bIsPlayerEnemy = true;
 			m_bPlayAngrySound = true;
@@ -457,10 +467,12 @@ void CNPC_Cremator::HandleAnimEvent(animevent_t *pEvent)
 	break;
 	case CREMATOR_AE_SPECIAL_MIDDLE:
 	{
+		/*
 		if (pCorpse && pCorpse != NULL) // double, triple, quadruple check!
 		{
-			IncinerateCorpse(pCorpse); // start the corpse burn
+		IncinerateCorpse(pCorpse); // start the corpse burn
 		}
+		*/
 	}
 	break;
 	case CREMATOR_AE_SPECIAL_END:
@@ -518,6 +530,10 @@ Vector CNPC_Cremator::RightFootHit(float eventtime)
 	FootstepEffect(footPosition);
 	return footPosition;
 }
+float CNPC_Cremator::GetSequenceGroundSpeed(CStudioHdr *pStudioHdr, int iSequence)
+{
+	return (BaseClass::GetSequenceGroundSpeed(pStudioHdr, iSequence) * m_flSpeedScale);
+}
 void CNPC_Cremator::FootstepEffect(const Vector &origin)
 {
 	trace_t tr;
@@ -566,7 +582,7 @@ void CNPC_Cremator::DispatchSpray(CBaseEntity *pEntity)
 
 	if (pEntity != NULL && m_takedamage)
 	{
-		CTakeDamageInfo firedamage(this, this, sk_cremator_firedamage.GetFloat(), DMG_DISSOLVE);
+		CTakeDamageInfo firedamage(this, this, sk_cremator_firedamage.GetFloat(), DMG_BURN);
 		CTakeDamageInfo radiusdamage(this, this, sk_cremator_radiusdamage.GetFloat(), DMG_PLASMA);
 		CalculateMeleeDamageForce(&firedamage, vecAim, tr.endpos);
 		RadiusDamage(CTakeDamageInfo(this, this, 2, DMG_PLASMA), // AOE; this makes cremators absurdly powerfull sometimes btw
@@ -595,95 +611,105 @@ void CNPC_Cremator::DispatchSpray(CBaseEntity *pEntity)
 #endif
 	m_iAmmo--;
 }
+/*
 void CNPC_Cremator::RunAI(void)
 {
-	if (!HasCondition(COND_CREMATOR_FOUND_CORPSE))
-		SearchForCorpses(); // FIXME: is it the best place for it?
-	//currently some crashes with this function.
-	/*
-	if (IsCurSchedule(SCHED_CREMATOR_INVESTIGATE_CORPSE) && pCorpse->WorldSpaceCenter().DistToSqr(WorldSpaceCenter()) <= 128 * 128)
-	{
-	GetNavigator()->StopMoving();
-	}
-	*/
-	BaseClass::RunAI();
+//if (!HasCondition(COND_CREMATOR_FOUND_CORPSE))
+//SearchForCorpses(); // FIXME: is it the best place for it?
+//currently some crashes with this function.
+
+if (IsCurSchedule(SCHED_CREMATOR_INVESTIGATE_CORPSE) && pCorpse->WorldSpaceCenter().DistToSqr(WorldSpaceCenter()) <= 128 * 128)
+{
+GetNavigator()->StopMoving();
 }
+
+BaseClass::RunAI();
+}
+
 void CNPC_Cremator::StartTask(const Task_t *pTask)
 {
-	switch (pTask->iTask)
-	{
-	case TASK_CREMATOR_INVESTIGATE_CORPSE:
-	{
-		DevMsg("Cremator is investigating a corpse he saw\n");
+switch (pTask->iTask)
+{
+case TASK_CREMATOR_INVESTIGATE_CORPSE:
+{
+DevMsg("Cremator is investigating a corpse he saw\n");
 
-		AssertMsg(pCorpse != NULL, "The corpse the cremator was after, it's gone!\n");
+AssertMsg(pCorpse != NULL, "The corpse the cremator was after, it's gone!\n");
 
-		if (pCorpse != NULL)
-		{
-			GetNavigator()->SetGoal(pCorpse->WorldSpaceCenter());
+if (pCorpse != NULL)
+{
+GetNavigator()->SetGoal(pCorpse->WorldSpaceCenter());
 
-			if (IsUnreachable(pCorpse))
-			{
-				DevMsg("The corpse is unreachable, marked as such\n");
-				pCorpse->SetOwnerEntity(this);	//HACKHACK: set the owner to prevent this unreachable corpse from being detected again. 
-				//TODO: find a better solution. How to do it other than implementing a new EFlag?
+if (IsUnreachable(pCorpse))
+{
+DevMsg("The corpse is unreachable, marked as such\n");
+pCorpse->SetOwnerEntity(this);	//HACKHACK: set the owner to prevent this unreachable corpse from being detected again.
+//TODO: find a better solution. How to do it other than implementing a new EFlag?
 
-				pCorpse = NULL;						//forget about this corpse.
-				ClearCondition(COND_CREMATOR_FOUND_CORPSE);
-				TaskFail(FAIL_NO_ROUTE);
-			}
-			TaskComplete();
-		}
-		break;
-	}
-	case TASK_CREMATOR_BURN_CORPSE:
-	{
-		if (!pCorpse)
-		{
-			TaskFail(FAIL_NO_TARGET);
-			ClearCondition(COND_CREMATOR_FOUND_CORPSE);
-			DevMsg("The corpse has been dealt with.\n");
-		}
-		else
-		{
-			GetMotor()->SetIdealYawToTarget(pCorpse->GetAbsOrigin(), 0, 0);
-			SetActivity(ACT_FIRESPREAD);
-
-			// IncinerateCorpse( pCorpse ); // Moved to HandleAnimEvent( ... )
-
-			// TODO: Handle multiple corpses in a pile at once
-		}
-		break;
-	}
-	default:
-		BaseClass::StartTask(pTask);
-		break;
-	}
+pCorpse = NULL;						//forget about this corpse.
+ClearCondition(COND_CREMATOR_FOUND_CORPSE);
+TaskFail(FAIL_NO_ROUTE);
 }
+TaskComplete();
+}
+break;
+}
+
+case TASK_CREMATOR_BURN_CORPSE:
+{
+if (!pCorpse)
+{
+TaskFail(FAIL_NO_TARGET);
+ClearCondition(COND_CREMATOR_FOUND_CORPSE);
+DevMsg("The corpse has been dealt with.\n");
+}
+else
+{
+GetMotor()->SetIdealYawToTarget(pCorpse->GetAbsOrigin(), 0, 0);
+SetActivity(ACT_FIRESPREAD);
+
+// IncinerateCorpse( pCorpse ); // Moved to HandleAnimEvent( ... )
+
+// TODO: Handle multiple corpses in a pile at once
+}
+break;
+}
+default:
+BaseClass::StartTask(pTask);
+break;
+}
+}
+*/
 void CNPC_Cremator::RunTask(const Task_t *pTask)
 {
 	switch (pTask->iTask)
 	{
-	case TASK_CREMATOR_INVESTIGATE_CORPSE: // FIXME: that never runs!
-	{
-		Msg("Running TASK_CREMATOR_INVESTIGATE_CORPSE\n");
-		if (WorldSpaceCenter().DistToSqr(pCorpse->WorldSpaceCenter()) <= pTask->flTaskData * pTask->flTaskData) // Stop when we're close enough to the corpse.
+		/*
+		case TASK_CREMATOR_INVESTIGATE_CORPSE: // FIXME: that never runs!
 		{
-			GetNavigator()->StopMoving();
-			DevMsg("Close enough to the corpse\n");
-			TaskComplete();
-		}
-		break;
-	}
-	case TASK_CREMATOR_BURN_CORPSE:
-	{
+		Msg("Running TASK_CREMATOR_INVESTIGATE_CORPSE\n");
+		//if (WorldSpaceCenter().DistToSqr(pCorpse->WorldSpaceCenter()) <= pTask->flTaskData * pTask->flTaskData) // Stop when we're close enough to the corpse.
+		//{
+		//GetNavigator()->StopMoving();
+		//DevMsg("Close enough to the corpse\n");
+		//TaskComplete();
+		//}
 		if (IsActivityFinished())
 		{
-			TaskComplete();
-			ClearCondition(COND_CREMATOR_FOUND_CORPSE);
+		TaskComplete();
 		}
 		break;
-	}
+		}
+		case TASK_CREMATOR_BURN_CORPSE:
+		{
+		if (IsActivityFinished())
+		{
+		TaskComplete();
+		ClearCondition(COND_CREMATOR_FOUND_CORPSE);
+		}
+		break;
+		}
+		*/
 	case TASK_CREMATOR_RANGE_ATTACK1:
 	{
 		Assert(GetEnemy() != NULL);
@@ -739,14 +765,16 @@ NPC_STATE CNPC_Cremator::SelectIdealState(void)
 		}
 		break;
 	}
+	/*
 	case NPC_STATE_IDLE:
 	{
-		if (HasCondition(COND_CREMATOR_FOUND_CORPSE))
-		{
-			return NPC_STATE_ALERT;
-		}
-		break;
+	if (HasCondition(COND_CREMATOR_FOUND_CORPSE))
+	{
+	return NPC_STATE_ALERT;
 	}
+	break;
+	}
+	*/
 	}
 	return BaseClass::SelectIdealState();
 }
@@ -764,6 +792,19 @@ Activity CNPC_Cremator::TranslateActivity(Activity activity)
 
 	return activity;
 }
+
+Activity CNPC_Cremator::NPC_TranslateActivity(Activity activity)
+{
+	float fiftyprecent = 0.5 * sk_cremator_health.GetInt();
+	
+	if ((activity == ACT_WALK || activity == ACT_RUN) && (GetHealth() < fiftyprecent))
+	{
+		return ACT_WALK_HURT;
+	}
+
+	return activity;
+}
+
 int CNPC_Cremator::TranslateSchedule(int scheduleType)
 {
 	switch (scheduleType)
@@ -792,6 +833,16 @@ int CNPC_Cremator::SelectSchedule(void)
 	{
 	case NPC_STATE_IDLE:
 	{
+		float fiftyprecent = 0.5 * sk_cremator_health.GetInt();
+		if (GetHealth() < fiftyprecent)
+		{
+			m_flSpeedScale = 0.5;
+		}
+		else
+		{
+			m_flSpeedScale = 1;
+		}
+
 		if (!HasSpawnFlags(SF_CREMATOR_NO_PATROL_BEHAVIOUR))
 			return SCHED_CREMATOR_PATROL;
 		else
@@ -799,10 +850,22 @@ int CNPC_Cremator::SelectSchedule(void)
 	}
 	case NPC_STATE_ALERT:
 	{
+		/*
 		if (HasCondition(COND_CREMATOR_FOUND_CORPSE) && !HasCondition(COND_LIGHT_DAMAGE | COND_HEAVY_DAMAGE) && GetEnemy() == NULL)
 		{
-			return SCHED_CREMATOR_INVESTIGATE_CORPSE;
+		return SCHED_CREMATOR_INVESTIGATE_CORPSE;
 		}
+		*/
+		float fiftyprecent = 0.5 * sk_cremator_health.GetInt();
+		if (GetHealth() < fiftyprecent)
+		{
+			m_flSpeedScale = 0.5;
+		}
+		else
+		{
+			m_flSpeedScale = 1;
+		}
+
 		if (!HasSpawnFlags(SF_CREMATOR_NO_PATROL_BEHAVIOUR))
 			return SCHED_CREMATOR_PATROL;
 		else
@@ -816,6 +879,16 @@ int CNPC_Cremator::SelectSchedule(void)
 		}
 		else
 		{
+			float fiftyprecent = 0.5 * sk_cremator_health.GetInt();
+
+			if (GetHealth() < fiftyprecent)
+			{
+				m_flSpeedScale = 0.5 * sk_cremator_chase_speed.GetFloat();
+			}
+			else
+			{
+				m_flSpeedScale = sk_cremator_chase_speed.GetFloat();
+			}
 			return SCHED_CREMATOR_CHASE_ENEMY;
 		}
 #if 0
@@ -856,56 +929,74 @@ void CNPC_Cremator::PrescheduleThink(void)
 	}
 #endif
 
+	/*
 	switch (m_NPCState)
 	{
 	case NPC_STATE_ALERT:
 	{
-		if (HasCondition(COND_CREMATOR_FOUND_CORPSE))
-		{
-			if (HasCondition(COND_LIGHT_DAMAGE | COND_HEAVY_DAMAGE | COND_REPEATED_DAMAGE))
-			{
-				ClearCondition(COND_CREMATOR_FOUND_CORPSE); // stop caring about stinks if we've been hit
-			}
-		}
-		break;
+	if (HasCondition(COND_CREMATOR_FOUND_CORPSE))
+	{
+	if (HasCondition(COND_LIGHT_DAMAGE | COND_HEAVY_DAMAGE | COND_REPEATED_DAMAGE))
+	{
+	ClearCondition(COND_CREMATOR_FOUND_CORPSE); // stop caring about stinks if we've been hit
 	}
 	}
+	break;
+	}
+	}
+	*/
 }
 
-
+/*
 void CNPC_Cremator::SearchForCorpses(void)
 {
-	//	float flSearchRadius = CREMATOR_DETECT_CORPSE_RANGE;
+//	float flSearchRadius = CREMATOR_DETECT_CORPSE_RANGE;
 
-	// I had to do this by making the cremator look through entlist because OnListened() (stink) method is flawed. 
-	// Originally this search was done with gEntList.FindEntityByClassnameNearest( "prop_ragdoll", GetAbsOrigin(), flSearchRadius ).
-	// Naturally, a check for prop_ragdoll would return any prop_ragdoll and we know that it can include things like cars and matrasses...
-	// For now I don't see a better way for it. Other than naming and/or flagging entities. I suppose I'll have to use scripted corpses after all.
+// I had to do this by making the cremator look through entlist because OnListened() (stink) method is flawed.
+// Originally this search was done with gEntList.FindEntityByClassnameNearest( "prop_ragdoll", GetAbsOrigin(), flSearchRadius ).
+// Naturally, a check for prop_ragdoll would return any prop_ragdoll and we know that it can include things like cars and matrasses...
+// For now I don't see a better way for it. Other than naming and/or flagging entities. I suppose I'll have to use scripted corpses after all.
 
-	// TODO: it's better to have the cremator search the names provided by a filter_name entity associated with it, akin to enemy filters.
-	CBaseEntity *pEnt = gEntList.FindEntityGenericWithin(this, "corpse", GetLocalOrigin(), sk_cremator_corpse_search_radius.GetFloat());
+// TODO: it's better to have the cremator search the names provided by a filter_name entity associated with it, akin to enemy filters.
+CBaseEntity *pEnt = gEntList.FindEntityGenericWithin(this, "corpse", GetLocalOrigin(), sk_cremator_corpse_search_radius.GetFloat());
 
-	//NDebugOverlay::Circle(GetLocalOrigin(), sk_cremator_corpse_search_radius.GetFloat(), 255, 255, 0, 150, true, 0.1f);
+//NDebugOverlay::Circle(GetLocalOrigin(), sk_cremator_corpse_search_radius.GetFloat(), 255, 255, 0, 150, true, 0.1f);
 
-	if (pEnt && pEnt->GetOwnerEntity() != this)
-	{
-		DevMsg("Cremator has found a corpse\n");
-		pCorpse = pEnt;
+if (pEnt && pEnt->GetOwnerEntity() != this)
+{
+DevMsg("Cremator has found a corpse\n");
+pCorpse = pEnt;
 
-		//NDebugOverlay::Sphere(pEnt->GetLocalOrigin(), 72.0f, 0, 255, 50, true, 3.0f);
+//NDebugOverlay::Sphere(pEnt->GetLocalOrigin(), 72.0f, 0, 255, 50, true, 3.0f);
 
-		SetCondition(COND_CREMATOR_FOUND_CORPSE);
-	}
+SetCondition(COND_CREMATOR_FOUND_CORPSE);
+}
 }
 void CNPC_Cremator::IncinerateCorpse(CBaseEntity *pTarget)
 {
-	if (pTarget)
-	{
-		SetEffectEntity(NULL);
-		pTarget->GetBaseAnimating()->Dissolve("", gpGlobals->curtime, false, ENTITY_DISSOLVE_NORMAL);
-		DevMsg("This corpse has been handled. Moving on\n");
-	}
+if (pTarget)
+{
+CEntityFlame *pFlame = CEntityFlame::Create(this);
+
+if (pFlame)
+{
+SetEffectEntity(NULL);
+pFlame->SetAbsOrigin(pTarget->GetAbsOrigin());
+pFlame->AttachToEntity(pTarget);
+pFlame->AddEFlags(EFL_FORCE_CHECK_TRANSMIT);
+pFlame->AddEffects(EF_BRIGHTLIGHT); // create light from the fire
+pFlame->SetLifetime(20.0); // burn for 20 seconds
+
+pTarget->AddFlag(FL_ONFIRE);
+pTarget->SetEffectEntity(pFlame);
+pTarget->SetRenderColor(50, 50, 50);
+
+pTarget->SetOwnerEntity(this); // HACKHACK - we're marking this corpse so that it won't be picked again in the future.
+DevMsg("This corpse has been handled. Moving on\n");
 }
+}
+}
+*/
 
 AI_BEGIN_CUSTOM_NPC(npc_cremator, CNPC_Cremator)
 
@@ -916,12 +1007,12 @@ DECLARE_ACTIVITY(ACT_CREMATOR_RELOAD)
 
 DECLARE_CONDITION(COND_CREMATOR_OUT_OF_AMMO)
 DECLARE_CONDITION(COND_CREMATOR_ENEMY_WITH_HIGHER_PRIORITY)
-DECLARE_CONDITION(COND_CREMATOR_FOUND_CORPSE)
+//DECLARE_CONDITION(COND_CREMATOR_FOUND_CORPSE)
 
 DECLARE_TASK(TASK_CREMATOR_RANGE_ATTACK1)
 DECLARE_TASK(TASK_CREMATOR_RELOAD)
-DECLARE_TASK(TASK_CREMATOR_INVESTIGATE_CORPSE)
-DECLARE_TASK(TASK_CREMATOR_BURN_CORPSE)
+//DECLARE_TASK(TASK_CREMATOR_INVESTIGATE_CORPSE)
+//DECLARE_TASK(TASK_CREMATOR_BURN_CORPSE)
 
 DEFINE_SCHEDULE(
 	SCHED_CREMATOR_CHASE_ENEMY,
@@ -973,6 +1064,7 @@ DEFINE_SCHEDULE(
 	"	COND_LIGHT_DAMAGE"
 	"	COND_HEAVY_DAMAGE"
 	)
+	/*
 	DEFINE_SCHEDULE(
 	SCHED_CREMATOR_INVESTIGATE_CORPSE, // we're here because we have COND_CREMATOR_FOUND_CORPSE.
 	"	Tasks"
@@ -992,4 +1084,5 @@ DEFINE_SCHEDULE(
 	"	COND_LIGHT_DAMAGE"
 	"	COND_HEAVY_DAMAGE"
 	)
+	*/
 	AI_END_CUSTOM_NPC()

@@ -1186,7 +1186,7 @@ void CBasePlayer::Reward_GivePerk(void)
 
 void CBasePlayer::Reward_GiveItem(void)
 {
-	int randomitemdrop = random->RandomInt(0, 35);
+	int randomitemdrop = random->RandomInt(0, 33);
 	if (randomitemdrop == FIREFIGHT_ITEMREWARD_HEALTHKIT)
 	{
 		AddHealth(25);
@@ -2143,46 +2143,6 @@ void CBasePlayer::Reward_GiveItem(void)
 			}
 		}
 	}
-	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_WEAPON_EGON)
-	{
-		if (!Weapon_OwnsThisType("weapon_egon"))
-		{
-			GiveNamedItem("weapon_egon");
-			CFmtStr hint;
-			hint.sprintf("#Valve_Hud_Reward_Weapon_Egon");
-			ShowPerkMessage(hint.Access());
-		}
-		else
-		{
-			int randalt = random->RandomInt(0, 3);
-			if (randalt == 0)
-			{
-				GiveNamedItem("item_ammo_egon");
-				GiveNamedItem("item_ammo_egon");
-				CFmtStr hint;
-				hint.sprintf("#Valve_Hud_Reward_EgonAmmo");
-				ShowPerkMessage(hint.Access());
-			}
-			else if (randalt == 1)
-			{
-				AddHealth(25);
-				CFmtStr hint;
-				hint.sprintf("#Valve_Hud_Reward_Healthkit");
-				ShowPerkMessage(hint.Access());
-			}
-			else if (randalt == 2)
-			{
-				IncrementArmorValue(30, GetMaxArmorValue());
-				CFmtStr hint;
-				hint.sprintf("#Valve_Hud_Reward_Battery");
-				ShowPerkMessage(hint.Access());
-			}
-			else if (randalt == 3)
-			{
-				Reward_GivePerk();
-			}
-		}
-	}
 	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_AMMO_GAUSS)
 	{
 		if (Weapon_OwnsThisType("weapon_gauss"))
@@ -2191,39 +2151,6 @@ void CBasePlayer::Reward_GiveItem(void)
 			GiveNamedItem("item_ammo_gauss");
 			CFmtStr hint;
 			hint.sprintf("#Valve_Hud_Reward_GaussAmmo");
-			ShowPerkMessage(hint.Access());
-		}
-		else
-		{
-			int randalt = random->RandomInt(0, 2);
-			if (randalt == 0)
-			{
-				AddHealth(25);
-				CFmtStr hint;
-				hint.sprintf("#Valve_Hud_Reward_Healthkit");
-				ShowPerkMessage(hint.Access());
-			}
-			else if (randalt == 1)
-			{
-				IncrementArmorValue(30, GetMaxArmorValue());
-				CFmtStr hint;
-				hint.sprintf("#Valve_Hud_Reward_Battery");
-				ShowPerkMessage(hint.Access());
-			}
-			else if (randalt == 2)
-			{
-				Reward_GivePerk();
-			}
-		}
-	}
-	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_AMMO_EGON)
-	{
-		if (Weapon_OwnsThisType("weapon_egon"))
-		{
-			GiveNamedItem("item_ammo_egon");
-			GiveNamedItem("item_ammo_egon");
-			CFmtStr hint;
-			hint.sprintf("#Valve_Hud_Reward_Weapon_Egon");
 			ShowPerkMessage(hint.Access());
 		}
 		else
@@ -7496,9 +7423,15 @@ CBaseEntity	*CBasePlayer::GiveNamedItem( const char *pszName, int iSubType )
 	pent->SetLocalOrigin( GetLocalOrigin() );
 	pent->AddSpawnFlags( SF_NORESPAWN );
 
-	CBaseCombatWeapon *pWeapon = dynamic_cast<CBaseCombatWeapon*>( (CBaseEntity*)pent );
+	CBaseCombatWeapon *pWeapon = dynamic_cast<CBaseCombatWeapon*>((CBaseEntity*)pent);
+	CBaseCombatWeapon *pActiveWeapon = GetActiveWeapon();
+
 	if ( pWeapon )
 	{
+		if (pActiveWeapon)
+		{
+			pActiveWeapon->Holster();
+		}
 		pWeapon->SetSubType( iSubType );
 	}
 
@@ -7978,7 +7911,6 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveAmmo(999, "OICW");
 		GiveAmmo(999, "OICW_Grenade");
 		GiveAmmo(999, "FlareRound");
-		GiveAmmo(999, "EgonEnergy");
 		GiveAmmo(999, "GaussEnergy");
 		GiveAmmo(999, "MP5Ammo");
 //#ifdef HL2_EPISODIC
@@ -8002,7 +7934,6 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveNamedItem("weapon_oicw");
 		GiveNamedItem("weapon_flaregun");
 		GiveNamedItem("weapon_knife");
-		GiveNamedItem("weapon_egon");
 		GiveNamedItem("weapon_gauss");
 		GiveNamedItem("weapon_mp5");
 		GiveNamedItem("weapon_grapple");
