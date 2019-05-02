@@ -582,10 +582,10 @@ void CNPC_Cremator::DispatchSpray(CBaseEntity *pEntity)
 
 	if (pEntity != NULL && m_takedamage)
 	{
-		CTakeDamageInfo firedamage(this, this, sk_cremator_firedamage.GetFloat(), DMG_BURN);
-		CTakeDamageInfo radiusdamage(this, this, sk_cremator_radiusdamage.GetFloat(), DMG_PLASMA);
+		CTakeDamageInfo firedamage(this, this, sk_cremator_firedamage.GetFloat(), DMG_DISSOLVE | DMG_PLASMA);
+		CTakeDamageInfo radiusdamage(this, this, sk_cremator_radiusdamage.GetFloat(), DMG_DISSOLVE | DMG_PLASMA);
 		CalculateMeleeDamageForce(&firedamage, vecAim, tr.endpos);
-		RadiusDamage(CTakeDamageInfo(this, this, 2, DMG_PLASMA), // AOE; this makes cremators absurdly powerfull sometimes btw
+		RadiusDamage(radiusdamage, // AOE; this makes cremators absurdly powerfull sometimes btw
 			tr.endpos,
 			64.0f,
 			CLASS_NONE,

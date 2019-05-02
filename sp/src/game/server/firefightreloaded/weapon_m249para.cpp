@@ -34,6 +34,9 @@ public:
 
 	float	WeaponAutoAimScale()	{ return 0.6f; }
 
+	void AddViewKick(void);
+	void DoMachineGunKick(CBasePlayer *pPlayer, float dampEasy, float maxVerticleKickAngle, float fireDurationTime, float slideLimitTime);
+
 	virtual const Vector& GetBulletSpread( void )
 	{
 		static const Vector cone = VECTOR_CONE_7DEGREES;
@@ -219,13 +222,7 @@ void CWeaponM249Para::PrimaryAttack(void)
 
 	pPlayer->SetMuzzleFlashTime(gpGlobals->curtime + 0.5);
 
-	QAngle vecScratch;
-
-	vecScratch.x = random->RandomInt(0, 1);
-	vecScratch.y = random->RandomInt(0, 1);
-	vecScratch.z = 0;
-
-	pPlayer->ViewPunch(vecScratch);
+	AddViewKick();
 
 	CSoundEnt::InsertSound(SOUND_COMBAT, GetAbsOrigin(), 600, 0.2, GetOwner());
 
@@ -234,4 +231,64 @@ void CWeaponM249Para::PrimaryAttack(void)
 		// HEV suit - indicate out of ammo condition
 		pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 	}
+}
+
+void CWeaponM249Para::AddViewKick(void)
+{
+#define	EASY_DAMPEN			0.5f
+#define	MAX_VERTICAL_KICK	12.0f	//Degrees
+#define	SLIDE_LIMIT			3.0f	//Seconds
+
+	//Get the view kick
+	CBasePlayer *pPlayer = ToBasePlayer(GetOwner());
+
+	if (pPlayer == NULL)
+		return;
+
+	DoMachineGunKick(pPlayer, EASY_DAMPEN, MAX_VERTICAL_KICK, m_fFireDuration, SLIDE_LIMIT);
+}
+
+void CWeaponM249Para::DoMachineGunKick(CBasePlayer *pPlayer, float dampEasy, float maxVerticleKickAngle, float fireDurationTime, float slideLimitTime)
+{
+#define	KICK_MIN_X			0.2f	//Degrees
+#define	KICK_MIN_Y			0.2f	//Degrees
+#define	KICK_MIN_Z			0.1f	//Degrees
+
+	QAngle vecScratch;
+
+	//Find how far into our accuracy degradation we are
+	float duration = (fireDurationTime > slideLimitTime) ? slideLimitTime : fireDurationTime;
+	float kickPerc = duration / slideLimitTime;
+
+	// do this to get a hard discontinuity, clear out anything under 10 degrees punch
+	pPlayer->ViewPunchReset(10);
+
+	//Apply this to the view angles as well
+	vecScratch.x = -(KICK_MIN_X + (maxVerticleKickAngle * kickPerc));
+	vecScratch.y = -(KICK_MIN_Y + (maxVerticleKickAngle * kickPerc)) / 3;
+	vecScratch.z = KICK_MIN_Z + (maxVerticleKickAngle * kickPerc) / 8;
+
+	//Wibble left and right
+	if (random->RandomInt(-1, 1) >= 0)
+		vecScratch.y *= -1;
+
+	//Wobble up and down
+	if (random->RandomInt(-1, 1) >= 0)
+		vecScratch.z *= -1;
+
+	//If we're in easy, dampen the effect a bit
+	if (g_pGameRules->IsSkillLevel(SKILL_EASY))
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			vecScratch[i] *= dampEasy;
+		}
+	}
+
+	//Clip this to our desired min/max
+	UTIL_ClipPunchAngleOffset(vecScratch, pPlayer->m_Local.m_vecPunchAngle, QAngle(24.0f, 3.0f, 1.0f));
+
+	//Add it to the view punch
+	// NOTE: 0.5 is just tuned to match the old effect before the punch became simulated
+	pPlayer->ViewPunch(vecScratch * 0.5);
 }

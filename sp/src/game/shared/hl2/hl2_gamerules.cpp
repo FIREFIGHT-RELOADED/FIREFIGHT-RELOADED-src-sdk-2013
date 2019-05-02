@@ -1722,7 +1722,7 @@ CAmmoDef *GetAmmoDef()
 		def.AddAmmoType("Grenade",			DMG_BURN | DMG_ALWAYSGIB, TRACER_NONE, "sk_plr_dmg_grenade", "sk_npc_dmg_grenade", "sk_max_grenade", 0, 0);
 		def.AddAmmoType("Sniper",			DMG_BULLET | DMG_SNIPER, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_sniper", "sk_npc_dmg_sniper", "sk_max_sniper", BULLET_IMPULSE(800, 5000), 0);
 		def.AddAmmoType("Deagle",			DMG_BULLET | DMG_SNIPER, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_deagle", "sk_npc_dmg_deagle", "sk_max_deagle", BULLET_IMPULSE(800, 5000), 0);
-		def.AddAmmoType("M249",				DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_m249para", "sk_npc_dmg_m249para", "sk_max_m249para", BULLET_IMPULSE(200, 1225), 0);
+		def.AddAmmoType("M249",				DMG_BULLET | DMG_SNIPER, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_m249para", "sk_npc_dmg_m249para", "sk_max_m249para", BULLET_IMPULSE(200, 1225), 0);
 		def.AddAmmoType("slam",				DMG_BURN | DMG_ALWAYSGIB, TRACER_NONE, "sk_plr_dmg_slam", "sk_npc_dmg_slam", "sk_max_slam", 0, 0);
 		def.AddAmmoType("OICW",				DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_oicw", "sk_npc_dmg_oicw", "sk_max_oicw", BULLET_IMPULSE(200, 1225), 0);
 		def.AddAmmoType("OICW_Grenade",		DMG_BURN | DMG_ALWAYSGIB, TRACER_NONE, "sk_plr_dmg_oicw_grenade", "sk_npc_dmg_oicw_grenade", "sk_max_oicw_grenade", 0, 0);

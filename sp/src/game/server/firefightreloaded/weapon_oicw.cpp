@@ -369,8 +369,8 @@ AddViewKick
 void CWeaponOICW::AddViewKick(void)
 {
 #define	EASY_DAMPEN			0.5f
-#define	MAX_VERTICAL_KICK	24.0f	//Degrees
-#define	SLIDE_LIMIT			3.0f	//Seconds
+#define	MAX_VERTICAL_KICK	2.5f	//Degrees
+#define	SLIDE_LIMIT			2.0f	//Seconds
 
 	//Get the view kick
 	CBasePlayer *pPlayer = ToBasePlayer(GetOwner());
