@@ -588,51 +588,6 @@ void CNPC_Houndeye::WriteBeamColor ( void )
 	WRITE_BYTE( bBlue  );
 }
 
-//-----------------------------------------------------------------------------
-// Purpose: Plays the engine sound.
-//-----------------------------------------------------------------------------
-void CNPC_Houndeye::NPCThink(void)
-{
-	// -----------------------------------------------------
-	//  Update collision group
-	//		While I'm running I'm allowed to penetrate
-	//		other houndeyes
-	// -----------------------------------------------------
-	Vector vVelocity;
-	GetVelocity( &vVelocity, NULL );
-	if (vVelocity.Length() > 10)
-	{
-		SetCollisionGroup( HL2COLLISION_GROUP_HOUNDEYE );
-	}
-	else 
-	{
-		// Don't go solid if resting in another houndeye 
-		trace_t tr;
-		AI_TraceHull( GetAbsOrigin(), GetAbsOrigin() + Vector(0,0,1), 
-						GetHullMins(), GetHullMaxs(),
-						MASK_NPCSOLID, this, COLLISION_GROUP_NONE, &tr );
-		if (!tr.startsolid)
-		{
-			SetCollisionGroup( COLLISION_GROUP_NONE );
-		}
-		else
-		{
-			SetCollisionGroup( HL2COLLISION_GROUP_HOUNDEYE );
-		}
-	}
-/*
-	if (GetCollisionGroup() == HL2COLLISION_GROUP_HOUNDEYE)
-	{
-		NDebugOverlay::Box(GetAbsOrigin(), GetHullMins(), GetHullMaxs(), 0, 255, 0, 0, 0);
-	}
-	else
-	{
-		NDebugOverlay::Box(GetAbsOrigin(), GetHullMins(), GetHullMaxs(), 255, 0, 0, 0, 0);
-	}
-*/
-	BaseClass::NPCThink();
-}
-
 //------------------------------------------------------------------------------
 // Purpose : Broadcast retreat occasionally when hurt
 // Input   :

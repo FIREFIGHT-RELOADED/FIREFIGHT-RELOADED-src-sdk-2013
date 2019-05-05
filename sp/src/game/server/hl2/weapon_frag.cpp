@@ -43,6 +43,7 @@ public:
 	void	Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
 	void	PrimaryAttack( void );
 	void	SecondaryAttack( void );
+	void	GrenadeAttack(void);
 	void	DecrementAmmo( CBaseCombatCharacter *pOwner );
 	void	ItemPostFrame( void );
 
@@ -307,6 +308,32 @@ void CWeaponFrag::PrimaryAttack( void )
 	}
 }
 
+void CWeaponFrag::GrenadeAttack(void)
+{
+	if (m_bRedraw)
+		return;
+
+	CBaseCombatCharacter *pOwner = GetOwner();
+
+	if (pOwner == NULL)
+	{
+		return;
+	}
+
+	CBasePlayer *pPlayer = ToBasePlayer(GetOwner());;
+
+	if (!pPlayer)
+		return;
+
+	SendWeaponAnim(ACT_VM_THROW);
+
+	// If I'm now out of ammo, switch away
+	if (!HasPrimaryAmmo())
+	{
+		pPlayer->SwitchToNextBestWeapon(this);
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : *pOwner - 
@@ -321,16 +348,21 @@ void CWeaponFrag::DecrementAmmo( CBaseCombatCharacter *pOwner )
 //-----------------------------------------------------------------------------
 void CWeaponFrag::ItemPostFrame( void )
 {
+	CBasePlayer *pOwner = ToBasePlayer(GetOwner());
+	
+	if (pOwner && (pOwner->m_afButtonPressed & IN_GRENADE1))
+	{
+		ThrowGrenade(pOwner);
+	}
+
 	if( m_fDrawbackFinished )
 	{
-		CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
-
 		if (pOwner)
 		{
 			switch( m_AttackPaused )
 			{
 			case GRENADE_PAUSED_PRIMARY:
-				if( !(pOwner->m_nButtons & IN_ATTACK) )
+				if (!(pOwner->m_nButtons & IN_ATTACK))
 				{
 					SendWeaponAnim( ACT_VM_THROW );
 					m_fDrawbackFinished = false;

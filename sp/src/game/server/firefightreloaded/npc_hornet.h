@@ -38,13 +38,15 @@ public:
 	Disposition_t		IRelationType(CBaseEntity *pTarget);
 
 	void DieTouch ( CBaseEntity *pOther );
+	void Die(void);
 	void DartTouch( CBaseEntity *pOther );
 	void TrackTouch ( CBaseEntity *pOther );
 	void TrackTarget ( void );
 	void StartDart ( void );
 	void IgniteTrail( void );
 	void StartTrack(void);
-
+	void Event_Killed(const CTakeDamageInfo &info);
+	bool CanBecomeRagdoll(void) { return false; }
 
 	virtual unsigned int PhysicsSolidMaskForEntity( void ) const;
 	virtual bool ShouldGib( const CTakeDamageInfo &info ) { return false; }

@@ -160,24 +160,35 @@ void CNPC_Hornet::DieTouch ( CBaseEntity *pOther )
 	{
 		return;
 	}
-
-	CPASAttenuationFilter filter( this );
-	EmitSound( filter, entindex(), "Hornet.Die" );
 			
 	CTakeDamageInfo info( this, GetOwnerEntity(), m_flDamage, DMG_BULLET );
 	CalculateBulletDamageForce( &info, GetAmmoDef()->Index("Hornet"), GetAbsVelocity(), GetAbsOrigin() );
 	pOther->TakeDamage( info );
 
-	m_takedamage	= DAMAGE_NO;
-
-	AddEffects( EF_NODRAW );
-
-	AddSolidFlags( FSOLID_NOT_SOLID );// intangible
-
-	UTIL_Remove( this );
-	SetTouch( NULL );
+	Die();
 }
 
+void CNPC_Hornet::Die()
+{
+	CPASAttenuationFilter filter(this);
+	EmitSound(filter, entindex(), "Hornet.Die");
+
+	m_takedamage = DAMAGE_NO;
+
+	AddEffects(EF_NODRAW);
+
+	AddSolidFlags(FSOLID_NOT_SOLID);// intangible
+
+	UTIL_Remove(this);
+	SetTouch(NULL);
+}
+
+void CNPC_Hornet::Event_Killed(const CTakeDamageInfo &info)
+{
+	Die();
+
+	BaseClass::Event_Killed(info);
+}
 
 //=========================================================
 // StartTrack - starts a hornet out tracking its target

@@ -178,9 +178,11 @@ void respawn( CBaseEntity *pEdict, bool fCopyCorpse )
 	{
 		if (sv_player_hardcoremode.GetBool() && !g_pGameRules->IsMultiplayer())
 		{
-			engine->ServerCommand("reload\n");
+			char szMapCommand[1024];
+			// create the command to execute
+			Q_snprintf(szMapCommand, sizeof(szMapCommand), "map credits\nprogress_enable\n");
+			engine->ServerCommand(szMapCommand);
 		}
-		/*
 		else if (pPlayer->GetLevel() == MAX_LEVEL && !g_pGameRules->IsMultiplayer())
 		{
 			char szMapCommand[1024];
@@ -188,7 +190,6 @@ void respawn( CBaseEntity *pEdict, bool fCopyCorpse )
 			Q_snprintf(szMapCommand, sizeof(szMapCommand), "map credits\nprogress_enable\n");
 			engine->ServerCommand(szMapCommand);
 		}
-		*/
 		else
 		{
 			pPlayer->Spawn();

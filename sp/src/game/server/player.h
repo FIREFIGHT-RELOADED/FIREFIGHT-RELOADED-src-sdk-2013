@@ -707,6 +707,7 @@ public:
 	void	IncrementArmorValueNoMax(int nCount);
 	void	IncrementMaxHealthValue(int nCount);
 	void	IncrementMaxHealthRegenValue(int nCount);
+	virtual int	GetMaxMaxHealthRegenValue(void) { return m_MaxHealthVal; }
 	void	IncrementHealthValue(int nCount);
 
 	void	SetConnected( PlayerConnectedState iConnected ) { m_iConnected = iConnected; }
@@ -923,6 +924,7 @@ public:
 	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_nWaterLevel );
 
 	float					m_fTimeLastHurt;
+	float					m_fTimeLastHealed;
 	int						m_nButtons;
 	int						m_afButtonPressed;
 	int						m_afButtonReleased;

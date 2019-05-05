@@ -48,7 +48,6 @@ public:
 	Activity		NPC_TranslateActivity( Activity eNewActivity );
 	virtual int		SelectSchedule( void );
 	bool			HandleInteraction(int interactionType, void *data, CBaseCombatCharacter* sourceEnt);
-	void			NPCThink(void);
 	int				OnTakeDamage_Alive( const CTakeDamageInfo &info );
 	void			Event_Killed( const CTakeDamageInfo &info );
 	bool			IsAnyoneInSquadAttacking( void );

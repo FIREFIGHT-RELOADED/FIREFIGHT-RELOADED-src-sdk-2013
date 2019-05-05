@@ -372,14 +372,20 @@ void CC_PlayerLevel(const CCommand &args)
 
 	if (pPlayer)
 	{
-		if (LevelNum != MAX_LEVEL)
+		if (LevelNum < 1)
+		{
+			Warning("This value is below the minimum level!\n");
+			return;
+		}
+		
+		if (LevelNum <= MAX_LEVEL)
 		{
 			pPlayer->SetLevel(LevelNum);
 			pPlayer->CheckLevel();
 		}
 		else
 		{
-			Warning("You are already at the maximum level possible!\n");
+			Warning("This value is above the maximum level!\n");
 		}
 	}
 	else
@@ -497,6 +503,7 @@ BEGIN_DATADESC( CBasePlayer )
 	DEFINE_FIELD( m_lastDamageAmount, FIELD_INTEGER ),
 	DEFINE_FIELD( m_tbdPrev, FIELD_TIME ),
 	DEFINE_FIELD(m_fTimeLastHurt, FIELD_TIME),
+	DEFINE_FIELD(m_fTimeLastHealed, FIELD_TIME),
 	DEFINE_FIELD( m_flStepSoundTime, FIELD_FLOAT ),
 	DEFINE_ARRAY( m_szNetname, FIELD_CHARACTER, MAX_PLAYER_NAME_LENGTH ),
 
@@ -2968,9 +2975,14 @@ int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 		OnDamagedByExplosion( info );
 	}
 
-	if (GetHealth() < GetMaxHealth())
+	if (GetHealth() < m_MaxHealthVal)
 	{
 		m_fTimeLastHurt = gpGlobals->curtime;
+	}
+
+	if (GetHealth() > m_MaxHealthVal)
+	{
+		m_fTimeLastHealed = gpGlobals->curtime;
 	}
 
 	if (sv_player_voice.GetBool())
@@ -3317,6 +3329,18 @@ void CBasePlayer::Event_Killed( const CTakeDamageInfo &info )
 	m_flDeathTime = gpGlobals->curtime;
 
 	ClearLastKnownArea();
+
+	if ((GetLevel() == MAX_LEVEL || sv_player_hardcoremode.GetBool()) && !g_pGameRules->IsMultiplayer())
+	{
+		color32 black = { 0, 0, 0, 255 };
+		UTIL_ScreenFade(this, black, 0.6, 9999, FFADE_OUT | FFADE_PURGE | FFADE_STAYOUT);
+	}
+	else
+	{
+		// Clear any screenfade
+		color32 nothing = { 0, 0, 0, 255 };
+		UTIL_ScreenFade(this, nothing, 0, 0, FFADE_IN | FFADE_PURGE);
+	}
 
 	BaseClass::Event_Killed( info );
 }
@@ -6206,7 +6230,6 @@ void CBasePlayer::PostThink()
 	if (IsAlive() && GetHealth() < m_MaxHealthVal && (sv_regeneration.GetInt() == 1))
 	{
 		// Color to overlay on the screen while the player is taking damage
-		color32 redDamage = { 128, 0, 0, 32 };
 
 		if (gpGlobals->curtime > m_fTimeLastHurt + sv_regeneration_wait_time.GetFloat())
 		{
@@ -6227,18 +6250,11 @@ void CBasePlayer::PostThink()
 				}
 			}
 		}
-		else
-		{
-			UTIL_ScreenFade(this, redDamage, 1.0f, 0.1f, FFADE_IN | FFADE_PURGE);
-		}
 	}
 
 	if (IsAlive() && GetHealth() > m_MaxHealthVal)
 	{
-		// Color to overlay on the screen while the player is taking damage
-		color32 redDamage = { 128, 0, 0, 32 };
-
-		if (gpGlobals->curtime > m_fTimeLastHurt + sv_decay_wait_time.GetFloat())
+		if (gpGlobals->curtime > m_fTimeLastHealed + sv_decay_wait_time.GetFloat())
 		{
 			m_fDecayRemander += sv_decay_rate.GetFloat() * gpGlobals->frametime;
 
@@ -6247,10 +6263,6 @@ void CBasePlayer::PostThink()
 				TakeHealth(-m_fDecayRemander, DMG_GENERIC);
 				m_fDecayRemander = 0;
 			}
-		}
-		else
-		{
-			UTIL_ScreenFade(this, redDamage, 1.0f, 0.1f, FFADE_IN | FFADE_PURGE);
 		}
 	}
 

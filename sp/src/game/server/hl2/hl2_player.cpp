@@ -1115,6 +1115,8 @@ void CHL2_Player::KickAttack(void)
 				}
 				else
 				{
+					int dmgtype = DMG_CLUB;
+
 					CBasePropDoor *pDoor = dynamic_cast<CBasePropDoor*>((CBaseEntity*)tr.m_pEnt);
 					if (pDoor)
 					{
@@ -1129,7 +1131,7 @@ void CHL2_Player::KickAttack(void)
 						pDoor->KickFail();
 						return;
 					}
-					CBaseEntity *pProp = this->CheckTraceHullAttack(Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), 5, DMG_CRUSH, KickThrowForceMult, false);
+					CBaseEntity *pProp = this->CheckTraceHullAttack(Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), 5, dmgtype, KickThrowForceMult, false);
 					if (pProp && !pProp->IsNPC())
 					{
 						IPhysicsObject *pPhysicsObject = pProp->VPhysicsGetObject();
@@ -1137,7 +1139,7 @@ void CHL2_Player::KickAttack(void)
 						{
 							return;
 						}
-						CTakeDamageInfo info(this, this, KickDamageProps, DMG_CRUSH);
+						CTakeDamageInfo info(this, this, KickDamageProps, dmgtype);
 						Vector hitDirection;
 						EyeVectors(&hitDirection, NULL, NULL);
 						VectorNormalize(hitDirection);
@@ -1155,7 +1157,7 @@ void CHL2_Player::KickAttack(void)
 						EmitSound("HL2Player.kick_wall");
 						return;
 					}
-					CBaseEntity *Victim = this->CheckTraceHullAttack(Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), KickDamageMult, DMG_CLUB, KickThrowForceMult, true);
+					CBaseEntity *Victim = this->CheckTraceHullAttack(Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), KickDamageMult, dmgtype, KickThrowForceMult, true);
 					if (Victim && Victim->IsNPC())
 					{
 						Vector hitDirection, up;
