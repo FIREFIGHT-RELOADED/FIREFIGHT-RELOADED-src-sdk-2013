@@ -14,6 +14,7 @@
 #include "IEffects.h"
 #include "engine/IEngineSound.h"
 #include "weapon_flaregun.h"
+#include "hl2_gamerules.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -38,6 +39,7 @@
 
  ********************************************************************/
 
+extern ConVar sk_plr_dmg_flare_round;
 
 #define	FLARE_LAUNCH_SPEED	1500
 
@@ -389,13 +391,7 @@ void CFlare::FlareTouch( CBaseEntity *pOther )
 	if ( pOther && pOther->m_takedamage )
 	{
 		//Damage is a function of how fast the flare is flying.
-		int iDamage = GetAbsVelocity().Length() / 50.0f;
-
-		if ( iDamage < 15 )
-		{
-			//Clamp minimum damage
-			iDamage = 15;
-		}
+		int iDamage = sk_plr_dmg_flare_round.GetInt();
 
 		//Use m_pOwner, not GetOwnerEntity()
 		pOther->TakeDamage( CTakeDamageInfo( this, m_pOwner, iDamage, (DMG_BULLET|DMG_BURN) ) );

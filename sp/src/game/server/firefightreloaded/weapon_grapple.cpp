@@ -19,6 +19,7 @@
 #include "SpriteTrail.h"
 #include "beam_shared.h"
 #include "explode.h"
+#include "ai_basenpc.h"
 
 #include "ammodef.h"		/* This is needed for the tracing done later */
 #include "gamestats.h" //
@@ -32,6 +33,8 @@
 
 #define BEAM_SPRITE "sprites/orangelight1.vmt"
 #define GLOW_SPRITE "sprites/orangeflare1.vmt"
+
+ConVar	sk_dmg_hook("sk_dmg_hook", "0");
  
 LINK_ENTITY_TO_CLASS( grapple_hook, CGrappleHook );
  
@@ -45,6 +48,7 @@ BEGIN_DATADESC( CGrappleHook )
 	DEFINE_FIELD( m_hOwner, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hBolt, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_bPlayerWasStanding, FIELD_BOOLEAN ),
+	DEFINE_FIELD(m_bHasDamagedNPC, FIELD_BOOLEAN),
  
 END_DATADESC()
  
@@ -140,100 +144,107 @@ void CGrappleHook::Precache( void )
 //-----------------------------------------------------------------------------
 void CGrappleHook::HookTouch( CBaseEntity *pOther )
 {
-	if ( !pOther->IsSolid() || pOther->IsSolidFlagSet(FSOLID_VOLUME_CONTENTS) )
+	if ( !pOther || !pOther->IsSolid() || pOther->IsSolidFlagSet(FSOLID_VOLUME_CONTENTS))
 		return;
  
-	if ( (pOther != m_hOwner) && (pOther->m_takedamage != DAMAGE_NO) )
-	{
-		m_hOwner->NotifyHookDied();
- 
-		SetTouch( NULL );
-		SetThink( NULL );
- 
-		UTIL_Remove( this );
-	}
-	else
-	{
-		trace_t	tr;
-		tr = BaseClass::GetTouchTrace();
- 
-		// See if we struck the world
-		if ( pOther->GetMoveType() == MOVETYPE_NONE && !( tr.surface.flags & SURF_SKY ) )
-		{
-			EmitSound( "Weapon_AR2.Reload_Push" );
- 
-			// if what we hit is static architecture, can stay around for a while.
-			Vector vecDir = GetAbsVelocity();
- 
-			//FIXME: We actually want to stick (with hierarchy) to what we've hit
-			SetMoveType( MOVETYPE_NONE );
- 
-			Vector vForward;
- 
-			AngleVectors( GetAbsAngles(), &vForward );
-			VectorNormalize ( vForward );
- 
-			CEffectData	data;
- 
-			data.m_vOrigin = tr.endpos;
-			data.m_vNormal = vForward;
-			data.m_nEntIndex = 0;
- 
-		//	DispatchEffect( "Impact", data );
- 
-		//	AddEffects( EF_NODRAW );
-			SetTouch( NULL );
+	trace_t	tr;
+	tr = BaseClass::GetTouchTrace();
 
-			VPhysicsDestroyObject();
-			VPhysicsInitNormal( SOLID_VPHYSICS, FSOLID_NOT_STANDABLE, false );
-			AddSolidFlags( FSOLID_NOT_SOLID );
-		//	SetMoveType( MOVETYPE_NONE );
- 
-			if ( !m_hPlayer )
+	// See if we struck the world
+	if (!(tr.surface.flags & SURF_SKY))
+	{
+		EmitSound("Weapon_AR2.Reload_Push");
+
+		// if what we hit is static architecture, can stay around for a while.
+		Vector vecDir = GetAbsVelocity();
+
+		//FIXME: We actually want to stick (with hierarchy) to what we've hit
+		SetMoveType(MOVETYPE_NONE);
+
+		Vector vForward;
+
+		AngleVectors(GetAbsAngles(), &vForward);
+		VectorNormalize(vForward);
+
+		CEffectData	data;
+
+		data.m_vOrigin = tr.endpos;
+		data.m_vNormal = vForward;
+		data.m_nEntIndex = 0;
+
+		if (pOther->m_takedamage && m_bHasDamagedNPC == false)
+		{
+			CAI_BaseNPC *pOtherNPC = (CAI_BaseNPC *)pOther;
+
+			if (!pOtherNPC)
 			{
-				Assert( 0 );
-				return;
+				m_bHasDamagedNPC = false;
 			}
- 
-			// Set Jay's gai flag
-			m_hPlayer->SetPhysicsFlag( PFLAG_VPHYSICS_MOTIONCONTROLLER, true );
- 
-			//IPhysicsObject *pPhysObject = m_hPlayer->VPhysicsGetObject();
-			IPhysicsObject *pRootPhysObject = VPhysicsGetObject();
-			Assert( pRootPhysObject );
-			Assert( pPhysObject );
- 
-			pRootPhysObject->EnableMotion( false );
- 
-			// Root has huge mass, tip has little
-			pRootPhysObject->SetMass( VPHYSICS_MAX_MASS );
-		//	pPhysObject->SetMass( 100 );
-		//	float damping = 3;
-		//	pPhysObject->SetDamping( &damping, &damping );
- 
-			Vector origin = m_hPlayer->GetAbsOrigin();
-			Vector rootOrigin = GetAbsOrigin();
-			m_fSpringLength = (origin - rootOrigin).Length();
- 
-			m_bPlayerWasStanding = ( ( m_hPlayer->GetFlags() & FL_DUCKING ) == 0 );
- 
-			SetThink( &CGrappleHook::HookedThink );
-			SetNextThink( gpGlobals->curtime);
+			else
+			{
+				pOtherNPC->TakeDamage(CTakeDamageInfo(this, m_hPlayer, sk_dmg_hook.GetFloat(), (DMG_BULLET | DMG_SHOCK | DMG_BURN | DMG_ENERGYBEAM)));
+				m_bHasDamagedNPC = true;
+			}
 		}
 		else
 		{
-			// Put a mark unless we've hit the sky
-			if ( ( tr.surface.flags & SURF_SKY ) == false )
-			{
-				UTIL_ImpactTrace( &tr, DMG_BULLET );
-			}
- 
-			SetTouch( NULL );
-			SetThink( NULL );
- 
-			m_hOwner->NotifyHookDied();
-			UTIL_Remove( this );
+			m_bHasDamagedNPC = false;
 		}
+
+		//	DispatchEffect( "Impact", data );
+
+		//	AddEffects( EF_NODRAW );
+		SetTouch(NULL);
+
+		VPhysicsDestroyObject();
+		VPhysicsInitNormal(SOLID_VPHYSICS, FSOLID_NOT_STANDABLE, false);
+		AddSolidFlags(FSOLID_NOT_SOLID);
+		//	SetMoveType( MOVETYPE_NONE );
+
+		if (!m_hPlayer)
+		{
+			Assert(0);
+			return;
+		}
+
+		// Set Jay's gai flag
+		m_hPlayer->SetPhysicsFlag(PFLAG_VPHYSICS_MOTIONCONTROLLER, true);
+
+		//IPhysicsObject *pPhysObject = m_hPlayer->VPhysicsGetObject();
+		IPhysicsObject *pRootPhysObject = VPhysicsGetObject();
+		Assert(pRootPhysObject);
+		Assert(pPhysObject);
+
+		pRootPhysObject->EnableMotion(false);
+
+		// Root has huge mass, tip has little
+		pRootPhysObject->SetMass(VPHYSICS_MAX_MASS);
+		//	pPhysObject->SetMass( 100 );
+		//	float damping = 3;
+		//	pPhysObject->SetDamping( &damping, &damping );
+
+		Vector origin = m_hPlayer->GetAbsOrigin();
+		Vector rootOrigin = GetAbsOrigin();
+		m_fSpringLength = (origin - rootOrigin).Length();
+
+		m_bPlayerWasStanding = ((m_hPlayer->GetFlags() & FL_DUCKING) == 0);
+
+		SetThink(&CGrappleHook::HookedThink);
+		SetNextThink(gpGlobals->curtime);
+	}
+	else
+	{
+		// Put a mark unless we've hit the sky
+		if ((tr.surface.flags & SURF_SKY) == false)
+		{
+			UTIL_ImpactTrace(&tr, DMG_BULLET);
+		}
+
+		SetTouch(NULL);
+		SetThink(NULL);
+
+		m_hOwner->NotifyHookDied();
+		UTIL_Remove(this);
 	}
 }
  

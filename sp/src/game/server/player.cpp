@@ -170,7 +170,6 @@ int MapTextureTypeStepType(char chTextureType);
 extern void	SpawnBlood(Vector vecSpot, const Vector &vecDir, int bloodColor, float flDamage);
 extern void AddMultiDamage( const CTakeDamageInfo &info, CBaseEntity *pEntity );
 
-
 #define CMD_MOSTRECENT 0
 
 //#define	FLASH_DRAIN_TIME	 1.2 //100 units/3 minutes
@@ -8084,6 +8083,8 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 #endif	// HLDEMO_BUILD
 }
 
+extern ConVar sk_healthkit;
+extern ConVar sk_battery;
 bool CBasePlayer::ClientCommand( const CCommand &args )
 {
 	const char *cmd = args[0];
@@ -8512,6 +8513,387 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 					ShowLevelMessage(hint.Access());
 				}
 				GiveNamedItem(args[1]);
+				RemoveMoney(moneyAmount);
+				if (sv_store_buysounds.GetBool())
+				{
+					EmitSound("Store.Buy");
+				}
+			}
+
+			if (menuID == 1)
+			{
+				KeyValues *data = new KeyValues("data");
+				data->SetString("type", "1");			// show userdata from stringtable entry
+				ShowViewPortPanel(PANEL_BUY_SUPPLIES, true, data);
+			}
+			else if (menuID == 2)
+			{
+				KeyValues *data = new KeyValues("data");
+				data->SetString("type", "1");			// show userdata from stringtable entry
+				ShowViewPortPanel(PANEL_BUY_AMMO, true, data);
+			}
+			else if (menuID == 3)
+			{
+				KeyValues *data = new KeyValues("data");
+				data->SetString("type", "1");			// show userdata from stringtable entry
+				ShowViewPortPanel(PANEL_BUY_WEAPONS, true, data);
+			}
+		}
+		else
+		{
+			if (sv_store_denynotifications.GetBool())
+			{
+				CFmtStr hint;
+				hint.sprintf("#Valve_StoreBuyDenyNoEconomy");
+				ShowLevelMessage(hint.Access());
+			}
+			if (sv_store_denysounds.GetBool())
+			{
+				EmitSound("Store.InsufficientFunds");
+			}
+		}
+		return true;
+	}
+	else if (stricmp(cmd, "buyammo") == 0)
+	{
+		if (!IsDead() && g_fr_economy.GetBool())
+		{
+			int moneyAmount = atoi(args[3]);
+			int menuID = atoi(args[4]);
+			if (GetMoney() < moneyAmount)
+			{
+				if (sv_store_denynotifications.GetBool())
+				{
+					CFmtStr hint;
+					hint.sprintf("#Valve_StoreBuyDenyInsufficentFunds");
+					ShowLevelMessage(hint.Access());
+				}
+				if (sv_store_denysounds.GetBool())
+				{
+					EmitSound("Store.InsufficientFunds");
+				}
+			}
+			else
+			{
+				if (sv_store_buynotifications.GetBool())
+				{
+					CFmtStr hint;
+					hint.sprintf("#Valve_StoreBuySuccessItem");
+					ShowLevelMessage(hint.Access());
+				}
+				GiveAmmo(atoi(args[2]), args[1]);
+				RemoveMoney(moneyAmount);
+				if (sv_store_buysounds.GetBool())
+				{
+					EmitSound("Store.Buy");
+				}
+			}
+
+			if (menuID == 1)
+			{
+				KeyValues *data = new KeyValues("data");
+				data->SetString("type", "1");			// show userdata from stringtable entry
+				ShowViewPortPanel(PANEL_BUY_SUPPLIES, true, data);
+			}
+			else if (menuID == 2)
+			{
+				KeyValues *data = new KeyValues("data");
+				data->SetString("type", "1");			// show userdata from stringtable entry
+				ShowViewPortPanel(PANEL_BUY_AMMO, true, data);
+			}
+			else if (menuID == 3)
+			{
+				KeyValues *data = new KeyValues("data");
+				data->SetString("type", "1");			// show userdata from stringtable entry
+				ShowViewPortPanel(PANEL_BUY_WEAPONS, true, data);
+			}
+		}
+		else
+		{
+			if (sv_store_denynotifications.GetBool())
+			{
+				CFmtStr hint;
+				hint.sprintf("#Valve_StoreBuyDenyNoEconomy");
+				ShowLevelMessage(hint.Access());
+			}
+			if (sv_store_denysounds.GetBool())
+			{
+				EmitSound("Store.InsufficientFunds");
+			}
+		}
+		return true;
+	}
+	else if (stricmp(cmd, "buyhealth") == 0)
+	{
+		if (!IsDead() && g_fr_economy.GetBool())
+		{
+			int moneyAmount = atoi(args[2]);
+			int menuID = atoi(args[3]);
+			if (GetMoney() < moneyAmount)
+			{
+				if (sv_store_denynotifications.GetBool())
+				{
+					CFmtStr hint;
+					hint.sprintf("#Valve_StoreBuyDenyInsufficentFunds");
+					ShowLevelMessage(hint.Access());
+				}
+				if (sv_store_denysounds.GetBool())
+				{
+					EmitSound("Store.InsufficientFunds");
+				}
+			}
+			else
+			{
+				if (sv_store_buynotifications.GetBool())
+				{
+					CFmtStr hint;
+					hint.sprintf("#Valve_StoreBuySuccessItem");
+					ShowLevelMessage(hint.Access());
+				}
+				TakeHealth(atoi(args[1]), DMG_GENERIC);
+				CSingleUserRecipientFilter user(this);
+				user.MakeReliable();
+
+				UserMessageBegin(user, "ItemPickup");
+				WRITE_STRING("item_healthkit");
+				MessageEnd();
+
+				CPASAttenuationFilter filter(this, "HealthKit.Touch");
+				EmitSound(filter, entindex(), "HealthKit.Touch");
+				RemoveMoney(moneyAmount);
+				if (sv_store_buysounds.GetBool())
+				{
+					EmitSound("Store.Buy");
+				}
+			}
+
+			if (menuID == 1)
+			{
+				KeyValues *data = new KeyValues("data");
+				data->SetString("type", "1");			// show userdata from stringtable entry
+				ShowViewPortPanel(PANEL_BUY_SUPPLIES, true, data);
+			}
+			else if (menuID == 2)
+			{
+				KeyValues *data = new KeyValues("data");
+				data->SetString("type", "1");			// show userdata from stringtable entry
+				ShowViewPortPanel(PANEL_BUY_AMMO, true, data);
+			}
+			else if (menuID == 3)
+			{
+				KeyValues *data = new KeyValues("data");
+				data->SetString("type", "1");			// show userdata from stringtable entry
+				ShowViewPortPanel(PANEL_BUY_WEAPONS, true, data);
+			}
+		}
+		else
+		{
+			if (sv_store_denynotifications.GetBool())
+			{
+				CFmtStr hint;
+				hint.sprintf("#Valve_StoreBuyDenyNoEconomy");
+				ShowLevelMessage(hint.Access());
+			}
+			if (sv_store_denysounds.GetBool())
+			{
+				EmitSound("Store.InsufficientFunds");
+			}
+		}
+		return true;
+	}
+	else if (stricmp(cmd, "buyhealthkit") == 0)
+	{
+		if (!IsDead() && g_fr_economy.GetBool())
+		{
+			int moneyAmount = atoi(args[1]);
+			int menuID = atoi(args[2]);
+			if (GetMoney() < moneyAmount)
+			{
+				if (sv_store_denynotifications.GetBool())
+				{
+					CFmtStr hint;
+					hint.sprintf("#Valve_StoreBuyDenyInsufficentFunds");
+					ShowLevelMessage(hint.Access());
+				}
+				if (sv_store_denysounds.GetBool())
+				{
+					EmitSound("Store.InsufficientFunds");
+				}
+			}
+			else
+			{
+				if (sv_store_buynotifications.GetBool())
+				{
+					CFmtStr hint;
+					hint.sprintf("#Valve_StoreBuySuccessItem");
+					ShowLevelMessage(hint.Access());
+				}
+				TakeHealth(sk_healthkit.GetInt(), DMG_GENERIC);
+				CSingleUserRecipientFilter user(this);
+				user.MakeReliable();
+
+				UserMessageBegin(user, "ItemPickup");
+				WRITE_STRING("item_healthkit");
+				MessageEnd();
+
+				CPASAttenuationFilter filter(this, "HealthKit.Touch");
+				EmitSound(filter, entindex(), "HealthKit.Touch");
+				RemoveMoney(moneyAmount);
+				if (sv_store_buysounds.GetBool())
+				{
+					EmitSound("Store.Buy");
+				}
+			}
+
+			if (menuID == 1)
+			{
+				KeyValues *data = new KeyValues("data");
+				data->SetString("type", "1");			// show userdata from stringtable entry
+				ShowViewPortPanel(PANEL_BUY_SUPPLIES, true, data);
+			}
+			else if (menuID == 2)
+			{
+				KeyValues *data = new KeyValues("data");
+				data->SetString("type", "1");			// show userdata from stringtable entry
+				ShowViewPortPanel(PANEL_BUY_AMMO, true, data);
+			}
+			else if (menuID == 3)
+			{
+				KeyValues *data = new KeyValues("data");
+				data->SetString("type", "1");			// show userdata from stringtable entry
+				ShowViewPortPanel(PANEL_BUY_WEAPONS, true, data);
+			}
+		}
+		else
+		{
+			if (sv_store_denynotifications.GetBool())
+			{
+				CFmtStr hint;
+				hint.sprintf("#Valve_StoreBuyDenyNoEconomy");
+				ShowLevelMessage(hint.Access());
+			}
+			if (sv_store_denysounds.GetBool())
+			{
+				EmitSound("Store.InsufficientFunds");
+			}
+		}
+		return true;
+	}
+	else if (stricmp(cmd, "buyarmor") == 0)
+	{
+		if (!IsDead() && g_fr_economy.GetBool())
+		{
+			int moneyAmount = atoi(args[2]);
+			int menuID = atoi(args[3]);
+			if (GetMoney() < moneyAmount)
+			{
+				if (sv_store_denynotifications.GetBool())
+				{
+					CFmtStr hint;
+					hint.sprintf("#Valve_StoreBuyDenyInsufficentFunds");
+					ShowLevelMessage(hint.Access());
+				}
+				if (sv_store_denysounds.GetBool())
+				{
+					EmitSound("Store.InsufficientFunds");
+				}
+			}
+			else
+			{
+				if (sv_store_buynotifications.GetBool())
+				{
+					CFmtStr hint;
+					hint.sprintf("#Valve_StoreBuySuccessItem");
+					ShowLevelMessage(hint.Access());
+				}
+				IncrementArmorValue(atoi(args[1]), GetMaxArmorValue());
+				CPASAttenuationFilter filter(this, "ItemBattery.Touch");
+				EmitSound(filter, entindex(), "ItemBattery.Touch");
+
+				CSingleUserRecipientFilter user(this);
+				user.MakeReliable();
+
+				UserMessageBegin(user, "ItemPickup");
+				WRITE_STRING("item_battery");
+				MessageEnd();
+				RemoveMoney(moneyAmount);
+				if (sv_store_buysounds.GetBool())
+				{
+					EmitSound("Store.Buy");
+				}
+			}
+
+			if (menuID == 1)
+			{
+				KeyValues *data = new KeyValues("data");
+				data->SetString("type", "1");			// show userdata from stringtable entry
+				ShowViewPortPanel(PANEL_BUY_SUPPLIES, true, data);
+			}
+			else if (menuID == 2)
+			{
+				KeyValues *data = new KeyValues("data");
+				data->SetString("type", "1");			// show userdata from stringtable entry
+				ShowViewPortPanel(PANEL_BUY_AMMO, true, data);
+			}
+			else if (menuID == 3)
+			{
+				KeyValues *data = new KeyValues("data");
+				data->SetString("type", "1");			// show userdata from stringtable entry
+				ShowViewPortPanel(PANEL_BUY_WEAPONS, true, data);
+			}
+		}
+		else
+		{
+			if (sv_store_denynotifications.GetBool())
+			{
+				CFmtStr hint;
+				hint.sprintf("#Valve_StoreBuyDenyNoEconomy");
+				ShowLevelMessage(hint.Access());
+			}
+			if (sv_store_denysounds.GetBool())
+			{
+				EmitSound("Store.InsufficientFunds");
+			}
+		}
+		return true;
+	}
+	else if (stricmp(cmd, "buybattery") == 0)
+	{
+		if (!IsDead() && g_fr_economy.GetBool())
+		{
+			int moneyAmount = atoi(args[1]);
+			int menuID = atoi(args[2]);
+			if (GetMoney() < moneyAmount)
+			{
+				if (sv_store_denynotifications.GetBool())
+				{
+					CFmtStr hint;
+					hint.sprintf("#Valve_StoreBuyDenyInsufficentFunds");
+					ShowLevelMessage(hint.Access());
+				}
+				if (sv_store_denysounds.GetBool())
+				{
+					EmitSound("Store.InsufficientFunds");
+				}
+			}
+			else
+			{
+				if (sv_store_buynotifications.GetBool())
+				{
+					CFmtStr hint;
+					hint.sprintf("#Valve_StoreBuySuccessItem");
+					ShowLevelMessage(hint.Access());
+				}
+				IncrementArmorValue(sk_battery.GetInt(), GetMaxArmorValue());
+				CPASAttenuationFilter filter(this, "ItemBattery.Touch");
+				EmitSound(filter, entindex(), "ItemBattery.Touch");
+
+				CSingleUserRecipientFilter user(this);
+				user.MakeReliable();
+
+				UserMessageBegin(user, "ItemPickup");
+				WRITE_STRING("item_battery");
+				MessageEnd();
 				RemoveMoney(moneyAmount);
 				if (sv_store_buysounds.GetBool())
 				{

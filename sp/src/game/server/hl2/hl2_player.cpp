@@ -2540,7 +2540,7 @@ bool CHL2_Player::SuitPower_ShouldRecharge( void )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-ConVar	sk_battery( "sk_battery","0" );			
+extern ConVar sk_battery;			
 
 bool CHL2_Player::ApplyBattery( float powerMultiplier )
 {
