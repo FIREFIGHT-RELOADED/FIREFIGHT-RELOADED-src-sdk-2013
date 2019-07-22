@@ -2217,7 +2217,7 @@ void CBasePlayer::Reward_GiveItem(void)
 	}
 	else if (randomitemdrop == FIREFIGHT_ITEMREWARD_BIGHEALTHKIT)
 	{
-		AddHealth(50);
+		TakeHealth(50, DMG_GENERIC);
 		CFmtStr hint;
 		hint.sprintf("#Valve_Hud_Reward_BigHealthkit");
 		ShowPerkMessage(hint.Access());
