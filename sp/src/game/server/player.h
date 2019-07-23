@@ -856,7 +856,6 @@ public:
 	void Reward_GiveItem(void);
 	void Reward_GiveKashBonus(void);
 
-	void GiveRandomPerk( void );
 	void LevelUpClassic( void);
 
 private:
