@@ -20,6 +20,7 @@ ipch
 *.vcxproj
 *.vcxproj.filters
 *.sln
+*.lib
 [Dd]ebug*/
 [Rr]elease*/
 

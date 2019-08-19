@@ -1050,11 +1050,11 @@ void CBasePlayer::DeathCheckLevel()
 			if (GetLevel() != 1)
 			{
 				m_iLevel--;
-				ResetXPAlt();
+				ResetXPtoHalf();
 			}
 			else
 			{
-				ResetXPAlt();
+				ResetXPtoHalf();
 			}
 		}
 	}
