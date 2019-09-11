@@ -9,9 +9,9 @@
 //=============================================================================//
 
 #include "cbase.h"
+#include "weapon_grapple.h"   
 #include "npcevent.h"
-#include "in_buttons.h"
-#include "weapon_grapple.h"                              
+#include "in_buttons.h"                           
 #include "game.h"                           
 #include "player.h"                 
 #include "te_effect_dispatch.h"
@@ -213,7 +213,7 @@ void CGrappleHook::HookTouch( CBaseEntity *pOther )
 		//IPhysicsObject *pPhysObject = m_hPlayer->VPhysicsGetObject();
 		IPhysicsObject *pRootPhysObject = VPhysicsGetObject();
 		Assert(pRootPhysObject);
-		Assert(pPhysObject);
+		//Assert(pPhysObject);
 
 		pRootPhysObject->EnableMotion(false);
 

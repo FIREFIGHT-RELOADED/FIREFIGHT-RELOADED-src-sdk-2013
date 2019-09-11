@@ -1047,17 +1047,32 @@ void CBasePlayer::DeathCheckLevel()
 	{
 		if (GetLevel() != MAX_LEVEL)
 		{
-			if (GetLevel() != 1)
-			{
-				m_iLevel--;
-				ResetXPtoHalf();
-			}
-			else
-			{
-				ResetXPtoHalf();
-			}
+			EXPLevelPenalty();
 		}
 	}
+}
+
+void CBasePlayer::EXPLevelPenalty()
+{
+	int inewEXP = (m_iExp / 2);
+
+	DevMsg("EXP %i set to %i\n", m_iExp, inewEXP);
+
+	if (inewEXP > 0)
+	{
+		m_iExp = inewEXP;
+	}
+	else
+	{
+		if ((GetLevel() != 1) || (GetLevel() != MAX_LEVEL))
+		{
+			m_iLevel--;
+		}
+
+		m_iExp = 0;
+	}
+
+	DevMsg("EXP set to %i\n", m_iExp);
 }
 
 void CBasePlayer::LevelUp()
@@ -5832,6 +5847,11 @@ void CBasePlayer::InitialSpawn( void )
 {
 	m_iConnected = PlayerConnected;
 	gamestats->Event_PlayerConnected( this );
+
+	if (sv_player_startingmoney.GetBool())
+	{
+		SetMoney(sv_player_startingmoney_amount.GetInt());
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -6041,11 +6061,6 @@ void CBasePlayer::Spawn( void )
 			GiveNamedItem("weapon_grapple");
 			GiveNamedItem("weapon_katana");
 		}
-	}
-
-	if (sv_player_startingmoney.GetBool())
-	{
-		SetMoney(sv_player_startingmoney_amount.GetInt());
 	}
 }
 

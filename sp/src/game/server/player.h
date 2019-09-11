@@ -843,19 +843,7 @@ public:
 
 	void ResetXP() { m_iExp = 0; m_iLevel = 1; LevelUp(); } // calling LevelUp will reset max health, etc
 	void ResetXPAlt() { m_iExp = 0;}
-	void ResetXPtoHalf() 
-	{ 
-		int inewEXP = m_iExp / 2; 
-
-		if (inewEXP > 0)
-		{
-			m_iExp = inewEXP;
-		}
-		else
-		{
-			m_iExp = 0;
-		}
-	}
+	void EXPLevelPenalty();
 
 	int GetMoney() { return m_iMoney; }
 	void SetMoney(int set = 1) { m_iMoney = set; }
