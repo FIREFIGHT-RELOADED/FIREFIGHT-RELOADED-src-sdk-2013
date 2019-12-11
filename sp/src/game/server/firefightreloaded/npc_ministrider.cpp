@@ -5014,7 +5014,7 @@ int CNPC_MiniStrider::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	}
 
 	// Show damage effects if we actually took damage.
-	if ( ( myInfo.GetDamageType() & ( DMG_CRUSH | DMG_BLAST ) ) && ( myInfo.GetDamage() > 0 ) )
+	if ((myInfo.GetDamageType() & (DMG_CRUSH | DMG_BLAST | DMG_KICK | DMG_KNOCKBACK)) && (myInfo.GetDamage() > 0))
 	{
 		if ( !bHitByUnoccupiedCar )
 			SetCondition( COND_MINISTRIDER_STAGGERED );

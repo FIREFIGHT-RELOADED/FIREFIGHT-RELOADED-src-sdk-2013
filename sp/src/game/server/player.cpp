@@ -205,7 +205,7 @@ ConVar sv_regen_interval("sv_regen_interval", "10", FCVAR_REPLICATED | FCVAR_CHE
 ConVar sv_decay_wait_time("sv_decay_wait_time", "0.5", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar sv_decay_rate("sv_decay_rate", "8.5", FCVAR_REPLICATED | FCVAR_CHEAT);
 
-ConVar sv_fr_maxhealthupgrades("sv_fr_maxhealthupgrades", "10", FCVAR_CHEAT);
+ConVar sv_fr_maxhealthupgrades("sv_fr_maxhealthupgrades", "15", FCVAR_CHEAT);
 
 ConVar sk_player_weapons("sk_player_weapons", "1");
 
