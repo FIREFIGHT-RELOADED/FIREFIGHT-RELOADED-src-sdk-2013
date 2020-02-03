@@ -2365,49 +2365,6 @@ void CGameMovement::PlaySwimSound()
 	MoveHelper()->StartSound( mv->GetAbsOrigin(), "Player.Swim" );
 }
 
-void CGameMovement::PreventBunnyJumping()
-{
-	// Speed at which bunny jumping is limited
-	float maxscaledspeed = fr_new_bunnyhop_max_speed_factor.GetFloat() * player->m_flMaxspeed;
-	if (maxscaledspeed <= 0.0f)
-		return;
-
-	// Current player speed
-	float spd = mv->m_vecVelocity.Length();
-	if (spd <= maxscaledspeed)
-		return;
-	// 320        400     0.8
-	if (fr_new_bunnyhopfade.GetBool())
-	{
-		// From testing 40 seems to be the best bunnyhop fade float
-		float fraction = (maxscaledspeed / fr_new_bunnyhopfade_val.GetFloat());
-
-		Vector vecSub = mv->m_vecVelocity / fraction;
-
-		Vector vecTargetVelocity = mv->m_vecVelocity - vecSub;
-		// If doing the fade would make us slower than the max speed
-		// do the reular prevention, putting us at the exact bunnyhop speed limit instead
-		if (vecTargetVelocity.Length() < maxscaledspeed)
-		{
-			// Apply this cropping fraction to velocity
-			float fraction = (maxscaledspeed / spd);
-
-			mv->m_vecVelocity *= fraction;
-		}
-		else // otherwise, go through with the gradient
-		{
-			mv->m_vecVelocity = vecTargetVelocity;
-		}
-	}
-	else
-	{
-		// Apply this cropping fraction to velocity
-		float fraction = (maxscaledspeed / spd);
-
-		mv->m_vecVelocity *= fraction;
-	}
-}
-
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -2553,11 +2510,8 @@ bool CGameMovement::CheckJumpButton( void )
 #if defined( HL2_DLL ) || defined( HL2_CLIENT_DLL )
 	//allow us to bunnyhop regardless if we have more than 1 player.
 	CHLMoveData *pMoveData = (CHLMoveData*)mv;
+	//1 is based on hl_gamemovement
 	if (fr_enable_bunnyhop.GetInt() == 1)
-	{
-		PreventBunnyJumping();
-	}
-	else if (fr_enable_bunnyhop.GetInt() == 2)
 	{
 		Vector vecForward, vecRight;
 		AngleVectors(mv->m_vecViewAngles, &vecForward, &vecRight, NULL);
