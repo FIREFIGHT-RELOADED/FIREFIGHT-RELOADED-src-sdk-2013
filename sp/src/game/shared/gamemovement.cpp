@@ -53,11 +53,6 @@ ConVar player_limit_jump_speed( "player_limit_jump_speed", "1", FCVAR_REPLICATED
 //Used for bunnyhopping
 ConVar fr_enable_bunnyhop("fr_enable_bunnyhop", "1", FCVAR_ARCHIVE);
 
-//new OF cvars!!!
-ConVar fr_new_bunnyhop_max_speed_factor("fr_new_bunnyhop_max_speed_factor", "1.2", FCVAR_ARCHIVE, "Max Speed achievable with bunnyhopping.");
-ConVar fr_new_bunnyhopfade("fr_new_bunnyhopfade", "0", FCVAR_ARCHIVE, "When on, instead of instantly slowing down upon a bunnyhop, you gradually loose your speed.");
-ConVar fr_new_bunnyhopfade_val("fr_new_bunnyhopfade_val", "40", FCVAR_ARCHIVE);
-
 ConVar fr_autojump("fr_autojump", "0", FCVAR_ARCHIVE);
 
 ConVar fr_doublejump("fr_doublejump", "1", FCVAR_ARCHIVE);
@@ -2510,7 +2505,7 @@ bool CGameMovement::CheckJumpButton( void )
 #if defined( HL2_DLL ) || defined( HL2_CLIENT_DLL )
 	//allow us to bunnyhop regardless if we have more than 1 player.
 	CHLMoveData *pMoveData = (CHLMoveData*)mv;
-	//1 is based on hl_gamemovement
+	//we might need to reconsider some things
 	if (fr_enable_bunnyhop.GetInt() == 1)
 	{
 		Vector vecForward, vecRight;
