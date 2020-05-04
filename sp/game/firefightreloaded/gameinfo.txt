@@ -1,15 +1,23 @@
 "GameInfo"
 {
-	game 		"My First Episodic Mod"
-	title 		"HALF-LIFE'"
+	game 		"FIREFIGHT RELOADED"
+	title 		""
 	title2		""
-	supportsvr	1
-
 	type		singleplayer_only
+	supportsvr	1
+	gamelogo 0
+	developer	"Bitl & Cobalt-57"
+	developer_url	"http://steamcommunity.com/id/bitl/"
+	manual		""
+	icon		"resource/game"
+	hidden_maps
+	{
+		"credits"		1
+	}
 
 	FileSystem
 	{
-		SteamAppId				243730		// This sets the app ID in Steam
+		SteamAppId				397680		// This sets the app ID in Steam
 		
 		//
 		// The code that loads this file automatically does a few things here:
@@ -37,43 +45,55 @@
 			// folder.
 			//
 			// Note that this folder is scanned only when the game is booted.
-			game+mod			ep2/custom/*
-			game+mod			episodic/custom/*
-			game+mod			hl2/custom/*
+			//game+mod			ep2/custom/*
+			//game+mod			episodic/custom/*
+			//game+mod			hl2/custom/*
 
 			// Now search loose files.  We'll set the directory containing the gameinfo.txt file
 			// as the first "mod" search path (after any user customizations).  This is also the one
 			// that's used when writing to the "mod" path.
+			game+mod			|gameinfo_path|addons/*
+			game+mod			|gameinfo_path|custom/*
+			//mount Workshop stuff
+			game+mod			"|gameinfo_path|..\..\..\workshop\content\397680\*"
+			//Mount the DLC.
+			game+mod			|all_source_engine_paths|firefightreloaded_dlc/cstrike/*
+			game+mod			|all_source_engine_paths|firefightreloaded_dlc/dod/*
+			//We need this to load any shared files the DLCs need.
+			game+mod			|all_source_engine_paths|firefightreloaded_dlc/dlc_shared/*
 			game+mod+mod_write+default_write_path		|gameinfo_path|.
-			gamebin				|gameinfo_path|bin
+			
+			//Call the VPK
+			game				|gameinfo_path|firefightreloaded_pak.vpk
 
 			// We search VPK files before ordinary folders, because most files will be found in
 			// VPK and we can avoid making thousands of file system calls to attempt to open files
 			// in folders where they don't exist.  (Searching a VPK is much faster than making an operating
 			// system call.)
-			game_lv				hl2/hl2_lv.vpk
-			game+mod			ep2/ep2_english.vpk
-			game+mod			ep2/ep2_pak.vpk
-			game				|all_source_engine_paths|episodic/ep1_english.vpk
-			game				|all_source_engine_paths|episodic/ep1_pak.vpk
-			game				|all_source_engine_paths|hl2/hl2_english.vpk
-			game				|all_source_engine_paths|hl2/hl2_pak.vpk
-			game				|all_source_engine_paths|hl2/hl2_textures.vpk
-			game				|all_source_engine_paths|hl2/hl2_sound_vo_english.vpk
-			game				|all_source_engine_paths|hl2/hl2_sound_misc.vpk
-			game				|all_source_engine_paths|hl2/hl2_misc.vpk
+			// this VPK was made so we can load the contents of hl2mp without any config overrides.
+			game+mod			|all_source_engine_paths|sourcebase/hl2mp_shared.vpk
+			//game+mod			|all_source_engine_paths|sourcebase/episodic_shared/ep2.vpk
+			//game+mod			|all_source_engine_paths|sourcebase/episodic_shared/episodic.vpk
+			//this VPK was made so we could lower the file space. previously we used the files above and they added 
+			//3-4 WHOLE gigabytes to the game, making it a WHOPPING 9 GIGABYTES! This method decreases the file size 
+			//by half, while still providing the episodic NPCs.
+			game+mod			|all_source_engine_paths|sourcebase/episodic_content.vpk
+			game				|all_source_engine_paths|sourcebase/main/hl2_textures.vpk
+			game				|all_source_engine_paths|sourcebase/main/hl2_sound_vo_english.vpk
+			game				|all_source_engine_paths|sourcebase/main/hl2_sound_misc.vpk
+			game				|all_source_engine_paths|sourcebase/main/hl2_misc.vpk
 			platform			|all_source_engine_paths|platform/platform_misc.vpk
 
 			// Add the HL2 directory as a game search path.  This is also where where writes
 			// to the "game" path go.
-			game+game_write		ep2
+			game+game_write                 |gameinfo_path|.
 
 			// Where the game's binaries are
-			gamebin				episodic/bin
-
+			gamebin				|gameinfo_path|bin
+			
 			// Last, mount in shared HL2 loose files
-			game				|all_source_engine_paths|episodic
-			game				|all_source_engine_paths|hl2
+			game				|all_source_engine_paths|sourcebase/episodic_shared
+			game				|all_source_engine_paths|sourcebase/main
 			platform			|all_source_engine_paths|platform
 		}
 	}
