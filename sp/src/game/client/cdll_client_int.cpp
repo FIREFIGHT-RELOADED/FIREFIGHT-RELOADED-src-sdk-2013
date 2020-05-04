@@ -149,6 +149,8 @@
 
 //discord
 #include "discord-rpc.h"
+#include "discord_register.h"
+#include <time.h>
 
 extern vgui::IInputInternal *g_InputInternal;
 
@@ -334,7 +336,13 @@ static ConVar s_CV_ShowParticleCounts("showparticlecounts", "0", 0, "Display num
 static ConVar s_cl_team("cl_team", "default", FCVAR_USERINFO|FCVAR_ARCHIVE, "Default team when joining a game");
 static ConVar s_cl_class("cl_class", "default", FCVAR_USERINFO|FCVAR_ARCHIVE, "Default class when joining a game");
 static ConVar cl_discord_appid("cl_discord_appid", "382336881758568448", FCVAR_DEVELOPMENTONLY|FCVAR_CHEAT);
+static int64_t startTimestamp = time(0);
+#define DEVBUILD
+#if defined(DEVBUILD) || defined(_DEBUG)
 static ConVar cl_discord_devbuild("cl_discord_devbuild", "1", FCVAR_DEVELOPMENTONLY | FCVAR_CHEAT);
+#else
+static ConVar cl_discord_devbuild("cl_discord_devbuild", "0", FCVAR_DEVELOPMENTONLY | FCVAR_CHEAT);
+#endif
 
 #ifdef HL1MP_CLIENT_DLL
 static ConVar s_cl_load_hl1_content("cl_load_hl1_content", "0", FCVAR_ARCHIVE, "Mount the content from Half-Life: Source if possible");
@@ -1134,6 +1142,7 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 		memset(&discordPresence, 0, sizeof(discordPresence));
 		discordPresence.state = "In-Game";
 		discordPresence.details = "Main Menu";
+		discordPresence.startTimestamp = startTimestamp;
 		if (cl_discord_devbuild.GetBool())
 		{
 			discordPresence.largeImageKey = "fr_dev_large";
