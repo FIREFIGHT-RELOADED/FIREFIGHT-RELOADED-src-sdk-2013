@@ -2506,7 +2506,7 @@ bool CGameMovement::CheckJumpButton( void )
 	//allow us to bunnyhop regardless if we have more than 1 player.
 	CHLMoveData *pMoveData = (CHLMoveData*)mv;
 	//we might need to reconsider some things
-	if (fr_enable_bunnyhop.GetInt() == 1)
+	if (fr_enable_bunnyhop.GetInt() == 1 && !bAirDash)
 	{
 		Vector vecForward, vecRight;
 		AngleVectors(mv->m_vecViewAngles, &vecForward, &vecRight, NULL);
@@ -2514,7 +2514,7 @@ bool CGameMovement::CheckJumpButton( void )
 		vecRight.z = 0.0f;
 		VectorNormalize(vecForward);
 		VectorNormalize(vecRight);
-		if (!pMoveData->m_bIsSprinting && !player->m_Local.m_bDucked && !bAirDash)
+		if (!pMoveData->m_bIsSprinting && !player->m_Local.m_bDucked)
 		{
 			for (int iAxis = 0; iAxis < 2; ++iAxis)
 			{

@@ -5,9 +5,22 @@
 //-----------------------------------------------------------------------------
 
 $Macro SRCDIR		"..\.."
-$Macro GAMENAME "mod_hl2"
+$Macro GAMENAME "firefightreloaded"
 $Include "$SRCDIR\materialsystem\stdshaders\game_shader_dx9_base.vpc"
 
-$Project "Shaders (HL2)"
+$Project "Shaders (FR)"
 {
+	$Folder "fxc"
+	{
+		$File	"pbr_ps30.fxc"
+		$File	"pbr_vs30.fxc"
+	}
+
+	$Folder "Source Files"
+	{
+		$File	"pbr_dx9.cpp"
+	}
+
+	$File	"buildfrshaders.bat"
+	$Shaders	"fr_dx9_30.txt"
 }

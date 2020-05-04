@@ -10,8 +10,7 @@
 
 $Games
 {
-	"EPISODIC"
-	"HL2"
+	"FR"
 }
 
 // Makes the VPC scripts work in the SDK's context
