@@ -836,7 +836,7 @@ public:
 	int GetLevel() { return m_iLevel; }
 	int GetXpToLevelUp(int level);
 	void CheckLevel();
-	void LevelUp();
+	virtual void LevelUp();
 	void SetLevel(int set = 1) { m_iLevel = set; }
 
 	void DeathCheckLevel();

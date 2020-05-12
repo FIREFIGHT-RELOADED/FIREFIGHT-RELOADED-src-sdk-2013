@@ -132,13 +132,22 @@ $Project "Client (FR)"
 		$Folder	"FIREFIGHT RELOADED DLL"
 		{
 			$File	"$SRCDIR\game\shared\firefightreloaded\achievements_firefightreloaded.cpp"
-			$File	"firefightreloaded\c_npc_antlionguardian.cpp"
 			$File	"firefightreloaded_clientcmds.cpp"
 			$File	"$SRCDIR\game\shared\firefightreloaded\singleplayer_animstate.cpp"
 			$File	"$SRCDIR\game\shared\firefightreloaded\singleplayer_animstate.h"
 			$File 	"firefightreloaded\fr_rendertargets.cpp"
 			$File 	"firefightreloaded\fr_rendertargets.h"
-			$File	"firefightreloaded\c_combineguard.cpp"
+			
+			$Folder	"NPCs"
+			{
+				$Folder	"Bot"
+				{
+					$File	"firefightreloaded\c_npc_player.cpp"
+				}
+				
+				$File	"firefightreloaded\c_combineguard.cpp"
+				$File	"firefightreloaded\c_npc_antlionguardian.cpp"
+			}
 
 			$Folder	"GameUI"
 			{

@@ -61,7 +61,7 @@ const char *g_charNPCSSpawnerList[] =
 	"npc_citizen",
 	"npc_ministrider",
 	"npc_rollermine",
-	"npc_cscanner",
+	"npc_cscanner"
 };
 
 const char *g_charNPCSCombineFirefightCommon[] =
@@ -71,7 +71,7 @@ const char *g_charNPCSCombineFirefightCommon[] =
 	"npc_combine_e",
 	"npc_combine_p",
 	"npc_combine_shot",
-	"npc_elitepolice",
+	"npc_elitepolice"
 };
 
 const char *g_charNPCSCombineFirefightRare[] =
@@ -83,35 +83,35 @@ const char *g_charNPCSCombineFirefightRare[] =
 	"npc_combineguard",
 	"npc_ministrider",
 	"npc_rollermine",
-	"npc_cscanner",
+	"npc_cscanner"
 };
 
 const char *g_charNPCSCombineFirefightSoldierWeapons[] =
 {
 	"weapon_smg1",
 	"weapon_ar2",
-	"weapon_shotgun",
+	"weapon_shotgun"
 };
 
 const char *g_charNPCSCombineFirefightMetropoliceWeapons[] =
 {
 	"weapon_smg1",
 	"weapon_pistol",
-	"weapon_stunstick",
+	"weapon_stunstick"
 };
 
 const char *g_charNPCSCombineFirefightEliteMetropoliceWeapons[] =
 {
 	"weapon_smg1",
 	"weapon_ar2",
-	"weapon_pistol",
+	"weapon_pistol"
 };
 
 const char *g_charNPCSAntlionAssaultRare[] =
 {
 	"npc_antlionworker",
 	"npc_antlionguard",
-	"npc_antlionguardian",
+	"npc_antlionguardian"
 };
 
 const char *g_charNPCSZombieSurvivalCommon[] =
@@ -119,13 +119,13 @@ const char *g_charNPCSZombieSurvivalCommon[] =
 	"npc_zombie",
 	"npc_zombie_torso",
 	"npc_fastzombie",
-	"npc_fastzombie_torso",
+	"npc_fastzombie_torso"
 };
 
 const char *g_charNPCSZombieSurvivalRare[] =
 {
 	"npc_poisonzombie",
-	"npc_zombine",
+	"npc_zombine"
 };
 
 const char *g_charNPCSXenInvasionCommon[] =
@@ -133,7 +133,7 @@ const char *g_charNPCSXenInvasionCommon[] =
 	"npc_houndeye",
 	"npc_bullsquid",
 	"npc_agrunt",
-	"npc_acontroller",
+	"npc_acontroller"
 };
 
 const char *g_charNPCSXenInvasionRare[] =
@@ -141,7 +141,7 @@ const char *g_charNPCSXenInvasionRare[] =
 	"npc_headcrab_fast",
 	"npc_headcrab_poison",
 	"npc_vortigaunt",
-	"npc_headcrab",
+	"npc_headcrab"
 };
 
 // no npc list as npc_citizen is the only character.
@@ -150,7 +150,7 @@ const char *g_charNPCSResistanceRetributionCommonWeapons[] =
 	"weapon_smg1",
 	"weapon_crowbar",
 	"weapon_shotgun",
-	"weapon_ar2",
+	"weapon_ar2"
 };
 
 const char *g_charNPCSFirefightRumbleCommon[] =
@@ -160,7 +160,7 @@ const char *g_charNPCSFirefightRumbleCommon[] =
 	"npc_combine_e",
 	"npc_combine_p",
 	"npc_combine_shot",
-	"npc_antlion",
+	"npc_antlion"
 	"npc_zombie",
 	"npc_zombie_torso",
 	"npc_fastzombie",
@@ -169,8 +169,7 @@ const char *g_charNPCSFirefightRumbleCommon[] =
 	"npc_houndeye",
 	"npc_bullsquid",
 	"npc_elitepolice",
-	"npc_acontroller",
-	"npc_citizen",
+	"npc_acontroller"
 };
 
 const char *g_charNPCSFirefightRumbleRare[] =
@@ -190,10 +189,9 @@ const char *g_charNPCSFirefightRumbleRare[] =
 	"npc_headcrab",
 	"npc_combineguard",
 	//these cits are used for rare spawns. we need them to be equipped with RPGS.
-	"npc_citizen",
 	"npc_ministrider",
 	"npc_rollermine",
-	"npc_cscanner",
+	"npc_cscanner"
 };
 
 static void DispatchActivate( CBaseEntity *pEntity )

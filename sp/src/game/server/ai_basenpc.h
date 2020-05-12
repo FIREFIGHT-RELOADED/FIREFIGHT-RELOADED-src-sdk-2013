@@ -1707,6 +1707,7 @@ public:
 	bool				Weapon_IsBetterAvailable ( void ) ;
 	virtual Vector		Weapon_ShootPosition( void );
 	virtual	void		GiveWeapon( string_t iszWeaponName );
+	virtual	void		GiveWeapon(const char *iszWeaponName);
 	virtual void		OnGivenWeapon( CBaseCombatWeapon *pNewWeapon ) { }
 	bool				IsMovingToPickupWeapon();
 	virtual bool		WeaponLOSCondition(const Vector &ownerPos, const Vector &targetPos, bool bSetConditions);

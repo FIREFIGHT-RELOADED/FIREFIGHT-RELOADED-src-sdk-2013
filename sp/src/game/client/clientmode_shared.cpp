@@ -37,6 +37,7 @@
 #include "hud_vote.h"
 #include "ienginevgui.h"
 #include "sourcevr/isourcevirtualreality.h"
+#include "clienteffectprecachesystem.h"
 #if defined( _X360 )
 #include "xbox/xbox_console.h"
 #endif
@@ -85,6 +86,14 @@ extern ConVar v_viewmodel_fov;
 extern ConVar voice_modenable;
 
 extern bool IsInCommentaryMode( void );
+
+#ifdef CLIENT_DLL
+CLIENTEFFECT_REGISTER_BEGIN(PrecachePostProcessingEffectsGlow)
+CLIENTEFFECT_MATERIAL("dev/glow_color")
+CLIENTEFFECT_MATERIAL("dev/halo_add_to_screen")
+//allow us to be seen regardless of dxlevel
+CLIENTEFFECT_REGISTER_END()
+#endif
 
 #ifdef VOICE_VOX_ENABLE
 void VoxCallback( IConVar *var, const char *oldString, float oldFloat )
@@ -769,6 +778,11 @@ bool ClientModeShared::DoPostScreenSpaceEffects( const CViewSetup *pSetup )
 			return false;
 	}
 #endif 
+
+#ifdef CLIENT_DLL
+	g_GlowObjectManager.RenderGlowEffects( pSetup, 0 );
+#endif
+
 	return true;
 }
 

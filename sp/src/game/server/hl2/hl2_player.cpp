@@ -493,6 +493,19 @@ void CHL2_Player::Precache( void )
 {
 	BaseClass::Precache();
 
+	FileFindHandle_t findHandle = NULL;
+
+	const char *pszFilename = g_pFullFileSystem->FindFirst("models/player/playermodels/*.mdl", &findHandle);
+	while (pszFilename)
+	{
+		char szModelName[2048];
+		Q_snprintf(szModelName, sizeof(szModelName), "models/player/playermodels/%s", pszFilename);
+		CBaseEntity::PrecacheModel(szModelName);
+		DevMsg("Precached Player Model %s\n", szModelName);
+		pszFilename = g_pFullFileSystem->FindNext(findHandle);
+	}
+	g_pFullFileSystem->FindClose(findHandle);
+
 	PrecacheScriptSound("HL2Player.kick_fire");
 	PrecacheScriptSound("HL2Player.kick_body");
 	PrecacheScriptSound("HL2Player.kick_wall");
@@ -1197,6 +1210,20 @@ void CHL2_Player::SetPlayerModel(void)
 	SetModel(szModelName);
 }
 
+void CHL2_Player::SetPlayerModelCustom(const char* szModel)
+{
+	const char *szModelName = NULL;
+	if (Q_strcmp(szModel, "none") == 0)
+	{
+		szModelName = "models/player/playermodels/gordon.mdl";
+	}
+	else
+	{
+		szModelName = szModel;
+	}
+	SetModel(szModelName);
+}
+
 void CHL2_Player::PostThink( void )
 {
 	BaseClass::PostThink();
@@ -1473,6 +1500,9 @@ void CHL2_Player::InitialSpawn(void)
 	m_bIsPlayerAVIP = CheckIfVIP();
 }
 
+extern ConVar sk_player_weapons;
+extern ConVar sv_player_hardcoremode;
+
 //-----------------------------------------------------------------------------
 // Purpose: Sets HL2 specific defaults.
 //-----------------------------------------------------------------------------
@@ -1481,7 +1511,9 @@ void CHL2_Player::Spawn(void)
 
 #ifndef HL2MP
 #ifndef PORTAL
+#ifndef FR_DLL
 	SetPlayerModel();
+#endif
 #endif
 #endif
 
@@ -1569,6 +1601,60 @@ void CHL2_Player::Spawn(void)
 			RemoveFlag(FL_FROZEN);
 			RemoveFlag(FL_NOTARGET);
 		}
+	}
+
+	DeterminePlayerModel();
+
+	char mapname[256];
+	Q_snprintf(mapname, sizeof(mapname), "maps/%s", STRING(gpGlobals->mapname));
+
+	Q_FixSlashes(mapname);
+	Q_strlower(mapname);
+
+	if (sk_player_weapons.GetBool() && gpGlobals->eLoadType != MapLoad_Background && !V_stristr(mapname, "credits"))
+	{
+		if (sv_player_hardcoremode.GetBool())
+		{
+			EquipSuit();
+			GiveNamedItem("weapon_physcannon");
+			GiveNamedItem("weapon_knife");
+			GiveNamedItem("weapon_crowbar");
+			GiveNamedItem("weapon_grapple");
+			GiveNamedItem("weapon_katana");
+		}
+		else if (GetLevel() == MAX_LEVEL)
+		{
+			EquipSuit();
+			GiveNamedItem("weapon_grapple");
+			GiveNamedItem("weapon_physcannon");
+		}
+		else
+		{
+			EquipSuit();
+			BaseClass::GiveAmmo(120, "Pistol");
+			BaseClass::GiveAmmo(220, "SMG1");
+			BaseClass::GiveAmmo(60, "MP5Ammo");
+			GiveNamedItem("weapon_smg1");
+			GiveNamedItem("weapon_mp5");
+			GiveNamedItem("weapon_crowbar");
+			GiveNamedItem("weapon_pistol");
+			GiveNamedItem("weapon_physcannon");
+			GiveNamedItem("weapon_knife");
+			GiveNamedItem("weapon_grapple");
+			GiveNamedItem("weapon_katana");
+		}
+	}
+}
+
+void CHL2_Player::DeterminePlayerModel()
+{
+	if ((GetFlags() & FL_FAKECLIENT))
+	{
+		SetPlayerModelCustom("none");
+	}
+	else
+	{
+		SetPlayerModel();
 	}
 }
 

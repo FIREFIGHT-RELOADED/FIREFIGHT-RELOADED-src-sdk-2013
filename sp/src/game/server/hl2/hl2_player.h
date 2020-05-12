@@ -250,6 +250,8 @@ public:
 
 	void		KickAttack(void);
 	void		SetPlayerModel(void);
+	void		DeterminePlayerModel();
+	void		SetPlayerModelCustom(const char* szModel);
 
 	bool	m_bIsPlayerADev;
 	bool	CheckIfDev(void);

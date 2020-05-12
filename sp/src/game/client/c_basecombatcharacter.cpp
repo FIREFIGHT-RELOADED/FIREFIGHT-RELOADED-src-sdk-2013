@@ -118,19 +118,27 @@ void C_BaseCombatCharacter::GetGlowEffectColor( float *r, float *g, float *b )
 //-----------------------------------------------------------------------------
 void C_BaseCombatCharacter::UpdateGlowEffect( void )
 {
+	// create a new effect
+	if ( m_bGlowEnabled )
+	{
+		float r, g, b;
+		GetGlowEffectColor(&r, &g, &b);
+		UpdateGlowEffect(Vector(r, g, b), 1.0);
+	}
+}
+
+void C_BaseCombatCharacter::UpdateGlowEffect(Vector &color, float alpha)
+{
 	// destroy the existing effect
-	if ( m_pGlowEffect )
+	if (m_pGlowEffect)
 	{
 		DestroyGlowEffect();
 	}
 
 	// create a new effect
-	if ( m_bGlowEnabled )
+	if (m_bGlowEnabled)
 	{
-		float r, g, b;
-		GetGlowEffectColor( &r, &g, &b );
-
-		m_pGlowEffect = new CGlowObject( this, Vector( r, g, b ), 1.0, true );
+		m_pGlowEffect = new CGlowObject(this, color, alpha, true);
 	}
 }
 

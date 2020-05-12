@@ -312,6 +312,11 @@ $Project "Server (FR)"
 
 			$Folder	"NPCs"
 			{
+				$Folder	"Bots"
+				{
+					$File	"firefightreloaded\bot\npc_player.cpp"
+					$File	"firefightreloaded\bot\npc_player.h"
+				}
 				$File	"firefightreloaded\npc_antlionguardian.cpp"
 				$File	"firefightreloaded\npc_antlionworker.cpp"
 				$File	"firefightreloaded\npc_antlionworker.h"

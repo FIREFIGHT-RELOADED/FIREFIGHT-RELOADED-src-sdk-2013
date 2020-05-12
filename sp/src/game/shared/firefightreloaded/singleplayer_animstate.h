@@ -16,8 +16,10 @@
  
 #ifdef CLIENT_DLL
 #include "c_baseplayer.h"
+#include "c_ai_basenpc.h"
 #else
 #include "player.h"
+#include "ai_basenpc.h"
 #endif
  
 class CSinglePlayerAnimState

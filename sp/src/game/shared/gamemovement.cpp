@@ -2430,6 +2430,7 @@ bool CGameMovement::CheckJumpButton( void )
 	}
 
 	// Check for an air dash as long as we are not holding the button.
+	//bots could spam jump. this fixes that.
 	if (bAirDash)
 	{
 		AirDash();
@@ -2597,11 +2598,11 @@ bool CGameMovement::CheckJumpButton( void )
 
 void CGameMovement::AirDash(void)
 {
-	// if we are pogojumping, don't do anything. please.
-	if (mv->m_nOldButtons & IN_JUMP)
+	if (m_1AirDashes >= AIRDASH_MAXJUMPCOUNT)
 		return;
 
-	if (m_1AirDashes == AIRDASH_MAXJUMPCOUNT)
+	// if we are pogojumping, don't do anything. please.
+	if (mv->m_nOldButtons & IN_JUMP)
 		return;
 	
 	float flDashZ = 0.0f;

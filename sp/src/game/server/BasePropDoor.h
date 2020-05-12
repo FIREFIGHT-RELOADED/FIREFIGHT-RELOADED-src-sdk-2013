@@ -131,7 +131,6 @@ private:
 	// Do not make the functions in this block virtual!!
 	// {
 	bool DoorActivate();
-	void DoorOpen( CBaseEntity *pOpenAwayFrom );
 	void OpenIfUnlocked(CBaseEntity *pActivator, CBaseEntity *pOpenAwayFrom);
 
 	void DoorOpenMoveDone();
@@ -222,7 +221,7 @@ private:
 
 	//HUMAN ERROR:
 public:
-
+	void DoorOpen(CBaseEntity *pOpenAwayFrom);
 	bool AreWeLocked(void);
 	bool IsMyDoorLock(CBaseEntity *pLock);
 	void BreakDoors(Vector vecOrigin, AngularImpulse angImpulse);

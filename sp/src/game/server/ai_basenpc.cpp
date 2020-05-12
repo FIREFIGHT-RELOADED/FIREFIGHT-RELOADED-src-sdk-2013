@@ -5198,6 +5198,33 @@ void CAI_BaseNPC::GiveWeapon( string_t iszWeaponName )
 	OnGivenWeapon( pWeapon );
 }
 
+void CAI_BaseNPC::GiveWeapon(const char *iszWeaponName)
+{
+	CBaseCombatWeapon* pWeapon = Weapon_Create(iszWeaponName);
+	if (!pWeapon)
+	{
+		Warning("Couldn't create weapon %s to give NPC %s.\n", iszWeaponName, GetEntityName());
+		return;
+	}
+
+	// If I have a weapon already, drop it
+	if (GetActiveWeapon())
+	{
+		Weapon_Drop(GetActiveWeapon());
+	}
+
+	// If I have a name, make my weapon match it with "_weapon" appended
+	if (GetEntityName() != NULL_STRING)
+	{
+		pWeapon->SetName(AllocPooledString(UTIL_VarArgs("%s_weapon", GetEntityName())));
+	}
+
+	Weapon_Equip(pWeapon);
+
+	// Handle this case
+	OnGivenWeapon(pWeapon);
+}
+
 //-----------------------------------------------------------------------------
 // Rather specific function that tells us if an NPC is in the process of 
 // moving to a weapon with the intent to pick it up.

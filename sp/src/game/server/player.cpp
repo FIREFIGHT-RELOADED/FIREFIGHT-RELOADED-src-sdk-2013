@@ -6022,46 +6022,6 @@ void CBasePlayer::Spawn( void )
 	m_weaponFiredTimer.Invalidate();
 
 	SetMaxArmorValue(sv_player_maxsuitpower.GetInt());
-
-	char mapname[256];
-	Q_snprintf(mapname, sizeof(mapname), "maps/%s", STRING(gpGlobals->mapname));
-
-	Q_FixSlashes(mapname);
-	Q_strlower(mapname);
-
-	if (sk_player_weapons.GetBool() && gpGlobals->eLoadType != MapLoad_Background && !V_stristr(mapname, "credits"))
-	{
-		if (sv_player_hardcoremode.GetBool())
-		{
-			EquipSuit();
-			GiveNamedItem("weapon_physcannon");
-			GiveNamedItem("weapon_knife");
-			GiveNamedItem("weapon_crowbar");
-			GiveNamedItem("weapon_grapple");
-			GiveNamedItem("weapon_katana");
-		}
-		else if (GetLevel() == MAX_LEVEL)
-		{
-			EquipSuit();
-			GiveNamedItem("weapon_grapple");
-			GiveNamedItem("weapon_physcannon");
-		}
-		else
-		{
-			EquipSuit();
-			GiveAmmo(120, "Pistol");
-			GiveAmmo(220, "SMG1");
-			GiveAmmo(60, "MP5Ammo");
-			GiveNamedItem("weapon_smg1");
-			GiveNamedItem("weapon_mp5");
-			GiveNamedItem("weapon_crowbar");
-			GiveNamedItem("weapon_pistol");
-			GiveNamedItem("weapon_physcannon");
-			GiveNamedItem("weapon_knife");
-			GiveNamedItem("weapon_grapple");
-			GiveNamedItem("weapon_katana");
-		}
-	}
 }
 
 void CBasePlayer::Activate( void )

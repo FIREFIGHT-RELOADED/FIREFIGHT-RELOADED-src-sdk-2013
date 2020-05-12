@@ -1973,7 +1973,7 @@ int CNPC_Combine::SelectFailSchedule( int failedSchedule, int failedTask, AI_Tas
 //-----------------------------------------------------------------------------
 bool CNPC_Combine::ShouldChargePlayer()
 {
-	return GetEnemy() && GetEnemy()->IsPlayer() && PlayerHasMegaPhysCannon() && !IsLimitingHintGroups();
+	return GetEnemy() /*&& GetEnemy()->IsPlayer() && PlayerHasMegaPhysCannon()*/ && !IsLimitingHintGroups();
 }
 
 
@@ -2127,23 +2127,7 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 			if ( m_pSquad )
 			{
 				// Have to explicitly check innate range attack condition as may have weapon with range attack 2
-				if (g_pGameRules->IsSkillLevel(SKILL_HARD) && HasCondition(COND_CAN_RANGE_ATTACK2) && OccupyStrategySlot( SQUAD_SLOT_GRENADE1 ) )
-				{
-					if (!m_fIsPoliceRank)
-					{
-						m_Sentences.Speak("COMBINE_THROW_GRENADE");
-					}
-					return SCHED_COMBINE_TOSS_GRENADE_COVER1;
-				}
-				else if (g_pGameRules->IsSkillLevel(SKILL_VERYHARD) && HasCondition(COND_CAN_RANGE_ATTACK2) && OccupyStrategySlot(SQUAD_SLOT_GRENADE1))
-				{
-					if (!m_fIsPoliceRank)
-					{
-						m_Sentences.Speak("COMBINE_THROW_GRENADE");
-					}
-					return SCHED_COMBINE_TOSS_GRENADE_COVER1;
-				}
-				else if (g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE) && HasCondition(COND_CAN_RANGE_ATTACK2) && OccupyStrategySlot(SQUAD_SLOT_GRENADE1))
+				if ((g_pGameRules->IsSkillLevel(SKILL_HARD) || g_pGameRules->IsSkillLevel(SKILL_VERYHARD) || g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE)) && HasCondition(COND_CAN_RANGE_ATTACK2) && OccupyStrategySlot(SQUAD_SLOT_GRENADE1))
 				{
 					if (!m_fIsPoliceRank)
 					{

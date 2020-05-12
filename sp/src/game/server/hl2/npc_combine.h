@@ -271,14 +271,14 @@ private:
 	int				m_nShots;
 	float			m_flShotDelay;
 	float			m_flStopMoveShootTime;
-	
-	CAI_AssaultBehavior			m_AssaultBehavior;
+
 	CCombineStandoffBehavior	m_StandoffBehavior;
 	CAI_FuncTankBehavior		m_FuncTankBehavior;
 	CAI_RappelBehavior			m_RappelBehavior;
 	CAI_ActBusyBehavior			m_ActBusyBehavior;
 
 public:
+	CAI_AssaultBehavior			m_AssaultBehavior;
 	int				m_iNumGrenades;
 	int				m_iLastAnimEventHandled;
 	bool			m_fIsElite;
