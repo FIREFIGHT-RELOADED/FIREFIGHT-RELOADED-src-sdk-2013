@@ -157,8 +157,8 @@ $sequence "ragdoll" {
 	ikrule "lfoot" release
 }
 
-$includemodel "elitepolice_animations.mdl"
 $includemodel "combine_soldier_anims.mdl"
+$includemodel "elitepolice_animations.mdl"
 $includemodel "player/combine_soldier_anims.mdl"
 
 $collisionjoints "combine_shotgunner_prisonguard_physics.smd"

@@ -222,8 +222,8 @@ $sequence "ragdoll" {
 	ikrule "lfoot" release
 }
 
-$includemodel "elitepolice_animations.mdl"
 $includemodel "combine_soldier_anims.mdl"
+$includemodel "elitepolice_animations.mdl"
 $includemodel "player/Police_animations.mdl"
 $includemodel "player/Police_ss.mdl"
 

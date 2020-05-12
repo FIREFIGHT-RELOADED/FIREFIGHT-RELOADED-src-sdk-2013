@@ -65,3 +65,7 @@ config.cfg
 # shader files
 *.tmp
 
+*.opendb
+*.db
+*.db-shm
+*.db-wal

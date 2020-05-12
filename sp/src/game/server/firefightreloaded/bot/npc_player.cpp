@@ -32,8 +32,8 @@
 extern ConVar sk_combine_guard_kick;
 extern ConVar sk_plr_dmg_buckshot;	
 extern ConVar sk_plr_num_shotgun_pellets;
-
 extern ConVar sv_player_hardcoremode;
+extern ConVar fr_new_normspeed;
 
 LINK_ENTITY_TO_CLASS( npc_player, CNPC_Player );
 
@@ -69,10 +69,8 @@ void CNPC_Player::Spawn( void )
 	Precache();
 
 	// Stronger, tougher.
-	//SetHealth(200);
-	//SetMaxHealth(200);
-	SetHealth(INT_MAX);
-	SetMaxHealth(INT_MAX);
+	SetHealth(200);
+	SetMaxHealth(200);
 	SetKickDamage(sk_combine_guard_kick.GetFloat());
 	SetModel("models/player/playermodels/gordon.mdl");
 
@@ -156,7 +154,12 @@ void CNPC_Player::Precache()
 
 Class_T	CNPC_Player::Classify(void)
 {
-	return CLASS_PLAYER_ALLY;
+	return CLASS_PLAYER_NPC;
+}
+
+float CNPC_Player::GetSequenceGroundSpeed(CStudioHdr* pStudioHdr, int iSequence)
+{
+	return fr_new_normspeed.GetFloat();
 }
 
 void CNPC_Player::DeathSound( const CTakeDamageInfo &info )

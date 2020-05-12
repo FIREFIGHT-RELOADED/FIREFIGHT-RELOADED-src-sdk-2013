@@ -88,25 +88,17 @@ ConVar sv_autojump( "sv_autojump", "0" );
 ConVar hl2_walkspeed("hl2_walkspeed", "180", FCVAR_CHEAT);
 ConVar hl2_normspeed("hl2_normspeed", "210", FCVAR_CHEAT);
 ConVar hl2_sprintspeed("hl2_sprintspeed", "320", FCVAR_CHEAT);
-ConVar fr_new_normspeed("fr_new_normspeed", "320", FCVAR_CHEAT);
+ConVar fr_new_normspeed("fr_new_normspeed", "280", FCVAR_CHEAT);
 ConVar fr_new_walkspeed("fr_new_walkspeed", "210", FCVAR_CHEAT);
 
 ConVar hl2_darkness_flashlight_factor ( "hl2_darkness_flashlight_factor", "1" );
 ConVar sv_leagcy_maxspeed("sv_leagcy_maxspeed", "0", FCVAR_ARCHIVE);
 
-#ifdef HL2MP
-	#define	HL2_WALK_SPEED 150
-	#define	HL2_NORM_SPEED 210
-	#define	HL2_SPRINT_SPEED 320
-	#define	FR_NORM_SPEED 320
-	#define	FR_WALK_SPEED 210
-#else
-	#define	HL2_WALK_SPEED hl2_walkspeed.GetFloat()
-	#define	HL2_NORM_SPEED hl2_normspeed.GetFloat()
-	#define	HL2_SPRINT_SPEED hl2_sprintspeed.GetFloat()
-	#define	FR_NORM_SPEED fr_new_normspeed.GetFloat()
-	#define	FR_WALK_SPEED fr_new_walkspeed.GetFloat()
-#endif
+#define	HL2_WALK_SPEED hl2_walkspeed.GetFloat()
+#define	HL2_NORM_SPEED hl2_normspeed.GetFloat()
+#define	HL2_SPRINT_SPEED hl2_sprintspeed.GetFloat()
+#define	FR_NORM_SPEED fr_new_normspeed.GetFloat()
+#define	FR_WALK_SPEED fr_new_walkspeed.GetFloat()
 
 ConVar player_showpredictedposition( "player_showpredictedposition", "0" );
 ConVar player_showpredictedposition_timestep( "player_showpredictedposition_timestep", "1.0" );
