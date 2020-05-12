@@ -175,6 +175,7 @@ DEFINE_INPUTFUNC( FIELD_STRING,	"ThrowGrenadeAtTarget",	InputThrowGrenadeAtTarge
 DEFINE_FIELD( m_iLastAnimEventHandled, FIELD_INTEGER ),
 DEFINE_FIELD( m_fIsElite, FIELD_BOOLEAN ),
 DEFINE_FIELD( m_fIsAce, FIELD_BOOLEAN ),
+DEFINE_FIELD(m_fIsPlayer, FIELD_BOOLEAN),
 DEFINE_FIELD( m_vecAltFireTarget, FIELD_VECTOR ),
 
 DEFINE_KEYFIELD( m_iTacticalVariant, FIELD_INTEGER, "tacticalvariant" ),
@@ -643,13 +644,20 @@ void CNPC_Combine::StartTaskChaseEnemyContinuously( const Task_t *pTask )
 	}
 
 	// NOTE: This is TaskRunPath here.
-	if ( TranslateActivity( ACT_RUN ) != ACT_INVALID )
+	if (!m_fIsPlayer)
 	{
-		GetNavigator()->SetMovementActivity( ACT_RUN );
+		if (TranslateActivity(ACT_RUN) != ACT_INVALID)
+		{
+			GetNavigator()->SetMovementActivity(ACT_RUN);
+		}
+		else
+		{
+			GetNavigator()->SetMovementActivity(ACT_WALK);
+		}
 	}
 	else
 	{
-		GetNavigator()->SetMovementActivity(ACT_WALK);
+		GetNavigator()->SetMovementActivity(ACT_RUN);
 	}
 
 	// Cover is void once I move
@@ -820,7 +828,7 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 				{
 					m_flLastAttackTime = gpGlobals->curtime;
 
-					if (!m_fIsPoliceRank)
+					if (!m_fIsPoliceRank || !m_fIsPlayer)
 					{
 						m_Sentences.Speak("COMBINE_ANNOUNCE", SENTENCE_PRIORITY_HIGH);
 					}
@@ -847,7 +855,7 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 			}
 			else
 			{
-				if (!m_fIsPoliceRank)
+				if (!m_fIsPoliceRank || !m_fIsPlayer)
 				{
 					m_Sentences.Speak("COMBINE_THROW_GRENADE", SENTENCE_PRIORITY_MEDIUM);
 				}
@@ -986,7 +994,7 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 							m_pSquad->SquadRemember(bits_MEMORY_PLAYER_HURT);
 						}
 
-						if (!m_fIsPoliceRank)
+						if (!m_fIsPoliceRank || !m_fIsPlayer)
 						{
 							m_Sentences.Speak("COMBINE_PLAYERHIT", SENTENCE_PRIORITY_INVALID);
 						}
@@ -1307,7 +1315,7 @@ void CNPC_Combine::Event_Killed( const CTakeDamageInfo &info )
 			m_nSkin = COMBINE_SKIN_DEADADDITIONAL;
 		}
 	}
-	else
+	else if (!m_fIsPlayer)
 	{
 		if (m_nSkin != COMBINE_SKIN_DEADDEFAULT)
 		{
@@ -1464,9 +1472,9 @@ void CNPC_Combine::AnnounceAssault(void)
 		return;
 
 	// Make sure player can see me
-	if ( FVisible( pBCC ) )
+	if ( FVisible( pBCC ) && !m_fIsPlayer)
 	{
-		if (!m_fIsPoliceRank)
+		if (!m_fIsPoliceRank || !m_fIsPlayer)
 		{
 			m_Sentences.Speak("COMBINE_ASSAULT");
 		}
@@ -1476,75 +1484,82 @@ void CNPC_Combine::AnnounceAssault(void)
 
 void CNPC_Combine::AnnounceEnemyType( CBaseEntity *pEnemy )
 {
-	const char *pSentenceName = "COMBINE_MONST";
-	switch ( pEnemy->Classify() )
+	if (!m_fIsPoliceRank || !m_fIsPlayer)
 	{
-	case CLASS_PLAYER:
-		pSentenceName = "COMBINE_ALERT";
-		break;
+		const char* pSentenceName = "COMBINE_MONST";
+		switch (pEnemy->Classify())
+		{
+		case CLASS_PLAYER:
+		case CLASS_PLAYER_NPC:
+			pSentenceName = "COMBINE_ALERT";
+			break;
 
-	case CLASS_PLAYER_ALLY:
-	case CLASS_CITIZEN_REBEL:
-	case CLASS_CITIZEN_PASSIVE:
-	case CLASS_VORTIGAUNT:
-		pSentenceName = "COMBINE_MONST_CITIZENS";
-		break;
+		case CLASS_PLAYER_ALLY:
+		case CLASS_CITIZEN_REBEL:
+		case CLASS_CITIZEN_PASSIVE:
+		case CLASS_VORTIGAUNT:
+			pSentenceName = "COMBINE_MONST_CITIZENS";
+			break;
 
-	case CLASS_PLAYER_ALLY_VITAL:
-		pSentenceName = "COMBINE_MONST_CHARACTER";
-		break;
+		case CLASS_PLAYER_ALLY_VITAL:
+			pSentenceName = "COMBINE_MONST_CHARACTER";
+			break;
 
-	case CLASS_ANTLION:
-		pSentenceName = "COMBINE_MONST_BUGS";
-		break;
+		case CLASS_ANTLION:
+			pSentenceName = "COMBINE_MONST_BUGS";
+			break;
 
-	case CLASS_ZOMBIE:
-		pSentenceName = "COMBINE_MONST_ZOMBIES";
-		break;
+		case CLASS_ZOMBIE:
+			pSentenceName = "COMBINE_MONST_ZOMBIES";
+			break;
 
-	case CLASS_HEADCRAB:
-	case CLASS_BARNACLE:
-		pSentenceName = "COMBINE_MONST_PARASITES";
-		break;
+		case CLASS_HEADCRAB:
+		case CLASS_BARNACLE:
+			pSentenceName = "COMBINE_MONST_PARASITES";
+			break;
+		}
+
+		m_Sentences.Speak(pSentenceName, SENTENCE_PRIORITY_HIGH);
 	}
-
-	m_Sentences.Speak( pSentenceName, SENTENCE_PRIORITY_HIGH );
 }
 
 void CNPC_Combine::AnnounceEnemyKill( CBaseEntity *pEnemy )
 {
-	if (!pEnemy )
-		return;
-
-	const char *pSentenceName = "COMBINE_KILL_MONST";
-	switch ( pEnemy->Classify() )
+	if (!m_fIsPoliceRank || !m_fIsPlayer)
 	{
-	case CLASS_PLAYER:
-		pSentenceName = "COMBINE_PLAYER_DEAD";
-		break;
+		if (!pEnemy)
+			return;
 
-		// no sentences for these guys yet
-	case CLASS_PLAYER_ALLY:
-	case CLASS_CITIZEN_REBEL:
-	case CLASS_CITIZEN_PASSIVE:
-	case CLASS_VORTIGAUNT:
-		break;
+		const char* pSentenceName = "COMBINE_KILL_MONST";
+		switch (pEnemy->Classify())
+		{
+		case CLASS_PLAYER:
+			pSentenceName = "COMBINE_PLAYER_DEAD";
+			break;
 
-	case CLASS_PLAYER_ALLY_VITAL:
-		break;
+			// no sentences for these guys yet
+		case CLASS_PLAYER_ALLY:
+		case CLASS_CITIZEN_REBEL:
+		case CLASS_CITIZEN_PASSIVE:
+		case CLASS_VORTIGAUNT:
+			break;
 
-	case CLASS_ANTLION:
-		break;
+		case CLASS_PLAYER_ALLY_VITAL:
+			break;
 
-	case CLASS_ZOMBIE:
-		break;
+		case CLASS_ANTLION:
+			break;
 
-	case CLASS_HEADCRAB:
-	case CLASS_BARNACLE:
-		break;
+		case CLASS_ZOMBIE:
+			break;
+
+		case CLASS_HEADCRAB:
+		case CLASS_BARNACLE:
+			break;
+		}
+
+		m_Sentences.Speak(pSentenceName, SENTENCE_PRIORITY_HIGH);
 	}
-
-	m_Sentences.Speak( pSentenceName, SENTENCE_PRIORITY_HIGH );
 }
 
 //-----------------------------------------------------------------------------
@@ -1607,7 +1622,7 @@ int CNPC_Combine::SelectCombatSchedule()
 			}
 			else
 			{
-				if ( m_pSquad->GetLeader() && FOkToMakeSound( SENTENCE_PRIORITY_MEDIUM ) )
+				if ( m_pSquad->GetLeader() && FOkToMakeSound( SENTENCE_PRIORITY_MEDIUM ) && !m_fIsPlayer)
 				{
 					JustMadeSound( SENTENCE_PRIORITY_MEDIUM );	// squelch anything that isn't high priority so the leader can speak
 				}
@@ -1846,7 +1861,7 @@ int CNPC_Combine::SelectSchedule( void )
 					{
 						// I hear something dangerous, probably need to take cover.
 						// dangerous sound nearby!, call it out if we are not elite metropolice
-						if (!m_fIsPoliceRank)
+						if (!m_fIsPoliceRank || !m_fIsPlayer)
 						{
 							const char *pSentenceName = "COMBINE_DANGER";
 
@@ -1896,8 +1911,17 @@ int CNPC_Combine::SelectSchedule( void )
 	{
 	case NPC_STATE_IDLE:
 		{
-			if ( m_bShouldPatrol )
-				return SCHED_COMBINE_PATROL;
+			if (m_bShouldPatrol)
+			{
+				if (!m_fIsPlayer)
+				{
+					return SCHED_COMBINE_PATROL;
+				}
+				else
+				{
+					return SCHED_COMBINE_PATROL_PLAYER;
+				}
+			}
 		}
 		// NOTE: Fall through!
 
@@ -1929,8 +1953,17 @@ int CNPC_Combine::SelectSchedule( void )
 			// Don't patrol if I'm in the middle of an assault, because I'll never return to the assault. 
 			if ( !m_AssaultBehavior.HasAssaultCue() )
 			{
-				if( m_bShouldPatrol || HasCondition( COND_COMBINE_SHOULD_PATROL ) )
-					return SCHED_COMBINE_PATROL;
+				if (m_bShouldPatrol || HasCondition(COND_COMBINE_SHOULD_PATROL))
+				{
+					if (!m_fIsPlayer)
+					{
+						return SCHED_COMBINE_PATROL;
+					}
+					else
+					{
+						return SCHED_COMBINE_PATROL_PLAYER;
+					}
+				}
 			}
 		}
 		break;
@@ -1954,7 +1987,7 @@ int CNPC_Combine::SelectFailSchedule( int failedSchedule, int failedTask, AI_Tas
 {
 	if( failedSchedule == SCHED_COMBINE_TAKE_COVER1 )
 	{
-		if( IsInSquad() && IsStrategySlotRangeOccupied(SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2) && HasCondition(COND_SEE_ENEMY) )
+		if( IsInSquad() && IsStrategySlotRangeOccupied(SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2) && HasCondition(COND_SEE_ENEMY) && !m_fIsPlayer )
 		{
 			// This eases the effects of an unfortunate bug that usually plagues shotgunners. Since their rate of fire is low,
 			// they spend relatively long periods of time without an attack squad slot. If you corner a shotgunner, usually 
@@ -1973,7 +2006,7 @@ int CNPC_Combine::SelectFailSchedule( int failedSchedule, int failedTask, AI_Tas
 //-----------------------------------------------------------------------------
 bool CNPC_Combine::ShouldChargePlayer()
 {
-	return GetEnemy() /*&& GetEnemy()->IsPlayer() && PlayerHasMegaPhysCannon()*/ && !IsLimitingHintGroups();
+	return GetEnemy() && GetEnemy()->IsPlayer() /*&& PlayerHasMegaPhysCannon()*/ && !IsLimitingHintGroups();
 }
 
 
@@ -2129,7 +2162,7 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 				// Have to explicitly check innate range attack condition as may have weapon with range attack 2
 				if ((g_pGameRules->IsSkillLevel(SKILL_HARD) || g_pGameRules->IsSkillLevel(SKILL_VERYHARD) || g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE)) && HasCondition(COND_CAN_RANGE_ATTACK2) && OccupyStrategySlot(SQUAD_SLOT_GRENADE1))
 				{
-					if (!m_fIsPoliceRank)
+					if (!m_fIsPoliceRank || !m_fIsPlayer)
 					{
 						m_Sentences.Speak("COMBINE_THROW_GRENADE");
 					}
@@ -2200,7 +2233,14 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 					RememberUnreachable( GetEnemy() );
 				}
 
-				return TranslateSchedule( SCHED_COMBINE_PATROL );
+				if (!m_fIsPlayer)
+				{
+					return TranslateSchedule(SCHED_COMBINE_PATROL);
+				}
+				else
+				{
+					return TranslateSchedule(SCHED_COMBINE_PATROL_PLAYER);
+				}
 			}
 		}
 		break;
@@ -2409,8 +2449,12 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 			// If I have an enemy, don't go off into random patrol mode.
 			//if ( GetEnemy() && GetEnemy()->IsAlive() )
 				//return SCHED_COMBINE_PATROL_ENEMY;
-
+			
 			return SCHED_COMBINE_PATROL;
+		}
+	case SCHED_COMBINE_PATROL_PLAYER:
+		{
+			return SCHED_COMBINE_PATROL_PLAYER;
 		}
 	}
 
@@ -2601,7 +2645,7 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 					}
 				}			
 
-				if (!m_fIsPoliceRank)
+				if (!m_fIsPoliceRank || !m_fIsPlayer)
 				{
 					m_Sentences.Speak("COMBINE_KICK");
 				}
@@ -2610,7 +2654,7 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 			}
 
 		case COMBINE_AE_CAUGHT_ENEMY:
-			if (!m_fIsPoliceRank)
+			if (!m_fIsPoliceRank || !m_fIsPlayer)
 			{
 				m_Sentences.Speak("COMBINE_ALERT");
 			}
@@ -2693,14 +2737,17 @@ void CNPC_Combine::SpeakSentence( int sentenceType )
 	switch( sentenceType )
 	{
 	case 0: // assault
-		AnnounceAssault();
+		if (!m_fIsPoliceRank || !m_fIsPlayer)
+		{
+			AnnounceAssault();
+		}
 		break;
 
 	case 1: // Flanking the player
 		// If I'm moving more than 20ft, I need to talk about it
 		if ( GetNavigator()->GetPath()->GetPathLength() > 20 * 12.0f )
 		{
-			if (!m_fIsPoliceRank)
+			if (!m_fIsPoliceRank || !m_fIsPlayer)
 			{
 				m_Sentences.Speak("COMBINE_FLANK");
 			}
@@ -2721,23 +2768,26 @@ void CNPC_Combine::PainSound ( void )
 	if ( GetFlags() & FL_DISSOLVING )
 		return;
 
-	if ( gpGlobals->curtime > m_flNextPainSoundTime )
+	if (!m_fIsPoliceRank || !m_fIsPlayer)
 	{
-		const char *pSentenceName = "COMBINE_PAIN";
-		float healthRatio = (float)GetHealth() / (float)GetMaxHealth();
-		if ( !HasMemory(bits_MEMORY_PAIN_LIGHT_SOUND) && healthRatio > 0.9 )
+		if (gpGlobals->curtime > m_flNextPainSoundTime)
 		{
-			Remember( bits_MEMORY_PAIN_LIGHT_SOUND );
-			pSentenceName = "COMBINE_TAUNT";
-		}
-		else if ( !HasMemory(bits_MEMORY_PAIN_HEAVY_SOUND) && healthRatio < 0.25 )
-		{
-			Remember( bits_MEMORY_PAIN_HEAVY_SOUND );
-			pSentenceName = "COMBINE_COVER";
-		}
+			const char* pSentenceName = "COMBINE_PAIN";
+			float healthRatio = (float)GetHealth() / (float)GetMaxHealth();
+			if (!HasMemory(bits_MEMORY_PAIN_LIGHT_SOUND) && healthRatio > 0.9)
+			{
+				Remember(bits_MEMORY_PAIN_LIGHT_SOUND);
+				pSentenceName = "COMBINE_TAUNT";
+			}
+			else if (!HasMemory(bits_MEMORY_PAIN_HEAVY_SOUND) && healthRatio < 0.25)
+			{
+				Remember(bits_MEMORY_PAIN_HEAVY_SOUND);
+				pSentenceName = "COMBINE_COVER";
+			}
 
-		m_Sentences.Speak( pSentenceName, SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS );
-		m_flNextPainSoundTime = gpGlobals->curtime + 1;
+			m_Sentences.Speak(pSentenceName, SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS);
+			m_flNextPainSoundTime = gpGlobals->curtime + 1;
+		}
 	}
 }
 
@@ -2752,19 +2802,22 @@ void CNPC_Combine::LostEnemySound( void)
 	if ( gpGlobals->curtime <= m_flNextLostSoundTime )
 		return;
 
-	const char *pSentence;
-	if (!(CBaseEntity*)GetEnemy() || gpGlobals->curtime - GetEnemyLastTimeSeen() > 10)
+	if (!m_fIsPoliceRank || !m_fIsPlayer)
 	{
-		pSentence = "COMBINE_LOST_LONG"; 
-	}
-	else
-	{
-		pSentence = "COMBINE_LOST_SHORT";
-	}
+		const char* pSentence;
+		if (!(CBaseEntity*)GetEnemy() || gpGlobals->curtime - GetEnemyLastTimeSeen() > 10)
+		{
+			pSentence = "COMBINE_LOST_LONG";
+		}
+		else
+		{
+			pSentence = "COMBINE_LOST_SHORT";
+		}
 
-	if ( m_Sentences.Speak( pSentence ) >= 0 )
-	{
-		m_flNextLostSoundTime = gpGlobals->curtime + random->RandomFloat(5.0,15.0);
+		if (m_Sentences.Speak(pSentence) >= 0)
+		{
+			m_flNextLostSoundTime = gpGlobals->curtime + random->RandomFloat(5.0, 15.0);
+		}
 	}
 }
 
@@ -2776,7 +2829,10 @@ void CNPC_Combine::LostEnemySound( void)
 //-----------------------------------------------------------------------------
 void CNPC_Combine::FoundEnemySound( void)
 {
-	m_Sentences.Speak( "COMBINE_REFIND_ENEMY", SENTENCE_PRIORITY_HIGH );
+	if (!m_fIsPoliceRank || !m_fIsPlayer)
+	{
+		m_Sentences.Speak("COMBINE_REFIND_ENEMY", SENTENCE_PRIORITY_HIGH);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -2789,10 +2845,13 @@ void CNPC_Combine::FoundEnemySound( void)
 // BUGBUG: It looks like this is never played because combine don't do SCHED_WAKE_ANGRY or anything else that does a TASK_SOUND_WAKE
 void CNPC_Combine::AlertSound( void)
 {
-	if ( gpGlobals->curtime > m_flNextAlertSoundTime )
+	if (!m_fIsPoliceRank || !m_fIsPlayer)
 	{
-		m_Sentences.Speak( "COMBINE_GO_ALERT", SENTENCE_PRIORITY_HIGH );
-		m_flNextAlertSoundTime = gpGlobals->curtime + 10.0f;
+		if (gpGlobals->curtime > m_flNextAlertSoundTime)
+		{
+			m_Sentences.Speak("COMBINE_GO_ALERT", SENTENCE_PRIORITY_HIGH);
+			m_flNextAlertSoundTime = gpGlobals->curtime + 10.0f;
+		}
 	}
 }
 
@@ -2801,7 +2860,7 @@ void CNPC_Combine::AlertSound( void)
 //=========================================================
 void CNPC_Combine::NotifyDeadFriend ( CBaseEntity* pFriend )
 {
-	if (!m_fIsPoliceRank)
+	if (!m_fIsPoliceRank || !m_fIsPlayer)
 	{
 		if (GetSquad()->NumMembers() < 2)
 		{
@@ -2823,14 +2882,17 @@ void CNPC_Combine::NotifyDeadFriend ( CBaseEntity* pFriend )
 //=========================================================
 void CNPC_Combine::DeathSound ( void )
 {
-	// NOTE: The response system deals with this at the moment
-	if ( GetFlags() & FL_DISSOLVING )
-		return;
+	if (!m_fIsPoliceRank || !m_fIsPlayer)
+	{
+		// NOTE: The response system deals with this at the moment
+		if (GetFlags() & FL_DISSOLVING)
+			return;
 
-	if (IsOnFire())
-		return;
+		if (IsOnFire())
+			return;
 
-	m_Sentences.Speak( "COMBINE_DIE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS );
+		m_Sentences.Speak("COMBINE_DIE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS);
+	}
 }
 
 //=========================================================
@@ -2838,7 +2900,7 @@ void CNPC_Combine::DeathSound ( void )
 //=========================================================
 void CNPC_Combine::IdleSound( void )
 {
-	if (!m_fIsPoliceRank)
+	if (!m_fIsPoliceRank || !m_fIsPlayer)
 	{
 		if (g_fCombineQuestion || random->RandomInt(0, 1))
 		{
@@ -4034,6 +4096,34 @@ DEFINE_SCHEDULE
  "		TASK_WAIT						3"
  "		TASK_WAIT_RANDOM				3"
  "		TASK_SET_SCHEDULE				SCHEDULE:SCHED_COMBINE_PATROL" // keep doing it
+ ""
+ "	Interrupts"
+ "		COND_ENEMY_DEAD"
+ "		COND_LIGHT_DAMAGE"
+ "		COND_HEAVY_DAMAGE"
+ "		COND_HEAR_DANGER"
+ "		COND_HEAR_MOVE_AWAY"
+ "		COND_NEW_ENEMY"
+ "		COND_SEE_ENEMY"
+ "		COND_CAN_RANGE_ATTACK1"
+ "		COND_CAN_RANGE_ATTACK2"
+ )
+
+ // so basically we need this because the player npcs run at player speed. in order for this speed to make sence we have to change the patrol schedule.
+ DEFINE_SCHEDULE	
+ (
+ SCHED_COMBINE_PATROL_PLAYER,
+
+ "	Tasks"
+ "		TASK_STOP_MOVING				0"
+ "		TASK_WANDER						900540" 
+ "		TASK_RUN_PATH					0"
+ "		TASK_WAIT_FOR_MOVEMENT			0"
+ "		TASK_STOP_MOVING				0"
+ "		TASK_FACE_REASONABLE			0"
+ "		TASK_WAIT						3"
+ "		TASK_WAIT_RANDOM				3"
+ "		TASK_SET_SCHEDULE				SCHEDULE:SCHED_COMBINE_PATROL_PLAYER" // keep doing it
  ""
  "	Interrupts"
  "		COND_ENEMY_DEAD"

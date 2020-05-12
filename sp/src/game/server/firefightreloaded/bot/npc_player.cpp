@@ -25,6 +25,7 @@
 #include "gameweaponmanager.h"
 #include "vehicle_base.h"
 #include "gib.h"
+#include "filesystem.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -52,6 +53,12 @@ const char* g_charNPCMidRangeWeapons[] =
 	"weapon_ar2"
 };
 
+const char* g_charNPCShortRangeWeapons[] =
+{
+	"weapon_shotgun",
+	"weapon_pistol"
+};
+
 CNPC_Player::CNPC_Player()
 {
 	m_flSoonestWeaponSwitch = gpGlobals->curtime;
@@ -77,25 +84,55 @@ void CNPC_Player::Spawn( void )
 	//Give him a random amount of grenades on spawn
 	m_iNumGrenades = random->RandomInt(2, 3);
 	AddGlowEffect();
-	GiveWeapons();
-	m_fIsElite = true;
+
 	m_fIsAce = true;
+	m_fIsPlayer = true;
 
 	CapabilitiesAdd( bits_CAP_ANIMATEDFACE );
 	CapabilitiesAdd( bits_CAP_MOVE_SHOOT );
 	CapabilitiesAdd(bits_CAP_MOVE_JUMP);
 	CapabilitiesAdd( bits_CAP_DOORS_GROUP );
+	CapabilitiesRemove(bits_CAP_INNATE_MELEE_ATTACK1);
+
+	GiveWeapons();
+	GiveRandomModel();
 
 	BaseClass::Spawn();
 }
 
 void CNPC_Player::GiveWeapons(void)
 {
-	int nWeapons = ARRAYSIZE(g_charNPCMidRangeWeapons);
-	int randomChoice = rand() % nWeapons;
-	const char* pRandomName = g_charNPCMidRangeWeapons[randomChoice];
-	GiveWeapon(pRandomName);
-	GiveWeapon("weapon_shotgun");
+	int nWeaponsMid = ARRAYSIZE(g_charNPCMidRangeWeapons);
+	int randomChoiceMid = rand() % nWeaponsMid;
+	const char* pRandomNameMid = g_charNPCMidRangeWeapons[randomChoiceMid];
+	GiveWeapon(pRandomNameMid);
+	DevMsg("PLAYER: GIVING MID RANGE WEAPON %s.\n", pRandomNameMid);
+
+	int nWeaponsShort = ARRAYSIZE(g_charNPCShortRangeWeapons);
+	int randomChoiceShort = rand() % nWeaponsShort;
+	const char* pRandomNameShort = g_charNPCShortRangeWeapons[randomChoiceShort];
+	GiveWeapon(pRandomNameShort);
+	DevMsg("PLAYER: GIVING SHORT RANGE WEAPON %s.\n", pRandomNameShort);
+}
+
+void CNPC_Player::GiveRandomModel(void)
+{
+	FileFindHandle_t findHandle = NULL;
+	CUtlVector< const char* >	vecAvailModels;
+	const char* pszFilename = g_pFullFileSystem->FindFirst("models/player/playermodels/*.mdl", &findHandle);
+	while (pszFilename)
+	{
+		char szModelName[2048];
+		Q_snprintf(szModelName, sizeof(szModelName), "models/player/playermodels/%s", pszFilename);
+		vecAvailModels.AddToTail(szModelName);
+		pszFilename = g_pFullFileSystem->FindNext(findHandle);
+	}
+	g_pFullFileSystem->FindClose(findHandle);
+
+	DevMsg("PLAYER: INIT %i MODELS.\n", vecAvailModels.Count());
+	const char* pRandomName = vecAvailModels[rand() % vecAvailModels.Count()];
+	SetModel(pRandomName);
+	DevMsg("PLAYER: GIVING RANDOM MODEL %s.\n", pRandomName);
 }
 
 void CNPC_Player::GiveWeapon(const char* iszWeaponName)
@@ -132,16 +169,17 @@ void CNPC_Player::GiveWeapon(const char* iszWeaponName)
 //-----------------------------------------------------------------------------
 void CNPC_Player::Precache()
 {
-	PrecacheModel("models/player/playermodels/gordon.mdl");
-	PrecacheModel("models/gibs/combine_super_soldier_beheaded.mdl");
-
-	PrecacheModel("models/gibs/soldier_elite_head.mdl");
-	PrecacheModel("models/gibs/soldier_elite_left_arm.mdl");
-	PrecacheModel("models/gibs/soldier_elite_right_arm.mdl");
-	PrecacheModel("models/gibs/soldier_elite_torso.mdl");
-	PrecacheModel("models/gibs/soldier_elite_pelvis.mdl");
-	PrecacheModel("models/gibs/soldier_elite_left_leg.mdl");
-	PrecacheModel("models/gibs/soldier_elite_right_leg.mdl");
+	FileFindHandle_t findHandle = NULL;
+	const char* pszFilename = g_pFullFileSystem->FindFirst("models/player/playermodels/*.mdl", &findHandle);
+	while (pszFilename)
+	{
+		char szModelName[2048];
+		Q_snprintf(szModelName, sizeof(szModelName), "models/player/playermodels/%s", pszFilename);
+		CBaseEntity::PrecacheModel(szModelName);
+		DevMsg("Precached Player Model %s\n", szModelName);
+		pszFilename = g_pFullFileSystem->FindNext(findHandle);
+	}
+	g_pFullFileSystem->FindClose(findHandle);
 
 	UTIL_PrecacheOther( "item_healthvial" );
 	UTIL_PrecacheOther( "weapon_frag" );
@@ -205,7 +243,7 @@ void CNPC_Player::NPCThink( void )
 		CBaseCombatWeapon* pActiveWeapon = GetActiveWeapon();
 		if (pActiveWeapon)
 		{
-			Msg("PLAYER: SWITCHING.\n");
+			DevMsg("PLAYER: SWITCHING.\n");
 			if (SwitchToNextBestWeaponBot(pActiveWeapon))
 			{
 				m_flSoonestWeaponSwitch = gpGlobals->curtime + PLAYERNPC_FASTEST_SWITCH_TIME;
@@ -226,7 +264,7 @@ float CNPC_Player::BotWeaponRangeDetermine(CBaseCombatWeapon* pActiveWeapon)
 
 	//0 = max range, 1 = melee, 2 = short range, 3 = mid range, 4 = long range
 
-	if (FClassnameIs(pActiveWeapon, "weapon_shotgun"))
+	if (FClassnameIs(pActiveWeapon, "weapon_shotgun") || FClassnameIs(pActiveWeapon, "weapon_pistol"))
 	{
 		flDeterminedRange = SKILL_SHORT_RANGE;
 	}
@@ -239,7 +277,7 @@ float CNPC_Player::BotWeaponRangeDetermine(CBaseCombatWeapon* pActiveWeapon)
 		flDeterminedRange = SKILL_MAX_RANGE;
 	}
 
-	Msg("PLAYER: DETERMINED %s RANGE AS %i\n", pActiveWeapon->GetClassname(), (int)flDeterminedRange);
+	DevMsg("PLAYER: DETERMINED %s RANGE AS %i\n", pActiveWeapon->GetClassname(), (int)flDeterminedRange);
 
 	return flDeterminedRange;
 }
@@ -263,11 +301,11 @@ CBaseCombatWeapon* CNPC_Player::GetNextBestWeaponBot(CBaseCombatWeapon* pCurrent
 			{
 				float flDist;
 				flDist = (GetLocalOrigin() - GetEnemy()->GetLocalOrigin()).Length();
-				Msg("PLAYER: TARGET AT %i\n", (int)flDist);
+				DevMsg("PLAYER: TARGET AT %i\n", (int)flDist);
 
 				if (BotWeaponRangeDetermine(pCheck) >= flDist)
 				{
-					Msg("PLAYER: SETTING %s AS BEST.\n", pCheck->GetClassname());
+					DevMsg("PLAYER: SETTING %s AS BEST.\n", pCheck->GetClassname());
 					// if this weapon is useable, flag it as the best
 					pBest = pCheck;
 				}
@@ -277,7 +315,7 @@ CBaseCombatWeapon* CNPC_Player::GetNextBestWeaponBot(CBaseCombatWeapon* pCurrent
 		if (!pCheck->HasAnyAmmo())
 		{
 			CBaseCombatWeapon* pActiveWeapon = GetActiveWeapon();
-			Msg("PLAYER: SETTING CURRENT WEAPON AS BEST.\n");
+			DevMsg("PLAYER: SETTING CURRENT WEAPON AS BEST.\n");
 			return pActiveWeapon;
 		}
 	}
@@ -337,7 +375,7 @@ bool CNPC_Player::Weapon_Switch(CBaseCombatWeapon* pWeapon)
 	pWeapon->RemoveEffects(EF_NODRAW);
 	m_hActiveWeapon = pWeapon;
 
-	Msg("PLAYER: SWITCHED WEAPON TO: %s\n", pWeapon->GetClassname());
+	DevMsg("PLAYER: SWITCHED WEAPON TO: %s\n", pWeapon->GetClassname());
 
 	return pWeapon->Deploy();
 }

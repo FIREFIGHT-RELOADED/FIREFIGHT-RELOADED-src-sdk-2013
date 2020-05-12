@@ -79,6 +79,7 @@ public:
 	Class_T			Classify( void );
 	bool			IsElite() { return m_fIsElite; }
 	bool			IsAce() { return m_fIsAce; }
+	bool			IsPlayerNPC() { return m_fIsPlayer; }
 	void			DelayAltFireAttack( float flDelay );
 	void			DelaySquadAltFireAttack( float flDelay );
 	float			MaxYawSpeed( void );
@@ -183,6 +184,7 @@ private:
 		SCHED_COMBINE_TAKECOVER_FAILED,
 		SCHED_COMBINE_GRENADE_AND_RELOAD,
 		SCHED_COMBINE_PATROL,
+		SCHED_COMBINE_PATROL_PLAYER,
 		SCHED_COMBINE_BUGBAIT_DISTRACTION,
 		SCHED_COMBINE_CHARGE_TURRET,
 		SCHED_COMBINE_DROP_GRENADE,
@@ -283,6 +285,7 @@ public:
 	int				m_iLastAnimEventHandled;
 	bool			m_fIsElite;
 	bool			m_fIsAce;
+	bool			m_fIsPlayer;
 	bool			m_fIsPoliceRank;
 	Vector			m_vecAltFireTarget;
 
