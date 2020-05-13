@@ -144,8 +144,21 @@ void CGrappleHook::Precache( void )
 //-----------------------------------------------------------------------------
 void CGrappleHook::HookTouch( CBaseEntity *pOther )
 {
-	if ( !pOther || !pOther->IsSolid() || pOther->IsSolidFlagSet(FSOLID_VOLUME_CONTENTS))
+	static const char* ppszIgnoredClasses[] =
+	{
+		"prop_detail",
+		"prop_dynamic",
+		"prop_dynamic_override"
+	};
+
+	if ( !pOther || !pOther->IsSolid() || pOther->IsSolidFlagSet(FSOLID_NOT_SOLID | FSOLID_TRIGGER | FSOLID_VOLUME_CONTENTS) || pOther->IsEffectActive(EF_NODRAW))
 		return;
+
+	for (int i = 0; i < ARRAYSIZE(ppszIgnoredClasses); i++)
+	{
+		if (pOther->ClassMatches(ppszIgnoredClasses[i]))
+			return ;
+	}
  
 	trace_t	tr;
 	tr = BaseClass::GetTouchTrace();

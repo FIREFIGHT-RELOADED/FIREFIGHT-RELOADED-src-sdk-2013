@@ -61,7 +61,9 @@ const char *g_charNPCSSpawnerList[] =
 	"npc_citizen",
 	"npc_ministrider",
 	"npc_rollermine",
-	"npc_cscanner"
+	"npc_cscanner",
+	//temp until we actually set up the wave system.
+	"npc_player"
 };
 
 const char *g_charNPCSCombineFirefightCommon[] =
@@ -83,7 +85,9 @@ const char *g_charNPCSCombineFirefightRare[] =
 	"npc_combineguard",
 	"npc_ministrider",
 	"npc_rollermine",
-	"npc_cscanner"
+	"npc_cscanner",
+	//temp until we actually set up the wave system.
+	"npc_player"
 };
 
 const char *g_charNPCSCombineFirefightSoldierWeapons[] =
@@ -111,7 +115,9 @@ const char *g_charNPCSAntlionAssaultRare[] =
 {
 	"npc_antlionworker",
 	"npc_antlionguard",
-	"npc_antlionguardian"
+	"npc_antlionguardian",
+	//temp until we actually set up the wave system.
+	"npc_player"
 };
 
 const char *g_charNPCSZombieSurvivalCommon[] =
@@ -125,7 +131,9 @@ const char *g_charNPCSZombieSurvivalCommon[] =
 const char *g_charNPCSZombieSurvivalRare[] =
 {
 	"npc_poisonzombie",
-	"npc_zombine"
+	"npc_zombine",
+	//temp until we actually set up the wave system.
+	"npc_player"
 };
 
 const char *g_charNPCSXenInvasionCommon[] =
@@ -141,7 +149,9 @@ const char *g_charNPCSXenInvasionRare[] =
 	"npc_headcrab_fast",
 	"npc_headcrab_poison",
 	"npc_vortigaunt",
-	"npc_headcrab"
+	"npc_headcrab",
+	//temp until we actually set up the wave system.
+	"npc_player"
 };
 
 // no npc list as npc_citizen is the only character.
@@ -191,7 +201,9 @@ const char *g_charNPCSFirefightRumbleRare[] =
 	//these cits are used for rare spawns. we need them to be equipped with RPGS.
 	"npc_ministrider",
 	"npc_rollermine",
-	"npc_cscanner"
+	"npc_cscanner",
+	//temp until we actually set up the wave system.
+	"npc_player"
 };
 
 static void DispatchActivate( CBaseEntity *pEntity )

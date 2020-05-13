@@ -18,7 +18,7 @@
 #ifdef GLOWS_ENABLE
 
 ConVar glow_outline_effect_enable( "glow_outline_effect_enable", "1", FCVAR_ARCHIVE, "Enable entity outline glow effects." );
-ConVar glow_outline_effect_width( "glow_outline_width", "10.0f", FCVAR_CHEAT, "Width of glow outline effect in screen space." );
+ConVar glow_outline_effect_width( "glow_outline_width", "14.0f", FCVAR_CHEAT, "Width of glow outline effect in screen space." );
 
 extern bool g_bDumpRenderTargets; // in viewpostprocess.cpp
 

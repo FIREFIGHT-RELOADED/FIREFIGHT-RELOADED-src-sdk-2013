@@ -96,6 +96,8 @@ public:
 
 #ifdef GLOWS_ENABLE
 	CGlowObject			*GetGlowObject( void ){ return m_pGlowEffect; }
+	virtual bool		GetGlowsEnabled(void) { return m_bGlowEnabled; }
+	virtual void		SetGlowObject(CGlowObject *obj) { m_pGlowEffect = obj; }
 	virtual void		GetGlowEffectColor( float *r, float *g, float *b );
 #endif // GLOWS_ENABLE
 

@@ -30,6 +30,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+//TODO: GIVE PLAYERS A HINT WHEN ALLY SPAWN
+
 extern ConVar sk_combine_guard_kick;
 extern ConVar sk_plr_dmg_buckshot;	
 extern ConVar sk_plr_num_shotgun_pellets;
@@ -92,7 +94,6 @@ void CNPC_Player::Spawn( void )
 	CapabilitiesAdd( bits_CAP_MOVE_SHOOT );
 	CapabilitiesAdd(bits_CAP_MOVE_JUMP);
 	CapabilitiesAdd( bits_CAP_DOORS_GROUP );
-	CapabilitiesRemove(bits_CAP_INNATE_MELEE_ATTACK1);
 
 	GiveWeapons();
 	GiveRandomModel();
@@ -115,22 +116,36 @@ void CNPC_Player::GiveWeapons(void)
 	DevMsg("PLAYER: GIVING SHORT RANGE WEAPON %s.\n", pRandomNameShort);
 }
 
+//modifed from utilshared
+int PlayerRandomInt(int iMinVal, int iMaxVal, int additionalSeed = 0)
+{
+	int seed = additionalSeed;
+	random->SetSeed(seed);
+	return random->RandomInt(iMinVal, iMaxVal);
+}
+
 void CNPC_Player::GiveRandomModel(void)
 {
-	FileFindHandle_t findHandle = NULL;
-	CUtlVector< const char* >	vecAvailModels;
-	const char* pszFilename = g_pFullFileSystem->FindFirst("models/player/playermodels/*.mdl", &findHandle);
-	while (pszFilename)
+	CUtlVector<const char*> vecAvailModels;
+	FileFindHandle_t h;
+	const char* szFilename = g_pFullFileSystem->FindFirstEx("models/player/playermodels/*.mdl", NULL, &h);
+	for (; szFilename; szFilename = g_pFullFileSystem->FindNext(h))
 	{
 		char szModelName[2048];
-		Q_snprintf(szModelName, sizeof(szModelName), "models/player/playermodels/%s", pszFilename);
+		Q_snprintf(szModelName, sizeof(szModelName), "models/player/playermodels/%s", szFilename);
 		vecAvailModels.AddToTail(szModelName);
-		pszFilename = g_pFullFileSystem->FindNext(findHandle);
+		DevMsg("PLAYER: INIT %s WITH INDEX %i.\n", szModelName, vecAvailModels.Find(szModelName));
 	}
-	g_pFullFileSystem->FindClose(findHandle);
+	g_pFullFileSystem->FindClose(h);
 
 	DevMsg("PLAYER: INIT %i MODELS.\n", vecAvailModels.Count());
-	const char* pRandomName = vecAvailModels[rand() % vecAvailModels.Count()];
+	for (int i = 0; i < vecAvailModels.Size(); i++)
+	{
+		DevMsg("PLAYER: INIT2: %s\n", vecAvailModels[i]);
+	}
+	int seed = PlayerRandomInt(0, 99999);
+	DevMsg("PLAYER: RANDSEED: %i\n", seed);
+	const char* pRandomName = vecAvailModels[PlayerRandomInt(0, vecAvailModels.Count() - 1, seed)];
 	SetModel(pRandomName);
 	DevMsg("PLAYER: GIVING RANDOM MODEL %s.\n", pRandomName);
 }
