@@ -116,38 +116,32 @@ void CNPC_Player::GiveWeapons(void)
 	DevMsg("PLAYER: GIVING SHORT RANGE WEAPON %s.\n", pRandomNameShort);
 }
 
-//modifed from utilshared
-int PlayerRandomInt(int iMinVal, int iMaxVal, int additionalSeed = 0)
-{
-	int seed = additionalSeed;
-	random->SetSeed(seed);
-	return random->RandomInt(iMinVal, iMaxVal);
-}
-
 void CNPC_Player::GiveRandomModel(void)
 {
-	CUtlVector<const char*> vecAvailModels;
+	CUtlDict<const char*> vecAvailModels;
+
 	FileFindHandle_t h;
 	const char* szFilename = g_pFullFileSystem->FindFirstEx("models/player/playermodels/*.mdl", NULL, &h);
 	for (; szFilename; szFilename = g_pFullFileSystem->FindNext(h))
 	{
 		char szModelName[2048];
 		Q_snprintf(szModelName, sizeof(szModelName), "models/player/playermodels/%s", szFilename);
-		vecAvailModels.AddToTail(szModelName);
+		vecAvailModels.Insert(szModelName);
 		DevMsg("PLAYER: INIT %s WITH INDEX %i.\n", szModelName, vecAvailModels.Find(szModelName));
 	}
 	g_pFullFileSystem->FindClose(h);
 
 	DevMsg("PLAYER: INIT %i MODELS.\n", vecAvailModels.Count());
-	for (int i = 0; i < vecAvailModels.Size(); i++)
+	int nModels = vecAvailModels.Count();
+	int randomChoice = rand() % nModels;
+	DevMsg("PLAYER: MODEL INDEX %i.\n", randomChoice - 1);
+	const char* pRandomName = vecAvailModels[randomChoice - 1];
+	DevMsg("PLAYER: MODEL %s.\n", (pRandomName != NULL) ? pRandomName : "null");
+	if (pRandomName != NULL)
 	{
-		DevMsg("PLAYER: INIT2: %s\n", vecAvailModels[i]);
+		SetModel(pRandomName);
+		DevMsg("PLAYER: GIVING RANDOM MODEL %s.\n", pRandomName);
 	}
-	int seed = PlayerRandomInt(0, 99999);
-	DevMsg("PLAYER: RANDSEED: %i\n", seed);
-	const char* pRandomName = vecAvailModels[PlayerRandomInt(0, vecAvailModels.Count() - 1, seed)];
-	SetModel(pRandomName);
-	DevMsg("PLAYER: GIVING RANDOM MODEL %s.\n", pRandomName);
 }
 
 void CNPC_Player::GiveWeapon(const char* iszWeaponName)
