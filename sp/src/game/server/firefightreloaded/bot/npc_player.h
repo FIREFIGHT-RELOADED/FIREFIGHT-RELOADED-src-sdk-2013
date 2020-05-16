@@ -12,9 +12,6 @@
 
 #include "npc_combine.h"
 
-#include <vector>
-#include <iostream>
-
 //ported bot funcs
 #define SKILL_SHORT_RANGE 150.0f
 #define SKILL_MID_RANGE 350.0f
@@ -59,13 +56,8 @@ public:
 
 	bool		IsLightDamage( const CTakeDamageInfo &info );
 	bool		IsHeavyDamage( const CTakeDamageInfo &info );
-
-	std::vector<const char*>	AvailableModels;
-
 private:
 	float		m_flSoonestWeaponSwitch;
-	int			nModelRandomRetries;
-	int			nModelRandomMaxRetries = 10;
 };
 
 #endif // NPC_COMBINES_H
