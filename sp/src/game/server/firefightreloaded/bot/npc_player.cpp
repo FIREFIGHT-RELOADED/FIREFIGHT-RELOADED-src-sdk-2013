@@ -27,6 +27,10 @@
 #include "gib.h"
 #include "filesystem.h"
 
+#include <time.h>
+#include <vector>
+#include "mathlib/vector.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -118,29 +122,31 @@ void CNPC_Player::GiveWeapons(void)
 
 void CNPC_Player::GiveRandomModel(void)
 {
-	CUtlDict<const char*> vecAvailModels;
+	//Seeding a random value using the current time
+	srand(time(0));
 
-	FileFindHandle_t h;
-	const char* szFilename = g_pFullFileSystem->FindFirstEx("models/player/playermodels/*.mdl", NULL, &h);
-	for (; szFilename; szFilename = g_pFullFileSystem->FindNext(h))
-	{
-		char szModelName[2048];
-		Q_snprintf(szModelName, sizeof(szModelName), "models/player/playermodels/%s", szFilename);
-		vecAvailModels.Insert(szModelName);
-		DevMsg("PLAYER: INIT %s WITH INDEX %i.\n", szModelName, vecAvailModels.Find(szModelName));
-	}
-	g_pFullFileSystem->FindClose(h);
-
-	DevMsg("PLAYER: INIT %i MODELS.\n", vecAvailModels.Count());
-	int nModels = vecAvailModels.Count();
+	int nModels = AvailableModels.size();
 	int randomChoice = rand() % nModels;
-	DevMsg("PLAYER: MODEL INDEX %i.\n", randomChoice - 1);
-	const char* pRandomName = vecAvailModels[randomChoice - 1];
-	DevMsg("PLAYER: MODEL %s.\n", (pRandomName != NULL) ? pRandomName : "null");
+	const char* pRandomName = AvailableModels[randomChoice];
+
 	if (pRandomName != NULL)
 	{
+		//Reset counter
+		nModelRandomRetries = 0;
+
 		SetModel(pRandomName);
 		DevMsg("PLAYER: GIVING RANDOM MODEL %s.\n", pRandomName);
+	}
+	else if(nModelRandomRetries <= nModelRandomMaxRetries)
+	{
+		//Mainly for debugging + making sure we don't loop infinitely
+		nModelRandomRetries += 1;
+		//Try again
+		GiveRandomModel();
+	}
+	else
+	{
+		nModelRandomRetries = 0;
 	}
 }
 
@@ -180,6 +186,7 @@ void CNPC_Player::Precache()
 {
 	FileFindHandle_t findHandle = NULL;
 	const char* pszFilename = g_pFullFileSystem->FindFirst("models/player/playermodels/*.mdl", &findHandle);
+
 	while (pszFilename)
 	{
 		char szModelName[2048];
@@ -195,6 +202,23 @@ void CNPC_Player::Precache()
 	UTIL_PrecacheOther( "item_ammo_ar2_altfire" );
 	UTIL_PrecacheOther( "item_ammo_smg1_grenade" );
 	UTIL_PrecacheOther( "item_oicw_grenade" );
+
+	//Precache all models in Playermodels
+	FileFindHandle_t h;
+	const char* szFilename = g_pFullFileSystem->FindFirstEx("models/player/playermodels/*.mdl", NULL, &h);
+
+	//Fill Vector
+	for (; szFilename; szFilename = g_pFullFileSystem->FindNext(h))
+	{
+		AvailableModels.push_back(g_pFullFileSystem->FindNext(h));
+	}
+
+	//Precache all Vector models - Not sure how this affects memory/cpu usage
+	for (size_t i = 0; i < AvailableModels.size(); i++)
+	{
+		if (AvailableModels[i] != NULL)
+			CBaseEntity::PrecacheModel(AvailableModels[i]);
+	}
 
 	BaseClass::Precache();
 }
