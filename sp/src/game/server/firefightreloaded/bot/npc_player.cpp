@@ -100,7 +100,7 @@ void CNPC_Player::Spawn( void )
 	CapabilitiesAdd( bits_CAP_DOORS_GROUP );
 
 	GiveWeapons();
-	GiveRandomModel();
+	//GiveRandomModel();
 
 	BaseClass::Spawn();
 }
@@ -120,6 +120,7 @@ void CNPC_Player::GiveWeapons(void)
 	DevMsg("PLAYER: GIVING SHORT RANGE WEAPON %s.\n", pRandomNameShort);
 }
 
+/*
 void CNPC_Player::GiveRandomModel(void)
 {
 	//Seeding a random value using the current time
@@ -148,7 +149,7 @@ void CNPC_Player::GiveRandomModel(void)
 	{
 		nModelRandomRetries = 0;
 	}
-}
+}*/
 
 void CNPC_Player::GiveWeapon(const char* iszWeaponName)
 {
@@ -203,6 +204,7 @@ void CNPC_Player::Precache()
 	UTIL_PrecacheOther( "item_ammo_smg1_grenade" );
 	UTIL_PrecacheOther( "item_oicw_grenade" );
 
+	/*
 	//Precache all models in Playermodels
 	FileFindHandle_t h;
 	const char* szFilename = g_pFullFileSystem->FindFirstEx("models/player/playermodels/*.mdl", NULL, &h);
@@ -218,7 +220,7 @@ void CNPC_Player::Precache()
 	{
 		if (AvailableModels[i] != NULL)
 			CBaseEntity::PrecacheModel(AvailableModels[i]);
-	}
+	}*/
 
 	BaseClass::Precache();
 }

@@ -12,8 +12,8 @@
 
 #include "npc_combine.h"
 
-#include <vector>
-#include <iostream>
+//#include <vector>
+//#include <iostream>
 
 //ported bot funcs
 #define SKILL_SHORT_RANGE 150.0f
@@ -45,7 +45,7 @@ public:
 	//player emulation
 	bool		Weapon_Switch(CBaseCombatWeapon* pWeapon);
 	void		GiveWeapons(void);
-	void		GiveRandomModel(void);
+	//void		GiveRandomModel(void);
 	float		GetSequenceGroundSpeed(CStudioHdr* pStudioHdr, int iSequence);
 	void		BuildScheduleTestBits( void );
 	int			SelectSchedule ( void );
@@ -59,13 +59,14 @@ public:
 
 	bool		IsLightDamage( const CTakeDamageInfo &info );
 	bool		IsHeavyDamage( const CTakeDamageInfo &info );
-
-	std::vector<const char*>	AvailableModels;
+	//std::vector<const char*>	AvailableModels;
 
 private:
 	float		m_flSoonestWeaponSwitch;
+	/*
 	int			nModelRandomRetries;
 	int			nModelRandomMaxRetries = 10;
+	*/
 };
 
 #endif // NPC_COMBINES_H
