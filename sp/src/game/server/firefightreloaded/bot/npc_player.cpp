@@ -26,10 +26,14 @@
 #include "vehicle_base.h"
 #include "gib.h"
 #include "filesystem.h"
+// TODO: add npc_citizen17 features, like player squads!!!
+#include "ai_squad.h"
 
+/*
 #include <time.h>
 #include <vector>
 #include "mathlib/vector.h"
+*/
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -52,6 +56,7 @@ IMPLEMENT_SERVERCLASS_ST(CNPC_Player, DT_NPC_Player)
 END_SEND_TABLE()
 
 #define	PLAYERNPC_FASTEST_SWITCH_TIME 5.0f
+const int MAX_PLAYER_SQUAD = 4;
 
 const char* g_charNPCMidRangeWeapons[] =
 {
