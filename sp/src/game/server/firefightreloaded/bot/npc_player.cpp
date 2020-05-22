@@ -106,6 +106,15 @@ void CNPC_Player::Spawn( void )
 
 	GiveWeapons();
 	//GiveRandomModel();
+	//do this in the spawner code probably
+	/*
+	CBasePlayer *pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
+	if (pPlayer)
+	{
+		CFmtStr hint;
+		hint.sprintf("#Valve_Hud_AllySpawned");
+		pPlayer->ShowLevelMessage(hint.Access());
+	}*/
 
 	BaseClass::Spawn();
 }
@@ -442,6 +451,9 @@ void CNPC_Player::BuildScheduleTestBits( void )
 //-----------------------------------------------------------------------------
 int CNPC_Player::SelectSchedule ( void )
 {
+	m_FollowBehavior.SetFollowTarget(UTIL_GetNearestPlayer(GetAbsOrigin()));
+	m_FollowBehavior.SetParameters(AIF_SIMPLE);
+
 	return BaseClass::SelectSchedule();
 }
 
