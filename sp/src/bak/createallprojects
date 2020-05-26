@@ -1,0 +1,5 @@
+#!/bin/bash
+
+pushd `dirname $0`
+devtools/bin/vpc /fr /episodic +everything /mksln fr_everything
+popd
