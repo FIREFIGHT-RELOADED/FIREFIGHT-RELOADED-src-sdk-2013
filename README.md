@@ -1,4 +1,4 @@
-<img src="http://i.imgur.com/Br6jx36.png">
+![Logo](https://github.com/FIREFIGHT-RELOADED/FIREFIGHT-RELOADED-src-sdk-2013/raw/master/Graphics/FR_Logo.png)
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
