@@ -15,7 +15,6 @@
 #include "mapentities.h"
 #include "IEffects.h"
 #include "props.h"
-#include "npc_citizen17.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -29,7 +28,7 @@ ConVar sk_spawnerminclientstospawn("sk_spawnerminclientstospawn", "2", FCVAR_NOT
 #define SF_METROPOLICE_ALLOWED_TO_RESPOND	0x01000000
 #define SF_METROPOLICE_MID_RANGE_ATTACK		0x02000000
 
-const char *g_charNPCSSpawnerList[] =
+const char *NPCSPrecacheList[] =
 {
 	"npc_metropolice",
 	"npc_combine_s",
@@ -58,7 +57,6 @@ const char *g_charNPCSSpawnerList[] =
 	"npc_cremator",
 	"npc_elitepolice",
 	"npc_combineguard",
-	"npc_citizen",
 	"npc_ministrider",
 	"npc_rollermine",
 	"npc_cscanner",
@@ -66,101 +64,25 @@ const char *g_charNPCSSpawnerList[] =
 	"npc_player"
 };
 
-const char *g_charNPCSCombineFirefightCommon[] =
-{
-	"npc_metropolice",
-	"npc_combine_s",
-	"npc_combine_e",
-	"npc_combine_p",
-	"npc_combine_shot",
-	"npc_elitepolice"
-};
-
-const char *g_charNPCSCombineFirefightRare[] =
-{
-	"npc_combine_ace",
-	"npc_hunter",
-	"npc_assassin",
-	"npc_cremator",
-	"npc_combineguard",
-	"npc_ministrider",
-	"npc_rollermine",
-	"npc_cscanner",
-	//temp until we actually set up the wave system.
-	"npc_player"
-};
-
-const char *g_charNPCSCombineFirefightSoldierWeapons[] =
+const char *CombineSoldierWeapons[] =
 {
 	"weapon_smg1",
 	"weapon_ar2",
 	"weapon_shotgun"
 };
 
-const char *g_charNPCSCombineFirefightMetropoliceWeapons[] =
+const char *MetropoliceWeapons[] =
 {
 	"weapon_smg1",
 	"weapon_pistol",
 	"weapon_stunstick"
 };
 
-const char *g_charNPCSCombineFirefightEliteMetropoliceWeapons[] =
+const char *EliteMetropoliceWeapons[] =
 {
 	"weapon_smg1",
 	"weapon_ar2",
 	"weapon_pistol"
-};
-
-const char *g_charNPCSAntlionAssaultRare[] =
-{
-	"npc_antlionworker",
-	"npc_antlionguard",
-	"npc_antlionguardian",
-	//temp until we actually set up the wave system.
-	"npc_player"
-};
-
-const char *g_charNPCSZombieSurvivalCommon[] =
-{
-	"npc_zombie",
-	"npc_zombie_torso",
-	"npc_fastzombie",
-	"npc_fastzombie_torso"
-};
-
-const char *g_charNPCSZombieSurvivalRare[] =
-{
-	"npc_poisonzombie",
-	"npc_zombine",
-	//temp until we actually set up the wave system.
-	"npc_player"
-};
-
-const char *g_charNPCSXenInvasionCommon[] =
-{
-	"npc_houndeye",
-	"npc_bullsquid",
-	"npc_agrunt",
-	"npc_acontroller"
-};
-
-const char *g_charNPCSXenInvasionRare[] =
-{
-	"npc_headcrab_fast",
-	"npc_headcrab_poison",
-	"npc_vortigaunt",
-	"npc_headcrab",
-	//temp until we actually set up the wave system.
-	"npc_player"
-};
-
-// no npc list as npc_citizen is the only character.
-const char *g_charNPCSResistanceRetributionCommonWeapons[] =
-{
-	"weapon_smg1",
-	"weapon_crowbar",
-	"weapon_shotgun",
-	"weapon_ar2"
 };
 
 const char *g_charNPCSFirefightRumbleCommon[] =

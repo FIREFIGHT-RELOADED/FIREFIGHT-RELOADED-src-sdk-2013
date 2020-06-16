@@ -1277,7 +1277,7 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 
 	const char *CHalfLife2::GetGameDescription(void)
 	{
-		return GetGamemodeName_ServerBrowser(bHasRandomized);
+		return "FIREFIGHT RELOADED";
 	}
 
 #endif //} !CLIENT_DLL
