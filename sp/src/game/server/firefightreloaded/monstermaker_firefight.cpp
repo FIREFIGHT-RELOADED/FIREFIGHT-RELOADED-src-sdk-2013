@@ -312,7 +312,8 @@ bool CNPCMakerFirefight::CanMakeNPC(bool bIgnoreSolidEntities)
 
 	if (g_iNPCLimit >= g_fr_npclimit.GetInt() && g_fr_npclimit.GetInt() != 0)
 		return false;
-	
+
+	/*
 	int iMinPlayersToSpawn = 0;
 
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
@@ -324,7 +325,7 @@ bool CNPCMakerFirefight::CanMakeNPC(bool bIgnoreSolidEntities)
 		}
 	}
 
-	/*if (iMinPlayersToSpawn < sk_spawnerminclientstospawn.GetInt() && g_pGameRules->IsMultiplayer())
+	if (iMinPlayersToSpawn < sk_spawnerminclientstospawn.GetInt() && g_pGameRules->IsMultiplayer())
 		return false;*/
 
 	if ( m_nMaxLiveChildren > 0 && m_nLiveChildren >= m_nMaxLiveChildren )
@@ -491,6 +492,20 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 		if (Q_stristr(pRandomName, "npc_combine_ace"))
 		{
 			pent->m_spawnEquipment = MAKE_STRING("weapon_smg1");
+		}
+		else if (Q_stristr(pRandomName, "npc_player"))
+		{
+			//alert all players.
+			for (int i = 1; i <= gpGlobals->maxClients; i++)
+			{
+				CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+				if (pPlayer)
+				{
+					CFmtStr hint;
+					hint.sprintf("#Valve_Hud_AllySpawned");
+					pPlayer->ShowLevelMessage(hint.Access());
+				}
+			}
 		}
 
 		pent->m_isRareEntity = true;
