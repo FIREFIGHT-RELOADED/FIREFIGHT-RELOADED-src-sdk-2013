@@ -180,17 +180,6 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 	{
 		RefreshSkillData( true );
 
-		const char *cfgfile = defaultcfgfile.GetString();
-
-		if (cfgfile && cfgfile[0])
-		{
-			char szCommand[256];
-
-			Log("Executing default gamemode config file %s\n", cfgfile);
-			Q_snprintf(szCommand, sizeof(szCommand), "exec %s\n", cfgfile);
-			engine->ServerCommand(szCommand);
-		}
-
 		char mapcfg[256];
 		Q_snprintf(mapcfg, sizeof(mapcfg), "cfg/%s.cfg", STRING(gpGlobals->mapname));
 

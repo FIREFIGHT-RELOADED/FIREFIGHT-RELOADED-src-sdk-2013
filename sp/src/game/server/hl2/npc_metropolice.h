@@ -26,6 +26,9 @@
 #include "ai_sentence.h"
 #include "props.h"
 
+#define SF_METROPOLICE_ALLOWED_TO_RESPOND	0x01000000
+#define SF_METROPOLICE_MID_RANGE_ATTACK		0x02000000
+
 class CNPC_MetroPolice;
 
 class CNPC_MetroPolice : public CAI_BaseActor

@@ -17,6 +17,7 @@
 // Spawnflags
 //-----------------------------------------------------------------------------
 #define SF_NPCMAKER_FADE			1	// Children's corpses fade
+//TODO: add mutators, including this.
 #define SF_NPCMAKER_DOUBLETROUBLE	8	//Spawn double the enemies
 //#define SF_NPCMAKER_ALWAYSUSERADIUS	32	// Use radius spawn whenever spawning
 
@@ -36,8 +37,7 @@ public:
 	bool CanMakeRareNPC();
 
 	virtual void DeathNotice( CBaseEntity *pChild );// NPC maker children use this to tell the NPC maker that they have died.
-	virtual void MakeNPC(void);
-	virtual void MakeRareNPC(void);
+	virtual void MakeNPC(bool rareNPC = false);
 
 	virtual	void ChildPreSpawn( CAI_BaseNPC *pChild ) {};
 	virtual	void ChildPostSpawn( CAI_BaseNPC *pChild );
