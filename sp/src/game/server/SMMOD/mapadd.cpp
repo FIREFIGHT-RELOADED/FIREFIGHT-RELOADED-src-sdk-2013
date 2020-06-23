@@ -57,7 +57,7 @@ bool CMapAdd::RunLabel( const char *mapaddMap, const char *szLabel)
 			KeyValues *pMapAddEnt = pMapAdd2->GetFirstTrueSubKey();
 			while (pMapAddEnt)
 			{
-				if (!HandlePlayerEntity(pMapAddEnt, false) && !HandleRemoveEnitity(pMapAddEnt) && !HandleSMODEntity(pMapAddEnt) && !HandleSpecialEnitity(pMapAddEnt) && !HandleWeaponManagerEnitity(pMapAddEnt))
+				if (!HandlePlayerEntity(pMapAddEnt, false) && !HandleRemoveEnitity(pMapAddEnt) && !HandleSMODEntity(pMapAddEnt) && !HandleSpecialEnitity(pMapAddEnt))
 				{
 					Vector SpawnVector = Vector(0,0,0);
 					QAngle SpawnAngle = QAngle(0,0,0);
@@ -167,6 +167,16 @@ bool CMapAdd::HandleSMODEntity( KeyValues *smodEntity)
 }
 bool CMapAdd::HandleSpecialEnitity( KeyValues *specialEntity)
 {
+	//weaponmanagers are moved to HandleSpecialEntity
+	if (AllocPooledString(specialEntity->GetName()) == AllocPooledString("gameweaponmanager"))
+	{
+		const char* pWeaponName = "";
+		int iMaxAllowed = 0;
+		pWeaponName = specialEntity->GetString("weaponname", pWeaponName);
+		iMaxAllowed = specialEntity->GetFloat("maxallowed", iMaxAllowed);
+		CreateWeaponManager(pWeaponName, iMaxAllowed);
+		return true;
+	}
 	return false;
 }
 bool CMapAdd::HandleRemoveEnitity( KeyValues *mapaddValue)
@@ -215,19 +225,6 @@ bool CMapAdd::HandleRemoveEnitity( KeyValues *mapaddValue)
 				}
 			}
 			return true;
-	}
-	return false;
-}
-bool CMapAdd::HandleWeaponManagerEnitity(KeyValues *weaponManagerEntity)
-{
-	if (AllocPooledString(weaponManagerEntity->GetName()) == AllocPooledString("gameweaponmanager"))
-	{
-		const char *pWeaponName = "";
-		int iMaxAllowed = 0;
-		pWeaponName = weaponManagerEntity->GetString("weaponname", pWeaponName);
-		iMaxAllowed = weaponManagerEntity->GetFloat("maxallowed", iMaxAllowed);
-		CreateWeaponManager(pWeaponName, iMaxAllowed);
-		return true;
 	}
 	return false;
 }

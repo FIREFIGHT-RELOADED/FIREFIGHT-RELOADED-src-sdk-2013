@@ -28,7 +28,6 @@ class CMapAdd : public CBaseEntity
 		bool HandleSMODEntity( KeyValues *smodEntity );
 		bool HandleSpecialEnitity( KeyValues *specialEntity);
 		bool HandleRemoveEnitity( KeyValues *mapaddValue);
-		bool HandleWeaponManagerEnitity(KeyValues *weaponManagerEntity);
 		void InputRunLabel( inputdata_t &inputData);
 	private:
 		bool bFirstRun;

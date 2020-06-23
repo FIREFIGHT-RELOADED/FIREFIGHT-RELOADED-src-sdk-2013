@@ -936,7 +936,7 @@ int CNPC_BaseZombie::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 
 		if( ShouldBecomeTorso( info, flDamageThreshold ) )
 		{
-			//bool bHitByCombineCannon = (inputInfo.GetAmmoType() == GetAmmoDef()->Index("CombineHeavyCannon"));
+			bool bHitByCombineCannon = (inputInfo.GetAmmoType() == GetAmmoDef()->Index("CombineHeavyCannon"));
 
 			if ( CanBecomeLiveTorso() )
 			{
@@ -950,7 +950,7 @@ int CNPC_BaseZombie::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 					}
 				}
 
-				/*
+				//why not uncomment this code!
 				if ( ( info.GetDamageType() & DMG_BLAST) && random->RandomInt( 0, 1 ) == 0 )
 				{
 					Ignite( 5.0 + random->RandomFloat( 0.0, 5.0 ) );
@@ -965,7 +965,7 @@ int CNPC_BaseZombie::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 						Ignite( 5.0f + random->RandomFloat( 0.0f, 5.0f ) );
 					}
 				}
-				*/
+				
 
 				if (flDamageThreshold >= 1.0)
 				{
@@ -1078,16 +1078,21 @@ void CNPC_BaseZombie::MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize )
 //-----------------------------------------------------------------------------
 bool CNPC_BaseZombie::IsChopped( const CTakeDamageInfo &info )
 {
+	//if we are damaged by a katana, return true.
+	if (info.GetDamageType() & DMG_SLASH)
+		return true;
+
+	/*
 	float flDamageThreshold = MIN( 1, info.GetDamage() / m_iMaxHealth );
 
 	if ( m_iHealth > 0 || flDamageThreshold <= 0.5 )
 		return false;
-
+	
 	if ( !( info.GetDamageType() & DMG_SLASH) )
 		return false;
 
 	if ( !( info.GetDamageType() & DMG_CRUSH) )
-		return false;
+		return false;*/
 
 	if ( info.GetDamageType() & DMG_REMOVENORAGDOLL )
 		return false;
@@ -1222,6 +1227,9 @@ void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info )
 
 		DispatchParticleEffect("blood_zombie_split", GetAbsOrigin(), GetAbsAngles(), this);
 	}
+
+	m_iHealth = 0;
+	Event_Killed(info);
 }
 
 void CNPC_BaseZombie::DieChoppedNoBurn(const CTakeDamageInfo &info)
@@ -1328,6 +1336,9 @@ void CNPC_BaseZombie::DieChoppedNoBurn(const CTakeDamageInfo &info)
 			UTIL_BloodImpact(vecSpot, vecDir, BloodColor(), 1);
 		}
 	}
+
+	m_iHealth = 0;
+	Event_Killed(info);
 }
 
 //-----------------------------------------------------------------------------
