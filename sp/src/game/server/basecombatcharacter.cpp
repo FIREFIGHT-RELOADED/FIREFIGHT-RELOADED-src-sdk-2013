@@ -1542,7 +1542,7 @@ bool CBaseCombatCharacter::BecomeRagdoll( const CTakeDamageInfo &info, const Vec
 
 #ifdef HL2_DLL	
 	// Mega physgun requires everything to be a server-side ragdoll
-	if (m_bForceServerRagdoll == true )
+	if (/*m_bForceServerRagdoll == true && */ HL2GameRules()->MegaPhyscannonActive())
 	{
 		if ( CanBecomeServerRagdoll() == false )
 			return false;

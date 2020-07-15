@@ -135,6 +135,8 @@ $Project "Client (FR)"
 			$File	"firefightreloaded_clientcmds.cpp"
 			$File	"$SRCDIR\game\shared\firefightreloaded\singleplayer_animstate.cpp"
 			$File	"$SRCDIR\game\shared\firefightreloaded\singleplayer_animstate.h"
+			$File	"$SRCDIR\game\shared\firefightreloaded\fr_ragdoll.cpp"
+			$File	"$SRCDIR\game\shared\firefightreloaded\fr_ragdoll.h"
 			$File 	"firefightreloaded\fr_rendertargets.cpp"
 			$File 	"firefightreloaded\fr_rendertargets.h"
 			

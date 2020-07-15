@@ -52,6 +52,7 @@
 #include "filesystem.h"
 #include "cdll_int.h"
 #include "predicted_viewmodel.h"
+#include "firefightreloaded/fr_ragdoll.h"
 
 #ifdef HL2_EPISODIC
 #include "npc_alyx_episodic.h"
@@ -4291,43 +4292,6 @@ bool CHL2_Player::BecomeRagdollOnClient(const Vector &force)
 	return true;
 }
 
-// -------------------------------------------------------------------------------- //
-// Ragdoll entities.
-// -------------------------------------------------------------------------------- //
-
-class CHL2MPRagdoll : public CBaseAnimatingOverlay
-{
-public:
-	DECLARE_CLASS(CHL2MPRagdoll, CBaseAnimatingOverlay);
-	DECLARE_SERVERCLASS();
-
-	// Transmit ragdolls to everyone.
-	virtual int UpdateTransmitState()
-	{
-		return SetTransmitState(FL_EDICT_ALWAYS);
-	}
-
-public:
-	// In case the client has the player entity, we transmit the player index.
-	// In case the client doesn't have it, we transmit the player's model index, origin, and angles
-	// so they can create a ragdoll in the right place.
-	CNetworkHandle(CBaseEntity, m_hPlayer);	// networked entity handle 
-	CNetworkVector(m_vecRagdollVelocity);
-	CNetworkVector(m_vecRagdollOrigin);
-};
-
-LINK_ENTITY_TO_CLASS(hl2mp_ragdoll, CHL2MPRagdoll);
-
-IMPLEMENT_SERVERCLASS_ST_NOBASE(CHL2MPRagdoll, DT_HL2MPRagdoll)
-SendPropVector(SENDINFO(m_vecRagdollOrigin), -1, SPROP_COORD),
-SendPropEHandle(SENDINFO(m_hPlayer)),
-SendPropModelIndex(SENDINFO(m_nModelIndex)),
-SendPropInt(SENDINFO(m_nForceBone), 8, 0),
-SendPropVector(SENDINFO(m_vecForce), -1, SPROP_NOSCALE),
-SendPropVector(SENDINFO(m_vecRagdollVelocity))
-END_SEND_TABLE()
-
-
 void CHL2_Player::CreateRagdollEntity(void)
 {
 	if (m_hRagdoll)
@@ -4337,17 +4301,17 @@ void CHL2_Player::CreateRagdollEntity(void)
 	}
 
 	// If we already have a ragdoll, don't make another one.
-	CHL2MPRagdoll *pRagdoll = dynamic_cast< CHL2MPRagdoll* >(m_hRagdoll.Get());
+	CFRRagdoll_Player* pRagdoll = dynamic_cast<CFRRagdoll_Player*>(m_hRagdoll.Get());
 
 	if (!pRagdoll)
 	{
 		// create a new one
-		pRagdoll = dynamic_cast< CHL2MPRagdoll* >(CreateEntityByName("hl2mp_ragdoll"));
+		pRagdoll = dynamic_cast<CFRRagdoll_Player*>(CreateEntityByName("fr_ragdoll_player"));
 	}
 
 	if (pRagdoll)
 	{
-		pRagdoll->m_hPlayer = this;
+		pRagdoll->m_hEntity = this;
 		pRagdoll->m_vecRagdollOrigin = GetAbsOrigin();
 		pRagdoll->m_vecRagdollVelocity = GetAbsVelocity();
 		pRagdoll->m_nModelIndex = m_nModelIndex;
