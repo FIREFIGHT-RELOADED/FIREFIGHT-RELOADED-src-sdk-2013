@@ -71,5 +71,6 @@ public:
 	~CFRRagdoll_NPC(void);
 
 	void Spawn(void);
+	virtual void TraceAttack(const CTakeDamageInfo& info, const Vector& dir, trace_t* ptr, CDmgAccumulator* pAccumulator);
 };
 #endif // FR_CLIENT

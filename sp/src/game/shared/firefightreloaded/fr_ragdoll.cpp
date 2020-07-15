@@ -274,6 +274,11 @@ void CFRRagdoll_NPC::Spawn(void)
 	BaseClass::Spawn();
 }
 
+void CFRRagdoll_NPC::TraceAttack(const CTakeDamageInfo& info, const Vector& dir, trace_t* ptr, CDmgAccumulator* pAccumulator)
+{
+	Msg("CFRRagdoll_NPC: OW.\n");
+	BaseClass::TraceAttack(info, dir, ptr, pAccumulator);
+}
 
 #endif // FR_CLIENT
 
