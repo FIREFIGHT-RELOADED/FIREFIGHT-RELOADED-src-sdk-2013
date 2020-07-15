@@ -69,5 +69,7 @@ class CFRRagdoll_NPC : public CRagdollProp
 public:
 	CFRRagdoll_NPC(void);
 	~CFRRagdoll_NPC(void);
+
+	void Spawn(void);
 };
 #endif // FR_CLIENT

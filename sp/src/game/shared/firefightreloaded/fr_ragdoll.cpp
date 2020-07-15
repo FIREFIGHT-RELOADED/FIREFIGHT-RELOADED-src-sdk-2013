@@ -267,6 +267,13 @@ CFRRagdoll_NPC::~CFRRagdoll_NPC(void)
 {
 }
 
+void CFRRagdoll_NPC::Spawn(void)
+{
+	BaseClass::Precache();
+	Msg("CFRRagdoll_NPC: I TALK!\n");
+	BaseClass::Spawn();
+}
+
 
 #endif // FR_CLIENT
 
