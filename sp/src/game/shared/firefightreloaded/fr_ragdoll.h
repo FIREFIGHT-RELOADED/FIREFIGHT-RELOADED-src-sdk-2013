@@ -7,14 +7,14 @@
 
 #ifdef CLIENT_DLL
 
-class C_FRRagdoll_Player : public C_BaseAnimatingOverlay
+class C_FRRagdoll_Base : public C_BaseAnimatingOverlay
 {
 public:
-	DECLARE_CLASS(C_FRRagdoll_Player, C_BaseAnimatingOverlay);
+	DECLARE_CLASS(C_FRRagdoll_Base, C_BaseAnimatingOverlay);
 	DECLARE_CLIENTCLASS();
 
-	C_FRRagdoll_Player();
-	~C_FRRagdoll_Player();
+	C_FRRagdoll_Base();
+	~C_FRRagdoll_Base();
 
 	virtual void OnDataChanged(DataUpdateType_t type);
 
@@ -25,26 +25,43 @@ public:
 	void UpdateOnRemove(void);
 	virtual void SetupWeights(const matrix3x4_t* pBoneToWorld, int nFlexWeightCount, float* pFlexWeights, float* pFlexDelayedWeights);
 
-private:
-
-	C_FRRagdoll_Player(const C_FRRagdoll_Player&) {}
+	virtual void CreateFRRagdoll(void);
 
 	void Interp_Copy(C_BaseAnimatingOverlay* pDestinationEntity);
-	void CreateFRRagdoll_Player(void);
 
 private:
+
+	C_FRRagdoll_Base(const C_FRRagdoll_Base&) {}
+
+public:
 
 	EHANDLE	m_hEntity;
 	CNetworkVector(m_vecRagdollVelocity);
 	CNetworkVector(m_vecRagdollOrigin);
 };
 
-#else
-
-class CFRRagdoll_Player : public CBaseAnimatingOverlay
+class C_FRRagdoll_Player : public C_FRRagdoll_Base
 {
 public:
-	DECLARE_CLASS(CFRRagdoll_Player, CBaseAnimatingOverlay);
+	DECLARE_CLASS(C_FRRagdoll_Player, C_FRRagdoll_Base);
+	DECLARE_CLIENTCLASS();
+
+	C_FRRagdoll_Player();
+	~C_FRRagdoll_Player();
+
+	virtual void CreateFRRagdoll(void);
+
+private:
+
+	C_FRRagdoll_Player(const C_FRRagdoll_Player&) {}
+};
+
+#else
+
+class CFRRagdoll_Base : public CBaseAnimatingOverlay
+{
+public:
+	DECLARE_CLASS(CFRRagdoll_Base, CBaseAnimatingOverlay);
 	DECLARE_SERVERCLASS();
 
 	// Transmit ragdolls to everyone.
@@ -62,15 +79,12 @@ public:
 	CNetworkVector(m_vecRagdollOrigin);
 };
 
-class CFRRagdoll_NPC : public CRagdollProp
+class CFRRagdoll_Player : public CFRRagdoll_Base
 {
-	DECLARE_CLASS(CFRRagdoll_NPC, CRagdollProp);
-
 public:
-	CFRRagdoll_NPC(void);
-	~CFRRagdoll_NPC(void);
-
-	void Spawn(void);
-	virtual void TraceAttack(const CTakeDamageInfo& info, const Vector& dir, trace_t* ptr, CDmgAccumulator* pAccumulator);
+	DECLARE_CLASS(CFRRagdoll_Player, CFRRagdoll_Base);
+	DECLARE_SERVERCLASS();
 };
+
+void CreateFRRagdollEntity(CBaseAnimating* ent);
 #endif // FR_CLIENT

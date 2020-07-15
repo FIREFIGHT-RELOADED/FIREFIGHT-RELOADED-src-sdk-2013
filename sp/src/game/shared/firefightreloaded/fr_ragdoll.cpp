@@ -1,5 +1,6 @@
 #include "cbase.h"
 #include "fr_ragdoll.h"
+#include "gamerules.h"
 
 #if CLIENT_DLL
 #include <c_basehlplayer.h>
@@ -11,9 +12,9 @@
 #include "tier0/memdbgon.h"
 
 #ifdef CLIENT_DLL
-//FRRagdoll_Player
+//FRRagdoll_Base
 
-IMPLEMENT_CLIENTCLASS_DT_NOBASE(C_FRRagdoll_Player, DT_FRRagdoll_Player, CFRRagdoll_Player)
+IMPLEMENT_CLIENTCLASS_DT_NOBASE(C_FRRagdoll_Base, DT_FRRagdoll_Base, CFRRagdoll_Base)
 RecvPropVector(RECVINFO(m_vecRagdollOrigin)),
 RecvPropEHandle(RECVINFO(m_hEntity)),
 RecvPropInt(RECVINFO(m_nModelIndex)),
@@ -22,12 +23,12 @@ RecvPropVector(RECVINFO(m_vecForce)),
 RecvPropVector(RECVINFO(m_vecRagdollVelocity))
 END_RECV_TABLE()
 
-C_FRRagdoll_Player::C_FRRagdoll_Player()
+C_FRRagdoll_Base::C_FRRagdoll_Base()
 {
 
 }
 
-C_FRRagdoll_Player::~C_FRRagdoll_Player()
+C_FRRagdoll_Base::~C_FRRagdoll_Base()
 {
 	PhysCleanupFrictionSounds(this);
 
@@ -37,7 +38,7 @@ C_FRRagdoll_Player::~C_FRRagdoll_Player()
 	}
 }
 
-void C_FRRagdoll_Player::Interp_Copy(C_BaseAnimatingOverlay* pSourceEntity)
+void C_FRRagdoll_Base::Interp_Copy(C_BaseAnimatingOverlay* pSourceEntity)
 {
 	if (!pSourceEntity)
 		return;
@@ -62,7 +63,7 @@ void C_FRRagdoll_Player::Interp_Copy(C_BaseAnimatingOverlay* pSourceEntity)
 	}
 }
 
-void C_FRRagdoll_Player::ImpactTrace(trace_t* pTrace, int iDamageType, const char* pCustomImpactName)
+void C_FRRagdoll_Base::ImpactTrace(trace_t* pTrace, int iDamageType, const char* pCustomImpactName)
 {
 	IPhysicsObject* pPhysicsObject = VPhysicsGetObject();
 
@@ -98,7 +99,145 @@ void C_FRRagdoll_Player::ImpactTrace(trace_t* pTrace, int iDamageType, const cha
 }
 
 
-void C_FRRagdoll_Player::CreateFRRagdoll_Player(void)
+void C_FRRagdoll_Base::CreateFRRagdoll(void)
+{
+	// First, initialize all our data. If we have the player's entity on our client,
+	// then we can make ourselves start out exactly where the player is.
+	C_BaseAnimating* pPlayer = dynamic_cast<C_BaseAnimating*>(m_hEntity.Get());
+
+	if (pPlayer && !pPlayer->IsDormant())
+	{
+		// move my current model instance to the ragdoll's so decals are preserved.
+		pPlayer->SnatchModelInstance(this);
+
+		VarMapping_t* varMap = GetVarMapping();
+
+		// set them in a default
+		// pose and slam their velocity, angles and origin
+		SetAbsOrigin(m_vecRagdollOrigin);
+
+		SetAbsAngles(pPlayer->GetRenderAngles());
+
+		SetAbsVelocity(m_vecRagdollVelocity);
+
+		int iSeq = pPlayer->GetSequence();
+		if (iSeq == -1)
+		{
+			Assert(false);	// missing walk_lower?
+			iSeq = 0;
+		}
+
+		SetSequence(iSeq);	// walk_lower, basic pose
+		SetCycle(0.0);
+
+		Interp_Reset(varMap);
+	}
+	else
+	{
+		// overwrite network origin so later interpolation will
+		// use this position
+		SetNetworkOrigin(m_vecRagdollOrigin);
+
+		SetAbsOrigin(m_vecRagdollOrigin);
+		SetAbsVelocity(m_vecRagdollVelocity);
+
+		Interp_Reset(GetVarMapping());
+
+	}
+
+	SetModelIndex(m_nModelIndex);
+
+	// Make us a ragdoll..
+	m_nRenderFX = kRenderFxRagdoll;
+
+	matrix3x4_t boneDelta0[MAXSTUDIOBONES];
+	matrix3x4_t boneDelta1[MAXSTUDIOBONES];
+	matrix3x4_t currentBones[MAXSTUDIOBONES];
+	const float boneDt = 0.05f;
+
+	if (pPlayer && !pPlayer->IsDormant())
+	{
+		pPlayer->GetRagdollInitBoneArrays(boneDelta0, boneDelta1, currentBones, boneDt);
+	}
+	else
+	{
+		GetRagdollInitBoneArrays(boneDelta0, boneDelta1, currentBones, boneDt);
+	}
+
+	InitAsClientRagdoll(boneDelta0, boneDelta1, currentBones, boneDt);
+}
+
+
+void C_FRRagdoll_Base::OnDataChanged(DataUpdateType_t type)
+{
+	BaseClass::OnDataChanged(type);
+
+	if (type == DATA_UPDATE_CREATED)
+	{
+		CreateFRRagdoll();
+	}
+}
+
+IRagdoll* C_FRRagdoll_Base::GetIRagdoll() const
+{
+	return m_pRagdoll;
+}
+
+void C_FRRagdoll_Base::UpdateOnRemove(void)
+{
+	VPhysicsSetObject(NULL);
+
+	BaseClass::UpdateOnRemove();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: clear out any face/eye values stored in the material system
+//-----------------------------------------------------------------------------
+void C_FRRagdoll_Base::SetupWeights(const matrix3x4_t* pBoneToWorld, int nFlexWeightCount, float* pFlexWeights, float* pFlexDelayedWeights)
+{
+	BaseClass::SetupWeights(pBoneToWorld, nFlexWeightCount, pFlexWeights, pFlexDelayedWeights);
+
+	static float destweight[128];
+	static bool bIsInited = false;
+
+	CStudioHdr* hdr = GetModelPtr();
+	if (!hdr)
+		return;
+
+	int nFlexDescCount = hdr->numflexdesc();
+	if (nFlexDescCount)
+	{
+		Assert(!pFlexDelayedWeights);
+		memset(pFlexWeights, 0, nFlexWeightCount * sizeof(float));
+	}
+
+	if (m_iEyeAttachment > 0)
+	{
+		matrix3x4_t attToWorld;
+		if (GetAttachment(m_iEyeAttachment, attToWorld))
+		{
+			Vector local, tmp;
+			local.Init(1000.0f, 0.0f, 0.0f);
+			VectorTransform(local, attToWorld, tmp);
+			modelrender->SetViewTarget(GetModelPtr(), GetBody(), tmp);
+		}
+	}
+}
+
+//player ragdoll
+
+IMPLEMENT_CLIENTCLASS_DT(C_FRRagdoll_Player, DT_FRRagdoll_Player, CFRRagdoll_Player)
+END_RECV_TABLE()
+
+C_FRRagdoll_Player::C_FRRagdoll_Player()
+{
+}
+
+C_FRRagdoll_Player::~C_FRRagdoll_Player()
+{
+}
+
+void C_FRRagdoll_Player::CreateFRRagdoll(void)
 {
 	// First, initialize all our data. If we have the player's entity on our client,
 	// then we can make ourselves start out exactly where the player is.
@@ -183,71 +322,15 @@ void C_FRRagdoll_Player::CreateFRRagdoll_Player(void)
 	InitAsClientRagdoll(boneDelta0, boneDelta1, currentBones, boneDt);
 }
 
-
-void C_FRRagdoll_Player::OnDataChanged(DataUpdateType_t type)
-{
-	BaseClass::OnDataChanged(type);
-
-	if (type == DATA_UPDATE_CREATED)
-	{
-		CreateFRRagdoll_Player();
-	}
-}
-
-IRagdoll* C_FRRagdoll_Player::GetIRagdoll() const
-{
-	return m_pRagdoll;
-}
-
-void C_FRRagdoll_Player::UpdateOnRemove(void)
-{
-	VPhysicsSetObject(NULL);
-
-	BaseClass::UpdateOnRemove();
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: clear out any face/eye values stored in the material system
-//-----------------------------------------------------------------------------
-void C_FRRagdoll_Player::SetupWeights(const matrix3x4_t* pBoneToWorld, int nFlexWeightCount, float* pFlexWeights, float* pFlexDelayedWeights)
-{
-	BaseClass::SetupWeights(pBoneToWorld, nFlexWeightCount, pFlexWeights, pFlexDelayedWeights);
-
-	static float destweight[128];
-	static bool bIsInited = false;
-
-	CStudioHdr* hdr = GetModelPtr();
-	if (!hdr)
-		return;
-
-	int nFlexDescCount = hdr->numflexdesc();
-	if (nFlexDescCount)
-	{
-		Assert(!pFlexDelayedWeights);
-		memset(pFlexWeights, 0, nFlexWeightCount * sizeof(float));
-	}
-
-	if (m_iEyeAttachment > 0)
-	{
-		matrix3x4_t attToWorld;
-		if (GetAttachment(m_iEyeAttachment, attToWorld))
-		{
-			Vector local, tmp;
-			local.Init(1000.0f, 0.0f, 0.0f);
-			VectorTransform(local, attToWorld, tmp);
-			modelrender->SetViewTarget(GetModelPtr(), GetBody(), tmp);
-		}
-	}
-}
 #else
 
 // -------------------------------------------------------------------------------- //
 // Ragdoll entities.
 // -------------------------------------------------------------------------------- //
 
-LINK_ENTITY_TO_CLASS(fr_ragdoll_player, CFRRagdoll_Player);
+LINK_ENTITY_TO_CLASS(fr_ragdoll_base, CFRRagdoll_Base);
 
-IMPLEMENT_SERVERCLASS_ST_NOBASE(CFRRagdoll_Player, DT_FRRagdoll_Player)
+IMPLEMENT_SERVERCLASS_ST_NOBASE(CFRRagdoll_Base, DT_FRRagdoll_Base)
 SendPropVector(SENDINFO(m_vecRagdollOrigin), -1, SPROP_COORD),
 SendPropEHandle(SENDINFO(m_hEntity)),
 SendPropModelIndex(SENDINFO(m_nModelIndex)),
@@ -256,29 +339,25 @@ SendPropVector(SENDINFO(m_vecForce), -1, SPROP_NOSCALE),
 SendPropVector(SENDINFO(m_vecRagdollVelocity))
 END_SEND_TABLE()
 
-LINK_ENTITY_TO_CLASS(physics_prop_fr_ragdoll, CFRRagdoll_NPC);
-LINK_ENTITY_TO_CLASS(prop_fr_ragdoll, CFRRagdoll_NPC);
+LINK_ENTITY_TO_CLASS(fr_ragdoll_player, CFRRagdoll_Player);
 
-CFRRagdoll_NPC::CFRRagdoll_NPC(void)
+IMPLEMENT_SERVERCLASS_ST(CFRRagdoll_Player, DT_FRRagdoll_Player)
+END_SEND_TABLE()
+
+void CreateFRRagdollEntity(CBaseAnimating *ent)
 {
-}
+	CFRRagdoll_Player* pRagdoll = dynamic_cast<CFRRagdoll_Player*>(CreateEntityByName("fr_ragdoll_player"));
 
-CFRRagdoll_NPC::~CFRRagdoll_NPC(void)
-{
+	if (pRagdoll)
+	{
+		pRagdoll->m_hEntity = ent;
+		pRagdoll->m_vecRagdollOrigin = ent->GetAbsOrigin();
+		pRagdoll->m_vecRagdollVelocity = ent->GetAbsVelocity();
+		pRagdoll->m_nModelIndex = ent->m_nModelIndex;
+		pRagdoll->m_nForceBone = ent->m_nForceBone;
+		pRagdoll->m_vecForce = ent->m_vecForce;
+		pRagdoll->SetAbsOrigin(ent->GetAbsOrigin());
+	}
 }
-
-void CFRRagdoll_NPC::Spawn(void)
-{
-	BaseClass::Precache();
-	Msg("CFRRagdoll_NPC: I TALK!\n");
-	BaseClass::Spawn();
-}
-
-void CFRRagdoll_NPC::TraceAttack(const CTakeDamageInfo& info, const Vector& dir, trace_t* ptr, CDmgAccumulator* pAccumulator)
-{
-	Msg("CFRRagdoll_NPC: OW.\n");
-	BaseClass::TraceAttack(info, dir, ptr, pAccumulator);
-}
-
 #endif // FR_CLIENT
 
