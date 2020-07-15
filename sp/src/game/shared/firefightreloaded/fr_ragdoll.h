@@ -38,7 +38,6 @@ private:
 	CNetworkVector(m_vecRagdollVelocity);
 	CNetworkVector(m_vecRagdollOrigin);
 };
-
 #else
 
 class CFRRagdoll_Player : public CBaseAnimatingOverlay
@@ -65,12 +64,6 @@ public:
 class CFRRagdoll_NPC : public CRagdollProp
 {
 	DECLARE_CLASS(CFRRagdoll_NPC, CRagdollProp);
-
-public:
-	CFRRagdoll_NPC(void);
-	~CFRRagdoll_NPC(void);
-
-	void Spawn(void);
-	virtual void TraceAttack(const CTakeDamageInfo& info, const Vector& dir, trace_t* ptr, CDmgAccumulator* pAccumulator);
+	DECLARE_SERVERCLASS();
 };
 #endif // FR_CLIENT
