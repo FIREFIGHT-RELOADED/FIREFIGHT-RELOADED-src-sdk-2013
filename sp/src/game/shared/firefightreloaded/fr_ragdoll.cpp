@@ -585,5 +585,26 @@ EXTERN_SEND_TABLE(DT_RagdollFR)
 IMPLEMENT_SERVERCLASS_ST(CFRRagdoll_NPC, DT_RagdollFR)
 END_SEND_TABLE()
 
+CFRRagdoll_NPC::CFRRagdoll_NPC(void)
+{
+}
+
+CFRRagdoll_NPC::~CFRRagdoll_NPC(void)
+{
+}
+
+void CFRRagdoll_NPC::Spawn(void)
+{
+	BaseClass::Precache();
+	Msg("CFRRagdoll_NPC: I TALK!\n");
+	BaseClass::Spawn();
+}
+
+void CFRRagdoll_NPC::TraceAttack(const CTakeDamageInfo& info, const Vector& dir, trace_t* ptr, CDmgAccumulator* pAccumulator)
+{
+	Msg("CFRRagdoll_NPC: OW.\n");
+	BaseClass::TraceAttack(info, dir, ptr, pAccumulator);
+}
+
 #endif // FR_CLIENT
 

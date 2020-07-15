@@ -65,5 +65,12 @@ class CFRRagdoll_NPC : public CRagdollProp
 {
 	DECLARE_CLASS(CFRRagdoll_NPC, CRagdollProp);
 	DECLARE_SERVERCLASS();
+
+public:
+	CFRRagdoll_NPC(void);
+	~CFRRagdoll_NPC(void);
+
+	void Spawn(void);
+	virtual void TraceAttack(const CTakeDamageInfo& info, const Vector& dir, trace_t* ptr, CDmgAccumulator* pAccumulator);
 };
 #endif // FR_CLIENT

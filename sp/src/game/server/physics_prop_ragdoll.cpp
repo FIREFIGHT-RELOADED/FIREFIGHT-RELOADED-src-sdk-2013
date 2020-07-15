@@ -20,6 +20,7 @@
 #include "AI_Criteria.h"
 #include "ragdoll_shared.h"
 #include "hierarchy.h"
+#include "firefightreloaded/fr_ragdoll.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1298,7 +1299,12 @@ CBaseEntity *CreateServerRagdoll( CBaseAnimating *pAnimating, int forceBone, con
 		// if the entity was killed by physics or a vehicle, move to the vphysics shadow position before creating the ragdoll.
 		SyncAnimatingWithPhysics( pAnimating );
 	}
+	// use dismemberable ragdolls.
+#ifdef FR_DLL
+	CFRRagdoll_NPC* pRagdoll = (CFRRagdoll_NPC*)CBaseEntity::CreateNoSpawn("prop_fr_ragdoll", pAnimating->GetAbsOrigin(), vec3_angle, NULL);
+#else
 	CRagdollProp *pRagdoll = (CRagdollProp *)CBaseEntity::CreateNoSpawn( "prop_ragdoll", pAnimating->GetAbsOrigin(), vec3_angle, NULL );
+#endif
 	pRagdoll->CopyAnimationDataFrom( pAnimating );
 	pRagdoll->SetOwnerEntity( pAnimating );
 	pRagdoll->SetName(AllocPooledString("corpse"));
