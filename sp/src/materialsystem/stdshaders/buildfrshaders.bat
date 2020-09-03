@@ -5,7 +5,7 @@ rem ================================
 rem ==== MOD PATH CONFIGURATIONS ===
 
 rem == Set the absolute path to your mod's game directory here ==
-set GAMEDIR=G:\Projects\GitHub\FIREFIGHT-RELOADED-src-sdk-2013\sp\game\mod_episodic
+set GAMEDIR=%cd%\..\..\..\game\firefightreloaded
 
 rem == Set the relative or absolute path to Source SDK Base 2013 Singleplayer\bin ==
 set SDKBINDIR=D:\SteamLibrary\steamapps\common\Source SDK Base 2013 Singleplayer\bin

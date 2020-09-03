@@ -1,5 +1,5 @@
 #include "shaderlib/cshader.h"
-class pbr_ps30_Static_Index
+class pbr_ps20b_Static_Index
 {
 private:
 	int m_nFLASHLIGHT;
@@ -65,27 +65,6 @@ public:
 #endif
 	}
 private:
-	int m_nUSEENVAMBIENT;
-#ifdef _DEBUG
-	bool m_bUSEENVAMBIENT;
-#endif
-public:
-	void SetUSEENVAMBIENT( int i )
-	{
-		Assert( i >= 0 && i <= 1 );
-		m_nUSEENVAMBIENT = i;
-#ifdef _DEBUG
-		m_bUSEENVAMBIENT = true;
-#endif
-	}
-	void SetUSEENVAMBIENT( bool i )
-	{
-		m_nUSEENVAMBIENT = i ? 1 : 0;
-#ifdef _DEBUG
-		m_bUSEENVAMBIENT = true;
-#endif
-	}
-private:
 	int m_nEMISSIVE;
 #ifdef _DEBUG
 	bool m_bEMISSIVE;
@@ -127,29 +106,8 @@ public:
 		m_bSPECULAR = true;
 #endif
 	}
-private:
-	int m_nPARALLAXOCCLUSION;
-#ifdef _DEBUG
-	bool m_bPARALLAXOCCLUSION;
-#endif
 public:
-	void SetPARALLAXOCCLUSION( int i )
-	{
-		Assert( i >= 0 && i <= 1 );
-		m_nPARALLAXOCCLUSION = i;
-#ifdef _DEBUG
-		m_bPARALLAXOCCLUSION = true;
-#endif
-	}
-	void SetPARALLAXOCCLUSION( bool i )
-	{
-		m_nPARALLAXOCCLUSION = i ? 1 : 0;
-#ifdef _DEBUG
-		m_bPARALLAXOCCLUSION = true;
-#endif
-	}
-public:
-	pbr_ps30_Static_Index( )
+	pbr_ps20b_Static_Index( )
 	{
 #ifdef _DEBUG
 		m_bFLASHLIGHT = false;
@@ -164,10 +122,6 @@ public:
 #endif // _DEBUG
 		m_nLIGHTMAPPED = 0;
 #ifdef _DEBUG
-		m_bUSEENVAMBIENT = false;
-#endif // _DEBUG
-		m_nUSEENVAMBIENT = 0;
-#ifdef _DEBUG
 		m_bEMISSIVE = false;
 #endif // _DEBUG
 		m_nEMISSIVE = 0;
@@ -175,24 +129,20 @@ public:
 		m_bSPECULAR = false;
 #endif // _DEBUG
 		m_nSPECULAR = 0;
-#ifdef _DEBUG
-		m_bPARALLAXOCCLUSION = false;
-#endif // _DEBUG
-		m_nPARALLAXOCCLUSION = 0;
 	}
 	int GetIndex()
 	{
 		// Asserts to make sure that we aren't using any skipped combinations.
 		// Asserts to make sure that we are setting all of the combination vars.
 #ifdef _DEBUG
-		bool bAllStaticVarsDefined = m_bFLASHLIGHT && m_bFLASHLIGHTDEPTHFILTERMODE && m_bLIGHTMAPPED && m_bUSEENVAMBIENT && m_bEMISSIVE && m_bSPECULAR && m_bPARALLAXOCCLUSION;
+		bool bAllStaticVarsDefined = m_bFLASHLIGHT && m_bFLASHLIGHTDEPTHFILTERMODE && m_bLIGHTMAPPED && m_bEMISSIVE && m_bSPECULAR;
 		Assert( bAllStaticVarsDefined );
 #endif // _DEBUG
-		return ( 80 * m_nFLASHLIGHT ) + ( 160 * m_nFLASHLIGHTDEPTHFILTERMODE ) + ( 480 * m_nLIGHTMAPPED ) + ( 960 * m_nUSEENVAMBIENT ) + ( 1920 * m_nEMISSIVE ) + ( 3840 * m_nSPECULAR ) + ( 7680 * m_nPARALLAXOCCLUSION ) + 0;
+		return ( 80 * m_nFLASHLIGHT ) + ( 160 * m_nFLASHLIGHTDEPTHFILTERMODE ) + ( 480 * m_nLIGHTMAPPED ) + ( 960 * m_nEMISSIVE ) + ( 1920 * m_nSPECULAR ) + 0;
 	}
 };
-#define shaderStaticTest_pbr_ps30 psh_forgot_to_set_static_FLASHLIGHT + psh_forgot_to_set_static_FLASHLIGHTDEPTHFILTERMODE + psh_forgot_to_set_static_LIGHTMAPPED + psh_forgot_to_set_static_USEENVAMBIENT + psh_forgot_to_set_static_EMISSIVE + psh_forgot_to_set_static_SPECULAR + psh_forgot_to_set_static_PARALLAXOCCLUSION + 0
-class pbr_ps30_Dynamic_Index
+#define shaderStaticTest_pbr_ps20b psh_forgot_to_set_static_FLASHLIGHT + psh_forgot_to_set_static_FLASHLIGHTDEPTHFILTERMODE + psh_forgot_to_set_static_LIGHTMAPPED + psh_forgot_to_set_static_EMISSIVE + psh_forgot_to_set_static_SPECULAR + 0
+class pbr_ps20b_Dynamic_Index
 {
 private:
 	int m_nWRITEWATERFOGTODESTALPHA;
@@ -300,7 +250,7 @@ public:
 #endif
 	}
 public:
-	pbr_ps30_Dynamic_Index()
+	pbr_ps20b_Dynamic_Index()
 	{
 #ifdef _DEBUG
 		m_bWRITEWATERFOGTODESTALPHA = false;
@@ -334,4 +284,4 @@ public:
 		return ( 1 * m_nWRITEWATERFOGTODESTALPHA ) + ( 2 * m_nPIXELFOGTYPE ) + ( 4 * m_nNUM_LIGHTS ) + ( 20 * m_nWRITE_DEPTH_TO_DESTALPHA ) + ( 40 * m_nFLASHLIGHTSHADOWS ) + 0;
 	}
 };
-#define shaderDynamicTest_pbr_ps30 psh_forgot_to_set_dynamic_WRITEWATERFOGTODESTALPHA + psh_forgot_to_set_dynamic_PIXELFOGTYPE + psh_forgot_to_set_dynamic_NUM_LIGHTS + psh_forgot_to_set_dynamic_WRITE_DEPTH_TO_DESTALPHA + psh_forgot_to_set_dynamic_FLASHLIGHTSHADOWS + 0
+#define shaderDynamicTest_pbr_ps20b psh_forgot_to_set_dynamic_WRITEWATERFOGTODESTALPHA + psh_forgot_to_set_dynamic_PIXELFOGTYPE + psh_forgot_to_set_dynamic_NUM_LIGHTS + psh_forgot_to_set_dynamic_WRITE_DEPTH_TO_DESTALPHA + psh_forgot_to_set_dynamic_FLASHLIGHTSHADOWS + 0
