@@ -26,6 +26,7 @@ struct VS_INPUT
     float4 vBoneWeights             : BLENDWEIGHT;
     float4 vBoneIndices             : BLENDINDICES;
     float4 vNormal                  : NORMAL;
+    float4 vTangent                 : TANGENT;
     float2 vTexCoord0               : TEXCOORD0;
     float4 vLightmapTexCoord        : TEXCOORD1;
     float4 vLightmapTexCoordOffset  : TEXCOORD2;
@@ -40,10 +41,11 @@ struct VS_OUTPUT
     float2 baseTexCoord             : TEXCOORD0;
     float4 lightAtten               : TEXCOORD1;
     float3 worldNormal              : TEXCOORD2;
-    float3 worldPos                 : TEXCOORD3;
-    float3 projPos                  : TEXCOORD4;
-    float4 lightmapTexCoord1And2    : TEXCOORD5;
-    float4 lightmapTexCoord3        : TEXCOORD6;
+    float3 worldTangent             : TEXCOORD3;
+    float3 worldPos                 : TEXCOORD4;
+    float3 projPos                  : TEXCOORD5;
+    float4 lightmapTexCoord1And2    : TEXCOORD6;
+    float4 lightmapTexCoord3        : TEXCOORD7;
 };
 
 //-----------------------------------------------------------------------------
@@ -53,12 +55,12 @@ VS_OUTPUT main( const VS_INPUT v )
 {
     VS_OUTPUT o = ( VS_OUTPUT )0;
 
-    o.lightmapTexCoord3.z = dot(v.vTexCoord0, cBaseTexCoordTransform[0]) + cBaseTexCoordTransform[0].w;
-    o.lightmapTexCoord3.w = dot(v.vTexCoord0, cBaseTexCoordTransform[1]) + cBaseTexCoordTransform[1].w;
+    o.lightmapTexCoord3.z = dot(v.vTexCoord0, cBaseTexCoordTransform[0].xy) + cBaseTexCoordTransform[0].w;
+    o.lightmapTexCoord3.w = dot(v.vTexCoord0, cBaseTexCoordTransform[1].xy) + cBaseTexCoordTransform[1].w;
     o.lightmapTexCoord1And2.xy = v.vLightmapTexCoord + v.vLightmapTexCoordOffset;
 
-    float2 lightmapTexCoord2 = o.lightmapTexCoord1And2.xy + v.vLightmapTexCoordOffset;
-    float2 lightmapTexCoord3 = lightmapTexCoord2 + v.vLightmapTexCoordOffset;
+    float2 lightmapTexCoord2 = o.lightmapTexCoord1And2.xy + v.vLightmapTexCoordOffset.xy;
+    float2 lightmapTexCoord3 = lightmapTexCoord2 + v.vLightmapTexCoordOffset.xy;
 
     // Reversed component order
     o.lightmapTexCoord1And2.w = lightmapTexCoord2.x;
@@ -66,11 +68,11 @@ VS_OUTPUT main( const VS_INPUT v )
 
     o.lightmapTexCoord3.xy = lightmapTexCoord3;
 
-    float3 vNormal;
-    DecompressVertex_Normal(v.vNormal, vNormal);
-
-    float3 worldNormal, worldPos;
-    SkinPositionAndNormal(g_bSkinning, v.vPos, vNormal, v.vBoneWeights, v.vBoneIndices, worldPos, worldNormal);
+    // Get normal and tangent and stuff
+    float3 vNormal; float4 vTangent;
+    DecompressVertex_NormalTangent(v.vNormal, v.vTangent, vNormal, vTangent);
+    float3 worldNormal, worldPos, worldTangentS, worldTangentT;
+    SkinPositionNormalAndTangentSpace(g_bSkinning, v.vPos, vNormal, vTangent, v.vBoneWeights, v.vBoneIndices, worldPos, worldNormal, worldTangentS, worldTangentT);
 
     // Transform into projection space
     float4 vProjPos = mul(float4(worldPos, 1), cViewProj);
@@ -83,8 +85,11 @@ VS_OUTPUT main( const VS_INPUT v )
     // Needed for water fog alpha and diffuse lighting 
     o.worldPos = worldPos;
     o.worldNormal = normalize(worldNormal);
+    //o.worldTangent = float4(worldTangentS.xyz, vTangent.w);
+    o.worldTangent = normalize(worldTangentS);
 
     // Scalar attenuations for four lights
+
     o.lightAtten = float4(0, 0, 0, 0);
 
     #if (NUM_LIGHTS > 0)
@@ -104,8 +109,8 @@ VS_OUTPUT main( const VS_INPUT v )
     #endif
 
     // Base texture coordinate transform
-    o.baseTexCoord.x = dot(v.vTexCoord0, cBaseTexCoordTransform[0]);
-    o.baseTexCoord.y = dot(v.vTexCoord0, cBaseTexCoordTransform[1]);
+    o.baseTexCoord.x = dot(v.vTexCoord0, cBaseTexCoordTransform[0].xy);
+    o.baseTexCoord.y = dot(v.vTexCoord0, cBaseTexCoordTransform[1].xy);
     o.baseTexCoord = v.vTexCoord0;
 
     return o;

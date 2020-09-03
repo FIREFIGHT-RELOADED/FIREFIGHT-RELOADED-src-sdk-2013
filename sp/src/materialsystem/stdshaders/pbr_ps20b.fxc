@@ -7,10 +7,8 @@
 // STATIC: "FLASHLIGHT"                 "0..1"
 // STATIC: "FLASHLIGHTDEPTHFILTERMODE"  "0..2"
 // STATIC: "LIGHTMAPPED"                "0..1"
-// STATIC: "USEENVAMBIENT"              "0..1"
 // STATIC: "EMISSIVE"                   "0..1"
 // STATIC: "SPECULAR"                   "0..1"
-// STATIC:  "PARALLAXOCCLUSION"         "0..1"
 
 // DYNAMIC: "WRITEWATERFOGTODESTALPHA"  "0..1"
 // DYNAMIC: "PIXELFOGTYPE"              "0..1"
@@ -43,12 +41,6 @@ const float4x4 g_FlashlightWorldToTexture       : register(PSREG_FLASHLIGHT_TO_W
 PixelShaderLightInfo cLightInfo[3]              : register(PSREG_LIGHT_INFO_ARRAY);         // 2 registers each - 6 registers total (4th light spread across w's)
 const float4 g_BaseColor                        : register(PSREG_SELFILLUMTINT);
 
-#if PARALLAXOCCLUSION
-const float4 g_ParallaxParms                    : register( c40 );
-#define PARALLAX_DEPTH                          g_ParallaxParms.r
-#define PARALLAX_CENTER                         g_ParallaxParms.g
-#endif
-
 sampler BaseTextureSampler          : register(s0);     // Base map, selfillum in alpha
 sampler NormalTextureSampler        : register(s1);     // Normal map
 sampler EnvmapSampler               : register(s2);     // Cubemap
@@ -71,38 +63,17 @@ struct PS_INPUT
     float2 baseTexCoord             : TEXCOORD0;
     float4 lightAtten               : TEXCOORD1;
     float3 worldNormal              : TEXCOORD2;
-    float3 worldPos                 : TEXCOORD3;
-    float3 projPos                  : TEXCOORD4;
-    float4 lightmapTexCoord1And2    : TEXCOORD5; 
-    float4 lightmapTexCoord3        : TEXCOORD6;
+    float3 worldTangent             : TEXCOORD3;
+    float3 worldPos                 : TEXCOORD4;
+    float3 projPos                  : TEXCOORD5;
+    float4 lightmapTexCoord1And2    : TEXCOORD6;
+    float4 lightmapTexCoord3        : TEXCOORD7;
 };
 
 // Entry point
 float4 main(PS_INPUT i) : COLOR
 {
-#if USEENVAMBIENT
-    float3 EnvAmbientCube[6];
-    setupEnvMapAmbientCube(EnvAmbientCube, EnvmapSampler);
-#else
-    #define EnvAmbientCube cAmbientCube
-#endif
-
-    float3 surfNormal = normalize(i.worldNormal);
-    float3 surfTangent;
-    float3 surfBase; 
-    float flipSign;
-    float3x3 normalBasis = compute_tangent_frame(surfNormal, i.worldPos, i.baseTexCoord , surfTangent, surfBase, flipSign);
-
-#if PARALLAXOCCLUSION
-    float3 outgoingLightRay = g_EyePos.xyz - i.worldPos;
-       float3 outgoingLightDirectionTS = worldToRelative( outgoingLightRay, surfTangent, surfBase, surfNormal);
-    float2 correctedTexCoord = parallaxCorrect(i.baseTexCoord, outgoingLightDirectionTS , NormalTextureSampler , PARALLAX_DEPTH , PARALLAX_CENTER);
-#else
     float2 correctedTexCoord = i.baseTexCoord;
-#endif
-
-    float3 textureNormal = normalize((tex2D( NormalTextureSampler,  correctedTexCoord).xyz - float3(0.5, 0.5, 0.5)) * 2);
-    float3 normal = normalize(mul(textureNormal, normalBasis)); // World Normal
 
     float4 albedo = tex2D(BaseTextureSampler, correctedTexCoord);
     albedo.xyz *= g_BaseColor;
@@ -115,8 +86,9 @@ float4 main(PS_INPUT i) : COLOR
 #if SPECULAR
     float3 specular = tex2D(SpecularTextureSampler, correctedTexCoord).xyz;
 #endif
-    
-    textureNormal.y *= flipSign; // Fixup textureNormal for ambient lighting
+    float3x3 normalBasis = float3x3(i.worldTangent, cross(i.worldNormal, i.worldTangent), i.worldNormal);
+    float3 textureNormal = normalize((tex2D( NormalTextureSampler, correctedTexCoord).xyz - float3(0.5, 0.5, 0.5)) * 2);
+    float3 normal = normalize(mul(textureNormal, normalBasis)); // World Normal
 
     float3 outgoingLightDirection = normalize(g_EyePos.xyz - i.worldPos); // Lo
     float lightDirectionAngle = max(0, dot(normal, outgoingLightDirection)); // cosLo
@@ -134,8 +106,7 @@ float4 main(PS_INPUT i) : COLOR
     float3 ambientLighting = 0.0;
     if (!FLASHLIGHT)
     {
-        float3 diffuseIrradiance = ambientLookup(normal, EnvAmbientCube, textureNormal, i.lightmapTexCoord1And2, i.lightmapTexCoord3, LightmapSampler, g_DiffuseModulation);
-        // return float4(diffuseIrradiance, 1); // testing diffuse irraciance
+        float3 diffuseIrradiance = ambientLookup(normal, cAmbientCube, textureNormal, i.lightmapTexCoord1And2, i.lightmapTexCoord3, LightmapSampler, g_DiffuseModulation);
         float3 ambientLightingFresnelTerm = fresnelSchlick(fresnelReflectance, lightDirectionAngle); // F
 #if SPECULAR
         float3 diffuseContributionFactor = 1 - ambientLightingFresnelTerm; // kd
@@ -145,8 +116,9 @@ float4 main(PS_INPUT i) : COLOR
         float3 diffuseIBL = diffuseContributionFactor * albedo.rgb * diffuseIrradiance;
 
         float4 specularUV = float4(specularReflectionVector, roughness * ENVMAPLOD);
-        float3 lookupHigh = ENV_MAP_SCALE * texCUBElod(EnvmapSampler, specularUV).xyz;
-        float3 lookupLow = PixelShaderAmbientLight(specularReflectionVector, EnvAmbientCube);
+        float3 lookupHigh = ENV_MAP_SCALE * texCUBE(EnvmapSampler, specularUV).xyz;
+
+        float3 lookupLow = PixelShaderAmbientLight(specularReflectionVector, cAmbientCube);
         float3 specularIrradiance = lerp(lookupHigh, lookupLow, roughness * roughness);
         float3 specularIBL = specularIrradiance * EnvBRDFApprox(fresnelReflectance, roughness, lightDirectionAngle);
 
@@ -157,7 +129,7 @@ float4 main(PS_INPUT i) : COLOR
     // Start direct
     float3 directLighting = 0.0;
     if (!FLASHLIGHT) {
-        for (uint n = 0; n < NUM_LIGHTS; ++n)
+        for (int n = 0; n < NUM_LIGHTS; ++n)
         {
             float3 LightIn = normalize(PixelShaderGetLightVector(i.worldPos, cLightInfo, n));
             float3 LightColor = PixelShaderGetLightColor(cLightInfo, n) * GetAttenForLight(i.lightAtten, n); // Li
@@ -202,18 +174,12 @@ float4 main(PS_INPUT i) : COLOR
     }
     // End flashlight
 
-float fogFactor = 0.0f;
-#if !FLASHLIGHT
-fogFactor = CalcPixelFogFactor(PIXELFOGTYPE, g_FogParams, g_EyePos.z, i.worldPos.z, i.projPos.z);
-#endif
+    float fogFactor = CalcPixelFogFactor(PIXELFOGTYPE, g_FogParams, g_EyePos.z, i.worldPos.z, i.projPos.z);
 
-float alpha = 0.0f;
-#if !FLASHLIGHT
 #if WRITEWATERFOGTODESTALPHA && (PIXELFOGTYPE == PIXEL_FOG_TYPE_HEIGHT)
-    alpha = fogFactor;
+    float alpha = fogFactor;
 #else
-    alpha = albedo.a;
-#endif
+    float alpha = albedo.a;
 #endif
 
     bool bWriteDepthToAlpha = (WRITE_DEPTH_TO_DESTALPHA != 0) && (WRITEWATERFOGTODESTALPHA == 0);

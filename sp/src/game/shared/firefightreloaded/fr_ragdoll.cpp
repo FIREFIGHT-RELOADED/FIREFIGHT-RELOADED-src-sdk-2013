@@ -1,3 +1,5 @@
+//Credit to Open Fortress for the gore code and idea!
+
 #include "cbase.h"
 #include "fr_ragdoll.h"
 
@@ -12,6 +14,202 @@
 #include <bone_setup.h>
 
 #ifdef CLIENT_DLL
+
+//-----------------------------------------------------------------------------
+// Purpose: Gore!
+//-----------------------------------------------------------------------------
+
+// Scale head to nothing
+static void ScaleGoreHead(C_BaseAnimating* pAnimating, int index)
+{
+	if (pAnimating)
+	{
+		int iBone = -1;
+
+		const char* boneNames[] = { "ValveBiped.Bip01_Head1" };
+
+		for (int i = 0; i < 4; i++)
+		{
+			iBone = pAnimating->LookupBone(boneNames[i]);
+			if (iBone != -1)
+				MatrixScaleByZero(pAnimating->GetBoneForWrite(iBone));
+		}
+	}
+
+}
+
+// Scale left arm to nothing
+static void ScaleGoreLeftArm(C_BaseAnimating* pAnimating)
+{
+	if (pAnimating)
+	{
+		int iBone = -1;
+
+		const char* boneNames[] = { "ValveBiped.Bip01_L_UpperArm", "ValveBiped.Bip01_L_Hand", "ValveBiped.Bip01_L_Forearm",
+									"ValveBiped.Bip01_L_Finger0", "ValveBiped.Bip01_L_Finger01", "ValveBiped.Bip01_L_Finger02",
+									"ValveBiped.Bip01_L_Finger1", "ValveBiped.Bip01_L_Finger11", "ValveBiped.Bip01_L_Finger12",
+									"ValveBiped.Bip01_L_Finger2", "ValveBiped.Bip01_L_Finger21", "ValveBiped.Bip01_L_Finger22",
+									"ValveBiped.Bip01_L_Finger3", "ValveBiped.Bip01_L_Finger31", "ValveBiped.Bip01_L_Finger32",
+									"ValveBiped.Bip01_L_Finger4", "ValveBiped.Bip01_L_Finger41", "ValveBiped.Bip01_L_Finger42",
+		};
+
+		for (int i = 0; i < 18; i++)
+		{
+			iBone = pAnimating->LookupBone(boneNames[i]);
+			if (iBone != -1)
+				MatrixScaleByZero(pAnimating->GetBoneForWrite(iBone));
+		}
+	}
+}
+
+// Scale left hand to nothing
+static void ScaleGoreLeftHand(C_BaseAnimating* pAnimating)
+{
+	if (pAnimating)
+	{
+		int iBone = -1;
+
+		const char* boneNames[] = { "ValveBiped.Bip01_L_Hand",
+									"ValveBiped.Bip01_L_Finger0", "ValveBiped.Bip01_L_Finger01", "ValveBiped.Bip01_L_Finger02",
+									"ValveBiped.Bip01_L_Finger1", "ValveBiped.Bip01_L_Finger11", "ValveBiped.Bip01_L_Finger12",
+									"ValveBiped.Bip01_L_Finger2", "ValveBiped.Bip01_L_Finger21", "ValveBiped.Bip01_L_Finger22",
+									"ValveBiped.Bip01_L_Finger3", "ValveBiped.Bip01_L_Finger31", "ValveBiped.Bip01_L_Finger32",
+									"ValveBiped.Bip01_L_Finger4", "ValveBiped.Bip01_L_Finger41", "ValveBiped.Bip01_L_Finger42",
+		};
+
+		for (int i = 0; i < 16; i++)
+		{
+			iBone = pAnimating->LookupBone(boneNames[i]);
+			if (iBone != -1)
+				MatrixScaleByZero(pAnimating->GetBoneForWrite(iBone));
+		}
+	}
+}
+
+// Scale right arm to nothing
+static void ScaleGoreRightArm(C_BaseAnimating* pAnimating)
+{
+	if (pAnimating)
+	{
+		int iBone = -1;
+
+		const char* boneNames[] = { "ValveBiped.Bip01_R_UpperArm", "ValveBiped.Bip01_R_Hand", "ValveBiped.Bip01_R_Forearm",
+									"ValveBiped.Bip01_R_Finger0", "ValveBiped.Bip01_R_Finger01", "ValveBiped.Bip01_R_Finger02",
+									"ValveBiped.Bip01_R_Finger1", "ValveBiped.Bip01_R_Finger11", "ValveBiped.Bip01_R_Finger12",
+									"ValveBiped.Bip01_R_Finger2", "ValveBiped.Bip01_R_Finger21", "ValveBiped.Bip01_R_Finger22",
+									"ValveBiped.Bip01_R_Finger3", "ValveBiped.Bip01_R_Finger31", "ValveBiped.Bip01_R_Finger32",
+									"ValveBiped.Bip01_R_Finger4", "ValveBiped.Bip01_R_Finger41", "ValveBiped.Bip01_R_Finger42",
+		};
+
+		for (int i = 0; i < 18; i++)
+		{
+			iBone = pAnimating->LookupBone(boneNames[i]);
+			if (iBone != -1)
+				MatrixScaleByZero(pAnimating->GetBoneForWrite(iBone));
+		}
+	}
+}
+
+// Scale right hand to nothing
+static void ScaleGoreRightHand(C_BaseAnimating* pAnimating)
+{
+	if (pAnimating)
+	{
+		int iBone = -1;
+
+		const char* boneNames[] = { "ValveBiped.Bip01_R_Hand",
+									"ValveBiped.Bip01_R_Finger0", "ValveBiped.Bip01_R_Finger01", "ValveBiped.Bip01_R_Finger02",
+									"ValveBiped.Bip01_R_Finger1", "ValveBiped.Bip01_R_Finger11", "ValveBiped.Bip01_R_Finger12",
+									"ValveBiped.Bip01_R_Finger2", "ValveBiped.Bip01_R_Finger21", "ValveBiped.Bip01_R_Finger22",
+									"ValveBiped.Bip01_R_Finger3", "ValveBiped.Bip01_R_Finger31", "ValveBiped.Bip01_R_Finger32",
+									"ValveBiped.Bip01_R_Finger4", "ValveBiped.Bip01_R_Finger41", "ValveBiped.Bip01_R_Finger42",
+		};
+
+		for (int i = 0; i < 16; i++)
+		{
+			iBone = pAnimating->LookupBone(boneNames[i]);
+			if (iBone != -1)
+				MatrixScaleByZero(pAnimating->GetBoneForWrite(iBone));
+		}
+	}
+}
+
+// Scale left knee to nothing
+static void ScaleGoreLeftKnee(C_BaseAnimating* pAnimating)
+{
+	if (pAnimating)
+	{
+		int iBone = -1;
+
+		const char* boneNames[] = { "ValveBiped.Bip01_L_Knee", "ValveBiped.Bip01_L_Shin", "ValveBiped.Bip01_L_Ankle",
+									"ValveBiped.Bip01_L_Calf", "ValveBiped.Bip01_L_Foot", "ValveBiped.Bip01_L_Toe0"
+		};
+
+		for (int i = 0; i < 6; i++)
+		{
+			iBone = pAnimating->LookupBone(boneNames[i]);
+			if (iBone != -1)
+				MatrixScaleByZero(pAnimating->GetBoneForWrite(iBone));
+		}
+	}
+}
+
+// Scale left foot to nothing
+static void ScaleGoreLeftFoot(C_BaseAnimating* pAnimating)
+{
+	if (pAnimating)
+	{
+		int iBone = -1;
+
+		const char* boneNames[] = { "ValveBiped.Bip01_L_Foot", "ValveBiped.Bip01_L_Toe0" };
+
+		for (int i = 0; i < 2; i++)
+		{
+			iBone = pAnimating->LookupBone(boneNames[i]);
+			if (iBone != -1)
+				MatrixScaleByZero(pAnimating->GetBoneForWrite(iBone));
+		}
+	}
+}
+
+// Scale right knee to nothing
+static void ScaleGoreRightKnee(C_BaseAnimating* pAnimating)
+{
+	if (pAnimating)
+	{
+		int iBone = -1;
+
+		const char* boneNames[] = { "ValveBiped.Bip01_R_Knee", "ValveBiped.Bip01_R_Shin", "ValveBiped.Bip01_R_Ankle",
+									"ValveBiped.Bip01_R_Calf", "ValveBiped.Bip01_R_Foot", "ValveBiped.Bip01_R_Toe0"
+		};
+
+		for (int i = 0; i < 6; i++)
+		{
+			iBone = pAnimating->LookupBone(boneNames[i]);
+			if (iBone != -1)
+				MatrixScaleByZero(pAnimating->GetBoneForWrite(iBone));
+		}
+	}
+}
+
+// Scale right foot to nothing
+static void ScaleGoreRightFoot(C_BaseAnimating* pAnimating)
+{
+	if (pAnimating)
+	{
+		int iBone = -1;
+
+		const char* boneNames[] = { "ValveBiped.Bip01_R_Foot", "ValveBiped.Bip01_R_Toe0" };
+
+		for (int i = 0; i < 2; i++)
+		{
+			iBone = pAnimating->LookupBone(boneNames[i]);
+			if (iBone != -1)
+				MatrixScaleByZero(pAnimating->GetBoneForWrite(iBone));
+		}
+	}
+}
+
 //FRRagdoll_Player
 
 IMPLEMENT_CLIENTCLASS_DT_NOBASE(C_FRRagdoll_Player, DT_FRRagdoll_Player, CFRRagdoll_Player)
@@ -20,12 +218,21 @@ RecvPropEHandle(RECVINFO(m_hEntity)),
 RecvPropInt(RECVINFO(m_nModelIndex)),
 RecvPropInt(RECVINFO(m_nForceBone)),
 RecvPropVector(RECVINFO(m_vecForce)),
-RecvPropVector(RECVINFO(m_vecRagdollVelocity))
+RecvPropVector(RECVINFO(m_vecRagdollVelocity)),
+RecvPropInt(RECVINFO(m_iGoreHead)),
+RecvPropInt(RECVINFO(m_iGoreLeftArm)),
+RecvPropInt(RECVINFO(m_iGoreRightArm)),
+RecvPropInt(RECVINFO(m_iGoreLeftLeg)),
+RecvPropInt(RECVINFO(m_iGoreRightLeg))
 END_RECV_TABLE()
 
 C_FRRagdoll_Player::C_FRRagdoll_Player()
 {
-
+	m_iGoreHead = 0;
+	m_iGoreLeftArm = 0;
+	m_iGoreRightArm = 0;
+	m_iGoreLeftLeg = 0;
+	m_iGoreRightLeg = 0;
 }
 
 C_FRRagdoll_Player::~C_FRRagdoll_Player()
@@ -280,6 +487,23 @@ public:
 	int			m_elementCount;
 	int			m_boneIndex[RAGDOLL_MAX_ELEMENTS];
 
+	// gore stuff
+	int m_iGoreHead;
+	int m_iGoreLeftArm;
+	int m_iGoreRightArm;
+	int m_iGoreLeftLeg;
+	int m_iGoreRightLeg;
+
+	// checks if this model can utilise gore
+	bool m_bGoreEnabled;
+
+	// how many blood decals to spray out when we dismember a limb overtime
+	int m_iGoreDecalAmount;
+	// the index of the bone we should spray blood decals out from
+	int m_iGoreDecalBone;
+	// time when blood decal was sprayed so that blood decals sprays are delayed in bursts for ClientThink
+	float m_fGoreDecalTime;
+
 private:
 	C_FRRagdoll_NPC(const C_FRRagdoll_NPC& src);
 
@@ -294,8 +518,12 @@ private:
 
 EXTERN_RECV_TABLE(DT_RagdollFR);
 IMPLEMENT_CLIENTCLASS_DT(C_FRRagdoll_NPC, DT_RagdollFR, CFRRagdoll_NPC)
+RecvPropInt(RECVINFO(m_iGoreHead)),
+RecvPropInt(RECVINFO(m_iGoreLeftArm)),
+RecvPropInt(RECVINFO(m_iGoreRightArm)),
+RecvPropInt(RECVINFO(m_iGoreLeftLeg)),
+RecvPropInt(RECVINFO(m_iGoreRightLeg))
 END_RECV_TABLE()
-
 
 C_FRRagdoll_NPC::C_FRRagdoll_NPC(void) :
 	m_iv_ragPos("C_FRRagdoll_NPC::m_iv_ragPos"),
@@ -311,6 +539,12 @@ C_FRRagdoll_NPC::C_FRRagdoll_NPC(void) :
 	m_flBlendWeightCurrent = 0.0f;
 	m_nOverlaySequence = -1;
 	m_flFadeScale = 1;
+
+	m_iGoreHead = 0;
+	m_iGoreLeftArm = 0;
+	m_iGoreRightArm = 0;
+	m_iGoreLeftLeg = 0;
+	m_iGoreRightLeg = 0;
 }
 
 void C_FRRagdoll_NPC::PostDataUpdate(DataUpdateType_t updateType)
@@ -575,6 +809,11 @@ SendPropModelIndex(SENDINFO(m_nModelIndex)),
 SendPropInt(SENDINFO(m_nForceBone), 8, 0),
 SendPropVector(SENDINFO(m_vecForce), -1, SPROP_NOSCALE),
 SendPropVector(SENDINFO(m_vecRagdollVelocity))
+SendPropInt(SENDINFO(m_iGoreHead), 2, SPROP_UNSIGNED),
+SendPropInt(SENDINFO(m_iGoreLeftArm), 2, SPROP_UNSIGNED),
+SendPropInt(SENDINFO(m_iGoreRightArm), 2, SPROP_UNSIGNED),
+SendPropInt(SENDINFO(m_iGoreLeftLeg), 2, SPROP_UNSIGNED),
+SendPropInt(SENDINFO(m_iGoreRightLeg), 2, SPROP_UNSIGNED),
 END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS(physics_prop_fr_ragdoll, CFRRagdoll_NPC);
@@ -583,6 +822,11 @@ LINK_ENTITY_TO_CLASS(prop_fr_ragdoll, CFRRagdoll_NPC);
 EXTERN_SEND_TABLE(DT_RagdollFR)
 
 IMPLEMENT_SERVERCLASS_ST(CFRRagdoll_NPC, DT_RagdollFR)
+SendPropInt(SENDINFO(m_iGoreHead), 2, SPROP_UNSIGNED),
+SendPropInt(SENDINFO(m_iGoreLeftArm), 2, SPROP_UNSIGNED),
+SendPropInt(SENDINFO(m_iGoreRightArm), 2, SPROP_UNSIGNED),
+SendPropInt(SENDINFO(m_iGoreLeftLeg), 2, SPROP_UNSIGNED),
+SendPropInt(SENDINFO(m_iGoreRightLeg), 2, SPROP_UNSIGNED),
 END_SEND_TABLE()
 
 CFRRagdoll_NPC::CFRRagdoll_NPC(void)
@@ -596,13 +840,11 @@ CFRRagdoll_NPC::~CFRRagdoll_NPC(void)
 void CFRRagdoll_NPC::Spawn(void)
 {
 	BaseClass::Precache();
-	Msg("CFRRagdoll_NPC: I TALK!\n");
 	BaseClass::Spawn();
 }
 
 void CFRRagdoll_NPC::TraceAttack(const CTakeDamageInfo& info, const Vector& dir, trace_t* ptr, CDmgAccumulator* pAccumulator)
 {
-	Msg("CFRRagdoll_NPC: OW.\n");
 	BaseClass::TraceAttack(info, dir, ptr, pAccumulator);
 }
 
