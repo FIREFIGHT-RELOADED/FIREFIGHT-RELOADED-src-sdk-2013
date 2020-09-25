@@ -224,7 +224,7 @@ float CNPC_CombineShot::GetHitgroupDamageMultiplier(int iHitGroup, const CTakeDa
 			if ((info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB))
 			{
 				SetModel("models/gibs/combine_shotgunner_beheaded.mdl");
-				DispatchParticleEffect("smod_headshot_r", PATTACH_POINT_FOLLOW, this, "bloodspurt", true);\
+				DispatchParticleEffect("smod_headshot_r", PATTACH_POINT_FOLLOW, this, "bloodspurt", true);
 				SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
 				CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p3.mdl", 6);
 				CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p4.mdl", 6);

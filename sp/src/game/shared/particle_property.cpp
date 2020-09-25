@@ -110,12 +110,26 @@ int CParticleProperty::GetParticleAttachment( C_BaseEntity *pEntity, const char 
 //-----------------------------------------------------------------------------
 CNewParticleEffect *CParticleProperty::Create( const char *pszParticleName, ParticleAttachment_t iAttachType, const char *pszAttachmentName )
 {
-	int iAttachment = GetParticleAttachment( GetOuter(), pszAttachmentName, pszParticleName );
-	if ( iAttachment == INVALID_PARTICLE_ATTACHMENT )
-		return NULL;
-
-	// Create the system
-	return Create( pszParticleName, iAttachType, iAttachment );
+	// credit to open fortress
+	switch (iAttachType)
+	{
+	case PATTACH_BONE_FOLLOW:
+		if (GetOuter() && GetOuter()->GetBaseAnimating() && GetOuter()->GetBaseAnimating()->GetModelPtr())
+		{
+			int iAttachment = Studio_BoneIndexByName(GetOuter()->GetBaseAnimating()->GetModelPtr(), pszAttachmentName);
+			return Create(pszParticleName, iAttachType, iAttachment);
+		}
+		else
+			return NULL;
+		break;
+	default:
+	case PATTACH_POINT_FOLLOW:
+	case PATTACH_POINT:
+		int iAttachment = GetParticleAttachment(GetOuter(), pszAttachmentName, pszParticleName);
+		if (iAttachment == INVALID_PARTICLE_ATTACHMENT)
+			return NULL;
+		return Create(pszParticleName, iAttachType, iAttachment);
+	}
 }
 	  
 //-----------------------------------------------------------------------------
@@ -658,6 +672,28 @@ void CParticleProperty::UpdateControlPoint( ParticleEffectList_t *pEffect, int i
 				}
 			}
 			break;
+		case PATTACH_BONE_FOLLOW:
+		{
+			C_BaseAnimating* pAnimating = pPoint->hEntity->GetBaseAnimating();
+
+			if (pAnimating)
+			{
+				int iBone = pPoint->iAttachmentPoint;
+				if (iBone < 0)
+				{
+					StopParticlesNamed(pEffect->pParticleEffect->GetEffectName());
+					return;
+				}
+				else
+				{
+					bUsingHeadOrigin = true;
+					const matrix3x4_t Bone = pAnimating->GetBone(iBone);
+					MatrixVectors(Bone, &vecForward, &vecRight, &vecUp);
+					MatrixPosition(Bone, vecOrigin);
+				}
+			}
+		}
+		break;
 		}
 	}
 

@@ -25,7 +25,21 @@ public:
 	void UpdateOnRemove(void);
 	virtual void SetupWeights(const matrix3x4_t* pBoneToWorld, int nFlexWeightCount, float* pFlexWeights, float* pFlexDelayedWeights);
 
-	//TODO: add transformations and dismemberment for both ragdolls.
+	// c_baseanimating functions
+	virtual void BuildTransformations(CStudioHdr* pStudioHdr, Vector* pos, Quaternion q[], const matrix3x4_t& cameraTransform, int boneMask, CBoneBitList& boneComputed);
+
+	// GORE
+	void ScaleGoreBones(void);
+	void InitDismember(void);
+
+	void DismemberHead();
+	void DismemberBase(char const* szBodyPart, bool bLevel, bool bBloodEffects, char const* szParticleBone);
+	void DismemberLeftArm(bool bLevel);
+	void DismemberRightArm(bool bLevel);
+	void DismemberLeftLeg(bool bLevel);
+	void DismemberRightLeg(bool bLevel);
+
+	void DismemberRandomLimbs(void);
 
 	// gore stuff
 	int m_iGoreHead;
@@ -100,8 +114,5 @@ public:
 	CNetworkVar(unsigned short, m_iGoreRightArm);
 	CNetworkVar(unsigned short, m_iGoreLeftLeg);
 	CNetworkVar(unsigned short, m_iGoreRightLeg);
-
-	void Spawn(void);
-	virtual void TraceAttack(const CTakeDamageInfo& info, const Vector& dir, trace_t* ptr, CDmgAccumulator* pAccumulator);
 };
 #endif // FR_CLIENT

@@ -20,7 +20,7 @@
 //-----------------------------------------------------------------------------
 
 // Scale head to nothing
-static void ScaleGoreHead(C_BaseAnimating* pAnimating, int index)
+static void ScaleGoreHead(C_BaseAnimating* pAnimating)
 {
 	if (pAnimating)
 	{
@@ -32,7 +32,7 @@ static void ScaleGoreHead(C_BaseAnimating* pAnimating, int index)
 		{
 			iBone = pAnimating->LookupBone(boneNames[i]);
 			if (iBone != -1)
-				MatrixScaleByZero(pAnimating->GetBoneForWrite(iBone));
+				MatrixScaleBy(0.001f, pAnimating->GetBoneForWrite(iBone));
 		}
 	}
 
@@ -57,7 +57,7 @@ static void ScaleGoreLeftArm(C_BaseAnimating* pAnimating)
 		{
 			iBone = pAnimating->LookupBone(boneNames[i]);
 			if (iBone != -1)
-				MatrixScaleByZero(pAnimating->GetBoneForWrite(iBone));
+				MatrixScaleBy(0.001f, pAnimating->GetBoneForWrite(iBone));
 		}
 	}
 }
@@ -81,7 +81,7 @@ static void ScaleGoreLeftHand(C_BaseAnimating* pAnimating)
 		{
 			iBone = pAnimating->LookupBone(boneNames[i]);
 			if (iBone != -1)
-				MatrixScaleByZero(pAnimating->GetBoneForWrite(iBone));
+				MatrixScaleBy(0.001f, pAnimating->GetBoneForWrite(iBone));
 		}
 	}
 }
@@ -105,7 +105,7 @@ static void ScaleGoreRightArm(C_BaseAnimating* pAnimating)
 		{
 			iBone = pAnimating->LookupBone(boneNames[i]);
 			if (iBone != -1)
-				MatrixScaleByZero(pAnimating->GetBoneForWrite(iBone));
+				MatrixScaleBy(0.001f, pAnimating->GetBoneForWrite(iBone));
 		}
 	}
 }
@@ -129,7 +129,7 @@ static void ScaleGoreRightHand(C_BaseAnimating* pAnimating)
 		{
 			iBone = pAnimating->LookupBone(boneNames[i]);
 			if (iBone != -1)
-				MatrixScaleByZero(pAnimating->GetBoneForWrite(iBone));
+				MatrixScaleBy(0.001f, pAnimating->GetBoneForWrite(iBone));
 		}
 	}
 }
@@ -149,7 +149,7 @@ static void ScaleGoreLeftKnee(C_BaseAnimating* pAnimating)
 		{
 			iBone = pAnimating->LookupBone(boneNames[i]);
 			if (iBone != -1)
-				MatrixScaleByZero(pAnimating->GetBoneForWrite(iBone));
+				MatrixScaleBy(0.001f, pAnimating->GetBoneForWrite(iBone));
 		}
 	}
 }
@@ -167,7 +167,7 @@ static void ScaleGoreLeftFoot(C_BaseAnimating* pAnimating)
 		{
 			iBone = pAnimating->LookupBone(boneNames[i]);
 			if (iBone != -1)
-				MatrixScaleByZero(pAnimating->GetBoneForWrite(iBone));
+				MatrixScaleBy(0.001f, pAnimating->GetBoneForWrite(iBone));
 		}
 	}
 }
@@ -187,7 +187,7 @@ static void ScaleGoreRightKnee(C_BaseAnimating* pAnimating)
 		{
 			iBone = pAnimating->LookupBone(boneNames[i]);
 			if (iBone != -1)
-				MatrixScaleByZero(pAnimating->GetBoneForWrite(iBone));
+				MatrixScaleBy(0.001f, pAnimating->GetBoneForWrite(iBone));
 		}
 	}
 }
@@ -205,7 +205,7 @@ static void ScaleGoreRightFoot(C_BaseAnimating* pAnimating)
 		{
 			iBone = pAnimating->LookupBone(boneNames[i]);
 			if (iBone != -1)
-				MatrixScaleByZero(pAnimating->GetBoneForWrite(iBone));
+				MatrixScaleBy(0.001f, pAnimating->GetBoneForWrite(iBone));
 		}
 	}
 }
@@ -279,12 +279,106 @@ void C_FRRagdoll_Player::ImpactTrace(trace_t* pTrace, int iDamageType, const cha
 
 	Vector dir = pTrace->endpos - pTrace->startpos;
 
+	// m_iGore<limb> has a level, from 0 to 3
+	// 1 is unused (reserved for normal TF bodygroups like pyro's head)
+	// 2 means the lower limb is marked for removal, 3 means the upper limb is marked for removal, the head is an exception as it only has level 2
+	// if our current level is at level 3, that means we can't dismember this limb anymore
+	// if our current level is at level 2, that means we can dismember this limb once more up to level 3
+	// if our current level is at level 0/1, that means we can dismember this limb up to level 2
+	// Dismember<limb> function accepts true or false, true means this limb will be dismembered to level 3, false means dismembered to level 2
+
+	if (m_bGoreEnabled)
+	{
+		switch (pTrace->hitgroup)
+		{
+		case HITGROUP_HEAD:
+			if (m_iGoreHead == 3)
+			{
+				break;
+			}
+			else if (m_iGoreHead == 2)
+			{
+				break;
+			}
+			else
+			{
+				DismemberHead();
+				break;
+			}
+		case HITGROUP_LEFTARM:
+			if (m_iGoreLeftArm == 3)
+			{
+				break;
+			}
+			else if (m_iGoreLeftArm == 2)
+			{
+				DismemberLeftArm(true);
+				break;
+			}
+			else
+			{
+				DismemberLeftArm(false);
+				break;
+			}
+		case HITGROUP_RIGHTARM:
+			if (m_iGoreRightArm == 3)
+			{
+				break;
+			}
+			else if (m_iGoreRightArm == 2)
+			{
+				DismemberRightArm(true);
+				break;
+			}
+			else
+			{
+				DismemberRightArm(false);
+				break;
+			}
+		case HITGROUP_LEFTLEG:
+			if (m_iGoreLeftLeg == 3)
+			{
+				break;
+			}
+			else if (m_iGoreLeftLeg == 2)
+			{
+				DismemberLeftLeg(true);
+				break;
+			}
+			else
+			{
+				DismemberLeftLeg(false);
+				break;
+			}
+		case HITGROUP_RIGHTLEG:
+			if (m_iGoreRightLeg == 3)
+			{
+				break;
+			}
+			else if (m_iGoreRightLeg == 2)
+			{
+				DismemberRightLeg(true);
+				break;
+			}
+			else
+			{
+				DismemberRightLeg(false);
+				break;
+			}
+		default:
+			break;
+		}
+	}
+
 	if (iDamageType == DMG_BLAST)
 	{
 		dir *= 4000;  // adjust impact strenght
 
 		// apply force at object mass center
 		pPhysicsObject->ApplyForceCenter(dir);
+
+		if (m_bGoreEnabled)
+			DismemberRandomLimbs();
 	}
 	else
 	{
@@ -389,6 +483,22 @@ void C_FRRagdoll_Player::CreateFRRagdoll_Player(void)
 	}
 
 	InitAsClientRagdoll(boneDelta0, boneDelta1, currentBones, boneDt);
+
+	int iBone = LookupBone("ValveBiped.Bip01_Neck1");
+
+	if (iBone != -1)
+	{
+		m_bGoreEnabled = g_fr_headshotgore.GetBool();
+	}
+	else
+	{
+		m_bGoreEnabled = false;
+	}
+
+	if (m_bGoreEnabled)
+		m_BoneAccessor.SetWritableBones(BONE_USED_BY_ANYTHING);
+
+	SetNextClientThink(gpGlobals->curtime + 0.1f);
 }
 
 
@@ -448,7 +558,193 @@ void C_FRRagdoll_Player::SetupWeights(const matrix3x4_t* pBoneToWorld, int nFlex
 	}
 }
 
-//TODO: make it use c_serverragdoll rather than copy pasting the entire class
+//---------------------------------------------------------------------------- -
+// Purpose: Scale the bones that need to be scaled for gore
+//-----------------------------------------------------------------------------
+void C_FRRagdoll_Player::BuildTransformations(CStudioHdr * pStudioHdr, Vector * pos, Quaternion q[], const matrix3x4_t & cameraTransform, int boneMask, CBoneBitList & boneComputed)
+{
+	BaseClass::BuildTransformations(pStudioHdr, pos, q, cameraTransform, boneMask, boneComputed);
+
+	if (m_bGoreEnabled)
+		ScaleGoreBones();
+}
+
+void C_FRRagdoll_Player::ScaleGoreBones()
+{
+	if (m_iGoreHead > 1)
+		ScaleGoreHead(this);
+
+	if (m_iGoreLeftArm == 2)
+		ScaleGoreLeftHand(this);
+	else if (m_iGoreLeftArm == 3)
+		ScaleGoreLeftArm(this);
+
+	if (m_iGoreRightArm == 2)
+		ScaleGoreRightHand(this);
+	else if (m_iGoreRightArm == 3)
+		ScaleGoreRightArm(this);
+
+	if (m_iGoreLeftLeg == 2)
+		ScaleGoreLeftFoot(this);
+	else if (m_iGoreLeftLeg == 3)
+		ScaleGoreLeftKnee(this);
+
+	if (m_iGoreRightLeg == 2)
+		ScaleGoreRightFoot(this);
+	else if (m_iGoreRightLeg == 3)
+		ScaleGoreRightKnee(this);
+}
+
+void C_FRRagdoll_Player::DismemberHead()
+{
+	m_iGoreHead = 3;
+
+	int iAttach = LookupBone("bip_neck");
+
+	if (iAttach != -1)
+	{
+		ParticleProp()->Create("smod_blood_decap_r", PATTACH_BONE_FOLLOW, "ValveBiped.Bip01_Neck1");
+		
+		EmitSound("Gore.Headshot");
+
+		m_iGoreDecalAmount += 15;
+		m_iGoreDecalBone = iAttach;
+
+	}
+}
+
+void C_FRRagdoll_Player::DismemberBase(char const* szBodyPart, bool bLevel, bool bBloodEffects, char const* szParticleBone)
+{
+	int iAttach = LookupBone(szParticleBone);
+
+	if (iAttach != -1)
+	{
+		// I'm too lazy to make a new particle which is less bloody than blood_decap, but whatever, this works
+		ParticleProp()->Create("smod_blood_gib_r", PATTACH_BONE_FOLLOW, szParticleBone);
+	}
+
+	if (iAttach != -1)
+	{
+		m_iGoreDecalAmount += 4;
+		m_iGoreDecalBone = iAttach;
+
+		EmitSound("Gore.Headshot");
+	}
+}
+
+void C_FRRagdoll_Player::DismemberLeftArm(bool bLevel)
+{
+	DismemberBase("leftarm", bLevel, true, bLevel ? "ValveBiped.Bip01_L_UpperArm" : "ValveBiped.Bip01_L_Forearm");
+
+	if (bLevel)
+		m_iGoreLeftArm = 3;
+	else
+		m_iGoreLeftArm = 2;
+}
+
+void C_FRRagdoll_Player::DismemberRightArm(bool bLevel)
+{
+	DismemberBase("rightarm", bLevel, true, bLevel ? "ValveBiped.Bip01_R_UpperArm" : "ValveBiped.Bip01_R_Forearm");
+
+	if (bLevel)
+		m_iGoreRightArm = 3;
+	else
+		m_iGoreRightArm = 2;
+}
+
+void C_FRRagdoll_Player::DismemberLeftLeg(bool bLevel)
+{
+	DismemberBase("leftleg", bLevel, true, bLevel ? "ValveBiped.Bip01_L_Knee" : "ValveBiped.Bip01_L_Foot");
+
+	if (bLevel)
+		m_iGoreLeftLeg = 3;
+	else
+		m_iGoreLeftLeg = 2;
+}
+
+void C_FRRagdoll_Player::DismemberRightLeg(bool bLevel)
+{
+	DismemberBase("rightleg", bLevel, true, bLevel ? "ValveBiped.Bip01_R_Knee" : "ValveBiped.Bip01_R_Foot");
+
+	if (bLevel)
+		m_iGoreRightLeg = 3;
+	else
+		m_iGoreRightLeg = 2;
+}
+
+void C_FRRagdoll_Player::InitDismember()
+{
+	// head does not have two levels of dismemberment, only one
+	if (m_iGoreHead > 1)
+		DismemberHead();
+
+	if (m_iGoreLeftArm == 3)
+		DismemberLeftArm(true);
+	else if (m_iGoreLeftArm == 2)
+		DismemberLeftArm(false);
+
+	if (m_iGoreRightArm == 3)
+		DismemberRightArm(true);
+	else if (m_iGoreRightArm == 2)
+		DismemberRightArm(false);
+
+	if (m_iGoreLeftLeg == 3)
+		DismemberLeftLeg(true);
+	else if (m_iGoreLeftLeg == 2)
+		DismemberLeftLeg(false);
+
+	if (m_iGoreRightLeg == 3)
+		DismemberRightLeg(true);
+	else if (m_iGoreRightLeg == 2)
+		DismemberRightLeg(false);
+}
+
+void C_FRRagdoll_Player::DismemberRandomLimbs(void)
+{
+	int iGore = 0;
+
+	// NOTE: head is not dismembered here intentionally
+
+	if (m_iGoreLeftArm < 3)
+	{
+		iGore = random->RandomInt(0, 3);
+
+		if (iGore == 2)
+			DismemberLeftArm(false);
+		else if (iGore == 3)
+			DismemberLeftArm(true);
+	}
+
+	if (m_iGoreRightArm < 3)
+	{
+		iGore = random->RandomInt(0, 3);
+
+		if (iGore == 2)
+			DismemberRightArm(false);
+		else if (iGore == 3)
+			DismemberRightArm(true);
+	}
+
+	if (m_iGoreLeftLeg < 3)
+	{
+		iGore = random->RandomInt(0, 3);
+
+		if (iGore == 2)
+			DismemberLeftLeg(false);
+		else if (iGore == 3)
+			DismemberLeftLeg(true);
+	}
+
+	if (m_iGoreRightLeg < 3)
+	{
+		iGore = random->RandomInt(0, 3);
+
+		if (iGore == 2)
+			DismemberRightLeg(false);
+		else if (iGore == 3)
+			DismemberRightLeg(true);
+	}
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -471,8 +767,25 @@ public:
 
 	void GetRenderBounds(Vector& theMins, Vector& theMaxs);
 	virtual void AddEntity(void);
+	virtual void OnDataChanged(DataUpdateType_t type);
 	virtual void AccumulateLayers(IBoneSetup& boneSetup, Vector pos[], Quaternion q[], float currentTime);
 	virtual void BuildTransformations(CStudioHdr* pStudioHdr, Vector* pos, Quaternion q[], const matrix3x4_t& cameraTransform, int boneMask, CBoneBitList& boneComputed);
+	
+	void ImpactTrace(trace_t* pTrace, int iDamageType, const char* pCustomImpactName);
+
+	// GORE
+	void ScaleGoreBones(void);
+	void InitDismember(void);
+
+	void DismemberHead();
+	void DismemberBase(char const* szBodyPart, bool bLevel, bool bBloodEffects, char const* szParticleBone);
+	void DismemberLeftArm(bool bLevel);
+	void DismemberRightArm(bool bLevel);
+	void DismemberLeftLeg(bool bLevel);
+	void DismemberRightLeg(bool bLevel);
+
+	void DismemberRandomLimbs(void);
+	
 	IPhysicsObject* GetElement(int elementNum);
 	virtual void UpdateOnRemove();
 	virtual float LastBoneChangedTime();
@@ -660,6 +973,159 @@ void C_FRRagdoll_NPC::AddEntity(void)
 	m_flBlendWeightCurrent = Approach(m_flBlendWeight, m_flBlendWeightCurrent, gpGlobals->frametime * 5.0f);
 }
 
+void C_FRRagdoll_NPC::OnDataChanged(DataUpdateType_t type)
+{
+	BaseClass::OnDataChanged(type);
+
+	if (type == DATA_UPDATE_CREATED)
+	{
+		int iBone = LookupBone("ValveBiped.Bip01_Neck1");
+
+		if (iBone != -1)
+		{
+			m_bGoreEnabled = g_fr_headshotgore.GetBool();
+		}
+		else
+		{
+			m_bGoreEnabled = false;
+		}
+
+		if (m_bGoreEnabled)
+			m_BoneAccessor.SetWritableBones(BONE_USED_BY_ANYTHING);
+
+		SetNextClientThink(gpGlobals->curtime + 0.1f);
+	}
+}
+
+void C_FRRagdoll_NPC::ImpactTrace(trace_t* pTrace, int iDamageType, const char* pCustomImpactName)
+{
+	IPhysicsObject* pPhysicsObject = VPhysicsGetObject();
+
+	if (!pPhysicsObject)
+		return;
+
+	Vector dir = pTrace->endpos - pTrace->startpos;
+
+	// m_iGore<limb> has a level, from 0 to 3
+	// 1 is unused (reserved for normal TF bodygroups like pyro's head)
+	// 2 means the lower limb is marked for removal, 3 means the upper limb is marked for removal, the head is an exception as it only has level 2
+	// if our current level is at level 3, that means we can't dismember this limb anymore
+	// if our current level is at level 2, that means we can dismember this limb once more up to level 3
+	// if our current level is at level 0/1, that means we can dismember this limb up to level 2
+	// Dismember<limb> function accepts true or false, true means this limb will be dismembered to level 3, false means dismembered to level 2
+
+	if (m_bGoreEnabled)
+	{
+		switch (pTrace->hitgroup)
+		{
+		case HITGROUP_HEAD:
+			if (m_iGoreHead == 3)
+			{
+				break;
+			}
+			else if (m_iGoreHead == 2)
+			{
+				break;
+			}
+			else
+			{
+				DismemberHead();
+				break;
+			}
+		case HITGROUP_LEFTARM:
+			if (m_iGoreLeftArm == 3)
+			{
+				break;
+			}
+			else if (m_iGoreLeftArm == 2)
+			{
+				DismemberLeftArm(true);
+				break;
+			}
+			else
+			{
+				DismemberLeftArm(false);
+				break;
+			}
+		case HITGROUP_RIGHTARM:
+			if (m_iGoreRightArm == 3)
+			{
+				break;
+			}
+			else if (m_iGoreRightArm == 2)
+			{
+				DismemberRightArm(true);
+				break;
+			}
+			else
+			{
+				DismemberRightArm(false);
+				break;
+			}
+		case HITGROUP_LEFTLEG:
+			if (m_iGoreLeftLeg == 3)
+			{
+				break;
+			}
+			else if (m_iGoreLeftLeg == 2)
+			{
+				DismemberLeftLeg(true);
+				break;
+			}
+			else
+			{
+				DismemberLeftLeg(false);
+				break;
+			}
+		case HITGROUP_RIGHTLEG:
+			if (m_iGoreRightLeg == 3)
+			{
+				break;
+			}
+			else if (m_iGoreRightLeg == 2)
+			{
+				DismemberRightLeg(true);
+				break;
+			}
+			else
+			{
+				DismemberRightLeg(false);
+				break;
+			}
+		default:
+			break;
+		}
+	}
+
+	if (iDamageType == DMG_BLAST)
+	{
+		dir *= 4000;  // adjust impact strenght
+
+		// apply force at object mass center
+		pPhysicsObject->ApplyForceCenter(dir);
+
+		if (m_bGoreEnabled)
+			DismemberRandomLimbs();
+	}
+	else
+	{
+		Vector hitpos;
+
+		VectorMA(pTrace->startpos, pTrace->fraction, dir, hitpos);
+		VectorNormalize(dir);
+
+		dir *= 4000;  // adjust impact strenght
+
+		// apply force where we hit it
+		pPhysicsObject->ApplyForceOffset(dir, hitpos);
+
+		// Blood spray!
+		//		FX_CS_BloodSpray( hitpos, dir, 10 );
+	}
+
+	m_pRagdoll->ResetRagdollSleepAfterTime();
+}
+
 void C_FRRagdoll_NPC::AccumulateLayers(IBoneSetup& boneSetup, Vector pos[], Quaternion q[], float currentTime)
 {
 	BaseClass::AccumulateLayers(boneSetup, pos, q, currentTime);
@@ -748,6 +1214,186 @@ void C_FRRagdoll_NPC::BuildTransformations(CStudioHdr* hdr, Vector* pos, Quatern
 		//	ApplyBoneMatrixTransform( GetBoneForWrite( i ) );
 		}
 	}
+
+	if (m_bGoreEnabled)
+		ScaleGoreBones();
+}
+
+void C_FRRagdoll_NPC::ScaleGoreBones()
+{
+	if (m_iGoreHead > 1)
+		ScaleGoreHead(this);
+
+	if (m_iGoreLeftArm == 2)
+		ScaleGoreLeftHand(this);
+	else if (m_iGoreLeftArm == 3)
+		ScaleGoreLeftArm(this);
+
+	if (m_iGoreRightArm == 2)
+		ScaleGoreRightHand(this);
+	else if (m_iGoreRightArm == 3)
+		ScaleGoreRightArm(this);
+
+	if (m_iGoreLeftLeg == 2)
+		ScaleGoreLeftFoot(this);
+	else if (m_iGoreLeftLeg == 3)
+		ScaleGoreLeftKnee(this);
+
+	if (m_iGoreRightLeg == 2)
+		ScaleGoreRightFoot(this);
+	else if (m_iGoreRightLeg == 3)
+		ScaleGoreRightKnee(this);
+}
+
+void C_FRRagdoll_NPC::DismemberHead()
+{
+	m_iGoreHead = 3;
+
+	int iAttach = LookupBone("bip_neck");
+
+	if (iAttach != -1)
+	{
+		ParticleProp()->Create("smod_blood_decap_r", PATTACH_BONE_FOLLOW, "ValveBiped.Bip01_Neck1");
+
+		EmitSound("Gore.Headshot");
+
+		m_iGoreDecalAmount += 15;
+		m_iGoreDecalBone = iAttach;
+
+	}
+}
+
+void C_FRRagdoll_NPC::DismemberBase(char const* szBodyPart, bool bLevel, bool bBloodEffects, char const* szParticleBone)
+{
+	int iAttach = LookupBone(szParticleBone);
+
+	if (iAttach != -1)
+	{
+		// I'm too lazy to make a new particle which is less bloody than blood_decap, but whatever, this works
+		ParticleProp()->Create("smod_blood_gib_r", PATTACH_BONE_FOLLOW, szParticleBone);
+	}
+
+	if (iAttach != -1)
+	{
+		m_iGoreDecalAmount += 4;
+		m_iGoreDecalBone = iAttach;
+
+		EmitSound("Gore.Headshot");
+	}
+}
+
+void C_FRRagdoll_NPC::DismemberLeftArm(bool bLevel)
+{
+	DismemberBase("leftarm", bLevel, true, bLevel ? "ValveBiped.Bip01_L_UpperArm" : "ValveBiped.Bip01_L_Forearm");
+
+	if (bLevel)
+		m_iGoreLeftArm = 3;
+	else
+		m_iGoreLeftArm = 2;
+}
+
+void C_FRRagdoll_NPC::DismemberRightArm(bool bLevel)
+{
+	DismemberBase("rightarm", bLevel, true, bLevel ? "ValveBiped.Bip01_R_UpperArm" : "ValveBiped.Bip01_R_Forearm");
+
+	if (bLevel)
+		m_iGoreRightArm = 3;
+	else
+		m_iGoreRightArm = 2;
+}
+
+void C_FRRagdoll_NPC::DismemberLeftLeg(bool bLevel)
+{
+	DismemberBase("leftleg", bLevel, true, bLevel ? "ValveBiped.Bip01_L_Knee" : "ValveBiped.Bip01_L_Foot");
+
+	if (bLevel)
+		m_iGoreLeftLeg = 3;
+	else
+		m_iGoreLeftLeg = 2;
+}
+
+void C_FRRagdoll_NPC::DismemberRightLeg(bool bLevel)
+{
+	DismemberBase("rightleg", bLevel, true, bLevel ? "ValveBiped.Bip01_R_Knee" : "ValveBiped.Bip01_R_Foot");
+
+	if (bLevel)
+		m_iGoreRightLeg = 3;
+	else
+		m_iGoreRightLeg = 2;
+}
+
+void C_FRRagdoll_NPC::InitDismember()
+{
+	// head does not have two levels of dismemberment, only one
+	if (m_iGoreHead > 1)
+		DismemberHead();
+
+	if (m_iGoreLeftArm == 3)
+		DismemberLeftArm(true);
+	else if (m_iGoreLeftArm == 2)
+		DismemberLeftArm(false);
+
+	if (m_iGoreRightArm == 3)
+		DismemberRightArm(true);
+	else if (m_iGoreRightArm == 2)
+		DismemberRightArm(false);
+
+	if (m_iGoreLeftLeg == 3)
+		DismemberLeftLeg(true);
+	else if (m_iGoreLeftLeg == 2)
+		DismemberLeftLeg(false);
+
+	if (m_iGoreRightLeg == 3)
+		DismemberRightLeg(true);
+	else if (m_iGoreRightLeg == 2)
+		DismemberRightLeg(false);
+}
+
+void C_FRRagdoll_NPC::DismemberRandomLimbs(void)
+{
+	int iGore = 0;
+
+	// NOTE: head is not dismembered here intentionally
+
+	if (m_iGoreLeftArm < 3)
+	{
+		iGore = random->RandomInt(0, 3);
+
+		if (iGore == 2)
+			DismemberLeftArm(false);
+		else if (iGore == 3)
+			DismemberLeftArm(true);
+	}
+
+	if (m_iGoreRightArm < 3)
+	{
+		iGore = random->RandomInt(0, 3);
+
+		if (iGore == 2)
+			DismemberRightArm(false);
+		else if (iGore == 3)
+			DismemberRightArm(true);
+	}
+
+	if (m_iGoreLeftLeg < 3)
+	{
+		iGore = random->RandomInt(0, 3);
+
+		if (iGore == 2)
+			DismemberLeftLeg(false);
+		else if (iGore == 3)
+			DismemberLeftLeg(true);
+	}
+
+	if (m_iGoreRightLeg < 3)
+	{
+		iGore = random->RandomInt(0, 3);
+
+		if (iGore == 2)
+			DismemberRightLeg(false);
+		else if (iGore == 3)
+			DismemberRightLeg(true);
+	}
 }
 
 IPhysicsObject* C_FRRagdoll_NPC::GetElement(int elementNum)
@@ -808,7 +1454,7 @@ SendPropEHandle(SENDINFO(m_hEntity)),
 SendPropModelIndex(SENDINFO(m_nModelIndex)),
 SendPropInt(SENDINFO(m_nForceBone), 8, 0),
 SendPropVector(SENDINFO(m_vecForce), -1, SPROP_NOSCALE),
-SendPropVector(SENDINFO(m_vecRagdollVelocity))
+SendPropVector(SENDINFO(m_vecRagdollVelocity)),
 SendPropInt(SENDINFO(m_iGoreHead), 2, SPROP_UNSIGNED),
 SendPropInt(SENDINFO(m_iGoreLeftArm), 2, SPROP_UNSIGNED),
 SendPropInt(SENDINFO(m_iGoreRightArm), 2, SPROP_UNSIGNED),
@@ -835,17 +1481,6 @@ CFRRagdoll_NPC::CFRRagdoll_NPC(void)
 
 CFRRagdoll_NPC::~CFRRagdoll_NPC(void)
 {
-}
-
-void CFRRagdoll_NPC::Spawn(void)
-{
-	BaseClass::Precache();
-	BaseClass::Spawn();
-}
-
-void CFRRagdoll_NPC::TraceAttack(const CTakeDamageInfo& info, const Vector& dir, trace_t* ptr, CDmgAccumulator* pAccumulator)
-{
-	BaseClass::TraceAttack(info, dir, ptr, pAccumulator);
 }
 
 #endif // FR_CLIENT

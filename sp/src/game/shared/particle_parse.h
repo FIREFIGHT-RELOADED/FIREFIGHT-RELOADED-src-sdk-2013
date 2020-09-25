@@ -29,6 +29,9 @@ enum ParticleAttachment_t
 
 	PATTACH_ROOTBONE_FOLLOW,		// Create at the root bone of the entity, and update to follow
 
+	// added from open fortress
+	PATTACH_BONE_FOLLOW,
+
 	MAX_PATTACH_TYPES,
 };
 

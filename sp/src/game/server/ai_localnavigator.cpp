@@ -325,7 +325,7 @@ AIMoveResult_t CAI_LocalNavigator::MoveCalcRaw( AILocalMoveGoal_t *pMoveGoal, bo
 	
 	AIMoveResult_t result = AIMR_OK; // Assume success
 	AIMoveTrace_t  directTrace;
-	float	   	   distClear;
+	float	   	   distClear = 0.0f;
 	
 	// --------------------------------------------------
 
