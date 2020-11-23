@@ -213,7 +213,6 @@ public:
 
 	const impactdamagetable_t &GetPhysicsImpactDamageTable();
 	virtual void		TraceAttack(const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator);
-	void				DismemberRandomLimbs(void);
 	virtual int			OnTakeDamage( const CTakeDamageInfo &info );
 	virtual int			OnTakeDamage_Alive( const CTakeDamageInfo &info );
 	virtual void		OnDamagedByExplosion( const CTakeDamageInfo &info );
@@ -317,13 +316,6 @@ public:
 
 	CSoundPatch *m_sndLeeches;
 	CSoundPatch *m_sndWaterSplashes;
-
-	// Gore
-	unsigned short m_iGoreHead;
-	unsigned short m_iGoreLeftArm;
-	unsigned short m_iGoreRightArm;
-	unsigned short m_iGoreLeftLeg;
-	unsigned short m_iGoreRightLeg;
 
 	void SetAnimation(PLAYER_ANIM playerAnim);
 

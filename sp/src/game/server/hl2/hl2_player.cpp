@@ -1604,12 +1604,6 @@ void CHL2_Player::Spawn(void)
 	Q_FixSlashes(mapname);
 	Q_strlower(mapname);
 
-	m_iGoreHead = 0;
-	m_iGoreLeftArm = 0;
-	m_iGoreRightArm = 0;
-	m_iGoreLeftLeg = 0;
-	m_iGoreRightLeg = 0;
-
 	if (sk_player_weapons.GetBool() && gpGlobals->eLoadType != MapLoad_Background && !V_stristr(mapname, "credits"))
 	{
 		if (sv_player_hardcoremode.GetBool())
@@ -3248,9 +3242,6 @@ void CHL2_Player::Event_Killed( const CTakeDamageInfo &info )
 	RemoveEffects(EF_NODRAW);	// still draw player body
 	StopZooming();
 
-	if (info.GetDamageType() & DMG_BLAST || info.GetDamageType() & DMG_NERVEGAS || info.GetDamageType() & DMG_CRUSH || info.GetDamageType() & DMG_FALL) // explosives or sawblade
-		DismemberRandomLimbs();
-
 	if (!g_pGameRules->IsMultiplayer())
 	{
 		FirePlayerProxyOutput("PlayerDied", variant_t(), this, this);
@@ -3584,92 +3575,6 @@ void CHL2_Player::TraceAttack(const CTakeDamageInfo& info, const Vector& vecDir,
 	// Save this bone for the ragdoll.
 	m_nForceBone = ptr->physicsbone;
 	SetLastHitGroup(ptr->hitgroup);
-
-	m_iGoreHead = 0;
-	m_iGoreLeftArm = 0;
-	m_iGoreRightArm = 0;
-	m_iGoreLeftLeg = 0;
-	m_iGoreRightLeg = 0;
-
-	switch (ptr->hitgroup)
-	{
-	case HITGROUP_HEAD:
-		m_iGoreHead = 2;
-		break;
-	case HITGROUP_LEFTARM:
-		m_iGoreLeftArm = 2;
-		break;
-	case HITGROUP_RIGHTARM:
-		m_iGoreRightArm = 2;
-		break;
-	case HITGROUP_LEFTLEG:
-		m_iGoreLeftLeg = 2;
-		break;
-	case HITGROUP_RIGHTLEG:
-		m_iGoreRightLeg = 2;
-		break;
-	default:
-		break;
-	}
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CHL2_Player::DismemberRandomLimbs(void)
-{
-	int iGore = 0;
-
-	if (m_iGoreHead < 3)
-	{
-		iGore = random->RandomInt(0, 3);
-
-		if (iGore == 1)
-			iGore = 2;
-
-		if (m_iGoreHead < iGore)
-			m_iGoreHead = iGore;
-	}
-	if (m_iGoreLeftArm < 3)
-	{
-		iGore = random->RandomInt(0, 3);
-
-		if (iGore == 1)
-			iGore = 2;
-
-		if (m_iGoreLeftArm < iGore)
-			m_iGoreLeftArm = iGore;
-	}
-	if (m_iGoreRightArm < 3)
-	{
-		iGore = random->RandomInt(0, 3);
-
-		if (iGore == 1)
-			iGore = 2;
-
-		if (m_iGoreRightArm < iGore)
-			m_iGoreRightArm = iGore;
-	}
-	if (m_iGoreLeftLeg < 3)
-	{
-		iGore = random->RandomInt(0, 3);
-
-		if (iGore == 1)
-			iGore = 2;
-
-		if (m_iGoreLeftLeg < iGore)
-			m_iGoreLeftLeg = iGore;
-	}
-	if (m_iGoreRightLeg < 3)
-	{
-		iGore = random->RandomInt(0, 3);
-
-		if (iGore == 1)
-			iGore = 2;
-
-		if (m_iGoreRightLeg < iGore)
-			m_iGoreRightLeg = iGore;
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -4425,11 +4330,6 @@ void CHL2_Player::CreateRagdollEntity(void)
 		pRagdoll->m_nModelIndex = m_nModelIndex;
 		pRagdoll->m_nForceBone = m_nForceBone;
 		pRagdoll->m_vecForce = m_vecForce;
-		pRagdoll->m_iGoreHead = m_iGoreHead;
-		pRagdoll->m_iGoreLeftArm = m_iGoreLeftArm;
-		pRagdoll->m_iGoreRightArm = m_iGoreRightArm;
-		pRagdoll->m_iGoreLeftLeg = m_iGoreLeftLeg;
-		pRagdoll->m_iGoreRightLeg = m_iGoreRightLeg;
 		pRagdoll->SetAbsOrigin(GetAbsOrigin());
 	}
 
