@@ -1971,7 +1971,7 @@ void CHL2_Player::Spawn(void)
 
 	if (sv_hud_hidechat.GetBool())
 	{
-	m_Local.m_iHideHUD |= HIDEHUD_CHAT;
+		m_Local.m_iHideHUD |= HIDEHUD_CHAT;
 	}
 
 	m_pPlayerAISquad = g_AI_SquadManager.FindCreateSquad(AllocPooledString(PLAYER_SQUADNAME));

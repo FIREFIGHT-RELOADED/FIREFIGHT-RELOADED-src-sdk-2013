@@ -532,6 +532,9 @@ void C_BasePlayer::Spawn( void )
 
 	SharedSpawn();
 
+	input->CAM_ToFirstPerson();
+	ThirdPersonSwitch(false);
+
 	m_bWasFreezeFraming = false;
 
 	m_bFiredWeapon = false;
@@ -1360,6 +1363,8 @@ void C_BasePlayer::AddEntity( void )
 
 	// Add in lighting effects
 	CreateLightEffects();
+
+	SetLocalAnglesDim(X_INDEX, 0);
 }
 
 extern float UTIL_WaterLevel( const Vector &position, float minz, float maxz );
@@ -1946,6 +1951,7 @@ void C_BasePlayer::ThirdPersonSwitch( bool bThirdperson )
 {
 	// We've switch from first to third, or vice versa.
 	UpdateVisibility();
+	m_bDrawPlayerModelExternally = bThirdperson;
 
 	// Update the visibility of anything bone attached to us.
 	if ( IsLocalPlayer() )
