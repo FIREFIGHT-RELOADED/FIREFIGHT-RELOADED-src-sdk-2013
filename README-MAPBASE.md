@@ -1,5 +1,3 @@
-NOTE: This clone was created to move FIREFIGHT RELOADED over to Mapbase. This repo will be archived after everything has been tested. 
-
 //===================================================================================================================================================
 
                Mapbase - Source 2013
