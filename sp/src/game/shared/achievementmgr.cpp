@@ -1152,7 +1152,7 @@ bool CAchievementMgr::CheckAchievementsEnabled()
 	if ( IsPC() )
 	{
 		// Don't award achievements if cheats are turned on.  
-		if (WereCheatsEverOn())
+		if ( WereCheatsEverOn() )
 		{
 #ifndef NO_STEAM
 			// Cheats get turned on automatically if you run with -dev which many people do internally, so allow cheats if developer is turned on and we're not running
@@ -1580,7 +1580,11 @@ void CAchievementMgr::OnKillEvent( CBaseEntity *pVictim, CBaseEntity *pAttacker,
 			}
 
 			CBaseCombatCharacter *pBCC = dynamic_cast<CBaseCombatCharacter *>( pVictim );
+#ifdef MAPBASE
+			if ( pBCC && ( D_FR >= pBCC->IRelationType( pLocalPlayer ) ) )
+#else
 			if ( pBCC && ( D_HT == pBCC->IRelationType( pLocalPlayer ) ) )
+#endif
 			{
 				bVictimIsPlayerEnemy = true;
 			}
@@ -1690,6 +1694,13 @@ void CAchievementMgr::OnMapEvent( const char *pchEventName )
 		CBaseAchievement *pAchievement = m_vecMapEventListeners[iAchievement];
 		pAchievement->OnMapEvent( pchEventName );
 	}
+
+#ifdef MAPBASE
+	if (cc_achievement_debug.GetBool())
+	{
+		Msg( "CAchievementMgr::OnMapEvent: Achievement \"%s\" not found\n", pchEventName );
+	}
+#endif
 }
 
 //-----------------------------------------------------------------------------

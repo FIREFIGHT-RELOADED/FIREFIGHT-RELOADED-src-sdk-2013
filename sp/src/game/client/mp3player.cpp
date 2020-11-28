@@ -1314,11 +1314,11 @@ void CMP3Player::PopulateTree()
 }
 
 #ifdef WIN32
-	// Instead of including windows.h
-	extern "C"
-	{
-		extern int __stdcall CopyFileA( char *pszSource, char *pszDest, int bFailIfExists );
-	};
+// Instead of including windows.h
+extern "C"
+{
+	extern int __stdcall CopyFileA( char *pszSource, char *pszDest, int bFailIfExists );
+};
 #endif
 
 void CMP3Player::GetLocalCopyOfSong( const MP3File_t &mp3, char *outsong, size_t outlen )

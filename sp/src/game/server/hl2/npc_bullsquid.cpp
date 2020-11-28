@@ -449,15 +449,15 @@ void CNPC_Bullsquid::HandleAnimEvent( animevent_t *pEvent )
 
 			// Don't fire again until this volley would have hit the ground (with some lag behind it)
 			SetNextAttack(gpGlobals->curtime + flTime + random->RandomFloat(0.5f, 2.0f));
-
+				
 			for (int i = 0; i < 6; i++)
 			{
 				CGrenadeSpit *pGrenade = (CGrenadeSpit*)CreateEntityByName("grenade_spit");
 				pGrenade->SetAbsOrigin(vSpitPos);
 				pGrenade->SetAbsAngles(vec3_angle);
 				DispatchSpawn(pGrenade);
-				pGrenade->SetThrower(this);
-				pGrenade->SetOwnerEntity(this);
+				pGrenade->SetThrower( this );
+				pGrenade->SetOwnerEntity( this );
 
 				if (i == 0)
 				{

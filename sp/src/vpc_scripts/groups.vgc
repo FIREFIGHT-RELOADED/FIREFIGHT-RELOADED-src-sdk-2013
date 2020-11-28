@@ -12,6 +12,7 @@ $Group "gamedlls"
 {
 	"client"
 	"server"
+	"game_shader_dx9"
 }
 
 $Group "game"
@@ -22,7 +23,7 @@ $Group "game"
 	"server"
 	"tier1"
 	"vgui_controls"
-	"game_shader_dx9"
+	"vscript"
 }
 
 $Group "shaders"
@@ -52,6 +53,7 @@ $Group "everything"
 	"vice"
 	"vrad_dll"
 	"vrad_launcher"
+	"vscript"
 	"vtf2tga"
 	"vtfdiff"
 	"vvis_dll"

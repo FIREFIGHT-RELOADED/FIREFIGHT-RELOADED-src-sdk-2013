@@ -82,7 +82,7 @@ END_DATADESC()
 
 acttable_t	CWeaponFrag::m_acttable[] = 
 {
-	{ ACT_RANGE_ATTACK1,	ACT_RANGE_ATTACK_SLAM,		true },
+	{ ACT_RANGE_ATTACK1, ACT_RANGE_ATTACK_SLAM, true },
 	{ ACT_HL2MP_IDLE,		ACT_HL2MP_IDLE_GRENADE,		false },
 	{ ACT_HL2MP_RUN,		ACT_HL2MP_RUN_GRENADE,		false },
 	{ ACT_HL2MP_IDLE_CROUCH,		ACT_HL2MP_IDLE_CROUCH_GRENADE,		false },
@@ -348,8 +348,8 @@ void CWeaponFrag::DecrementAmmo( CBaseCombatCharacter *pOwner )
 //-----------------------------------------------------------------------------
 void CWeaponFrag::ItemPostFrame( void )
 {
-	CBasePlayer *pOwner = ToBasePlayer(GetOwner());
-	
+		CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+
 	if (pOwner && (pOwner->m_afButtonPressed & IN_GRENADE1))
 	{
 		ThrowGrenade(pOwner);
@@ -362,7 +362,7 @@ void CWeaponFrag::ItemPostFrame( void )
 			switch( m_AttackPaused )
 			{
 			case GRENADE_PAUSED_PRIMARY:
-				if (!(pOwner->m_nButtons & IN_ATTACK))
+				if( !(pOwner->m_nButtons & IN_ATTACK) )
 				{
 					SendWeaponAnim( ACT_VM_THROW );
 					m_fDrawbackFinished = false;

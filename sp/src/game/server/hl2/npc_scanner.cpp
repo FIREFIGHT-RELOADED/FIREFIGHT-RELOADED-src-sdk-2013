@@ -45,7 +45,7 @@ extern IMaterialSystemHardwareConfig *g_pMaterialSystemHardwareConfig;
 #define SCANNER_SOUND_INSPECT_LENGTH	5		// How long does the inspection last
 
 #define SCANNER_HINT_INSPECT_DELAY		15		// Check for hint nodes this often
-
+	
 #define SCANNER_MINE_RESPAWN_DELAY		8
 #define SCANNER_MINE_REDEPLOY_DELAY		2
 	
@@ -153,6 +153,7 @@ BEGIN_DATADESC( CNPC_CScanner )
 	DEFINE_FIELD( m_nPoseFaceVert,			FIELD_INTEGER ),
 	DEFINE_FIELD( m_nPoseFaceHoriz,			FIELD_INTEGER ),
 
+	DEFINE_FIELD( m_bIsClawScanner,			FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bIsOpen,				FIELD_BOOLEAN ),
 
 	// DEFINE_FIELD( m_bHasSpoken,			FIELD_BOOLEAN ),
@@ -183,6 +184,11 @@ BEGIN_DATADESC( CNPC_CScanner )
 	DEFINE_INPUTFUNC( FIELD_STRING, "DeployMine", InputDeployMine ),
 	DEFINE_INPUTFUNC( FIELD_STRING, "EquipMine", InputEquipMine ),
 
+#ifdef MAPBASE
+	DEFINE_INPUTFUNC( FIELD_VOID, "DisablePhotos", InputDisablePhotos ),
+	DEFINE_INPUTFUNC( FIELD_VOID, "EnablePhotos", InputEnablePhotos ),
+#endif
+
 	DEFINE_OUTPUT( m_OnPhotographPlayer, "OnPhotographPlayer" ),
 	DEFINE_OUTPUT( m_OnPhotographNPC, "OnPhotographNPC" ),
 
@@ -211,6 +217,20 @@ CNPC_CScanner::CNPC_CScanner()
 	char szMapName[256];
 	Q_strncpy(szMapName, STRING(gpGlobals->mapname), sizeof(szMapName) );
 	Q_strlower(szMapName);
+
+	if( !Q_strnicmp( szMapName, "d3_c17", 6 ) )
+	{
+		// Streetwar scanners are claw scanners
+		m_bIsClawScanner = true;
+	}
+	else
+	{
+		m_bIsClawScanner = false;
+	}
+
+#ifdef MAPBASE
+	CapabilitiesAdd( bits_CAP_INNATE_MELEE_ATTACK1 );
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -239,7 +259,14 @@ void CNPC_CScanner::Spawn(void)
 
 	Precache();
 
-	SetModel("models/shield_scanner.mdl");
+	if( m_bIsClawScanner )
+	{
+		SetModel( "models/shield_scanner.mdl");
+	}
+	else
+	{
+		SetModel( "models/combine_scanner.mdl");
+	}
 
 	m_iHealth				= sk_scanner_health.GetFloat();
 	m_iMaxHealth = m_iHealth;
@@ -278,15 +305,11 @@ void CNPC_CScanner::Spawn(void)
 
 	// --------------------------------------------
 
+#ifndef MAPBASE // Moved to constructor so keyvalue works
 	CapabilitiesAdd( bits_CAP_INNATE_MELEE_ATTACK1 );
+#endif
 
 	m_bPhotoTaken = false;
-
-	if (g_pGameRules->IsSkillLevel(SKILL_EASY)) { m_bNoLight = true; }
-	else if (g_pGameRules->IsSkillLevel(SKILL_MEDIUM)) { m_bNoLight = true; }
-	else if (g_pGameRules->IsSkillLevel(SKILL_HARD)) { m_bNoLight = true; }
-	else if (g_pGameRules->IsSkillLevel(SKILL_VERYHARD)) { m_bNoLight = false; }
-	else if (g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE)) { m_bNoLight = false; }
 
 	BaseClass::Spawn();
 
@@ -314,6 +337,27 @@ void CNPC_CScanner::Activate()
 	m_pEyeFlash->SetScale( 1.4 );
 }
 
+#ifdef MAPBASE
+//-----------------------------------------------------------------------------
+// Purpose: Cache user entity field values until spawn is called.
+// Input  : szKeyName - Key to handle.
+//			szValue - Value for key.
+// Output : Returns true if the key was handled, false if not.
+//-----------------------------------------------------------------------------
+bool CNPC_CScanner::KeyValue( const char *szKeyName, const char *szValue )
+{
+	// Any "Counter" outputs are changed to "OutCounter" before spawning.
+	if (FStrEq(szKeyName, "DisablePhotos") && FStrEq(szValue, "1"))
+	{
+		CapabilitiesRemove(bits_CAP_INNATE_MELEE_ATTACK1);
+	}
+	else
+		return BaseClass::KeyValue( szKeyName, szValue );
+
+	return true;
+}
+#endif
+
 //------------------------------------------------------------------------------
 // Purpose: Override to split in two when attacked
 //------------------------------------------------------------------------------
@@ -335,12 +379,22 @@ void CNPC_CScanner::Gib( void )
 		return;
 
 	// Spawn all gibs
-	CGib::SpawnSpecificGibs(this, 1, 500, 250, "models/gibs/Shield_Scanner_Gib1.mdl");
-	CGib::SpawnSpecificGibs(this, 1, 500, 250, "models/gibs/Shield_Scanner_Gib2.mdl");
-	CGib::SpawnSpecificGibs(this, 1, 500, 250, "models/gibs/Shield_Scanner_Gib3.mdl");
-	CGib::SpawnSpecificGibs(this, 1, 500, 250, "models/gibs/Shield_Scanner_Gib4.mdl");
-	CGib::SpawnSpecificGibs(this, 1, 500, 250, "models/gibs/Shield_Scanner_Gib5.mdl");
-	CGib::SpawnSpecificGibs(this, 1, 500, 250, "models/gibs/Shield_Scanner_Gib6.mdl");
+	if( m_bIsClawScanner )
+	{
+		CGib::SpawnSpecificGibs( this, 1, 500, 250, "models/gibs/Shield_Scanner_Gib1.mdl");
+		CGib::SpawnSpecificGibs( this, 1, 500, 250, "models/gibs/Shield_Scanner_Gib2.mdl");
+		CGib::SpawnSpecificGibs( this, 1, 500, 250, "models/gibs/Shield_Scanner_Gib3.mdl");
+		CGib::SpawnSpecificGibs( this, 1, 500, 250, "models/gibs/Shield_Scanner_Gib4.mdl");
+		CGib::SpawnSpecificGibs( this, 1, 500, 250, "models/gibs/Shield_Scanner_Gib5.mdl");
+		CGib::SpawnSpecificGibs( this, 1, 500, 250, "models/gibs/Shield_Scanner_Gib6.mdl");
+	}
+	else
+	{
+		CGib::SpawnSpecificGibs( this, 1, 500, 250, "models/gibs/scanner_gib01.mdl" );
+		CGib::SpawnSpecificGibs( this, 1, 500, 250, "models/gibs/scanner_gib02.mdl" );
+		CGib::SpawnSpecificGibs( this, 1, 500, 250, "models/gibs/scanner_gib04.mdl" );
+		CGib::SpawnSpecificGibs( this, 1, 500, 250, "models/gibs/scanner_gib05.mdl" );
+	}
 
 	// Add a random chance of spawning a battery...
 	if ( !HasSpawnFlags(SF_NPC_NO_WEAPON_DROP) && random->RandomFloat( 0.0f, 1.0f) < 0.3f )
@@ -389,7 +443,7 @@ void CNPC_CScanner::Event_Killed( const CTakeDamageInfo &info )
 	m_pEyeFlash = NULL;
 
 	// If I have an enemy and I'm up high, do a dive bomb (unless dissolved)
-	if ( GetEnemy() != NULL && (info.GetDamageType() & DMG_DISSOLVE) == false )
+	if ( !m_bIsClawScanner && GetEnemy() != NULL && (info.GetDamageType() & DMG_DISSOLVE) == false )
 	{
 		Vector vecDelta = GetLocalOrigin() - GetEnemy()->GetLocalOrigin();
 		if ( ( vecDelta.z > 120 ) && ( vecDelta.Length() > 360 ) )
@@ -443,6 +497,11 @@ int CNPC_CScanner::TranslateSchedule( int scheduleType )
 //-----------------------------------------------------------------------------
 Activity CNPC_CScanner::NPC_TranslateActivity( Activity eNewActivity )
 {
+	if( !m_bIsClawScanner )
+	{
+		return BaseClass::NPC_TranslateActivity( eNewActivity );
+	}
+
 	// The claw scanner came along a little late and doesn't have the activities
 	// of the city scanner. So Just pick between these three
 	if( eNewActivity == ACT_DISARM )
@@ -480,7 +539,10 @@ void CNPC_CScanner::HandleAnimEvent( animevent_t *pEvent )
 //-----------------------------------------------------------------------------
 char *CNPC_CScanner::GetEngineSound( void )
 {
-	return "NPC_SScanner.FlyLoop";
+	if( m_bIsClawScanner )
+		return "NPC_SScanner.FlyLoop";
+
+	return "NPC_CScanner.FlyLoop";
 }
 
 //-----------------------------------------------------------------------------
@@ -498,7 +560,10 @@ void CNPC_CScanner::NPCThink(void)
 	{
 		BaseClass::NPCThink();
 		SpotlightUpdate();
-		MineBehavior();
+		if( m_bIsClawScanner )
+		{
+			MineBehavior();
+		}
 	}
 }
 
@@ -602,29 +667,56 @@ void CNPC_CScanner::EquipMine(void)
 void CNPC_CScanner::Precache(void)
 {
 	// Model
-	PrecacheModel("models/shield_scanner.mdl");
+	if( m_bIsClawScanner )
+	{
+		PrecacheModel("models/shield_scanner.mdl");
 
-	PrecacheModel("models/gibs/Shield_Scanner_Gib1.mdl");
-	PrecacheModel("models/gibs/Shield_Scanner_Gib2.mdl");
-	PrecacheModel("models/gibs/Shield_Scanner_Gib3.mdl");
-	PrecacheModel("models/gibs/Shield_Scanner_Gib4.mdl");
-	PrecacheModel("models/gibs/Shield_Scanner_Gib5.mdl");
-	PrecacheModel("models/gibs/Shield_Scanner_Gib6.mdl");
+		PrecacheModel("models/gibs/Shield_Scanner_Gib1.mdl");
+		PrecacheModel("models/gibs/Shield_Scanner_Gib2.mdl");
+		PrecacheModel("models/gibs/Shield_Scanner_Gib3.mdl");
+		PrecacheModel("models/gibs/Shield_Scanner_Gib4.mdl");
+		PrecacheModel("models/gibs/Shield_Scanner_Gib5.mdl");
+		PrecacheModel("models/gibs/Shield_Scanner_Gib6.mdl");
 
-	PrecacheScriptSound("NPC_SScanner.Shoot");
-	PrecacheScriptSound("NPC_SScanner.Alert");
-	PrecacheScriptSound("NPC_SScanner.Die");
-	PrecacheScriptSound("NPC_SScanner.Combat");
-	PrecacheScriptSound("NPC_SScanner.Idle");
-	PrecacheScriptSound("NPC_SScanner.Pain");
-	PrecacheScriptSound("NPC_SScanner.TakePhoto");
-	PrecacheScriptSound("NPC_SScanner.AttackFlash");
-	PrecacheScriptSound("NPC_SScanner.DiveBombFlyby");
-	PrecacheScriptSound("NPC_SScanner.DiveBomb");
-	PrecacheScriptSound("NPC_SScanner.DeployMine");
+		PrecacheScriptSound( "NPC_SScanner.Shoot");
+		PrecacheScriptSound( "NPC_SScanner.Alert" );
+		PrecacheScriptSound( "NPC_SScanner.Die" );
+		PrecacheScriptSound( "NPC_SScanner.Combat" );
+		PrecacheScriptSound( "NPC_SScanner.Idle" );
+		PrecacheScriptSound( "NPC_SScanner.Pain" );
+		PrecacheScriptSound( "NPC_SScanner.TakePhoto" );
+		PrecacheScriptSound( "NPC_SScanner.AttackFlash" );
+		PrecacheScriptSound( "NPC_SScanner.DiveBombFlyby" );
+		PrecacheScriptSound( "NPC_SScanner.DiveBomb" );
+		PrecacheScriptSound( "NPC_SScanner.DeployMine" );
 
-	PrecacheScriptSound("NPC_SScanner.FlyLoop");
-	UTIL_PrecacheOther("combine_mine");
+		PrecacheScriptSound( "NPC_SScanner.FlyLoop" );
+		UTIL_PrecacheOther( "combine_mine" );
+	}
+	else
+	{
+		PrecacheModel("models/combine_scanner.mdl");
+
+		PrecacheModel("models/gibs/scanner_gib01.mdl" );
+		PrecacheModel("models/gibs/scanner_gib02.mdl" );	
+		PrecacheModel("models/gibs/scanner_gib02.mdl" );
+		PrecacheModel("models/gibs/scanner_gib04.mdl" );
+		PrecacheModel("models/gibs/scanner_gib05.mdl" );
+
+		PrecacheScriptSound( "NPC_CScanner.Shoot");
+		PrecacheScriptSound( "NPC_CScanner.Alert" );
+		PrecacheScriptSound( "NPC_CScanner.Die" );
+		PrecacheScriptSound( "NPC_CScanner.Combat" );
+		PrecacheScriptSound( "NPC_CScanner.Idle" );
+		PrecacheScriptSound( "NPC_CScanner.Pain" );
+		PrecacheScriptSound( "NPC_CScanner.TakePhoto" );
+		PrecacheScriptSound( "NPC_CScanner.AttackFlash" );
+		PrecacheScriptSound( "NPC_CScanner.DiveBombFlyby" );
+		PrecacheScriptSound( "NPC_CScanner.DiveBomb" );
+		PrecacheScriptSound( "NPC_CScanner.DeployMine" );
+
+		PrecacheScriptSound( "NPC_CScanner.FlyLoop" );
+	}
 
 	// Sprites
 	m_nHaloSprite = PrecacheModel("sprites/light_glow03.vmt");
@@ -986,7 +1078,11 @@ void CNPC_CScanner::DeployMine()
 				pPhysObj->Wake();
 			}
 
-			SetActivity(ACT_DISARM);
+			if( m_bIsClawScanner )
+			{
+				// Fold up.
+				SetActivity( ACT_DISARM );
+			}
 
 			return;
 		}
@@ -998,7 +1094,12 @@ void CNPC_CScanner::DeployMine()
 //-----------------------------------------------------------------------------
 float CNPC_CScanner::GetMaxSpeed()
 {
+#ifdef MAPBASE
+	// Don't stomp custom max speed in base class
+	if( IsStriderScout() && m_flCustomMaxSpeed <= 0.0f )
+#else
 	if( IsStriderScout() )
+#endif
 	{
 		return SCANNER_SCOUT_MAX_SPEED;
 	}
@@ -1036,25 +1137,29 @@ void CNPC_CScanner::InputEquipMine(inputdata_t &inputdata)
 	pEnt = CreateEntityByName( "combine_mine" );
 	bool bPlacedMine = false;
 
-	Vector	vecOrigin;
-	QAngle	angles;
-	int		attachment;
-
-	attachment = LookupAttachment("claw");
-
-	if (attachment > -1)
+	if( m_bIsClawScanner )
 	{
-		GetAttachment(attachment, vecOrigin, angles);
+		Vector	vecOrigin;
+		QAngle	angles;
+		int		attachment;
 
-		pEnt->SetAbsOrigin(vecOrigin);
-		pEnt->SetAbsAngles(angles);
-		pEnt->SetOwnerEntity(this);
-		pEnt->SetParent(this, attachment);
+		attachment = LookupAttachment( "claw" );
 
-		m_bIsOpen = true;
-		SetActivity(ACT_IDLE_ANGRY);
-		bPlacedMine = true;
+		if( attachment > -1 )
+		{
+			GetAttachment( attachment, vecOrigin, angles );
+			
+			pEnt->SetAbsOrigin( vecOrigin );
+			pEnt->SetAbsAngles( angles );
+			pEnt->SetOwnerEntity( this );
+			pEnt->SetParent( this, attachment );
+
+			m_bIsOpen = true;
+			SetActivity( ACT_IDLE_ANGRY );
+			bPlacedMine = true;
+		}
 	}
+
 
 	if( !bPlacedMine )
 	{
@@ -1069,6 +1174,24 @@ void CNPC_CScanner::InputEquipMine(inputdata_t &inputdata)
 
 	pEnt->Spawn();
 }
+
+#ifdef MAPBASE
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CNPC_CScanner::InputDisablePhotos( inputdata_t &inputdata )
+{
+	CapabilitiesRemove(bits_CAP_INNATE_MELEE_ATTACK1);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CNPC_CScanner::InputEnablePhotos( inputdata_t &inputdata )
+{
+	CapabilitiesAdd(bits_CAP_INNATE_MELEE_ATTACK1);
+}
+#endif
 
 
 //-----------------------------------------------------------------------------
@@ -1486,6 +1609,10 @@ int CNPC_CScanner::SelectSchedule(void)
 			return SCHED_CSCANNER_SPOTLIGHT_HOVER;
 
 		// Melee attack if possible
+#ifdef MAPBASE
+		if ( CapabilitiesGet() & bits_CAP_INNATE_MELEE_ATTACK1 )
+		{
+#endif
 		if ( HasCondition( COND_CAN_MELEE_ATTACK1 ) )
 		{ 
 			if ( random->RandomInt(0,1) )
@@ -1494,6 +1621,13 @@ int CNPC_CScanner::SelectSchedule(void)
 			// TODO: a schedule where he makes an alarm sound?
 			return SCHED_SCANNER_CHASE_ENEMY;
 		}
+#ifdef MAPBASE
+		}
+		else
+		{
+			return SCHED_CSCANNER_SPOTLIGHT_HOVER;
+		}
+#endif
 
 		// If I'm far from the enemy, stay up high and approach in spotlight mode
 		float fAttack2DDist = ( GetEnemyLKP() - GetAbsOrigin() ).Length2D();
@@ -1902,6 +2036,15 @@ void CNPC_CScanner::UpdateOnRemove( void )
 //------------------------------------------------------------------------------
 void CNPC_CScanner::TakePhoto(void)
 {
+#ifdef MAPBASE
+	// Only take photos if we're allowed
+	if (!(CapabilitiesGet() & bits_CAP_INNATE_MELEE_ATTACK1))
+	{
+		m_bPhotoTaken = true;
+		return;
+	}
+#endif
+
 	ScannerEmitSound( "TakePhoto" );
 	
 	m_pEyeFlash->SetScale( 1.4 );
@@ -2299,7 +2442,10 @@ void CNPC_CScanner::StartTask( const Task_t *pTask )
 //-----------------------------------------------------------------------------
 char *CNPC_CScanner::GetScannerSoundPrefix( void )
 {
-	return "NPC_SScanner";
+	if( m_bIsClawScanner )
+		return "NPC_SScanner";
+
+	return "NPC_CScanner";
 }
 
 //------------------------------------------------------------------------------
@@ -2320,7 +2466,10 @@ float CNPC_CScanner::MinGroundDist( void )
 //-----------------------------------------------------------------------------
 void CNPC_CScanner::AdjustScannerVelocity( void )
 {
-	m_vCurrentVelocity *= (1 + sin((gpGlobals->curtime + m_flFlyNoiseBase) * 2.5f) * .1);
+	if ( m_bIsClawScanner )
+	{
+		m_vCurrentVelocity *= ( 1 + sin( ( gpGlobals->curtime + m_flFlyNoiseBase ) * 2.5f ) * .1 );
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -3027,3 +3176,33 @@ AI_BEGIN_CUSTOM_NPC( npc_cscanner, CNPC_CScanner )
 	)
 	
 AI_END_CUSTOM_NPC()
+
+//-----------------------------------------------------------------------------
+// Claw Scanner
+//
+// Scanner that always spawns as a claw scanner
+//-----------------------------------------------------------------------------
+	
+class CNPC_ClawScanner : public CNPC_CScanner
+{
+DECLARE_CLASS( CNPC_ClawScanner, CNPC_CScanner );
+
+public:
+	CNPC_ClawScanner();
+	DECLARE_DATADESC();
+};
+
+BEGIN_DATADESC( CNPC_ClawScanner )
+END_DATADESC()
+
+
+LINK_ENTITY_TO_CLASS(npc_clawscanner, CNPC_ClawScanner);
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+CNPC_ClawScanner::CNPC_ClawScanner()
+{
+	// override our superclass's setting
+	BecomeClawScanner();
+}

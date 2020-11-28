@@ -52,6 +52,9 @@ BEGIN_DATADESC( CAI_ScriptConditions )
 
 	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
+#ifdef MAPBASE
+	DEFINE_INPUTFUNC( FIELD_EHANDLE, "SatisfyConditions", InputSatisfyConditions ),
+#endif
 
 	//---------------------------------
 
@@ -195,12 +198,20 @@ bool CAI_ScriptConditions::EvalState( const EvalArgs_t &args )
 			-1, // NPC_STATE_PLAYDEAD
 			-1, // NPC_STATE_PRONE
 			-1, // NPC_STATE_DEAD
+#ifdef MAPBASE
+			3, // A "Don't care" for the maximum value
+#endif
 	};
 
 	int valState = stateVals[pNpc->m_NPCState];
 
 	if ( valState < 0 )
 	{
+#ifdef MAPBASE
+		if (m_fMinState == 0)
+			return true;
+#endif
+
 		if ( pNpc->m_NPCState == NPC_STATE_SCRIPT && m_fScriptStatus >= TRS_TRUE )
 			return true;
 
@@ -473,6 +484,14 @@ void CAI_ScriptConditions::EvaluationThink()
 
 	int iActorsDone = 0;
 
+#ifdef HL2_DLL
+	if( UTIL_GetNearestPlayer(GetAbsOrigin())->GetFlags() & FL_NOTARGET )
+	{
+		ScrCondDbgMsg( ("%s WARNING: Player is NOTARGET. This will affect all LOS conditiosn involving the player!\n", GetDebugName()) );
+	}
+#endif
+
+
 	for ( int i = 0; i < m_ElementList.Count(); )
 	{
 		CAI_ScriptConditionsElement *pConditionElement = &m_ElementList[i];
@@ -668,6 +687,25 @@ void CAI_ScriptConditions::InputDisable( inputdata_t &inputdata )
 	Disable();
 }
 
+#ifdef MAPBASE
+//-----------------------------------------------------------------------------
+
+void CAI_ScriptConditions::InputSatisfyConditions( inputdata_t &inputdata )
+{
+	// This satisfies things.
+	CBaseEntity *pActivator = HasSpawnFlags(SF_ACTOR_AS_ACTIVATOR) ? inputdata.value.Entity() : this;
+	m_OnConditionsSatisfied.FireOutput(pActivator, this);
+
+
+	//All done!
+	if ( m_ElementList.Count() == 1 )
+	{
+		Disable();
+		m_ElementList.Purge();
+	}
+}
+#endif
+
 //-----------------------------------------------------------------------------
 
 bool CAI_ScriptConditions::IsInFOV( CBaseEntity *pViewer, CBaseEntity *pViewed, float fov, bool bTrueCone )
@@ -820,6 +858,11 @@ void CAI_ScriptConditions::OnEntitySpawned( CBaseEntity *pEntity )
 
 	if ( pEntity->MyNPCPointer() == NULL )
 		 return;
+
+#ifdef MAPBASE
+	if ( m_Actor == NULL_STRING )
+		return;
+#endif
 
 	if ( pEntity->NameMatches( m_Actor ) )
 	{

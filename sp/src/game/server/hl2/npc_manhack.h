@@ -136,7 +136,7 @@ public:
 	void			HitPhysicsObject( CBaseEntity *pOther );
 	virtual void	ClampMotorForces( Vector &linear, AngularImpulse &angular );
 	unsigned int	PhysicsSolidMaskForEntity( void ) const;
-	
+
 	virtual bool	CanBecomeServerRagdoll(void) { return false; }
 
 	// Create smoke trail!
@@ -147,6 +147,10 @@ public:
 
 	void			InputDisableSwarm( inputdata_t &inputdata );
 	void			InputUnpack( inputdata_t &inputdata );
+#ifdef MAPBASE
+	void			InputEnableSprites( inputdata_t &inputdata );
+	void			InputDisableSprites( inputdata_t &inputdata );
+#endif
 
 	// 	CDefaultPlayerPickupVPhysics
 	virtual void	OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason );
@@ -157,7 +161,11 @@ public:
 	float GetMaxEnginePower();
 
 	// INPCInteractive Functions
+#ifdef MAPBASE
+	virtual bool	CanInteractWith( CAI_BaseNPC *pUser );
+#else
 	virtual bool	CanInteractWith( CAI_BaseNPC *pUser ) { return false; } // Disabled for now (sjb)
+#endif
 	virtual	bool	HasBeenInteractedWith()	{ return m_bHackedByAlyx; }
 	virtual void	NotifyInteraction( CAI_BaseNPC *pUser )
 	{
@@ -165,6 +173,9 @@ public:
 		KillSprites(0.0f);
 		m_bHackedByAlyx = true; 
 		StartEye();
+#ifdef MAPBASE
+		m_OnHacked.FireOutput(pUser, this);
+#endif
 	}
 
 	virtual void	InputPowerdown( inputdata_t &inputdata )
@@ -256,6 +267,11 @@ private:
 	CSprite			*m_pLightGlow;
 	
 	CHandle<SmokeTrail>	m_hSmokeTrail;
+#ifdef MAPBASE
+	EHANDLE			m_hPrevOwner;
+
+	bool			m_bNoSprites;
+#endif
 
 	int				m_iPanel1;
 	int				m_iPanel2;

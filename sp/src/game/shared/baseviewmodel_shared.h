@@ -28,10 +28,8 @@ class CVGuiScreen;
 
 #define VIEWMODEL_INDEX_BITS 1
 
-#define VM_LEGS 1
-#define VM_ARMS 2
-#define VM_CAM 3
-
+//hands are 1
+#define VM_LEGS 2
 class CBaseViewModel : public CBaseAnimating, public IHasOwner
 {
 	DECLARE_CLASS( CBaseViewModel, CBaseAnimating );
@@ -55,6 +53,7 @@ public:
 	// Weapon client handling
 	virtual void			SendViewModelMatchingSequence( int sequence );
 	virtual void			SetWeaponModel( const char *pszModelname, CBaseCombatWeapon *weapon );
+
 	virtual void			CalcViewModelLag( Vector& origin, QAngle& angles, QAngle& original_angles );
 	void					CalcIronsights(Vector &pos, QAngle &ang);
 	void					CalcAdjustedView(Vector &pos, QAngle &ang);
@@ -150,7 +149,11 @@ public:
 	// Should this object receive shadows?
 	virtual bool			ShouldReceiveProjectedTextures( int flags )
 	{
+#ifdef MAPBASE
 		return true;
+#else
+		return false;
+#endif
 	}
 
 	// Add entity to visible view models list?
@@ -176,7 +179,6 @@ public:
 	virtual bool			GetAttachment( int number, Vector &origin );
 	virtual	bool			GetAttachment( int number, Vector &origin, QAngle &angles );
 	virtual bool			GetAttachmentVelocity( int number, Vector &originVel, Quaternion &angleVel );
-
 #endif
 
 private:

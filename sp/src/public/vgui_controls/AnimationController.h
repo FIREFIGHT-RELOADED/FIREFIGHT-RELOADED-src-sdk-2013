@@ -78,7 +78,7 @@ public:
 	{
 		float a, b, c, d;
 	};
-	void RunAnimationCommand(vgui::Panel *panel, const char *variable, PublicValue_t targetValue, float startDelaySeconds, float durationSeconds, Interpolators_e interpolator, float animParameter = 0);
+	void RunAnimationCommand(vgui::Panel* panel, const char* variable, PublicValue_t targetValue, float startDelaySeconds, float durationSeconds, Interpolators_e interpolator, float animParameter = 0);
 
 private:
 	bool UpdateScreenSize();

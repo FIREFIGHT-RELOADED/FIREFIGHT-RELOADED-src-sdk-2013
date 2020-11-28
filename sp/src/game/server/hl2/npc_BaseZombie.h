@@ -42,6 +42,10 @@ extern int AE_ZOMBIE_POUND;
 #define ZOMBIE_BLOOD_RIGHT_HAND		1
 #define ZOMBIE_BLOOD_BOTH_HANDS		2
 #define ZOMBIE_BLOOD_BITE			3
+
+#ifdef MAPBASE
+#define SF_ZOMBIE_NO_TORSO ( 1 << 15 )
+#endif
 	
 
 enum HeadcrabRelease_t
@@ -173,7 +177,6 @@ public:
 	virtual bool IsChopped( const CTakeDamageInfo &info );
 	virtual bool IsSquashed( const CTakeDamageInfo &info ) { return false; }
 	virtual void DieChopped( const CTakeDamageInfo &info );
-	virtual void DieChoppedNoBurn(const CTakeDamageInfo &info);
 	virtual void Ignite( float flFlameLifetime, bool bNPCOnly = true, float flSize = 0.0f, bool bCalledByLevelDesigner = false );
 	void CopyRenderColorTo( CBaseEntity *pOther );
 
@@ -235,6 +238,8 @@ public:
 
 	bool OnInsufficientStopDist( AILocalMoveGoal_t *pMoveGoal, float distClear, AIMoveResult_t *pResult );
 
+	virtual	bool		AllowedToIgnite( void ) { return true; }
+
 public:
 	CAI_ActBusyBehavior		m_ActBusyBehavior;
 
@@ -258,6 +263,10 @@ protected:
 	float	m_flBurnDamageResetTime;	// Time at which we reset the burn damage.
 
 	EHANDLE m_hPhysicsEnt;
+#ifdef MAPBASE
+	COutputEHANDLE m_OnSwattedProp;
+	COutputEHANDLE m_OnCrab;
+#endif
 
 	float m_flNextMoanSound;
 	float m_flNextSwat;

@@ -80,7 +80,6 @@ void CreateWeaponManager( const char *pWeaponName, int iMaxPieces )
 		pManager->m_iszWeaponName = MAKE_STRING( pWeaponName );
 		pManager->m_iMaxPieces = iMaxPieces;
 		DispatchSpawn( pManager );
-		DevMsg("Weapon Manager Added!\n");
 	}
 }
 
@@ -240,7 +239,30 @@ void CGameWeaponManager::Think()
 		pCandidate = candidates[i];
 		Assert( !pCandidate->IsEffectActive( EF_NODRAW ) );
 
-		fRemovedOne = true;
+		if ( gpGlobals->maxClients == 1 )
+		{
+			CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+			// Nodraw serves as a flag that this weapon is already being removed since
+			// all we're really doing inside this loop is marking them for removal by
+			// the entity system. We don't want to count the same weapon as removed
+			// more than once.
+			if( !UTIL_FindClientInPVS( pCandidate->edict() ) )
+			{
+				fRemovedOne = true;
+			}
+			else if( !pPlayer->FInViewCone( pCandidate ) )
+			{
+				fRemovedOne = true;
+			}
+			else if ( UTIL_DistApprox( pPlayer->GetAbsOrigin(), pCandidate->GetAbsOrigin() ) > (30*12) )
+			{
+				fRemovedOne = true;
+			}
+		}
+		else
+		{
+			fRemovedOne = true;
+		}
 
 		if( fRemovedOne )
 		{

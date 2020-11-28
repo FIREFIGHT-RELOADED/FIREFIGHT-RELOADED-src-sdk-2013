@@ -181,7 +181,7 @@ public:
 	virtual void		AddEntity( void );
 	virtual bool		ShouldReceiveProjectedTextures( int flags )
 	{
-		return true;
+		return false;
 	}
 
 // Beam Data Elements

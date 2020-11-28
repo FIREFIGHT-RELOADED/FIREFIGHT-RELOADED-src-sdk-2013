@@ -88,30 +88,43 @@ void CHudSuitPower::OnThink( void )
 	if ( flCurrentPower == m_flSuitPower )
 		return;
 
-	if (flCurrentPower >= 100.0f && m_flSuitPower < 100.0f)
+	if ( flCurrentPower >= 100.0f && m_flSuitPower < 100.0f )
 	{
 		// we've reached max power
 		g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("SuitAuxPowerMax");
 	}
-	else if (flCurrentPower < 100.0f && (m_flSuitPower >= 100.0f || m_flSuitPower == SUITPOWER_INIT))
+	else if ( flCurrentPower < 100.0f && (m_flSuitPower >= 100.0f || m_flSuitPower == SUITPOWER_INIT) )
 	{
 		// we've lost power
 		g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("SuitAuxPowerNotMax");
 	}
 
-	
 	bool flashlightActive = pPlayer->IsFlashlightActive();
 	bool sprintActive = pPlayer->IsSprinting();
 	bool breatherActive = pPlayer->IsBreatherActive();
 	int activeDevices = (int)flashlightActive + (int)sprintActive + (int)breatherActive;
+
+#ifdef MAPBASE
+	activeDevices += (int)pPlayer->IsCustomDevice0Active() + (int)pPlayer->IsCustomDevice1Active() + (int)pPlayer->IsCustomDevice2Active();
+#endif
+
 	if (activeDevices != m_iActiveSuitDevices)
 	{
 		m_iActiveSuitDevices = activeDevices;
-		g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("SuitAuxPowerNoItemsActive");
 
-		/*
 		switch ( m_iActiveSuitDevices )
 		{
+#ifdef MAPBASE
+		case 6:
+			g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("SuitAuxPowerSixItemsActive");
+			break;
+		case 5:
+			g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("SuitAuxPowerFiveItemsActive");
+			break;
+		case 4:
+			g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("SuitAuxPowerFourItemsActive");
+			break;
+#endif
 		default:
 		case 3:
 			g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("SuitAuxPowerThreeItemsActive");
@@ -126,7 +139,6 @@ void CHudSuitPower::OnThink( void )
 			g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("SuitAuxPowerNoItemsActive");
 			break;
 		}
-		*/
 	}
 
 	m_flSuitPower = flCurrentPower;
@@ -143,7 +155,7 @@ void CHudSuitPower::Paint()
 
 	// get bar chunks
 	int chunkCount = m_flBarWidth / (m_flBarChunkWidth + m_flBarChunkGap);
-	int enabledChunks = (int)((float)chunkCount * (m_flSuitPower * 1.0f / 100.0f) + 0.5f);
+	int enabledChunks = (int)((float)chunkCount * (m_flSuitPower * 1.0f/100.0f) + 0.5f );
 
 	// see if we've changed power state
 	int lowPower = 0;
@@ -199,7 +211,6 @@ void CHudSuitPower::Paint()
 		surface()->DrawPrintText(L"AUX POWER", wcslen(L"AUX POWER"));
 	}
 
-	/*
 	if ( m_iActiveSuitDevices )
 	{
 		// draw the additional text
@@ -255,8 +266,60 @@ void CHudSuitPower::Paint()
 			}
 			ypos += text2_gap;
 		}
+
+#ifdef MAPBASE
+		if (pPlayer->IsCustomDevice0Active())
+		{
+			tempString = g_pVGuiLocalize->Find("#Mapbase_Hud_DEVICE0");
+
+			surface()->DrawSetTextPos(text2_xpos, ypos);
+
+			if (tempString)
+			{
+				surface()->DrawPrintText(tempString, wcslen(tempString));
+			}
+			else
+			{
+				surface()->DrawPrintText(L"CUSTOM 0", wcslen(L"CUSTOM 0"));
+			}
+			ypos += text2_gap;
+		}
+
+		if (pPlayer->IsCustomDevice1Active())
+		{
+			tempString = g_pVGuiLocalize->Find("#Mapbase_Hud_DEVICE1");
+
+			surface()->DrawSetTextPos(text2_xpos, ypos);
+
+			if (tempString)
+			{
+				surface()->DrawPrintText(tempString, wcslen(tempString));
+			}
+			else
+			{
+				surface()->DrawPrintText(L"CUSTOM 1", wcslen(L"CUSTOM 1"));
+			}
+			ypos += text2_gap;
+		}
+
+		if (pPlayer->IsCustomDevice2Active())
+		{
+			tempString = g_pVGuiLocalize->Find("#Mapbase_Hud_DEVICE2");
+
+			surface()->DrawSetTextPos(text2_xpos, ypos);
+
+			if (tempString)
+			{
+				surface()->DrawPrintText(tempString, wcslen(tempString));
+			}
+			else
+			{
+				surface()->DrawPrintText(L"CUSTOM 2", wcslen(L"CUSTOM 2"));
+			}
+			ypos += text2_gap;
+		}
+#endif
 	}
-	*/
 }
 
 

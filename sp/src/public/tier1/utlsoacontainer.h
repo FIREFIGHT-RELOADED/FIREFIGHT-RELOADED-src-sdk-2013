@@ -403,7 +403,7 @@ public:
 class CFltX4AttributeIterator : public CFltx4StridedConstPtr
 {
 	FORCEINLINE CFltX4AttributeIterator( CSOAContainer const *pContainer, int nAttribute, int nRowNumber = 0 )
-		: CFltx4StridedConstPtr( pContainer->ConstRowPtr( nAttribute, nRowNumber), 
+		: CFltx4StridedConstPtr( pContainer->ConstRowPtr( nAttribute, nRowNumber),
 								   pContainer->ItemByteStride( nAttribute ) )
 	{
 	}
@@ -412,7 +412,7 @@ class CFltX4AttributeIterator : public CFltx4StridedConstPtr
 class CFltX4AttributeWriteIterator : public CFltx4StridedPtr
 {
 	FORCEINLINE CFltX4AttributeWriteIterator( CSOAContainer const *pContainer, int nAttribute, int nRowNumber = 0 )
-		: CFltx4StridedPtr( pContainer->RowPtr( nAttribute, nRowNumber), 
+		: CFltx4StridedPtr( pContainer->RowPtr( nAttribute, nRowNumber),
 							  pContainer->ItemByteStride( nAttribute ) )
 	{
 	}

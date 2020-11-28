@@ -18,7 +18,7 @@ using namespace vgui;
 
 class CAchievementNotificationPanel : public CHudElement, public EditablePanel
 {
-	DECLARE_CLASS_SIMPLE(CAchievementNotificationPanel, EditablePanel);
+	DECLARE_CLASS_SIMPLE( CAchievementNotificationPanel, EditablePanel );
 
 public:
 	CAchievementNotificationPanel( const char *pElementName );
@@ -28,7 +28,7 @@ public:
 	virtual bool	ShouldDraw( void );
 	virtual void	PerformLayout( void );
 	virtual void	LevelInit( void ) { m_flHideTime = 0; }
-	//virtual void	FireGameEvent( IGameEvent * event );
+	virtual void	FireGameEvent( IGameEvent * event );
 	virtual void	OnTick( void );
 
 	void AddNotification( const char *szIconBaseName, const wchar_t *pHeading, const wchar_t *pTitle );

@@ -4,11 +4,19 @@
 	title 		""
 	title2		""
 	type		singleplayer_only
-	supportsvr	1
+	supportsvr	0
 	gamelogo 0
 	developer	"Bitl & Cobalt-57"
 	developer_url	"http://steamcommunity.com/id/bitl/"
 	manual		""
+	// All versions run on the EP2 version of the flashlight by default,
+	// but you could use this setting to make it run on the HL2 & EP1 version of the flashlight,
+	// which runs on the player's own aux power.
+	// FR doesn't read this lol
+	use_legacy_flashlight 1
+	
+	// Indicates this is an original Mapbase mod and not just a mod using its features.
+	mapbase_core 0
 	icon		"resource/game"
 	hidden_maps
 	{

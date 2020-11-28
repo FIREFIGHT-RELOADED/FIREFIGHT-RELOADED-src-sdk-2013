@@ -331,7 +331,7 @@ float CBaseHLCombatWeapon::CalcViewmodelBob( void )
 void CBaseHLCombatWeapon::AddViewmodelBob( CBaseViewModel *viewmodel, Vector &origin, QAngle &angles )
 {
 	Vector	forward, right;
-
+	
 	if (!IsIronsighted())
 	{
 		AngleVectors(angles, &forward, &right, NULL);

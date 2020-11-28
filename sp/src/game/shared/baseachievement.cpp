@@ -513,7 +513,7 @@ void CBaseAchievement::ShowProgressNotification()
 #else
 		gameeventmanager->FireEventClientSide( event );
 #endif
-	}
+	}	
 	*/
 }
 

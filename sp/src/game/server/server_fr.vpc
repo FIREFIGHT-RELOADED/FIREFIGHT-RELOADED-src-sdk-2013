@@ -15,11 +15,11 @@ $Configuration
 	$Compiler
 	{
 		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\game\shared\hl2;$SRCDIR\game\shared\episodic;.\hl2;.\episodic"
-		$PreprocessorDefinitions		"$BASE;HL2_DLL;HL2_EPISODIC;USES_SAVERESTORE;SOURCE_2013;FR_SERVER;FR_DLL;GLOWS_ENABLE"
+		$PreprocessorDefinitions		"$BASE;HL2_DLL;HL2_EPISODIC;USES_SAVERESTORE;SOURCE_2013;FR_SERVER;FR_DLL"
 	}
 }
 
-$Project "Server (FR)"
+$Project "Server (FIREFIGHT RELOADED)"
 {
 	$Folder	"Source Files"
 	{
@@ -266,8 +266,8 @@ $Project "Server (FR)"
 			$File	"hl2\weapon_smg1.cpp"
 			$File	"episodic\weapon_striderbuster.cpp"
 			$File	"episodic\weapon_striderbuster.h"
-			$File	"hl2\weapon_stunstick.cpp"
-			$File	"hl2\weapon_stunstick.h"
+			$File	"hl2\weapon_stunstick.cpp" [!$MAPBASE] // See server_mapbase.vpc
+			$File	"hl2\weapon_stunstick.h" [!$MAPBASE] // See server_mapbase.vpc
 			$File	"episodic\ep1_gamestats.h"
 			$File	"episodic\ep2_gamestats.h"
 			$File	"episodic\ep1_gamestats.cpp" \
@@ -347,12 +347,6 @@ $Project "Server (FR)"
 				$File	"firefightreloaded\weapon_sniper_rifle.cpp"
 				$File	"firefightreloaded\weapon_deagle.cpp"
 				$File	"firefightreloaded\weapon_m249para.cpp"
-				$File	"firefightreloaded\weapon_slam.cpp"
-				$File	"firefightreloaded\weapon_slam.h"
-				$File	"firefightreloaded\grenade_satchel.cpp"
-				$File	"firefightreloaded\grenade_satchel.h"
-				$File	"firefightreloaded\grenade_tripmine.cpp"
-				$File	"firefightreloaded\grenade_tripmine.h"
 				$File	"firefightreloaded\weapon_oicw.cpp"
 				$File	"firefightreloaded\weapon_oicw.h"
 				$File "firefightreloaded\weapon_knife.cpp"

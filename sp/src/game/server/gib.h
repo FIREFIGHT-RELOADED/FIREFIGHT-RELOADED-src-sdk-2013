@@ -31,53 +31,53 @@ enum GibType_e
 };
 
 class CGib : public CBaseAnimating,
-	public CDefaultPlayerPickupVPhysics
+			 public CDefaultPlayerPickupVPhysics
 {
 public:
-	DECLARE_CLASS(CGib, CBaseAnimating);
+	DECLARE_CLASS( CGib, CBaseAnimating );
 
-	void Spawn(const char *szGibModel);
-	void Spawn(const char *szGibModel, float flLifetime);
+	void Spawn( const char *szGibModel );
+	void Spawn( const char *szGibModel, float flLifetime );
 
-	void InitGib(CBaseEntity *pVictim, float fMaxVelocity, float fMinVelocity);
-	void BounceGibTouch(CBaseEntity *pOther);
-	void StickyGibTouch(CBaseEntity *pOther);
+	void InitGib( CBaseEntity *pVictim, float fMaxVelocity, float fMinVelocity );
+	void BounceGibTouch ( CBaseEntity *pOther );
+	void StickyGibTouch ( CBaseEntity *pOther );
 	void GibTouch(CBaseEntity *pOther);
-	void WaitTillLand(void);
-	void DieThink(void);
-	void LimitVelocity(void);
-	virtual bool SUB_AllowedToFade(void);
+	void WaitTillLand( void );
+	void DieThink( void );
+	void LimitVelocity( void );
+	virtual bool SUB_AllowedToFade( void );
 
-	void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 
-	virtual int	ObjectCaps(void) { return (BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DONT_SAVE | FCAP_IMPULSE_USE; }
-	static	void SpawnHeadGib(CBaseEntity *pVictim);
-	static	void SpawnRandomGibs(CBaseEntity *pVictim, int cGibs, GibType_e eGibType);
-	static  void SpawnStickyGibs(CBaseEntity *pVictim, Vector vecOrigin, int cGibs);
-	static	void SpawnSpecificGibs(CBaseEntity *pVictim, int nNumGibs, float fMaxVelocity, float fMinVelocity, const char* cModelName, float flLifetime = 25);
+	virtual int	ObjectCaps( void ) { return (BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DONT_SAVE | FCAP_IMPULSE_USE; }
+	static	void SpawnHeadGib( CBaseEntity *pVictim );
+	static	void SpawnRandomGibs( CBaseEntity *pVictim, int cGibs, GibType_e eGibType );
+	static  void SpawnStickyGibs( CBaseEntity *pVictim, Vector vecOrigin, int cGibs );
+	static	void SpawnSpecificGibs( CBaseEntity *pVictim, int nNumGibs, float fMaxVelocity, float fMinVelocity, const char* cModelName, float flLifetime = 25);
 	static	void SpawnSpecificStickyGibs(CBaseEntity *pVictim, int nNumGibs, float fMaxVelocity, float fMinVelocity, const char* cModelName, float flLifetime = 25);
 
-	void SetPhysicsAttacker(CBasePlayer *pEntity, float flTime);
-	virtual void OnPhysGunPickup(CBasePlayer *pPhysGunUser, PhysGunPickup_t reason);
-	virtual void OnPhysGunDrop(CBasePlayer *pPhysGunUser, PhysGunDrop_t reason);
-	virtual	CBasePlayer *HasPhysicsAttacker(float dt);
+	void SetPhysicsAttacker( CBasePlayer *pEntity, float flTime );
+	virtual void OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason );
+	virtual void OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t reason );
+	virtual	CBasePlayer *HasPhysicsAttacker( float dt );
 
-	void SetSprite(CBaseEntity *pSprite)
+	void SetSprite( CBaseEntity *pSprite )
 	{
-		m_hSprite = pSprite;
+		m_hSprite = pSprite;	
 	}
 
-	CBaseEntity *GetSprite(void)
+	CBaseEntity *GetSprite( void )
 	{
 		return m_hSprite.Get();
 	}
 
-	void SetFlame(CBaseEntity *pFlame)
+	void SetFlame( CBaseEntity *pFlame )
 	{
-		m_hFlame = pFlame;
+		m_hFlame = pFlame;	
 	}
 
-	CBaseEntity *GetFlame(void)
+	CBaseEntity *GetFlame( void )
 	{
 		return m_hFlame.Get();
 	}
@@ -86,7 +86,7 @@ public:
 
 
 public:
-	void SetBloodColor(int nBloodColor);
+	void SetBloodColor( int nBloodColor );
 
 	int		m_material;
 	float	m_lifeTime;
@@ -97,7 +97,7 @@ public:
 
 private:
 	// A little piece of duplicated code
-	void AdjustVelocityBasedOnHealth(int nHealth, Vector &vecVelocity);
+	void AdjustVelocityBasedOnHealth( int nHealth, Vector &vecVelocity );
 	int		m_bloodColor;
 
 	EHANDLE m_hSprite;
@@ -108,7 +108,7 @@ class CRagGib : public CBaseAnimating,
 	public CDefaultPlayerPickupVPhysics
 {
 public:
-	DECLARE_CLASS(CRagGib, CBaseAnimating);
+	DECLARE_CLASS( CRagGib, CBaseAnimating );
 
 	void Spawn(CBaseEntity *pVictim, const char *szModel, const Vector &vecOrigin, const Vector &vecForce, float flFadeTime);
 	void RagGibTouch(CBaseEntity *pOther);

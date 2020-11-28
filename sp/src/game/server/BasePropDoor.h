@@ -75,6 +75,10 @@ public:
 	virtual float GetOpenInterval(void) = 0;
 	// }
 
+#ifdef MAPBASE
+	virtual bool PassesDoorFilter(CBaseEntity *pEntity) { return true; }
+#endif
+
 protected:
 
 	enum DoorState_t
@@ -131,6 +135,7 @@ private:
 	// Do not make the functions in this block virtual!!
 	// {
 	bool DoorActivate();
+	//void DoorOpen( CBaseEntity *pOpenAwayFrom );
 	void OpenIfUnlocked(CBaseEntity *pActivator, CBaseEntity *pOpenAwayFrom);
 
 	void DoorOpenMoveDone();
@@ -167,6 +172,11 @@ private:
 	void InputNotKickable(inputdata_t &inputdata);
 	void InputKickableNPC(inputdata_t &inputdata);
 	void InputNotKickableNPC(inputdata_t &inputdata);
+	
+#ifdef MAPBASE
+	void InputAllowPlayerUse(inputdata_t &inputdata);
+	void InputDisallowPlayerUse(inputdata_t &inputdata);
+#endif
 
 	void SetDoorBlocker( CBaseEntity *pBlocker );
 

@@ -76,9 +76,9 @@ void CHLMachineGun::PrimaryAttack( void )
 	}
 
 	// Make sure we don't fire more than the amount in the clip, if this weapon uses clips
-	if (UsesClipsForAmmo1())
+	if ( UsesClipsForAmmo1() )
 	{
-		if (iBulletsToFire > m_iClip1)
+		if ( iBulletsToFire > m_iClip1 )
 			iBulletsToFire = m_iClip1;
 		m_iClip1 -= iBulletsToFire;
 	}

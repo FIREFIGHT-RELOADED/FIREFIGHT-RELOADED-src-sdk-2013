@@ -130,13 +130,13 @@ void C_BaseCombatCharacter::UpdateGlowEffect( void )
 void C_BaseCombatCharacter::UpdateGlowEffect(Vector &color, float alpha)
 {
 	// destroy the existing effect
-	if (m_pGlowEffect)
+	if ( m_pGlowEffect )
 	{
 		DestroyGlowEffect();
 	}
 
 	// create a new effect
-	if (m_bGlowEnabled)
+	if ( m_bGlowEnabled )
 	{
 		m_pGlowEffect = new CGlowObject(this, color, alpha, true);
 	}

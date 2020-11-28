@@ -26,7 +26,7 @@ CBaseEntity* MoveToRandomSpot( CBaseEntity *pEnt )
 {
 	if ( pEnt )
 	{
-		UTIL_SetOrigin(pEnt, GetRandomSpot());
+			UTIL_SetOrigin( pEnt, GetRandomSpot() );
 	}
 
 	return pEnt;

@@ -8,11 +8,6 @@ $Macro SRCDIR		"..\.."
 $Macro GAMENAME "firefightreloaded"
 $Include "$SRCDIR\materialsystem\stdshaders\game_shader_dx9_base.vpc"
 
-$Project "Shaders (FR)"
+$Project "Shaders (FIREFIGHT RELOADED)"
 {
-	$Folder "Shader Source"
-	{
-		$File	"fr_dx9_30.txt"
-		$File	"fr_dx9_20b.txt"
-	}
 }

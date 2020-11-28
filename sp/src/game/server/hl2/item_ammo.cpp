@@ -25,6 +25,108 @@ ConVar	sk_customammo_buckshot_model("sk_customammo_buckshot_model", "");
 ConVar	sk_customammo_sniper_model("sk_customammo_sniper_model", "");
 ConVar	sk_customammo_buckshotsniper_model("sk_customammo_buckshotsniper_model", "");
 
+#ifdef MAPBASE
+// ========================================================================
+//	>> CItemAmmo
+// 
+// All ammo items now derive from this for multiplier purposes.
+// ========================================================================
+class CItemAmmo : public CItem
+{
+public:
+	DECLARE_CLASS( CItemAmmo, CItem );
+	DECLARE_DATADESC();
+
+	int ITEM_GiveAmmo( CBasePlayer *pPlayer, float flCount, const char *pszAmmoName, bool bSuppressSound = false )
+	{
+		int iAmmoType = GetAmmoDef()->Index(pszAmmoName);
+		if (iAmmoType == -1)
+		{
+			Msg("ERROR: Attempting to give unknown ammo type (%s)\n",pszAmmoName);
+			return 0;
+		}
+
+		flCount *= g_pGameRules->GetAmmoQuantityScale(iAmmoType);
+
+		// Don't give out less than 1 of anything.
+		flCount = MAX( 1.0f, flCount );
+
+		// Mapper-specific ammo multiplier.
+		// If it results in 0, the ammo will simply be ignored.
+		// If the ammo multiplier is negative, assume it's actually a direct number to override with.
+		if (m_flAmmoMultiplier != 1.0f)
+		{
+			if (m_flAmmoMultiplier >= 0)
+				flCount *= m_flAmmoMultiplier;
+			else
+				flCount = -m_flAmmoMultiplier;
+		}
+
+		return pPlayer->GiveAmmo( flCount, iAmmoType, bSuppressSound );
+	}
+	
+	void GiveCustomWeaponAmmo(CBasePlayer *pPlayer, int mode)
+	{
+		if (mode == 1)
+		{
+			ITEM_GiveAmmo(pPlayer, sk_customammo_normal_count.GetFloat(), "CustomBullet1_Normal");
+			ITEM_GiveAmmo(pPlayer, sk_customammo_normal_count.GetFloat(), "CustomBullet2_NormalBurn");
+			ITEM_GiveAmmo(pPlayer, sk_customammo_normal_count.GetFloat(), "CustomBullet3_NormalBurnGib");
+			ITEM_GiveAmmo(pPlayer, sk_customammo_normal_count.GetFloat(), "CustomBullet4_NormalAlwaysGib");
+			ITEM_GiveAmmo(pPlayer, sk_customammo_normal_count.GetFloat(), "CustomBullet5_NormalDissolve");
+			ITEM_GiveAmmo(pPlayer, sk_customammo_normal_count.GetFloat(), "CustomBullet6_NormalDissolveGib");
+			ITEM_GiveAmmo(pPlayer, sk_customammo_normal_count.GetFloat(), "CustomBullet25_NormalKnockback");
+		}
+		else if (mode == 2)
+		{
+			ITEM_GiveAmmo(pPlayer, sk_customammo_buckshot_count.GetFloat(), "CustomBullet7_Buckshot");
+			ITEM_GiveAmmo(pPlayer, sk_customammo_buckshot_count.GetFloat(), "CustomBullet8_BuckshotBurn");
+			ITEM_GiveAmmo(pPlayer, sk_customammo_buckshot_count.GetFloat(), "CustomBullet9_BuckshotBurnGib");
+			ITEM_GiveAmmo(pPlayer, sk_customammo_buckshot_count.GetFloat(), "CustomBullet10_BuckshotAlwaysGib");
+			ITEM_GiveAmmo(pPlayer, sk_customammo_buckshot_count.GetFloat(), "CustomBullet11_BuckshotDissolve");
+			ITEM_GiveAmmo(pPlayer, sk_customammo_buckshot_count.GetFloat(), "CustomBullet12_BuckshotDissolveGib");
+			ITEM_GiveAmmo(pPlayer, sk_customammo_buckshot_count.GetFloat(), "CustomBullet26_BuckshotKnockback");
+		}
+		else if (mode == 3)
+		{
+			ITEM_GiveAmmo(pPlayer, sk_customammo_sniper_count.GetFloat(), "CustomBullet13_Sniper");
+			ITEM_GiveAmmo(pPlayer, sk_customammo_sniper_count.GetFloat(), "CustomBullet14_SniperBurn");
+			ITEM_GiveAmmo(pPlayer, sk_customammo_sniper_count.GetFloat(), "CustomBullet15_SniperBurnGib");
+			ITEM_GiveAmmo(pPlayer, sk_customammo_sniper_count.GetFloat(), "CustomBullet16_SniperAlwaysGib");
+			ITEM_GiveAmmo(pPlayer, sk_customammo_sniper_count.GetFloat(), "CustomBullet17_SniperDissolve");
+			ITEM_GiveAmmo(pPlayer, sk_customammo_sniper_count.GetFloat(), "CustomBullet18_SniperDissolveGib");
+			ITEM_GiveAmmo(pPlayer, sk_customammo_sniper_count.GetFloat(), "CustomBullet27_SniperKnockback");
+		}
+		else if (mode == 4)
+		{
+			ITEM_GiveAmmo(pPlayer, sk_customammo_buckshotsniper_count.GetFloat(), "CustomBullet19_BuckshotSniper");
+			ITEM_GiveAmmo(pPlayer, sk_customammo_buckshotsniper_count.GetFloat(), "CustomBullet20_BuckshotSniperBurn");
+			ITEM_GiveAmmo(pPlayer, sk_customammo_buckshotsniper_count.GetFloat(), "CustomBullet21_BuckshotSniperBurnGib");
+			ITEM_GiveAmmo(pPlayer, sk_customammo_buckshotsniper_count.GetFloat(), "CustomBullet22_BuckshotSniperAlwaysGib");
+			ITEM_GiveAmmo(pPlayer, sk_customammo_buckshotsniper_count.GetFloat(), "CustomBullet23_BuckshotSniperDissolve");
+			ITEM_GiveAmmo(pPlayer, sk_customammo_buckshotsniper_count.GetFloat(), "CustomBullet24_BuckshotSniperDissolveGib");
+			ITEM_GiveAmmo(pPlayer, sk_customammo_buckshotsniper_count.GetFloat(), "CustomBullet28_BuckshotSniperKnockback");
+		}
+	}
+
+	void	InputSetAmmoMultiplier( inputdata_t &inputdata ) { m_flAmmoMultiplier = inputdata.value.Float(); }
+
+	float m_flAmmoMultiplier = 1.0f;
+};
+
+BEGIN_DATADESC( CItemAmmo )
+
+	DEFINE_KEYFIELD( m_flAmmoMultiplier,	FIELD_FLOAT, "AmmoMultiplier" ),
+
+	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetAmmoMultiplier", InputSetAmmoMultiplier ),
+
+END_DATADESC()
+
+// Almost all instances of CItem below are for declaring the base class, which is now CItemAmmo.
+// This is here so we don't have to #ifdef all of them.
+#define CItem CItemAmmo
+
+#else
 //---------------------------------------------------------
 // Applies ammo quantity scale.
 //---------------------------------------------------------
@@ -37,58 +139,14 @@ int ITEM_GiveAmmo( CBasePlayer *pPlayer, float flCount, const char *pszAmmoName,
 		return 0;
 	}
 
-	//don't adjust ammo
-	//flCount *= g_pGameRules->GetAmmoQuantityScale(iAmmoType);
+	flCount *= g_pGameRules->GetAmmoQuantityScale(iAmmoType);
 
 	// Don't give out less than 1 of anything.
 	flCount = MAX( 1.0f, flCount );
 
 	return pPlayer->GiveAmmo( flCount, iAmmoType, bSuppressSound );
 }
-
-void GiveCustomWeaponAmmo(CBasePlayer *pPlayer, int mode)
-{
-	if (mode == 1)
-	{
-		ITEM_GiveAmmo(pPlayer, sk_customammo_normal_count.GetFloat(), "CustomBullet1_Normal");
-		ITEM_GiveAmmo(pPlayer, sk_customammo_normal_count.GetFloat(), "CustomBullet2_NormalBurn");
-		ITEM_GiveAmmo(pPlayer, sk_customammo_normal_count.GetFloat(), "CustomBullet3_NormalBurnGib");
-		ITEM_GiveAmmo(pPlayer, sk_customammo_normal_count.GetFloat(), "CustomBullet4_NormalAlwaysGib");
-		ITEM_GiveAmmo(pPlayer, sk_customammo_normal_count.GetFloat(), "CustomBullet5_NormalDissolve");
-		ITEM_GiveAmmo(pPlayer, sk_customammo_normal_count.GetFloat(), "CustomBullet6_NormalDissolveGib");
-		ITEM_GiveAmmo(pPlayer, sk_customammo_normal_count.GetFloat(), "CustomBullet25_NormalKnockback");
-	}
-	else if (mode == 2)
-	{
-		ITEM_GiveAmmo(pPlayer, sk_customammo_buckshot_count.GetFloat(), "CustomBullet7_Buckshot");
-		ITEM_GiveAmmo(pPlayer, sk_customammo_buckshot_count.GetFloat(), "CustomBullet8_BuckshotBurn");
-		ITEM_GiveAmmo(pPlayer, sk_customammo_buckshot_count.GetFloat(), "CustomBullet9_BuckshotBurnGib");
-		ITEM_GiveAmmo(pPlayer, sk_customammo_buckshot_count.GetFloat(), "CustomBullet10_BuckshotAlwaysGib");
-		ITEM_GiveAmmo(pPlayer, sk_customammo_buckshot_count.GetFloat(), "CustomBullet11_BuckshotDissolve");
-		ITEM_GiveAmmo(pPlayer, sk_customammo_buckshot_count.GetFloat(), "CustomBullet12_BuckshotDissolveGib");
-		ITEM_GiveAmmo(pPlayer, sk_customammo_buckshot_count.GetFloat(), "CustomBullet26_BuckshotKnockback");
-	}
-	else if (mode == 3)
-	{
-		ITEM_GiveAmmo(pPlayer, sk_customammo_sniper_count.GetFloat(), "CustomBullet13_Sniper");
-		ITEM_GiveAmmo(pPlayer, sk_customammo_sniper_count.GetFloat(), "CustomBullet14_SniperBurn");
-		ITEM_GiveAmmo(pPlayer, sk_customammo_sniper_count.GetFloat(), "CustomBullet15_SniperBurnGib");
-		ITEM_GiveAmmo(pPlayer, sk_customammo_sniper_count.GetFloat(), "CustomBullet16_SniperAlwaysGib");
-		ITEM_GiveAmmo(pPlayer, sk_customammo_sniper_count.GetFloat(), "CustomBullet17_SniperDissolve");
-		ITEM_GiveAmmo(pPlayer, sk_customammo_sniper_count.GetFloat(), "CustomBullet18_SniperDissolveGib");
-		ITEM_GiveAmmo(pPlayer, sk_customammo_sniper_count.GetFloat(), "CustomBullet27_SniperKnockback");
-	}
-	else if (mode == 4)
-	{
-		ITEM_GiveAmmo(pPlayer, sk_customammo_buckshotsniper_count.GetFloat(), "CustomBullet19_BuckshotSniper");
-		ITEM_GiveAmmo(pPlayer, sk_customammo_buckshotsniper_count.GetFloat(), "CustomBullet20_BuckshotSniperBurn");
-		ITEM_GiveAmmo(pPlayer, sk_customammo_buckshotsniper_count.GetFloat(), "CustomBullet21_BuckshotSniperBurnGib");
-		ITEM_GiveAmmo(pPlayer, sk_customammo_buckshotsniper_count.GetFloat(), "CustomBullet22_BuckshotSniperAlwaysGib");
-		ITEM_GiveAmmo(pPlayer, sk_customammo_buckshotsniper_count.GetFloat(), "CustomBullet23_BuckshotSniperDissolve");
-		ITEM_GiveAmmo(pPlayer, sk_customammo_buckshotsniper_count.GetFloat(), "CustomBullet24_BuckshotSniperDissolveGib");
-		ITEM_GiveAmmo(pPlayer, sk_customammo_buckshotsniper_count.GetFloat(), "CustomBullet28_BuckshotSniperKnockback");
-	}
-}
+#endif
 
 // ========================================================================
 //	>> BoxSRounds
@@ -1128,6 +1186,10 @@ enum
 	AMMOCRATE_CROSSBOW,
 	AMMOCRATE_AR2_ALTFIRE,
 	AMMOCRATE_SMG_ALTFIRE,
+#ifdef MAPBASE
+	AMMOCRATE_SLAM,
+	AMMOCRATE_EMPTY,
+#endif
 	NUM_AMMO_CRATE_TYPES,
 };
 
@@ -1170,6 +1232,10 @@ protected:
 	COutputEvent	m_OnUsed;
 	CHandle< CBasePlayer > m_hActivator;
 
+#ifdef MAPBASE
+	COutputEvent	m_OnAmmoTaken;
+#endif
+
 	DECLARE_DATADESC();
 };
 
@@ -1190,6 +1256,10 @@ BEGIN_DATADESC( CItem_AmmoCrate )
 
 	DEFINE_OUTPUT( m_OnUsed, "OnUsed" ),
 
+#ifdef MAPBASE
+	DEFINE_OUTPUT( m_OnAmmoTaken, "OnAmmoTaken" ),
+#endif
+
 	DEFINE_INPUTFUNC( FIELD_VOID, "Kill", InputKill ),
 
 	DEFINE_THINKFUNC( CrateThink ),
@@ -1209,12 +1279,22 @@ const char *CItem_AmmoCrate::m_lpzModelNames[NUM_AMMO_CRATE_TYPES] =
 	"models/items/ammocrate_rockets.mdl",	// RPG rounds
 	"models/items/ammocrate_buckshot.mdl",	// Buckshot
 	"models/items/ammocrate_grenade.mdl",	// Grenades
+#ifdef MAPBASE
+	"models/items/ammocrate_357.mdl",		// 357
+	"models/items/ammocrate_xbow.mdl",		// Crossbow
+	"models/items/ammocrate_ar2alt.mdl",	// Combine Ball 
+#else
 	"models/items/ammocrate_smg1.mdl",		// 357
 	"models/items/ammocrate_smg1.mdl",	// Crossbow
-	
+
 	//FIXME: This model is incorrect!
 	"models/items/ammocrate_ar2.mdl",		// Combine Ball 
+#endif
 	"models/items/ammocrate_smg2.mdl",	    // smg grenade
+#ifdef MAPBASE
+	"models/items/ammocrate_slam.mdl",	    // slam
+	"models/items/ammocrate_empty.mdl",	    // empty
+#endif
 };
 
 // Ammo type names
@@ -1230,6 +1310,10 @@ const char *CItem_AmmoCrate::m_lpzAmmoNames[NUM_AMMO_CRATE_TYPES] =
 	"XBowBolt",
 	"AR2AltFire",
 	"SMG1_Grenade",
+#ifdef MAPBASE
+	"slam",
+	NULL,
+#endif
 };
 
 // Ammo amount given per +use
@@ -1245,6 +1329,10 @@ int CItem_AmmoCrate::m_nAmmoAmounts[NUM_AMMO_CRATE_TYPES] =
 	50,		// Crossbow
 	3,		// AR2 alt-fire
 	5,
+#ifdef MAPBASE
+	5,		// SLAM
+	NULL,	// Empty
+#endif
 };
 
 const char *CItem_AmmoCrate::m_pGiveWeapon[NUM_AMMO_CRATE_TYPES] =
@@ -1259,6 +1347,10 @@ const char *CItem_AmmoCrate::m_pGiveWeapon[NUM_AMMO_CRATE_TYPES] =
 	NULL,		// Crossbow
 	NULL,		// AR2 alt-fire
 	NULL,		// SMG alt-fire
+#ifdef MAPBASE
+	"weapon_slam",		// SLAM
+	NULL,	// Empty
+#endif
 };
 
 #define	AMMO_CRATE_CLOSE_DELAY	1.5f
@@ -1314,6 +1406,10 @@ void CItem_AmmoCrate::Precache( void )
 //-----------------------------------------------------------------------------
 void CItem_AmmoCrate::SetupCrate( void )
 {
+#ifdef MAPBASE
+	// Custom models might be desired on, say, empty crates with custom textures
+	if (GetModelName() == NULL_STRING)
+#endif
 	SetModelName( AllocPooledString( m_lpzModelNames[m_nAmmoType] ) );
 	
 	m_nAmmoIndex = GetAmmoDef()->Index( m_lpzAmmoNames[m_nAmmoType] );
@@ -1437,13 +1533,24 @@ void CItem_AmmoCrate::HandleAnimEvent( animevent_t *pEvent )
 					}
 					else
 					{
+#ifdef MAPBASE
+						m_OnAmmoTaken.FireOutput(m_hActivator, this);
+#endif
 						SetBodygroup( 1, false );
 					}
 				}
 			}
 
+#ifdef MAPBASE
+			// Empty ammo crates should still fire OnAmmoTaken
+			if ( m_hActivator->GiveAmmo( m_nAmmoAmounts[m_nAmmoType], m_nAmmoIndex ) != 0 || m_nAmmoType == AMMOCRATE_EMPTY )
+#else
 			if ( m_hActivator->GiveAmmo( m_nAmmoAmounts[m_nAmmoType], m_nAmmoIndex ) != 0 )
+#endif
 			{
+#ifdef MAPBASE
+				m_OnAmmoTaken.FireOutput(m_hActivator, this);
+#endif
 				SetBodygroup( 1, false );
 			}
 			m_hActivator = NULL;
@@ -1501,6 +1608,13 @@ void CItem_AmmoCrate::CrateThink( void )
 //-----------------------------------------------------------------------------
 void CItem_AmmoCrate::InputKill( inputdata_t &data )
 {
+#ifdef MAPBASE
+	// Why is this its own function?
+	// item_dynamic_resupply and item_item_crate are in the same boat.
+	// I don't understand.
+	m_OnKilled.FireOutput( data.pActivator, this );
+#endif
+
 	UTIL_Remove( this );
 }
 

@@ -80,7 +80,7 @@ LINK_ENTITY_TO_CLASS( npc_combine_ace, CNPC_CombineAce );
 
 extern Activity ACT_WALK_EASY;
 extern Activity ACT_WALK_MARCH;
-extern Activity ACT_COMBINE_THROW_GRENADE;
+//extern Activity ACT_COMBINE_THROW_GRENADE;
 extern Activity ACT_COMBINE_LAUNCH_GRENADE;
 
 //-----------------------------------------------------------------------------
@@ -177,14 +177,10 @@ void CNPC_CombineAce::Spawn( void )
 
 	BaseClass::Spawn();
 
-	/*
-#if HL2_EPISODIC
 	if (m_iUseMarch && !HasSpawnFlags(SF_NPC_START_EFFICIENT))
 	{
 		Msg( "Soldier %s is set to use march anim, but is not an efficient AI. The blended march anim can only be used for dead-ahead walks!\n", GetDebugName() );
 	}
-#endif
-	*/
 }
 
 //-----------------------------------------------------------------------------
@@ -219,6 +215,11 @@ void CNPC_CombineAce::Precache()
 
 void CNPC_CombineAce::DeathSound( const CTakeDamageInfo &info )
 {
+#ifdef COMBINE_SOLDIER_USES_RESPONSE_SYSTEM
+	AI_CriteriaSet set;
+	ModifyOrAppendDamageCriteria(set, info);
+	SpeakIfAllowed( TLK_CMB_DIE, set, SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS );
+#else
 	// NOTE: The response system deals with this at the moment
 	if ( GetFlags() & FL_DISSOLVING )
 		return;
@@ -227,6 +228,7 @@ void CNPC_CombineAce::DeathSound( const CTakeDamageInfo &info )
 		return;
 
 	GetSentences()->Speak( "COMBINE_DIE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS ); 
+#endif 
 }
 
 
@@ -237,6 +239,7 @@ void CNPC_CombineAce::DeathSound( const CTakeDamageInfo &info )
 //			that determines whether a grenade can be thrown, so prevent the 
 //			base class from clearing it out. (sjb)
 //-----------------------------------------------------------------------------
+#ifndef MAPBASE // Moved to CAI_GrenadeUser
 void CNPC_CombineAce::ClearAttackConditions( )
 {
 	bool fCanRangeAttack2 = HasCondition( COND_CAN_RANGE_ATTACK2 );
@@ -251,6 +254,7 @@ void CNPC_CombineAce::ClearAttackConditions( )
 		SetCondition( COND_CAN_RANGE_ATTACK2 );
 	}
 }
+#endif
 
 void CNPC_CombineAce::PrescheduleThink( void )
 {

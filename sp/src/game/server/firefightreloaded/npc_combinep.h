@@ -35,7 +35,11 @@ public:
 	void		Event_Killed( const CTakeDamageInfo &info );
 	void		OnListened();
 
+#ifndef MAPBASE // Moved to CAI_GrenadeUser
 	void		ClearAttackConditions( void );
+#endif
+
+	virtual	bool		AllowedToIgnite( void ) { return true; }
 
 	bool		m_fIsBlocking;
 

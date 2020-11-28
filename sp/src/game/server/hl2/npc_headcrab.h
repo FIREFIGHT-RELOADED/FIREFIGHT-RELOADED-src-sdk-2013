@@ -74,6 +74,8 @@ public:
 
 	void	CrawlFromCanister();
 
+	virtual	bool		AllowedToIgnite( void ) { return true; }
+
 	virtual bool CanBeAnEnemyOf( CBaseEntity *pEnemy );
 
 	bool	IsHangingFromCeiling( void ) 
@@ -147,6 +149,10 @@ protected:
 
 	bool	m_bHangingFromCeiling;
 	float	m_flIlluminatedTime;
+
+#ifdef MAPBASE
+	COutputEvent m_OnLeap;
+#endif
 };
 
 

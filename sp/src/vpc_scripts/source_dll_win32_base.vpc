@@ -138,7 +138,9 @@ $Project
 		$Implib	"$LIBPUBLIC\tier0"
 		$Lib	"$LIBPUBLIC\tier1"
 		$Implib	"$LIBPUBLIC\vstdlib"
-		$Lib	"$LIBPUBLIC\discord-rpc"
+		
+		// Discord integration
+		$Lib	"$LIBPUBLIC\discord-rpc" [$MAPBASE_RPC]
 	}
 }
 

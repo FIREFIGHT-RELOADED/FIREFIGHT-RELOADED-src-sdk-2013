@@ -1,6 +1,0 @@
-..\..\devtools\bin\d3dx9_33.dll 
-..\..\dx10sdk\utilities\dx9_30\dx_proxy.dll 
-D:\SteamLibrary\steamapps\common\Source SDK Base 2013 Singleplayer\bin\shadercompile.exe 
-D:\SteamLibrary\steamapps\common\Source SDK Base 2013 Singleplayer\bin\shadercompile_dll.dll 
-D:\SteamLibrary\steamapps\common\Source SDK Base 2013 Singleplayer\bin\tier0.dll 
-D:\SteamLibrary\steamapps\common\Source SDK Base 2013 Singleplayer\bin\vstdlib.dll 

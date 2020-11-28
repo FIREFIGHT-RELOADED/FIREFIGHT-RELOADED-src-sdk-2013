@@ -81,9 +81,9 @@ void CNPC_CombineS::Spawn( void )
 	m_fIsPlayer = false;
 	m_iUseMarch = true;
 
-	SetHealth( sk_combine_s_health.GetFloat() );
-	SetMaxHealth( sk_combine_s_health.GetFloat() );
-	SetKickDamage( sk_combine_s_kick.GetFloat() );
+		SetHealth( sk_combine_s_health.GetFloat() );
+		SetMaxHealth( sk_combine_s_health.GetFloat() );
+		SetKickDamage( sk_combine_s_kick.GetFloat() );
 
 	CapabilitiesAdd( bits_CAP_ANIMATEDFACE );
 	CapabilitiesAdd( bits_CAP_MOVE_SHOOT );
@@ -92,14 +92,11 @@ void CNPC_CombineS::Spawn( void )
 
 	BaseClass::Spawn();
 
-	/*
-#if HL2_EPISODIC
+
 	if (m_iUseMarch && !HasSpawnFlags(SF_NPC_START_EFFICIENT))
 	{
 		Msg( "Soldier %s is set to use march anim, but is not an efficient AI. The blended march anim can only be used for dead-ahead walks!\n", GetDebugName() );
 	}
-#endif
-	*/
 }
 
 //-----------------------------------------------------------------------------
@@ -130,6 +127,11 @@ void CNPC_CombineS::Precache()
 
 void CNPC_CombineS::DeathSound( const CTakeDamageInfo &info )
 {
+#ifdef COMBINE_SOLDIER_USES_RESPONSE_SYSTEM
+	AI_CriteriaSet set;
+	ModifyOrAppendDamageCriteria(set, info);
+	SpeakIfAllowed( TLK_CMB_DIE, set, SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS );
+#else
 	// NOTE: The response system deals with this at the moment
 	if ( GetFlags() & FL_DISSOLVING )
 		return;
@@ -138,9 +140,11 @@ void CNPC_CombineS::DeathSound( const CTakeDamageInfo &info )
 		return;
 
 	GetSentences()->Speak( "COMBINE_DIE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS ); 
+#endif
 }
 
 
+#ifndef MAPBASE // Moved to CAI_GrenadeUser
 //-----------------------------------------------------------------------------
 // Purpose: Soldiers use CAN_RANGE_ATTACK2 to indicate whether they can throw
 //			a grenade. Because they check only every half-second or so, this
@@ -162,6 +166,7 @@ void CNPC_CombineS::ClearAttackConditions( )
 		SetCondition( COND_CAN_RANGE_ATTACK2 );
 	}
 }
+#endif
 
 void CNPC_CombineS::PrescheduleThink( void )
 {
@@ -427,7 +432,7 @@ void CNPC_CombineS::Event_Killed( const CTakeDamageInfo &info )
 		SetThink(NULL);
 		return;
 	}
-
+	
 	// Don't bother if we've been told not to, or the player has a megaphyscannon
 	if ( combine_spawn_health.GetBool() == false || PlayerHasMegaPhysCannon() )
 	{

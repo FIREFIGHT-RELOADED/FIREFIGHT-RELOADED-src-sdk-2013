@@ -248,7 +248,7 @@ float CNPC_Houndeye::MaxYawSpeed ( void )
 
 	switch ( GetActivity() )
 	{
-	case ACT_CROUCHIDLE: //sleeping!
+	case ACT_CROUCHIDLE://sleeping!
 		ys = 0;
 		break;
 	case ACT_IDLE:	
@@ -520,7 +520,7 @@ void CNPC_Houndeye::AlertSound ( void )
 //=========================================================
 // DeathSound 
 //=========================================================
-void CNPC_Houndeye::DeathSound(void)
+void CNPC_Houndeye::DeathSound ( void )
 {
 	if (IsOnFire())
 		return;
@@ -531,7 +531,7 @@ void CNPC_Houndeye::DeathSound(void)
 //=========================================================
 // PainSound 
 //=========================================================
-void CNPC_Houndeye::PainSound(void)
+void CNPC_Houndeye::PainSound ( void )
 {
 	if (IsOnFire())
 		return;
@@ -693,33 +693,33 @@ void CNPC_Houndeye::SonicAttack ( void )
 
 				flAdjustedDamage -= (flDist / HOUNDEYE_MAX_ATTACK_RADIUS) * flAdjustedDamage;
 
-				if (!FVisible(pEntity))
+			if ( !FVisible( pEntity ) )
+			{
+				if ( pEntity->IsPlayer() )
 				{
-					if (pEntity->IsPlayer())
-					{
-						// if this entity is a client, and is not in full view, inflict half damage. We do this so that players still 
-						// take the residual damage if they don't totally leave the houndeye's effective radius. We restrict it to clients
-						// so that monsters in other parts of the level don't take the damage and get pissed.
+					// if this entity is a client, and is not in full view, inflict half damage. We do this so that players still 
+					// take the residual damage if they don't totally leave the houndeye's effective radius. We restrict it to clients
+					// so that monsters in other parts of the level don't take the damage and get pissed.
 						flAdjustedDamage *= 0.5;
-					}
-					else if (!FClassnameIs(pEntity, "func_breakable") && !FClassnameIs(pEntity, "func_pushable"))
-					{
-						// do not hurt nonclients through walls, but allow damage to be done to breakables
-						flAdjustedDamage = 0;
-					}
 				}
+				else if ( !FClassnameIs( pEntity, "func_breakable" ) && !FClassnameIs( pEntity, "func_pushable" ) ) 
+				{
+					// do not hurt nonclients through walls, but allow damage to be done to breakables
+						flAdjustedDamage = 0;
+				}
+			}
 
 				//ALERT ( at_aiconsole, "Damage: %f\n", flAdjustedDamage );
 
 				if (flAdjustedDamage > 0)
-				{
+			{
 					CTakeDamageInfo info(this, this, flAdjustedDamage, DMG_SONIC | DMG_ALWAYSGIB);
-					CalculateExplosiveDamageForce(&info, (pEntity->GetAbsOrigin() - GetAbsOrigin()), pEntity->GetAbsOrigin());
+				CalculateExplosiveDamageForce( &info, (pEntity->GetAbsOrigin() - GetAbsOrigin()), pEntity->GetAbsOrigin() );
 
-					pEntity->TakeDamage(info);
+				pEntity->TakeDamage( info );
 
 					if ((pEntity->GetAbsOrigin() - GetAbsOrigin()).Length2D() <= HOUNDEYE_MAX_ATTACK_RADIUS)
-					{
+				{
 						if (pEntity->GetMoveType() == MOVETYPE_VPHYSICS || (pEntity->VPhysicsGetObject() && !pEntity->IsPlayer()))
 						{
 							IPhysicsObject *pPhysObject = pEntity->VPhysicsGetObject();

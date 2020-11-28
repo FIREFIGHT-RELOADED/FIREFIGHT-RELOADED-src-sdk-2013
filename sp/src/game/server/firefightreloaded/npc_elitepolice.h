@@ -12,6 +12,11 @@
 
 #include "npc_combine.h"
 
+#ifdef EXPANDED_RESPONSE_SYSTEM_USAGE
+#include "mapbase/expandedrs_combine.h"
+#define ELITE_METROPOLICE_USES_RESPONSE_SYSTEM 1
+#endif
+
 //=========================================================
 //	>> CNPC_CombineS
 //=========================================================
@@ -40,7 +45,7 @@ public:
 	void		AnnounceEnemyType(CBaseEntity *pEnemy);
 	void		AnnounceEnemyKill(CBaseEntity *pEnemy);
 	void		NotifyDeadFriend(CBaseEntity* pFriend);
-	void		PainSound(void);
+	void		PainSound(const CTakeDamageInfo& info);
 	void		IdleSound(void);
 	void		AlertSound(void);
 	void		LostEnemySound(void);

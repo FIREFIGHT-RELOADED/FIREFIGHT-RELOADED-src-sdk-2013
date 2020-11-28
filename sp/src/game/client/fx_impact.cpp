@@ -400,14 +400,7 @@ void PlayImpactSound( CBaseEntity *pEntity, trace_t &tr, Vector &vecServerOrigin
 		else
 		{
 			CLocalPlayerFilter filter;
-			if (g_pGameRules->IsMultiplayer())
-			{
-				C_BaseEntity::EmitSound(filter, NULL, pbulletImpactSoundName, &vecOrigin);
-			}
-			else
-			{
-				C_BaseEntity::EmitSound(filter, NULL, pbulletImpactSoundName, pdata->soundhandles.bulletImpact, &vecOrigin);
-			}
+			C_BaseEntity::EmitSound( filter, NULL, pbulletImpactSoundName, pdata->soundhandles.bulletImpact, &vecOrigin );
 		}
 
 		return;

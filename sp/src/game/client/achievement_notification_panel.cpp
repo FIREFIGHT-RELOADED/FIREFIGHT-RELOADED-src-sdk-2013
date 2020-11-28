@@ -33,7 +33,7 @@ using namespace vgui;
 // Purpose: 
 //-----------------------------------------------------------------------------
 
-DECLARE_HUDELEMENT( CAchievementNotificationPanel );
+DECLARE_HUDELEMENT_DEPTH( CAchievementNotificationPanel, 100 );
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -52,8 +52,6 @@ CAchievementNotificationPanel::CAchievementNotificationPanel( const char *pEleme
 	m_pIcon->SetShouldScaleImage( true );
 
 	vgui::ivgui()->AddTickSignal( GetVPanel() );
-
-	SetHiddenBits(HIDEHUD_PLAYERDEAD);
 }
 
 //-----------------------------------------------------------------------------
@@ -61,7 +59,7 @@ CAchievementNotificationPanel::CAchievementNotificationPanel( const char *pEleme
 //-----------------------------------------------------------------------------
 void CAchievementNotificationPanel::Init()
 {
-	//ListenForGameEvent( "achievement_event" );
+	ListenForGameEvent( "achievement_event" );
 }
 
 //-----------------------------------------------------------------------------
@@ -87,18 +85,16 @@ void CAchievementNotificationPanel::PerformLayout( void )
 	SetBgColor( Color( 0, 0, 0, 0 ) );
 	m_pLabelHeading->SetBgColor( Color( 0, 0, 0, 0 ) );
 	m_pLabelTitle->SetBgColor( Color( 0, 0, 0, 0 ) );
-	//m_pPanelBackground->SetBgColor( Color( 62,70,55, 200 ) );
-	m_pPanelBackground->SetBgColor(Color(82, 82, 82, 128));
+	m_pPanelBackground->SetBgColor( Color( 62,70,55, 200 ) );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-/*
 void CAchievementNotificationPanel::FireGameEvent( IGameEvent * event )
 {
 	const char *name = event->GetName();
-	if ( Q_strcmp( name, "achievement_event" ) )
+	if ( 0 == Q_strcmp( name, "achievement_event" ) )
 	{
 		const char *pchName = event->GetString( "achievement_name" );
 		int iCur = event->GetInt( "cur_val" );
@@ -146,7 +142,6 @@ void CAchievementNotificationPanel::FireGameEvent( IGameEvent * event )
 		}
 	}
 }
-*/
 
 //-----------------------------------------------------------------------------
 // Purpose: Called on each tick
@@ -181,7 +176,7 @@ void CAchievementNotificationPanel::AddNotification( const char *szIconBaseName,
 	Q_wcsncpy( notification.szTitle, pTitle, sizeof( notification.szTitle ) );
 
 	// if we are not currently displaying a notification, go ahead and show this one
-	if (0 == m_flHideTime)
+	if ( 0 == m_flHideTime )
 	{
 		ShowNextNotification();
 	}
@@ -193,7 +188,7 @@ void CAchievementNotificationPanel::AddNotification( const char *szIconBaseName,
 void CAchievementNotificationPanel::ShowNextNotification()
 {
 	// see if we have anything to do
-	if (0 == m_queueNotification.Count())
+	if ( 0 == m_queueNotification.Count() )
 	{
 		m_flHideTime = 0;
 		return;
@@ -250,16 +245,14 @@ void CAchievementNotificationPanel::SetXAndWide( Panel *pPanel, int x, int wide 
 	pPanel->SetWide( wide );
 }
 
-CON_COMMAND_F( achievement_notification_test, "Test the hud notification UI", FCVAR_CHEAT)
+CON_COMMAND_F( achievement_notification_test, "Test the hud notification UI", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY )
 {
 	static int iCount=0;
 
 	CAchievementNotificationPanel *pPanel = GET_HUDELEMENT( CAchievementNotificationPanel );
 	if ( pPanel )
 	{		
-		//pPanel->AddNotification( "HL2_KILL_ODESSAGUNSHIP", L"Achievement Progress", ( 0 == ( iCount % 2 ) ? L"Test Notification Message A (1/10)" :
-			//L"Test Message B" ) );
-		pPanel->AddNotification( "FIREFIGHTRELOADED_KILL20COMBINE", L"Achievement Progress", ( 0 == ( iCount % 2 ) ? L"Test Notification Message A (1/10)" :
+		pPanel->AddNotification( "HL2_KILL_ODESSAGUNSHIP", L"Achievement Progress", ( 0 == ( iCount % 2 ) ? L"Test Notification Message A (1/10)" :
 			L"Test Message B" ) );
 	}
 

@@ -147,11 +147,6 @@
 #include "fbxsystem/fbxsystem.h"
 #endif
 
-//discord
-#include "discord-rpc.h"
-#include "discord_register.h"
-#include <time.h>
-
 extern vgui::IInputInternal *g_InputInternal;
 
 //=============================================================================
@@ -219,6 +214,11 @@ IEngineReplay *g_pEngineReplay = NULL;
 IEngineClientReplay *g_pEngineClientReplay = NULL;
 IReplaySystem *g_pReplay = NULL;
 #endif
+#ifdef MAPBASE
+IVEngineServer	*serverengine = NULL;
+#endif
+
+IScriptManager *scriptmanager = NULL;
 
 IHaptics* haptics = NULL;// NVNT haptics system interface singleton
 
@@ -335,18 +335,18 @@ void DispatchHudText( const char *pszName );
 static ConVar s_CV_ShowParticleCounts("showparticlecounts", "0", 0, "Display number of particles drawn per frame");
 static ConVar s_cl_team("cl_team", "default", FCVAR_USERINFO|FCVAR_ARCHIVE, "Default team when joining a game");
 static ConVar s_cl_class("cl_class", "default", FCVAR_USERINFO|FCVAR_ARCHIVE, "Default class when joining a game");
-static ConVar cl_discord_appid("cl_discord_appid", "382336881758568448", FCVAR_DEVELOPMENTONLY|FCVAR_CHEAT);
-static int64_t startTimestamp = time(0);
-#define DEVBUILD
-#if defined(DEVBUILD) || defined(_DEBUG)
-static ConVar cl_discord_devbuild("cl_discord_devbuild", "1", FCVAR_DEVELOPMENTONLY | FCVAR_CHEAT);
-#else
-static ConVar cl_discord_devbuild("cl_discord_devbuild", "0", FCVAR_DEVELOPMENTONLY | FCVAR_CHEAT);
-#endif
 
 #ifdef HL1MP_CLIENT_DLL
 static ConVar s_cl_load_hl1_content("cl_load_hl1_content", "0", FCVAR_ARCHIVE, "Mount the content from Half-Life: Source if possible");
 #endif
+
+#ifdef MAPBASE_RPC
+// Mapbase stuff
+extern void MapbaseRPC_Init();
+extern void MapbaseRPC_Shutdown();
+extern void MapbaseRPC_Update( int iType, const char *pMapName );
+#endif
+
 
 // Physics system
 bool g_bLevelInitialized;
@@ -844,33 +844,6 @@ bool IsEngineThreaded()
 	return false;
 }
 
-static void handleDiscordReady()
-{
-	DevMsg("Discord: Ready\n");
-}
-
-static void handleDiscordDisconnected(int errcode, const char* message)
-{
-	DevMsg("Discord: Disconnected (%d: %s)\n", errcode, message);
-}
-
-static void handleDiscordError(int errcode, const char* message)
-{
-	DevMsg("Discord: Error (%d: %s)\n", errcode, message);
-}
-
-static void handleDiscordJoin(const char* secret)
-{
-}
-
-static void handleDiscordSpectate(const char* secret)
-{
-}
-
-static void handleDiscordJoinRequest(const DiscordJoinRequest* request)
-{
-}
-
 //-----------------------------------------------------------------------------
 // Constructor
 //-----------------------------------------------------------------------------
@@ -880,6 +853,7 @@ CHLClient::CHLClient()
 	// Kinda bogus, but the logic in the engine is too convoluted to put it there
 	g_bLevelInitialized = false;
 }
+
 
 
 extern IGameSystem *ViewportClientSystem();
@@ -975,8 +949,27 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 		return false;
 #endif
 
+#ifdef MAPBASE
+	// Implements the server engine interface on the client.
+	// I'm extremely confused as to how this is even possible, but Saul Rennison's worldlight did it.
+	// If it's really this possible, why wasn't it available before?
+	// Hopefully there's no SP-only magic going on here, because I want to use this for RPC.
+	if ( (serverengine = (IVEngineServer*)appSystemFactory(INTERFACEVERSION_VENGINESERVER, NULL )) == NULL )
+		return false;
+#endif
+
 	if (!g_pMatSystemSurface)
 		return false;
+
+	if ( !CommandLine()->CheckParm( "-noscripting") )
+	{
+		scriptmanager = (IScriptManager *)appSystemFactory( VSCRIPT_INTERFACE_VERSION, NULL );
+
+		if (scriptmanager == nullptr)
+		{
+			scriptmanager = (IScriptManager*)Sys_GetFactoryThis()(VSCRIPT_INTERFACE_VERSION, NULL);
+		}
+	}
 
 #ifdef WORKSHOP_IMPORT_ENABLED
 	if ( !ConnectDataModel( appSystemFactory ) )
@@ -1124,57 +1117,13 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 	HookHapticMessages(); // Always hook the messages
 #endif
 
-	DiscordEventHandlers handlers;
-	memset(&handlers, 0, sizeof(handlers));
-	handlers.ready = handleDiscordReady;
-	handlers.disconnected = handleDiscordDisconnected;
-	handlers.errored = handleDiscordError;
-	handlers.joinGame = handleDiscordJoin;
-	handlers.spectateGame = handleDiscordSpectate;
-	handlers.joinRequest = handleDiscordJoinRequest;
-	char appid[255];
-	sprintf(appid, "%d", engine->GetAppID());
-	Discord_Initialize(cl_discord_appid.GetString(), &handlers, 1, appid);
+#ifdef MAPBASE_RPC
+	MapbaseRPC_Init();
+#endif
 
-	if (!g_bTextMode)
-	{
-		DiscordRichPresence discordPresence;
-		memset(&discordPresence, 0, sizeof(discordPresence));
-		discordPresence.state = "In-Game";
-		discordPresence.details = "Main Menu";
-		discordPresence.startTimestamp = startTimestamp;
-		if (cl_discord_devbuild.GetBool())
-		{
-			discordPresence.largeImageKey = "fr_dev_large";
-
-			char verString[30];
-			if (g_pFullFileSystem->FileExists("version.txt"))
-			{
-				FileHandle_t fh = filesystem->Open("version.txt", "r", "MOD");
-				int file_len = filesystem->Size(fh);
-				char* GameInfo = new char[file_len + 1];
-
-				filesystem->Read((void*)GameInfo, file_len, fh);
-				GameInfo[file_len] = 0; // null terminator
-
-				filesystem->Close(fh);
-
-				Q_snprintf(verString, sizeof(verString), "Version: %s", GameInfo + 8);
-
-				delete[] GameInfo;
-			}
-			char buffer[256];
-			sprintf(buffer, "%s | Hi!", verString);
-			discordPresence.largeImageText = buffer;
-		}
-		else
-		{
-			discordPresence.largeImageKey = "fr_large";
-		}
-		Discord_UpdatePresence(&discordPresence);
-	}
-
-	//InitCustomWeapon();
+#ifdef MAPBASE
+	CommandLine()->AppendParm( "+r_hunkalloclightmaps", "0" );
+#endif
 
 	return true;
 }
@@ -1301,7 +1250,9 @@ void CHLClient::Shutdown( void )
 	ShutdownFbx();
 #endif
 
-	Discord_Shutdown();
+#ifdef MAPBASE_RPC
+	MapbaseRPC_Shutdown();
+#endif
 	
 	// This call disconnects the VGui libraries which we rely on later in the shutdown path, so don't do it
 //	DisconnectTier3Libraries( );
@@ -1715,44 +1666,12 @@ void CHLClient::LevelInitPreEntity( char const* pMapName )
 	}
 #endif
 
+#ifdef MAPBASE_RPC
 	if (!g_bTextMode)
 	{
-		char buffer[256];
-		DiscordRichPresence discordPresence;
-		memset(&discordPresence, 0, sizeof(discordPresence));
-		discordPresence.state = "In-Game";
-		sprintf(buffer, "Map: %s", pMapName);
-		discordPresence.details = buffer;
-		if (cl_discord_devbuild.GetBool())
-		{
-			discordPresence.largeImageKey = "fr_dev_large";
-
-			char verString[30];
-			if (g_pFullFileSystem->FileExists("version.txt"))
-			{
-				FileHandle_t fh = filesystem->Open("version.txt", "r", "MOD");
-				int file_len = filesystem->Size(fh);
-				char* GameInfo = new char[file_len + 1];
-
-				filesystem->Read((void*)GameInfo, file_len, fh);
-				GameInfo[file_len] = 0; // null terminator
-
-				filesystem->Close(fh);
-
-				Q_snprintf(verString, sizeof(verString), "Version: %s", GameInfo + 8);
-
-				delete[] GameInfo;
-			}
-			char buffer[256];
-			sprintf(buffer, "%s | Hi!", verString);
-			discordPresence.largeImageText = buffer;
-		}
-		else
-		{
-			discordPresence.largeImageKey = "fr_large";
-		}
-		Discord_UpdatePresence(&discordPresence);
+		MapbaseRPC_Update(RPCSTATE_LEVEL_INIT, pMapName);
 	}
+#endif
 
 	// Check low violence settings for this map
 	g_RagdollLVManager.SetLowViolence( pMapName );
@@ -1845,42 +1764,12 @@ void CHLClient::LevelShutdown( void )
 
 	gHUD.LevelShutdown();
 
+#ifdef MAPBASE_RPC
 	if (!g_bTextMode)
 	{
-		DiscordRichPresence discordPresence;
-		memset(&discordPresence, 0, sizeof(discordPresence));
-		discordPresence.state = "In-Game";
-		discordPresence.details = "Main Menu";
-		if (cl_discord_devbuild.GetBool())
-		{
-			discordPresence.largeImageKey = "fr_dev_large";
-
-			char verString[30];
-			if (g_pFullFileSystem->FileExists("version.txt"))
-			{
-				FileHandle_t fh = filesystem->Open("version.txt", "r", "MOD");
-				int file_len = filesystem->Size(fh);
-				char* GameInfo = new char[file_len + 1];
-
-				filesystem->Read((void*)GameInfo, file_len, fh);
-				GameInfo[file_len] = 0; // null terminator
-
-				filesystem->Close(fh);
-
-				Q_snprintf(verString, sizeof(verString), "Version: %s", GameInfo + 8);
-
-				delete[] GameInfo;
-			}
-			char buffer[256];
-			sprintf(buffer, "%s | Hi!", verString);
-			discordPresence.largeImageText = buffer;
-		}
-		else
-		{
-			discordPresence.largeImageKey = "fr_large";
-		}
-		Discord_UpdatePresence(&discordPresence);
+		MapbaseRPC_Update(RPCSTATE_LEVEL_SHUTDOWN, NULL);
 	}
+#endif
 
 	internalCenterPrint->Clear();
 
@@ -2312,7 +2201,9 @@ void OnRenderStart()
 	// are at the correct location
 	view->OnRenderStart();
 
+#ifndef MAPBASE
 	RopeManager()->OnRenderStart();
+#endif
 	
 	// This will place all entities in the correct position in world space and in the KD-tree
 	C_BaseAnimating::UpdateClientSideAnimations();

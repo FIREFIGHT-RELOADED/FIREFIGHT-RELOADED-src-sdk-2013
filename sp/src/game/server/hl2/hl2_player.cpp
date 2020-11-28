@@ -62,11 +62,20 @@
 #include "portal_player.h"
 #endif // PORTAL
 
+#ifdef MAPBASE
+#include "triggers.h"
+#include "mapbase/variant_tools.h"
+#endif
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 extern ConVar weapon_showproficiency;
 extern ConVar autoaim_max_dist;
+
+#ifdef MAPBASE
+extern ConVar player_squad_autosummon_enabled;
+#endif
 
 // Do not touch with without seeing me, please! (sjb)
 // For consistency's sake, enemy gunfire is traced against a scaled down
@@ -95,9 +104,9 @@ ConVar fr_new_walkspeed("fr_new_walkspeed", "210", FCVAR_CHEAT);
 ConVar hl2_darkness_flashlight_factor ( "hl2_darkness_flashlight_factor", "1" );
 ConVar sv_leagcy_maxspeed("sv_leagcy_maxspeed", "0", FCVAR_ARCHIVE);
 
-#define	HL2_WALK_SPEED hl2_walkspeed.GetFloat()
-#define	HL2_NORM_SPEED hl2_normspeed.GetFloat()
-#define	HL2_SPRINT_SPEED hl2_sprintspeed.GetFloat()
+	#define	HL2_WALK_SPEED hl2_walkspeed.GetFloat()
+	#define	HL2_NORM_SPEED hl2_normspeed.GetFloat()
+	#define	HL2_SPRINT_SPEED hl2_sprintspeed.GetFloat()
 #define	FR_NORM_SPEED fr_new_normspeed.GetFloat()
 #define	FR_WALK_SPEED fr_new_walkspeed.GetFloat()
 
@@ -112,6 +121,10 @@ ConVar sv_infinite_aux_power( "sv_infinite_aux_power", "0", FCVAR_CHEAT );
 ConVar autoaim_unlock_target( "autoaim_unlock_target", "0.8666" );
 
 ConVar sv_stickysprint("sv_stickysprint", "0", FCVAR_ARCHIVE | FCVAR_ARCHIVE_XBOX);
+
+#ifdef MAPBASE
+ConVar player_autoswitch_enabled( "player_autoswitch_enabled", "1", FCVAR_NONE, "This convar was added by Mapbase to toggle whether players automatically switch to their ''best'' weapon upon picking up ammo for it after it was dry." );
+#endif
 
 ConVar sv_suitpower_mintosprint("sv_suitpower_mintosprint", "10");
 
@@ -183,24 +196,35 @@ static impactdamagetable_t gCappedPlayerImpactDamageTable =
 bool g_bUseLegacyFlashlight;
 bool Flashlight_UseLegacyVersion( void )
 {
-	//old ep2 code - bitl
 	// If this is the first run through, cache off what the answer should be (cannot change during a session)
-	//if ( g_bCacheLegacyFlashlightStatus )
-	//{
-		//char modDir[MAX_PATH];
-		//if ( UTIL_GetModDir( modDir, sizeof(modDir) ) == false )
-			//return false;
+	/*
+	if ( g_bCacheLegacyFlashlightStatus )
+	{
+#ifdef MAPBASE
+		// Check if there's a gameinfo setting.
+		ThreeState_t iGameKey = Flashlight_GetLegacyVersionKey();
+		if (iGameKey != TRS_NONE)
+		{
+			g_bUseLegacyFlashlight = (iGameKey == TRS_TRUE);
+			g_bCacheLegacyFlashlightStatus = false;
+			return g_bUseLegacyFlashlight;
+		}
+#endif
 
-		//g_bUseLegacyFlashlight = ( !Q_strcmp( modDir, "hl2" ) ||
-					  // !Q_strcmp( modDir, "episodic" ) ||
-					  // !Q_strcmp( modDir, "lostcoast" ) || !Q_strcmp( modDir, "hl1" ));
+		char modDir[MAX_PATH];
+		if ( UTIL_GetModDir( modDir, sizeof(modDir) ) == false )
+			return false;
 
+		g_bUseLegacyFlashlight = ( !Q_strcmp( modDir, "hl2" ) ||
+					   !Q_strcmp( modDir, "episodic" ) ||
+					   !Q_strcmp( modDir, "lostcoast" ) || !Q_strcmp( modDir, "hl1" ));
 
-		//g_bCacheLegacyFlashlightStatus = false;
-	//}
-	
+		g_bCacheLegacyFlashlightStatus = false;
+	}
+	*/
+
 	g_bUseLegacyFlashlight = sv_leagcy_flashlight.GetBool();
-
+	
 	// Return the results
 	return g_bUseLegacyFlashlight;
 }
@@ -227,6 +251,17 @@ public:
 
 	COutputInt m_RequestedPlayerHealth;
 
+#ifdef MAPBASE
+	COutputInt m_OnGetAmmo;
+	COutputEvent m_PlayerDamaged;
+	COutputEvent m_OnSquadMemberKilled;
+	COutputInt m_RequestedPlayerArmor;
+	COutputFloat m_RequestedPlayerAuxPower;
+	COutputFloat m_RequestedPlayerFlashBattery;
+
+	COutputEvent m_OnPlayerSpawn;
+#endif
+
 	void InputRequestPlayerHealth( inputdata_t &inputdata );
 	void InputSetFlashlightSlowDrain( inputdata_t &inputdata );
 	void InputSetFlashlightNormalDrain( inputdata_t &inputdata );
@@ -239,8 +274,35 @@ public:
 #ifdef PORTAL
 	void InputSuppressCrosshair( inputdata_t &inputdata );
 #endif // PORTAL2
+#ifdef MAPBASE
+	void InputRequestPlayerArmor( inputdata_t &inputdata );
+	void InputRequestPlayerAuxPower( inputdata_t &inputdata );
+	void InputRequestPlayerFlashBattery( inputdata_t &inputdata );
+
+	void InputGetAmmoOnWeapon( inputdata_t &inputdata );
+
+	void InputSetHandModel( inputdata_t &inputdata );
+	void InputSetHandModelSkin( inputdata_t &inputdata );
+
+	void InputSetPlayerModel( inputdata_t &inputdata );
+	void InputSetPlayerDrawExternally( inputdata_t &inputdata );
+#endif
 
 	void Activate ( void );
+
+#ifdef MAPBASE
+	bool KeyValue( const char *szKeyName, const char *szValue );
+
+	bool AcceptInput( const char *szInputName, CBaseEntity *pActivator, CBaseEntity *pCaller, variant_t Value, int outputID );
+
+	void NotifyPlayerHasProxy();
+
+	// This is here because the player might not be available when we spawn.
+	// Hope there wouldn't be enough time for this to need to be saved...
+	CUtlDict<string_t, int> m_QueuedKV;
+
+	int m_MaxArmor = 100;
+#endif
 
 	bool PassesDamageFilter( const CTakeDamageInfo &info );
 
@@ -265,6 +327,131 @@ void CC_ToggleBullettime(void)
 }
 
 static ConCommand toggle_bullettime("toggle_bullettime", CC_ToggleBullettime, "Toggles Bullettime");
+
+#ifdef MAPBASE
+static CUtlVector<CBaseEntity*> g_pCommandRedirects;
+
+//-----------------------------------------------------------------------------
+// Redirects player squad commands
+//-----------------------------------------------------------------------------
+class CCommandRedirect : public CBaseTrigger
+{
+	DECLARE_CLASS( CCommandRedirect, CBaseTrigger );
+public:
+	CCommandRedirect()
+	{
+		g_pCommandRedirects.AddToTail(this);
+		//int i = g_pCommandRedirects.AddToTail();
+		//g_pCommandRedirects[i].Set( this );
+	}
+
+	~CCommandRedirect()
+	{
+		g_pCommandRedirects.FindAndRemove(this);
+		/*
+		for (int i = 0; i < g_pCommandRedirects.Count(); i++)
+		{
+			if (g_pCommandRedirects[i].Get() == this)
+			{
+				g_pCommandRedirects.Remove( i );
+				break;
+			}
+		}
+		*/
+	}
+
+	void Spawn()
+	{
+		BaseClass::Spawn();
+		InitTrigger();
+	}
+
+	// Will the command point change?
+	// True = Judged guilty and changed.
+	// False = Judged not guilty and unchanged.
+	bool GetVerdict(Vector *defendant, CHL2_Player *pPlayer)
+	{
+		// Deliver goal to relevant destinations before sentencing.
+		m_OnCommandGoal.Set(*defendant, pPlayer, this);
+
+		if (m_target == NULL_STRING)
+		{
+			// Abort sentencing.
+			return false;
+		}
+		else if (FStrEq(STRING(m_target), "-1"))
+		{
+			// Deliver verdict immediately.
+			*defendant = Vector(0, 0, 0);
+			return false;
+		}
+		else
+		{
+			// Locate entity of interest.
+			// Player is caller.
+			// Player squad representative is activator.
+			CBaseEntity *pEntOfInterest = gEntList.FindEntityGeneric(NULL, STRING(m_target), this, pPlayer->GetSquadCommandRepresentative(), pPlayer);
+			if (pEntOfInterest)
+			{
+				// Deliver their local origin.
+				*defendant = pEntOfInterest->GetLocalOrigin();
+				return true;
+			}
+		}
+
+		// No sentence.
+		return false;
+	}
+
+	void HandleAllies(CAI_Squad *pSquad, CHL2_Player *pPlayer)
+	{
+		if (m_bRepOnly)
+		{
+			CBaseEntity *pSquadRep = pPlayer->GetSquadCommandRepresentative();
+			if (pSquadRep)
+				m_OutAlly.Set(pSquadRep, pSquadRep, this);
+		}
+		else
+		{
+			AISquadIter_t iter;
+			for ( CBaseEntity *pAllyNpc = pSquad->GetFirstMember(&iter); pAllyNpc; pAllyNpc = pSquad->GetNextMember(&iter) )
+			{
+				m_OutAlly.Set(pAllyNpc, pAllyNpc, this);
+			}
+		}
+	}
+
+	bool PassesTriggerFilters(CBaseEntity *pOther)
+	{
+		return pOther->IsPlayer() || (pOther->MyNPCPointer() && pOther->MyNPCPointer()->IsInPlayerSquad());
+	}
+
+	bool IsDisabled() { return m_bDisabled; }
+
+	DECLARE_DATADESC();
+
+private:
+	bool m_bRepOnly;
+
+	COutputVector m_OnCommandGoal;
+	COutputEHANDLE m_OutAlly;
+};
+
+LINK_ENTITY_TO_CLASS( func_commandredirect, CCommandRedirect );
+BEGIN_DATADESC( CCommandRedirect )
+	
+	DEFINE_KEYFIELD( m_bRepOnly,	FIELD_BOOLEAN, "reponly" ),
+	DEFINE_KEYFIELD( m_bDisabled,	FIELD_BOOLEAN, "StartDisabled" ),
+
+	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
+	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
+
+	DEFINE_OUTPUT( m_OnCommandGoal, "OnCommandGoal" ),
+	DEFINE_OUTPUT( m_OutAlly, "OutAlly" ),
+
+END_DATADESC()
+#endif
+
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -411,10 +598,34 @@ BEGIN_DATADESC( CHL2_Player )
 
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "IgnoreFallDamage", InputIgnoreFallDamage ),
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "IgnoreFallDamageWithoutReset", InputIgnoreFallDamageWithoutReset ),
+#ifdef MAPBASE
+	DEFINE_INPUTFUNC( FIELD_EHANDLE, "OnSquadMemberKilled", OnSquadMemberKilled ),
+#else
 	DEFINE_INPUTFUNC( FIELD_VOID, "OnSquadMemberKilled", OnSquadMemberKilled ),
+#endif
 	DEFINE_INPUTFUNC( FIELD_VOID, "DisableFlashlight", InputDisableFlashlight ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "EnableFlashlight", InputEnableFlashlight ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "ForceDropPhysObjects", InputForceDropPhysObjects ),
+#ifdef MAPBASE
+	DEFINE_INPUTFUNC( FIELD_VOID, "SquadForceSummon", InputSquadForceSummon ),
+	DEFINE_INPUTFUNC( FIELD_INPUT, "SquadForceGoTo", InputSquadForceGoTo ), // FIELD_INPUT so it supports vectors, ehandles, and strings
+
+	DEFINE_INPUTFUNC( FIELD_INTEGER, "AddArmor", InputAddArmor ),
+	DEFINE_INPUTFUNC( FIELD_INTEGER, "RemoveArmor", InputRemoveArmor ),
+	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetArmor", InputSetArmor ),
+
+	DEFINE_INPUTFUNC( FIELD_FLOAT, "AddAuxPower", InputAddAuxPower ),
+	DEFINE_INPUTFUNC( FIELD_FLOAT, "RemoveAuxPower", InputRemoveAuxPower ),
+	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetAuxPower", InputSetAuxPower ),
+
+	DEFINE_INPUTFUNC( FIELD_VOID, "TurnFlashlightOn", InputTurnFlashlightOn ),
+	DEFINE_INPUTFUNC( FIELD_VOID, "TurnFlashlightOff", InputTurnFlashlightOff ),
+
+	DEFINE_INPUTFUNC( FIELD_VOID, "EnableGeigerCounter", InputEnableGeigerCounter ),
+	DEFINE_INPUTFUNC( FIELD_VOID, "DisableGeigerCounter", InputDisableGeigerCounter ),
+	DEFINE_INPUTFUNC( FIELD_VOID, "ShowSquadHUD", InputShowSquadHUD ),
+	DEFINE_INPUTFUNC( FIELD_VOID, "HideSquadHUD", InputHideSquadHUD ),
+#endif
 
 	DEFINE_SOUNDPATCH( m_sndLeeches ),
 	DEFINE_SOUNDPATCH( m_sndWaterSplashes ),
@@ -431,6 +642,23 @@ BEGIN_DATADESC( CHL2_Player )
 	//DEFINE_FIELD( m_hPlayerProxy, FIELD_EHANDLE ), //Shut up class check!
 
 END_DATADESC()
+
+#ifdef MAPBASE_VSCRIPT
+BEGIN_ENT_SCRIPTDESC( CHL2_Player, CBasePlayer, "The HL2 player entity." )
+
+	DEFINE_SCRIPTFUNC_NAMED( SuitPower_Drain, "RemoveAuxPower", "Removes from the player's available aux power." )
+	DEFINE_SCRIPTFUNC_NAMED( SuitPower_Charge, "AddAuxPower", "Adds to the player's available aux power." )
+	DEFINE_SCRIPTFUNC_NAMED( SuitPower_SetCharge, "SetAuxPower", "Sets the player's available aux power." )
+	DEFINE_SCRIPTFUNC_NAMED( SuitPower_GetCurrentPercentage, "GetAuxPower", "Gets the player's available aux power." )
+	DEFINE_SCRIPTFUNC( GetFlashlightBattery, "Gets the energy available in the player's flashlight. If the legacy (aux power-based) flashlight is enabled, this returns the aux power." )
+
+	DEFINE_SCRIPTFUNC( InitCustomSuitDevice, "Initializes a custom suit device. (just sets drain rate for now)" )
+	DEFINE_SCRIPTFUNC( AddCustomSuitDevice, "Adds a custom suit device ID. (1-3)" )
+	DEFINE_SCRIPTFUNC( RemoveCustomSuitDevice, "Removes a custom suit device ID. (1-3)" )
+	DEFINE_SCRIPTFUNC( IsCustomSuitDeviceActive, "Checks if a custom suit device is active." )
+
+END_SCRIPTDESC();
+#endif
 
 CHL2_Player::CHL2_Player()
 {
@@ -473,6 +701,16 @@ CHL2_Player::CHL2_Player()
 #endif
 CSuitPowerDevice SuitDeviceBreather( bits_SUIT_DEVICE_BREATHER, 6.7f );		// 100 units in 15 seconds (plus three padded seconds)
 CSuitPowerDevice SuitDeviceBulletTime(bits_SUIT_DEVICE_BULLETTIME, 6.7f);
+
+#ifdef MAPBASE
+// Default: 100 units in 8 seconds
+CSuitPowerDevice SuitDeviceCustom[] =
+{
+	{ bits_SUIT_DEVICE_CUSTOM0, 12.5f },
+	{ bits_SUIT_DEVICE_CUSTOM1, 12.5f },
+	{ bits_SUIT_DEVICE_CUSTOM2, 12.5f },
+};
+#endif
 
 
 IMPLEMENT_SERVERCLASS_ST(CHL2_Player, DT_HL2_Player)
@@ -1482,6 +1720,203 @@ void CHL2_Player::PlayerRunCommand(CUserCmd *ucmd, IMoveHelper *moveHelper)
 	BaseClass::PlayerRunCommand( ucmd, moveHelper );
 }
 
+//disabled due to broken animations.
+#ifdef MAPBASE_HLDM_ANIMS //MAPBASE
+void CHL2_Player::SpawnedAtPoint( CBaseEntity *pSpawnPoint )
+{
+	FirePlayerProxyOutput( "OnPlayerSpawn", variant_t(), this, pSpawnPoint );
+}
+
+//-----------------------------------------------------------------------------
+
+ConVar hl2_use_hl2dm_anims( "hl2_use_hl2dm_anims", "0", FCVAR_NONE, "Allows SP HL2 players to use HL2:DM animations (for custom player models)" );
+
+void CHL2_Player::ResetAnimation( void )
+{
+	if (!hl2_use_hl2dm_anims.GetBool())
+		return;
+
+	if (IsAlive())
+	{
+		SetSequence( -1 );
+		SetActivity( ACT_INVALID );
+
+		if (!GetAbsVelocity().x && !GetAbsVelocity().y)
+			SetAnimation( PLAYER_IDLE );
+		else if ((GetAbsVelocity().x || GetAbsVelocity().y) && (GetFlags() & FL_ONGROUND))
+			SetAnimation( PLAYER_WALK );
+		else if (GetWaterLevel() > 1)
+			SetAnimation( PLAYER_WALK );
+	}
+}
+
+// Set the activity based on an event or current state
+void CHL2_Player::SetAnimation( PLAYER_ANIM playerAnim )
+{
+	if (!hl2_use_hl2dm_anims.GetBool())
+	{
+		BaseClass::SetAnimation( playerAnim );
+		return;
+	}
+
+	int animDesired;
+
+	float speed;
+
+	speed = GetAbsVelocity().Length2D();
+
+	
+	// bool bRunning = true;
+
+	//Revisit!
+/*	if ( ( m_nButtons & ( IN_FORWARD | IN_BACK | IN_MOVELEFT | IN_MOVERIGHT ) ) )
+	{
+		if ( speed > 1.0f && speed < hl2_normspeed.GetFloat() - 20.0f )
+		{
+			bRunning = false;
+		}
+	}*/
+
+	if ( GetFlags() & ( FL_FROZEN | FL_ATCONTROLS ) )
+	{
+		speed = 0;
+		playerAnim = PLAYER_IDLE;
+	}
+
+	Activity idealActivity = ACT_HL2MP_RUN;
+
+	// This could stand to be redone. Why is playerAnim abstracted from activity? (sjb)
+	if ( playerAnim == PLAYER_JUMP )
+	{
+		idealActivity = ACT_HL2MP_JUMP;
+	}
+	else if ( playerAnim == PLAYER_DIE )
+	{
+		if ( m_lifeState == LIFE_ALIVE )
+		{
+			return;
+		}
+	}
+	else if ( playerAnim == PLAYER_ATTACK1 )
+	{
+		if ( GetActivity( ) == ACT_HOVER	|| 
+			 GetActivity( ) == ACT_SWIM		||
+			 GetActivity( ) == ACT_HOP		||
+			 GetActivity( ) == ACT_LEAP		||
+			 GetActivity( ) == ACT_DIESIMPLE )
+		{
+			idealActivity = GetActivity( );
+		}
+		else
+		{
+			idealActivity = ACT_HL2MP_GESTURE_RANGE_ATTACK;
+		}
+	}
+	else if ( playerAnim == PLAYER_RELOAD )
+	{
+		idealActivity = ACT_HL2MP_GESTURE_RELOAD;
+	}
+	else if ( playerAnim == PLAYER_IDLE || playerAnim == PLAYER_WALK )
+	{
+		if ( !( GetFlags() & FL_ONGROUND ) && GetActivity( ) == ACT_HL2MP_JUMP )	// Still jumping
+		{
+			idealActivity = GetActivity( );
+		}
+		/*
+		else if ( GetWaterLevel() > 1 )
+		{
+			if ( speed == 0 )
+				idealActivity = ACT_HOVER;
+			else
+				idealActivity = ACT_SWIM;
+		}
+		*/
+		else
+		{
+			if ( GetFlags() & FL_DUCKING )
+			{
+				if ( speed > 0 )
+				{
+					idealActivity = ACT_HL2MP_WALK_CROUCH;
+				}
+				else
+				{
+					idealActivity = ACT_HL2MP_IDLE_CROUCH;
+				}
+			}
+			else
+			{
+				if ( speed > 0 )
+				{
+					/*
+					if ( bRunning == false )
+					{
+						idealActivity = ACT_WALK;
+					}
+					else
+					*/
+					{
+						idealActivity = ACT_HL2MP_RUN;
+					}
+				}
+				else
+				{
+					idealActivity = ACT_HL2MP_IDLE;
+				}
+			}
+		}
+	}
+	
+	if ( idealActivity == ACT_HL2MP_GESTURE_RANGE_ATTACK )
+	{
+		RestartGesture( Weapon_TranslateActivity( idealActivity ) );
+
+		// FIXME: this seems a bit wacked
+		Weapon_SetActivity( Weapon_TranslateActivity( ACT_RANGE_ATTACK1 ), 0 );
+
+		return;
+	}
+	else if ( idealActivity == ACT_HL2MP_GESTURE_RELOAD )
+	{
+		RestartGesture( Weapon_TranslateActivity( idealActivity ) );
+		return;
+	}
+	else
+	{
+		SetActivity( idealActivity );
+
+		animDesired = SelectWeightedSequence( Weapon_TranslateActivity ( idealActivity ) );
+
+		if (animDesired == -1)
+		{
+			animDesired = SelectWeightedSequence( idealActivity );
+
+			if ( animDesired == -1 )
+			{
+				animDesired = 0;
+			}
+		}
+	
+		// Already using the desired animation?
+		if ( GetSequence() == animDesired )
+			return;
+
+		m_flPlaybackRate = 1.0;
+		ResetSequence( animDesired );
+		SetCycle( 0 );
+		return;
+	}
+
+	// Already using the desired animation?
+	if ( GetSequence() == animDesired )
+		return;
+
+	//Msg( "Set animation to %d\n", animDesired );
+	// Reset to first frame of desired animation
+	ResetSequence( animDesired );
+	SetCycle( 0 );
+}
+#endif
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -1512,6 +1947,17 @@ void CHL2_Player::Spawn(void)
 
 	BaseClass::Spawn();
 
+#ifdef MAPBASE
+	// Ported from CHL2MP_Player. Fixes issues with respawning players in SP
+	if ( !IsObserver() )
+	{
+		pl.deadflag = false;
+		RemoveSolidFlags( FSOLID_NOT_SOLID );
+
+		RemoveEffects( EF_NODRAW );
+	}
+#endif
+
 	//
 	// Our player movement speed is set once here. This will override the cl_xxxx
 	// cvars unless they are set to be lower than this.
@@ -1525,11 +1971,11 @@ void CHL2_Player::Spawn(void)
 
 	if (sv_hud_hidechat.GetBool())
 	{
-		m_Local.m_iHideHUD |= HIDEHUD_CHAT;
+	m_Local.m_iHideHUD |= HIDEHUD_CHAT;
 	}
 
 	m_pPlayerAISquad = g_AI_SquadManager.FindCreateSquad(AllocPooledString(PLAYER_SQUADNAME));
-	
+
 	if (sv_leagcy_maxspeed.GetBool())
 	{
 		InitSprinting();
@@ -1546,7 +1992,7 @@ void CHL2_Player::Spawn(void)
 //#ifdef HL2_EPISODIC
 	if (sv_leagcy_flashlight.GetBool())
 	{
-		m_HL2Local.m_flFlashBattery = 100.0f;
+	m_HL2Local.m_flFlashBattery = 100.0f;
 	}
 //#endif 
 
@@ -1721,7 +2167,7 @@ void CHL2_Player::StartSprinting( void )
 	CPASAttenuationFilter filter( this );
 	filter.UsePredictionRules();
 	EmitSound( filter, entindex(), "HL2Player.SprintStart" );
-	
+
 	SetMaxSpeed( HL2_SPRINT_SPEED );
 	m_fIsSprinting = true;
 }
@@ -1740,10 +2186,10 @@ void CHL2_Player::StopSprinting( void )
 	{
 		if (sv_leagcy_maxspeed.GetBool())
 		{
-			SetMaxSpeed(HL2_NORM_SPEED);
-		}
-		else
-		{
+		SetMaxSpeed( HL2_NORM_SPEED );
+	}
+	else
+	{
 			SetMaxSpeed(FR_NORM_SPEED);
 		}
 	}
@@ -1751,8 +2197,8 @@ void CHL2_Player::StopSprinting( void )
 	{
 		if (sv_leagcy_maxspeed.GetBool())
 		{
-			SetMaxSpeed(HL2_WALK_SPEED);
-		}
+		SetMaxSpeed( HL2_WALK_SPEED );
+	}
 		else
 		{
 			SetMaxSpeed(FR_WALK_SPEED);
@@ -1767,6 +2213,7 @@ void CHL2_Player::StopSprinting( void )
 		m_fAutoSprintMinTime = 0.0f;
 	}
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Called to disable and enable sprint due to temporary circumstances:
@@ -1789,9 +2236,9 @@ void CHL2_Player::StartWalking( void )
 {
 	if (sv_leagcy_maxspeed.GetBool())
 	{
-		SetMaxSpeed(HL2_WALK_SPEED);
-		m_fIsWalking = true;
-	}
+	SetMaxSpeed( HL2_WALK_SPEED );
+	m_fIsWalking = true;
+}
 	else
 	{
 		SetMaxSpeed(FR_WALK_SPEED);
@@ -1805,9 +2252,9 @@ void CHL2_Player::StopWalking( void )
 {
 	if (sv_leagcy_maxspeed.GetBool())
 	{
-		SetMaxSpeed(HL2_NORM_SPEED);
-		m_fIsWalking = false;
-	}
+	SetMaxSpeed( HL2_NORM_SPEED );
+	m_fIsWalking = false;
+}
 	else
 	{
 		SetMaxSpeed(FR_NORM_SPEED);
@@ -2026,10 +2473,52 @@ bool CHL2_Player::CommanderFindGoal( commandgoal_t *pGoal )
 	
 	//---------------------------------
 	// MASK_SHOT on purpose! So that you don't hit the invisible hulls of the NPCs.
+#ifdef MAPBASE
+	// Get either our +USE entity or the gravity gun entity
+	CBaseEntity *pHeldEntity = GetPlayerHeldEntity(this);
+	if ( !pHeldEntity )
+		PhysCannonGetHeldEntity( GetActiveWeapon() );
+
+	CTraceFilterSkipTwoEntities filter( this, pHeldEntity, COLLISION_GROUP_INTERACTIVE_DEBRIS );
+#else
 	CTraceFilterSkipTwoEntities filter( this, PhysCannonGetHeldEntity( GetActiveWeapon() ), COLLISION_GROUP_INTERACTIVE_DEBRIS );
+#endif
 
 	UTIL_TraceLine( EyePosition(), EyePosition() + forward * MAX_COORD_RANGE, MASK_SHOT, &filter, &tr );
 
+#ifdef MAPBASE
+	// func_commandredirect handling
+	if (g_pCommandRedirects.Count() > 0)
+	{
+		for (int i = 0; i < g_pCommandRedirects.Count(); i++)
+		{
+			CCommandRedirect *pCommandRedirect = static_cast<CCommandRedirect*>(g_pCommandRedirects[i]);
+			if (!pCommandRedirect || pCommandRedirect->IsDisabled() || !pCommandRedirect->PointIsWithin(tr.endpos))
+				continue;
+
+			// First, GIVE IT OUR ALLIES so it could fire outputs
+			pCommandRedirect->HandleAllies(m_pPlayerAISquad, this);
+
+			Vector vec = tr.endpos;
+			if (pCommandRedirect->GetVerdict(&vec, this))
+			{
+				// It doesn't want us moving, so just don't find a goal at all
+				if (vec.IsZero())
+				{
+					return false;
+				}
+
+				// Just set our goal to this, the mapper didn't sign up for these checks
+				pGoal->m_vecGoalLocation = vec;
+				return true;
+			}
+
+			// Only one should be necessary
+			break;
+		}
+	}
+	//else
+#endif
 	if( !tr.DidHitWorld() )
 	{
 		CUtlVector<CAI_BaseNPC *> Allies;
@@ -2150,7 +2639,11 @@ void CHL2_Player::CommanderUpdate()
 {
 	CAI_BaseNPC *pCommandRepresentative = GetSquadCommandRepresentative();
 	bool bFollowMode = false;
+#ifdef MAPBASE
+	if ( pCommandRepresentative && !HasSpawnFlags(SF_PLAYER_HIDE_SQUAD_HUD) )
+#else
 	if ( pCommandRepresentative )
+#endif
 	{
 		bFollowMode = ( pCommandRepresentative->GetCommandGoal() == vec3_invalid );
 
@@ -2196,8 +2689,22 @@ void CHL2_Player::CommanderUpdate()
 	{
 		m_CommanderUpdateTimer.Set(2.5);
 
+#ifdef MAPBASE
+		if ( pCommandRepresentative->ShouldAutoSummon() )
+		{
+			if (!HL2GameRules()->AutosummonDisabled() && player_squad_autosummon_enabled.GetBool())
+				CommanderExecute( CC_FOLLOW );
+			else
+			{
+				// Show a hud hint if autosummoning has been disabled
+				UTIL_HudHintText( this, "#Valve_Hint_Command_recall" );
+				//m_CommanderUpdateTimer.Set(10.0);
+			}
+		}
+#else
 		if ( pCommandRepresentative->ShouldAutoSummon() )
 			CommanderExecute( CC_FOLLOW );
+#endif
 	}
 }
 
@@ -2324,6 +2831,95 @@ void CHL2_Player::CommanderMode()
 		m_QueuedCommand = (player_squad_transient_commands.GetBool()) ? CC_SEND : CC_TOGGLE;
 	}
 }
+
+#ifdef MAPBASE
+//-----------------------------------------------------------------------------
+// Purpose: 
+//----------------------------------------------------------------------------- 
+void CHL2_Player::InputSquadForceSummon( inputdata_t &inputdata )
+{
+	CommanderExecute( CC_FOLLOW );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Forces the player's squad to go to a specific location or entity.
+//----------------------------------------------------------------------------- 
+void CHL2_Player::InputSquadForceGoTo( inputdata_t &inputdata )
+{
+	CAI_BaseNPC *pPlayerSquadLeader = GetSquadCommandRepresentative();
+
+	if ( !pPlayerSquadLeader )
+		return;
+
+	int i;
+	CUtlVector<CAI_BaseNPC *> Allies;
+	commandgoal_t goal;
+
+	variant_t var = Variant_ParseInput(inputdata);
+
+	if (var.FieldType() == FIELD_VECTOR)
+	{
+		goal.m_pGoalEntity = NULL;
+		var.Vector3D(goal.m_vecGoalLocation);
+	}
+	else
+	{
+		goal.m_pGoalEntity = var.FieldType() == FIELD_EHANDLE ? var.Entity().Get() : gEntList.FindEntityByNameNearest(var.String(), pPlayerSquadLeader->GetAbsOrigin(), 0, this, inputdata.pActivator, inputdata.pCaller);
+		goal.m_vecGoalLocation = vec3_invalid;
+	}
+
+	AISquadIter_t iter;
+	for ( CAI_BaseNPC *pAllyNpc = m_pPlayerAISquad->GetFirstMember(&iter); pAllyNpc; pAllyNpc = m_pPlayerAISquad->GetNextMember(&iter) )
+	{
+		if ( pAllyNpc->IsCommandable() )
+			Allies.AddToTail( pAllyNpc );
+	}
+
+	CAI_BaseNPC * pTargetNpc = (goal.m_pGoalEntity) ? goal.m_pGoalEntity->MyNPCPointer() : NULL;
+	
+	bool bHandled = false;
+	if( pTargetNpc )
+	{
+		bHandled = !CommanderExecuteOne( pTargetNpc, goal, Allies.Base(), Allies.Count() );
+	}
+	
+	for ( i = 0; !bHandled && i < Allies.Count(); i++ )
+	{
+		if ( Allies[i] != pTargetNpc && Allies[i]->IsPlayerAlly() )
+		{
+			bHandled = !CommanderExecuteOne( Allies[i], goal, Allies.Base(), Allies.Count() );
+		}
+	}
+
+	//CommanderExecute( CC_SEND );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//----------------------------------------------------------------------------- 
+void CHL2_Player::InputEnableGeigerCounter( inputdata_t &inputdata )
+{
+	RemoveSpawnFlags(SF_PLAYER_NO_GEIGER);
+}
+
+void CHL2_Player::InputDisableGeigerCounter( inputdata_t &inputdata )
+{
+	AddSpawnFlags(SF_PLAYER_NO_GEIGER);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//----------------------------------------------------------------------------- 
+void CHL2_Player::InputShowSquadHUD( inputdata_t &inputdata )
+{
+	RemoveSpawnFlags(SF_PLAYER_HIDE_SQUAD_HUD);
+}
+
+void CHL2_Player::InputHideSquadHUD( inputdata_t &inputdata )
+{
+	AddSpawnFlags(SF_PLAYER_HIDE_SQUAD_HUD);
+}
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -2533,7 +3129,7 @@ void CHL2_Player::SuitPower_Charge( float flPower )
 {
 	m_HL2Local.m_flSuitPower += flPower;
 
-	if (m_HL2Local.m_flSuitPower > 100.0)
+	if( m_HL2Local.m_flSuitPower > 100.0 )
 	{
 		// Full charge, clamp.
 		m_HL2Local.m_flSuitPower = 100.0;
@@ -2604,7 +3200,7 @@ bool CHL2_Player::SuitPower_ShouldRecharge( void )
 		return false;
 
 	// Is the system fully charged?
-	if (m_HL2Local.m_flSuitPower >= 100.0f)
+	if( m_HL2Local.m_flSuitPower >= 100.0f )
 		return false; 
 
 	// Has the system been in a no-load state for long enough
@@ -2627,7 +3223,7 @@ bool CHL2_Player::ApplyBattery( float powerMultiplier )
 		int pct;
 		char szcharge[64];
 
-		IncrementArmorValue(sk_battery.GetFloat() * powerMultiplier, MAX_NORMAL_BATTERY);
+		IncrementArmorValue( sk_battery.GetFloat() * powerMultiplier, MAX_NORMAL_BATTERY );
 
 		CPASAttenuationFilter filter( this, "ItemBattery.Touch" );
 		EmitSound( filter, entindex(), "ItemBattery.Touch" );
@@ -2799,7 +3395,7 @@ void CHL2_Player::FlashlightTurnOn( void )
 	EmitSound( "HL2Player.FlashLightOn" );
 
 	variant_t flashlighton;
-	flashlighton.SetFloat(m_HL2Local.m_flSuitPower / 100.0f);
+	flashlighton.SetFloat( m_HL2Local.m_flSuitPower / 100.0f );
 	FirePlayerProxyOutput( "OnFlashlightOn", flashlighton, this, this );
 }
 
@@ -2818,7 +3414,7 @@ void CHL2_Player::FlashlightTurnOff( void )
 	EmitSound( "HL2Player.FlashLightOff" );
 
 	variant_t flashlightoff;
-	flashlightoff.SetFloat(m_HL2Local.m_flSuitPower / 100.0f);
+	flashlightoff.SetFloat( m_HL2Local.m_flSuitPower / 100.0f );
 	FirePlayerProxyOutput( "OnFlashlightOff", flashlightoff, this, this );
 }
 
@@ -2996,6 +3592,72 @@ void CHL2_Player::InputIgnoreFallDamageWithoutReset( inputdata_t &inputdata )
 	m_bIgnoreFallDamageResetAfterImpact = false;
 }
 
+#ifdef MAPBASE
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CHL2_Player::InputAddArmor( inputdata_t &inputdata )
+{
+	int iArmor = MIN((GetPlayerProxy() ? GetPlayerProxy()->m_MaxArmor : 100) - ArmorValue(), inputdata.value.Int());
+
+	IncrementArmorValue( iArmor );
+}
+
+//-----------------------------------------------------------------------------
+// This can also add to the player's armor by passing a negative input
+// which can bypass the maximum armor set in the player proxy.
+//-----------------------------------------------------------------------------
+void CHL2_Player::InputRemoveArmor( inputdata_t &inputdata )
+{
+	int iArmor = MIN(ArmorValue(), inputdata.value.Int());
+
+	IncrementArmorValue( -iArmor );
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CHL2_Player::InputSetArmor( inputdata_t &inputdata )
+{
+	int iArmor = MIN(GetPlayerProxy() ? GetPlayerProxy()->m_MaxArmor : 100, inputdata.value.Int());
+
+	SetArmorValue( iArmor );
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CHL2_Player::InputAddAuxPower( inputdata_t &inputdata )
+{
+	SuitPower_Charge( inputdata.value.Float() );
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CHL2_Player::InputRemoveAuxPower( inputdata_t &inputdata )
+{
+	SuitPower_Drain( inputdata.value.Float() );
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CHL2_Player::InputSetAuxPower( inputdata_t &inputdata )
+{
+	SuitPower_SetCharge( inputdata.value.Float() );
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CHL2_Player::InputTurnFlashlightOn( inputdata_t &inputdata )
+{
+	FlashlightTurnOn();
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CHL2_Player::InputTurnFlashlightOff( inputdata_t &inputdata )
+{
+	FlashlightTurnOff();
+}
+#endif
+
 //-----------------------------------------------------------------------------
 // Purpose: Notification of a player's npc ally in the players squad being killed
 //-----------------------------------------------------------------------------
@@ -3006,6 +3668,10 @@ void CHL2_Player::OnSquadMemberKilled( inputdata_t &data )
 	user.MakeReliable();
 	UserMessageBegin( user, "SquadMemberDied" );
 	MessageEnd();
+
+#ifdef MAPBASE
+	FirePlayerProxyOutput("OnSquadMemberKilled", data.value, data.pActivator, data.value.Entity());
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -3113,6 +3779,10 @@ int	CHL2_Player::OnTakeDamage( const CTakeDamageInfo &info )
 	}
 
 	gamestats->Event_PlayerDamage( this, info );
+
+#ifdef MAPBASE
+	FirePlayerProxyOutput("PlayerDamaged", variant_t(), info.GetAttacker(), this);
+#endif
 
 	return BaseClass::OnTakeDamage( playerDamage );
 }
@@ -3226,7 +3896,7 @@ void CHL2_Player::Event_KilledOther( CBaseEntity *pVictim, const CTakeDamageInfo
 void CHL2_Player::Event_Killed( const CTakeDamageInfo &info )
 {
 	BaseClass::Event_Killed( info );
-
+	
 	CreateRagdollEntity();
 
 	if (info.GetDamageType() & DMG_DISSOLVE)
@@ -3242,11 +3912,20 @@ void CHL2_Player::Event_Killed( const CTakeDamageInfo &info )
 	RemoveEffects(EF_NODRAW);	// still draw player body
 	StopZooming();
 
-	if (!g_pGameRules->IsMultiplayer())
+#ifdef MAPBASE
+	FirePlayerProxyOutput( "PlayerDied", variant_t(), info.GetAttacker(), this );
+
+	if (IsSuitEquipped())
 	{
-		FirePlayerProxyOutput("PlayerDied", variant_t(), this, this);
-		NotifyScriptsOfDeath();
+		// Make sure all devices are deactivated (for respawn)
+		m_HL2Local.m_bitsActiveDevices = 0x00000000;
+		m_flSuitPowerLoad = 0;
+		m_flTimeAllSuitDevicesOff = gpGlobals->curtime;
 	}
+#else
+	FirePlayerProxyOutput( "PlayerDied", variant_t(), this, this );
+#endif
+	NotifyScriptsOfDeath();
 }
 
 //-----------------------------------------------------------------------------
@@ -3359,6 +4038,15 @@ bool CHL2_Player::ShouldKeepLockedAutoaimTarget( EHANDLE hLockedTarget )
 	return true;
 }
 
+#ifdef MAPBASE
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+bool CHL2_Player::CanAutoSwitchToNextBestWeapon( CBaseCombatWeapon *pWeapon )
+{
+	return player_autoswitch_enabled.GetBool();
+}
+#endif
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : iCount - 
@@ -3400,6 +4088,9 @@ int CHL2_Player::GiveAmmo( int nCount, int nAmmoIndex, bool bSuppressSound)
 
 		if ( pWeapon && pWeapon->GetPrimaryAmmoType() == nAmmoIndex )
 		{
+#ifdef MAPBASE
+			if (CanAutoSwitchToNextBestWeapon(pWeapon))
+#endif
 			SwitchToNextBestWeapon(GetActiveWeapon());
 		}
 	}
@@ -3412,12 +4103,45 @@ int CHL2_Player::GiveAmmo( int nCount, int nAmmoIndex, bool bSuppressSound)
 bool CHL2_Player::Weapon_CanUse( CBaseCombatWeapon *pWeapon )
 {
 #ifndef HL2MP	
+#ifdef MAPBASE
+	if ( pWeapon->ClassMatches( "weapon_stunstick" ) )
+	{
+		switch (HL2GameRules()->GetStunstickPickupBehavior())
+		{
+			// Default, including 0
+			default:
+				{
+					if ( ApplyBattery( 0.5 ) )
+						UTIL_Remove( pWeapon );
+					return false;
+				} break;
+
+			// Allow pickup, if already picked up just apply battery
+			case 1:
+				{
+					if ( Weapon_OwnsThisType("weapon_stunstick") )
+					{
+						if ( ApplyBattery( 0.5 ) )
+							UTIL_Remove( pWeapon );
+						return false;
+					}
+				} break;
+
+			// Don't pickup, don't even apply battery
+			case 2: return false;
+
+			// Just pickup, never apply battery
+			case 3: break;
+		}
+	}
+#else
 	if ( pWeapon->ClassMatches( "weapon_stunstick" ) )
 	{
 		if ( ApplyBattery( 0.5 ) )
 			UTIL_Remove( pWeapon );
 		return false;
 	}
+#endif
 #endif
 
 	return BaseClass::Weapon_CanUse( pWeapon );
@@ -3709,6 +4433,7 @@ void CHL2_Player::PlayerUse ( void )
 	}
 }
 
+#ifndef MAPBASE_HLDM_ANIMS //MAPBASE
 // Set the activity based on an event or current state
 void CHL2_Player::SetAnimation(PLAYER_ANIM playerAnim)
 {
@@ -3884,6 +4609,7 @@ void CHL2_Player::SetAnimation(PLAYER_ANIM playerAnim)
 	ResetSequence(animDesired);
 	SetCycle(0);
 }
+#endif
 
 ConVar	sv_show_crosshair_target( "sv_show_crosshair_target", "0" );
 
@@ -4123,6 +4849,11 @@ float CHL2_Player::GetHeldObjectMass( IPhysicsObject *pHeldObject )
 		mass = PhysCannonGetHeldObjectMass( GetActiveWeapon(), pHeldObject );
 	}
 	return mass;
+}
+
+CBaseEntity	*CHL2_Player::GetHeldObject( void )
+{
+	return PhysCannonGetHeldEntity( GetActiveWeapon() );
 }
 
 //-----------------------------------------------------------------------------
@@ -4691,6 +5422,64 @@ void CHL2_Player::DisplayLadderHudHint()
 #endif//CLIENT_DLL
 }
 
+#ifdef MAPBASE
+//-----------------------------------------------------------------------------
+// 
+//-----------------------------------------------------------------------------
+void CHL2_Player::InitCustomSuitDevice( int iDeviceID, float flDrainRate )
+{
+	if (iDeviceID < 0 || iDeviceID > 2)
+	{
+		Warning("InitCustomSuitDevice : \"%i\" is not a valid custom device slot\n", iDeviceID);
+		return;
+	}
+
+	SuitDeviceCustom[iDeviceID].SetDeviceDrainRate( flDrainRate );
+}
+
+//-----------------------------------------------------------------------------
+// 
+//-----------------------------------------------------------------------------
+void CHL2_Player::AddCustomSuitDevice( int iDeviceID )
+{
+	if (iDeviceID < 0 || iDeviceID > 2)
+	{
+		Warning("AddCustomSuitDevice : \"%i\" is not a valid custom device slot\n", iDeviceID);
+		return;
+	}
+
+	SuitPower_AddDevice( SuitDeviceCustom[iDeviceID] );
+}
+
+//-----------------------------------------------------------------------------
+// 
+//-----------------------------------------------------------------------------
+void CHL2_Player::RemoveCustomSuitDevice( int iDeviceID )
+{
+	if (iDeviceID < 0 || iDeviceID > 2)
+	{
+		Warning("AddCustomSuitDevice : \"%i\" is not a valid custom device slot\n", iDeviceID);
+		return;
+	}
+
+	SuitPower_RemoveDevice( SuitDeviceCustom[iDeviceID] );
+}
+
+//-----------------------------------------------------------------------------
+// 
+//-----------------------------------------------------------------------------
+bool CHL2_Player::IsCustomSuitDeviceActive( int iDeviceID )
+{
+	if (iDeviceID < 0 || iDeviceID > 2)
+	{
+		Warning("IsCustomSuitDeviceActive : \"%i\" is not a valid custom device slot\n", iDeviceID);
+		return false;
+	}
+
+	return SuitPower_IsDeviceActive( SuitDeviceCustom[iDeviceID] );
+}
+#endif
+
 //-----------------------------------------------------------------------------
 // Shuts down sounds
 //-----------------------------------------------------------------------------
@@ -4721,6 +5510,22 @@ void CHL2_Player::ModifyOrAppendPlayerCriteria( AI_CriteriaSet& set )
 		set.AppendCriteria( "gordon_precriminal", "0" );
 	}
 }
+
+#ifdef MAPBASE
+const char *CHL2_Player::GetOverrideStepSound( const char *pszBaseStepSoundName )
+{
+	int idx = FindContextByName("footsteps");
+	if (idx != -1)
+	{
+		const char *szSound = GetContextValue(idx);
+		if (szSound[0] != '\0')
+		{
+			return szSound;
+		}
+	}
+	return pszBaseStepSoundName;
+}
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -4857,6 +5662,9 @@ CLogicPlayerProxy *CHL2_Player::GetPlayerProxy( void )
 
 		pProxy->m_hPlayer = this;
 		m_hPlayerProxy = pProxy;
+#ifdef MAPBASE
+		pProxy->NotifyPlayerHasProxy();
+#endif
 	}
 
 	return pProxy;
@@ -4880,6 +5688,15 @@ BEGIN_DATADESC( CLogicPlayerProxy )
 	DEFINE_OUTPUT( m_PlayerHasNoAmmo, "PlayerHasNoAmmo" ),
 	DEFINE_OUTPUT( m_PlayerDied,	"PlayerDied" ),
 	DEFINE_OUTPUT( m_PlayerMissedAR2AltFire, "PlayerMissedAR2AltFire" ),
+#ifdef MAPBASE
+	DEFINE_OUTPUT( m_PlayerDamaged, "PlayerDamaged" ),
+	DEFINE_OUTPUT( m_OnSquadMemberKilled, "OnSquadMemberKilled" ),
+	DEFINE_OUTPUT( m_OnGetAmmo, "OnGetAmmo" ),
+	DEFINE_OUTPUT( m_RequestedPlayerArmor, "PlayerArmor" ),
+	DEFINE_OUTPUT( m_RequestedPlayerAuxPower, "PlayerAuxPower" ),
+	DEFINE_OUTPUT( m_RequestedPlayerFlashBattery, "PlayerFlashBattery" ),
+	DEFINE_OUTPUT( m_OnPlayerSpawn, "OnPlayerSpawn" ),
+#endif
 	DEFINE_INPUTFUNC( FIELD_VOID,	"RequestPlayerHealth",	InputRequestPlayerHealth ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"SetFlashlightSlowDrain",	InputSetFlashlightSlowDrain ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"SetFlashlightNormalDrain",	InputSetFlashlightNormalDrain ),
@@ -4892,6 +5709,17 @@ BEGIN_DATADESC( CLogicPlayerProxy )
 #ifdef PORTAL
 	DEFINE_INPUTFUNC( FIELD_VOID,	"SuppressCrosshair", InputSuppressCrosshair ),
 #endif // PORTAL
+#ifdef MAPBASE
+	DEFINE_INPUTFUNC( FIELD_VOID,	"RequestPlayerArmor",	InputRequestPlayerArmor ),
+	DEFINE_INPUTFUNC( FIELD_VOID,	"RequestPlayerAuxPower",		InputRequestPlayerAuxPower ),
+	DEFINE_INPUTFUNC( FIELD_VOID,	"RequestPlayerFlashBattery",		InputRequestPlayerFlashBattery ),
+	DEFINE_INPUTFUNC( FIELD_STRING,	"GetAmmoOnWeapon", InputGetAmmoOnWeapon ),
+	DEFINE_INPUTFUNC( FIELD_STRING,	"SetHandModel", InputSetHandModel ),
+	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetHandModelSkin", InputSetHandModelSkin ),
+	DEFINE_INPUTFUNC( FIELD_STRING,	"SetPlayerModel", InputSetPlayerModel ),
+	DEFINE_INPUTFUNC( FIELD_BOOLEAN, "SetPlayerDrawExternally", InputSetPlayerDrawExternally ),
+	DEFINE_INPUT( m_MaxArmor, FIELD_INTEGER, "SetMaxInputArmor" ),
+#endif
 	DEFINE_FIELD( m_hPlayer, FIELD_EHANDLE ),
 END_DATADESC()
 
@@ -4905,12 +5733,150 @@ void CLogicPlayerProxy::Activate( void )
 	}
 }
 
+#ifdef MAPBASE
+//-----------------------------------------------------------------------------
+// Purpose: Cache user entity field values until spawn is called.
+// Input  : szKeyName - Key to handle.
+//			szValue - Value for key.
+// Output : Returns true if the key was handled, false if not.
+//-----------------------------------------------------------------------------
+bool CLogicPlayerProxy::KeyValue( const char *szKeyName, const char *szValue )
+{
+	bool bPlayerKV = false;
+
+	if (Q_strnicmp(szKeyName, "HandsVM", 7) == 0)
+	{
+		if (m_hPlayer)
+		{
+			szKeyName += 7;
+			CBasePlayer *pPlayer = static_cast<CBasePlayer*>( m_hPlayer.Get() );
+			CBaseViewModel *vm = pPlayer->GetViewModel(1);
+			if (vm)
+			{
+				if (*szKeyName == NULL && PrecacheModel(szValue)) // HandsVM
+					vm->SetModel(szValue);
+				else if (FStrEq(szKeyName, "Skin")) // HandsVMSkin
+					vm->m_nSkin = atoi(szValue);
+			}
+			return true;
+		}
+	}
+	else if (FStrEq(szKeyName, "ResponseContext"))
+	{
+		bPlayerKV = true;
+		if (m_hPlayer)
+			return m_hPlayer->KeyValue(szKeyName, szValue);
+	}
+	else if (FStrEq(szKeyName, "HideSquadHUD"))
+	{
+		if (m_hPlayer)
+		{
+			if (szValue[0] != '0')
+				m_hPlayer->AddSpawnFlags(SF_PLAYER_HIDE_SQUAD_HUD);
+			else
+				m_hPlayer->RemoveSpawnFlags(SF_PLAYER_HIDE_SQUAD_HUD);
+			return true;
+		}
+	}
+	else if (FStrEq(szKeyName, "PlayerModel"))
+	{
+		if (m_hPlayer)
+		{
+			if (PrecacheModel( szValue ))
+			{
+				m_hPlayer->SetModel( szValue );
+			}
+			return true;
+		}
+	}
+	else
+	{
+		if (BaseClass::KeyValue( szKeyName, szValue ))
+			return true;
+
+		if (m_hPlayer)
+		{
+			DevMsg("logic_playerproxy: Passing unhandled keyvalue \"%s, %s\" to player\n", szKeyName, szValue);
+			return m_hPlayer->KeyValue(szKeyName, szValue);
+		}
+	}
+
+	// If we reach this point, player is not available to test unidentified/special KV
+	// Queue it up
+	DevMsg("logic_playerproxy: Queueing %s, %s\n", szKeyName, szValue);
+	m_QueuedKV.Insert(bPlayerKV ? UTIL_VarArgs("&&%s", szKeyName) : szKeyName, AllocPooledString(szValue));
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: calls the appropriate message mapped function in the entity according
+//			to the fired action.
+// Input  : char *szInputName - input destination
+//			*pActivator - entity which initiated this sequence of actions
+//			*pCaller - entity from which this event is sent
+// Output : Returns true on success, false on failure.
+//-----------------------------------------------------------------------------
+bool CLogicPlayerProxy::AcceptInput( const char *szInputName, CBaseEntity *pActivator, CBaseEntity *pCaller, variant_t Value, int outputID )
+{
+	bool base = BaseClass::AcceptInput( szInputName, pActivator, pCaller, Value, outputID );
+
+	if (!base)
+	{
+		if (m_hPlayer)
+		{
+			DevMsg("logic_playerproxy: Passing unhandled input \"%s\" to player\n", szInputName);
+			return m_hPlayer->AcceptInput( szInputName, pActivator, pCaller, Value, outputID );
+		}
+		else
+		{
+			DevMsg("logic_playerproxy: Player not found!\n");
+
+			g_EventQueue.AddEvent("!player", szInputName, Value, 0.01f, pActivator, pCaller);
+		}
+	}
+
+	return base;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Notifies logic_playerproxy when player is valid
+//-----------------------------------------------------------------------------
+void CLogicPlayerProxy::NotifyPlayerHasProxy()
+{
+	Assert( m_hPlayer != NULL );
+
+	// Handle any queued keyvalues
+	int iQueueCount = m_QueuedKV.Count();
+	for (int i = 0; i < iQueueCount; i++)
+	{
+		const char *name = m_QueuedKV.GetElementName(i);
+		const char *value = STRING(m_QueuedKV[i]);
+		DevMsg("logic_playerproxy: Handing over %s, %s from dict\n", name, value);
+
+		if (name[0] == '&' && name[1] == '&')
+		{
+			// We're supposed to send this to the player
+			m_hPlayer->KeyValue(name + 2, value);
+		}
+
+		KeyValue(name, value);
+	}
+
+	m_QueuedKV.RemoveAll();
+}
+#endif
+
 bool CLogicPlayerProxy::PassesDamageFilter( const CTakeDamageInfo &info )
 {
 	if (m_hDamageFilter)
 	{
 		CBaseFilter *pFilter = (CBaseFilter *)(m_hDamageFilter.Get());
+#ifdef MAPBASE
+		return pFilter->PassesDamageFilter(m_hPlayer.Get(), info);
+#else
 		return pFilter->PassesDamageFilter(info);
+#endif
 	}
 
 	return true;
@@ -4932,6 +5898,43 @@ void CLogicPlayerProxy::InputRequestPlayerHealth( inputdata_t &inputdata )
 
 	m_RequestedPlayerHealth.Set( m_hPlayer->GetHealth(), inputdata.pActivator, inputdata.pCaller );
 }
+
+#ifdef MAPBASE
+void CLogicPlayerProxy::InputRequestPlayerArmor( inputdata_t &inputdata )
+{
+	if ( m_hPlayer == NULL )
+		return;
+
+	m_RequestedPlayerArmor.Set( static_cast<CHL2_Player*>(m_hPlayer.Get())->ArmorValue(), inputdata.pActivator, inputdata.pCaller );
+}
+
+void CLogicPlayerProxy::InputRequestPlayerAuxPower( inputdata_t &inputdata )
+{
+	if ( m_hPlayer == NULL )
+		return;
+
+	m_RequestedPlayerAuxPower.Set( static_cast<CHL2_Player*>(m_hPlayer.Get())->SuitPower_GetCurrentPercentage(), inputdata.pActivator, inputdata.pCaller );
+}
+
+void CLogicPlayerProxy::InputRequestPlayerFlashBattery( inputdata_t &inputdata )
+{
+	if ( m_hPlayer == NULL )
+		return;
+
+	m_RequestedPlayerFlashBattery.Set( static_cast<CHL2_Player*>(m_hPlayer.Get())->GetFlashlightBattery(), inputdata.pActivator, inputdata.pCaller );
+}
+
+// If it's the EP2 flashlight, it returns the flashlight battery. If it's the legacy flashlight, it returns the aux power.
+// Note that this is on CHL2_Player, not CLogicPlayerProxy.
+float CHL2_Player::GetFlashlightBattery()
+{
+#ifdef HL2_EPISODIC
+	return Flashlight_UseLegacyVersion() ? SuitPower_GetCurrentPercentage() : m_HL2Local.m_flFlashBattery;
+#else
+	return SuitPower_GetCurrentPercentage();
+#endif
+}
+#endif
 
 void CLogicPlayerProxy::InputSetFlashlightSlowDrain( inputdata_t &inputdata )
 {
@@ -4978,6 +5981,99 @@ void CLogicPlayerProxy::InputRequestAmmoState( inputdata_t &inputdata )
 
 	m_PlayerHasNoAmmo.FireOutput( this, this, 0 );
 }
+
+#ifdef MAPBASE
+void CLogicPlayerProxy::InputGetAmmoOnWeapon( inputdata_t &inputdata )
+{
+	if( m_hPlayer == NULL )
+		return;
+
+	CHL2_Player *pPlayer = dynamic_cast<CHL2_Player*>(m_hPlayer.Get());
+
+	const char *szClass = inputdata.value.String();
+
+	// Support secondary cases
+	bool bAmmo2 = szClass[0] == '@';
+	if (bAmmo2)
+		szClass++;
+
+	bool bClipOnly = szClass[0] == '#';
+	if (bClipOnly)
+		szClass++;
+
+	if (szClass[0] != NULL)
+	{
+		// Find weapon that matches class
+		for ( int i = 0 ; i < pPlayer->WeaponCount(); ++i )
+		{
+			CBaseCombatWeapon* pCheck = pPlayer->GetWeapon( i );
+
+			if ( pCheck && FClassnameIs(pCheck, szClass) )
+			{
+				int ammo = 0;
+				if (!bAmmo2)
+				{
+					// Ammo 1
+					if (!bClipOnly)
+						ammo = pPlayer->GetAmmoCount(pCheck->GetPrimaryAmmoType());
+
+					if (pCheck->UsesClipsForAmmo1())
+						ammo += pCheck->m_iClip1;
+					else
+						ammo += pCheck->GetPrimaryAmmoCount();
+				}
+				else
+				{
+					// Ammo 2
+					if (!bClipOnly)
+						ammo = pPlayer->GetAmmoCount(pCheck->GetSecondaryAmmoType());
+
+					if (pCheck->UsesClipsForAmmo2())
+						ammo += pCheck->m_iClip2;
+					else
+						ammo += pCheck->GetSecondaryAmmoCount();
+				}
+
+				m_OnGetAmmo.Set( ammo, this, 0 );
+				return;
+			}
+		}
+	}
+	else
+	{
+		// Get current weapon ammo
+		if (CBaseCombatWeapon *pCheck = pPlayer->GetActiveWeapon())
+		{
+			int ammo = 0;
+			if (!bAmmo2)
+			{
+				// Ammo 1
+				if (!bClipOnly)
+					ammo = pPlayer->GetAmmoCount(pCheck->GetPrimaryAmmoType());
+
+				if (pCheck->UsesClipsForAmmo1())
+					ammo += pCheck->m_iClip1;
+				else
+					ammo += pCheck->GetPrimaryAmmoCount();
+			}
+			else
+			{
+				// Ammo 2
+				if (!bClipOnly)
+					ammo = pPlayer->GetAmmoCount(pCheck->GetSecondaryAmmoType());
+
+				if (pCheck->UsesClipsForAmmo2())
+					ammo += pCheck->m_iClip2;
+				else
+					ammo += pCheck->GetSecondaryAmmoCount();
+			}
+
+			m_OnGetAmmo.Set( ammo, this, 0 );
+			return;
+		}
+	}
+}
+#endif
 
 void CLogicPlayerProxy::InputLowerWeapon( inputdata_t &inputdata )
 {
@@ -5034,3 +6130,62 @@ void CLogicPlayerProxy::InputSuppressCrosshair( inputdata_t &inputdata )
 	pPlayer->SuppressCrosshair( true );
 }
 #endif // PORTAL
+
+#ifdef MAPBASE
+void CLogicPlayerProxy::InputSetHandModel( inputdata_t &inputdata )
+{
+	if (!m_hPlayer)
+		return;
+
+	string_t iszModel = inputdata.value.StringID();
+
+	if (iszModel != NULL_STRING)
+		PrecacheModel(STRING(iszModel));
+
+	CBasePlayer *pPlayer = static_cast<CBasePlayer*>( m_hPlayer.Get() );
+	CBaseViewModel *vm = pPlayer->GetViewModel(1);
+	if (vm)
+		vm->SetModel(STRING(iszModel));
+}
+
+void CLogicPlayerProxy::InputSetHandModelSkin( inputdata_t &inputdata )
+{
+	if (!m_hPlayer)
+		return;
+
+	CBasePlayer *pPlayer = static_cast<CBasePlayer*>( m_hPlayer.Get() );
+	CBaseViewModel *vm = pPlayer->GetViewModel(1);
+	if (vm)
+		vm->m_nSkin = inputdata.value.Int();
+}
+
+void CLogicPlayerProxy::InputSetPlayerModel( inputdata_t &inputdata )
+{
+	if (!m_hPlayer)
+		return;
+
+	string_t iszModel = inputdata.value.StringID();
+
+	if (iszModel != NULL_STRING)
+		PrecacheModel( STRING( iszModel ) );
+	else
+	{
+		// We're resetting the model. The original model should've been cached to our own model name.
+		iszModel = GetModelName();
+	}
+
+	// Cache the original model as our own model name.
+	SetModelName( m_hPlayer->GetModelName() );
+
+	m_hPlayer->SetModel( STRING(iszModel) );
+}
+
+void CLogicPlayerProxy::InputSetPlayerDrawExternally( inputdata_t &inputdata )
+{
+	if (!m_hPlayer)
+		return;
+
+	CBasePlayer *pPlayer = static_cast<CBasePlayer*>(m_hPlayer.Get());
+	pPlayer->m_bDrawPlayerModelExternally = inputdata.value.Bool();
+}
+#endif

@@ -1363,7 +1363,7 @@ void CBaseGameStats::SetCaptionsStatistic( bool bClosedCaptionsEnabled )
 
 void CBaseGameStats::SetSkillStatistic( int iSkillSetting )
 {
-	int skill = clamp( iSkillSetting, 0, 4 ) - 1;
+	int skill = clamp( iSkillSetting, 1, 3 ) - 1;
 
 	if( CBGSDriver.m_bInLevel )
 	{

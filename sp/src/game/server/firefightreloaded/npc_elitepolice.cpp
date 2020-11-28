@@ -119,7 +119,9 @@ bool CNPC_ElitePolice::CreateComponents()
 	if (!BaseClass::CreateComponents())
 		return false;
 
-	m_Sentences.Init(this, "NPC_Metropolice.SentenceParameters");
+#ifndef ELITE_METROPOLICE_USES_RESPONSE_SYSTEM
+	m_Sentences.Init( this, "NPC_Metropolice.SentenceParameters" );
+#endif
 	return true;
 }
 
@@ -133,7 +135,9 @@ void CNPC_ElitePolice::DeathSound(const CTakeDamageInfo &info)
 	if (IsOnFire())
 		return;
 
+#ifndef ELITE_METROPOLICE_USES_RESPONSE_SYSTEM
 	m_Sentences.Speak("METROPOLICE_DIE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS);
+#endif
 }
 
 
@@ -239,13 +243,35 @@ void CNPC_ElitePolice::AnnounceAssault(void)
 	// Make sure player can see me
 	if (FVisible(pBCC))
 	{
+#ifdef ELITE_METROPOLICE_USES_RESPONSE_SYSTEM
+		SpeakIfAllowed( TLK_COP_GO_ALERT );
+#else
 		m_Sentences.Speak("METROPOLICE_GO_ALERT");
+#endif
 	}
 }
 
 
 void CNPC_ElitePolice::AnnounceEnemyType(CBaseEntity *pEnemy)
 {
+#ifdef ELITE_METROPOLICE_USES_RESPONSE_SYSTEM
+	// First contact, and I'm the squad leader.
+	bool bEnemyInVehicle = false;
+	switch ( pEnemy->Classify() )
+	{
+	case CLASS_PLAYER:
+		{
+			CBasePlayer *pPlayer = assert_cast<CBasePlayer*>( pEnemy );
+			if ( pPlayer && pPlayer->IsInAVehicle() )
+			{
+				bEnemyInVehicle = true;
+			}
+		}
+		break;
+	}
+
+	SpeakIfAllowed( TLK_COP_ENEMY, UTIL_VarArgs("enemy_in_vehicle:%d", bEnemyInVehicle), SENTENCE_PRIORITY_HIGH );
+#else
 	const char *pSentenceName = "METROPOLICE_MONST";
 	switch (pEnemy->Classify())
 	{
@@ -279,10 +305,16 @@ void CNPC_ElitePolice::AnnounceEnemyType(CBaseEntity *pEnemy)
 	}
 
 	m_Sentences.Speak(pSentenceName, SENTENCE_PRIORITY_HIGH);
+#endif
 }
 
 void CNPC_ElitePolice::AnnounceEnemyKill(CBaseEntity *pEnemy)
 {
+#ifdef ELITE_METROPOLICE_USES_RESPONSE_SYSTEM
+	AI_CriteriaSet set;
+	ModifyOrAppendEnemyCriteria(set, pEnemy);
+	SpeakIfAllowed( TLK_COP_KILLENEMY, set, SENTENCE_PRIORITY_HIGH );
+#else
 	if (!pEnemy)
 		return;
 
@@ -320,6 +352,7 @@ void CNPC_ElitePolice::AnnounceEnemyKill(CBaseEntity *pEnemy)
 	}
 
 	m_Sentences.Speak(pSentenceName, SENTENCE_PRIORITY_HIGH);
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -328,14 +361,17 @@ void CNPC_ElitePolice::AnnounceEnemyKill(CBaseEntity *pEnemy)
 void CNPC_ElitePolice::NotifyDeadFriend(CBaseEntity* pFriend)
 {
 	BaseClass::NotifyDeadFriend(pFriend);
-
+#ifdef ELITE_METROPOLICE_USES_RESPONSE_SYSTEM
+	SpeakIfAllowed(TLK_COP_MANDOWN, SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL);
+#else
 	m_Sentences.Speak("METROPOLICE_MAN_DOWN", SENTENCE_PRIORITY_MEDIUM);
+#endif
 }
 
 //=========================================================
 // PainSound
 //=========================================================
-void CNPC_ElitePolice::PainSound(void)
+void CNPC_ElitePolice::PainSound(const CTakeDamageInfo& info)
 {
 	if (gpGlobals->curtime < m_flNextPainSoundTime)
 		return;
@@ -344,6 +380,12 @@ void CNPC_ElitePolice::PainSound(void)
 	if (IsOnFire())
 		return;
 
+#ifdef ELITE_METROPOLICE_USES_RESPONSE_SYSTEM
+	AI_CriteriaSet set;
+	ModifyOrAppendDamageCriteria(set, info);
+	SpeakIfAllowed(TLK_COP_PAIN, set, SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS);
+	m_flNextPainSoundTime = gpGlobals->curtime + 1;
+#else
 	float healthRatio = (float)GetHealth() / (float)GetMaxHealth();
 	if (healthRatio > 0.0f)
 	{
@@ -363,6 +405,7 @@ void CNPC_ElitePolice::PainSound(void)
 		m_Sentences.Speak(pSentenceName, SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS);
 		m_flNextPainSoundTime = gpGlobals->curtime + 1;
 	}
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -376,6 +419,12 @@ void CNPC_ElitePolice::LostEnemySound(void)
 	if (gpGlobals->curtime <= m_flNextLostSoundTime)
 		return;
 
+#ifdef ELITE_METROPOLICE_USES_RESPONSE_SYSTEM
+	if (SpeakIfAllowed(TLK_COP_LOSTENEMY))
+	{
+		m_flNextLostSoundTime = gpGlobals->curtime + random->RandomFloat(5.0,15.0);
+	}
+#else
 	const char *pSentence;
 	if (!(CBaseEntity*)GetEnemy() || gpGlobals->curtime - GetEnemyLastTimeSeen() > 10)
 	{
@@ -390,6 +439,7 @@ void CNPC_ElitePolice::LostEnemySound(void)
 	{
 		m_flNextLostSoundTime = gpGlobals->curtime + random->RandomFloat(5.0, 15.0);
 	}
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -400,7 +450,11 @@ void CNPC_ElitePolice::LostEnemySound(void)
 //-----------------------------------------------------------------------------
 void CNPC_ElitePolice::FoundEnemySound(void)
 {
-	m_Sentences.Speak("METROPOLICE_REFIND_ENEMY", SENTENCE_PRIORITY_HIGH);
+#ifdef ELITE_METROPOLICE_USES_RESPONSE_SYSTEM
+	SpeakIfAllowed( TLK_COP_REFINDENEMY, SENTENCE_PRIORITY_HIGH );
+#else
+	m_Sentences.Speak( "METROPOLICE_REFIND_ENEMY", SENTENCE_PRIORITY_HIGH );
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -408,7 +462,11 @@ void CNPC_ElitePolice::FoundEnemySound(void)
 //-----------------------------------------------------------------------------
 void CNPC_ElitePolice::IdleSound(void)
 {
+#ifdef ELITE_METROPOLICE_USES_RESPONSE_SYSTEM
+	SpeakIfAllowed(TLK_COP_IDLE);
+#else
 	m_Sentences.Speak("METROPOLICE_IDLE", SENTENCE_PRIORITY_HIGH);
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -423,7 +481,11 @@ void CNPC_ElitePolice::AlertSound(void)
 {
 	if (gpGlobals->curtime > m_flNextAlertSoundTime)
 	{
+#ifdef ELITE_METROPOLICE_USES_RESPONSE_SYSTEM
+		SpeakIfAllowed( TLK_COP_GO_ALERT );
+#else
 		m_Sentences.Speak("METROPOLICE_GO_ALERT", SENTENCE_PRIORITY_HIGH);
+#endif
 		m_flNextAlertSoundTime = gpGlobals->curtime + 10.0f;
 	}
 }

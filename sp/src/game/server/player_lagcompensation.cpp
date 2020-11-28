@@ -292,29 +292,29 @@ void CLagCompensationManager::FrameUpdatePostEntityThink()
 	else // setting this true here ensures that the update happens at the start of the next frame 
 		m_bNeedsAIUpdate = true;
 
-	if ((gpGlobals->maxClients <= 1) || !sv_unlag.GetBool())
+	if ( (gpGlobals->maxClients <= 1) || !sv_unlag.GetBool() )
 	{
 		ClearHistory();
 		return;
 	}
-
+	
 	m_flTeleportDistanceSqr = sv_lagcompensation_teleport_dist.GetFloat() * sv_lagcompensation_teleport_dist.GetFloat();
 
-	VPROF_BUDGET("FrameUpdatePostEntityThink", "CLagCompensationManager");
+	VPROF_BUDGET( "FrameUpdatePostEntityThink", "CLagCompensationManager" );
 
 	// remove all records before that time:
 	int flDeadtime = gpGlobals->curtime - sv_maxunlag.GetFloat();
 
 	// Iterate all active players
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
-		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 
-		CUtlFixedLinkedList< LagRecord > *track = &m_PlayerTrack[i - 1];
+		CUtlFixedLinkedList< LagRecord > *track = &m_PlayerTrack[i-1];
 
-		if (!pPlayer)
+		if ( !pPlayer )
 		{
-			if (track->Count() > 0)
+			if ( track->Count() > 0 )
 			{
 				track->RemoveAll();
 			}
@@ -322,53 +322,53 @@ void CLagCompensationManager::FrameUpdatePostEntityThink()
 			continue;
 		}
 
-		Assert(track->Count() < 1000); // insanity check
+		Assert( track->Count() < 1000 ); // insanity check
 
 		// remove tail records that are too old
 		int tailIndex = track->Tail();
-		while (track->IsValidIndex(tailIndex))
+		while ( track->IsValidIndex( tailIndex ) )
 		{
-			LagRecord &tail = track->Element(tailIndex);
+			LagRecord &tail = track->Element( tailIndex );
 
 			// if tail is within limits, stop
-			if (tail.m_flSimulationTime >= flDeadtime)
+			if ( tail.m_flSimulationTime >= flDeadtime )
 				break;
-
+			
 			// remove tail, get new tail
-			track->Remove(tailIndex);
+			track->Remove( tailIndex );
 			tailIndex = track->Tail();
 		}
 
 		// check if head has same simulation time
-		if (track->Count() > 0)
+		if ( track->Count() > 0 )
 		{
-			LagRecord &head = track->Element(track->Head());
+			LagRecord &head = track->Element( track->Head() );
 
 			// check if player changed simulation time since last time updated
-			if (head.m_flSimulationTime >= pPlayer->GetSimulationTime())
+			if ( head.m_flSimulationTime >= pPlayer->GetSimulationTime() )
 				continue; // don't add new entry for same or older time
 		}
 
 		// add new record to player track
-		LagRecord &record = track->Element(track->AddToHead());
+		LagRecord &record = track->Element( track->AddToHead() );
 
 		record.m_fFlags = 0;
-		if (pPlayer->IsAlive())
+		if ( pPlayer->IsAlive() )
 		{
 			record.m_fFlags |= LC_ALIVE;
 		}
 
-		record.m_flSimulationTime = pPlayer->GetSimulationTime();
-		record.m_vecAngles = pPlayer->GetLocalAngles();
-		record.m_vecOrigin = pPlayer->GetLocalOrigin();
-		record.m_vecMinsPreScaled = pPlayer->CollisionProp()->OBBMinsPreScaled();
-		record.m_vecMaxsPreScaled = pPlayer->CollisionProp()->OBBMaxsPreScaled();
+		record.m_flSimulationTime	= pPlayer->GetSimulationTime();
+		record.m_vecAngles			= pPlayer->GetLocalAngles();
+		record.m_vecOrigin			= pPlayer->GetLocalOrigin();
+		record.m_vecMinsPreScaled	= pPlayer->CollisionProp()->OBBMinsPreScaled();
+		record.m_vecMaxsPreScaled	= pPlayer->CollisionProp()->OBBMaxsPreScaled();
 
 		int layerCount = pPlayer->GetNumAnimOverlays();
-		for (int layerIndex = 0; layerIndex < layerCount; ++layerIndex)
+		for( int layerIndex = 0; layerIndex < layerCount; ++layerIndex )
 		{
 			CAnimationLayer *currentLayer = pPlayer->GetAnimOverlay(layerIndex);
-			if (currentLayer)
+			if( currentLayer )
 			{
 				record.m_layerRecords[layerIndex].m_cycle = currentLayer->m_flCycle;
 				record.m_layerRecords[layerIndex].m_order = currentLayer->m_nOrder;

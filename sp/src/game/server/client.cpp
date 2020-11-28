@@ -46,6 +46,10 @@
 #include "weapon_physcannon.h"
 #endif
 
+#ifdef MAPBASE
+#include "fmtstr.h"
+#endif
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -334,6 +338,16 @@ void ClientPrecache( void )
 	CBaseEntity::PrecacheScriptSound( "Bounce.ShotgunShell" );
 	CBaseEntity::PrecacheScriptSound( "Bounce.Shell" );
 	CBaseEntity::PrecacheScriptSound( "Bounce.Concrete" );
+
+#ifdef MAPBASE
+	// Game Instructor sounds
+	CBaseEntity::PrecacheScriptSound( "Instructor.LessonStart" );
+	CBaseEntity::PrecacheScriptSound( "Instructor.ImportantLessonStart" );
+
+	// TODO: Does sv_pure cover this? This is from the ASW SDK to prevent people from making simple scripted wall hacks
+	//engine->ForceExactFile( "scripts/instructor_lessons.txt" );
+	//engine->ForceExactFile( "scripts/mod_lessons.txt" );
+#endif
 
 	ClientGamePrecache();
 }
@@ -928,10 +942,10 @@ CON_COMMAND_F_COMPLETION(give, "Give item to player. Syntax: <item name>", FCVAR
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-CON_COMMAND_F(fov, "Change players FOV", FCVAR_CHEAT)
+CON_COMMAND( fov, "Change players FOV" )
 {
 	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() );
-	if ( pPlayer )
+	if ( pPlayer && sv_cheats->GetBool() )
 	{
 		if ( args.ArgC() > 1 )
 		{
@@ -1114,7 +1128,7 @@ void CC_Player_Use( const CCommand &args )
 	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() ); 
 	if ( pPlayer)
 	{
-		pPlayer->SelectItem(args[1]);
+		pPlayer->SelectItem((char *)args[1]);
 	}
 }
 static ConCommand use("use", CC_Player_Use, "Use a particular weapon\t\nArguments: <weapon_name>");
@@ -1168,6 +1182,8 @@ void EnableNoClip( CBasePlayer *pPlayer )
 
 void CC_Player_NoClip( void )
 {
+	if ( !sv_cheats->GetBool() )
+		return;
 
 	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() ); 
 	if ( !pPlayer )
@@ -1226,6 +1242,8 @@ static ConCommand noclip("noclip", CC_Player_NoClip, "Toggle. Player becomes non
 //------------------------------------------------------------------------------
 void CC_God_f (void)
 {
+	if ( !sv_cheats->GetBool() )
+		return;
 
 	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() ); 
 	if ( !pPlayer )
@@ -1257,6 +1275,8 @@ static ConCommand god("god", CC_God_f, "Toggle. Player becomes invulnerable.", F
 //------------------------------------------------------------------------------
 CON_COMMAND_F( setpos, "Move player to specified origin (must have sv_cheats).", FCVAR_CHEAT )
 {
+	if ( !sv_cheats->GetBool() )
+		return;
 
 	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() ); 
 	if ( !pPlayer )
@@ -1289,6 +1309,8 @@ CON_COMMAND_F( setpos, "Move player to specified origin (must have sv_cheats).",
 //------------------------------------------------------------------------------
 void CC_setang_f (const CCommand &args)
 {
+	if ( !sv_cheats->GetBool() )
+		return;
 
 	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() ); 
 	if ( !pPlayer )
@@ -1328,6 +1350,8 @@ static float GetHexFloat( const char *pStr )
 //------------------------------------------------------------------------------
 CON_COMMAND_F( setpos_exact, "Move player to an exact specified origin (must have sv_cheats).", FCVAR_CHEAT )
 {
+	if ( !sv_cheats->GetBool() )
+		return;
 
 	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() ); 
 	if ( !pPlayer )
@@ -1360,6 +1384,8 @@ CON_COMMAND_F( setpos_exact, "Move player to an exact specified origin (must hav
 
 CON_COMMAND_F( setang_exact, "Snap player eyes and orientation to specified pitch yaw <roll:optional> (must have sv_cheats).", FCVAR_CHEAT )
 {
+	if ( !sv_cheats->GetBool() )
+		return;
 
 	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() ); 
 	if ( !pPlayer )
@@ -1392,6 +1418,8 @@ CON_COMMAND_F( setang_exact, "Snap player eyes and orientation to specified pitc
 //------------------------------------------------------------------------------
 void CC_Notarget_f (void)
 {
+	if ( !sv_cheats->GetBool() )
+		return;
 
 	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() ); 
 	if ( !pPlayer )
@@ -1414,6 +1442,8 @@ ConCommand notarget("notarget", CC_Notarget_f, "Toggle. Player becomes hidden to
 //------------------------------------------------------------------------------
 void CC_HurtMe_f(const CCommand &args)
 {
+	if ( !sv_cheats->GetBool() )
+		return;
 
 	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() ); 
 	if ( !pPlayer )
@@ -1602,6 +1632,32 @@ void ClientCommand( CBasePlayer *pPlayer, const CCommand &args )
 	{
 		if ( !g_pGameRules->ClientCommand( pPlayer, args ) )
 		{
+#ifdef MAPBASE_VSCRIPT
+			// Console command hook for VScript
+			if ( pPlayer->m_ScriptScope.IsInitialized() )
+			{
+				ScriptVariant_t functionReturn;
+				g_pScriptVM->SetValue( "command", ScriptVariant_t( pCmd ) );
+
+				ScriptVariant_t varTable;
+				g_pScriptVM->CreateTable( varTable );
+				HSCRIPT hTable = varTable.m_hScript;
+				for ( int i = 0; i < args.ArgC(); i++ )
+				{
+					g_pScriptVM->SetValue( hTable, CNumStr( i ), ScriptVariant_t( args[i] ) );
+				}
+				g_pScriptVM->SetValue( "args", varTable );
+
+				pPlayer->CallScriptFunction( "ClientCommand", &functionReturn );
+
+				g_pScriptVM->ClearValue( "command" );
+				g_pScriptVM->ClearValue( "args" );
+				g_pScriptVM->ReleaseValue( varTable );
+
+				if (functionReturn.m_bool)
+					return;
+			}
+#endif
 			if ( Q_strlen( pCmd ) > 128 )
 			{
 				ClientPrint( pPlayer, HUD_PRINTCONSOLE, "Console command too long.\n" );

@@ -190,6 +190,17 @@ Activity ACT_ANTLIONGUARD_CHARGE_STOP;
 Activity ACT_ANTLIONGUARD_CHARGE_HIT;
 Activity ACT_ANTLIONGUARD_CHARGE_ANTICIPATION;
 
+#ifdef MAPBASE
+// Unused activities
+Activity ACT_ANTLIONGUARD_COVER_ENTER;
+Activity ACT_ANTLIONGUARD_COVER_LOOP;
+Activity ACT_ANTLIONGUARD_COVER_EXIT;
+Activity ACT_ANTLIONGUARD_COVER_ADVANCE;
+Activity ACT_ANTLIONGUARD_COVER_FLINCH;
+Activity ACT_ANTLIONGUARD_SNEAK;
+Activity ACT_ANTLIONGUARD_RUN_FULL;
+#endif
+
 // Anim events
 int AE_ANTLIONGUARD_CHARGE_HIT;
 int AE_ANTLIONGUARD_SHOVE_PHYSOBJECT;
@@ -1580,7 +1591,11 @@ public:
 			if ( pVictimBCC )
 			{
 				// Can only damage other NPCs that we hate
+#ifdef MAPBASE
+				if ( m_pAttacker->IRelationType( pEntity ) <= D_FR )
+#else
 				if ( m_pAttacker->IRelationType( pEntity ) == D_HT )
+#endif
 				{
 					pEntity->TakeDamage( info );
 					return true;
@@ -2157,7 +2172,7 @@ int CNPC_AntlionGuard::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	}
 
 	// Hack to make antlion guard harder in HARD
-	if (g_pGameRules->IsSkillLevel(SKILL_HARD) && !(info.GetDamageType() & DMG_CRUSH))
+	if ( g_pGameRules->IsSkillLevel(SKILL_HARD) && !(info.GetDamageType() & DMG_CRUSH) )
 	{
 		dInfo.SetDamage( dInfo.GetDamage() * 0.75 );
 	}
@@ -2627,8 +2642,15 @@ public:
 			if ( !pEntity->IsNPC() && pEntity->GetMoveType() == MOVETYPE_VPHYSICS )
 			{
 				IPhysicsObject *pPhysics = pEntity->VPhysicsGetObject();
+#ifdef MAPBASE
+				// A MOVETYPE_VPHYSICS object without a VPhysics object is an odd edge case, but it's evidently possible
+				// since my game crashed after an antlion guard tried to see me through an EP2 jalopy.
+				// Perhaps that's a sign of an underlying issue?
+				if ( pPhysics && pPhysics->IsMoveable() && pPhysics->GetMass() < m_minMass )
+#else
 				Assert(pPhysics);
 				if ( pPhysics->IsMoveable() && pPhysics->GetMass() < m_minMass )
+#endif
 					return false;
 			}
 
@@ -2744,7 +2766,11 @@ bool CNPC_AntlionGuard::HandleChargeImpact( Vector vecImpact, CBaseEntity *pEnti
 	}
 
 	// Hit anything we don't like
+#ifdef MAPBASE
+	if ( IRelationType( pEntity ) <= D_FR && ( GetNextAttack() < gpGlobals->curtime ) )
+#else
 	if ( IRelationType( pEntity ) == D_HT && ( GetNextAttack() < gpGlobals->curtime ) )
+#endif
 	{
 		EmitSound( "NPC_AntlionGuard.Shove" );
 
@@ -3245,6 +3271,9 @@ void CNPC_AntlionGuard::SummonAntlions( void )
 
 		// Make the antlion fire my input when he dies
 		pAntlion->KeyValue( "OnDeath", UTIL_VarArgs("%s,SummonedAntlionDied,,0,-1", STRING(GetEntityName())) );
+#ifdef MAPBASE
+		pAntlion->KeyValue( "OnKilled", UTIL_VarArgs("%s,SummonedAntlionDied,,0,-1", STRING(GetEntityName())) );
+#endif
 
 		// Start the antlion burrowed, and tell him to come up
 		pAntlion->m_bStartBurrowed = true;
@@ -3384,6 +3413,11 @@ void CNPC_AntlionGuard::InputClearChargeTarget( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 Activity CNPC_AntlionGuard::NPC_TranslateActivity( Activity baseAct )
 {
+#ifdef MAPBASE
+	// Needed for VScript NPC_TranslateActiviy hook
+	baseAct = BaseClass::NPC_TranslateActivity( baseAct );
+#endif
+
 	//See which run to use
 	if ( ( baseAct == ACT_RUN ) && IsCurSchedule( SCHED_ANTLIONGUARD_CHARGE ) )
 		return (Activity) ACT_ANTLIONGUARD_CHARGE_RUN;
@@ -4697,6 +4731,15 @@ AI_BEGIN_CUSTOM_NPC( npc_antlionguard, CNPC_AntlionGuard )
 	DECLARE_ACTIVITY( ACT_ANTLIONGUARD_PHYSHIT_FL )
 	DECLARE_ACTIVITY( ACT_ANTLIONGUARD_PHYSHIT_RR )	
 	DECLARE_ACTIVITY( ACT_ANTLIONGUARD_PHYSHIT_RL )		
+#ifdef MAPBASE
+	DECLARE_ACTIVITY( ACT_ANTLIONGUARD_COVER_ENTER )
+	DECLARE_ACTIVITY( ACT_ANTLIONGUARD_COVER_LOOP )
+	DECLARE_ACTIVITY( ACT_ANTLIONGUARD_COVER_EXIT )
+	DECLARE_ACTIVITY( ACT_ANTLIONGUARD_COVER_ADVANCE )
+	DECLARE_ACTIVITY( ACT_ANTLIONGUARD_COVER_FLINCH )
+	DECLARE_ACTIVITY( ACT_ANTLIONGUARD_SNEAK )
+	DECLARE_ACTIVITY( ACT_ANTLIONGUARD_RUN_FULL )
+#endif
 	
 	//Adrian: events go here
 	DECLARE_ANIMEVENT( AE_ANTLIONGUARD_CHARGE_HIT )

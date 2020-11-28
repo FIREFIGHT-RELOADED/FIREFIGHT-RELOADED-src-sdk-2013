@@ -150,6 +150,7 @@ CNPCMakerFirefight::CNPCMakerFirefight(void)
 //-----------------------------------------------------------------------------
 void CNPCMakerFirefight::Spawn(void)
 {
+
 	SetSolid( SOLID_NONE );
 	m_nLiveChildren		= 0;
 	m_nLiveRareNPCs		= 0;

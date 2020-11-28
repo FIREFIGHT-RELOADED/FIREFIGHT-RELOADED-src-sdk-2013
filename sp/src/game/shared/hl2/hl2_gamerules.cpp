@@ -43,9 +43,216 @@ BEGIN_NETWORK_TABLE_NOBASE( CHalfLife2, DT_HL2GameRules )
 	#endif
 END_NETWORK_TABLE()
 
+#if MAPBASE && GAME_DLL
+extern bool g_bUseLegacyFlashlight;
+//extern bool g_bCacheLegacyFlashlightStatus;
+
+BEGIN_DATADESC( CHalfLife2Proxy )
+
+	// These get the gamerules values on save and write to them on restore
+	DEFINE_FIELD( m_save_DefaultCitizenType, FIELD_INTEGER ),
+	DEFINE_FIELD( m_save_LegacyFlashlight, FIELD_CHARACTER ),
+	DEFINE_FIELD( m_save_PlayerSquadAutosummonDisabled, FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_save_StunstickPickupBehavior, FIELD_INTEGER ),
+	DEFINE_FIELD( m_save_AllowSPRespawn, FIELD_BOOLEAN ),
+
+	// Inputs
+	DEFINE_INPUTFUNC( FIELD_VOID, "EpisodicOn", InputEpisodicOn ),
+	DEFINE_INPUTFUNC( FIELD_VOID, "EpisodicOff", InputEpisodicOff ),
+
+	// These are FIELD_STRING because they call KeyValue() directly
+	DEFINE_INPUTFUNC( FIELD_STRING, "SetFriendlyFire", InputSetFriendlyFire ),
+	DEFINE_INPUTFUNC( FIELD_STRING, "DefaultCitizenType", InputSetDefaultCitizenType ),
+	DEFINE_INPUTFUNC( FIELD_STRING, "SetLegacyFlashlight", InputSetLegacyFlashlight ),
+	DEFINE_INPUTFUNC( FIELD_STRING, "SetPlayerSquadAutosummon", InputSetPlayerSquadAutosummon ),
+	DEFINE_INPUTFUNC( FIELD_STRING, "SetStunstickPickupBehavior", InputSetStunstickPickupBehavior ),
+	DEFINE_INPUTFUNC( FIELD_STRING, "SetAllowSPRespawn", InputSetAllowSPRespawn ),
+
+END_DATADESC()
+#endif
 
 LINK_ENTITY_TO_CLASS( hl2_gamerules, CHalfLife2Proxy );
 IMPLEMENT_NETWORKCLASS_ALIASED( HalfLife2Proxy, DT_HalfLife2Proxy )
+
+#if defined(MAPBASE) && defined(GAME_DLL)
+void CHalfLife2Proxy::InputEpisodicOn( inputdata_t &inputdata ) { KeyValue("SetEpisodic", "1"); }
+void CHalfLife2Proxy::InputEpisodicOff( inputdata_t &inputdata ) { KeyValue("SetEpisodic", "0"); }
+void CHalfLife2Proxy::InputSetFriendlyFire( inputdata_t &inputdata ) { KeyValue("GlobalFriendlyFire", inputdata.value.String()); }
+void CHalfLife2Proxy::InputSetDefaultCitizenType( inputdata_t &inputdata ) { KeyValue("DefaultCitizenType", inputdata.value.String()); }
+void CHalfLife2Proxy::InputSetLegacyFlashlight( inputdata_t &inputdata ) { KeyValue("SetLegacyFlashlight", inputdata.value.String()); }
+void CHalfLife2Proxy::InputSetPlayerSquadAutosummon( inputdata_t &inputdata ) { KeyValue("SetPlayerSquadAutosummon", inputdata.value.String()); }
+void CHalfLife2Proxy::InputSetStunstickPickupBehavior( inputdata_t &inputdata ) { KeyValue("SetStunstickPickupBehavior", inputdata.value.String()); }
+void CHalfLife2Proxy::InputSetAllowSPRespawn( inputdata_t &inputdata ) { KeyValue( "SetAllowSPRespawn", inputdata.value.String() ); }
+
+//-----------------------------------------------------------------------------
+// Purpose: Cache user entity field values until spawn is called.
+// Input  : szKeyName - Key to handle.
+//			szValue - Value for key.
+// Output : Returns true if the key was handled, false if not.
+//-----------------------------------------------------------------------------
+bool CHalfLife2Proxy::KeyValue( const char *szKeyName, const char *szValue )
+{
+	if (FStrEq(szKeyName, "DefaultCitizenType"))
+	{
+		HL2GameRules()->SetDefaultCitizenType(atoi(szValue));
+	}
+	else if (FStrEq(szKeyName, "GlobalFriendlyFire"))
+	{
+		HL2GameRules()->SetGlobalFriendlyFire(TO_THREESTATE(atoi(szValue)));
+	}
+	else if (FStrEq(szKeyName, "SetEpisodic") && !FStrEq(szValue, "2"))
+	{
+		hl2_episodic.SetValue(!FStrEq(szValue, "0"));
+	}
+	else if (FStrEq(szKeyName, "SetLegacyFlashlight"))
+	{
+		// Turn off flashlights first
+		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		{
+			CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
+
+			if ( pPlayer )
+			{
+				if (pPlayer->FlashlightIsOn())
+					pPlayer->FlashlightTurnOff();
+			}
+		}
+
+		g_bUseLegacyFlashlight = !FStrEq(szValue, "0");
+
+		// We have overridden it, don't test directory
+		//g_bCacheLegacyFlashlightStatus = false;
+
+		// Tell our save/load we've modified it
+		// 1 = modified, 2 = legacy enabled
+		m_save_LegacyFlashlight |= 1;
+		if (g_bUseLegacyFlashlight)
+			m_save_LegacyFlashlight |= 2;
+	}
+	else if (FStrEq(szKeyName, "SetPlayerSquadAutosummon"))
+	{
+		HL2GameRules()->SetAutosummonDisabled(FStrEq(szValue, "0"));
+	}
+	else if (FStrEq(szKeyName, "SetStunstickPickupBehavior"))
+	{
+		HL2GameRules()->SetStunstickPickupBehavior(atoi(szValue));
+	}
+	else if (FStrEq(szKeyName, "SetAllowSPRespawn"))
+	{
+		HL2GameRules()->SetAllowSPRespawn(!FStrEq(szValue, "0"));
+	}
+	else
+	{
+		return BaseClass::KeyValue( szKeyName, szValue );
+	}
+
+	return true;
+}
+
+bool CHalfLife2Proxy::GetKeyValue( const char *szKeyName, char *szValue, int iMaxLen )
+{
+	if (FStrEq(szKeyName, "DefaultCitizenType"))
+	{
+		Q_snprintf( szValue, iMaxLen, "%i", HL2GameRules()->GetDefaultCitizenType() );
+	}
+	else if (FStrEq(szKeyName, "GlobalFriendlyFire"))
+	{
+		Q_snprintf( szValue, iMaxLen, "%i", HL2GameRules()->GlobalFriendlyFire() );
+	}
+	else if (FStrEq(szKeyName, "SetEpisodic") && !FStrEq(szValue, "2"))
+	{
+		Q_snprintf( szValue, iMaxLen, "%s", hl2_episodic.GetString() );
+	}
+	else if (FStrEq(szKeyName, "SetLegacyFlashlight"))
+	{
+		Q_snprintf( szValue, iMaxLen, "%d", g_bUseLegacyFlashlight );
+	}
+	else if (FStrEq(szKeyName, "SetPlayerSquadAutosummon"))
+	{
+		Q_snprintf( szValue, iMaxLen, "%d", HL2GameRules()->AutosummonDisabled() );
+	}
+	else if (FStrEq(szKeyName, "SetStunstickPickupBehavior"))
+	{
+		Q_snprintf( szValue, iMaxLen, "%i", HL2GameRules()->GetStunstickPickupBehavior() );
+	}
+	else if (FStrEq(szKeyName, "SetAllowSPRespawn"))
+	{
+		Q_snprintf( szValue, iMaxLen, "%d", HL2GameRules()->AllowSPRespawn() );
+	}
+	else
+	{
+		return BaseClass::GetKeyValue( szKeyName, szValue, iMaxLen );
+	}
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Saves the current object out to disk, by iterating through the objects
+//			data description hierarchy
+// Input  : &save - save buffer which the class data is written to
+// Output : int	- 0 if the save failed, 1 on success
+//-----------------------------------------------------------------------------
+int CHalfLife2Proxy::Save( ISave &save )
+{
+	m_save_DefaultCitizenType = HL2GameRules()->GetDefaultCitizenType();
+	m_save_PlayerSquadAutosummonDisabled = HL2GameRules()->AutosummonDisabled();
+
+	// As a static variable, this is actually kept across save games, but lost when the game exits.
+	// NOTE: Now set in KeyValue() directly
+	//m_save_LegacyFlashlight = (g_bUseLegacyFlashlight);
+
+	m_save_StunstickPickupBehavior = HL2GameRules()->GetStunstickPickupBehavior();
+
+	m_save_AllowSPRespawn = HL2GameRules()->AllowSPRespawn();
+
+	return BaseClass::Save(save);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Restores the current object from disk, by iterating through the objects
+//			data description hierarchy
+// Input  : &restore - restore buffer which the class data is read from
+// Output : int	- 0 if the restore failed, 1 on success
+//-----------------------------------------------------------------------------
+int CHalfLife2Proxy::Restore( IRestore &restore )
+{
+	int base = BaseClass::Restore(restore);
+
+	HL2GameRules()->SetDefaultCitizenType(m_save_DefaultCitizenType);
+	HL2GameRules()->SetAutosummonDisabled(m_save_PlayerSquadAutosummonDisabled);
+
+	// Are we modding the legacy flashlight?
+	if (m_save_LegacyFlashlight & 1)
+	{
+		g_bUseLegacyFlashlight = (m_save_LegacyFlashlight & 2) != 0;
+
+		// If we've got the desired legacy flashlight state saved, don't bother caching.
+		//g_bCacheLegacyFlashlightStatus = false;
+	}
+
+	HL2GameRules()->SetStunstickPickupBehavior(m_save_StunstickPickupBehavior);
+
+	HL2GameRules()->SetAllowSPRespawn(m_save_AllowSPRespawn);
+
+	return base;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CHalfLife2Proxy::UpdateOnRemove()
+{
+	// Were we modding the legacy flashlight?
+	if (m_save_LegacyFlashlight & 1)
+	{
+		// Restore the default state.
+		//g_bCacheLegacyFlashlightStatus = true;
+	}
+
+	BaseClass::UpdateOnRemove();
+}
+#endif
 
 
 #ifdef CLIENT_DLL
@@ -88,7 +295,7 @@ ConVar	sk_dmg_inflict_scale5( "sk_dmg_inflict_scale5", "0.75", FCVAR_REPLICATED 
 // Damage scale for damage taken by the player on each skill level.
 ConVar	sk_dmg_take_scale1( "sk_dmg_take_scale1", "0.50", FCVAR_REPLICATED );
 ConVar	sk_dmg_take_scale2( "sk_dmg_take_scale2", "1.00", FCVAR_REPLICATED );
-ConVar	sk_dmg_take_scale3("sk_dmg_take_scale3", "1.50", FCVAR_REPLICATED);
+ConVar	sk_dmg_take_scale3( "sk_dmg_take_scale3", "1.50", FCVAR_REPLICATED );
 ConVar	sk_dmg_take_scale4("sk_dmg_take_scale4", "2.00", FCVAR_REPLICATED);
 ConVar	sk_dmg_take_scale5("sk_dmg_take_scale5", "2.50", FCVAR_REPLICATED);
 
@@ -106,8 +313,6 @@ ConVar	firefightrumble_enemyattack("firefightrumble_enemyattack", "1", FCVAR_REP
 ConVar	sk_autoaim_scale1( "sk_autoaim_scale1", "1.0", FCVAR_REPLICATED );
 ConVar	sk_autoaim_scale2( "sk_autoaim_scale2", "1.0", FCVAR_REPLICATED );
 //ConVar	sk_autoaim_scale3( "sk_autoaim_scale3", "0.0", FCVAR_REPLICATED ); NOT CURRENTLY OFFERED ON SKILL 3
-//ConVar	sk_autoaim_scale4( "sk_autoaim_scale4", "0.0", FCVAR_REPLICATED ); NOT CURRENTLY OFFERED ON SKILL 4
-//ConVar	sk_autoaim_scale5( "sk_autoaim_scale5", "0.0", FCVAR_REPLICATED ); NOT CURRENTLY OFFERED ON SKILL 5
 
 // Quantity scale for ammo received by the player.
 ConVar	sk_ammo_qty_scale1 ( "sk_ammo_qty_scale1", "1.20", FCVAR_REPLICATED );
@@ -145,6 +350,10 @@ ConVar	sk_plr_dmg_buckshot		( "sk_plr_dmg_buckshot","0", FCVAR_REPLICATED);
 ConVar	sk_npc_dmg_buckshot		( "sk_npc_dmg_buckshot","0", FCVAR_REPLICATED);
 ConVar	sk_max_buckshot			( "sk_max_buckshot","0", FCVAR_REPLICATED);
 ConVar	sk_plr_num_shotgun_pellets( "sk_plr_num_shotgun_pellets","7", FCVAR_REPLICATED);
+#ifdef MAPBASE
+ConVar	sk_plr_num_shotgun_pellets_double( "sk_plr_num_shotgun_pellets_double","12", FCVAR_REPLICATED);
+ConVar	sk_npc_num_shotgun_pellets( "sk_npc_num_shotgun_pellets","8", FCVAR_REPLICATED);
+#endif
 
 ConVar	sk_plr_dmg_rpg_round	( "sk_plr_dmg_rpg_round","0", FCVAR_REPLICATED);
 ConVar	sk_npc_dmg_rpg_round	( "sk_npc_dmg_rpg_round","0", FCVAR_REPLICATED);
@@ -277,7 +486,11 @@ bool CHalfLife2::Damage_IsTimeBased( int iDmgType )
 	// Damage types that are time-based.
 #ifdef HL2_EPISODIC
 	// This makes me think EP2 should have its own rules, but they are #ifdef all over in here.
+#ifdef MAPBASE
+	return ( ( iDmgType & ( DMG_PARALYZE | DMG_NERVEGAS | DMG_POISON | DMG_RADIATION | DMG_DROWNRECOVER | DMG_ACID | DMG_SLOWBURN ) ) != 0 );
+#else
 	return ( ( iDmgType & ( DMG_PARALYZE | DMG_NERVEGAS | DMG_POISON | DMG_RADIATION | DMG_DROWNRECOVER | DMG_SLOWBURN ) ) != 0 );
+#endif
 #else
 	return BaseClass::Damage_IsTimeBased( iDmgType );
 #endif
@@ -343,6 +556,11 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 		m_flLastHealthDropTime = 0.0f;
 		m_flLastGrenadeDropTime = 0.0f;
 
+#ifdef MAPBASE
+		m_DefaultCitizenType = 0;
+		m_bPlayerSquadAutosummonDisabled = false;
+		m_bAllowSPRespawn = true;
+#endif
 		if (IsMultiplayer())
 		{
 			if (engine->IsDedicatedServer())
@@ -550,32 +768,32 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 		}
 
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_ANTLION, CLASS_PLAYER, D_HT, 0);
-		CBaseCombatCharacter::SetDefaultRelationship(CLASS_BARNACLE, CLASS_PLAYER, D_HT, 0);
-		CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE, CLASS_PLAYER, D_HT, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_BARNACLE,			CLASS_PLAYER,			D_HT, 0);			
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE,			CLASS_PLAYER,			D_HT, 0);			
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_BULLSQUID, CLASS_PLAYER, D_HT, 0);
-		CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_GUNSHIP, CLASS_PLAYER, D_HT, 0);
-		CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_HUNTER, CLASS_PLAYER, D_HT, 0);
-		CBaseCombatCharacter::SetDefaultRelationship(CLASS_HEADCRAB, CLASS_PLAYER, D_HT, 0);
-		CBaseCombatCharacter::SetDefaultRelationship(CLASS_HOUNDEYE, CLASS_PLAYER, D_HT, 0);
-		CBaseCombatCharacter::SetDefaultRelationship(CLASS_MANHACK, CLASS_PLAYER, D_HT, 0);
-		CBaseCombatCharacter::SetDefaultRelationship(CLASS_METROPOLICE, CLASS_PLAYER, D_HT, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_GUNSHIP,		CLASS_PLAYER,			D_HT, 0);			
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_HUNTER,		CLASS_PLAYER,			D_HT, 0);			
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_HEADCRAB,			CLASS_PLAYER,			D_HT, 0);			
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_HOUNDEYE,			CLASS_PLAYER,			D_HT, 0);			
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_MANHACK,			CLASS_PLAYER,			D_HT, 0);			
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_METROPOLICE,		CLASS_PLAYER,			D_HT, 0);			
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_ALIEN_MILITARY, CLASS_PLAYER, D_HT, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_SCANNER, CLASS_PLAYER, D_HT, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_CREMATOR, CLASS_PLAYER, D_NU, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_ZOMBIE, CLASS_PLAYER, D_HT, 0);
-		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_ANTLION, D_HT, 0);
-		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_BARNACLE, D_HT, 0);
-		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_COMBINE, D_HT, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER,			CLASS_ANTLION,			D_HT, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER,			CLASS_BARNACLE,			D_HT, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER,			CLASS_COMBINE,			D_HT, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_BULLSQUID, D_HT, 0);
-		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_COMBINE_GUNSHIP, D_HT, 0);
-		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_COMBINE_HUNTER, D_HT, 0);
-		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_HEADCRAB, D_HT, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER,			CLASS_COMBINE_GUNSHIP,	D_HT, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER,			CLASS_COMBINE_HUNTER,	D_HT, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER,			CLASS_HEADCRAB,			D_HT, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_HOUNDEYE, D_HT, 0);
-		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_MANHACK, D_HT, 0);
-		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_METROPOLICE, D_HT, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER,			CLASS_MANHACK,			D_HT, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER,			CLASS_METROPOLICE,		D_HT, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_ALIEN_MILITARY, D_HT, 0);
-		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_SCANNER, D_HT, 0);
-		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_ZOMBIE, D_HT, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER,			CLASS_SCANNER,			D_HT, 0);		
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER,			CLASS_ZOMBIE,			D_HT, 0);
 
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_ANTLION, CLASS_PLAYER_NPC, D_HT, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_BARNACLE, CLASS_PLAYER_NPC, D_HT, 0);
@@ -634,10 +852,10 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_METROPOLICE, CLASS_MANHACK, D_LI, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_METROPOLICE, CLASS_SCANNER, D_LI, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_METROPOLICE, CLASS_COMBINE_CREMATOR, D_LI, 0);
-		CBaseCombatCharacter::SetDefaultRelationship(CLASS_SCANNER, CLASS_COMBINE, D_LI, 0);
-		CBaseCombatCharacter::SetDefaultRelationship(CLASS_SCANNER, CLASS_COMBINE_GUNSHIP, D_LI, 0);
-		CBaseCombatCharacter::SetDefaultRelationship(CLASS_SCANNER, CLASS_COMBINE_HUNTER, D_LI, 0);
-		CBaseCombatCharacter::SetDefaultRelationship(CLASS_SCANNER, CLASS_MANHACK, D_LI, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_SCANNER,			CLASS_COMBINE,			D_LI, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_SCANNER,			CLASS_COMBINE_GUNSHIP,	D_LI, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_SCANNER,			CLASS_COMBINE_HUNTER,	D_LI, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_SCANNER,			CLASS_MANHACK,			D_LI, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_SCANNER, CLASS_COMBINE_CREMATOR, D_LI, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_CREMATOR, CLASS_COMBINE, D_LI, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_CREMATOR, CLASS_COMBINE_GUNSHIP, D_LI, 0);
@@ -692,6 +910,10 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 			case CLASS_NONE:			return "CLASS_NONE";
 			case CLASS_PLAYER:			return "CLASS_PLAYER";
 			case CLASS_ALIEN_MILITARY:	return "CLASS_ALIEN_MILITARY";
+#ifdef MAPBASE
+			case CLASS_PLAYER_ALLY:		return "CLASS_PLAYER_ALLY";
+			case CLASS_PLAYER_ALLY_VITAL:	return "CLASS_PLAYER_ALLY_VITAL";
+#endif
 			case CLASS_ANTLION:			return "CLASS_ANTLION";
 			case CLASS_BARNACLE:		return "CLASS_BARNACLE";
 			case CLASS_BULLSEYE:		return "CLASS_BULLSEYE";
@@ -716,6 +938,9 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 			case CLASS_MISSILE:			return "CLASS_MISSILE";
 			case CLASS_FLARE:			return "CLASS_FLARE";
 			case CLASS_EARTH_FAUNA:		return "CLASS_EARTH_FAUNA";
+#ifdef MAPBASE
+			case CLASS_HACKED_ROLLERMINE:	return "CLASS_HACKED_ROLLERMINE";
+#endif
 
 			default:					return "MISSING CLASS in ClassifyText()";
 		}
@@ -1186,21 +1411,29 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 				if (!pPlayer)//AI Patch Removal
 					continue;
 
-				CBaseEntity *pWeapon = pPlayer->HasNamedPlayerItem("weapon_physcannon");
-
-				if( pWeapon )
+#ifdef MAPBASE
+				// Friendly fire needs to be handled here.
+				if ( pPlayer && !pVictim->MyNPCPointer()->FriendlyFireEnabled() )
+#else
+				if( pPlayer )
+#endif
 				{
-					CBaseCombatWeapon *pCannon = assert_cast <CBaseCombatWeapon*>(pWeapon);
+					CBaseEntity *pWeapon = pPlayer->HasNamedPlayerItem("weapon_physcannon");
 
-					if( pCannon )
+					if( pWeapon )
 					{
-						if( PhysCannonAccountableForObject(pCannon, info.GetInflictor() ) )
+						CBaseCombatWeapon *pCannon = assert_cast <CBaseCombatWeapon*>(pWeapon);
+
+						if( pCannon )
 						{
-							// Antlions can always be squashed!
-							if ( pVictim->Classify() == CLASS_ANTLION )
+							if( PhysCannonAccountableForObject(pCannon, info.GetInflictor() ) )
+							{
+								// Antlions can always be squashed!
+								if ( pVictim->Classify() == CLASS_ANTLION )
 								return true;
 
-  							return false;
+  								return false;
+							}
 						}
 					}
 				}
@@ -1675,6 +1908,96 @@ bool CHalfLife2::ShouldBurningPropsEmitLight()
 }
 
 
+#ifdef MAPBASE
+//-----------------------------------------------------------------------------
+// Gets the default citizen type.
+//-----------------------------------------------------------------------------
+int CHalfLife2::GetDefaultCitizenType()
+{
+	return m_DefaultCitizenType;
+}
+
+//-----------------------------------------------------------------------------
+// Sets the default citizen type.
+//-----------------------------------------------------------------------------
+void CHalfLife2::SetDefaultCitizenType(int val)
+{
+	m_DefaultCitizenType = val;
+}
+
+//-----------------------------------------------------------------------------
+// Gets our global friendly fire override.
+//-----------------------------------------------------------------------------
+ThreeState_t CHalfLife2::GlobalFriendlyFire()
+{
+	return GlobalEntity_IsInTable(FRIENDLY_FIRE_GLOBALNAME) ? TO_THREESTATE(GlobalEntity_GetState(FRIENDLY_FIRE_GLOBALNAME)) : TRS_NONE;
+}
+
+//-----------------------------------------------------------------------------
+// Sets our global friendly fire override.
+//-----------------------------------------------------------------------------
+void CHalfLife2::SetGlobalFriendlyFire(ThreeState_t val)
+{
+	GlobalEntity_Add(MAKE_STRING(FRIENDLY_FIRE_GLOBALNAME), gpGlobals->mapname, (GLOBALESTATE)val);
+}
+
+//-----------------------------------------------------------------------------
+// Gets our autosummon setting.
+//-----------------------------------------------------------------------------
+bool CHalfLife2::AutosummonDisabled()
+{
+	return m_bPlayerSquadAutosummonDisabled;
+}
+
+//-----------------------------------------------------------------------------
+// Sets our autosummon setting.
+//-----------------------------------------------------------------------------
+void CHalfLife2::SetAutosummonDisabled(bool toggle)
+{
+	m_bPlayerSquadAutosummonDisabled = toggle;
+}
+
+//-----------------------------------------------------------------------------
+// Gets our stunstick pickup setting.
+//-----------------------------------------------------------------------------
+int CHalfLife2::GetStunstickPickupBehavior()
+{
+	return m_StunstickPickupBehavior;
+}
+
+//-----------------------------------------------------------------------------
+// Sets our stunstick pickup setting.
+//-----------------------------------------------------------------------------
+void CHalfLife2::SetStunstickPickupBehavior(int val)
+{
+	m_StunstickPickupBehavior = val;
+}
+
+//-----------------------------------------------------------------------------
+// Gets our SP respawn setting.
+//-----------------------------------------------------------------------------
+bool CHalfLife2::AllowSPRespawn()
+{
+	return m_bAllowSPRespawn;
+}
+
+//-----------------------------------------------------------------------------
+// Sets our SP respawn setting.
+//-----------------------------------------------------------------------------
+void CHalfLife2::SetAllowSPRespawn( bool toggle )
+{
+	m_bAllowSPRespawn = toggle;
+}
+
+//BEGIN_SIMPLE_DATADESC( CHalfLife2 )
+//
+//	DEFINE_FIELD( m_DefaultCitizenType, FIELD_INTEGER ),
+//	DEFINE_FIELD( m_bPlayerSquadAutosummonDisabled, FIELD_BOOLEAN ),
+//
+//END_DATADESC()
+#endif
+
+
 #endif//CLIENT_DLL
 
 // ------------------------------------------------------------------------------------ //
@@ -1775,7 +2098,6 @@ CAmmoDef *GetAmmoDef()
 		def.AddAmmoType("Sniper",			DMG_BULLET | DMG_SNIPER, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_sniper", "sk_npc_dmg_sniper", "sk_max_sniper", BULLET_IMPULSE(800, 5000), 0);
 		def.AddAmmoType("Deagle",			DMG_BULLET | DMG_SNIPER, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_deagle", "sk_npc_dmg_deagle", "sk_max_deagle", BULLET_IMPULSE(800, 5000), 0);
 		def.AddAmmoType("M249",				DMG_BULLET | DMG_SNIPER, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_m249para", "sk_npc_dmg_m249para", "sk_max_m249para", BULLET_IMPULSE(200, 1225), 0);
-		def.AddAmmoType("slam",				DMG_BURN | DMG_ALWAYSGIB, TRACER_NONE, "sk_plr_dmg_slam", "sk_npc_dmg_slam", "sk_max_slam", 0, 0);
 		def.AddAmmoType("OICW",				DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_oicw", "sk_npc_dmg_oicw", "sk_max_oicw", BULLET_IMPULSE(200, 1225), 0);
 		def.AddAmmoType("OICW_Grenade",		DMG_BURN | DMG_ALWAYSGIB, TRACER_NONE, "sk_plr_dmg_oicw_grenade", "sk_npc_dmg_oicw_grenade", "sk_max_oicw_grenade", 0, 0);
 		def.AddAmmoType("FlareRound",		DMG_BURN, TRACER_LINE, "sk_plr_dmg_flare_round", "sk_npc_dmg_flare_round", "sk_max_flare_round", BULLET_IMPULSE(1500, 600), 0);
@@ -1818,9 +2140,20 @@ CAmmoDef *GetAmmoDef()
 		//STOP HERE.
 #ifdef HL2_EPISODIC
 		def.AddAmmoType("Hopwire",			DMG_BLAST,					TRACER_NONE,			"sk_plr_dmg_grenade",		"sk_npc_dmg_grenade",		"sk_max_hopwire",		0, 0);
+#ifdef MAPBASE
+		// 
+		// Always gibbing would make it look better on antlions, etc.
+		// Hopefully this is very good and isn't bad.
+		// 
+		def.AddAmmoType("CombineHeavyCannon",	DMG_BULLET | DMG_ALWAYSGIB,		TRACER_LINE,			40,	40, NULL, 10 * 750 * 12, AMMO_FORCE_DROP_IF_CARRIED ); // hit like a 10 kg weight at 750 ft/s
+#else
 		def.AddAmmoType("CombineHeavyCannon",	DMG_BULLET,				TRACER_LINE,			40,	40, NULL, 10 * 750 * 12, AMMO_FORCE_DROP_IF_CARRIED ); // hit like a 10 kg weight at 750 ft/s
+#endif
 		def.AddAmmoType("ammo_proto1",			DMG_BULLET,				TRACER_LINE,			0, 0, 10, 0, 0 );
 #endif // HL2_EPISODIC
+#ifdef MAPBASE
+		def.AddAmmoType("slam",				DMG_BURN,					TRACER_NONE,			0,			0,			5,			0,							0 );
+#endif
 	}
 
 	return &def;

@@ -63,6 +63,7 @@ protected:
 		SetPaintBackgroundEnabled( false );
 	}
 
+	virtual void CreateDefaultPanels( void ) { /* don't create any panels yet*/ };
 	virtual IViewPortPanel *CreatePanelByName(const char *szPanelName);
 };
 

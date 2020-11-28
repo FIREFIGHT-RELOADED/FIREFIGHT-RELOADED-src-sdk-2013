@@ -23,6 +23,7 @@ extern ConVar cl_backspeed;
 extern ConVar cl_sidespeed;
 
 extern ConVar zoom_sensitivity_ratio;
+extern ConVar default_fov;
 extern ConVar sensitivity;
 
 ConVar cl_npc_speedmod_intime( "cl_npc_speedmod_intime", "0.25", FCVAR_CLIENTDLL | FCVAR_ARCHIVE );
@@ -39,6 +40,11 @@ BEGIN_PREDICTION_DATA( C_BaseHLPlayer )
 	DEFINE_PRED_TYPEDESCRIPTION( m_HL2Local, C_HL2PlayerLocalData ),
 	DEFINE_PRED_FIELD( m_fIsSprinting, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
 END_PREDICTION_DATA()
+
+// link to the correct class.
+#if !defined ( HL2MP ) && !defined ( PORTAL )
+LINK_ENTITY_TO_CLASS( player, C_BaseHLPlayer );
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: Drops player's primary weapon
@@ -68,6 +74,11 @@ C_BaseHLPlayer::C_BaseHLPlayer()
 	m_flZoomRate		= 0.0f;
 	m_flZoomStartTime	= 0.0f;
 	m_flSpeedMod		= cl_forwardspeed.GetFloat();
+
+#ifdef MAPBASE
+	ConVarRef scissor("r_flashlightscissor");
+	scissor.SetValue("0");
+#endif
 }
 
 //-----------------------------------------------------------------------------

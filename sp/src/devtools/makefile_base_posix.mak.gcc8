@@ -35,7 +35,7 @@ else
 endif
 
 # CPPFLAGS == "c/c++ *preprocessor* flags" - not "cee-plus-plus flags"
-ARCH_FLAGS = -fabi-compat-version=2 -fabi-version=2 -fpic -fno-plt
+ARCH_FLAGS = -fabi-compat-version=2 -fabi-version=2 -fpic -fno-plt  -fcf-protection=none -fno-stack-protector -fno-stack-clash-protection
 BUILDING_MULTI_ARCH = 0
 CPPFLAGS = $(DEFINES) $(addprefix -I, $(abspath $(INCLUDEDIRS) ))
 CFLAGS = $(ARCH_FLAGS) $(CPPFLAGS) $(WARN_FLAGS) -fvisibility=$(SymbolVisibility) $(OptimizerLevel) -pipe $(GCC_ExtraCompilerFlags) -Usprintf -Ustrncpy -UPROTECTED_THINGS_ENABLE
@@ -47,7 +47,7 @@ else
 	CXXFLAGS = $(CFLAGS) -std=gnu++0x -Wno-narrowing -fpermissive
 endif
 DEFINES += -DVPROF_LEVEL=1 -DGNUC -DNO_HOOK_MALLOC -DNO_MALLOC_OVERRIDE -D_GLIBCXX_USE_CXX11_ABI=0
-LDFLAGS = $(CFLAGS) $(GCC_ExtraLinkerFlags) $(OptimizerLevel)
+LDFLAGS = $(CFLAGS) $(GCC_ExtraLinkerFlags) $(OptimizerLevel) -fuse-ld=gold
 GENDEP_CXXFLAGS = -MD -MP -MF $(@:.o=.P) 
 MAP_FLAGS =
 Srv_GAMEOUTPUTFILE = 
@@ -73,10 +73,8 @@ ifeq ($(OS),Linux)
 		# dedicated server flags
 		ifeq ($(TARGET_PLATFORM),linux64)
 			VALVE_BINDIR = /valve/bin64/
-			MARCH_TARGET = nocona
 		else
 			VALVE_BINDIR = /valve/bin/
-			MARCH_TARGET = pentium4
 		endif
 		STRIP_FLAGS =
 	else
@@ -92,11 +90,13 @@ ifeq ($(OS),Linux)
 			endif
 		endif
 		GCC_VER =
-		MARCH_TARGET = pentium4
 		# On dedicated servers, some plugins depend on global variable symbols in addition to functions.
 		# So symbols like _Z16ClearMultiDamagev should show up when you do "nm server_srv.so" in TF2.
 		STRIP_FLAGS = -x
 	endif
+	# nocona = MMX, SSE, SSE2, SSE3
+	MARCH_TARGET = nocona
+	MTUNE_TARGET = generic
 
 	ifeq ($(CXX),clang++)
 		# Clang does not support -mfpmath=sse because it uses whatever
@@ -132,14 +132,12 @@ ifeq ($(OS),Linux)
 	LINK ?= $(CC)
 
 	ifeq ($(TARGET_PLATFORM),linux64)
-		# nocona = pentium4 + 64bit + MMX, SSE, SSE2, SSE3 - no SSSE3 (that's three s's - added in core2)
-		ARCH_FLAGS += -march=$(MARCH_TARGET) -mtune=core2
+		ARCH_FLAGS += -march=$(MARCH_TARGET) -mtune=$(MTUNE_TARGET)
 		LD_SO = ld-linux-x86_64.so.2
 		LIBSTDCXX := $(shell $(CXX) -print-file-name=libstdc++.a)
 		LIBSTDCXXPIC := $(shell $(CXX) -print-file-name=libstdc++-pic.a)
 	else
-		# pentium4 = MMX, SSE, SSE2 - no SSE3 (added in prescott) # -msse3 -mfpmath=sse
-		ARCH_FLAGS += -m32 -march=$(MARCH_TARGET) -mtune=core2 $(SSE_GEN_FLAGS)
+		ARCH_FLAGS += -m32 -march=$(MARCH_TARGET) -mtune=$(MTUNE_TARGET)
 		LD_SO = ld-linux.so.2
 		LIBSTDCXX := $(shell $(CXX) $(ARCH_FLAGS) -print-file-name=libstdc++.so)
 		LIBSTDCXXPIC := $(shell $(CXX) $(ARCH_FLAGS) -print-file-name=libstdc++.so)
@@ -176,7 +174,7 @@ ifeq ($(OS),Linux)
 	LIB_END_EXE = -Wl,--end-group -lm -ldl $(LIBSTDCXX) -lpthread 
 
 	LIB_START_SHLIB = $(PATHWRAP) -static-libgcc -Wl,--start-group
-	LIB_END_SHLIB = -Wl,--end-group -lm -ldl $(LIBSTDCXXPIC) -lpthread -l:$(LD_SO) -Wl,--version-script=$(SRCROOT)/devtools/version_script.linux.txt
+	LIB_END_SHLIB = -Wl,--end-group $(SRCROOT)/devtools/gcc9+support.o -lm -ldl $(LIBSTDCXXPIC) -lpthread -l:$(LD_SO) -Wl,--version-script=$(SRCROOT)/devtools/version_script.linux.txt
 
 endif
 

@@ -97,7 +97,7 @@ void CClassMap::Add( const char *mapname, const char *classname, int size, DISPA
 		if ( !Q_stricmp( lookup->GetMapName(), mapname ) )
 		{
 			m_ClassDict.RemoveAt( i );
-		}
+	}
 	}
 
 
@@ -147,7 +147,7 @@ const char *CClassMap::Lookup( const char *classname )
 
 		return lookup->GetMapName();
 	}
-
+	
 	return NULL;
 }
 

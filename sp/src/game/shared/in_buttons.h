@@ -11,6 +11,11 @@
 #pragma once
 #endif
 
+#ifdef MAPBASE
+// That one article on the VDC.
+//#define VGUI_SCREEN_FIX 1
+#endif
+
 #define IN_ATTACK		(1 << 0)
 #define IN_JUMP			(1 << 1)
 #define IN_DUCK			(1 << 2)
@@ -40,6 +45,10 @@
 #define	IN_IRONSIGHT	(1 << 26)
 #define	IN_KICK			(1 << 27)
 #define	IN_BULLETTIME	(1 << 28)
-#define	IN_GRAPPLE	(1 << 29)
+#define	IN_GRAPPLE		(1 << 29)
+
+#ifdef VGUI_SCREEN_FIX
+#define IN_VALIDVGUIINPUT		    (1 << 23) //bitflag for vgui fix
+#endif
 
 #endif // IN_BUTTONS_H

@@ -19,12 +19,46 @@
 	#define CHalfLife2Proxy C_HalfLife2Proxy
 #endif
 
+#if MAPBASE && GAME_DLL
+#define FRIENDLY_FIRE_GLOBALNAME "friendly_fire_override"
+#endif
+
 
 class CHalfLife2Proxy : public CGameRulesProxy
 {
 public:
 	DECLARE_CLASS( CHalfLife2Proxy, CGameRulesProxy );
 	DECLARE_NETWORKCLASS();
+
+#if defined(MAPBASE) && defined(GAME_DLL)
+	bool KeyValue( const char *szKeyName, const char *szValue );
+	bool GetKeyValue( const char *szKeyName, char *szValue, int iMaxLen );
+
+	virtual int	Save( ISave &save );
+	virtual int	Restore( IRestore &restore );
+	virtual void UpdateOnRemove();
+
+	// Inputs
+	void InputEpisodicOn( inputdata_t &inputdata );
+	void InputEpisodicOff( inputdata_t &inputdata );
+	void InputSetFriendlyFire( inputdata_t &inputdata );
+	void InputSetDefaultCitizenType( inputdata_t &inputdata );
+	void InputSetLegacyFlashlight( inputdata_t &inputdata );
+	void InputSetPlayerSquadAutosummon( inputdata_t &inputdata );
+	void InputSetStunstickPickupBehavior( inputdata_t &inputdata );
+	void InputSetAllowSPRespawn( inputdata_t &inputdata );
+
+	// Gamerules classes don't seem to support datadescs, so the hl2_gamerules entity takes the current values
+	// from the actual gamerules and saves them in the entity itself, where they're saved via the entity's own datadesc.
+	// When the save is loaded, the entity sets the main gamerules values according to what was saved.
+	int m_save_DefaultCitizenType;
+	char m_save_LegacyFlashlight;
+	bool m_save_PlayerSquadAutosummonDisabled;
+	int m_save_StunstickPickupBehavior;
+	bool m_save_AllowSPRespawn;
+
+	DECLARE_DATADESC();
+#endif
 };
 
 
@@ -47,6 +81,10 @@ public:
 	virtual float			GetAmmoQuantityScale( int iAmmoIndex );
 	virtual void			LevelInitPreEntity();
 	const char				*GetChatFormat(bool bTeamOnly, CBasePlayer *pPlayer);
+#endif
+
+#ifdef MAPBASE_VSCRIPT
+	virtual void			RegisterScriptFunctions( void );
 #endif
 
 private:
@@ -89,11 +127,11 @@ public:
 	bool	MegaPhyscannonActive( void ) { return m_bMegaPhysgun;	}
 	void	SetMegaPhyscannonActive(void);
 	void	SetMegaPhyscannonInActive(void);
-
+	
 	int	GetNumberOfPlayers(void);
 	
 	virtual bool IsAlyxInDarknessMode();
-
+	
 	//mp shit
 	bool IsIntermission(void);
 	void PlayerKilled(CBasePlayer *pVictim, const CTakeDamageInfo &info);
@@ -110,6 +148,23 @@ public:
 	void SkipNextMapInCycle();
 	virtual void FrameUpdatePostEntityThink();
 
+#ifdef MAPBASE
+	int				GetDefaultCitizenType();
+	void			SetDefaultCitizenType(int val);
+
+	ThreeState_t	GlobalFriendlyFire();
+	void			SetGlobalFriendlyFire(ThreeState_t val);
+
+	bool			AutosummonDisabled();
+	void			SetAutosummonDisabled(bool toggle);
+
+	int				GetStunstickPickupBehavior();
+	void			SetStunstickPickupBehavior(int val);
+
+	virtual bool	AllowSPRespawn();
+	void			SetAllowSPRespawn( bool toggle );
+#endif
+
 private:
 
 	float	m_flLastHealthDropTime;
@@ -122,6 +177,13 @@ private:
 	float m_tmNextPeriodicThink;
 
 	float m_flTimeLastMapChangeOrPlayerWasConnected;
+
+#ifdef MAPBASE
+	int		m_DefaultCitizenType;
+	bool	m_bPlayerSquadAutosummonDisabled;
+	int		m_StunstickPickupBehavior;
+	bool	m_bAllowSPRespawn;
+#endif
 
 	void AdjustPlayerDamageTaken( CTakeDamageInfo *pInfo );
 	void AdjustPlayerDamageTakenCombineAce(CTakeDamageInfo *pInfo);

@@ -37,7 +37,6 @@
 #include "hud_vote.h"
 #include "ienginevgui.h"
 #include "sourcevr/isourcevirtualreality.h"
-#include "clienteffectprecachesystem.h"
 #if defined( _X360 )
 #include "xbox/xbox_console.h"
 #endif
@@ -66,6 +65,10 @@ extern ConVar replay_rendersetting_renderglow;
 #include "econ_item_description.h"
 #endif
 
+#ifdef GLOWS_ENABLE
+#include "clienteffectprecachesystem.h"
+#endif
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -78,6 +81,9 @@ class CHudVote;
 static vgui::HContext s_hVGuiContext = DEFAULT_VGUI_CONTEXT;
 
 ConVar cl_drawhud( "cl_drawhud", "1", FCVAR_ARCHIVE, "Enable the rendering of the hud" );
+#ifdef DEMO_AUTORECORD
+ConVar cl_autorecord("cl_autorecord", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Start recording demos automatically with an incremental name based on this value.");
+#endif
 ConVar hud_takesshots( "hud_takesshots", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Auto-save a scoreboard screenshot at the end of a map." );
 ConVar hud_freezecamhide( "hud_freezecamhide", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Hide the HUD during freeze-cam" );
 ConVar cl_show_num_particle_systems( "cl_show_num_particle_systems", "0", FCVAR_CLIENTDLL, "Display the number of active particle systems." );
@@ -87,10 +93,10 @@ extern ConVar voice_modenable;
 
 extern bool IsInCommentaryMode( void );
 
-#ifdef CLIENT_DLL
-CLIENTEFFECT_REGISTER_BEGIN(PrecachePostProcessingEffectsGlow)
-CLIENTEFFECT_MATERIAL("dev/glow_color")
-CLIENTEFFECT_MATERIAL("dev/halo_add_to_screen")
+#ifdef GLOWS_ENABLE
+CLIENTEFFECT_REGISTER_BEGIN( PrecachePostProcessingEffectsGlow )
+CLIENTEFFECT_MATERIAL( "dev/glow_color" )
+CLIENTEFFECT_MATERIAL( "dev/halo_add_to_screen" )
 //allow us to be seen regardless of dxlevel
 CLIENTEFFECT_REGISTER_END()
 #endif
@@ -153,9 +159,8 @@ CON_COMMAND( hud_reloadscheme, "Reloads hud layout and animation scripts." )
 	mode->ReloadScheme();
 }
 
-//#ifdef _DEBUG
-//CON_COMMAND_F( crash, "Crash the client. Optional parameter -- type of crash:\n 0: read from NULL\n 1: write to NULL\n 2: DmCrashDump() (xbox360 only)", FCVAR_CHEAT )
-CON_COMMAND(crash, "Crash the client. Optional parameter -- type of crash:\n 0: read from NULL\n 1: write to NULL\n 2: DmCrashDump() (xbox360 only)")
+#ifdef _DEBUG
+CON_COMMAND_F( crash, "Crash the client. Optional parameter -- type of crash:\n 0: read from NULL\n 1: write to NULL\n 2: DmCrashDump() (xbox360 only)", FCVAR_CHEAT )
 {
 	int crashtype = 0;
 	int dummy;
@@ -182,7 +187,7 @@ CON_COMMAND(crash, "Crash the client. Optional parameter -- type of crash:\n 0: 
 			break;
 	}
 }
-//#endif // _DEBUG
+#endif // _DEBUG
 
 static void __MsgFunc_Rumble( bf_read &msg )
 {
@@ -771,6 +776,10 @@ int ClientModeShared::HudElementKeyInput( int down, ButtonCode_t keynum, const c
 //-----------------------------------------------------------------------------
 bool ClientModeShared::DoPostScreenSpaceEffects( const CViewSetup *pSetup )
 {
+#ifdef GLOWS_ENABLE
+	g_GlowObjectManager.RenderGlowEffects( pSetup, 0 );
+#endif
+
 #if defined( REPLAY_ENABLED )
 	if ( engine->IsPlayingDemo() )
 	{
@@ -778,11 +787,6 @@ bool ClientModeShared::DoPostScreenSpaceEffects( const CViewSetup *pSetup )
 			return false;
 	}
 #endif 
-
-#ifdef CLIENT_DLL
-	g_GlowObjectManager.RenderGlowEffects( pSetup, 0 );
-#endif
-
 	return true;
 }
 
@@ -845,7 +849,53 @@ void ClientModeShared::LevelInit( const char *newmap )
 	// Reset any player explosion/shock effects
 	CLocalPlayerFilter filter;
 	enginesound->SetPlayerDSP( filter, 0, true );
+
+#ifdef DEMO_AUTORECORD
+	AutoRecord(newmap);
+#endif
 }
+
+#ifdef DEMO_AUTORECORD
+void ClientModeShared::AutoRecord(const char *map)
+{
+	if (!cl_autorecord.GetBool()) {
+		return;
+	}
+
+	if (map == nullptr) {
+		Warning("null map in ClientModeShared::AutoRecord");
+		return;
+	}
+
+	// stop any demo to make sure they're saved
+	engine->ClientCmd("stop");
+
+	// KLEMS: sanitize space in client name because having to type "" while playing back lots of demos is annoying
+	ConVarRef name("name");
+	char nameStr[128];
+	memset(nameStr, 0, sizeof(nameStr));
+	Q_snprintf(nameStr, sizeof(nameStr), "%s", name.GetString());
+	int i = 0;
+	while (nameStr[i]) {
+		char c = nameStr[i];
+		if (!(	(c >= '0' && c <= '9') ||
+				(c >= 'a' && c <= 'z') ||
+				(c >= 'A' && c <= 'Z'))) {
+			nameStr[i] = '_';
+		}
+		i++;
+	}
+	nameStr[127] = 0;
+
+	char cmd[256];
+	Q_snprintf(cmd, sizeof(cmd), "record \"%s_%04d_%s\"", nameStr, cl_autorecord.GetInt(), map);
+	cl_autorecord.SetValue(cl_autorecord.GetInt() + 1);
+	engine->ClientCmd(cmd);
+
+	// write to config to make sure the cvar is recorded
+	engine->ClientCmd("host_writeconfig");
+}
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: 

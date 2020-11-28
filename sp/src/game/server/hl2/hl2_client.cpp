@@ -115,7 +115,7 @@ CBaseEntity* FindEntity( edict_t *pEdict, char *classname)
 //-----------------------------------------------------------------------------
 void ClientGamePrecache( void )
 {
-	CBaseEntity::PrecacheModel( "models/player.mdl");
+	CBaseEntity::PrecacheModel("models/player.mdl");
 	
 	CBaseEntity::PrecacheModel( "models/gibs/agibs.mdl" );
 	CBaseEntity::PrecacheModel ("models/weapons/v_hands.mdl");
@@ -145,7 +145,7 @@ void ClientGamePrecache( void )
 	CBaseEntity::PrecacheScriptSound( "Bullets.DefaultNearmiss" );
 	CBaseEntity::PrecacheScriptSound( "Bullets.GunshipNearmiss" );
 	CBaseEntity::PrecacheScriptSound( "Bullets.StriderNearmiss" );
-
+	
 	CBaseEntity::PrecacheScriptSound( "Player.IronSightIn" );
 	CBaseEntity::PrecacheScriptSound( "Player.IronSightOut" );
 
@@ -159,28 +159,39 @@ void ClientGamePrecache( void )
 // called by ClientKill and DeadThink
 void respawn( CBaseEntity *pEdict, bool fCopyCorpse )
 {
-	CHL2_Player *pPlayer = (CHL2_Player *)pEdict;
-	if (pPlayer)
+	CBasePlayer* pPlayer = (CBasePlayer*)pEdict;
+	if (gpGlobals->coop || gpGlobals->deathmatch)
 	{
-		if (sv_player_hardcoremode.GetBool() && !g_pGameRules->IsMultiplayer())
+		if ( fCopyCorpse )
 		{
-			char szMapCommand[1024];
-			// create the command to execute
-			Q_snprintf(szMapCommand, sizeof(szMapCommand), "map credits\nprogress_enable\n");
-			engine->ServerCommand(szMapCommand);
+			// make a copy of the dead body for appearances sake
+			pPlayer->CreateCorpse();
 		}
-		else if (pPlayer->GetLevel() == MAX_LEVEL && !g_pGameRules->IsMultiplayer())
-		{
-			char szMapCommand[1024];
-			// create the command to execute
-			Q_snprintf(szMapCommand, sizeof(szMapCommand), "map credits\nprogress_enable\n");
-			engine->ServerCommand(szMapCommand);
-		}
-		else
-		{
-			pPlayer->Spawn();
-		}
+
+		// respawn player
+		pEdict->Spawn();
 	}
+	else if ((pPlayer->GetLevel() == MAX_LEVEL || sv_player_hardcoremode.GetBool()) && !g_pGameRules->IsMultiplayer())
+	{
+		char szMapCommand[1024];
+		// create the command to execute
+		Q_snprintf(szMapCommand, sizeof(szMapCommand), "map credits\nprogress_enable\n");
+		engine->ServerCommand(szMapCommand);
+	}
+#ifdef MAPBASE
+	else if (g_pGameRules->AllowSPRespawn())
+	{
+		// In SP respawns, only create corpse if drawing externally
+		if ( fCopyCorpse && pPlayer->m_bDrawPlayerModelExternally )
+		{
+			// make a copy of the dead body for appearances sake
+			pPlayer->CreateCorpse();
+		}
+
+		// respawn player
+		pPlayer->Spawn();
+	}
+#endif
 }
 
 void GameStartFrame( void )

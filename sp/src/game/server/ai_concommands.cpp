@@ -389,228 +389,188 @@ void CC_NPC_Focus( const CCommand &args )
 }
 static ConCommand npc_focus("npc_focus", CC_NPC_Focus, "Displays red line to NPC's enemy (if has one) and blue line to NPC's target entity (if has one)\n\tArguments:   	{npc_name} / {npc class_name} / no argument picks what player is looking at", FCVAR_CHEAT);
 
-struct ClassNamePrefix_t
-{
-	ClassNamePrefix_t(const char *pszPrefix, bool bKeepPrefix) : m_pszPrefix(pszPrefix), m_bKeepPrefix(bKeepPrefix)
-	{
-		m_nLength = strlen(pszPrefix);
-	}
+ConVar npc_create_equipment("npc_create_equipment", "");
 
-	const char *m_pszPrefix;
-	size_t m_nLength;
-	bool m_bKeepPrefix;
-};
+#ifdef MAPBASE
+extern int EntityFactory_AutoComplete( const char *cmdname, CUtlVector< CUtlString > &commands, CUtlRBTree< CUtlString > &symbols, char *substring, int checklen = 0 );
+extern bool UtlStringLessFunc( const CUtlString &lhs, const CUtlString &rhs );
 
-
-static ClassNamePrefix_t s_pEquipmentPrefixes[] =
-{
-	ClassNamePrefix_t("weapon_", false),
-};
-
-static ClassNamePrefix_t s_pNPCPrefixes[] =
-{
-	ClassNamePrefix_t("npc_", false),
-};
-
-
-static int StringSortFunc(const void *p1, const void *p2)
-{
-	const char *psz1 = (const char *)p1;
-	const char *psz2 = (const char *)p2;
-
-	return V_stricmp(psz1, psz2);
-}
-
-
-int EquipmentAutocomplete(const char *partial, char commands[COMMAND_COMPLETION_MAXITEMS][COMMAND_COMPLETION_ITEM_LENGTH])
-{
-	// Find the first space in our input
-	const char *firstSpace = V_strstr(partial, " ");
-	if (!firstSpace)
-		return 0;
-
-	int commandLength = firstSpace - partial;
-
-	// Extract the command name from the input
-	char commandName[COMMAND_COMPLETION_ITEM_LENGTH];
-	V_StrSlice(partial, 0, commandLength, commandName, sizeof(commandName));
-
-	// Calculate the length of the command string (minus the command name)
-	partial += commandLength + 1;
-	int partialLength = V_strlen(partial);
-
-	// Grab the factory dictionary
-	if (!EntityFactoryDictionary())
-		return 0;
-
-	const EntityFactoryDict_t &factoryDict = EntityFactoryDictionary()->GetFactoryDictionary();
-	int numMatches = 0;
-
-	// Iterate through all entity factories
-	for (int i = factoryDict.First(); i != factoryDict.InvalidIndex() && numMatches < COMMAND_COMPLETION_MAXITEMS; i = factoryDict.Next(i))
-	{
-		const char *pszClassName = factoryDict.GetElementName(i);
-
-		// See if this entity classname has a prefix that we show in the
-		// autocomplete
-		// TODO: optimise by caching all autocompletable classnames into a hash
-		// table on first run
-		int j;
-		const ClassNamePrefix_t *pPrefix = NULL;
-
-		for (j = 0; j < ARRAYSIZE(s_pEquipmentPrefixes); ++j)
-		{
-			pPrefix = &s_pEquipmentPrefixes[j];
-
-			if (Q_strncmp(pszClassName, pPrefix->m_pszPrefix, pPrefix->m_nLength))
-				continue;
-
-			break;
-		}
-
-		// If this entity factory had no prefixes, we could not find the prefix, skip this entity
-		if (j == ARRAYSIZE(s_pEquipmentPrefixes))
-			continue;
-
-		// Skip past the prefix if it shouldn't be kept
-		if (!pPrefix->m_bKeepPrefix)
-			pszClassName += pPrefix->m_nLength;
-
-		// Does this entity match our partial completion?
-		if (Q_strnicmp(pszClassName, partial, partialLength))
-			continue;
-
-		Q_snprintf(commands[numMatches++], COMMAND_COMPLETION_ITEM_LENGTH, "%s %s", commandName, pszClassName);
-	}
-
-	// Sort the commands alphabetically
-	qsort(commands, numMatches, COMMAND_COMPLETION_ITEM_LENGTH, StringSortFunc);
-
-	return numMatches;
-}
-
-int CreateAutocomplete(const char *partial, char commands[COMMAND_COMPLETION_MAXITEMS][COMMAND_COMPLETION_ITEM_LENGTH])
-{
-	// Find the first space in our input
-	const char *firstSpace = V_strstr(partial, " ");
-	if (!firstSpace)
-		return 0;
-
-	int commandLength = firstSpace - partial;
-
-	// Extract the command name from the input
-	char commandName[COMMAND_COMPLETION_ITEM_LENGTH];
-	V_StrSlice(partial, 0, commandLength, commandName, sizeof(commandName));
-
-	// Calculate the length of the command string (minus the command name)
-	partial += commandLength + 1;
-	int partialLength = V_strlen(partial);
-
-	// Grab the factory dictionary
-	if (!EntityFactoryDictionary())
-		return 0;
-
-	const EntityFactoryDict_t &factoryDict = EntityFactoryDictionary()->GetFactoryDictionary();
-	int numMatches = 0;
-
-	// Iterate through all entity factories
-	for (int i = factoryDict.First(); i != factoryDict.InvalidIndex() && numMatches < COMMAND_COMPLETION_MAXITEMS; i = factoryDict.Next(i))
-	{
-		const char *pszClassName = factoryDict.GetElementName(i);
-
-		// See if this entity classname has a prefix that we show in the
-		// autocomplete
-		// TODO: optimise by caching all autocompletable classnames into a hash
-		// table on first run
-		int j;
-		const ClassNamePrefix_t *pPrefix = NULL;
-
-		for (j = 0; j < ARRAYSIZE(s_pNPCPrefixes); ++j)
-		{
-			pPrefix = &s_pNPCPrefixes[j];
-
-			if (Q_strncmp(pszClassName, pPrefix->m_pszPrefix, pPrefix->m_nLength))
-				continue;
-
-			break;
-		}
-
-		// If this entity factory had no prefixes, we could not find the prefix, skip this entity
-		if (j == ARRAYSIZE(s_pNPCPrefixes))
-			continue;
-
-		// Skip past the prefix if it shouldn't be kept
-		if (!pPrefix->m_bKeepPrefix)
-			pszClassName += pPrefix->m_nLength;
-
-		// Does this entity match our partial completion?
-		if (Q_strnicmp(pszClassName, partial, partialLength))
-			continue;
-
-		Q_snprintf(commands[numMatches++], COMMAND_COMPLETION_ITEM_LENGTH, "%s %s", commandName, pszClassName);
-	}
-
-	// Sort the commands alphabetically
-	qsort(commands, numMatches, COMMAND_COMPLETION_ITEM_LENGTH, StringSortFunc);
-
-	return numMatches;
-}
-
-ConVar npc_create_equipment_cvar("npc_create_equipment_cvar", "", FCVAR_DEVELOPMENTONLY | FCVAR_CHEAT);
-CON_COMMAND_F_COMPLETION(npc_create_equipment, "Equipment for an NPC to be equipped with on create.", FCVAR_CHEAT, EquipmentAutocomplete)
-{
-	if (args.ArgC() != 2)
-		return;
-
-	char pszClassName[64];
-	Q_strncpy(pszClassName, args.Arg(1), sizeof(pszClassName));
-
-	for (int i = 0; i < ARRAYSIZE(s_pEquipmentPrefixes) && !CanCreateEntityClass(pszClassName); ++i)
-	{
-		// If we keep the prefix in the autocomplete, there's no point
-		// checking this prefix
-		if (s_pEquipmentPrefixes[i].m_bKeepPrefix)
-			continue;
-
-		Q_snprintf(pszClassName, sizeof(pszClassName), "%s%s", s_pEquipmentPrefixes[i].m_pszPrefix, args.Arg(1));
-	}
-
-	npc_create_equipment_cvar.SetValue(pszClassName);
-}
 //------------------------------------------------------------------------------
 // Purpose: Create an NPC of the given type
 //------------------------------------------------------------------------------
-CON_COMMAND_F_COMPLETION(npc_create, "Creates an NPC of the given type where the player is looking (if the given NPC can actually stand at that location).  Note that this only works for npc classes that are already in the world.  You can not create an entity that doesn't have an instance in the level.\n\tArguments:	{npc_class_name}", FCVAR_CHEAT, CreateAutocomplete)
+class CNPCCreateAutoCompletionFunctor : public ICommandCallback, public ICommandCompletionCallback
+{
+public:
+	virtual bool CreateAimed() { return false; }
+
+	virtual void CommandCallback( const CCommand &args )
+	{
+		MDLCACHE_CRITICAL_SECTION();
+
+		bool allowPrecache = CBaseEntity::IsPrecacheAllowed();
+		CBaseEntity::SetAllowPrecache( true );
+
+		// Try to create entity
+		CAI_BaseNPC *baseNPC = dynamic_cast< CAI_BaseNPC * >( CreateEntityByName(args[1]) );
+		if (baseNPC)
+		{
+			baseNPC->KeyValue( "additionalequipment", npc_create_equipment.GetString() );
+
+			if ( args.ArgC() == 3 )
+			{
+				baseNPC->SetName( AllocPooledString( args[2] ) );
+			}
+			else if ( args.ArgC() > 3 )
+			{
+				baseNPC->SetName( AllocPooledString( args[2] ) );
+
+				// Pass in any additional parameters.
+				for ( int i = 3; i + 1 < args.ArgC(); i += 2 )
+				{
+					const char *pKeyName = args[i];
+					const char *pValue = args[i+1];
+					baseNPC->KeyValue( pKeyName, pValue );
+				}
+			}
+
+			DispatchSpawn(baseNPC);
+
+			// Now attempt to drop into the world
+			CBasePlayer* pPlayer = UTIL_GetCommandClient();
+			trace_t tr;
+			Vector forward;
+			QAngle angles;
+			pPlayer->EyeVectors( &forward );
+
+			bool bCreateAimed = CreateAimed();
+			if (bCreateAimed)
+			{
+				VectorAngles( forward, angles );
+				angles.x = 0;
+				angles.z = 0;
+			}
+
+			// Pass through the player's vehicle
+			CTraceFilterSkipTwoEntities filter( pPlayer, pPlayer->GetVehicleEntity(), COLLISION_GROUP_NONE );
+			AI_TraceLine(pPlayer->EyePosition(),
+				pPlayer->EyePosition() + forward * MAX_TRACE_LENGTH,MASK_NPCSOLID, 
+				&filter, &tr );
+
+			if ( tr.fraction != 1.0)
+			{
+				if (baseNPC->CapabilitiesGet() & bits_CAP_MOVE_FLY)
+				{
+					Vector pos = tr.endpos - forward * 36;
+					baseNPC->Teleport( &pos, bCreateAimed ? &angles : NULL, NULL );
+				}
+				else
+				{
+					// Raise the end position a little up off the floor, place the npc and drop him down
+					tr.endpos.z += 12;
+					baseNPC->Teleport( &tr.endpos, bCreateAimed ? &angles : NULL, NULL );
+					UTIL_DropToFloor( baseNPC, MASK_NPCSOLID );
+				}
+
+				// Now check that this is a valid location for the new npc to be
+				Vector	vUpBit = baseNPC->GetAbsOrigin();
+				vUpBit.z += 1;
+
+				AI_TraceHull( baseNPC->GetAbsOrigin(), vUpBit, baseNPC->GetHullMins(), baseNPC->GetHullMaxs(), 
+					MASK_NPCSOLID, baseNPC, COLLISION_GROUP_NONE, &tr );
+				if ( tr.startsolid || (tr.fraction < 1.0) )
+				{
+					baseNPC->SUB_Remove();
+					DevMsg("Can't create %s.  Bad Position!\n",args[1]);
+					NDebugOverlay::Box(baseNPC->GetAbsOrigin(), baseNPC->GetHullMins(), baseNPC->GetHullMaxs(), 255, 0, 0, 0, 0);
+				}
+			}
+			else if (bCreateAimed)
+			{
+				baseNPC->Teleport( NULL, &angles, NULL );
+			}
+
+			baseNPC->Activate();
+		}
+		CBaseEntity::SetAllowPrecache( allowPrecache );
+	}
+
+	virtual int CommandCompletionCallback( const char *partial, CUtlVector< CUtlString > &commands )
+	{
+		if ( !g_pGameRules )
+		{
+			return 0;
+		}
+
+		const char *cmdname = CreateAimed() ? "npc_create_aimed" : "npc_create";
+
+		char *substring = (char *)partial;
+		if ( Q_strstr( partial, cmdname ) )
+		{
+			substring = (char *)partial + strlen( cmdname ) + 1;
+		}
+
+		int checklen = Q_strlen( substring );
+
+		if (checklen <= 0)
+		{
+			// Only show classnames prefixed with "npc" unless the user starts typing other characters
+			substring = "npc";
+			checklen = 3;
+		}
+
+		CUtlRBTree< CUtlString > symbols( 0, 0, UtlStringLessFunc );
+		return EntityFactory_AutoComplete( cmdname, commands, symbols, substring, checklen );
+	}
+};
+
+static CNPCCreateAutoCompletionFunctor g_NPCCreateAutoComplete;
+static ConCommand npc_create("npc_create", &g_NPCCreateAutoComplete, "Creates an NPC of the given type where the player is looking (if the given NPC can actually stand at that location).\n\tArguments:	{npc_class_name}", FCVAR_CHEAT, &g_NPCCreateAutoComplete);
+
+class CNPCCreateAimedAutoCompletionFunctor : public CNPCCreateAutoCompletionFunctor
+{
+public:
+	virtual bool CreateAimed() { return true; }
+};
+
+static CNPCCreateAimedAutoCompletionFunctor g_NPCCreateAimedAutoComplete;
+
+static ConCommand npc_create_aimed("npc_create_aimed", &g_NPCCreateAimedAutoComplete, "Creates an NPC aimed away from the player of the given type where the player is looking (if the given NPC can actually stand at that location).\n\tArguments:	{npc_class_name}", FCVAR_CHEAT, &g_NPCCreateAimedAutoComplete);
+#else
+//------------------------------------------------------------------------------
+// Purpose: Create an NPC of the given type
+//------------------------------------------------------------------------------
+void CC_NPC_Create( const CCommand &args )
 {
 	MDLCACHE_CRITICAL_SECTION();
 
 	bool allowPrecache = CBaseEntity::IsPrecacheAllowed();
 	CBaseEntity::SetAllowPrecache( true );
 
-	char pszClassName[64];
-	Q_strncpy(pszClassName, args.Arg(1), sizeof(pszClassName));
-
-	for (int i = 0; i < ARRAYSIZE(s_pNPCPrefixes) && !CanCreateEntityClass(pszClassName); ++i)
-	{
-		// If we keep the prefix in the autocomplete, there's no point
-		// checking this prefix
-		if (s_pNPCPrefixes[i].m_bKeepPrefix)
-			continue;
-
-		Q_snprintf(pszClassName, sizeof(pszClassName), "%s%s", s_pNPCPrefixes[i].m_pszPrefix, args.Arg(1));
-	}
-
 	// Try to create entity
-	CAI_BaseNPC *baseNPC = dynamic_cast< CAI_BaseNPC * >(CreateEntityByName(pszClassName));
+	CAI_BaseNPC *baseNPC = dynamic_cast< CAI_BaseNPC * >( CreateEntityByName(args[1]) );
 	if (baseNPC)
 	{
-		baseNPC->KeyValue("additionalequipment", npc_create_equipment_cvar.GetString());
+		baseNPC->KeyValue( "additionalequipment", npc_create_equipment.GetString() );
 		baseNPC->Precache();
 
 		if ( args.ArgC() == 3 )
 		{
 			baseNPC->SetName( AllocPooledString( args[2] ) );
 		}
+#ifdef MAPBASE
+		else if ( args.ArgC() > 3 )
+		{
+			baseNPC->SetName( AllocPooledString( args[2] ) );
+
+			// Pass in any additional parameters.
+			for ( int i = 3; i + 1 < args.ArgC(); i += 2 )
+			{
+				const char *pKeyName = args[i];
+				const char *pValue = args[i+1];
+				baseNPC->KeyValue( pKeyName, pValue );
+			}
+		}
+#endif
 
 		DispatchSpawn(baseNPC);
 		// Now attempt to drop into the world
@@ -645,7 +605,7 @@ CON_COMMAND_F_COMPLETION(npc_create, "Creates an NPC of the given type where the
 			if ( tr.startsolid || (tr.fraction < 1.0) )
 			{
 				baseNPC->SUB_Remove();
-				DevMsg("Can't create %s.  Bad Position!\n", pszClassName);
+				DevMsg("Can't create %s.  Bad Position!\n",args[1]);
 				NDebugOverlay::Box(baseNPC->GetAbsOrigin(), baseNPC->GetHullMins(), baseNPC->GetHullMaxs(), 255, 0, 0, 0, 0);
 			}
 		}
@@ -654,35 +614,24 @@ CON_COMMAND_F_COMPLETION(npc_create, "Creates an NPC of the given type where the
 	}
 	CBaseEntity::SetAllowPrecache( allowPrecache );
 }
+static ConCommand npc_create("npc_create", CC_NPC_Create, "Creates an NPC of the given type where the player is looking (if the given NPC can actually stand at that location).  Note that this only works for npc classes that are already in the world.  You can not create an entity that doesn't have an instance in the level.\n\tArguments:	{npc_class_name}", FCVAR_CHEAT);
+
 
 //------------------------------------------------------------------------------
 // Purpose: Create an NPC of the given type
 //------------------------------------------------------------------------------
-CON_COMMAND_F_COMPLETION(npc_create_aimed, "Creates an NPC aimed away from the player of the given type where the player is looking (if the given NPC can actually stand at that location).  Note that this only works for npc classes that are already in the world.  You can not create an entity that doesn't have an instance in the level.\n\tArguments:	{npc_class_name}", FCVAR_CHEAT, CreateAutocomplete)
+void CC_NPC_Create_Aimed( const CCommand &args )
 {
 	MDLCACHE_CRITICAL_SECTION();
 
 	bool allowPrecache = CBaseEntity::IsPrecacheAllowed();
 	CBaseEntity::SetAllowPrecache( true );
 
-	char pszClassName[64];
-	Q_strncpy(pszClassName, args.Arg(1), sizeof(pszClassName));
-
-	for (int i = 0; i < ARRAYSIZE(s_pNPCPrefixes) && !CanCreateEntityClass(pszClassName); ++i)
-	{
-		// If we keep the prefix in the autocomplete, there's no point
-		// checking this prefix
-		if (s_pNPCPrefixes[i].m_bKeepPrefix)
-			continue;
-
-		Q_snprintf(pszClassName, sizeof(pszClassName), "%s%s", s_pNPCPrefixes[i].m_pszPrefix, args.Arg(1));
-	}
-
 	// Try to create entity
-	CAI_BaseNPC *baseNPC = dynamic_cast< CAI_BaseNPC * >(CreateEntityByName(pszClassName));
+	CAI_BaseNPC *baseNPC = dynamic_cast< CAI_BaseNPC * >( CreateEntityByName(args[1]) );
 	if (baseNPC)
 	{
-		baseNPC->KeyValue("additionalequipment", npc_create_equipment_cvar.GetString());
+		baseNPC->KeyValue( "additionalequipment", npc_create_equipment.GetString() );
 		baseNPC->Precache();
 		DispatchSpawn( baseNPC );
 
@@ -723,7 +672,7 @@ CON_COMMAND_F_COMPLETION(npc_create_aimed, "Creates an NPC aimed away from the p
 			if ( tr.startsolid || (tr.fraction < 1.0) )
 			{
 				baseNPC->SUB_Remove();
-				DevMsg("Can't create %s.  Bad Position!\n", pszClassName);
+				DevMsg("Can't create %s.  Bad Position!\n",args[1]);
 				NDebugOverlay::Box(baseNPC->GetAbsOrigin(), baseNPC->GetHullMins(), baseNPC->GetHullMaxs(), 255, 0, 0, 0, 0);
 			}
 		}
@@ -736,6 +685,8 @@ CON_COMMAND_F_COMPLETION(npc_create_aimed, "Creates an NPC aimed away from the p
 	}
 	CBaseEntity::SetAllowPrecache( allowPrecache );
 }
+static ConCommand npc_create_aimed("npc_create_aimed", CC_NPC_Create_Aimed, "Creates an NPC aimed away from the player of the given type where the player is looking (if the given NPC can actually stand at that location).  Note that this only works for npc classes that are already in the world.  You can not create an entity that doesn't have an instance in the level.\n\tArguments:	{npc_class_name}", FCVAR_CHEAT);
+#endif
 
 //------------------------------------------------------------------------------
 // Purpose: Destroy unselected NPCs
@@ -907,6 +858,134 @@ void CC_NPC_Reset( void )
 }
 static ConCommand npc_reset("npc_reset", CC_NPC_Reset, "Reloads schedules for all NPC's from their script files\n\tArguments:	-none-", FCVAR_CHEAT);
 
+#ifdef MAPBASE
+extern bool UtlStringLessFunc( const CUtlString &lhs, const CUtlString &rhs );
+
+//------------------------------------------------------------------------------
+// Purpose : Auto-completes with entities in the entity list, but only uses NPC-derived entities.
+// Input   : cmdname - The name of the command.
+//			 &commands - Where the complete autocompletes should be sent to.
+//			 substring - The current search query. (only pool entities that start with this)
+//			 checklen - The number of characters to check.
+// Output  : A pointer to a cUtlRBTRee containing all of the entities.
+//------------------------------------------------------------------------------
+static int AutoCompleteNPCs(const char *cmdname, CUtlVector< CUtlString > &commands, CUtlRBTree< CUtlString > &symbols, char *substring, int checklen = 0)
+{
+	CBaseEntity *pos = NULL;
+	while ((pos = gEntList.NextEnt(pos)) != NULL)
+	{
+		if (!pos->IsNPC())
+			continue;
+
+		const char *name = pos->GetClassname();
+		if (pos->GetEntityName() == NULL_STRING || Q_strnicmp(STRING(pos->GetEntityName()), substring, checklen))
+		{
+			if (Q_strnicmp(pos->GetClassname(), substring, checklen))
+				continue;
+		}
+		else
+			name = STRING(pos->GetEntityName());
+
+		CUtlString sym = name;
+		int idx = symbols.Find(sym);
+		if (idx == symbols.InvalidIndex())
+		{
+			symbols.Insert(sym);
+		}
+
+		// Too many
+		if (symbols.Count() >= COMMAND_COMPLETION_MAXITEMS)
+			break;
+	}
+
+	// Now fill in the results
+	for (int i = symbols.FirstInorder(); i != symbols.InvalidIndex(); i = symbols.NextInorder(i))
+	{
+		const char *name = symbols[i].String();
+
+		char buf[512];
+		Q_strncpy(buf, name, sizeof(buf));
+		Q_strlower(buf);
+
+		CUtlString command;
+		command = CFmtStr("%s %s", cmdname, buf);
+		commands.AddToTail(command);
+	}
+
+	return symbols.Count();
+}
+
+//------------------------------------------------------------------------------
+// There's a big set of NPC debug commands that do similar operations and
+// can fall under this base class for auto-completion, etc.
+//------------------------------------------------------------------------------
+class CNPCDebugAutoCompletionFunctor : public ICommandCallback, public ICommandCompletionCallback
+{
+public:
+	virtual const char *CommandName() { return NULL; }
+	virtual void CommandCallback( const CCommand &args )
+	{
+		SetDebugBits( UTIL_GetCommandClient(), args[1], OVERLAY_NPC_NEAREST_BIT );
+	}
+
+	virtual int CommandCompletionCallback( const char *partial, CUtlVector< CUtlString > &commands )
+	{
+		if ( !g_pGameRules )
+		{
+			return 0;
+		}
+
+		const char *cmdname = CommandName();
+
+		char *substring = (char *)partial;
+		if ( Q_strstr( partial, cmdname ) )
+		{
+			substring = (char *)partial + strlen( cmdname ) + 1;
+		}
+
+		int checklen = Q_strlen( substring );
+
+		if (checklen == 0 || atoi(substring) != 0)
+		{
+			// Must be the picker or an entity index
+			return 0;
+		}
+
+		CUtlRBTree< CUtlString > symbols( 0, 0, UtlStringLessFunc );
+		return AutoCompleteNPCs(cmdname, commands, symbols, substring, checklen);
+	}
+};
+
+#define NPCDebugCommand(name, functor, bit, help) class CNPC##functor##AutoCompletionFunctor : public CNPCDebugAutoCompletionFunctor \
+{ \
+public: \
+	virtual const char *CommandName() { return #name; } \
+	virtual void CommandCallback( const CCommand &args ) \
+	{ \
+		SetDebugBits( UTIL_GetCommandClient(), args[1], bit ); \
+	} \
+}; \
+static CNPC##functor##AutoCompletionFunctor g_NPC##functor##AutoCompletionFunctor; \
+static ConCommand name(#name, &g_NPC##functor##AutoCompletionFunctor, help, FCVAR_CHEAT, &g_NPC##functor##AutoCompletionFunctor);
+
+NPCDebugCommand( npc_nearest, Nearest, OVERLAY_NPC_NEAREST_BIT, "Draw's a while box around the NPC(s) nearest node\n\tArguments:   	{entity_name} / {class_name} / no argument picks what player is looking at  " );
+NPCDebugCommand( npc_route, Route, OVERLAY_NPC_ROUTE_BIT, "Displays the current route of the given NPC as a line on the screen.  Waypoints along the route are drawn as small cyan rectangles.  Line is color coded in the following manner:\n\tBlue	- path to a node\n\tCyan	- detour around an object (triangulation)\n\tRed	- jump\n\tMaroon - path to final target position\n\tArguments:   	{npc_name} / {npc_class_name} / no argument picks what player is looking at " );
+NPCDebugCommand( npc_select, Select, OVERLAY_NPC_SELECTED_BIT, "Select or deselects the given NPC(s) for later manipulation.  Selected NPC's are shown surrounded by a red translucent box\n\tArguments:   	{entity_name} / {class_name} / no argument picks what player is looking at " );
+NPCDebugCommand( npc_combat, Combat, OVERLAY_NPC_SQUAD_BIT, "Displays text debugging information about the squad and enemy of the selected NPC  (See Overlay Text)\n\tArguments:   	{npc_name} / {npc class_name} / no argument picks what player is looking at" );
+NPCDebugCommand( npc_tasks, Tasks, OVERLAY_NPC_TASK_BIT, "Displays detailed text debugging information about the all the tasks of the selected NPC current schedule (See Overlay Text)\n\tArguments:   	{npc_name} / {npc class_name} / no argument picks what player is looking at " );
+NPCDebugCommand( npc_task_text, TaskText, OVERLAY_TASK_TEXT_BIT, "Outputs text debugging information to the console about the all the tasks + break conditions of the selected NPC current schedule\n\tArguments:   	{npc_name} / {npc class_name} / no argument picks what player is looking at " );
+NPCDebugCommand( npc_conditions, Conditions, OVERLAY_NPC_CONDITIONS_BIT, "Displays all the current AI conditions that an NPC has in the overlay text.\n\tArguments:   	{npc_name} / {npc class_name} / no argument picks what player is looking at" );
+NPCDebugCommand( npc_viewcone, Viewcone, OVERLAY_NPC_VIEWCONE_BIT, "Displays the viewcone of the NPC (where they are currently looking and what the extents of there vision is)\n\tArguments:   	{entity_name} / {class_name} / no argument picks what player is looking at" );
+NPCDebugCommand( npc_relationships, Relationships, OVERLAY_NPC_RELATION_BIT, "Displays the relationships between this NPC and all others.\n\tArguments:   	{entity_name} / {class_name} / no argument picks what player is looking at" );
+NPCDebugCommand( npc_steering, Steering, OVERLAY_NPC_STEERING_REGULATIONS, "Displays the steering obstructions of the NPC( used to perform local avoidance )\n\tArguments:   	{entity_name} / {class_name} / no argument picks what player is looking at" );
+
+// For backwards compatibility
+void CC_NPC_Squads( const CCommand &args )
+{
+	SetDebugBits( UTIL_GetCommandClient(),args[1],OVERLAY_NPC_SQUAD_BIT);
+}
+static ConCommand npc_squads("npc_squads", CC_NPC_Squads, "Obsolete.  Replaced by npc_combat", FCVAR_CHEAT);
+#else
 //------------------------------------------------------------------------------
 // Purpose: Show the selected NPC's nearest node
 //------------------------------------------------------------------------------
@@ -1001,6 +1080,7 @@ void CC_NPC_ViewSteeringRegulations( const CCommand &args )
 	SetDebugBits( UTIL_GetCommandClient(), args[1], OVERLAY_NPC_STEERING_REGULATIONS);
 }
 static ConCommand npc_steering("npc_steering", CC_NPC_ViewSteeringRegulations, "Displays the steering obstructions of the NPC (used to perform local avoidance)\n\tArguments:   	{entity_name} / {class_name} / no argument picks what player is looking at", FCVAR_CHEAT);
+#endif
 
 void CC_NPC_ViewSteeringRegulationsAll( void )
 {

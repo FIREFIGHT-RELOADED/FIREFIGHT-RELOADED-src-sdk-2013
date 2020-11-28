@@ -185,6 +185,17 @@ Activity ACT_GNTLIONGUARD_CHARGE_STOP;
 Activity ACT_GNTLIONGUARD_CHARGE_HIT;
 Activity ACT_GNTLIONGUARD_CHARGE_ANTICIPATION;
 
+#ifdef MAPBASE
+// Unused activities
+Activity ACT_GNTLIONGUARD_COVER_ENTER;
+Activity ACT_GNTLIONGUARD_COVER_LOOP;
+Activity ACT_GNTLIONGUARD_COVER_EXIT;
+Activity ACT_GNTLIONGUARD_COVER_ADVANCE;
+Activity ACT_GNTLIONGUARD_COVER_FLINCH;
+Activity ACT_GNTLIONGUARD_SNEAK;
+Activity ACT_GNTLIONGUARD_RUN_FULL;
+#endif
+
 // Anim events
 int AE_GNTLIONGUARD_CHARGE_HIT;
 int AE_GNTLIONGUARD_SHOVE_PHYSOBJECT;
@@ -1555,7 +1566,11 @@ public:
 			if ( pVictimBCC )
 			{
 				// Can only damage other NPCs that we hate
+#ifdef MAPBASE
+				if ( m_pAttacker->IRelationType( pEntity ) <= D_FR )
+#else
 				if ( m_pAttacker->IRelationType( pEntity ) == D_HT )
+#endif
 				{
 					pEntity->TakeDamage( info );
 					return true;
@@ -2567,8 +2582,15 @@ public:
 			if ( !pEntity->IsNPC() && pEntity->GetMoveType() == MOVETYPE_VPHYSICS )
 			{
 				IPhysicsObject *pPhysics = pEntity->VPhysicsGetObject();
+#ifdef MAPBASE
+				// A MOVETYPE_VPHYSICS object without a VPhysics object is an odd edge case, but it's evidently possible
+				// since my game crashed after an antlion guard tried to see me through an EP2 jalopy.
+				// Perhaps that's a sign of an underlying issue?
+				if ( pPhysics && pPhysics->IsMoveable() && pPhysics->GetMass() < m_minMass )
+#else
 				Assert(pPhysics);
 				if ( pPhysics->IsMoveable() && pPhysics->GetMass() < m_minMass )
+#endif
 					return false;
 			}
 
@@ -2684,7 +2706,11 @@ bool CNPC_AntlionGuardian::HandleChargeImpact( Vector vecImpact, CBaseEntity *pE
 	}
 
 	// Hit anything we don't like
+#ifdef MAPBASE
+	if ( IRelationType( pEntity ) <= D_FR && ( GetNextAttack() < gpGlobals->curtime ) )
+#else
 	if ( IRelationType( pEntity ) == D_HT && ( GetNextAttack() < gpGlobals->curtime ) )
+#endif
 	{
 		EmitSound( "NPC_AntlionGuard.Shove" );
 
@@ -3185,6 +3211,9 @@ void CNPC_AntlionGuardian::SummonAntlions( void )
 
 		// Make the antlion fire my input when he dies
 		pAntlion->KeyValue( "OnDeath", UTIL_VarArgs("%s,SummonedAntlionDied,,0,-1", STRING(GetEntityName())) );
+#ifdef MAPBASE
+		pAntlion->KeyValue( "OnKilled", UTIL_VarArgs("%s,SummonedAntlionDied,,0,-1", STRING(GetEntityName())) );
+#endif
 
 		// Start the antlion burrowed, and tell him to come up
 		pAntlion->m_bStartBurrowed = true;
@@ -3324,6 +3353,11 @@ void CNPC_AntlionGuardian::InputClearChargeTarget( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 Activity CNPC_AntlionGuardian::NPC_TranslateActivity( Activity baseAct )
 {
+#ifdef MAPBASE
+	// Needed for VScript NPC_TranslateActiviy hook
+	baseAct = BaseClass::NPC_TranslateActivity( baseAct );
+#endif
+	
 	//See which run to use
 	if ( ( baseAct == ACT_RUN ) && IsCurSchedule( SCHED_ANTLIONGUARDIAN_CHARGE ) )
 		return (Activity) ACT_GNTLIONGUARD_CHARGE_RUN;
@@ -4634,7 +4668,16 @@ AI_BEGIN_CUSTOM_NPC( npc_antlionguardian, CNPC_AntlionGuardian )
 	DECLARE_ACTIVITY( ACT_GNTLIONGUARD_PHYSHIT_FR )
 	DECLARE_ACTIVITY( ACT_GNTLIONGUARD_PHYSHIT_FL )
 	DECLARE_ACTIVITY( ACT_GNTLIONGUARD_PHYSHIT_RR )	
-	DECLARE_ACTIVITY( ACT_GNTLIONGUARD_PHYSHIT_RL )		
+	DECLARE_ACTIVITY( ACT_GNTLIONGUARD_PHYSHIT_RL )	
+#ifdef MAPBASE
+	DECLARE_ACTIVITY( ACT_GNTLIONGUARD_COVER_ENTER )
+	DECLARE_ACTIVITY( ACT_GNTLIONGUARD_COVER_LOOP )
+	DECLARE_ACTIVITY( ACT_GNTLIONGUARD_COVER_EXIT )
+	DECLARE_ACTIVITY( ACT_GNTLIONGUARD_COVER_ADVANCE )
+	DECLARE_ACTIVITY( ACT_GNTLIONGUARD_COVER_FLINCH )
+	DECLARE_ACTIVITY( ACT_GNTLIONGUARD_SNEAK )
+	DECLARE_ACTIVITY( ACT_GNTLIONGUARD_RUN_FULL )
+#endif	
 	
 	//Adrian: events go here
 	DECLARE_ANIMEVENT( AE_GNTLIONGUARD_CHARGE_HIT )

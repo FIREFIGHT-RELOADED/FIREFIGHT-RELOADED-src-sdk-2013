@@ -36,6 +36,9 @@ public:
 	DECLARE_CLASS( CRecharge, CBaseToggle );
 
 	void Spawn( );
+#ifdef MAPBASE
+	void Precache( void );
+#endif
 	bool CreateVPhysics();
 	int DrawDebugTextOverlays(void);
 	void Off(void);
@@ -46,6 +49,10 @@ public:
 
 private:
 	void InputRecharge( inputdata_t &inputdata );
+#ifdef MAPBASE
+	void InputSetCharge( inputdata_t &inputdata );
+	void InputSetChargeNoMax( inputdata_t &inputdata );
+#endif
 	
 	float MaxJuice() const;
 	void UpdateJuice( int newJuice );
@@ -57,6 +64,10 @@ private:
 	int		m_iJuice;
 	int		m_iOn;			// 0 = off, 1 = startup, 2 = going
 	float   m_flSoundTime;
+#ifdef MAPBASE
+	int		m_iMaxJuice;
+	int		m_iIncrementValue;
+#endif
 	
 	int		m_nState;
 	
@@ -71,9 +82,16 @@ BEGIN_DATADESC( CRecharge )
 
 	DEFINE_FIELD( m_flNextCharge, FIELD_TIME ),
 	DEFINE_FIELD( m_iReactivate, FIELD_INTEGER),
-	DEFINE_FIELD( m_iJuice, FIELD_INTEGER),
+#ifdef MAPBASE
+	DEFINE_KEYFIELD(m_iJuice, FIELD_INTEGER, "Charge"),
+#else
+	DEFINE_FIELD(m_iJuice, FIELD_INTEGER),
+#endif
 	DEFINE_FIELD( m_iOn, FIELD_INTEGER),
 	DEFINE_FIELD( m_flSoundTime, FIELD_TIME ),
+#ifdef MAPBASE
+	DEFINE_INPUT( m_iIncrementValue, FIELD_INTEGER, "SetIncrementValue" ),
+#endif
 	DEFINE_FIELD( m_nState, FIELD_INTEGER ),
 
 	// Function Pointers
@@ -87,6 +105,10 @@ BEGIN_DATADESC( CRecharge )
 	DEFINE_OUTPUT(m_OnPlayerUse, "OnPlayerUse" ),
 
 	DEFINE_INPUTFUNC( FIELD_VOID, "Recharge", InputRecharge ),
+#ifdef MAPBASE
+	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetCharge", InputSetCharge ),
+	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetChargeNoMax", InputSetChargeNoMax ),
+#endif
 	
 END_DATADESC()
 
@@ -124,12 +146,29 @@ void CRecharge::Spawn()
 
 	SetModel( STRING( GetModelName() ) );
 
+#ifdef MAPBASE
+	// In case the juice was overridden
+	if (m_iJuice == 0)
+		UpdateJuice( MaxJuice() );
+	else if (m_iJuice == -1)
+		m_iJuice = 0;
+#else
 	UpdateJuice( MaxJuice() );
+#endif
 
 	m_nState = 0;			
 
 	CreateVPhysics();
 }
+
+#ifdef MAPBASE
+void CRecharge::Precache( void )
+{
+	PrecacheScriptSound( "SuitRecharge.Deny" );
+	PrecacheScriptSound( "SuitRecharge.Start" );
+	PrecacheScriptSound( "SuitRecharge.ChargingLoop" );
+}
+#endif
 
 bool CRecharge::CreateVPhysics()
 {
@@ -157,6 +196,14 @@ int CRecharge::DrawDebugTextOverlays(void)
 //-----------------------------------------------------------------------------
 float CRecharge::MaxJuice()	const
 {
+#ifdef MAPBASE
+	if ( m_iMaxJuice != 0 )
+	{
+		// It must've been overridden by the mapper
+		return m_iMaxJuice;
+	}
+#endif
+
 	if ( HasSpawnFlags( SF_CITADEL_RECHARGER ) )
 	{
 		return sk_suitcharger_citadel.GetFloat();
@@ -199,6 +246,18 @@ void CRecharge::InputRecharge( inputdata_t &inputdata )
 {
 	Recharge();
 }
+
+#ifdef MAPBASE
+void CRecharge::InputSetCharge( inputdata_t &inputdata )
+{
+	m_iMaxJuice = m_iJuice = inputdata.value.Int();
+}
+
+void CRecharge::InputSetChargeNoMax( inputdata_t &inputdata )
+{
+	UpdateJuice(inputdata.value.Int());
+}
+#endif
 
 void CRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 { 
@@ -306,6 +365,11 @@ void CRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 		}
 	}
 
+#ifdef MAPBASE
+	if (m_iIncrementValue != 0)
+		nIncrementArmor = m_iIncrementValue;
+#endif
+
 	if (pl->ArmorValue() < nMaxArmor)
 	{
 		UpdateJuice( m_iJuice - nIncrementArmor );
@@ -369,6 +433,9 @@ public:
 private:
 	void InputRecharge( inputdata_t &inputdata );
 	void InputSetCharge( inputdata_t &inputdata );
+#ifdef MAPBASE
+	void InputSetChargeNoMax( inputdata_t &inputdata );
+#endif
 	float MaxJuice() const;
 	void UpdateJuice( int newJuice );
 	void Precache( void );
@@ -384,6 +451,9 @@ private:
 	int		m_nState;
 	int		m_iCaps;
 	int		m_iMaxJuice;
+#ifdef MAPBASE
+	int		m_iIncrementValue;
+#endif
 	
 	COutputFloat m_OutRemainingCharge;
 	COutputEvent m_OnHalfEmpty;
@@ -399,12 +469,21 @@ BEGIN_DATADESC( CNewRecharge )
 
 	DEFINE_FIELD( m_flNextCharge, FIELD_TIME ),
 	DEFINE_FIELD( m_iReactivate, FIELD_INTEGER),
+#ifdef MAPBASE
+	DEFINE_KEYFIELD( m_iJuice, FIELD_INTEGER, "Charge" ),
+#else
 	DEFINE_FIELD( m_iJuice, FIELD_INTEGER),
+#endif
 	DEFINE_FIELD( m_iOn, FIELD_INTEGER),
 	DEFINE_FIELD( m_flSoundTime, FIELD_TIME ),
 	DEFINE_FIELD( m_nState, FIELD_INTEGER ),
 	DEFINE_FIELD( m_iCaps, FIELD_INTEGER ),
+#ifdef MAPBASE
+	DEFINE_KEYFIELD( m_iMaxJuice, FIELD_INTEGER, "MaxCharge" ),
+	DEFINE_INPUT( m_iIncrementValue, FIELD_INTEGER, "SetIncrementValue" ),
+#else
 	DEFINE_FIELD( m_iMaxJuice, FIELD_INTEGER ),
+#endif
 
 	// Function Pointers
 	DEFINE_FUNCTION( Off ),
@@ -419,6 +498,9 @@ BEGIN_DATADESC( CNewRecharge )
 
 	DEFINE_INPUTFUNC( FIELD_VOID, "Recharge", InputRecharge ),
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetCharge", InputSetCharge ),
+#ifdef MAPBASE
+	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetChargeNoMax", InputSetChargeNoMax ),
+#endif
 	
 END_DATADESC()
 
@@ -430,6 +512,10 @@ LINK_ENTITY_TO_CLASS( item_suitcharger, CNewRecharge);
 #define CHARGES_PER_SECOND 1 / CHARGE_RATE
 #define CITADEL_CHARGES_PER_SECOND 10 / CHARGE_RATE
 #define CALLS_PER_SECOND 7.0f * CHARGES_PER_SECOND
+
+#ifdef MAPBASE
+#define CUSTOM_CHARGES_PER_SECOND(inc) inc / CHARGE_RATE
+#endif
 
 
 bool CNewRecharge::KeyValue( const char *szKeyName, const char *szValue )
@@ -455,7 +541,14 @@ bool CNewRecharge::KeyValue( const char *szKeyName, const char *szValue )
 
 void CNewRecharge::Precache( void )
 {
+#ifdef MAPBASE
+	if ( GetModelName() == NULL_STRING )
+		SetModelName( AllocPooledString(HEALTH_CHARGER_MODEL_NAME) );
+
+	PrecacheModel( STRING(GetModelName()) );
+#else
 	PrecacheModel( HEALTH_CHARGER_MODEL_NAME );
+#endif
 
 	PrecacheScriptSound( "SuitRecharge.Deny" );
 	PrecacheScriptSound( "SuitRecharge.Start" );
@@ -465,6 +558,14 @@ void CNewRecharge::Precache( void )
 
 void CNewRecharge::SetInitialCharge( void )
 {
+#ifdef MAPBASE
+	if ( m_iMaxJuice != 0 )
+	{
+		// It must've been overridden by the mapper
+		return;
+	}
+#endif
+
 	if ( HasSpawnFlags( SF_KLEINER_RECHARGER ) )
 	{
 		// The charger in Kleiner's lab.
@@ -489,14 +590,31 @@ void CNewRecharge::Spawn()
 	SetSolid( SOLID_VPHYSICS );
 	CreateVPhysics();
 
+#ifdef MAPBASE
+	SetModel( STRING(GetModelName()) );
+#else
 	SetModel( HEALTH_CHARGER_MODEL_NAME );
+#endif
 	AddEffects( EF_NOSHADOW );
 
 	ResetSequence( LookupSequence( "idle" ) );
 
 	SetInitialCharge();
 
+#ifdef MAPBASE
+	// In case the juice was overridden
+	if (m_iJuice == 0)
+		UpdateJuice( MaxJuice() );
+	else if (m_iJuice == -1)
+	{
+		UpdateJuice( 0 );
+		ResetSequence( LookupSequence( "empty" ) );
+	}
+	else
+		UpdateJuice( m_iJuice );
+#else
 	UpdateJuice( MaxJuice() );
+#endif
 
 	m_nState = 0;		
 	m_iCaps	= FCAP_CONTINUOUS_USE;
@@ -603,8 +721,22 @@ void CNewRecharge::InputSetCharge( inputdata_t &inputdata )
 	int iJuice = inputdata.value.Int();
 
 	m_flJuice = m_iMaxJuice = m_iJuice = iJuice;
+
+	ResetSequence( m_iJuice > 0 ? LookupSequence( "idle" ) : LookupSequence( "empty" ) );
 	StudioFrameAdvance();
 }
+
+#ifdef MAPBASE
+void CNewRecharge::InputSetChargeNoMax( inputdata_t &inputdata )
+{
+	m_flJuice = inputdata.value.Float();
+
+	UpdateJuice(m_flJuice);
+
+	ResetSequence( m_iJuice > 0 ? LookupSequence( "idle" ) : LookupSequence( "empty" ) );
+	StudioFrameAdvance();
+}
+#endif
 
 void CNewRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 { 
@@ -624,6 +756,11 @@ void CNewRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 
 		if ( HasSpawnFlags( SF_CITADEL_RECHARGER ) )
 			 flCharges = CITADEL_CHARGES_PER_SECOND;
+
+#ifdef MAPBASE
+		if ( m_iIncrementValue != 0 )
+			flCharges = CUSTOM_CHARGES_PER_SECOND(m_iIncrementValue);
+#endif
 
 		m_flJuice -= flCharges / flCalls;		
 		StudioFrameAdvance();
@@ -703,6 +840,11 @@ void CNewRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 			pActivator->TakeHealth( 5, DMG_GENERIC );
 		}
 	}
+
+#ifdef MAPBASE
+	if (m_iIncrementValue != 0)
+		nIncrementArmor = m_iIncrementValue;
+#endif
 
 	// If we're over our limit, debounce our keys
 	if ( pPlayer->ArmorValue() >= nMaxArmor)

@@ -396,7 +396,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 	// IPointsForKill - how many points awarded to anyone
 	// that kills this player?
 	//=========================================================
-	int CSingleplayRules::IPointsForKill(CBasePlayer *pAttacker, CBasePlayer *pKilled)
+	int CSingleplayRules::IPointsForKill( CBasePlayer *pAttacker, CBasePlayer *pKilled )
 	{
 		return 1;
 	}
@@ -959,10 +959,10 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 		}
 		else
 		{
-			return -1;
-		}
+		return -1;
 	}
-	
+	}
+
 	#define ENTITY_INTOLERANCE	100
 	//=========================================================
 	// FlWeaponRespawnTime - Returns 0 if the weapon can respawn 
@@ -972,7 +972,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 	float CSingleplayRules::FlWeaponTryRespawn( CBaseCombatWeapon *pWeapon )
 	{
 		if ( gEntList.NumberOfEntities() < (gpGlobals->maxEntities - ENTITY_INTOLERANCE) )
-			return 0;
+		return 0;
 
 		// we're past the entity tolerance level,  so delay the respawn
 		return FlWeaponRespawnTime( pWeapon );
@@ -997,8 +997,8 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 		{
 			if (pWeapon->HasSpawnFlags(SF_NORESPAWN))
 			{
-				return GR_WEAPON_RESPAWN_NO;
-			}
+		return GR_WEAPON_RESPAWN_NO;
+	}
 			else
 			{
 				return GR_WEAPON_RESPAWN_YES;
@@ -1040,8 +1040,8 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 		}
 		else
 		{
-			return GR_ITEM_RESPAWN_NO;
-		}
+		return GR_ITEM_RESPAWN_NO;
+	}
 	}
 
 
@@ -1056,8 +1056,8 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 		}
 		else
 		{
-			return -1;
-		}
+		return -1;
+	}
 	}
 
 	//=========================================================
