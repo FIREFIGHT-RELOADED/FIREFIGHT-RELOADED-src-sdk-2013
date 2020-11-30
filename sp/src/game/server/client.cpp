@@ -831,7 +831,6 @@ static int StringSortFunc(const void *p1, const void *p2)
 	return V_stricmp(psz1, psz2);
 }
 
-
 int GiveAutocomplete(const char *partial, char commands[COMMAND_COMPLETION_MAXITEMS][COMMAND_COMPLETION_ITEM_LENGTH])
 {
 	// Find the first space in our input
@@ -939,6 +938,114 @@ CON_COMMAND_F_COMPLETION(give, "Give item to player. Syntax: <item name>", FCVAR
 	pPlayer->GiveNamedItem(pszClassName);
 }
 
+//suggest only weapons
+static ClassNamePrefix_t s_pCustomEntityPrefixes[] =
+{
+	ClassNamePrefix_t("weapon_", false),
+};
+
+int GiveCustomAutocomplete(const char* partial, char commands[COMMAND_COMPLETION_MAXITEMS][COMMAND_COMPLETION_ITEM_LENGTH])
+{
+	// Find the first space in our input
+	const char* firstSpace = V_strstr(partial, " ");
+	if (!firstSpace)
+		return 0;
+
+	int commandLength = firstSpace - partial;
+
+	// Extract the command name from the input
+	char commandName[COMMAND_COMPLETION_ITEM_LENGTH];
+	V_StrSlice(partial, 0, commandLength, commandName, sizeof(commandName));
+
+	// Calculate the length of the command string (minus the command name)
+	partial += commandLength + 1;
+	int partialLength = V_strlen(partial);
+
+	// Grab the factory dictionary
+	if (!EntityFactoryDictionary())
+		return 0;
+
+	const EntityFactoryDict_t& factoryDict = EntityFactoryDictionary()->GetFactoryDictionary();
+	int numMatches = 0;
+
+	// Iterate through all entity factories
+	for (int i = factoryDict.First(); i != factoryDict.InvalidIndex() && numMatches < COMMAND_COMPLETION_MAXITEMS; i = factoryDict.Next(i))
+	{
+		const char* pszClassName = factoryDict.GetElementName(i);
+
+		// See if this entity classname has a prefix that we show in the
+		// autocomplete
+		// TODO: optimise by caching all autocompletable classnames into a hash
+		// table on first run
+		int j;
+		const ClassNamePrefix_t* pPrefix = NULL;
+
+		for (j = 0; j < ARRAYSIZE(s_pCustomEntityPrefixes); ++j)
+		{
+			pPrefix = &s_pCustomEntityPrefixes[j];
+
+			if (Q_strncmp(pszClassName, pPrefix->m_pszPrefix, pPrefix->m_nLength))
+				continue;
+
+			break;
+		}
+
+		// If this entity factory had no prefixes, we could not find the prefix, skip this entity
+		if (j == ARRAYSIZE(s_pCustomEntityPrefixes))
+			continue;
+
+		// Skip past the prefix if it shouldn't be kept
+		if (!pPrefix->m_bKeepPrefix)
+			pszClassName += pPrefix->m_nLength;
+
+		// Does this entity match our partial completion?
+		if (Q_strnicmp(pszClassName, partial, partialLength))
+			continue;
+
+		Q_snprintf(commands[numMatches++], COMMAND_COMPLETION_ITEM_LENGTH, "%s %s", commandName, pszClassName);
+	}
+
+	// Sort the commands alphabetically
+	qsort(commands, numMatches, COMMAND_COMPLETION_ITEM_LENGTH, StringSortFunc);
+
+	return numMatches;
+}
+
+CON_COMMAND_F_COMPLETION(give_custom, "Give custom weapon to player. Syntax: <weapon data script name>, <vscript name>", FCVAR_CHEAT, GiveAutocomplete)
+{
+	CBasePlayer* pPlayer = UTIL_GetCommandClient();
+	if (!pPlayer)
+		return;
+
+	if (args.ArgC() != 3)
+		return;
+
+	char pszClassName[64];
+	Q_strncpy(pszClassName, args.Arg(1), sizeof(pszClassName));
+
+	for (int i = 0; i < ARRAYSIZE(s_pEntityPrefixes); ++i)
+	{
+		// If we keep the prefix in the autocomplete, there's no point
+		// checking this prefix
+		if (s_pEntityPrefixes[i].m_bKeepPrefix)
+			continue;
+
+		Q_snprintf(pszClassName, sizeof(pszClassName), "%s%s", s_pEntityPrefixes[i].m_pszPrefix, args.Arg(1));
+	}
+
+	char pszScriptName[1024];
+	Q_strncpy(pszScriptName, args.Arg(2), sizeof(pszScriptName));
+
+	CBaseEntity* entity = CBaseEntity::CreateNoSpawn("weapon_custom_scripted1", pPlayer->GetAbsOrigin(), pPlayer->GetAbsAngles());
+	entity->KeyValue("vscripts", pszScriptName);
+	entity->KeyValue("weapondatascript_name", pszClassName);
+	DispatchSpawn(entity);
+
+	if (entity != NULL && !(entity->IsMarkedForDeletion()))
+	{
+		entity->Touch(pPlayer);
+	}
+}
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
