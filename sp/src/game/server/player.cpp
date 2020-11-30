@@ -90,7 +90,6 @@
 
 #ifdef MAPBASE_VSCRIPT
 #include "mapbase/vscript_funcs_shared.h"
-#include "mapbase/weapon_custom_scripted.h"
 #endif
 
 ConVar autoaim_max_dist( "autoaim_max_dist", "2160" ); // 2160 = 180 feet
@@ -6911,23 +6910,12 @@ void CBloodSplat::Think( void )
 	UTIL_Remove( this );
 }
 
-#ifdef MAPBASE_VSCRIPT
-//override
-CBaseEntity* CBasePlayer::GiveNamedItem(const char* pszName, int iSubType)
-{
-	//call the default script for custom wepons
-	return GiveNamedItem(pszName, iSubType, "", "weapon_custom_scripted1");
-}
-
 //==============================================
 
 //-----------------------------------------------------------------------------
 // Purpose: Create and give the named item to the player. Then return it.
 //-----------------------------------------------------------------------------
-CBaseEntity	*CBasePlayer::GiveNamedItem( const char *pszName, int iSubType, const char* szClientScript, const char* szScriptFileName)
-#else
-CBaseEntity* CBasePlayer::GiveNamedItem(const char* pszName, int iSubType)
-#endif
+CBaseEntity	*CBasePlayer::GiveNamedItem( const char *pszName, int iSubType )
 {
 	// If I already own this type don't create one
 	if ( Weapon_OwnsThisType(pszName, iSubType) )
@@ -6957,18 +6945,6 @@ CBaseEntity* CBasePlayer::GiveNamedItem(const char* pszName, int iSubType)
 			pActiveWeapon->Holster();
 		}
 		pWeapon->SetSubType( iSubType );
-
-#ifdef MAPBASE_VSCRIPT
-		if (FStrEq(pszName, "weapon_custom_scripted1"))
-		{
-			CWeaponCustomScripted* pCustomWeapon = dynamic_cast<CWeaponCustomScripted*>(pWeapon);
-			if (pCustomWeapon)
-			{
-				pCustomWeapon->KeyValue("vscripts_client", szClientScript);
-				pCustomWeapon->KeyValue("weapondatascript_name", szScriptFileName);
-			}
-		}
-#endif
 	}
 
 	DispatchSpawn( pent );

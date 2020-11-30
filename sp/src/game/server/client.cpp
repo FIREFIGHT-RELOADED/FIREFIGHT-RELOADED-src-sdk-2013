@@ -936,21 +936,7 @@ CON_COMMAND_F_COMPLETION(give, "Give item to player. Syntax: <item name>", FCVAR
 		return;
 	}
 
-	if (FStrEq(pszClassName, "weapon_custom_scripted1"))
-	{
-		if (args.ArgC() > 2)
-		{
-			pPlayer->GiveNamedItem(pszClassName, 0, args.Arg(2), args.Arg(3));
-		}
-		else
-		{
-			Warning("Cannot create custom weapon: no client and/or data script defined.");
-		}
-	}
-	else
-	{
-		pPlayer->GiveNamedItem(pszClassName);
-	}
+	pPlayer->GiveNamedItem(pszClassName);
 }
 
 
