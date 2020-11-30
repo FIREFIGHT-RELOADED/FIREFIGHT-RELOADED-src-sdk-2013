@@ -547,7 +547,12 @@ public:
 	virtual void 			SelectItem( const char *pstr, int iSubType = 0 );
 	void					ItemPreFrame( void );
 	virtual void			ItemPostFrame( void );
+#ifdef MAPBASE_VSCRIPT
+	virtual CBaseEntity		*GiveNamedItem(const char* szName, int iSubType, const char *szClientScript, const char *szScriptFileName);
 	virtual CBaseEntity		*GiveNamedItem( const char *szName, int iSubType = 0 );
+#else
+	virtual CBaseEntity* GiveNamedItem(const char* szName, int iSubType = 0);
+#endif
 	void					EnableControl(bool fControl);
 	virtual void			CheckTrainUpdate( void );
 	void					AbortReload( void );
