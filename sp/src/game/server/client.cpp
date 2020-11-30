@@ -1011,7 +1011,7 @@ int GiveCustomAutocomplete(const char* partial, char commands[COMMAND_COMPLETION
 	return numMatches;
 }
 
-CON_COMMAND_F_COMPLETION(give_custom, "Give custom weapon to player. Syntax: <weapon data script name>, <vscript name>", FCVAR_CHEAT, GiveAutocomplete)
+CON_COMMAND_F_COMPLETION(give_custom, "Give custom weapon to player. Syntax: <weapon data script name>, <vscript name>", FCVAR_CHEAT, GiveCustomAutocomplete)
 {
 	CBasePlayer* pPlayer = UTIL_GetCommandClient();
 	if (!pPlayer)
