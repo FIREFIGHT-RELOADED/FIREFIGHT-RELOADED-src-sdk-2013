@@ -1011,13 +1011,13 @@ int GiveCustomAutocomplete(const char* partial, char commands[COMMAND_COMPLETION
 	return numMatches;
 }
 
-CON_COMMAND_F_COMPLETION(give_custom, "Give custom weapon to player. Syntax: <weapon data script name>, <vscript name>", FCVAR_CHEAT, GiveCustomAutocomplete)
+CON_COMMAND_F_COMPLETION(give_custom, "Give custom weapon to player. Syntax: <weapon data script name> <vscript name with file extension> [custom weapon ID]", FCVAR_CHEAT, GiveCustomAutocomplete)
 {
 	CBasePlayer* pPlayer = UTIL_GetCommandClient();
 	if (!pPlayer)
 		return;
 
-	if (args.ArgC() != 3)
+	if (args.ArgC() != 4)
 		return;
 
 	char pszClassName[64];
@@ -1036,7 +1036,21 @@ CON_COMMAND_F_COMPLETION(give_custom, "Give custom weapon to player. Syntax: <we
 	char pszScriptName[1024];
 	Q_strncpy(pszScriptName, args.Arg(2), sizeof(pszScriptName));
 
-	CBaseEntity* entity = CBaseEntity::CreateNoSpawn("weapon_custom_scripted1", pPlayer->GetAbsOrigin(), pPlayer->GetAbsAngles());
+	char classname[1024];
+
+	if (args.Arg(3) != NULL)
+	{
+		//there are only 30 custom weapons.
+		char pszID[2];
+		Q_strncpy(pszID, args.Arg(3), sizeof(pszID));
+		Q_snprintf(classname, sizeof(classname), "weapon_custom%s", args.Arg(3));
+	}
+	else
+	{
+		Q_snprintf(classname, sizeof(classname), "weapon_custom_scripted1");
+	}
+
+	CBaseEntity* entity = CBaseEntity::CreateNoSpawn(classname, pPlayer->GetAbsOrigin(), pPlayer->GetAbsAngles());
 	entity->KeyValue("vscripts", pszScriptName);
 	entity->KeyValue("weapondatascript_name", pszClassName);
 	DispatchSpawn(entity);
