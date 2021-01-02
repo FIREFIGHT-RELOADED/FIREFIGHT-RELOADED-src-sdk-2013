@@ -330,7 +330,8 @@ END_RECV_TABLE()
 		
 
 		RecvPropString( RECVINFO(m_szLastPlaceName) ),
-
+		
+		RecvPropEHandle(RECVINFO(m_hPostProcessCtrl)),		// Send to everybody - for spectating
 		RecvPropInt   ( RECVINFO( m_iExp ) ),
 		RecvPropInt   ( RECVINFO( m_iLevel ) ),
 		RecvPropInt	  ( RECVINFO( m_iFrags ) ),
@@ -1951,7 +1952,6 @@ void C_BasePlayer::ThirdPersonSwitch( bool bThirdperson )
 {
 	// We've switch from first to third, or vice versa.
 	UpdateVisibility();
-	m_bDrawPlayerModelExternally = bThirdperson;
 
 	// Update the visibility of anything bone attached to us.
 	if ( IsLocalPlayer() )
@@ -2918,6 +2918,14 @@ void C_BasePlayer::UpdateFogBlend( void )
 				
 		}
 	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+C_PostProcessController* C_BasePlayer::GetActivePostProcessController() const
+{
+	return m_hPostProcessCtrl.Get();
 }
 
 //-----------------------------------------------------------------------------

@@ -2510,22 +2510,18 @@ bool CGameMovement::CheckJumpButton( void )
 	// Add a little forward velocity based on your current forward velocity - if you are not sprinting.
 #if defined( HL2_DLL ) || defined( HL2_CLIENT_DLL )
 	//allow us to bunnyhop regardless if we have more than 1 player.
-		CHLMoveData *pMoveData = ( CHLMoveData* )mv;
-	//we might need to reconsider some things
+	CHLMoveData *pMoveData = ( CHLMoveData* )mv;
 	if (fr_enable_bunnyhop.GetInt() == 1 && !bAirDash)
 	{
-		Vector vecForward, vecRight;
-		AngleVectors(mv->m_vecViewAngles, &vecForward, &vecRight, NULL);
+		Vector vecForward;
+		AngleVectors(mv->m_vecViewAngles, &vecForward);
 		vecForward.z = 0.0f;
-		vecRight.z = 0.0f;
 		VectorNormalize(vecForward);
-		VectorNormalize(vecRight);
 		if (!pMoveData->m_bIsSprinting && !player->m_Local.m_bDucked)
 		{
 			for (int iAxis = 0; iAxis < 2; ++iAxis)
 			{
 				vecForward[iAxis] *= (mv->m_flForwardMove * 0.5f);
-				vecRight[iAxis] *= (mv->m_flSideMove * 0.5f);
 			}
 		}
 		else
@@ -2533,11 +2529,9 @@ bool CGameMovement::CheckJumpButton( void )
 			for (int iAxis = 0; iAxis < 2; ++iAxis)
 			{
 				vecForward[iAxis] *= (mv->m_flForwardMove * 0.1f);
-				vecRight[iAxis] *= (mv->m_flSideMove * 0.1f);
 			}
 		}
 		VectorAdd(vecForward, mv->m_vecVelocity, mv->m_vecVelocity);
-		VectorAdd(vecRight, mv->m_vecVelocity, mv->m_vecVelocity);
 	}
 	else
 	{

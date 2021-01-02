@@ -819,6 +819,8 @@ CLIENTEFFECT_REGISTER_BEGIN( PrecachePostProcessingEffects )
 	CLIENTEFFECT_MATERIAL( "dev/copyfullframefb_vanilla" )
 	CLIENTEFFECT_MATERIAL( "dev/copyfullframefb" )
 	CLIENTEFFECT_MATERIAL( "dev/engine_post" )
+	CLIENTEFFECT_MATERIAL( "dev/depth_of_field" )
+	CLIENTEFFECT_MATERIAL( "dev/blurgaussian_3x3" )
 	CLIENTEFFECT_MATERIAL( "dev/motion_blur" )
 	CLIENTEFFECT_MATERIAL( "dev/upscale" )
 
@@ -2100,14 +2102,24 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 		RenderPlayerSprites();
 
 		// Image-space motion blur
-		if ( !building_cubemaps.GetBool() && view.m_bDoBloomAndToneMapping ) // We probably should use a different view. variable here
+		if ( !building_cubemaps.GetBool() /*&& view.m_bDoBloomAndToneMapping*/ ) // We probably should use a different view. variable here
 		{
+			if ( IsDepthOfFieldEnabled() )
+			{
+				pRenderContext.GetFrom( materials );
+				{
+					PIXEVENT( pRenderContext, "DoDepthOfField()" );
+					DoDepthOfField( view );
+				}
+				pRenderContext.SafeRelease();
+			}
+
 			if ( ( mat_motion_blur_enabled.GetInt() ) && ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 90 ) )
 			{
 				pRenderContext.GetFrom( materials );
 				{
 					PIXEVENT( pRenderContext, "DoImageSpaceMotionBlur" );
-					DoImageSpaceMotionBlur( view, view.x, view.y, view.width, view.height );
+					DoImageSpaceMotionBlur( view );
 				}
 				pRenderContext.SafeRelease();
 			}
