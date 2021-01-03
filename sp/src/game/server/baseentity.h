@@ -674,6 +674,8 @@ public:
 	bool ScriptAcceptInput(const char *szInputName, const char *szValue, HSCRIPT hActivator, HSCRIPT hCaller);
 #endif
 
+	bool ScriptInputHook( const char *szInputName, CBaseEntity *pActivator, CBaseEntity *pCaller, variant_t Value, ScriptVariant_t &functionReturn );
+
 	//
 	// Input handlers.
 	//
@@ -985,6 +987,7 @@ public:
 	bool	HasContext( string_t name, string_t value ) const; // NOTE: string_t version only compares pointers!
 	bool	HasContext( const char *nameandvalue ) const;
 	const char *GetContextValue( const char *contextName ) const;
+	float	GetContextExpireTime( const char *name );
 	void	RemoveContext( const char *nameandvalue );
 	void	AddContext( const char *name, const char *value, float duration = 0.0f );
 #endif
@@ -1334,7 +1337,9 @@ public:
 	// 
 	// Also, keep in mind pretty much all existing DispatchInteraction() calls are only performed on CBaseCombatCharacters.
 	// You'll need to change their code manually if you want other, non-character entities to use the interaction.
-	bool				DispatchInteraction( int interactionType, void *data, CBaseCombatCharacter* sourceEnt )	{ return ( interactionType > 0 ) ? HandleInteraction( interactionType, data, sourceEnt ) : false; }
+	bool				DispatchInteraction( int interactionType, void *data, CBaseCombatCharacter* sourceEnt );
+
+	// Do not call HandleInteraction directly, use DispatchInteraction
 	virtual bool		HandleInteraction( int interactionType, void *data, CBaseCombatCharacter* sourceEnt ) { return false; }
 #endif
 
@@ -2075,6 +2080,7 @@ public:
 
 	void ScriptAddContext( const char *name, const char *value, float duration = 0.0f );
 	const char *ScriptGetContext( const char *name );
+	HSCRIPT ScriptGetContextIndex( int index );
 
 	int ScriptClassify(void);
 
@@ -2099,12 +2105,18 @@ public:
 	int ScriptGetMoveType() { return GetMoveType(); }
 	void ScriptSetMoveType( int iMoveType ) { SetMoveType( (MoveType_t)iMoveType ); }
 	
+	bool ScriptDispatchInteraction( int interactionType, HSCRIPT data, HSCRIPT sourceEnt );
+
+	int ScriptGetTakeDamage() { return m_takedamage; }
+	void ScriptSetTakeDamage( int val ) { m_takedamage = val; }
+	
 	bool ScriptIsRareEnemy() {return m_isRareEntity;}
 	void ScriptSetRareEnemy(bool iSetRare) {m_isRareEntity = iSetRare;}
 	static ScriptHook_t	g_Hook_UpdateOnRemove;
 	static ScriptHook_t	g_Hook_VPhysicsCollision;
 	static ScriptHook_t	g_Hook_FireBullets;
 	static ScriptHook_t	g_Hook_OnDeath;
+	static ScriptHook_t	g_Hook_HandleInteraction;
 #endif
 
 	string_t		m_iszVScripts;

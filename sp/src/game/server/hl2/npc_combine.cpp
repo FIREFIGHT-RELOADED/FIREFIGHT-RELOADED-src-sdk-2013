@@ -1237,6 +1237,11 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 					}
 				}
 			}
+			else
+			{
+				TaskFail( "No weapon" );
+				break;
+			}
 		}
 		break;
 

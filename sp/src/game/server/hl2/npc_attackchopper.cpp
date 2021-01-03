@@ -4866,6 +4866,26 @@ void CNPC_AttackHelicopter::Hunt( void )
 		{
 			BullrushBombs();
 		}
+#ifdef MAPBASE
+		// Some may want the hunter-chopper to aim at different positions searching for its target
+		// without actually firing at anything. Gun aiming is only handled in FireGun(), which is
+		// disabled when the gun is disabled. point_posecontroller doesn't seem to work well for this either,
+		// so a new spawnflag is handled here to allow the chopper to aim at its enemy even when the gun is off.
+		else if ( HasSpawnFlags( SF_HELICOPTER_AIM_WITH_GUN_OFF ) && GetEnemy() )
+		{
+			// Get gun attachment points
+			Vector vBasePos;
+			GetAttachment( m_nGunBaseAttachment, vBasePos );
+
+			Vector vecFireAtPosition;
+			ComputeFireAtPosition( &vecFireAtPosition );
+	
+			Vector vTargetDir = vecFireAtPosition - vBasePos;
+			VectorNormalize( vTargetDir );
+
+			PoseGunTowardTargetDirection( vTargetDir );
+		}
+#endif
 	}
 
 #ifdef HL2_EPISODIC

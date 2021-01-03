@@ -419,7 +419,11 @@ void CGameText::Display( CBaseEntity *pActivator )
 		// Otherwise show the message to the player that triggered us.
 		else if ( pActivator && pActivator->IsNetClient() )
 		{
+#ifdef MAPBASE
+			UTIL_HudMessage( ToBasePlayer( pActivator ), m_textParms, MessageGet(), STRING(m_strFont), m_bAutobreak );
+#else
 			UTIL_HudMessage( ToBasePlayer( pActivator ), m_textParms, MessageGet() );
+#endif
 		}
 	}
 }
