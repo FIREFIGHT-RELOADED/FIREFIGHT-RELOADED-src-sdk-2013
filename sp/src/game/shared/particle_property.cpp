@@ -128,6 +128,8 @@ CNewParticleEffect *CParticleProperty::Create( const char *pszParticleName, Part
 		int iAttachment = GetParticleAttachment(GetOuter(), pszAttachmentName, pszParticleName);
 		if (iAttachment == INVALID_PARTICLE_ATTACHMENT)
 			return NULL;
+
+		// Create the system
 		return Create(pszParticleName, iAttachType, iAttachment);
 	}
 }
