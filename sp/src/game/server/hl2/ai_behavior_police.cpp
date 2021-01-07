@@ -136,7 +136,7 @@ void CAI_PolicingBehavior::HostSpeakSentence( const char *pSentence, SentencePri
 		pSentences->Speak( pSentence, nSoundPriority, nCriteria );
 #endif
 	}
-#ifdef MAPBASE
+#ifdef COMBINE_SOLDIER_USES_RESPONSE_SYSTEM
 	else if ( CNPC_Combine *pCombine = dynamic_cast<CNPC_Combine*>(GetOuter()) )
 	{
 		pCombine->SpeakIfAllowed( pSentence, nSoundPriority, nCriteria );

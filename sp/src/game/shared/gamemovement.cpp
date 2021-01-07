@@ -2425,9 +2425,7 @@ bool CGameMovement::CheckJumpButton( void )
 	// Cannot jump again until the jump button has been released.
 	if (mv->m_nOldButtons & IN_JUMP)
 	{
-		if (!bOnGround)
-			return false;
-		if (fr_enable_bunnyhop.GetInt() == 0)
+		if (!bOnGround || fr_enable_bunnyhop.GetInt() == 0)
 			return false;
 	}
 
@@ -2439,8 +2437,8 @@ bool CGameMovement::CheckJumpButton( void )
 			bAirDash = true;
 		}
 		else
-	{
-		mv->m_nOldButtons |= IN_JUMP;
+		{
+			mv->m_nOldButtons |= IN_JUMP;
 			return false;
 		}
 	}

@@ -339,10 +339,6 @@ private:
 	float			m_flShotDelay;
 	float			m_flStopMoveShootTime;
 
-#ifndef COMBINE_SOLDIER_USES_RESPONSE_SYSTEM
-	CAI_Sentence< CNPC_Combine > m_Sentences;
-#endif
-
 #ifndef MAPBASE
 	int			m_iNumGrenades;
 #endif
@@ -364,6 +360,10 @@ public:
 	bool			m_fIsPoliceRank;
 #ifndef MAPBASE
 	Vector			m_vecAltFireTarget;
+#endif
+
+#ifndef COMBINE_SOLDIER_USES_RESPONSE_SYSTEM
+	CAI_Sentence< CNPC_Combine > m_Sentences;
 #endif
 
 	// Time Variables
