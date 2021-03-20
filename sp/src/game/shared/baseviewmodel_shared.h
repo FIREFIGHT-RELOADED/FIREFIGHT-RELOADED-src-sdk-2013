@@ -26,7 +26,7 @@ class CVGuiScreen;
 #define CBaseCombatWeapon C_BaseCombatWeapon
 #endif
 
-#define VIEWMODEL_INDEX_BITS 1
+#define VIEWMODEL_INDEX_BITS 2
 
 //hands are 1
 #define VM_LEGS 2

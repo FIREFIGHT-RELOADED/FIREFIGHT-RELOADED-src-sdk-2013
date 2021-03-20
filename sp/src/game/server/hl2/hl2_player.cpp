@@ -1305,7 +1305,7 @@ void CHL2_Player::KickAttack(void)
 	MDLCACHE_CRITICAL_SECTION();
 	if (!IsDead())
 	{
-		CBaseViewModel *vm = GetViewModel(1);
+		CBaseViewModel *vm = GetViewModel(VM_LEGS);
 
 		if (vm)
 		{
