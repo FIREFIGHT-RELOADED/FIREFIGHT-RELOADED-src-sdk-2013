@@ -1312,8 +1312,10 @@ void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info )
 		DispatchParticleEffect("blood_zombie_split", GetAbsOrigin(), GetAbsAngles(), this);
 	}
 
-	m_iHealth = 0;
-	Event_Killed(info);
+	if ( m_iHealth > 0 ) {
+		m_iHealth = 0;
+		Event_Killed(info);
+	}
 }
 
 //-----------------------------------------------------------------------------
