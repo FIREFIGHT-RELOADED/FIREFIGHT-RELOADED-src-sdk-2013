@@ -1183,7 +1183,7 @@ void CBasePlayer::EXPLevelPenalty()
 {
 	int inewEXP = (m_iExp / 2);
 
-	DevMsg("EXP %i set to %i\n", m_iExp, inewEXP);
+	DevMsg("EXP %i set to %i\n", m_iExp.Get(), inewEXP);
 
 	if (inewEXP > 0)
 	{
@@ -1199,7 +1199,7 @@ void CBasePlayer::EXPLevelPenalty()
 		m_iExp = 0;
 	}
 
-	DevMsg("EXP set to %i\n", m_iExp);
+	DevMsg("EXP set to %i\n", m_iExp.Get());
 }
 
 void CBasePlayer::LevelUp()

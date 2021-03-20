@@ -170,7 +170,7 @@ void CNPC_Player::GiveWeapon(const char* iszWeaponName)
 	CBaseCombatWeapon* pWeapon = Weapon_Create(iszWeaponName);
 	if (!pWeapon)
 	{
-		Warning("Couldn't create weapon %s to give NPC %s.\n", iszWeaponName, GetEntityName());
+		Warning("Couldn't create weapon %s to give NPC %s.\n", iszWeaponName, STRING(GetEntityName()));
 		return;
 	}
 

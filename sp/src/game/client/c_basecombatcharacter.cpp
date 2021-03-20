@@ -127,7 +127,7 @@ void C_BaseCombatCharacter::UpdateGlowEffect( void )
 	}
 }
 
-void C_BaseCombatCharacter::UpdateGlowEffect(Vector &color, float alpha)
+void C_BaseCombatCharacter::UpdateGlowEffect(const Vector &color, float alpha)
 {
 	// destroy the existing effect
 	if ( m_pGlowEffect )

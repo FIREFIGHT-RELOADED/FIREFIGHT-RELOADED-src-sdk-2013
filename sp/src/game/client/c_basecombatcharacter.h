@@ -109,7 +109,7 @@ protected:
 
 #ifdef GLOWS_ENABLE	
 	virtual void		UpdateGlowEffect( void );
-	virtual void		UpdateGlowEffect(Vector &color, float alpha);
+	virtual void		UpdateGlowEffect(const Vector &color, float alpha);
 	virtual void		DestroyGlowEffect( void );
 #endif // GLOWS_ENABLE
 
