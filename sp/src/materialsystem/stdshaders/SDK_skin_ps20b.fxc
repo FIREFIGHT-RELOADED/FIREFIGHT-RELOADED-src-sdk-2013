@@ -212,7 +212,7 @@ float4 main( PS_INPUT i ) : COLOR
 	normalTexel = flTextureAmount * normalTexel + flWrinkleAmount * wrinkleNormal + flStretchAmount * stretchNormal;
 #endif
 
-#if (FASTPATH_NOBUMP == 0 )
+#if (FASTPATH_NOBUMP == 0)
 	tangentSpaceNormal = lerp( 2.0f * normalTexel.xyz - 1.0f, float3(0, 0, 1), g_fBaseMapAlphaPhongMask );
 #else
 	tangentSpaceNormal = float3(0, 0, 1);
@@ -228,7 +228,7 @@ float4 main( PS_INPUT i ) : COLOR
 #if (FASTPATH_NOBUMP == 0 )
 		fSpecMask = lerp( normalTexel.a, baseColor.a, g_fBaseMapAlphaPhongMask );
 #else
-	fSpecMask = baseColor.a;
+		fSpecMask = baseColor.a;
 #endif
 	}
 	#endif

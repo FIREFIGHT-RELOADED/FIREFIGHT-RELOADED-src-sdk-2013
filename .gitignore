@@ -25,6 +25,8 @@ ipch
 
 # OSX/Linux build products
 *.DS_Store
+
+# OSX/Linux build products
 *.mak
 *.mak.vpc_crc
 *.xcodeproj/
@@ -86,3 +88,6 @@ server.dylib.dSYM/
 *.db-shm
 *.db-wal
 *.bak
+
+# Build support files
+sp/src/devtools/gcc9+support.o
