@@ -43,7 +43,9 @@ CFRMainMenuPanel::CFRMainMenuPanel(vgui::Panel* parent) : CFRMainMenuPanelBase(p
 	m_pVideo = dynamic_cast<CFRVideoPanel *>(FindChildByName("BackgroundVideo"));
 	m_pLogo = dynamic_cast<CFRImagePanel *>(FindChildByName("Logo"));
 
-	//Q_strncpy(m_pzVideoLink, GetRandomVideo(), sizeof(m_pzVideoLink));
+	m_iVideoCount = CheckVideoCount();
+	//GetRandomVideo(m_pzVideoLink, sizeof(m_pzVideoLink));
+
 	SetVersionLabel();
 
 	DefaultLayout();
@@ -268,31 +270,27 @@ void CFRMainMenuPanel::SetHintLabel()
 	}
 };
 
-char* CFRMainMenuPanel::GetRandomVideo()
+size_t CFRMainMenuPanel::CheckVideoCount()
 {
-	char* pszBasePath = "media/bg_0";
-	int iCount = 0;
+	size_t i = 0;
 
-	for (int i = 0; i < 9; i++)
+	for (; i <= MAX_VIDEO_COUNT; i++)
 	{
 		char szPath[MAX_PATH];
-		char szNumber[5];
-		Q_snprintf(szNumber, sizeof(szNumber), "%d", iCount + 1);
-		Q_strncpy(szPath, pszBasePath, sizeof(szPath));
-		Q_strncat(szPath, szNumber, sizeof(szPath));
-		Q_strncat(szPath, ".bik", sizeof(szPath));
+		GetVideoPath(szPath, sizeof(szPath), i + 1);
 		if (!g_pFullFileSystem->FileExists(szPath))
 			break;
-		iCount++;
 	}
 
-	int iRand = rand() % iCount + 1;
-	char szPath[MAX_PATH];
-	char szNumber[5];
-	Q_snprintf(szNumber, sizeof(szNumber), "%d", iRand);
-	Q_strncpy(szPath, pszBasePath, sizeof(szPath));
-	Q_strncat(szPath, szNumber, sizeof(szPath));
-	Q_strncat(szPath, ".bik", sizeof(szPath));
-	char *szResult = szPath;
-	return szResult;
+	return i;
+}
+
+void CFRMainMenuPanel::GetVideoPath(char *szPath, size_t szPathLen, size_t i)
+{
+	V_snprintf(szPath, szPathLen, "media/bg_0%zd.bik", i);
+}
+
+void CFRMainMenuPanel::GetRandomVideo(char *szPath, size_t szPathLen)
+{
+	GetVideoPath(szPath, szPathLen, random->RandomInt(1, m_iVideoCount + 1));
 }

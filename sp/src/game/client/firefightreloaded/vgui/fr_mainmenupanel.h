@@ -26,6 +26,10 @@ public:
 	void SetHintLabel();
 
 private:
+	static size_t		CheckVideoCount();
+	static void			GetVideoPath(char *szPath, size_t szPathLen, size_t i);
+	void				GetRandomVideo(char *szPath, size_t szPathLen);
+
 	CExLabel			*m_pVersionLabel;
 	CExLabel			*m_pHintLabel;
 	CFRMainMenuButton	*m_pDisconnectButton;
@@ -41,7 +45,8 @@ private:
 	float				m_flActionThink;
 	float				m_flAnimationThink;
 	bool				m_bAnimationIn;
-	char*				GetRandomVideo();
+	size_t				m_iVideoCount;
+	static const size_t	MAX_VIDEO_COUNT = 8;
 };
 
 #endif // TFMAINMENUPANEL_H
