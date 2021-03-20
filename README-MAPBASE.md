@@ -40,8 +40,8 @@ or complicated code changes accessible and easy to use for level designers and o
 If you believe any content in Mapbase originates from any leak or unauthorized source (from Valve or otherwise), please contact Blixibon immediately.
 Mapbase is intended to be usable by everyone, including licensed Source projects and Steam mods. ***
 
-The Alien Swarm SDK was used to backport features and code from newer branches of Source into a Source 2013/Half-Life 2 environment.
-Mapbase also implements some of Tony Sergi's code changes from the Source 2007 SDK codebase. Both SDKs are publicly distributed by Valve and are available on Steam.
+-- The Alien Swarm SDK was used to backport features and code from newer branches of Source into a Source 2013/Half-Life 2 environment.
+-- Mapbase also implements some of Tony Sergi's code changes from the Source 2007 SDK codebase. Both SDKs are publicly distributed by Valve and are available on Steam.
 
 Some of the features backported from the Alien Swarm SDK (e.g. game instructor, particle rain) require assets from later versions of Source in order to work properly.
 The required assets have been backported from Alien Swarm and Left 4 Dead for the release build. They are not available in the code repository.
@@ -83,6 +83,7 @@ interchangeable arms; this may change in the future)
 - https://developer.valvesoftware.com/wiki/Npc_clawscanner#Strider_Scout_Issue (npc_clawscanner strider scout fix)
 - https://developer.valvesoftware.com/wiki/Ambient_generic:_stop_and_toggle_fix (Fixes for stopping/toggling ambient_generic)
 - https://developer.valvesoftware.com/wiki/Func_clip_vphysics ("Start Disabled" keyvalue fix)
+- https://developer.valvesoftware.com/wiki/Importing_CSS_Weapons_Into_HL2 (CS:S viewmodel chirality)
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -91,15 +92,21 @@ Direct contributions:
 - https://github.com/mapbase-source/source-sdk-2013/pull/5 (Custom VScript implementation by ReDucTor; was placed into feature branch before being merged in a subsequent PR)
 - https://github.com/mapbase-source/source-sdk-2013/pull/3 ("playvideo" command playback fix from Avantate)
 - https://github.com/mapbase-source/source-sdk-2013/pull/21 (Various GCC/Linux fixes from z33ky)
-- https://github.com/mapbase-source/source-sdk-2013/pull/47 (VScript utility/consistency changes from samisalreadytaken)
-- https://github.com/mapbase-source/source-sdk-2013/pull/59 (New VScript functions and singletons from samisalreadytaken based on API documentation in later Source/Source 2 games)
 - https://github.com/mapbase-source/source-sdk-2013/pull/60 (Adjustment by RoyaleNoir to one of Saul's VDC changes)
+- https://github.com/mapbase-source/source-sdk-2013/pull/84 (CS:S viewmodel chirality from 1upD)
 - Demo autorecord code provided by Klems
 - cc_emit crash fix provided by 1upD
 - Custom HL2 ammo crate models created by Rara (Textures created by Blixibon; This is asset-based and, aside from the SLAM crate, not reflected in the code)
 - Combine lock hardware on door01_left.mdl created by Kralich (This is asset-based and not reflected in the code)
 - npc_vehicledriver fixes provided by CrAzY
 - npc_combine cover behavior patches provided by iohnnyboy
+- logic_playmovie icon created by URAKOLOUY5 (This is asset-based and not reflected in the code)
+
+== Contributions from samisalreadytaken:
+=-- https://github.com/mapbase-source/source-sdk-2013/pull/47 (VScript utility/consistency changes)
+=-- https://github.com/mapbase-source/source-sdk-2013/pull/59 (New VScript functions and singletons based on API documentation in later Source/Source 2 games)
+=-- https://github.com/mapbase-source/source-sdk-2013/pull/80 (More VScript changes, including support for extremely flexible client/server messaging)
+=-- https://github.com/mapbase-source/source-sdk-2013/pull/105 (VScript fixes and optimizations, Vector class extensions, custom convars/commands)
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -112,6 +119,7 @@ Other sources:
 -- https://github.com/ValveSoftware/source-sdk-2013/pull/401 (func_rot_button "Starts locked" flag fix)
 -- https://github.com/ValveSoftware/source-sdk-2013/pull/391 (VBSP func_detail smoothing group fix)
 -- https://github.com/ValveSoftware/source-sdk-2013/pull/362 (npc_manhack npc_maker fix; Adjusted for formatting and save/restore in Mapbase)
+-- https://github.com/Petercov/Source-PlusPlus/commit/ecdf50c48cd31dec4dbdb7fea2d0780e7f0dd8ec (used as a guide for porting the Alien Swarm SDK response system)
 - https://github.com/momentum-mod/game/blob/1d066180b3bf74830c51e6914d46c40b0bea1fc2/mp/src/game/server/player.cpp#L6543 (spec_goto fix)
 - Poison zombie barnacle crash fix implemented based on a snippet from HL2: Plus posted by Agent Agrimar on Discord (Mapbase makes the barnacle recognize it as poison just like poison headcrabs)
 - https://gamebanana.com/skins/172192 (Airboat handling fix; This is asset-based and not reflected in the code)

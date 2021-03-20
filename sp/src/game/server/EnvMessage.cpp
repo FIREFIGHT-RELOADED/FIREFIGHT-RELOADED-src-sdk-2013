@@ -212,6 +212,10 @@ static ConCommand creditsdone("creditsdone", CreditsDone_f );
 
 extern ConVar sv_unlockedchapters;
 
+#ifdef MAPBASE
+extern int Mapbase_GetChapterCount();
+#endif
+
 void CCredits::OnRestore()
 {
 	BaseClass::OnRestore();
@@ -226,7 +230,20 @@ void CCredits::OnRestore()
 
 void CCredits::RollOutroCredits()
 {
+#ifdef FR_DLL
 	sv_unlockedchapters.SetValue( "99" );
+#else
+#ifdef MAPBASE
+	// Don't set this if we're using Mapbase chapters or if sv_unlockedchapters is already greater than 15
+	if (Mapbase_GetChapterCount() <= 0 && sv_unlockedchapters.GetInt() < 15)
+#endif
+	sv_unlockedchapters.SetValue( "15" );
+	
+	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+
+	CSingleUserRecipientFilter user( pPlayer );
+	user.MakeReliable();
+#endif
 
 	CRecipientFilter filter;
 	filter.AddAllPlayers();

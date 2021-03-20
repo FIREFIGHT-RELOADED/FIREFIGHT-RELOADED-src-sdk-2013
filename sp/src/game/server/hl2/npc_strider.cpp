@@ -397,6 +397,9 @@ BEGIN_DATADESC( CNPC_Strider )
 	DEFINE_INPUTFUNC( FIELD_VOID, "EnableMinigun", InputEnableMinigun ),
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "StopShootingMinigunForSeconds", InputStopShootingMinigunForSeconds ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "DisableCrouch", InputDisableCrouch ),
+#ifdef MAPBASE
+	DEFINE_INPUTFUNC( FIELD_VOID, "EnableCrouch", InputEnableCrouch ),
+#endif
 	DEFINE_INPUTFUNC( FIELD_VOID, "DisableMoveToLOS", InputDisableMoveToLOS ),
 	DEFINE_INPUTFUNC( FIELD_STRING, "DisableCollisionWith", InputDisableCollisionWith ),
 	DEFINE_INPUTFUNC( FIELD_STRING, "EnableCollisionWith", InputEnableCollisionWith ),
@@ -2363,6 +2366,15 @@ void CNPC_Strider::InputDisableCrouch( inputdata_t &inputdata )
 {
 	m_bDontCrouch = true;
 }
+
+#ifdef MAPBASE
+//---------------------------------------------------------
+//---------------------------------------------------------
+void CNPC_Strider::InputEnableCrouch( inputdata_t &inputdata )
+{
+	m_bDontCrouch = false;
+}
+#endif
 
 //---------------------------------------------------------
 //---------------------------------------------------------

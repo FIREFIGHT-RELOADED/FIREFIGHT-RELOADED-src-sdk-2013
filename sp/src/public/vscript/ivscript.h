@@ -95,6 +95,9 @@
 #ifndef IVSCRIPT_H
 #define IVSCRIPT_H
 
+#include <type_traits>
+#include <utility>
+
 #include "platform.h"
 #include "datamap.h"
 #include "appframework/IAppSystem.h"
@@ -158,20 +161,6 @@ public:
 	virtual KeyValues *GetKeyValuesFromScriptKV( IScriptVM *pVM, HSCRIPT hSKV ) = 0;
 #endif
 };
-
-//-----------------------------------------------------------------------------
-// 
-//-----------------------------------------------------------------------------
-
-#ifdef MAPBASE_VSCRIPT
-template <typename T> T *HScriptToClass( HSCRIPT hObj )
-{
-	return (hObj) ? (T*)g_pScriptVM->GetInstanceValue( hObj, GetScriptDesc( (T*)NULL ) ) : NULL;
-}
-#else
-DECLARE_POINTER_HANDLE( HSCRIPT );
-#define INVALID_HSCRIPT ((HSCRIPT)-1)
-#endif
 
 //-----------------------------------------------------------------------------
 // 
@@ -645,8 +634,21 @@ struct ScriptEnumDesc_t
 // 
 //-----------------------------------------------------------------------------
 
+// forwards T (and T&) if T is neither enum or an unsigned integer
+// the overload for int below captures enums and unsigned integers and "bends" them to int
+template<typename T>
+static inline typename std::enable_if<!std::is_enum<typename std::remove_reference<T>::type>::value && !std::is_unsigned<typename std::remove_reference<T>::type>::value, T&&>::type ToConstantVariant(T &&value)
+{
+	return std::forward<T>(value);
+}
+
+static inline int ToConstantVariant(int value)
+{
+	return value;
+}
+
 #define ScriptRegisterConstant( pVM, constant, description )									ScriptRegisterConstantNamed( pVM, constant, #constant, description )
-#define ScriptRegisterConstantNamed( pVM, constant, scriptName, description )					do { static ScriptConstantBinding_t binding; binding.m_pszScriptName = scriptName; binding.m_pszDescription = description; binding.m_data = constant; pVM->RegisterConstant( &binding ); } while (0)
+#define ScriptRegisterConstantNamed( pVM, constant, scriptName, description )					do { static ScriptConstantBinding_t binding; binding.m_pszScriptName = scriptName; binding.m_pszDescription = description; binding.m_data = ToConstantVariant(constant); pVM->RegisterConstant( &binding ); } while (0)
 
 // Could probably use a better name.
 // This is used for registering variants (particularly vectors) not tied to existing variables.
@@ -695,29 +697,16 @@ struct ScriptEnumDesc_t
 #define BEGIN_SCRIPTDESC( className, baseClass, description )								BEGIN_SCRIPTDESC_NAMED( className, baseClass, #className, description )
 #define BEGIN_SCRIPTDESC_ROOT( className, description )										BEGIN_SCRIPTDESC_ROOT_NAMED( className, #className, description )
 
-#ifdef MSVC
-	#define DEFINE_SCRIPTDESC_FUNCTION( className, baseClass ) \
-		ScriptClassDesc_t * GetScriptDesc( className * )
-#else
-	#define DEFINE_SCRIPTDESC_FUNCTION( className, baseClass ) \
-		template <> ScriptClassDesc_t * GetScriptDesc<baseClass>( baseClass *); \
-		template <> ScriptClassDesc_t * GetScriptDesc<className>( className *)
-#endif
-
 #define BEGIN_SCRIPTDESC_NAMED( className, baseClass, scriptName, description ) \
-	ScriptClassDesc_t g_##className##_ScriptDesc; \
-	DEFINE_SCRIPTDESC_FUNCTION( className, baseClass ) \
+	template <> ScriptClassDesc_t* GetScriptDesc<baseClass>(baseClass*); \
+	template <> ScriptClassDesc_t* GetScriptDesc<className>(className*); \
+	ScriptClassDesc_t & g_##className##_ScriptDesc = *GetScriptDesc<className>(nullptr); \
+	template <> ScriptClassDesc_t* GetScriptDesc<className>(className*) \
 	{ \
-		static bool bInitialized; \
-		if ( bInitialized ) \
-		{ \
-			return &g_##className##_ScriptDesc; \
-		} \
-		\
-		bInitialized = true; \
-		\
+		static ScriptClassDesc_t g_##className##_ScriptDesc; \
 		typedef className _className; \
 		ScriptClassDesc_t *pDesc = &g_##className##_ScriptDesc; \
+		if (pDesc->m_pszClassname) return pDesc; \
 		pDesc->m_pszDescription = description; \
 		ScriptInitClassDescNamed( pDesc, className, GetScriptDescForClass( baseClass ), scriptName ); \
 		ScriptClassDesc_t *pInstanceHelperBase = pDesc->m_pBaseDesc; \
@@ -932,6 +921,9 @@ public:
 	virtual bool SetValue( HSCRIPT hScope, const char *pszKey, const char *pszValue ) = 0;
 	virtual bool SetValue( HSCRIPT hScope, const char *pszKey, const ScriptVariant_t &value ) = 0;
 	bool SetValue( const char *pszKey, const ScriptVariant_t &value )																{ return SetValue(NULL, pszKey, value ); }
+#ifdef MAPBASE_VSCRIPT
+	virtual bool SetValue( HSCRIPT hScope, const ScriptVariant_t& key, const ScriptVariant_t& val ) = 0;
+#endif
 
 	virtual void CreateTable( ScriptVariant_t &Table ) = 0;
 	virtual int	GetNumTableEntries( HSCRIPT hScope ) = 0;
@@ -939,13 +931,19 @@ public:
 
 	virtual bool GetValue( HSCRIPT hScope, const char *pszKey, ScriptVariant_t *pValue ) = 0;
 	bool GetValue( const char *pszKey, ScriptVariant_t *pValue )																	{ return GetValue(NULL, pszKey, pValue ); }
+#ifdef MAPBASE_VSCRIPT
+	virtual bool GetValue( HSCRIPT hScope, ScriptVariant_t key, ScriptVariant_t* pValue ) = 0;
+#endif
 	virtual void ReleaseValue( ScriptVariant_t &value ) = 0;
 
 	virtual bool ClearValue( HSCRIPT hScope, const char *pszKey ) = 0;
 	bool ClearValue( const char *pszKey)																							{ return ClearValue( NULL, pszKey ); }
+#ifdef MAPBASE_VSCRIPT
+	virtual bool ClearValue( HSCRIPT hScope, ScriptVariant_t pKey ) = 0;
+#endif
 
 #ifdef MAPBASE_VSCRIPT
-	// virtual void CreateArray(ScriptVariant_t &arr, int size = 0) = 0;
+	virtual void CreateArray(ScriptVariant_t &arr, int size = 0) = 0;
 	virtual bool ArrayAppend(HSCRIPT hArray, const ScriptVariant_t &val) = 0;
 #endif
 
@@ -1094,6 +1092,20 @@ public:
 #endif
 };
 
+//-----------------------------------------------------------------------------
+// 
+//-----------------------------------------------------------------------------
+
+#ifdef MAPBASE_VSCRIPT
+template <typename T> T *HScriptToClass( HSCRIPT hObj )
+{
+	extern IScriptVM *g_pScriptVM;
+	return (hObj) ? (T*)g_pScriptVM->GetInstanceValue( hObj, GetScriptDesc( (T*)NULL ) ) : NULL;
+}
+#else
+DECLARE_POINTER_HANDLE( HSCRIPT );
+#define INVALID_HSCRIPT ((HSCRIPT)-1)
+#endif
 
 //-----------------------------------------------------------------------------
 // Script scope helper class

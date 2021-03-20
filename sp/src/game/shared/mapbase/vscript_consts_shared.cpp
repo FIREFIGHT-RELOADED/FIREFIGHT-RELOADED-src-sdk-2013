@@ -66,7 +66,7 @@ BEGIN_SCRIPTENUM( RenderMode, "Render modes used by Get/SetRenderMode" )
 	DEFINE_ENUMCONST_NAMED( kRenderTransAdd, "Additive", "" )
 	DEFINE_ENUMCONST_NAMED( kRenderEnvironmental, "Environmental", "" )
 	DEFINE_ENUMCONST_NAMED( kRenderTransAddFrameBlend, "AdditiveFractionalFrame", "" )
-	DEFINE_ENUMCONST_NAMED( kRenderTransAlphaAdd, "Alpha Add", "" )
+	DEFINE_ENUMCONST_NAMED( kRenderTransAlphaAdd, "AlphaAdd", "" )
 	DEFINE_ENUMCONST_NAMED( kRenderWorldGlow, "WorldSpaceGlow", "" )
 	DEFINE_ENUMCONST_NAMED( kRenderNone, "None", "" )
 
@@ -483,7 +483,8 @@ void RegisterSharedScriptConstants()
 	//ScriptRegisterConstant( g_pScriptVM, AISS_AUTO_PVS_AFTER_PVS, "" );
 	ScriptRegisterConstant( g_pScriptVM, AI_SLEEP_FLAGS_NONE, "No sleep flags. (NPC sleep flag used in Add/Remove/HasSleepFlags())" );
 	ScriptRegisterConstant( g_pScriptVM, AI_SLEEP_FLAG_AUTO_PVS, "Indicates a NPC will sleep upon exiting PVS. (NPC sleep flag used in Add/Remove/HasSleepFlags())" );
-	ScriptRegisterConstant( g_pScriptVM, AI_SLEEP_FLAG_AUTO_PVS_AFTER_PVS, "Indicates a NPC will sleep upon exiting PVS after entering PVS for the first time(?????) (NPC sleep flag used in Add/Remove/HasSleepFlags())" );
+	// note: the one "?" is escaped to prevent evaluation of a trigraph
+	ScriptRegisterConstant( g_pScriptVM, AI_SLEEP_FLAG_AUTO_PVS_AFTER_PVS, "Indicates a NPC will sleep upon exiting PVS after entering PVS for the first time(????\?) (NPC sleep flag used in Add/Remove/HasSleepFlags())" );
 
 	ScriptRegisterConstantNamed( g_pScriptVM, CAI_BaseNPC::SCRIPT_PLAYING, "SCRIPT_PLAYING", "Playing the action animation." );
 	ScriptRegisterConstantNamed( g_pScriptVM, CAI_BaseNPC::SCRIPT_WAIT, "SCRIPT_WAIT", "Waiting on everyone in the script to be ready. Plays the pre idle animation if there is one." );

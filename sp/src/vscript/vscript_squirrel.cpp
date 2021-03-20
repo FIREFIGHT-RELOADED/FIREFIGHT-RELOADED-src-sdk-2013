@@ -31,7 +31,6 @@
 #include "squirrel/squirrel/sqvm.h"
 #include "squirrel/squirrel/sqclosure.h"
 
-#include "color.h"
 #include "tier1/utlbuffer.h"
 #include "tier1/mapbase_con_groups.h"
 
@@ -79,24 +78,34 @@ struct ReadStateMap
 		}
 	}
 
-	bool CheckCache(CUtlBuffer* pBuffer, HSQOBJECT** obj)
+	bool CheckCache(CUtlBuffer* pBuffer, HSQUIRRELVM vm, int * outmarker)
 	{
 		int marker = pBuffer->GetInt();
 
 		auto idx = cache.Find(marker);
 		if (idx != cache.InvalidIndex())
 		{
-			*obj = &cache[idx];
+			sq_pushobject(vm, cache[idx]);
 			return true;
 		}
 		else
 		{
-			HSQOBJECT temp;
-			sq_resetobject(&temp);
-			auto idx = cache.Insert(marker, temp);
-			*obj = &cache[idx];
+			*outmarker = marker;
 			return false;
 		}
+	}
+
+	void StoreInCache(int marker, HSQOBJECT& obj)
+	{
+		cache.Insert(marker, obj);
+	}
+
+	void StoreTopInCache(int marker)
+	{
+		HSQOBJECT obj;
+		sq_getstackobj(vm_, -1, &obj);
+		sq_addref(vm_, &obj);
+		cache.Insert(marker, obj);
 	}
 };
 
@@ -192,17 +201,20 @@ public:
 
 	virtual bool SetValue(HSCRIPT hScope, const char* pszKey, const char* pszValue) override;
 	virtual bool SetValue(HSCRIPT hScope, const char* pszKey, const ScriptVariant_t& value) override;
+	virtual bool SetValue(HSCRIPT hScope, const ScriptVariant_t& key, const ScriptVariant_t& val) override;
 
 	virtual void CreateTable(ScriptVariant_t& Table) override;
 	virtual int	GetNumTableEntries(HSCRIPT hScope) override;
 	virtual int GetKeyValue(HSCRIPT hScope, int nIterator, ScriptVariant_t* pKey, ScriptVariant_t* pValue) override;
 
 	virtual bool GetValue(HSCRIPT hScope, const char* pszKey, ScriptVariant_t* pValue) override;
+	virtual bool GetValue(HSCRIPT hScope, ScriptVariant_t key, ScriptVariant_t* pValue) override;
 	virtual void ReleaseValue(ScriptVariant_t& value) override;
 
 	virtual bool ClearValue(HSCRIPT hScope, const char* pszKey) override;
+	virtual bool ClearValue( HSCRIPT hScope, ScriptVariant_t pKey ) override;
 
-	// virtual void CreateArray(ScriptVariant_t &arr, int size = 0) override;
+	virtual void CreateArray(ScriptVariant_t &arr, int size = 0) override;
 	virtual bool ArrayAppend(HSCRIPT hArray, const ScriptVariant_t &val) override;
 
 	//----------------------------------------------------------------------------
@@ -229,7 +241,7 @@ public:
 	HSQOBJECT regexpClass_;
 };
 
-SQUserPointer TYPETAG_VECTOR = "VectorTypeTag";
+static char TYPETAG_VECTOR[] = "VectorTypeTag";
 
 namespace SQVector
 {
@@ -258,7 +270,7 @@ namespace SQVector
 		return 0;
 	}
 
-	SQInteger Get(HSQUIRRELVM vm)
+	SQInteger _get(HSQUIRRELVM vm)
 	{
 		const char* key = nullptr;
 		sq_getstring(vm, 2, &key);
@@ -284,7 +296,7 @@ namespace SQVector
 		return 1;
 	}
 
-	SQInteger Set(HSQUIRRELVM vm)
+	SQInteger _set(HSQUIRRELVM vm)
 	{
 		const char* key = nullptr;
 		sq_getstring(vm, 2, &key);
@@ -316,7 +328,7 @@ namespace SQVector
 		return 0;
 	}
 
-	SQInteger Add(HSQUIRRELVM vm)
+	SQInteger _add(HSQUIRRELVM vm)
 	{
 		Vector* v1 = nullptr;
 		Vector* v2 = nullptr;
@@ -338,7 +350,7 @@ namespace SQVector
 		return 1;
 	}
 
-	SQInteger Sub(HSQUIRRELVM vm)
+	SQInteger _sub(HSQUIRRELVM vm)
 	{
 		Vector* v1 = nullptr;
 		Vector* v2 = nullptr;
@@ -360,23 +372,20 @@ namespace SQVector
 		return 1;
 	}
 
-	SQInteger Multiply(HSQUIRRELVM vm)
+	SQInteger _multiply(HSQUIRRELVM vm)
 	{
 		Vector* v1 = nullptr;
 
 		if (sq_gettop(vm) != 2 ||
 			SQ_FAILED(sq_getinstanceup(vm, 1, (SQUserPointer*)&v1, TYPETAG_VECTOR)))
 		{
-			return sq_throwerror(vm, "Expected (Vector, float) or (Vector, Vector)");
+			return sq_throwerror(vm, "Expected (Vector, Vector|float)");
 		}
-
-		SQObjectType paramType = sq_gettype(vm, 2);
 
 		float s = 0.0;
 		Vector* v2 = nullptr;
 
-		if ((paramType & SQOBJECT_NUMERIC) &&
-			SQ_SUCCEEDED(sq_getfloat(vm, 2, &s)))
+		if ( SQ_SUCCEEDED(sq_getfloat(vm, 2, &s)) )
 		{
 			sq_getclass(vm, 1);
 			sq_createinstance(vm, -1);
@@ -387,8 +396,7 @@ namespace SQVector
 
 			return 1;
 		}
-		else if (paramType == OT_INSTANCE &&
-			SQ_SUCCEEDED(sq_getinstanceup(vm, 1, (SQUserPointer*)&v2, TYPETAG_VECTOR)))
+		else if ( SQ_SUCCEEDED(sq_getinstanceup(vm, 1, (SQUserPointer*)&v2, TYPETAG_VECTOR)) )
 		{
 			sq_getclass(vm, 1);
 			sq_createinstance(vm, -1);
@@ -401,27 +409,24 @@ namespace SQVector
 		}
 		else
 		{
-			return sq_throwerror(vm, "Expected (Vector, float) or (Vector, Vector)");
+			return sq_throwerror(vm, "Expected (Vector, Vector|float)");
 		}
 	}
 
-	SQInteger Divide(HSQUIRRELVM vm)
+	SQInteger _divide(HSQUIRRELVM vm)
 	{
 		Vector* v1 = nullptr;
 
 		if (sq_gettop(vm) != 2 ||
 			SQ_FAILED(sq_getinstanceup(vm, 1, (SQUserPointer*)&v1, TYPETAG_VECTOR)))
 		{
-			return sq_throwerror(vm, "Expected (Vector, float) or (Vector, Vector)");
+			return sq_throwerror(vm, "Expected (Vector, Vector|float)");
 		}
-
-		SQObjectType paramType = sq_gettype(vm, 2);
 
 		float s = 0.0;
 		Vector* v2 = nullptr;
 
-		if ((paramType & SQOBJECT_NUMERIC) &&
-			SQ_SUCCEEDED(sq_getfloat(vm, 2, &s)))
+		if ( SQ_SUCCEEDED(sq_getfloat(vm, 2, &s)) )
 		{
 			sq_getclass(vm, 1);
 			sq_createinstance(vm, -1);
@@ -432,8 +437,7 @@ namespace SQVector
 
 			return 1;
 		}
-		else if (paramType == OT_INSTANCE &&
-			SQ_SUCCEEDED(sq_getinstanceup(vm, 1, (SQUserPointer*)&v2, TYPETAG_VECTOR)))
+		else if ( SQ_SUCCEEDED(sq_getinstanceup(vm, 1, (SQUserPointer*)&v2, TYPETAG_VECTOR)) )
 		{
 			sq_getclass(vm, 1);
 			sq_createinstance(vm, -1);
@@ -446,8 +450,219 @@ namespace SQVector
 		}
 		else
 		{
-			return sq_throwerror(vm, "Expected (Vector, float) or (Vector, Vector)");
+			return sq_throwerror(vm, "Expected (Vector, Vector|float)");
 		}
+	}
+
+	SQInteger _unm(HSQUIRRELVM vm)
+	{
+		Vector* v1 = nullptr;
+
+		if (sq_gettop(vm) != 1 ||
+			SQ_FAILED(sq_getinstanceup(vm, 1, (SQUserPointer*)&v1, TYPETAG_VECTOR)))
+		{
+			return sq_throwerror(vm, "Expected (Vector)");
+		}
+
+		v1->Negate();
+
+		return 1;
+	}
+
+	// multi purpose - copy from input vector, or init with 3 float input
+	SQInteger Set(HSQUIRRELVM vm)
+	{
+		SQInteger top = sq_gettop(vm);
+		Vector* v1 = nullptr;
+
+		if ( top < 2 || SQ_FAILED(sq_getinstanceup(vm, 1, (SQUserPointer*)&v1, TYPETAG_VECTOR)) )
+		{
+			return sq_throwerror(vm, "Expected (Vector, Vector)");
+		}
+
+		Vector* v2 = nullptr;
+
+		if ( SQ_SUCCEEDED(sq_getinstanceup(vm, 2, (SQUserPointer*)&v2, TYPETAG_VECTOR)) )
+		{
+			if ( top != 2 )
+				return sq_throwerror(vm, "Expected (Vector, Vector)");
+
+			VectorCopy( *v2, *v1 );
+			sq_remove( vm, -1 );
+
+			return 1;
+		}
+
+		float x, y, z;
+
+		if ( top == 4 &&
+			SQ_SUCCEEDED(sq_getfloat(vm, 2, &x)) &&
+			SQ_SUCCEEDED(sq_getfloat(vm, 3, &y)) &&
+			SQ_SUCCEEDED(sq_getfloat(vm, 4, &z)) )
+		{
+			v1->Init( x, y, z );
+			sq_pop( vm, 3 );
+
+			return 1;
+		}
+
+		return sq_throwerror(vm, "Expected (Vector, Vector)");
+	}
+
+	SQInteger Add(HSQUIRRELVM vm)
+	{
+		Vector* v1 = nullptr;
+		Vector* v2 = nullptr;
+
+		if (sq_gettop(vm) != 2 ||
+			SQ_FAILED(sq_getinstanceup(vm, 1, (SQUserPointer*)&v1, TYPETAG_VECTOR)) ||
+			SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&v2, TYPETAG_VECTOR)))
+		{
+			return sq_throwerror(vm, "Expected (Vector, Vector)");
+		}
+
+		VectorAdd( *v1, *v2, *v1 );
+		sq_remove( vm, -1 );
+
+		return 1;
+	}
+
+	SQInteger Subtract(HSQUIRRELVM vm)
+	{
+		Vector* v1 = nullptr;
+		Vector* v2 = nullptr;
+
+		if (sq_gettop(vm) != 2 ||
+			SQ_FAILED(sq_getinstanceup(vm, 1, (SQUserPointer*)&v1, TYPETAG_VECTOR)) ||
+			SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&v2, TYPETAG_VECTOR)))
+		{
+			return sq_throwerror(vm, "Expected (Vector, Vector)");
+		}
+
+		VectorSubtract( *v1, *v2, *v1 );
+		sq_remove( vm, -1 );
+
+		return 1;
+	}
+
+	SQInteger Multiply(HSQUIRRELVM vm)
+	{
+		Vector* v1 = nullptr;
+
+		if (sq_gettop(vm) != 2 ||
+			SQ_FAILED(sq_getinstanceup(vm, 1, (SQUserPointer*)&v1, TYPETAG_VECTOR)))
+		{
+			return sq_throwerror(vm, "Expected (Vector, Vector|float)");
+		}
+
+		Vector* v2 = nullptr;
+
+		if ( SQ_SUCCEEDED(sq_getinstanceup( vm, 2, (SQUserPointer*)&v2, TYPETAG_VECTOR )) )
+		{
+			VectorMultiply( *v1, *v2, *v1 );
+			sq_remove( vm, -1 );
+
+			return 1;
+		}
+
+		float flInput;
+
+		if ( SQ_SUCCEEDED(sq_getfloat( vm, 2, &flInput )) )
+		{
+			VectorMultiply( *v1, flInput, *v1 );
+			sq_remove( vm, -1 );
+
+			return 1;
+		}
+
+		return sq_throwerror(vm, "Expected (Vector, Vector|float)");
+	}
+
+	SQInteger Divide(HSQUIRRELVM vm)
+	{
+		Vector* v1 = nullptr;
+
+		if (sq_gettop(vm) != 2 ||
+			SQ_FAILED(sq_getinstanceup(vm, 1, (SQUserPointer*)&v1, TYPETAG_VECTOR)))
+		{
+			return sq_throwerror(vm, "Expected (Vector, Vector|float)");
+		}
+
+		Vector* v2 = nullptr;
+
+		if ( SQ_SUCCEEDED(sq_getinstanceup( vm, 2, (SQUserPointer*)&v2, TYPETAG_VECTOR )) )
+		{
+			VectorDivide( *v1, *v2, *v1 );
+			sq_remove( vm, -1 );
+
+			return 1;
+		}
+
+		float flInput;
+
+		if ( SQ_SUCCEEDED(sq_getfloat( vm, 2, &flInput )) )
+		{
+			VectorDivide( *v1, flInput, *v1 );
+			sq_remove( vm, -1 );
+
+			return 1;
+		}
+
+		return sq_throwerror(vm, "Expected (Vector, Vector|float)");
+	}
+
+	SQInteger DistTo(HSQUIRRELVM vm)
+	{
+		Vector* v1 = nullptr;
+		Vector* v2 = nullptr;
+
+		if (sq_gettop(vm) != 2 ||
+			SQ_FAILED(sq_getinstanceup(vm, 1, (SQUserPointer*)&v1, TYPETAG_VECTOR)) ||
+			SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&v2, TYPETAG_VECTOR)))
+		{
+			return sq_throwerror(vm, "Expected (Vector, Vector)");
+		}
+
+		sq_pushfloat( vm, v1->DistTo(*v2) );
+
+		return 1;
+	}
+
+	SQInteger DistToSqr(HSQUIRRELVM vm)
+	{
+		Vector* v1 = nullptr;
+		Vector* v2 = nullptr;
+
+		if (sq_gettop(vm) != 2 ||
+			SQ_FAILED(sq_getinstanceup(vm, 1, (SQUserPointer*)&v1, TYPETAG_VECTOR)) ||
+			SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&v2, TYPETAG_VECTOR)))
+		{
+			return sq_throwerror(vm, "Expected (Vector, Vector)");
+		}
+
+		sq_pushfloat( vm, v1->DistToSqr(*v2) );
+
+		return 1;
+	}
+
+	SQInteger IsEqualTo(HSQUIRRELVM vm)
+	{
+		Vector* v1 = nullptr;
+		Vector* v2 = nullptr;
+
+		if (sq_gettop(vm) < 2 || // bother checking > 3?
+			SQ_FAILED(sq_getinstanceup(vm, 1, (SQUserPointer*)&v1, TYPETAG_VECTOR)) ||
+			SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&v2, TYPETAG_VECTOR)) )
+		{
+			return sq_throwerror(vm, "Expected (Vector, Vector, float)");
+		}
+
+		float tolerance = 0.0f;
+		sq_getfloat( vm, 3, &tolerance );
+
+		sq_pushbool( vm, VectorsAreEqual( *v1, *v2, tolerance ) );
+
+		return 1;
 	}
 
 	SQInteger Length(HSQUIRRELVM vm)
@@ -545,30 +760,23 @@ namespace SQVector
 	SQInteger Scale(HSQUIRRELVM vm)
 	{
 		Vector* v1 = nullptr;
+		float s = 0.0f;
 
 		if (sq_gettop(vm) != 2 ||
-			SQ_FAILED(sq_getinstanceup(vm, 1, (SQUserPointer*)&v1, TYPETAG_VECTOR)))
+			SQ_FAILED(sq_getinstanceup(vm, 1, (SQUserPointer*)&v1, TYPETAG_VECTOR)) ||
+			SQ_SUCCEEDED(sq_getfloat(vm, 2, &s)))
 		{
 			return sq_throwerror(vm, "Expected (Vector, float)");
 		}
 
-		float s = 0.0;
+		sq_getclass(vm, 1);
+		sq_createinstance(vm, -1);
+		SQUserPointer p;
+		sq_getinstanceup(vm, -1, &p, 0);
+		new(p) Vector((*v1) * s);
+		sq_remove(vm, -2);
 
-		if (SQ_SUCCEEDED(sq_getfloat(vm, 2, &s)))
-		{
-			sq_getclass(vm, 1);
-			sq_createinstance(vm, -1);
-			SQUserPointer p;
-			sq_getinstanceup(vm, -1, &p, 0);
-			new(p) Vector((*v1) * s);
-			sq_remove(vm, -2);
-
-			return 1;
-		}
-		else
-		{
-			return sq_throwerror(vm, "Expected (Vector, float)");
-		}
+		return 1;
 	}
 
 	SQInteger Dot(HSQUIRRELVM vm)
@@ -601,6 +809,42 @@ namespace SQVector
 		return 1;
 	}
 
+	SQInteger FromKVString(HSQUIRRELVM vm)
+	{
+		Vector* v1 = nullptr;
+		const char* szInput;
+
+		if (sq_gettop(vm) != 2 ||
+			SQ_FAILED(sq_getinstanceup(vm, 1, (SQUserPointer*)&v1, TYPETAG_VECTOR)) ||
+			SQ_FAILED(sq_getstring(vm, 2, &szInput)) )
+		{
+			return sq_throwerror(vm, "Expected (Vector, string)");
+		}
+
+		float x = 0.0f, y = 0.0f, z = 0.0f;
+
+		if ( sscanf( szInput, "%f %f %f", &x, &y, &z ) < 3 ) // UTIL_StringToVector
+		{
+			// Don't throw, return null while invalidating the input vector.
+			// This allows the user to easily check for input errors without halting.
+			//return sq_throwerror(vm, "invalid KV string");
+
+			sq_pushnull(vm);
+			*v1 = vec3_invalid;
+
+			return 1;
+		}
+
+		v1->x = x;
+		v1->y = y;
+		v1->z = z;
+
+		// return input vector
+		sq_remove( vm, -1 );
+
+		return 1;
+	}
+
 	SQInteger Cross(HSQUIRRELVM vm)
 	{
 		Vector* v1 = nullptr;
@@ -623,6 +867,25 @@ namespace SQVector
 		return 1;
 	}
 
+	SQInteger WithinAABox(HSQUIRRELVM vm)
+	{
+		Vector* v1 = nullptr;
+		Vector* mins = nullptr;
+		Vector* maxs = nullptr;
+
+		if (sq_gettop(vm) != 3 ||
+			SQ_FAILED(sq_getinstanceup(vm, 1, (SQUserPointer*)&v1, TYPETAG_VECTOR)) ||
+			SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&mins, TYPETAG_VECTOR)) ||
+			SQ_FAILED(sq_getinstanceup(vm, 3, (SQUserPointer*)&maxs, TYPETAG_VECTOR)))
+		{
+			return sq_throwerror(vm, "Expected (Vector, Vector, Vector)");
+		}
+
+		sq_pushbool( vm, v1->WithinAABox( *mins, *maxs ) );
+
+		return 1;
+	}
+
 	SQInteger ToString(HSQUIRRELVM vm)
 	{
 		Vector* v1 = nullptr;
@@ -633,7 +896,7 @@ namespace SQVector
 			return sq_throwerror(vm, "Expected (Vector)");
 		}
 
-		sqstd_pushstringf(vm, "(vector: (%f, %f, %f))", v1->x, v1->y, v1->z);
+		sqstd_pushstringf(vm, "(Vector %p [%f %f %f])", (void*)v1, v1->x, v1->y, v1->z);
 		return 1;
 	}
 
@@ -689,22 +952,33 @@ namespace SQVector
 
 	static const SQRegFunction funcs[] = {
 		{_SC("constructor"), Construct,0,nullptr},
-		{_SC("_get"), Get, 2, _SC(".s")},
-		{_SC("_set"), Set, 3, _SC(".sn")},
-		{_SC("_add"), Add, 2, _SC("..")},
-		{_SC("_sub"), Sub, 2, _SC("..")},
-		{_SC("_mul"), Multiply, 2, _SC("..")},
-		{_SC("_div"), Divide, 2, _SC("..")},
+		{_SC("_get"), _get, 2, _SC(".s")},
+		{_SC("_set"), _set, 3, _SC(".sn")},
+		{_SC("_add"), _add, 2, _SC("..")},
+		{_SC("_sub"), _sub, 2, _SC("..")},
+		{_SC("_mul"), _multiply, 2, _SC("..")},
+		{_SC("_div"), _divide, 2, _SC("..")},
+		{_SC("_unm"), _unm, 1, _SC(".")},
+		{_SC("Set"), Set, -2, _SC("..nn")},
+		{_SC("Add"), Add, 2, _SC("..")},
+		{_SC("Subtract"), Subtract, 2, _SC("..")},
+		{_SC("Multiply"), Multiply, 2, _SC("..")},
+		{_SC("Divide"), Divide, 2, _SC("..")},
+		{_SC("DistTo"), DistTo, 2, _SC("..")},
+		{_SC("DistToSqr"), DistToSqr, 2, _SC("..")},
+		{_SC("IsEqualTo"), IsEqualTo, -2, _SC("..n")},
 		{_SC("Length"), Length, 1, _SC(".")},
 		{_SC("LengthSqr"), LengthSqr, 1, _SC(".")},
 		{_SC("Length2D"), Length2D, 1, _SC(".")},
 		{_SC("Length2DSqr"), Length2DSqr, 1, _SC(".")},
 		{_SC("Normalized"), Normalized, 1, _SC(".")},
 		{_SC("Norm"), Norm, 1, _SC(".")},
-		{_SC("Scale"), Scale, 2, _SC("..")},
+		{_SC("Scale"), Scale, 2, _SC(".n")},		// identical to _multiply
 		{_SC("Dot"), Dot, 2, _SC("..")},
 		{_SC("Cross"), Cross, 2, _SC("..")},
+		{_SC("WithinAABox"), WithinAABox, 3, _SC("...")},
 		{_SC("ToKVString"), ToKVString, 1, _SC(".")},
+		{_SC("FromKVString"), FromKVString, 2, _SC(".s")},
 		{_SC("_tostring"), ToString, 1, _SC(".")},
 		{_SC("_typeof"), TypeOf, 1, _SC(".")},
 		{_SC("_nexti"), Nexti, 2, _SC("..")},
@@ -815,7 +1089,7 @@ void PushVariant(HSQUIRRELVM vm, const ScriptVariant_t& value)
 		sq_createinstance(vm, -1);
 		SQUserPointer p;
 		sq_getinstanceup(vm, -1, &p, 0);
-		new(p) Vector(value);
+		new(p) Vector(static_cast<const Vector&>(value));
 		sq_remove(vm, -2);
 		break;
 	}
@@ -1408,6 +1682,19 @@ const char * ScriptDataTypeToName(ScriptDataType_t datatype)
 	}
 }
 
+
+#define PushDocumentationRegisterFunction( szName )	\
+	sq_pushroottable(vm);							\
+	sq_pushstring(vm, "__Documentation", -1);		\
+	sq_get(vm, -2);									\
+	sq_pushstring(vm, szName, -1);					\
+	sq_get(vm, -2);									\
+	sq_push(vm, -2);
+
+#define CallDocumentationRegisterFunction( paramcount )	\
+	sq_call(vm, paramcount+1, SQFalse, SQFalse);		\
+	sq_pop(vm, 3);
+
 void RegisterDocumentation(HSQUIRRELVM vm, const ScriptFuncDescriptor_t& pFuncDesc, ScriptClassDesc_t* pClassDesc = nullptr)
 {
 	SquirrelSafeCheck safeCheck(vm);
@@ -1440,16 +1727,11 @@ void RegisterDocumentation(HSQUIRRELVM vm, const ScriptFuncDescriptor_t& pFuncDe
 	V_strcat_safe(signature, ")");
 
 	// RegisterHelp(name, signature, description)
-	sq_pushroottable(vm);
-	sq_pushstring(vm, "RegisterHelp", -1);
-	sq_get(vm, -2);
-	sq_remove(vm, -2);
-	sq_pushroottable(vm);
-	sq_pushstring(vm, name, -1);
-	sq_pushstring(vm, signature, -1);
-	sq_pushstring(vm, pFuncDesc.m_pszDescription ? pFuncDesc.m_pszDescription : "", -1);
-	sq_call(vm, 4, SQFalse, SQFalse);
-	sq_pop(vm, 1);
+	PushDocumentationRegisterFunction( "RegisterHelp" );
+		sq_pushstring(vm, name, -1);
+		sq_pushstring(vm, signature, -1);
+		sq_pushstring(vm, pFuncDesc.m_pszDescription ? pFuncDesc.m_pszDescription : "", -1);
+	CallDocumentationRegisterFunction( 3 );
 }
 
 void RegisterClassDocumentation(HSQUIRRELVM vm, const ScriptClassDesc_t* pClassDesc)
@@ -1477,16 +1759,11 @@ void RegisterClassDocumentation(HSQUIRRELVM vm, const ScriptClassDesc_t* pClassD
 	}
 
 	// RegisterClassHelp(name, base, description)
-	sq_pushroottable(vm);
-	sq_pushstring(vm, "RegisterClassHelp", -1);
-	sq_get(vm, -2);
-	sq_remove(vm, -2);
-	sq_pushroottable(vm);
-	sq_pushstring(vm, name, -1);
-	sq_pushstring(vm, base, -1);
-	sq_pushstring(vm, description, -1);
-	sq_call(vm, 4, SQFalse, SQFalse);
-	sq_pop(vm, 1);
+	PushDocumentationRegisterFunction( "RegisterClassHelp" );
+		sq_pushstring(vm, name, -1);
+		sq_pushstring(vm, base, -1);
+		sq_pushstring(vm, description, -1);
+	CallDocumentationRegisterFunction( 3 );
 }
 
 void RegisterEnumDocumentation(HSQUIRRELVM vm, const ScriptEnumDesc_t* pClassDesc)
@@ -1499,16 +1776,11 @@ void RegisterEnumDocumentation(HSQUIRRELVM vm, const ScriptEnumDesc_t* pClassDes
 	const char *name = pClassDesc->m_pszScriptName;
 
 	// RegisterEnumHelp(name, description)
-	sq_pushroottable(vm);
-	sq_pushstring(vm, "RegisterEnumHelp", -1);
-	sq_get(vm, -2);
-	sq_remove(vm, -2);
-	sq_pushroottable(vm);
-	sq_pushstring(vm, name, -1);
-	sq_pushinteger(vm, pClassDesc->m_ConstantBindings.Count());
-	sq_pushstring(vm, pClassDesc->m_pszDescription ? pClassDesc->m_pszDescription : "", -1);
-	sq_call(vm, 4, SQFalse, SQFalse);
-	sq_pop(vm, 1);
+	PushDocumentationRegisterFunction( "RegisterEnumHelp" );
+		sq_pushstring(vm, name, -1);
+		sq_pushinteger(vm, pClassDesc->m_ConstantBindings.Count());
+		sq_pushstring(vm, pClassDesc->m_pszDescription ? pClassDesc->m_pszDescription : "", -1);
+	CallDocumentationRegisterFunction( 3 );
 }
 
 void RegisterConstantDocumentation( HSQUIRRELVM vm, const ScriptConstantBinding_t* pConstDesc, const char *pszAsString, ScriptEnumDesc_t* pEnumDesc = nullptr )
@@ -1532,16 +1804,11 @@ void RegisterConstantDocumentation( HSQUIRRELVM vm, const ScriptConstantBinding_
 	V_snprintf(signature, sizeof(signature), "%s (%s)", pszAsString, ScriptDataTypeToName(pConstDesc->m_data.m_type));
 
 	// RegisterConstHelp(name, signature, description)
-	sq_pushroottable(vm);
-	sq_pushstring(vm, "RegisterConstHelp", -1);
-	sq_get(vm, -2);
-	sq_remove(vm, -2);
-	sq_pushroottable(vm);
-	sq_pushstring(vm, name, -1);
-	sq_pushstring(vm, signature, -1);
-	sq_pushstring(vm, pConstDesc->m_pszDescription ? pConstDesc->m_pszDescription : "", -1);
-	sq_call(vm, 4, SQFalse, SQFalse);
-	sq_pop(vm, 1);
+	PushDocumentationRegisterFunction( "RegisterConstHelp" );
+		sq_pushstring(vm, name, -1);
+		sq_pushstring(vm, signature, -1);
+		sq_pushstring(vm, pConstDesc->m_pszDescription ? pConstDesc->m_pszDescription : "", -1);
+	CallDocumentationRegisterFunction( 3 );
 }
 
 void RegisterHookDocumentation(HSQUIRRELVM vm, const ScriptHook_t* pHook, const ScriptFuncDescriptor_t& pFuncDesc, ScriptClassDesc_t* pClassDesc = nullptr)
@@ -1579,16 +1846,11 @@ void RegisterHookDocumentation(HSQUIRRELVM vm, const ScriptHook_t* pHook, const 
 	V_strcat_safe(signature, ")");
 
 	// RegisterHookHelp(name, signature, description)
-	sq_pushroottable(vm);
-	sq_pushstring(vm, "RegisterHookHelp", -1);
-	sq_get(vm, -2);
-	sq_remove(vm, -2);
-	sq_pushroottable(vm);
-	sq_pushstring(vm, name, -1);
-	sq_pushstring(vm, signature, -1);
-	sq_pushstring(vm, pFuncDesc.m_pszDescription ? pFuncDesc.m_pszDescription : "", -1);
-	sq_call(vm, 4, SQFalse, SQFalse);
-	sq_pop(vm, 1);
+	PushDocumentationRegisterFunction( "RegisterHookHelp" );
+		sq_pushstring(vm, name, -1);
+		sq_pushstring(vm, signature, -1);
+		sq_pushstring(vm, pFuncDesc.m_pszDescription ? pFuncDesc.m_pszDescription : "", -1);
+	CallDocumentationRegisterFunction( 3 );
 }
 
 void RegisterMemberDocumentation(HSQUIRRELVM vm, const ScriptMemberDesc_t& pDesc, ScriptClassDesc_t* pClassDesc = nullptr)
@@ -1609,21 +1871,15 @@ void RegisterMemberDocumentation(HSQUIRRELVM vm, const ScriptMemberDesc_t& pDesc
 	if (pDesc.m_pszScriptName)
 		V_strcat_safe(name, pDesc.m_pszScriptName);
 
-
 	char signature[256] = "";
 	V_snprintf(signature, sizeof(signature), "%s %s", ScriptDataTypeToName(pDesc.m_ReturnType), name);
 
-	// RegisterHookHelp(name, signature, description)
-	sq_pushroottable(vm);
-	sq_pushstring(vm, "RegisterMemberHelp", -1);
-	sq_get(vm, -2);
-	sq_remove(vm, -2);
-	sq_pushroottable(vm);
-	sq_pushstring(vm, name, -1);
-	sq_pushstring(vm, signature, -1);
-	sq_pushstring(vm, pDesc.m_pszDescription ? pDesc.m_pszDescription : "", -1);
-	sq_call(vm, 4, SQFalse, SQFalse);
-	sq_pop(vm, 1);
+	// RegisterMemberHelp(name, signature, description)
+	PushDocumentationRegisterFunction( "RegisterMemberHelp" );
+		sq_pushstring(vm, name, -1);
+		sq_pushstring(vm, signature, -1);
+		sq_pushstring(vm, pDesc.m_pszDescription ? pDesc.m_pszDescription : "", -1);
+	CallDocumentationRegisterFunction( 3 );
 }
 
 
@@ -2439,6 +2695,41 @@ bool SquirrelVM::SetValue(HSCRIPT hScope, const char* pszKey, const ScriptVarian
 	return true;
 }
 
+bool SquirrelVM::SetValue( HSCRIPT hScope, const ScriptVariant_t& key, const ScriptVariant_t& val )
+{
+	SquirrelSafeCheck safeCheck(vm_);
+	HSQOBJECT obj = *(HSQOBJECT*)hScope;
+	if (hScope)
+	{
+		Assert(hScope != INVALID_HSCRIPT);
+		sq_pushobject(vm_, obj);
+	}
+	else
+	{
+		sq_pushroottable(vm_);
+	}
+
+	if ( sq_isarray(obj) )
+	{
+		Assert( key.m_type == FIELD_INTEGER );
+
+		sq_pushinteger(vm_, key.m_int);
+		PushVariant(vm_, val);
+
+		sq_set(vm_, -3);
+	}
+	else
+	{
+		PushVariant(vm_, key);
+		PushVariant(vm_, val);
+
+		sq_newslot(vm_, -3, SQFalse);
+	}
+
+	sq_pop(vm_, 1);
+	return true;
+}
+
 void SquirrelVM::CreateTable(ScriptVariant_t& Table)
 {
 	SquirrelSafeCheck safeCheck(vm_);
@@ -2454,15 +2745,17 @@ void SquirrelVM::CreateTable(ScriptVariant_t& Table)
 	Table = (HSCRIPT)obj;
 }
 
+//
+// input table/array/class/instance/string
+//
 int	SquirrelVM::GetNumTableEntries(HSCRIPT hScope)
 {
 	SquirrelSafeCheck safeCheck(vm_);
 
 	if (!hScope)
 	{
-		// TODO: This is called hScope but seems like just a table so
-		// lets not fallback to root table
-		return 0;
+		// sq_getsize returns -1 on invalid input
+		return -1;
 	}
 
 	HSQOBJECT* scope = (HSQOBJECT*)hScope;
@@ -2555,6 +2848,47 @@ bool SquirrelVM::GetValue(HSCRIPT hScope, const char* pszKey, ScriptVariant_t* p
 	return true;
 }
 
+bool SquirrelVM::GetValue( HSCRIPT hScope, ScriptVariant_t key, ScriptVariant_t* pValue )
+{
+	SquirrelSafeCheck safeCheck(vm_);
+
+	Assert(pValue);
+	if (!pValue)
+	{
+		return false;
+	}
+
+	if (hScope)
+	{
+		HSQOBJECT* scope = (HSQOBJECT*)hScope;
+		Assert(hScope != INVALID_HSCRIPT);
+		sq_pushobject(vm_, *scope);
+	}
+	else
+	{
+		sq_pushroottable(vm_);
+	}
+
+	PushVariant(vm_, key);
+
+	if (sq_get(vm_, -2) != SQ_OK)
+	{
+		sq_pop(vm_, 1);
+		return false;
+	}
+
+	if (!getVariant(vm_, -1, *pValue))
+	{
+		sq_pop(vm_, 2);
+		return false;
+	}
+
+	sq_pop(vm_, 2);
+
+	return true;
+}
+
+
 void SquirrelVM::ReleaseValue(ScriptVariant_t& value)
 {
 	SquirrelSafeCheck safeCheck(vm_);
@@ -2599,7 +2933,34 @@ bool SquirrelVM::ClearValue(HSCRIPT hScope, const char* pszKey)
 	sq_pop(vm_, 1);
 	return true;
 }
-/*
+
+bool SquirrelVM::ClearValue(HSCRIPT hScope, ScriptVariant_t pKey)
+{
+	SquirrelSafeCheck safeCheck(vm_);
+
+	if (hScope)
+	{
+		HSQOBJECT* scope = (HSQOBJECT*)hScope;
+		Assert(hScope != INVALID_HSCRIPT);
+		sq_pushobject(vm_, *scope);
+	}
+	else
+	{
+		sq_pushroottable(vm_);
+	}
+
+	PushVariant(vm_, pKey);
+	if (SQ_FAILED(sq_deleteslot(vm_, -2, SQFalse)))
+	{
+		sq_pop(vm_, 1);
+		return false;
+	}
+
+	sq_pop(vm_, 1);
+	return true;
+}
+
+
 void SquirrelVM::CreateArray(ScriptVariant_t &arr, int size)
 {
 	SquirrelSafeCheck safeCheck(vm_);
@@ -2614,7 +2975,7 @@ void SquirrelVM::CreateArray(ScriptVariant_t &arr, int size)
 
 	arr = (HSCRIPT)obj;
 }
-*/
+
 bool SquirrelVM::ArrayAppend(HSCRIPT hArray, const ScriptVariant_t &val)
 {
 	SquirrelSafeCheck safeCheck(vm_);
@@ -3085,10 +3446,9 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 	}
 	case OT_TABLE:
 	{
-		HSQOBJECT* obj = nullptr;
-		if (readState.CheckCache(pBuffer, &obj))
+		int marker = 0;
+		if (readState.CheckCache(pBuffer, vm_, &marker))
 		{
-			sq_pushobject(vm_, *obj);
 			break;
 		}
 
@@ -3096,8 +3456,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 
 		int count = pBuffer->GetInt();
 		sq_newtableex(vm_, count);
-		sq_getstackobj(vm_, -1, obj);
-		sq_addref(vm_, obj);
+		readState.StoreTopInCache(marker);
 
 		sq_push(vm_, -2);
 		sq_setdelegate(vm_, -2);
@@ -3115,17 +3474,15 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 	}
 	case OT_ARRAY:
 	{
-		HSQOBJECT* obj = nullptr;
-		if (readState.CheckCache(pBuffer, &obj))
+		int marker = 0;
+		if (readState.CheckCache(pBuffer, vm_, &marker))
 		{
-			sq_pushobject(vm_, *obj);
 			break;
 		}
 
 		int count = pBuffer->GetInt();
 		sq_newarray(vm_, count);
-		sq_getstackobj(vm_, -1, obj);
-		sq_addref(vm_, obj);
+		readState.StoreTopInCache(marker);
 
 		for (int i = 0; i < count; ++i)
 		{
@@ -3137,10 +3494,9 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 	}
 	case OT_CLOSURE:
 	{
-		HSQOBJECT* obj = nullptr;
-		if (readState.CheckCache(pBuffer, &obj))
+		int marker = 0;
+		if (readState.CheckCache(pBuffer, vm_, &marker))
 		{
-			sq_pushobject(vm_, *obj);
 			break;
 		}
 
@@ -3152,8 +3508,8 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 				sq_pushnull(vm_);
 				break;
 			}
-			sq_getstackobj(vm_, -1, obj);
-			sq_addref(vm_, obj);
+
+			readState.StoreTopInCache(marker);
 		}
 		else
 		{
@@ -3187,9 +3543,8 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 				sq_poptop(vm_);
 			}
 
-			*obj = ret;
-			sq_addref(vm_, obj);
-			sq_pushobject(vm_, *obj);
+			vm_->Push(ret);
+			readState.StoreTopInCache(marker);
 		}
 
 		ReadObject(pBuffer, readState);
@@ -3198,10 +3553,12 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 		sq_getstackobj(vm_, -1, &env);
 		if (!sq_isnull(env))
 		{
-			if (_closure( *obj ) == nullptr)
+			HSQOBJECT obj;
+			sq_getstackobj(vm_, -2, &obj);
+			if (_closure(obj) == nullptr)
 				Warning("Closure is null\n");
 			else
-				_closure(*obj)->_env = _refcounted(env)->GetWeakRef(sq_type(env));
+				_closure(obj)->_env = _refcounted(env)->GetWeakRef(sq_type(env));
 		}
 		sq_poptop(vm_);
 
@@ -3226,10 +3583,9 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 	}
 	case OT_CLASS:
 	{
-		HSQOBJECT* obj = nullptr;
-		if (readState.CheckCache(pBuffer, &obj))
+		int marker = 0;
+		if (readState.CheckCache(pBuffer, vm_, &marker))
 		{
-			sq_pushobject(vm_, *obj);
 			break;
 		}
 
@@ -3238,8 +3594,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 		if (classType == VectorClassType)
 		{
 			sq_pushobject(vm_, vectorClass_);
-			sq_getstackobj(vm_, -1, obj);
-			sq_addref(vm_, obj);
+			readState.StoreTopInCache(marker);
 		}
 		else if (classType == NativeClassType)
 		{
@@ -3254,8 +3609,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 				sq_pushnull(vm_);
 			}
 			sq_remove(vm_, -2);
-			sq_getstackobj(vm_, -1, obj);
-			sq_addref(vm_, obj);
+			readState.StoreTopInCache(marker);
 		}
 		else if (classType == ScriptClassType)
 		{
@@ -3267,8 +3621,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 			}
 
 			sq_newclass(vm_, hasBase);
-			sq_getstackobj(vm_, -1, obj);
-			sq_addref(vm_, obj);
+			readState.StoreTopInCache(marker);
 
 			sq_pushnull(vm_);
 			ReadObject(pBuffer, readState);
@@ -3292,10 +3645,9 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 	}
 	case OT_INSTANCE:
 	{
-		HSQOBJECT* obj = nullptr;
-		if (readState.CheckCache(pBuffer, &obj))
+		int marker = 0;
+		if (readState.CheckCache(pBuffer, vm_, &marker))
 		{
-			sq_pushobject(vm_, *obj);
 			break;
 		}
 
@@ -3310,8 +3662,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 			ReadObject(pBuffer, readState);
 			sq_call(vm_, 2, SQTrue, SQFalse);
 
-			sq_getstackobj(vm_, -1, obj);
-			sq_addref(vm_, obj);
+			readState.StoreTopInCache(marker);
 
 			sq_remove(vm_, -2);
 
@@ -3340,8 +3691,9 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 				if (sq_isinstance(singleton) && _instance(singleton)->_class == _class(klass))
 				{
 					foundSingleton = true;
-					*obj = singleton;
-					sq_addref(vm_, obj);
+
+					readState.StoreInCache(marker, singleton);
+					sq_addref(vm_, &singleton);
 					sq_pop(vm_, 2);
 					break;
 				}
@@ -3355,25 +3707,28 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 					((ScriptClassDesc_t*)typetag)->m_pszScriptName);
 			}
 
-			sq_pushobject(vm_, *obj);
+			sq_pushobject(vm_, singleton);
 			break;
 		}
 
+
+		HSQOBJECT obj;
 		sq_createinstance(vm_, -1);
-		sq_getstackobj(vm_, -1, obj);
-		sq_addref(vm_, obj);
+		sq_getstackobj(vm_, -1, &obj);
+		sq_addref(vm_, &obj);
+		readState.StoreInCache(marker, obj);
 
 		sq_remove(vm_, -2);
 
 		{
 			// HACK: No way to get the default values part from accessing the class directly
-			SQUnsignedInteger nvalues = _instance(*obj)->_class->_defaultvalues.size();
+			SQUnsignedInteger nvalues = _instance(obj)->_class->_defaultvalues.size();
 			for (SQUnsignedInteger n = 0; n < nvalues; n++) {
 				ReadObject(pBuffer, readState);
 				HSQOBJECT val;
 				sq_resetobject(&val);
 				sq_getstackobj(vm_, -1, &val);
-				_instance(*obj)->_values[n] = val;
+				_instance(obj)->_values[n] = val;
 				sq_pop(vm_, 1);
 			}
 		}
@@ -3436,10 +3791,9 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 	}
 	case OT_FUNCPROTO: //internal usage only
 	{
-		HSQOBJECT* obj = nullptr;
-		if (readState.CheckCache(pBuffer, &obj))
+		int marker = 0;
+		if (readState.CheckCache(pBuffer, vm_, &marker))
 		{
-			sq_pushobject(vm_, *obj);
 			break;
 		}
 
@@ -3452,15 +3806,13 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 		}
 
 		vm_->Push(ret);
-		sq_getstackobj(vm_, -1, obj);
-		sq_addref(vm_, obj);
+		readState.StoreTopInCache(marker);
 	}
 	case OT_OUTER: //internal usage only
 	{
-		HSQOBJECT* obj = nullptr;
-		if (readState.CheckCache(pBuffer, &obj))
+		int marker = 0;
+		if (readState.CheckCache(pBuffer, vm_, &marker))
 		{
-			sq_pushobject(vm_, *obj);
 			break;
 		}
 
@@ -3473,8 +3825,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 		outer->_valptr = &(outer->_value);
 		sq_poptop(vm_);
 		vm_->Push(outer);
-		sq_getstackobj(vm_, -1, obj);
-		sq_addref(vm_, obj);
+		readState.StoreTopInCache(marker);
 
 		break;
 	}
@@ -3496,10 +3847,12 @@ void SquirrelVM::ReadState(CUtlBuffer* pBuffer)
 
 	sq_pushroottable(vm_);
 
-	HSQOBJECT* obj = nullptr;
-	readState.CheckCache(pBuffer, &obj);
-	sq_getstackobj(vm_, -1, obj);
-	sq_addref(vm_, obj);
+	HSQOBJECT obj;
+	int marker = 0;
+	readState.CheckCache(pBuffer, vm_, &marker);
+	sq_getstackobj(vm_, -1, &obj);
+	sq_addref(vm_, &obj);
+	readState.StoreInCache(marker, obj);
 
 	int count = pBuffer->GetInt();
 

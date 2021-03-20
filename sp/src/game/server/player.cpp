@@ -718,8 +718,8 @@ BEGIN_ENT_SCRIPTDESC( CBasePlayer, CBaseCombatCharacter, "The player entity." )
 	DEFINE_SCRIPTFUNC( GetButtonForced, "Gets the player's currently forced buttons." )
 
 	DEFINE_SCRIPTFUNC( GetFOV, "" )
-	DEFINE_SCRIPTFUNC_NAMED( ScriptGetFOVOwner, "GetFOVOwner", "" )
-	DEFINE_SCRIPTFUNC_NAMED( ScriptSetFOV, "SetFOV", "" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetFOVOwner, "GetFOVOwner", "Gets current view owner." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetFOV, "SetFOV", "Sets player FOV regardless of view owner." )
 
 	DEFINE_SCRIPTFUNC( ViewPunch, "Punches the player's view with the specified vector." )
 	DEFINE_SCRIPTFUNC( SetMuzzleFlashTime, "Sets the player's muzzle flash time for AI." )
@@ -6230,6 +6230,11 @@ void CBasePlayer::Spawn( void )
 	m_flLaggedMovementValue = 1.0f;
 	m_vecSmoothedVelocity = vec3_origin;
 	InitVCollision( GetAbsOrigin(), GetAbsVelocity() );
+
+	if ( !g_pGameRules->IsMultiplayer() && g_pScriptVM )
+	{
+		g_pScriptVM->SetValue( "player", GetScriptInstance() );
+	}
 
 #if !defined( TF_DLL )
 	IGameEvent *event = gameeventmanager->CreateEvent( "player_spawn" );

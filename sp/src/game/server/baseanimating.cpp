@@ -282,6 +282,11 @@ IMPLEMENT_SERVERCLASS_ST(CBaseAnimating, DT_BaseAnimating)
 
 END_SEND_TABLE()
 
+#ifdef MAPBASE_VSCRIPT
+ScriptHook_t	CBaseAnimating::g_Hook_OnServerRagdoll;
+ScriptHook_t	CBaseAnimating::g_Hook_HandleAnimEvent;
+#endif
+
 BEGIN_ENT_SCRIPTDESC( CBaseAnimating, CBaseEntity, "Animating models" )
 
 	DEFINE_SCRIPTFUNC( LookupAttachment, "Get the named attachement id"  )
@@ -333,6 +338,15 @@ BEGIN_ENT_SCRIPTDESC( CBaseAnimating, CBaseEntity, "Animating models" )
 	DEFINE_SCRIPTFUNC( BecomeRagdollOnClient, "" )
 	DEFINE_SCRIPTFUNC( IsRagdoll, "" )
 	DEFINE_SCRIPTFUNC( CanBecomeRagdoll, "" )
+
+	BEGIN_SCRIPTHOOK( CBaseAnimating::g_Hook_OnServerRagdoll, "OnServerRagdoll", FIELD_VOID, "Called when this entity creates/turns into a server-side ragdoll." )
+		DEFINE_SCRIPTHOOK_PARAM( "ragdoll", FIELD_HSCRIPT )
+		DEFINE_SCRIPTHOOK_PARAM( "submodel", FIELD_BOOLEAN )
+	END_SCRIPTHOOK()
+
+	BEGIN_SCRIPTHOOK( CBaseAnimating::g_Hook_HandleAnimEvent, "HandleAnimEvent", FIELD_BOOLEAN, "Called when handling animation events. Return false to cancel base handling." )
+		DEFINE_SCRIPTHOOK_PARAM( "event", FIELD_HSCRIPT )
+	END_SCRIPTHOOK()
 #endif
 END_SCRIPTDESC();
 
@@ -1234,6 +1248,11 @@ void CBaseAnimating::DispatchAnimEvents ( CBaseAnimating *eventHandler )
 			event.eventtime = m_flAnimTime + (flCycle - GetCycle()) / flCycleRate + GetAnimTimeInterval();
 		}
 
+#ifdef MAPBASE_VSCRIPT
+		if (eventHandler->ScriptHookHandleAnimEvent( &event ) == false)
+			continue;
+#endif
+
 		/*
 		if (m_debugOverlays & OVERLAY_NPC_SELECTED_BIT)
 		{
@@ -1263,6 +1282,29 @@ void CBaseAnimating::DispatchAnimEvents ( CBaseAnimating *eventHandler )
 		}
 	}
 }
+
+#ifdef MAPBASE_VSCRIPT
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+bool CBaseAnimating::ScriptHookHandleAnimEvent( animevent_t *pEvent )
+{
+	if (m_ScriptScope.IsInitialized() && g_Hook_HandleAnimEvent.CanRunInScope(m_ScriptScope))
+	{
+		HSCRIPT hEvent = g_pScriptVM->RegisterInstance( pEvent );
+
+		// event
+		ScriptVariant_t args[] = { hEvent };
+		ScriptVariant_t returnValue = true;
+		g_Hook_HandleAnimEvent.Call( m_ScriptScope, &returnValue, args );
+
+		g_pScriptVM->RemoveInstance( hEvent );
+		return returnValue.m_bool;
+	}
+
+	return true;
+}
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: 

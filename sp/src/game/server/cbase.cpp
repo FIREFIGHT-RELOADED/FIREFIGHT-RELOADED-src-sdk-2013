@@ -850,7 +850,7 @@ void CEventQueue::Dump( void )
 // Purpose: adds the action into the correct spot in the priority queue, targeting entity via string name
 //-----------------------------------------------------------------------------
 #ifdef MAPBASE_VSCRIPT
-intptr_t
+int
 #else
 void
 #endif
@@ -874,6 +874,7 @@ CEventQueue::AddEvent( const char *target, const char *targetInput, variant_t Va
 	AddEvent( newEvent );
 
 #ifdef MAPBASE_VSCRIPT
+	Assert( sizeof(EventQueuePrioritizedEvent_t*) == sizeof(int) );
 	return reinterpret_cast<intptr_t>(newEvent);  // POINTER_TO_INT
 #endif
 }
@@ -882,7 +883,7 @@ CEventQueue::AddEvent( const char *target, const char *targetInput, variant_t Va
 // Purpose: adds the action into the correct spot in the priority queue, targeting entity via pointer
 //-----------------------------------------------------------------------------
 #ifdef MAPBASE_VSCRIPT
-intptr_t
+int
 #else
 void
 #endif
@@ -906,7 +907,8 @@ CEventQueue::AddEvent( CBaseEntity *target, const char *targetInput, variant_t V
 	AddEvent( newEvent );
 
 #ifdef MAPBASE_VSCRIPT
-	return reinterpret_cast<intptr_t>(newEvent);
+	Assert( sizeof(EventQueuePrioritizedEvent_t*) == sizeof(int) );
+	return reinterpret_cast<intptr_t>(newEvent); // POINTER_TO_INT
 #endif
 }
 
@@ -1257,7 +1259,10 @@ void ServiceEventQueue( void )
 
 #ifdef MAPBASE_VSCRIPT
 //-----------------------------------------------------------------------------
-// Remove events on entity by input.
+// Remove pending events on entity by input.
+//
+// Also removes events that were targeted with their debug name (classname when unnamed).
+// E.g. CancelEventsByInput( pRelay, "Trigger" ) removes all pending logic_relay "Trigger" events.
 //-----------------------------------------------------------------------------
 void CEventQueue::CancelEventsByInput( CBaseEntity *pTarget, const char *szInput )
 {
@@ -1290,11 +1295,8 @@ void CEventQueue::CancelEventsByInput( CBaseEntity *pTarget, const char *szInput
 	}
 }
 
-bool CEventQueue::RemoveEvent( intptr_t event )
+bool CEventQueue::RemoveEvent( int event )
 {
-	if ( !event )
-		return false;
-
 	EventQueuePrioritizedEvent_t *pe = reinterpret_cast<EventQueuePrioritizedEvent_t*>(event); // INT_TO_POINTER
 
 	for ( EventQueuePrioritizedEvent_t *pCur = m_Events.m_pNext; pCur; pCur = pCur->m_pNext )
@@ -1310,11 +1312,8 @@ bool CEventQueue::RemoveEvent( intptr_t event )
 	return false;
 }
 
-float CEventQueue::GetTimeLeft( intptr_t event )
+float CEventQueue::GetTimeLeft( int event )
 {
-	if ( !event )
-		return 0.f;
-
 	EventQueuePrioritizedEvent_t *pe = reinterpret_cast<EventQueuePrioritizedEvent_t*>(event); // INT_TO_POINTER
 
 	for ( EventQueuePrioritizedEvent_t *pCur = m_Events.m_pNext; pCur; pCur = pCur->m_pNext )

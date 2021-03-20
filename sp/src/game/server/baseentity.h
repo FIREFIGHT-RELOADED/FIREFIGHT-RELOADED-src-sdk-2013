@@ -341,6 +341,16 @@ struct thinkfunc_t
 	DECLARE_SIMPLE_DATADESC();
 };
 
+#ifdef MAPBASE_VSCRIPT
+struct scriptthinkfunc_t
+{
+	int				m_nNextThinkTick;
+	HSCRIPT			m_hfnThink;
+	unsigned short	m_iContextHash;
+	bool			m_bNoParam;
+};
+#endif
+
 struct EmitSound_t;
 struct rotatingpushmove_t;
 
@@ -755,6 +765,8 @@ public:
 	void InputRemoveEffects( inputdata_t &inputdata );
 	void InputDrawEntity( inputdata_t &inputdata );
 	void InputUndrawEntity( inputdata_t &inputdata );
+	void InputEnableReceivingFlashlight( inputdata_t &inputdata );
+	void InputDisableReceivingFlashlight( inputdata_t &inputdata );
 	void InputAddEFlags( inputdata_t &inputdata );
 	void InputRemoveEFlags( inputdata_t &inputdata );
 	void InputAddSolidFlags( inputdata_t &inputdata );
@@ -921,6 +933,9 @@ public:
 	// 
 	// This was partly inspired by Underhell's keyvalue that allows entities to only render in mirrors and cameras.
 	CNetworkVar( int, m_iViewHideFlags );
+
+	// Disables receiving projected textures. Based on a keyvalue from later Source games.
+	CNetworkVar( bool, m_bDisableFlashlight );
 #endif
 
 	// was pev->rendercolor
@@ -1997,11 +2012,12 @@ public:
 #ifdef MAPBASE_VSCRIPT
 	void ScriptSetThinkFunction(const char *szFunc, float time);
 	void ScriptStopThinkFunction();
-	void ScriptSetThink(HSCRIPT hFunc, float time);
+	void ScriptSetContextThink( const char* szContext, HSCRIPT hFunc, float time );
+	void ScriptSetThink( HSCRIPT hFunc, float time );
 	void ScriptStopThink();
-	void ScriptThinkH();
+	void ScriptContextThink();
 private:
-	HSCRIPT m_hfnThink;
+	CUtlVector< scriptthinkfunc_t* > m_ScriptThinkFuncs;
 public:
 #endif
 	const char* GetScriptId();
@@ -2032,8 +2048,10 @@ public:
 	const Vector& ScriptGetAngles(void) { static Vector vec; QAngle qa = GetAbsAngles(); vec.x = qa.x; vec.y = qa.y; vec.z = qa.z; return vec; }
 #endif
 
+#ifndef MAPBASE_VSCRIPT
 	void ScriptSetSize(const Vector& mins, const Vector& maxs) { UTIL_SetSize(this, mins, maxs); }
 	void ScriptUtilRemove(void) { UTIL_Remove(this); }
+#endif
 	void ScriptSetOwner(HSCRIPT hEntity) { SetOwnerEntity(ToEnt(hEntity)); }
 	void ScriptSetOrigin(const Vector& v) { Teleport(&v, NULL, NULL); }
 	void ScriptSetForward(const Vector& v) { QAngle angles; VectorAngles(v, angles); Teleport(NULL, &angles, NULL); }
@@ -2059,6 +2077,7 @@ public:
 	const char* ScriptGetModelName(void) const;
 	HSCRIPT ScriptGetModelKeyValues(void);
 
+	void ScriptStopSound(const char* soundname);
 	void ScriptEmitSound(const char* soundname);
 	float ScriptSoundDuration(const char* soundname, const char* actormodel);
 

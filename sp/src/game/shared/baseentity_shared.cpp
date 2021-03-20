@@ -2418,6 +2418,18 @@ void CBaseEntity::FollowEntity( CBaseEntity *pBaseEntity, bool bBoneMerge )
 	}
 }
 
+#ifdef MAPBASE_VSCRIPT
+void CBaseEntity::ScriptFollowEntity( HSCRIPT hBaseEntity, bool bBoneMerge )
+{
+	FollowEntity( ToEnt( hBaseEntity ), bBoneMerge );
+}
+
+HSCRIPT CBaseEntity::ScriptGetFollowedEntity()
+{
+	return ToHScript( GetFollowedEntity() );
+}
+#endif
+
 void CBaseEntity::SetEffectEntity( CBaseEntity *pEffectEnt )
 {
 	if ( m_hEffectEntity.Get() != pEffectEnt )
@@ -2606,4 +2618,390 @@ bool CBaseEntity::IsToolRecording() const
 	return false;
 #endif
 }
+#endif
+
+#ifdef MAPBASE_VSCRIPT
+HSCRIPT CBaseEntity::GetOrCreatePrivateScriptScope()
+{
+	ValidateScriptScope();
+	return m_ScriptScope;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CBaseEntity::ScriptSetParent(HSCRIPT hParent, const char *szAttachment)
+{
+	CBaseEntity *pParent = ToEnt(hParent);
+	if ( !pParent )
+	{
+		SetParent(NULL);
+		return;
+	}
+
+	// if an attachment is specified, the parent needs to be CBaseAnimating
+	if ( szAttachment && szAttachment[0] != '\0' )
+	{
+		CBaseAnimating *pAnimating = pParent->GetBaseAnimating();
+		if ( !pAnimating )
+		{
+			Warning("ERROR: Tried to set parent for entity %s (%s), but its parent has no model.\n", GetClassname(), GetDebugName());
+			return;
+		}
+		
+		int iAttachment = pAnimating->LookupAttachment(szAttachment);
+		if ( iAttachment <= 0 )
+		{
+			Warning("ERROR: Tried to set parent for entity %s (%s), but it has no attachment named %s.\n", GetClassname(), GetDebugName(), szAttachment);
+			return;
+		}
+
+		SetParent(pParent, iAttachment);
+		SetMoveType(MOVETYPE_NONE);
+		return;
+	}
+	
+	SetParent(pParent);
+}
+
+HSCRIPT	CBaseEntity::GetScriptOwnerEntity()
+{
+	return ToHScript(GetOwnerEntity());
+}
+
+void CBaseEntity::SetScriptOwnerEntity(HSCRIPT pOwner)
+{
+	SetOwnerEntity(ToEnt(pOwner));
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+const Vector& CBaseEntity::ScriptGetColorVector()
+{
+	static Vector vecColor;
+	vecColor.Init( m_clrRender.GetR(), m_clrRender.GetG(), m_clrRender.GetB() );
+	return vecColor;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CBaseEntity::ScriptSetColorVector( const Vector& vecColor )
+{
+	SetRenderColor( vecColor.x, vecColor.y, vecColor.z );
+}
+
+void CBaseEntity::ScriptSetColor( int r, int g, int b )
+{
+	SetRenderColor( r, g, b );
+}
+
+//-----------------------------------------------------------------------------
+// Vscript: Gets the entity matrix transform
+//-----------------------------------------------------------------------------
+HSCRIPT CBaseEntity::ScriptEntityToWorldTransform( void )
+{
+	return g_pScriptVM->RegisterInstance( &EntityToWorldTransform() );
+}
+
+//-----------------------------------------------------------------------------
+// Vscript: Gets the entity's physics object if it has one
+//-----------------------------------------------------------------------------
+HSCRIPT CBaseEntity::ScriptGetPhysicsObject( void )
+{
+	if (VPhysicsGetObject())
+		return g_pScriptVM->RegisterInstance( VPhysicsGetObject() );
+	else
+		return NULL;
+}
+
+static inline void ScriptStopContextThink( scriptthinkfunc_t *context )
+{
+	Assert( context->m_hfnThink );
+
+	g_pScriptVM->ReleaseScript( context->m_hfnThink );
+	context->m_hfnThink = NULL;
+	//context->m_nNextThinkTick = TICK_NEVER_THINK;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void CBaseEntity::ScriptContextThink()
+{
+	float flNextThink = FLT_MAX;
+	int nScheduledTick = 0;
+
+	for ( int i = 0; i < m_ScriptThinkFuncs.Count(); ++i )
+	{
+		scriptthinkfunc_t *cur = m_ScriptThinkFuncs[i];
+
+		if ( cur->m_nNextThinkTick == TICK_NEVER_THINK )
+		{
+			continue;
+		}
+
+		if ( cur->m_nNextThinkTick > gpGlobals->tickcount )
+		{
+			// There is more to execute, don't stop thinking if the rest are done.
+
+			// Find the shortest schedule
+			if ( !nScheduledTick || nScheduledTick > cur->m_nNextThinkTick )
+			{
+				nScheduledTick = cur->m_nNextThinkTick;
+			}
+			continue;
+		}
+
+#ifdef _DEBUG
+		// going to run the script func
+		cur->m_nNextThinkTick = 0;
+#endif
+
+		ScriptVariant_t varReturn;
+
+		if ( !cur->m_bNoParam )
+		{
+			ScriptVariant_t arg = m_hScriptInstance;
+			if ( g_pScriptVM->ExecuteFunction( cur->m_hfnThink, &arg, 1, &varReturn, NULL, true ) == SCRIPT_ERROR )
+			{
+				cur->m_nNextThinkTick = TICK_NEVER_THINK;
+				continue;
+			}
+		}
+		else
+		{
+			if ( g_pScriptVM->ExecuteFunction( cur->m_hfnThink, NULL, 0, &varReturn, NULL, true ) == SCRIPT_ERROR )
+			{
+				cur->m_nNextThinkTick = TICK_NEVER_THINK;
+				continue;
+			}
+		}
+
+		if ( cur->m_nNextThinkTick == TICK_NEVER_THINK )
+		{
+			// stopped from script while thinking
+			continue;
+		}
+
+		float flReturn;
+		if ( !varReturn.AssignTo( &flReturn ) )
+		{
+			cur->m_nNextThinkTick = TICK_NEVER_THINK;
+			continue;
+		}
+
+		if ( flReturn < 0.0f )
+		{
+			cur->m_nNextThinkTick = TICK_NEVER_THINK;
+			continue;
+		}
+
+		if ( flReturn < flNextThink )
+		{
+			flNextThink = flReturn;
+		}
+
+		cur->m_nNextThinkTick = TIME_TO_TICKS( gpGlobals->curtime + flReturn );
+	}
+
+	// deferred safe removal
+	for ( int i = 0; i < m_ScriptThinkFuncs.Count(); )
+	{
+		if ( m_ScriptThinkFuncs[i]->m_nNextThinkTick == TICK_NEVER_THINK )
+		{
+			ScriptStopContextThink( m_ScriptThinkFuncs[i] );
+			delete m_ScriptThinkFuncs[i];
+			m_ScriptThinkFuncs.Remove(i);
+		}
+		else ++i;
+	}
+
+	bool bNewNext = flNextThink < FLT_MAX;
+
+#ifdef _DEBUG
+#ifdef GAME_DLL
+	int nNextThinkTick = GetNextThinkTick("ScriptContextThink"); // -1
+#else
+	int nNextThinkTick = GetNextThinkTick(); // 0
+#endif
+	if ( ( nNextThinkTick <= 0 ) || ( nNextThinkTick >= nScheduledTick ) || ( nNextThinkTick == gpGlobals->tickcount ) )
+	{
+#endif
+		if ( nScheduledTick )
+		{
+			float flScheduledTime = TICKS_TO_TIME( nScheduledTick );
+
+			if ( bNewNext )
+			{
+				flNextThink = min( gpGlobals->curtime + flNextThink, flScheduledTime );
+			}
+			else
+			{
+				flNextThink = flScheduledTime;
+			}
+		}
+		else
+		{
+			if ( bNewNext )
+			{
+				flNextThink = gpGlobals->curtime + flNextThink;
+			}
+			else
+			{
+#ifdef GAME_DLL
+				flNextThink = TICK_NEVER_THINK;
+#else
+				flNextThink = CLIENT_THINK_NEVER;
+#endif
+			}
+		}
+#ifdef _DEBUG
+	}
+	else
+	{
+		// Next think was set (from script) to a sooner tick while thinking?
+		Assert(0);
+
+		if ( nScheduledTick )
+		{
+			int nNextSchedule = min( nScheduledTick, nNextThinkTick );
+			float flNextSchedule = TICKS_TO_TIME( nNextSchedule );
+
+			if ( bNewNext )
+			{
+				flNextThink = min( gpGlobals->curtime + flNextThink, flNextSchedule );
+			}
+			else
+			{
+				flNextThink = flNextSchedule;
+			}
+		}
+		else
+		{
+			float nextthink = TICKS_TO_TIME( nNextThinkTick );
+
+			if ( bNewNext )
+			{
+				flNextThink = min( gpGlobals->curtime + flNextThink, nextthink );
+			}
+			else
+			{
+				flNextThink = nextthink;
+			}
+		}
+	}
+#endif
+
+#ifdef GAME_DLL
+	SetNextThink( flNextThink, "ScriptContextThink" );
+#else
+	SetNextClientThink( flNextThink );
+#endif
+}
+
+// see ScriptSetThink
+static bool s_bScriptContextThinkNoParam = false;
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void CBaseEntity::ScriptSetContextThink( const char* szContext, HSCRIPT hFunc, float flTime )
+{
+#ifdef CLIENT_DLL
+	// Context thinking is not yet supported on client, entities can only have 1 think function.
+	// C_World does not have one by default, so it is safe to set its.
+	if ( !IsWorld() )
+	{
+		g_pScriptVM->RaiseException("SetContextThink is only supported on C_World");
+		return;
+	}
+#endif
+
+	scriptthinkfunc_t *pf = NULL;
+	unsigned short hash = ( szContext && *szContext ) ? HashString( szContext ) : 0;
+
+	FOR_EACH_VEC( m_ScriptThinkFuncs, i )
+	{
+		scriptthinkfunc_t *f = m_ScriptThinkFuncs[i];
+		if ( hash == f->m_iContextHash )
+		{
+			pf = f;
+			break;
+		}
+	}
+
+	if ( hFunc )
+	{
+		// add new
+		if ( !pf )
+		{
+			pf = new scriptthinkfunc_t;
+
+			m_ScriptThinkFuncs.SetGrowSize(1);
+			m_ScriptThinkFuncs.AddToTail( pf );
+
+			pf->m_bNoParam = s_bScriptContextThinkNoParam;
+			pf->m_iContextHash = hash;
+		}
+		// update existing
+		else
+		{
+#ifdef _DEBUG
+			if ( pf->m_nNextThinkTick == 0 )
+			{
+				Warning("Script think ('%s') was changed while it was thinking!\n", szContext);
+			}
+#endif
+			g_pScriptVM->ReleaseScript( pf->m_hfnThink );
+		}
+
+		float nextthink = gpGlobals->curtime + flTime;
+
+		pf->m_hfnThink = hFunc;
+		pf->m_nNextThinkTick = TIME_TO_TICKS( nextthink );
+
+#ifdef GAME_DLL
+		int nexttick = GetNextThinkTick( RegisterThinkContext( "ScriptContextThink" ) );
+#else
+		int nexttick = GetNextThinkTick();
+#endif
+
+		// sooner than next think
+		if ( nexttick <= 0 || nexttick > pf->m_nNextThinkTick )
+		{
+#ifdef GAME_DLL
+			SetContextThink( &CBaseEntity::ScriptContextThink, nextthink, "ScriptContextThink" );
+#else
+			SetNextClientThink( nextthink );
+#endif
+		}
+	}
+	// null func input, think exists
+	else if ( pf )
+	{
+		pf->m_nNextThinkTick = TICK_NEVER_THINK;
+	}
+}
+
+//-----------------------------------------------------------------------------
+// m_bNoParam and s_bScriptContextThinkNoParam exist only to keep backwards compatibility
+// and are an alternative to this script closure:
+//
+//	function CBaseEntity::SetThink( func, time )
+//	{
+//		SetContextThink( "", function(_){ return func() }, time )
+//	}
+//-----------------------------------------------------------------------------
+#ifndef CLIENT_DLL
+void CBaseEntity::ScriptSetThink( HSCRIPT hFunc, float time )
+{
+	s_bScriptContextThinkNoParam = true;
+	ScriptSetContextThink( NULL, hFunc, time );
+	s_bScriptContextThinkNoParam = false;
+}
+
+void CBaseEntity::ScriptStopThink()
+{
+	ScriptSetContextThink( NULL, NULL, 0.0f );
+}
+#endif
 #endif

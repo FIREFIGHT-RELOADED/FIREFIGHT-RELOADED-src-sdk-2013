@@ -31,10 +31,14 @@ $Project
 		$File	"c_postprocesscontroller.cpp"
 		$File	"c_postprocesscontroller.h"
 		$File	"c_env_dof_controller.cpp"
+		$File	"c_movie_display.cpp"
+		$File	"c_movie_display.h"
+		$File	"vgui_movie_display.cpp"
 	
 		$Folder	"Mapbase"
 		{
 			$File	"$SRCDIR\game\shared\mapbase\mapbase_shared.cpp"
+			$File	"$SRCDIR\game\shared\mapbase\mapbase_usermessages.cpp"
 			$File	"$SRCDIR\game\shared\mapbase\mapbase_rpc.cpp"
 			$File	"$SRCDIR\game\shared\mapbase\mapbase_game_log.cpp"
 			$File	"$SRCDIR\game\shared\mapbase\MapEdit.cpp"
@@ -50,11 +54,13 @@ $Project
 			$File	"$SRCDIR\game\shared\mapbase\vscript_consts_weapons.cpp" [$MAPBASE_VSCRIPT]
 			$File	"$SRCDIR\game\shared\mapbase\weapon_custom_scripted.cpp" [$MAPBASE_VSCRIPT]
 			$File	"$SRCDIR\game\shared\mapbase\weapon_custom_scripted.h" [$MAPBASE_VSCRIPT]
+			$File	"$SRCDIR\game\shared\mapbase\logic_script_client.cpp" [$MAPBASE_VSCRIPT]
 			
 			$File	"mapbase\c_func_clientclip.cpp"
 			$File	"mapbase\c_func_fake_worldportal.cpp"
 			$File	"mapbase\c_func_fake_worldportal.h"
 			$File	"mapbase\c_point_glow.cpp"
+			$File	"mapbase\c_vgui_text_display.cpp"
 		}
 		
 		$Folder "HL2 DLL"
