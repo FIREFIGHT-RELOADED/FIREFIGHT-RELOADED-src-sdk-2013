@@ -70,3 +70,4 @@ config.cfg
 *.db
 *.db-shm
 *.db-wal
+*.bak
