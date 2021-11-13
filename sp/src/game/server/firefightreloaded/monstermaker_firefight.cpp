@@ -25,6 +25,7 @@ ConVar sk_spawnrareenemies("sk_spawnrareenemies", "1", FCVAR_ARCHIVE);
 ConVar sk_spawnerhidefromplayer("sk_spawnerhidefromplayer", "1", FCVAR_ARCHIVE);
 //ConVar sk_spawnerminclientstospawn("sk_spawnerminclientstospawn", "2", FCVAR_NOTIFY);
 
+//spawn lists (TODO: use KeyValues files)
 const char *g_CombineSoldierWeapons[] =
 {
 	"weapon_smg1",
@@ -67,6 +68,54 @@ const char *g_charNPCSCommon[] =
 
 const char *g_charNPCSRare[] =
 {
+	"npc_combine_ace",
+	"npc_hunter",
+	"npc_antlionworker",
+	"npc_antlionguard",
+	"npc_antlionguardian",
+	"npc_poisonzombie",
+	"npc_zombine",
+	"npc_headcrab_fast",
+	"npc_headcrab_poison",
+	"npc_vortigaunt",
+	"npc_assassin",
+	"npc_cremator",
+	"npc_headcrab",
+	"npc_combineguard",
+	"npc_ministrider",
+	"npc_rollermine",
+	"npc_cscanner",
+	//temp until we actually set up the wave system.
+	"npc_player"
+};
+
+//precache list
+const char* g_Weapons[] =
+{
+	"weapon_smg1",
+	"weapon_ar2",
+	"weapon_shotgun",
+	"weapon_pistol",
+	"weapon_stunstick"
+};
+
+const char* g_NPCS[] =
+{
+	"npc_metropolice",
+	"npc_combine_s",
+	"npc_combine_e",
+	"npc_combine_p",
+	"npc_combine_shot",
+	"npc_antlion"
+	"npc_zombie",
+	"npc_zombie_torso",
+	"npc_fastzombie",
+	"npc_fastzombie_torso",
+	"npc_agrunt",
+	"npc_houndeye",
+	"npc_bullsquid",
+	"npc_elitepolice",
+	"npc_acontroller",
 	"npc_combine_ace",
 	"npc_hunter",
 	"npc_antlionworker",
@@ -177,41 +226,18 @@ void CNPCMakerFirefight::Precache(void)
 {
 	BaseClass::Precache();
 
-	//precache both common and rare npc lists instead of a fucking HUGE list.
-	int nNPCsPrecacheCommon = ARRAYSIZE(g_charNPCSCommon);
-	for (int i = 0; i < nNPCsPrecacheCommon; ++i)
+	int nWeapons = ARRAYSIZE(g_Weapons);
+	for (int i = 0; i < nWeapons; ++i)
 	{
-		UTIL_PrecacheOther(g_charNPCSCommon[i]);
-		DevMsg("Precaching common NPC %s.\n", g_charNPCSCommon[i]);
+		UTIL_PrecacheOther(g_Weapons[i]);
+		DevMsg("Precaching NPC %s.\n", g_Weapons[i]);
 	}
 
-	int nNPCsPrecacheRare = ARRAYSIZE(g_charNPCSRare);
-	for (int i = 0; i < nNPCsPrecacheRare; ++i)
+	int nNPCs = ARRAYSIZE(g_NPCS);
+	for (int i = 0; i < nNPCs; ++i)
 	{
-		UTIL_PrecacheOther(g_charNPCSRare[i]);
-		DevMsg("Precaching rare NPC %s.\n", g_charNPCSRare[i]);
-	}
-
-	//precache weapon lists too, just in case.
-	int nCombineSoldierWeapons = ARRAYSIZE(g_CombineSoldierWeapons);
-	for (int i = 0; i < nCombineSoldierWeapons; ++i)
-	{
-		UTIL_PrecacheOther(g_CombineSoldierWeapons[i]);
-		DevMsg("Precaching Combine Soldier weapon %s.\n", g_CombineSoldierWeapons[i]);
-	}
-
-	int nMetropoliceWeapons = ARRAYSIZE(g_MetropoliceWeapons);
-	for (int i = 0; i < nMetropoliceWeapons; ++i)
-	{
-		UTIL_PrecacheOther(g_MetropoliceWeapons[i]);
-		DevMsg("Precaching Civil Protection weapon %s.\n", g_MetropoliceWeapons[i]);
-	}
-
-	int nEliteMetropoliceWeapons = ARRAYSIZE(g_EliteMetropoliceWeapons);
-	for (int i = 0; i < nEliteMetropoliceWeapons; ++i)
-	{
-		UTIL_PrecacheOther(g_EliteMetropoliceWeapons[i]);
-		DevMsg("Precaching Elite Civil Protection weapon %s.\n", g_EliteMetropoliceWeapons[i]);
+		UTIL_PrecacheOther(g_NPCS[i]);
+		DevMsg("Precaching NPC %s.\n", g_NPCS[i]);
 	}
 
 	/*
@@ -238,43 +264,18 @@ void CNPCMakerFirefight::MakerThink(void)
 	{
 		int rarenpcrandom = random->RandomInt(0, m_nRareNPCRarity);
 
-		if (HasSpawnFlags(SF_NPCMAKER_DOUBLETROUBLE))
+		if (rarenpcrandom == 0 && CanMakeRareNPC())
 		{
-			if (rarenpcrandom == 0 && CanMakeRareNPC())
-			{
-				MakeNPC(true);
-			}
-			else
-			{
-				MakeNPC();
-				SetNextThink(gpGlobals->curtime + 0.5);
-				MakeNPC();
-			}
+			MakeNPC(true);
 		}
 		else
 		{
-			if (rarenpcrandom == 0 && CanMakeRareNPC())
-			{
-				MakeNPC(true);
-			}
-			else
-			{
-				MakeNPC();
-			}
+			MakeNPC();
 		}
 	}
 	else
 	{
-		if (HasSpawnFlags(SF_NPCMAKER_DOUBLETROUBLE))
-		{
-			MakeNPC();
-			SetNextThink(gpGlobals->curtime + 0.5);
-			MakeNPC();
-		}
-		else
-		{
-			MakeNPC();
-		}
+		MakeNPC();
 	}
 }
 
@@ -408,10 +409,7 @@ bool CNPCMakerFirefight::CanMakeNPC(bool bIgnoreSolidEntities)
 //-----------------------------------------------------------------------------
 bool CNPCMakerFirefight::CanMakeRareNPC()
 {
-	if (gEntList.NumberOfEntities() >= (gpGlobals->maxEntities - ENTITY_INTOLERANCE))
-		return false;
-
-	if (g_iNPCLimit >= g_fr_npclimit.GetInt() && g_fr_npclimit.GetInt() != 0)
+	if (!CanMakeNPC())
 		return false;
 
 	if (m_nMaxLiveRareNPCs > 0 && m_nLiveRareNPCs >= m_nMaxLiveRareNPCs)
@@ -452,43 +450,54 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 {
 	if (!CanMakeNPC())
 		return;
-	
+
+	int nNPCs = ARRAYSIZE(g_charNPCSCommon);
+	int randomChoice = rand() % nNPCs;
+	const char* pRandomName = g_charNPCSCommon[randomChoice];
 	if (rareNPC)
 	{
-		int nNPCs = ARRAYSIZE(g_charNPCSRare);
-		int randomChoice = rand() % nNPCs;
-		const char* pRandomName = g_charNPCSRare[randomChoice];
+		nNPCs = ARRAYSIZE(g_charNPCSRare);
+		randomChoice = rand() % nNPCs;
+		pRandomName = g_charNPCSRare[randomChoice];
+	}
 
-		CAI_BaseNPC* pent = (CAI_BaseNPC*)CreateEntityByName(pRandomName);
+	CAI_BaseNPC* pent = (CAI_BaseNPC*)CreateEntityByName(pRandomName);
 
-		if (!pent)
-		{
-			Warning("npc_maker_firefight: Entity classname does not exist in database.\n");
-			return;
-		}
+	if (!pent)
+	{
+		Warning("npc_maker_firefight: Entity classname does not exist in database.\n");
+		return;
+	}
 
-		// ------------------------------------------------
-		//  Intialize spawned NPC's relationships
-		// ------------------------------------------------
-		pent->SetRelationshipString(m_RelationshipString);
+	// ------------------------------------------------
+	//  Intialize spawned NPC's relationships
+	// ------------------------------------------------
+	pent->SetRelationshipString(m_RelationshipString);
 
+	m_OnSpawnNPC.Set(pent, pent, this);
+
+	if (rareNPC)
+	{
 		m_OnSpawnRareNPC.Set(pent, pent, this);
+	}
 
-		pent->SetAbsOrigin(GetAbsOrigin());
+	pent->SetAbsOrigin(GetAbsOrigin());
 
-		// Strip pitch and roll from the spawner's angles. Pass only yaw to the spawned NPC.
-		QAngle angles = GetAbsAngles();
-		angles.x = 0.0;
-		angles.z = 0.0;
-		pent->SetAbsAngles(angles);
+	// Strip pitch and roll from the spawner's angles. Pass only yaw to the spawned NPC.
+	QAngle angles = GetAbsAngles();
+	angles.x = 0.0;
+	angles.z = 0.0;
+	pent->SetAbsAngles(angles);
 
-		pent->AddSpawnFlags(SF_NPC_FALL_TO_GROUND);
+	pent->AddSpawnFlags(SF_NPC_FALL_TO_GROUND);
 
-		if (m_spawnflags & SF_NPCMAKER_FADE)
-		{
-			pent->AddSpawnFlags(SF_NPC_FADE_CORPSE);
-		}
+	if (m_spawnflags & SF_NPCMAKER_FADE)
+	{
+		pent->AddSpawnFlags(SF_NPC_FADE_CORPSE);
+	}
 
+	if (rareNPC)
+	{
 		if (Q_stristr(pRandomName, "npc_combine_ace"))
 		{
 			pent->m_spawnEquipment = MAKE_STRING("weapon_smg1");
@@ -509,61 +518,10 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 		}
 
 		pent->m_isRareEntity = true;
-		pent->SetSquadName(m_SquadName);
-		pent->SetHintGroup(m_strHintGroup);
-
-		ChildPreSpawn(pent);
-
-		DispatchSpawn(pent);
-		pent->SetOwnerEntity(this);
-		DispatchActivate(pent);
-
-		if (m_ChildTargetName != NULL_STRING)
-		{
-			// if I have a netname (overloaded), give the child NPC that name as a targetname
-			pent->SetName(m_ChildTargetName);
-		}
-
-		ChildPostSpawn(pent);
-		//rare entities have their own value we must consider.
-		m_nLiveRareNPCs++;
 	}
 	else
 	{
-		int nNPCs = ARRAYSIZE(g_charNPCSCommon);
-		int randomChoice = rand() % nNPCs;
-		const char* pRandomName = g_charNPCSCommon[randomChoice];
-
-		CAI_BaseNPC* pent = (CAI_BaseNPC*)CreateEntityByName(pRandomName);
-
-		if (!pent)
-		{
-			Warning("npc_maker_firefight: Entity classname does not exist in database.\n");
-			return;
-		}
-
-		// ------------------------------------------------
-		//  Intialize spawned NPC's relationships
-		// ------------------------------------------------
-		pent->SetRelationshipString(m_RelationshipString);
-
-		m_OnSpawnNPC.Set(pent, pent, this);
-
-		pent->SetAbsOrigin(GetAbsOrigin());
-
-		// Strip pitch and roll from the spawner's angles. Pass only yaw to the spawned NPC.
-		QAngle angles = GetAbsAngles();
-		angles.x = 0.0;
-		angles.z = 0.0;
-		pent->SetAbsAngles(angles);
-
-		pent->AddSpawnFlags(SF_NPC_FALL_TO_GROUND);
-
-		if (m_spawnflags & SF_NPCMAKER_FADE)
-		{
-			pent->AddSpawnFlags(SF_NPC_FADE_CORPSE);
-		}
-
+		//why
 		if (Q_stristr(pRandomName, "npc_metropolice"))
 		{
 			int nWeaponsPolice = ARRAYSIZE(g_MetropoliceWeapons);
@@ -607,22 +565,29 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 		}
 
 		pent->m_isRareEntity = false;
-		pent->SetSquadName(m_SquadName);
-		pent->SetHintGroup(m_strHintGroup);
+	}
 
-		ChildPreSpawn(pent);
+	pent->SetSquadName(m_SquadName);
+	pent->SetHintGroup(m_strHintGroup);
 
-		DispatchSpawn(pent);
-		pent->SetOwnerEntity(this);
-		DispatchActivate(pent);
+	ChildPreSpawn(pent);
 
-		if (m_ChildTargetName != NULL_STRING)
-		{
-			// if I have a netname (overloaded), give the child NPC that name as a targetname
-			pent->SetName(m_ChildTargetName);
-		}
+	DispatchSpawn(pent);
+	pent->SetOwnerEntity(this);
+	DispatchActivate(pent);
 
-		ChildPostSpawn(pent);
+	if (m_ChildTargetName != NULL_STRING)
+	{
+		// if I have a netname (overloaded), give the child NPC that name as a targetname
+		pent->SetName(m_ChildTargetName);
+	}
+
+	ChildPostSpawn(pent);
+
+	if (rareNPC)
+	{
+		//rare entities have their own value we must consider.
+		m_nLiveRareNPCs++;
 	}
 
 	m_nLiveChildren++;// count this NPC
