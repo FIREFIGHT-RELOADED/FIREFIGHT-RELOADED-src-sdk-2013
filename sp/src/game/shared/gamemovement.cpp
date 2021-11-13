@@ -1427,15 +1427,18 @@ void CGameMovement::WaterMove( void )
 	VectorCopy (wishvel, wishdir);
 	wishspeed = VectorNormalize(wishdir);
 
-	// Cap speed.
-	if (wishspeed > mv->m_flMaxSpeed)
+	if (fr_enable_bunnyhop.GetInt() == 0)
 	{
-		VectorScale (wishvel, mv->m_flMaxSpeed/wishspeed, wishvel);
-		wishspeed = mv->m_flMaxSpeed;
-	}
+		// Cap speed.
+		if (wishspeed > mv->m_flMaxSpeed)
+		{
+			VectorScale(wishvel, mv->m_flMaxSpeed / wishspeed, wishvel);
+			wishspeed = mv->m_flMaxSpeed;
+		}
 
-	// Slow us down a bit.
-	wishspeed *= 0.8;
+		// Slow us down a bit.
+		wishspeed *= 0.8;
+	}
 	
 	// Water friction
 	VectorCopy(mv->m_vecVelocity, temp);
@@ -1791,13 +1794,16 @@ void CGameMovement::AirMove( void )
 	VectorCopy (wishvel, wishdir);   // Determine maginitude of speed of move
 	wishspeed = VectorNormalize(wishdir);
 
-	//
-	// clamp to server defined max speed
-	//
-	if ( wishspeed != 0 && (wishspeed > mv->m_flMaxSpeed))
+	if (fr_enable_bunnyhop.GetInt() == 0)
 	{
-		VectorScale (wishvel, mv->m_flMaxSpeed/wishspeed, wishvel);
-		wishspeed = mv->m_flMaxSpeed;
+		//
+		// Clamp to server defined max speed
+		//
+		if ((wishspeed != 0.0f) && (wishspeed > mv->m_flMaxSpeed))
+		{
+			VectorScale(wishvel, mv->m_flMaxSpeed / wishspeed, wishvel);
+			wishspeed = mv->m_flMaxSpeed;
+		}
 	}
 	
 	AirAccelerate( wishdir, wishspeed, sv_airaccelerate.GetFloat() );
@@ -1960,13 +1966,16 @@ void CGameMovement::WalkMove( void )
 	VectorCopy (wishvel, wishdir);   // Determine maginitude of speed of move
 	wishspeed = VectorNormalize(wishdir);
 
-	//
-	// Clamp to server defined max speed
-	//
-	if ((wishspeed != 0.0f) && (wishspeed > mv->m_flMaxSpeed))
+	if (fr_enable_bunnyhop.GetInt() == 0)
 	{
-		VectorScale (wishvel, mv->m_flMaxSpeed/wishspeed, wishvel);
-		wishspeed = mv->m_flMaxSpeed;
+		//
+		// Clamp to server defined max speed
+		//
+		if ((wishspeed != 0.0f) && (wishspeed > mv->m_flMaxSpeed))
+		{
+			VectorScale(wishvel, mv->m_flMaxSpeed / wishspeed, wishvel);
+			wishspeed = mv->m_flMaxSpeed;
+		}
 	}
 
 	// Set pmove velocity
@@ -2218,17 +2227,20 @@ void CGameMovement::FullObserverMove( void )
 	VectorCopy (wishvel, wishdir);   // Determine maginitude of speed of move
 	wishspeed = VectorNormalize(wishdir);
 
-	//
-	// Clamp to server defined max speed
-	//
-
-	float maxspeed = sv_maxvelocity.GetFloat(); 
-
-
-	if (wishspeed > maxspeed )
+	if (fr_enable_bunnyhop.GetInt() == 0)
 	{
-		VectorScale (wishvel, mv->m_flMaxSpeed/wishspeed, wishvel);
-		wishspeed = maxspeed;
+		//
+		// Clamp to server defined max speed
+		//
+
+		float maxspeed = sv_maxvelocity.GetFloat();
+
+
+		if (wishspeed > maxspeed)
+		{
+			VectorScale(wishvel, mv->m_flMaxSpeed / wishspeed, wishvel);
+			wishspeed = maxspeed;
+		}
 	}
 
 	// Set pmove velocity, give observer 50% acceration bonus
@@ -2295,13 +2307,13 @@ void CGameMovement::FullNoClipMove( float factor, float maxacceleration )
 	VectorCopy (wishvel, wishdir);   // Determine maginitude of speed of move
 	wishspeed = VectorNormalize(wishdir);
 
-	//
-	// Clamp to server defined max speed
-	//
-	if (wishspeed > maxspeed )
+	if (fr_enable_bunnyhop.GetInt() == 0)
 	{
-		VectorScale (wishvel, maxspeed/wishspeed, wishvel);
-		wishspeed = maxspeed;
+		if (wishspeed > maxspeed)
+		{
+			VectorScale(wishvel, mv->m_flMaxSpeed / wishspeed, wishvel);
+			wishspeed = maxspeed;
+		}
 	}
 
 	if ( maxacceleration > 0.0 )
@@ -4907,13 +4919,16 @@ void CGameMovement::FullTossMove( void )
 		VectorCopy (wishvel, wishdir);   // Determine maginitude of speed of move
 		wishspeed = VectorNormalize(wishdir);
 
-		//
-		// Clamp to server defined max speed
-		//
-		if (wishspeed > mv->m_flMaxSpeed)
+		if (fr_enable_bunnyhop.GetInt() == 0)
 		{
-			VectorScale (wishvel, mv->m_flMaxSpeed/wishspeed, wishvel);
-			wishspeed = mv->m_flMaxSpeed;
+			//
+			// clamp to server defined max speed
+			//
+			if (wishspeed != 0 && (wishspeed > mv->m_flMaxSpeed))
+			{
+				VectorScale(wishvel, mv->m_flMaxSpeed / wishspeed, wishvel);
+				wishspeed = mv->m_flMaxSpeed;
+			}
 		}
 
 		// Set pmove velocity

@@ -1119,7 +1119,7 @@ bool CNPC_BaseZombie::ShouldIgniteZombieGib( void )
 //-----------------------------------------------------------------------------
 // Purpose: Handle the special case of a zombie killed by a physics chopper.
 //-----------------------------------------------------------------------------
-void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info )
+void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info, bool event_killed )
 {
 	bool bSquashed = IsSquashed(info);
 
@@ -1228,117 +1228,11 @@ void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info )
 		DispatchParticleEffect("blood_zombie_split", GetAbsOrigin(), GetAbsAngles(), this);
 	}
 
-	m_iHealth = 0;
-	Event_Killed(info);
-}
-
-void CNPC_BaseZombie::DieChoppedNoBurn(const CTakeDamageInfo &info)
-{
-	bool bSquashed = IsSquashed(info);
-
-	Vector forceVector(vec3_origin);
-
-	forceVector += CalcDamageForceVector(info);
-
-	if (!m_fIsHeadless && !bSquashed)
+	if (!event_killed)
 	{
-		if (random->RandomInt(0, 1) == 0)
-		{
-			// Drop a live crab half of the time.
-			ReleaseHeadcrab(EyePosition(), forceVector * 0.005, true, false, false);
-		}
+		m_iHealth = 0;
+		Event_Killed(info);
 	}
-
-	float flFadeTime = 0.0;
-
-	if (HasSpawnFlags(SF_NPC_FADE_CORPSE))
-	{
-		flFadeTime = 5.0;
-	}
-
-	SetSolid(SOLID_NONE);
-	AddEffects(EF_NODRAW);
-
-	Vector vecLegsForce;
-	vecLegsForce.x = random->RandomFloat(-400, 400);
-	vecLegsForce.y = random->RandomFloat(-400, 400);
-	vecLegsForce.z = random->RandomFloat(0, 250);
-
-	if (bSquashed && vecLegsForce.z > 0)
-	{
-		// Force the broken legs down. (Give some additional force, too)
-		vecLegsForce.z *= -10;
-	}
-
-	CBaseEntity *pLegGib = CreateRagGib(this, GetLegsModel(), GetAbsOrigin(), GetAbsAngles(), vecLegsForce, flFadeTime, false);
-	if (pLegGib)
-	{
-		CopyRenderColorTo(pLegGib);
-	}
-
-	forceVector *= random->RandomFloat(0.04, 0.06);
-	forceVector.z = (100 * 12 * 5) * random->RandomFloat(0.8, 1.2);
-
-	if (bSquashed && forceVector.z > 0)
-	{
-		// Force the broken torso down.
-		forceVector.z *= -1.0;
-	}
-
-	// Why do I have to fix this up?! (sjb)
-	QAngle TorsoAngles;
-	TorsoAngles = GetAbsAngles();
-	TorsoAngles.x -= 90.0f;
-	CBaseEntity *pTorsoGib = CreateRagGib(this, GetTorsoModel(), GetAbsOrigin() + Vector(0, 0, 64), TorsoAngles, forceVector, flFadeTime, false);
-	if (pTorsoGib)
-	{
-		CBaseAnimating *pAnimating = dynamic_cast<CBaseAnimating*>(pTorsoGib);
-		if (pAnimating)
-		{
-			pAnimating->SetBodygroup(ZOMBIE_BODYGROUP_HEADCRAB, !m_fIsHeadless);
-		}
-
-		pTorsoGib->SetOwnerEntity(this);
-		CopyRenderColorTo(pTorsoGib);
-
-	}
-
-	if (UTIL_ShouldShowBlood(BLOOD_COLOR_YELLOW))
-	{
-		int i;
-		Vector vecSpot;
-		Vector vecDir;
-
-		for (i = 0; i < 4; i++)
-		{
-			vecSpot = WorldSpaceCenter();
-
-			vecSpot.x += random->RandomFloat(-12, 12);
-			vecSpot.y += random->RandomFloat(-12, 12);
-			vecSpot.z += random->RandomFloat(-4, 16);
-
-			UTIL_BloodDrips(vecSpot, vec3_origin, BLOOD_COLOR_YELLOW, 50);
-		}
-
-		for (int i = 0; i < 4; i++)
-		{
-			Vector vecSpot = WorldSpaceCenter();
-
-			vecSpot.x += random->RandomFloat(-12, 12);
-			vecSpot.y += random->RandomFloat(-12, 12);
-			vecSpot.z += random->RandomFloat(-4, 16);
-
-			vecDir.x = random->RandomFloat(-1, 1);
-			vecDir.y = random->RandomFloat(-1, 1);
-			vecDir.z = 0;
-			VectorNormalize(vecDir);
-
-			UTIL_BloodImpact(vecSpot, vecDir, BloodColor(), 1);
-		}
-	}
-
-	m_iHealth = 0;
-	Event_Killed(info);
 }
 
 //-----------------------------------------------------------------------------
@@ -2460,9 +2354,10 @@ void CNPC_BaseZombie::Event_Killed( const CTakeDamageInfo &info )
 		UTIL_BloodSpray( WorldSpaceCenter(), vecDamageDir, BLOOD_COLOR_YELLOW, 8, FX_BLOODSPRAY_CLOUD );
 	}
 
+	//this crashes the game for some reason.
 	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && info.GetDamageType() & (DMG_ALWAYSGIB | DMG_BLAST | DMG_CRUSH) && !(info.GetDamageType() & (DMG_NEVERGIB | DMG_DISSOLVE)) && !m_fIsTorso && !FClassnameIs(this, "npc_poisonzombie"))
 	{
-		DieChopped(info);
+		DieChopped(info, true);
 		Vector vecDamageDir = info.GetDamageForce();
 		VectorNormalize(vecDamageDir);
 		UTIL_BloodSpray(WorldSpaceCenter(), vecDamageDir, BLOOD_COLOR_YELLOW, 13, FX_BLOODSPRAY_ALL);

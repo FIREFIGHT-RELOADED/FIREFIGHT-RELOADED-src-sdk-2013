@@ -3087,6 +3087,9 @@ Activity CNPC_MetroPolice::NPC_TranslateActivity( Activity newActivity )
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::ReleaseManhack( void )
 {
+	if (!IsAlive())
+		return;
+
 	Assert( m_hManhack );
 
 	// Make us physical
