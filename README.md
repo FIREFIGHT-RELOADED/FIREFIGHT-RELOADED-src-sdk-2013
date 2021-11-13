@@ -1,6 +1,6 @@
 ![Logo](https://github.com/FIREFIGHT-RELOADED/FIREFIGHT-RELOADED-src-sdk-2013/raw/endgame/Graphics/FR_Logo.png)
 
-[![Project Status: Inactive – The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](https://www.repostatus.org/badges/latest/inactive.svg)](https://www.repostatus.org/#inactive)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
 FIREFIGHT RELOADED is a (now open source) Source SDK 2013 modification with the goal to combine gameplay elements from Half-Life 2, SMOD, old-school first-person shooters like Quake and Unreal Tournament, and the RPG-styled horde-mode gameplay that ties this mod together. 
 
