@@ -41,4 +41,65 @@ void CServerGameDLL::LevelInit_ParseAllEntities( const char *pMapEntities )
 	{
 		pMapadd->RunLabel(szMapadd, "Init");
 	}
+
+	if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_COMBINEFIREFIGHT)
+	{
+		if (!pMapadd)
+		{
+			pMapadd = CreateMapAddEntity();
+			pMapadd->RunLabel(szMapadd, "CombineFirefight");
+		}
+		else
+		{
+			pMapadd->RunLabel(szMapadd, "CombineFirefight");
+		}
+	}
+	else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_XENINVASION)
+	{
+		if (!pMapadd)
+		{
+			pMapadd = CreateMapAddEntity();
+			pMapadd->RunLabel(szMapadd, "XenInvasion");
+		}
+		else
+		{
+			pMapadd->RunLabel(szMapadd, "XenInvasion");
+		}
+	}
+	else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_ANTLIONASSAULT)
+	{
+		if (!pMapadd)
+		{
+			pMapadd = CreateMapAddEntity();
+			pMapadd->RunLabel(szMapadd, "AntlionAssault");
+		}
+		else
+		{
+			pMapadd->RunLabel(szMapadd, "AntlionAssault");
+		}
+	}
+	else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_ZOMBIESURVIVAL)
+	{
+		if (!pMapadd)
+		{
+			pMapadd = CreateMapAddEntity();
+			pMapadd->RunLabel(szMapadd, "ZombieSurvival");
+		}
+		else
+		{
+			pMapadd->RunLabel(szMapadd, "ZombieSurvival");
+		}
+	}
+	else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE)
+	{
+		if (!pMapadd)
+		{
+			pMapadd = CreateMapAddEntity();
+			pMapadd->RunLabel(szMapadd, "FirefightRumble");
+		}
+		else
+		{
+			pMapadd->RunLabel(szMapadd, "FirefightRumble");
+		}
+	}
 }

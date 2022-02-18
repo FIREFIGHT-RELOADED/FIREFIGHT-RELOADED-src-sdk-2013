@@ -137,6 +137,79 @@ const char* g_NPCS[] =
 	"npc_player"
 };
 
+const char* g_charNPCSCombineFirefightCommon[] =
+{
+	"npc_metropolice",
+	"npc_combine_s",
+	"npc_combine_e",
+	"npc_combine_p",
+	"npc_combine_shot",
+	"npc_elitepolice"
+};
+
+const char* g_charNPCSCombineFirefightRare[] =
+{
+	"npc_combine_ace",
+	"npc_hunter",
+	"npc_assassin",
+	"npc_cremator",
+	"npc_combineguard",
+	"npc_ministrider",
+	"npc_rollermine",
+	"npc_cscanner",
+	//temp until we actually set up the wave system.
+	"npc_player"
+};
+
+//why.
+const char* g_charNPCSAntlionAssaultCommon[] =
+{
+	"npc_antlion"
+};
+
+const char* g_charNPCSAntlionAssaultRare[] =
+{
+	"npc_antlionworker",
+	"npc_antlionguard",
+	"npc_antlionguardian",
+	//temp until we actually set up the wave system.
+	"npc_player"
+};
+
+const char* g_charNPCSZombieSurvivalCommon[] =
+{
+	"npc_zombie",
+	"npc_zombie_torso",
+	"npc_fastzombie",
+	"npc_fastzombie_torso"
+};
+
+const char* g_charNPCSZombieSurvivalRare[] =
+{
+	"npc_poisonzombie",
+	"npc_zombine",
+	//temp until we actually set up the wave system.
+	"npc_player"
+};
+
+const char* g_charNPCSXenInvasionCommon[] =
+{
+	"npc_houndeye",
+	"npc_bullsquid",
+	"npc_agrunt",
+	"npc_acontroller"
+};
+
+const char* g_charNPCSXenInvasionRare[] =
+{
+	"npc_headcrab_fast",
+	"npc_headcrab_poison",
+	"npc_vortigaunt",
+	"npc_headcrab",
+	//temp until we actually set up the wave system.
+	"npc_player"
+};
+
 static void DispatchActivate( CBaseEntity *pEntity )
 {
 	bool bAsyncAnims = mdlcache->SetAsyncLoad( MDLCACHE_ANIMBLOCK, false );
@@ -258,7 +331,21 @@ void CNPCMakerFirefight::Precache(void)
 //-----------------------------------------------------------------------------
 void CNPCMakerFirefight::MakerThink(void)
 {
-	SetNextThink(gpGlobals->curtime + m_flSpawnFrequency);
+	if (g_fr_spawneroldfunctionality.GetBool())
+	{
+		if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_ANTLIONASSAULT)
+		{
+			SetNextThink(gpGlobals->curtime + (m_flSpawnFrequency + 15));
+		}
+		else
+		{
+			SetNextThink(gpGlobals->curtime + m_flSpawnFrequency);
+		}
+	}
+	else
+	{
+		SetNextThink(gpGlobals->curtime + m_flSpawnFrequency);
+	}
 
 	if (sk_spawnrareenemies.GetBool())
 	{
@@ -451,14 +538,79 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 	if (!CanMakeNPC())
 		return;
 
-	int nNPCs = ARRAYSIZE(g_charNPCSCommon);
-	int randomChoice = rand() % nNPCs;
-	const char* pRandomName = g_charNPCSCommon[randomChoice];
+	const char* pRandomName = "npc_player";
+
 	if (rareNPC)
 	{
-		nNPCs = ARRAYSIZE(g_charNPCSRare);
-		randomChoice = rand() % nNPCs;
-		pRandomName = g_charNPCSRare[randomChoice];
+		if (g_fr_spawneroldfunctionality.GetBool())
+		{
+			if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_COMBINEFIREFIGHT)
+			{
+				int randomChoice = rand() % ARRAYSIZE(g_charNPCSCombineFirefightRare);
+				pRandomName = g_charNPCSCombineFirefightRare[randomChoice];
+			}
+			else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_XENINVASION)
+			{
+				int randomChoice = rand() % ARRAYSIZE(g_charNPCSXenInvasionRare);
+				pRandomName = g_charNPCSXenInvasionRare[randomChoice];
+			}
+			else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_ANTLIONASSAULT)
+			{
+				int randomChoice = rand() % ARRAYSIZE(g_charNPCSAntlionAssaultRare);
+				pRandomName = g_charNPCSAntlionAssaultRare[randomChoice];
+			}
+			else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_ZOMBIESURVIVAL)
+			{
+				int randomChoice = rand() % ARRAYSIZE(g_charNPCSZombieSurvivalRare);
+				pRandomName = g_charNPCSZombieSurvivalRare[randomChoice];
+			}
+			else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE)
+			{
+				int randomChoice = rand() % ARRAYSIZE(g_charNPCSRare);
+				pRandomName = g_charNPCSRare[randomChoice];
+			}
+		}
+		else
+		{
+			int randomChoice = rand() % ARRAYSIZE(g_charNPCSRare);
+			pRandomName = g_charNPCSRare[randomChoice];
+		}
+	}
+	else
+	{
+		if (g_fr_spawneroldfunctionality.GetBool())
+		{
+			if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_COMBINEFIREFIGHT)
+			{
+				int randomChoice = rand() % ARRAYSIZE(g_charNPCSCombineFirefightCommon);
+				pRandomName = g_charNPCSCombineFirefightCommon[randomChoice];
+			}
+			else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_XENINVASION)
+			{
+				int randomChoice = rand() % ARRAYSIZE(g_charNPCSXenInvasionCommon);
+				pRandomName = g_charNPCSXenInvasionCommon[randomChoice];
+			}
+			else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_ANTLIONASSAULT)
+			{
+				int randomChoice = rand() % ARRAYSIZE(g_charNPCSAntlionAssaultCommon);
+				pRandomName = g_charNPCSAntlionAssaultCommon[randomChoice];
+			}
+			else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_ZOMBIESURVIVAL)
+			{
+				int randomChoice = rand() % ARRAYSIZE(g_charNPCSZombieSurvivalCommon);
+				pRandomName = g_charNPCSZombieSurvivalCommon[randomChoice];
+			}
+			else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE)
+			{
+				int randomChoice = rand() % ARRAYSIZE(g_charNPCSCommon);
+				pRandomName = g_charNPCSCommon[randomChoice];
+			}
+		}
+		else
+		{
+			int randomChoice = rand() % ARRAYSIZE(g_charNPCSCommon);
+			pRandomName = g_charNPCSCommon[randomChoice];
+		}
 	}
 
 	CAI_BaseNPC* pent = (CAI_BaseNPC*)CreateEntityByName(pRandomName);
@@ -476,11 +628,6 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 
 	m_OnSpawnNPC.Set(pent, pent, this);
 
-	if (rareNPC)
-	{
-		m_OnSpawnRareNPC.Set(pent, pent, this);
-	}
-
 	pent->SetAbsOrigin(GetAbsOrigin());
 
 	// Strip pitch and roll from the spawner's angles. Pass only yaw to the spawned NPC.
@@ -496,77 +643,67 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 		pent->AddSpawnFlags(SF_NPC_FADE_CORPSE);
 	}
 
-	if (rareNPC)
+	if (Q_stristr(pRandomName, "npc_metropolice"))
 	{
-		if (Q_stristr(pRandomName, "npc_combine_ace"))
+		int nWeaponsPolice = ARRAYSIZE(g_MetropoliceWeapons);
+		int randomChoicePolice = rand() % nWeaponsPolice;
+		const char* pRandomNamePolice = g_MetropoliceWeapons[randomChoicePolice];
+		pent->m_spawnEquipment = MAKE_STRING(pRandomNamePolice);
+		pent->AddSpawnFlags(SF_METROPOLICE_ALLOWED_TO_RESPOND);
+		pent->AddSpawnFlags(SF_METROPOLICE_MID_RANGE_ATTACK);
+	}
+	else if (Q_stristr(pRandomName, "npc_elitepolice"))
+	{
+		int nWeaponsElitePolice = ARRAYSIZE(g_EliteMetropoliceWeapons);
+		int randomChoiceElitePolice = rand() % nWeaponsElitePolice;
+		const char* pRandomNameElitePolice = g_EliteMetropoliceWeapons[randomChoiceElitePolice];
+		pent->m_spawnEquipment = MAKE_STRING(pRandomNameElitePolice);
+	}
+	else if (Q_stristr(pRandomName, "npc_combine_shot"))
+	{
+		pent->m_spawnEquipment = MAKE_STRING("weapon_shotgun");
+	}
+	else if (Q_stristr(pRandomName, "npc_combine_s"))
+	{
+		int nWeaponsSoldier = ARRAYSIZE(g_CombineSoldierWeapons);
+		int randomChoiceSoldier = rand() % nWeaponsSoldier;
+		const char* pRandomNameSoldier = g_CombineSoldierWeapons[randomChoiceSoldier];
+		pent->m_spawnEquipment = MAKE_STRING(pRandomNameSoldier);
+	}
+	else if (Q_stristr(pRandomName, "npc_combine_e"))
+	{
+		int nWeaponsSoldier = ARRAYSIZE(g_CombineSoldierWeapons);
+		int randomChoiceSoldier = rand() % nWeaponsSoldier;
+		const char* pRandomNameSoldier = g_CombineSoldierWeapons[randomChoiceSoldier];
+		pent->m_spawnEquipment = MAKE_STRING(pRandomNameSoldier);
+	}
+	else if (Q_stristr(pRandomName, "npc_combine_p"))
+	{
+		int nWeaponsSoldier = ARRAYSIZE(g_CombineSoldierWeapons);
+		int randomChoiceSoldier = rand() % nWeaponsSoldier;
+		const char* pRandomNameSoldier = g_CombineSoldierWeapons[randomChoiceSoldier];
+		pent->m_spawnEquipment = MAKE_STRING(pRandomNameSoldier);
+	}
+	else if (Q_stristr(pRandomName, "npc_combine_ace"))
+	{
+		pent->m_spawnEquipment = MAKE_STRING("weapon_smg1");
+	}
+	else if (Q_stristr(pRandomName, "npc_player"))
+	{
+		//alert all players.
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
 		{
-			pent->m_spawnEquipment = MAKE_STRING("weapon_smg1");
-		}
-		else if (Q_stristr(pRandomName, "npc_player"))
-		{
-			//alert all players.
-			for (int i = 1; i <= gpGlobals->maxClients; i++)
+			CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+			if (pPlayer)
 			{
-				CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
-				if (pPlayer)
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_Hud_AllySpawned");
-					pPlayer->ShowLevelMessage(hint.Access());
-				}
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_AllySpawned");
+				pPlayer->ShowLevelMessage(hint.Access());
 			}
 		}
-
-		pent->m_isRareEntity = true;
-	}
-	else
-	{
-		//why
-		if (Q_stristr(pRandomName, "npc_metropolice"))
-		{
-			int nWeaponsPolice = ARRAYSIZE(g_MetropoliceWeapons);
-			int randomChoicePolice = rand() % nWeaponsPolice;
-			const char* pRandomNamePolice = g_MetropoliceWeapons[randomChoicePolice];
-			pent->m_spawnEquipment = MAKE_STRING(pRandomNamePolice);
-			pent->AddSpawnFlags(SF_METROPOLICE_ALLOWED_TO_RESPOND);
-			pent->AddSpawnFlags(SF_METROPOLICE_MID_RANGE_ATTACK);
-		}
-		else if (Q_stristr(pRandomName, "npc_elitepolice"))
-		{
-			int nWeaponsElitePolice = ARRAYSIZE(g_EliteMetropoliceWeapons);
-			int randomChoiceElitePolice = rand() % nWeaponsElitePolice;
-			const char* pRandomNameElitePolice = g_EliteMetropoliceWeapons[randomChoiceElitePolice];
-			pent->m_spawnEquipment = MAKE_STRING(pRandomNameElitePolice);
-		}
-		else if (Q_stristr(pRandomName, "npc_combine_shot"))
-		{
-			pent->m_spawnEquipment = MAKE_STRING("weapon_shotgun");
-		}
-		else if (Q_stristr(pRandomName, "npc_combine_s"))
-		{
-			int nWeaponsSoldier = ARRAYSIZE(g_CombineSoldierWeapons);
-			int randomChoiceSoldier = rand() % nWeaponsSoldier;
-			const char* pRandomNameSoldier = g_CombineSoldierWeapons[randomChoiceSoldier];
-			pent->m_spawnEquipment = MAKE_STRING(pRandomNameSoldier);
-		}
-		else if (Q_stristr(pRandomName, "npc_combine_e"))
-		{
-			int nWeaponsSoldier = ARRAYSIZE(g_CombineSoldierWeapons);
-			int randomChoiceSoldier = rand() % nWeaponsSoldier;
-			const char* pRandomNameSoldier = g_CombineSoldierWeapons[randomChoiceSoldier];
-			pent->m_spawnEquipment = MAKE_STRING(pRandomNameSoldier);
-		}
-		else if (Q_stristr(pRandomName, "npc_combine_p"))
-		{
-			int nWeaponsSoldier = ARRAYSIZE(g_CombineSoldierWeapons);
-			int randomChoiceSoldier = rand() % nWeaponsSoldier;
-			const char* pRandomNameSoldier = g_CombineSoldierWeapons[randomChoiceSoldier];
-			pent->m_spawnEquipment = MAKE_STRING(pRandomNameSoldier);
-		}
-
-		pent->m_isRareEntity = false;
 	}
 
+	pent->m_isRareEntity = rareNPC;
 	pent->SetSquadName(m_SquadName);
 	pent->SetHintGroup(m_strHintGroup);
 
@@ -589,7 +726,6 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 		//rare entities have their own value we must consider.
 		m_nLiveRareNPCs++;
 	}
-
 	m_nLiveChildren++;// count this NPC
 	g_iNPCLimit++;
 }

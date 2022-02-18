@@ -52,10 +52,11 @@ ConVar player_limit_jump_speed( "player_limit_jump_speed", "1", FCVAR_REPLICATED
 
 //Used for bunnyhopping
 ConVar fr_enable_bunnyhop("fr_enable_bunnyhop", "1", FCVAR_ARCHIVE);
+ConVar fr_bunnyhop_boost("fr_bunnyhop_boost", "0", FCVAR_ARCHIVE);
 
 ConVar fr_autojump("fr_autojump", "0", FCVAR_ARCHIVE);
 
-ConVar fr_doublejump("fr_doublejump", "1", FCVAR_ARCHIVE);
+ConVar fr_doublejump("fr_doublejump", "0", FCVAR_ARCHIVE);
 ConVar fr_doublejump_power("fr_doublejump_power", "20", FCVAR_ARCHIVE);
 
 // option_duck_method is a carrier convar. Its sole purpose is to serve an easy-to-flip
@@ -1427,7 +1428,7 @@ void CGameMovement::WaterMove( void )
 	VectorCopy (wishvel, wishdir);
 	wishspeed = VectorNormalize(wishdir);
 
-	if (fr_enable_bunnyhop.GetInt() == 0)
+	if (fr_enable_bunnyhop.GetInt() == 0 && !fr_bunnyhop_boost.GetBool())
 	{
 		// Cap speed.
 		if (wishspeed > mv->m_flMaxSpeed)
@@ -1794,7 +1795,7 @@ void CGameMovement::AirMove( void )
 	VectorCopy (wishvel, wishdir);   // Determine maginitude of speed of move
 	wishspeed = VectorNormalize(wishdir);
 
-	if (fr_enable_bunnyhop.GetInt() == 0)
+	if (fr_enable_bunnyhop.GetInt() == 0 && !fr_bunnyhop_boost.GetBool())
 	{
 		//
 		// Clamp to server defined max speed
@@ -1966,7 +1967,7 @@ void CGameMovement::WalkMove( void )
 	VectorCopy (wishvel, wishdir);   // Determine maginitude of speed of move
 	wishspeed = VectorNormalize(wishdir);
 
-	if (fr_enable_bunnyhop.GetInt() == 0)
+	if (fr_enable_bunnyhop.GetInt() == 0 && !fr_bunnyhop_boost.GetBool())
 	{
 		//
 		// Clamp to server defined max speed
@@ -2227,7 +2228,7 @@ void CGameMovement::FullObserverMove( void )
 	VectorCopy (wishvel, wishdir);   // Determine maginitude of speed of move
 	wishspeed = VectorNormalize(wishdir);
 
-	if (fr_enable_bunnyhop.GetInt() == 0)
+	if (fr_enable_bunnyhop.GetInt() == 0 && !fr_bunnyhop_boost.GetBool())
 	{
 		//
 		// Clamp to server defined max speed
@@ -2307,7 +2308,7 @@ void CGameMovement::FullNoClipMove( float factor, float maxacceleration )
 	VectorCopy (wishvel, wishdir);   // Determine maginitude of speed of move
 	wishspeed = VectorNormalize(wishdir);
 
-	if (fr_enable_bunnyhop.GetInt() == 0)
+	if (fr_enable_bunnyhop.GetInt() == 0 && !fr_bunnyhop_boost.GetBool())
 	{
 		if (wishspeed > maxspeed)
 		{
