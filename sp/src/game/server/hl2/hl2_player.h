@@ -300,6 +300,7 @@ public:
 	void StopWaterDeathSounds( void );
 
 	bool IsWeaponLowered( void ) { return m_HL2Local.m_bWeaponLowered; }
+	bool IsGrappling(void) { return m_bInGrapple; }
 	void HandleArmorReduction( void );
 	void StartArmorReduction( void ) { m_flArmorReductionTime = gpGlobals->curtime + ARMOR_DECAY_TIME; 
 									   m_iArmorReductionFrom = ArmorValue(); 
@@ -375,6 +376,8 @@ private:
 
 	float				m_flNextFlashlightCheckTime;
 	float				m_flFlashlightPowerDrainScale;
+
+	bool				m_bInGrapple;
 
 
 	// Aiming heuristics code

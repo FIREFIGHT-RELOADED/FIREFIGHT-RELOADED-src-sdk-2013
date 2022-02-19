@@ -33,8 +33,6 @@
 
 #define BEAM_SPRITE "sprites/orangelight1.vmt"
 #define GLOW_SPRITE "sprites/orangeflare1.vmt"
-
-ConVar	sk_dmg_hook("sk_dmg_hook", "0");
  
 LINK_ENTITY_TO_CLASS( grapple_hook, CGrappleHook );
  
@@ -48,7 +46,6 @@ BEGIN_DATADESC( CGrappleHook )
 	DEFINE_FIELD( m_hOwner, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hBolt, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_bPlayerWasStanding, FIELD_BOOLEAN ),
-	DEFINE_FIELD(m_bHasDamagedNPC, FIELD_BOOLEAN),
  
 END_DATADESC()
  
@@ -151,7 +148,7 @@ void CGrappleHook::HookTouch( CBaseEntity *pOther )
 		"prop_dynamic_override"
 	};
 
-	if ( !pOther || !pOther->IsSolid() || pOther->IsSolidFlagSet(FSOLID_NOT_SOLID | FSOLID_TRIGGER | FSOLID_VOLUME_CONTENTS) || pOther->IsEffectActive(EF_NODRAW))
+	if ( !pOther || pOther->IsSolidFlagSet(FSOLID_NOT_SOLID | FSOLID_TRIGGER | FSOLID_VOLUME_CONTENTS) || pOther->IsEffectActive(EF_NODRAW))
 		return;
 
 	for (int i = 0; i < ARRAYSIZE(ppszIgnoredClasses); i++)
@@ -185,25 +182,6 @@ void CGrappleHook::HookTouch( CBaseEntity *pOther )
 		data.m_vNormal = vForward;
 		data.m_nEntIndex = 0;
 
-		if (pOther->m_takedamage && m_bHasDamagedNPC == false)
-		{
-			CAI_BaseNPC *pOtherNPC = (CAI_BaseNPC *)pOther;
-
-			if (!pOtherNPC)
-			{
-				m_bHasDamagedNPC = false;
-			}
-			else
-			{
-				pOtherNPC->TakeDamage(CTakeDamageInfo(this, m_hPlayer, sk_dmg_hook.GetFloat(), (DMG_BULLET | DMG_SHOCK | DMG_BURN | DMG_ENERGYBEAM)));
-				m_bHasDamagedNPC = true;
-			}
-		}
-		else
-		{
-			m_bHasDamagedNPC = false;
-		}
-
 		//	DispatchEffect( "Impact", data );
 
 		//	AddEffects( EF_NODRAW );
@@ -227,6 +205,12 @@ void CGrappleHook::HookTouch( CBaseEntity *pOther )
 		IPhysicsObject *pRootPhysObject = VPhysicsGetObject();
 		Assert(pRootPhysObject);
 		//Assert(pPhysObject);
+
+		if (!pRootPhysObject)
+		{
+			Assert(0);
+			return;
+		}
 
 		pRootPhysObject->EnableMotion(false);
 

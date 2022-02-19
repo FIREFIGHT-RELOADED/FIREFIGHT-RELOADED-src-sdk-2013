@@ -73,7 +73,6 @@ private:
 	IPhysicsSpring				*m_pSpring;
 	float						m_fSpringLength;
 	bool						m_bPlayerWasStanding;
-	bool						m_bHasDamagedNPC;
 };
  
 #endif

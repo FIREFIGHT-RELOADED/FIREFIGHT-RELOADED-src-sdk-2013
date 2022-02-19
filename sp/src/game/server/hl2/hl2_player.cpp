@@ -690,6 +690,8 @@ void CHL2_Player::HandleGrapple(void)
 		{
 			pGrapple->PrimaryAttack();
 		}
+
+		m_bInGrapple = true;
 	}
 	else if (!(m_nButtons & IN_GRAPPLE))
 	{
@@ -705,6 +707,8 @@ void CHL2_Player::HandleGrapple(void)
 				SelectLastItem();
 			}
 		}
+
+		m_bInGrapple = false;
 	}
 }
 
@@ -1100,7 +1104,7 @@ void CHL2_Player::KickAttack(void)
 				}
 			}
 
-			float kick_range = 90.0f;
+			float kick_range = m_bInGrapple ? 500.0f : 90.0f;
 
 			Vector vecEnd;
 			VectorMA(Weapon_ShootPosition(), 50, vecDirection, vecEnd);
@@ -1111,6 +1115,7 @@ void CHL2_Player::KickAttack(void)
 			// did I hit someone?
 			float KickThrowForceMult = sk_kick_throwforce.GetFloat() + (sk_kick_throwforce_mult.GetFloat() * ((fabs(GetAbsVelocity().x) + fabs(GetAbsVelocity().y) + fabs(GetAbsVelocity().z)) / sk_kick_throwforce_div.GetFloat()));
 			float KickDamageMult = KickThrowForceMult / sk_kick_dmg_div.GetFloat();
+			float KickDamageFlightBoost = (m_bInGrapple ? KickDamageMult * 3 : KickDamageMult);
 			float KickDamageProps = KickThrowForceMult / sk_kick_propdmg_div.GetFloat();
 
 			if (tr.m_pEnt)
@@ -1161,7 +1166,7 @@ void CHL2_Player::KickAttack(void)
 						EmitSound("HL2Player.kick_wall");
 						return;
 					}
-					CBaseEntity *Victim = this->CheckTraceHullAttack(Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), KickDamageMult, (DMG_CLUB | DMG_KICK), KickThrowForceMult, true);
+					CBaseEntity *Victim = this->CheckTraceHullAttack(Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), KickDamageFlightBoost, (DMG_CLUB | DMG_KICK), KickThrowForceMult, true);
 					if (Victim && Victim->IsNPC())
 					{
 						Vector hitDirection, up;
