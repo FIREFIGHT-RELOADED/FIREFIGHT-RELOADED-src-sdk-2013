@@ -71,3 +71,4 @@ config.cfg
 *.db-shm
 *.db-wal
 *.bak
+sp/game/firefightreloaded/bin
