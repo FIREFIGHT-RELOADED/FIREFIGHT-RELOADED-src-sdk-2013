@@ -2568,7 +2568,7 @@ public:
 			{
 				IPhysicsObject *pPhysics = pEntity->VPhysicsGetObject();
 				Assert(pPhysics);
-				if ( pPhysics->IsMoveable() && pPhysics->GetMass() < m_minMass )
+				if ( pPhysics && pPhysics->IsMoveable() && pPhysics->GetMass() < m_minMass )
 					return false;
 			}
 

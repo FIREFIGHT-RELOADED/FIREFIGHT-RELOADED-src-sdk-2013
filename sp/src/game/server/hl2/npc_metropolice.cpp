@@ -3092,6 +3092,9 @@ void CNPC_MetroPolice::ReleaseManhack( void )
 
 	Assert( m_hManhack );
 
+	if (!m_hManhack || m_hManhack && !m_hManhack->IsAlive())
+		return;
+
 	// Make us physical
 	m_hManhack->RemoveSpawnFlags( SF_MANHACK_CARRIED );
 	m_hManhack->CreateVPhysics();
