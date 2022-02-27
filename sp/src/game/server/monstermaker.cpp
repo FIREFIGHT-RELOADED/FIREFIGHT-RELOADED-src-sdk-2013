@@ -175,7 +175,7 @@ bool CBaseNPCMaker::CanMakeNPC( bool bIgnoreSolidEntities )
 	if (g_fr_npclimit.GetInt() > 0 && (g_iNPCLimit >= g_fr_npclimit.GetInt()))
 		return false;
 
-	if ( m_nMaxLiveChildren > 0 && m_nLiveChildren >= m_nMaxLiveChildren )
+	if ( m_nMaxLiveChildren > 0 && (m_nLiveChildren >= m_nMaxLiveChildren))
 	{// not allowed to make a new one yet. Too many live ones out right now.
 		return false;
 	}
