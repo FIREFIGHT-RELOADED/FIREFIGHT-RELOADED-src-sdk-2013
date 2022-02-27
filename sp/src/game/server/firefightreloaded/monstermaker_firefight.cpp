@@ -23,6 +23,7 @@
 ConVar sk_initialspawnertime("sk_initialspawnertime", "5", FCVAR_CHEAT);
 ConVar sk_spawnrareenemies("sk_spawnrareenemies", "1", FCVAR_ARCHIVE);
 ConVar sk_spawnerhidefromplayer("sk_spawnerhidefromplayer", "1", FCVAR_ARCHIVE);
+ConVar sk_spawner_npc_ragdoll_fade("sk_spawner_npc_ragdoll_fade", "1", FCVAR_ARCHIVE);
 //ConVar sk_spawnerminclientstospawn("sk_spawnerminclientstospawn", "2", FCVAR_NOTIFY);
 
 //spawn lists (TODO: use KeyValues files)
@@ -277,7 +278,7 @@ void CNPCMakerFirefight::Spawn(void)
 	m_nLiveRareNPCs		= 0;
 	Precache();
 
-	m_spawnflags |= SF_NPCMAKER_FADE;
+	//m_spawnflags |= SF_NPCMAKER_FADE;
 
 	//Start on?
 	if ( m_bDisabled == false )
@@ -638,7 +639,7 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 
 	pent->AddSpawnFlags(SF_NPC_FALL_TO_GROUND);
 
-	if (m_spawnflags & SF_NPCMAKER_FADE)
+	if (sk_spawner_npc_ragdoll_fade.GetBool() /* || m_spawnflags & SF_NPCMAKER_FADE*/)
 	{
 		pent->AddSpawnFlags(SF_NPC_FADE_CORPSE);
 	}

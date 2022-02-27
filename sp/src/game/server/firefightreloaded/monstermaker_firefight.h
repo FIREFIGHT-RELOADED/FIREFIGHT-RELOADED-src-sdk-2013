@@ -16,7 +16,7 @@
 //-----------------------------------------------------------------------------
 // Spawnflags
 //-----------------------------------------------------------------------------
-#define SF_NPCMAKER_FADE			1	// Children's corpses fade
+//#define SF_NPCMAKER_FADE			1	// Children's corpses fade
 //TODO: add mutators, including this.
 //#define SF_NPCMAKER_DOUBLETROUBLE	8	//Spawn double the enemies
 //#define SF_NPCMAKER_ALWAYSUSERADIUS	32	// Use radius spawn whenever spawning
