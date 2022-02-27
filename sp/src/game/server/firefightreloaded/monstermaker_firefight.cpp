@@ -651,7 +651,7 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 		const char* pRandomNamePolice = g_MetropoliceWeapons[randomChoicePolice];
 		pent->m_spawnEquipment = MAKE_STRING(pRandomNamePolice);
 		pent->AddSpawnFlags(SF_METROPOLICE_ALLOWED_TO_RESPOND);
-		pent->AddSpawnFlags(SF_METROPOLICE_MID_RANGE_ATTACK);
+		//pent->AddSpawnFlags(SF_METROPOLICE_MID_RANGE_ATTACK);
 	}
 	else if (Q_stristr(pRandomName, "npc_elitepolice"))
 	{
