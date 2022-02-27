@@ -399,7 +399,7 @@ bool CNPCMakerFirefight::CanMakeNPC(bool bIgnoreSolidEntities)
 	if ( gEntList.NumberOfEntities() >= (gpGlobals->maxEntities - ENTITY_INTOLERANCE) )
 		return false;
 
-	if (g_fr_npclimit.GetInt() > 0 && g_iNPCLimit >= g_fr_npclimit.GetInt())
+	if (g_fr_npclimit.GetInt() > 0 && (g_iNPCLimit >= g_fr_npclimit.GetInt()))
 		return false;
 
 	/*
