@@ -538,7 +538,7 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 	if (!CanMakeNPC())
 		return;
 
-	const char* pRandomName = "npc_player";
+	const char* pRandomName = "";
 
 	if (rareNPC)
 	{

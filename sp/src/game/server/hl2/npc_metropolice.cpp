@@ -2846,6 +2846,12 @@ void CNPC_MetroPolice::OnAnimEventStartDeployManhack( void )
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::OnAnimEventDeployManhack( animevent_t *pEvent )
 {
+	if (!IsAlive())
+		return;
+
+	if (!m_hManhack)
+		return;
+
 	// Let it go
 	ReleaseManhack();
 

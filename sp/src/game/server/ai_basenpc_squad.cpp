@@ -213,6 +213,8 @@ void CAI_BaseNPC::RemoveFromSquad()
 	}
 }
 
+extern ConVar firefightrumble_enemyattack;
+
 //-----------------------------------------------------------------------------
 void CAI_BaseNPC::CheckSquad()
 {
@@ -235,7 +237,7 @@ void CAI_BaseNPC::CheckSquad()
 	{
 		if( IRelationType(pSquadmate) < D_LI )
 		{
-			bool bWarn = true;
+			bool bWarn = firefightrumble_enemyattack.GetBool() ? false : true;
 
 			// Rollermines and manhacks set their Class to NONE when held by the player, which makes all of 
 			// their squadmates complain that an enemy is in the squad. Suppress this.

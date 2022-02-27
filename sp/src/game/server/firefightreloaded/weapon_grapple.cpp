@@ -33,6 +33,13 @@
 
 #define BEAM_SPRITE "sprites/orangelight1.vmt"
 #define GLOW_SPRITE "sprites/orangeflare1.vmt"
+
+static const char* ppszIgnoredClasses[] =
+{
+	"prop_detail",
+	"prop_dynamic",
+	"prop_dynamic_override"
+};
  
 LINK_ENTITY_TO_CLASS( grapple_hook, CGrappleHook );
  
@@ -134,27 +141,22 @@ void CGrappleHook::Precache( void )
 {
 	PrecacheModel( HOOK_MODEL );
 }
- 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : *pOther - 
 //-----------------------------------------------------------------------------
 void CGrappleHook::HookTouch( CBaseEntity *pOther )
 {
-	static const char* ppszIgnoredClasses[] =
-	{
-		"prop_detail",
-		"prop_dynamic",
-		"prop_dynamic_override"
-	};
-
-	if ( !pOther || pOther->IsSolidFlagSet(FSOLID_NOT_SOLID | FSOLID_TRIGGER | FSOLID_VOLUME_CONTENTS) || pOther->IsEffectActive(EF_NODRAW))
+	if ( !pOther || pOther->IsSolidFlagSet(FSOLID_NOT_SOLID | FSOLID_VOLUME_CONTENTS) || pOther->IsEffectActive(EF_NODRAW))
 		return;
 
 	for (int i = 0; i < ARRAYSIZE(ppszIgnoredClasses); i++)
 	{
 		if (pOther->ClassMatches(ppszIgnoredClasses[i]))
-			return ;
+		{
+			return;
+		}
 	}
  
 	trace_t	tr;
@@ -388,6 +390,29 @@ void CWeaponGrapple::PrimaryAttack( void )
 	
 	//Traces a line between the two vectors
 	UTIL_TraceLine( vecShootOrigin, vecEnd, MASK_SHOT, pPlayer, COLLISION_GROUP_NONE, &tr);
+
+	CBaseEntity* pOther = tr.m_pEnt;
+
+	if (!pOther || pOther->IsSolidFlagSet(FSOLID_NOT_SOLID | FSOLID_VOLUME_CONTENTS) || pOther->IsEffectActive(EF_NODRAW))
+	{
+		WeaponSound(EMPTY);
+		return;
+	}
+
+	for (int i = 0; i < ARRAYSIZE(ppszIgnoredClasses); i++)
+	{
+		if (pOther->ClassMatches(ppszIgnoredClasses[i]))
+		{
+			WeaponSound(EMPTY);
+			return;
+		}
+	}
+
+	if (tr.surface.flags & SURF_SKY)
+	{
+		WeaponSound(EMPTY);
+		return;
+	}
 
 	//Draws the beam
 	DrawBeam( vecShootOrigin, tr.endpos, 5 );
