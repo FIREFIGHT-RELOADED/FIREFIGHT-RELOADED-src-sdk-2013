@@ -172,7 +172,7 @@ bool CBaseNPCMaker::CanMakeNPC( bool bIgnoreSolidEntities )
 	if( ai_inhibit_spawners.GetBool() )
 		return false;
 
-	if (g_iNPCLimit >= g_fr_npclimit.GetInt() && g_fr_npclimit.GetInt() != 0)
+	if (g_fr_npclimit.GetInt() > 0 && g_iNPCLimit >= g_fr_npclimit.GetInt())
 		return false;
 
 	if ( m_nMaxLiveChildren > 0 && m_nLiveChildren >= m_nMaxLiveChildren )
