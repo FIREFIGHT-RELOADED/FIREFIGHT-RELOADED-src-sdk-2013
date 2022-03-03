@@ -75,6 +75,8 @@ ConVar viewmodel_adjust_enabled("viewmodel_adjust_enabled", "0", FCVAR_REPLICATE
 ConVar viewmodel_lower_on_sprint("viewmodel_lower_on_sprint", "0", FCVAR_ARCHIVE);
 ConVar weapon_magazinestyledreloads("weapon_magazinestyledreloads", "0", FCVAR_ARCHIVE);
 
+ConVar weapon_quickswitch("weapon_quickswitch", "1", FCVAR_REPLICATED);
+
 void vm_adjust_enable_callback(IConVar *pConVar, char const *pOldString, float flOldValue)
 {
 	ConVarRef sv_cheats("sv_cheats");
@@ -1662,14 +1664,31 @@ bool CBaseCombatWeapon::DefaultDeploy( char *szViewModel, char *szWeaponModel, i
 		pOwner->SetAnimationExtension( szAnimExt );
 
 		SetViewModel();
-		SendWeaponAnim( iActivity );
+		SendWeaponAnim(iActivity);
+		
 
-		pOwner->SetNextAttack( gpGlobals->curtime + SequenceDuration() );
+		if (weapon_quickswitch.GetBool())
+		{
+			pOwner->SetNextAttack(gpGlobals->curtime + 0.1f);
+		}
+		else
+		{
+			pOwner->SetNextAttack(gpGlobals->curtime + SequenceDuration());
+		}
 	}
 
-	// Can't shoot again until we've finished deploying
-	m_flNextPrimaryAttack	= gpGlobals->curtime + SequenceDuration();
-	m_flNextSecondaryAttack	= gpGlobals->curtime + SequenceDuration();
+	if (weapon_quickswitch.GetBool())
+	{
+		m_flNextPrimaryAttack = gpGlobals->curtime + 0.1f;
+		m_flNextSecondaryAttack = gpGlobals->curtime + 0.1f;
+	}
+	else
+	{
+		// Can't shoot again until we've finished deploying
+		m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
+		m_flNextSecondaryAttack = gpGlobals->curtime + SequenceDuration();
+	}
+
 	m_flHudHintMinDisplayTime = 0;
 
 	m_bAltFireHudHintDisplayed = false;
