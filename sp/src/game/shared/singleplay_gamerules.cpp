@@ -205,41 +205,76 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 
 		if (g_fr_spawneroldfunctionality.GetBool())
 		{
-			if (V_stristr(mapname, "cf"))
-			{
-				SetGamemode(FIREFIGHT_PRIMARY_COMBINEFIREFIGHT);
-				Log("Automatically setting the gamemode to COMBINE FIREFIGHT due to mapname.\n");
-			}
-			else if (V_stristr(mapname, "xi"))
-			{
-				SetGamemode(FIREFIGHT_PRIMARY_XENINVASION);
-				Log("Automatically setting the gamemode to XEN INVASION due to mapname.\n");
-			}
-			else if (V_stristr(mapname, "aa"))
-			{
-				SetGamemode(FIREFIGHT_PRIMARY_ANTLIONASSAULT);
-				Log("Automatically setting the gamemode to ANTLION ASSAULT due to mapname.\n");
-			}
-			else if (V_stristr(mapname, "zs"))
-			{
-				SetGamemode(FIREFIGHT_PRIMARY_ZOMBIESURVIVAL);
-				Log("Automatically setting the gamemode to ZOMBIE SURVIVAL due to mapname.\n");
-			}
-			else if (V_stristr(mapname, "fr"))
-			{
-				SetGamemode(FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE);
-				Log("Automatically setting the gamemode to FIREFIGHT RUMBLE due to mapname.\n");
-			}
+			SetGamemode(g_gamemode.GetInt());
+			Log("Setting the gamemode to %i.\n", GetGamemode());
+		}
 
-			if (GetGamemode() == FIREFIGHT_PRIMARY_DEFAULT)
+		if (V_stristr(mapname, "cf"))
+		{
+			if (!g_fr_spawneroldfunctionality.GetBool())
+			{
+				bSkipFuncCheck = true;
+			}
+			SetGamemode(FIREFIGHT_PRIMARY_COMBINEFIREFIGHT);
+			Log("Automatically setting the gamemode to COMBINE FIREFIGHT due to mapname.\n");
+		}
+		else if (V_stristr(mapname, "xi"))
+		{
+			if (!g_fr_spawneroldfunctionality.GetBool())
+			{
+				bSkipFuncCheck = true;
+			}
+			SetGamemode(FIREFIGHT_PRIMARY_XENINVASION);
+			Log("Automatically setting the gamemode to XEN INVASION due to mapname.\n");
+		}
+		else if (V_stristr(mapname, "aa"))
+		{
+			if (!g_fr_spawneroldfunctionality.GetBool())
+			{
+				bSkipFuncCheck = true;
+			}
+			SetGamemode(FIREFIGHT_PRIMARY_ANTLIONASSAULT);
+			Log("Automatically setting the gamemode to ANTLION ASSAULT due to mapname.\n");
+		}
+		else if (V_stristr(mapname, "zs"))
+		{
+			if (!g_fr_spawneroldfunctionality.GetBool())
+			{
+				bSkipFuncCheck = true;
+			}
+			SetGamemode(FIREFIGHT_PRIMARY_ZOMBIESURVIVAL);
+			Log("Automatically setting the gamemode to ZOMBIE SURVIVAL due to mapname.\n");
+		}
+		else if (V_stristr(mapname, "fr"))
+		{
+			if (!g_fr_spawneroldfunctionality.GetBool())
+			{
+				bSkipFuncCheck = true;
+			}
+			SetGamemode(FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE);
+			Log("Automatically setting the gamemode to FIREFIGHT RUMBLE due to mapname.\n");
+		}
+		else
+		{
+			bSkipFuncCheck = false;
+		}
+
+		if (bSkipFuncCheck)
+		{
+			Log("Overriding g_fr_spawneroldfunctionality...\n");
+		}
+
+		if (bSkipFuncCheck || g_fr_spawneroldfunctionality.GetBool())
+		{
+			if (GetGamemode() <= FIREFIGHT_PRIMARY_DEFAULT)
 			{
 				if (bHasRandomized)
 				{
 					bHasRandomized = false;
-					iRandomGamemode = 0;
+					iGameMode = FIREFIGHT_PRIMARY_DEFAULT;
 				}
 				Log("No gamemode defined! Randomizing gamemodes.\n");
-				SetGamemodeRandom(FIREFIGHT_PRIMARY_COMBINEFIREFIGHT, FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE, true);
+				SetGamemodeRandom(FIREFIGHT_PRIMARY_COMBINEFIREFIGHT, FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE);
 				bHasRandomized = true;
 			}
 
@@ -292,7 +327,6 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 				}
 				break;
 			case FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE:
-			default:
 				if (cfgfilefr && cfgfilefr[0])
 				{
 					char szCommand[256];
@@ -301,6 +335,9 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 					Q_snprintf(szCommand, sizeof(szCommand), "exec %s\n", cfgfilefr);
 					engine->ServerCommand(szCommand);
 				}
+				break;
+			default:
+				Log("No gamemode? What did you do?\n");
 				break;
 			}
 		}

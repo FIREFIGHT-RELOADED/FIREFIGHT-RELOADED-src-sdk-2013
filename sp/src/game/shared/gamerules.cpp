@@ -299,30 +299,16 @@ void CGameRules::RefreshSkillData ( bool forceUpdate )
 #endif // CLIENT_DLL
 }
 
-void CGameRules::SetGamemode(int name, bool localServer)
+void CGameRules::SetGamemode(int name)
 {
-	if (localServer)
-	{
-		iRandomGamemode = name;
-	}
-	else
-	{
-		g_gamemode.SetValue(name);
-	}
+	iGameMode = name;
 }
 
 int CGameRules::GetGamemode()
 {
-	if (g_fr_spawneroldfunctionality.GetBool())
+	if (bSkipFuncCheck || g_fr_spawneroldfunctionality.GetBool())
 	{
-		if (bHasRandomized)
-		{
-			return iRandomGamemode;
-		}
-		else
-		{
-			return g_gamemode.GetInt();
-		}
+		return iGameMode;
 	}
 	else
 	{
@@ -330,37 +316,27 @@ int CGameRules::GetGamemode()
 	}
 }
 
-const char* CGameRules::GetGamemodeName(bool localServer)
+const char* CGameRules::GetGamemodeName()
 {
-	int gamemodeVal = NULL;
 	const char* gamemodeName = "";
 
-	if (localServer)
-	{
-		gamemodeVal = iRandomGamemode;
-	}
-	else
-	{
-		gamemodeVal = g_gamemode.GetInt();
-	}
-
-	if (gamemodeVal == FIREFIGHT_PRIMARY_COMBINEFIREFIGHT)
+	if (GetGamemode() == FIREFIGHT_PRIMARY_COMBINEFIREFIGHT)
 	{
 		gamemodeName = "combine_firefight";
 	}
-	else if (gamemodeVal == FIREFIGHT_PRIMARY_XENINVASION)
+	else if (GetGamemode() == FIREFIGHT_PRIMARY_XENINVASION)
 	{
 		gamemodeName = "xen_invasion";
 	}
-	else if (gamemodeVal == FIREFIGHT_PRIMARY_ANTLIONASSAULT)
+	else if (GetGamemode() == FIREFIGHT_PRIMARY_ANTLIONASSAULT)
 	{
 		gamemodeName = "antlion_assault";
 	}
-	else if (gamemodeVal == FIREFIGHT_PRIMARY_ZOMBIESURVIVAL)
+	else if (GetGamemode() == FIREFIGHT_PRIMARY_ZOMBIESURVIVAL)
 	{
 		gamemodeName = "zombie_survival";
 	}
-	else if (gamemodeVal == FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE)
+	else if (GetGamemode() == FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE)
 	{
 		gamemodeName = "firefight_rumble";
 	}
@@ -368,37 +344,27 @@ const char* CGameRules::GetGamemodeName(bool localServer)
 	return gamemodeName;
 }
 
-const char* CGameRules::GetGamemodeName_ServerBrowser(bool localServer)
+const char* CGameRules::GetGamemodeName_ServerBrowser()
 {
-	int gamemodeVal = NULL;
 	const char* gamemodeName = "";
 
-	if (localServer)
-	{
-		gamemodeVal = iRandomGamemode;
-	}
-	else
-	{
-		gamemodeVal = g_gamemode.GetInt();
-	}
-
-	if (gamemodeVal == FIREFIGHT_PRIMARY_COMBINEFIREFIGHT)
+	if (GetGamemode() == FIREFIGHT_PRIMARY_COMBINEFIREFIGHT)
 	{
 		gamemodeName = "COMBINE FIREFIGHT";
 	}
-	else if (gamemodeVal == FIREFIGHT_PRIMARY_XENINVASION)
+	else if (GetGamemode() == FIREFIGHT_PRIMARY_XENINVASION)
 	{
 		gamemodeName = "XEN INVASION";
 	}
-	else if (gamemodeVal == FIREFIGHT_PRIMARY_ANTLIONASSAULT)
+	else if (GetGamemode() == FIREFIGHT_PRIMARY_ANTLIONASSAULT)
 	{
 		gamemodeName = "ANTLION ASSAULT";
 	}
-	else if (gamemodeVal == FIREFIGHT_PRIMARY_ZOMBIESURVIVAL)
+	else if (GetGamemode() == FIREFIGHT_PRIMARY_ZOMBIESURVIVAL)
 	{
 		gamemodeName = "ZOMBIE SURVIVAL";
 	}
-	else if (gamemodeVal == FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE)
+	else if (GetGamemode() == FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE)
 	{
 		gamemodeName = "FIREFIGHT RUMBLE";
 	}
@@ -410,19 +376,10 @@ const char* CGameRules::GetGamemodeName_ServerBrowser(bool localServer)
 	return gamemodeName;
 }
 
-void CGameRules::SetGamemodeRandom(int x, int y, bool localServer)
+void CGameRules::SetGamemodeRandom(int x, int y)
 {
 	int randomGm = random->RandomInt(x, y);
-
-	if (localServer)
-	{
-		iRandomGamemode = randomGm;
-		SetGamemode(iRandomGamemode, true);
-	}
-	else
-	{
-		SetGamemode(randomGm);
-	}
+	SetGamemode(randomGm);
 }
 
 //-----------------------------------------------------------------------------

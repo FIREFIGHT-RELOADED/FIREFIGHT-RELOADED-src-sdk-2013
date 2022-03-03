@@ -258,13 +258,14 @@ public:
 	virtual bool FAllowFlashlight( void ) = 0;// Are players allowed to switch on their flashlight?
 	virtual bool FShouldSwitchWeapon( CBasePlayer *pPlayer, CBaseCombatWeapon *pWeapon ) = 0;// should the player switch to this weapon?
 
-	virtual void SetGamemodeRandom(int x, int y, bool localServer = false);
-	virtual void SetGamemode(int name, bool localServer = false);
+	virtual void SetGamemodeRandom(int x, int y);
+	virtual void SetGamemode(int name);
 	virtual int GetGamemode();
-	virtual const char* GetGamemodeName(bool localServer = false);
-	virtual const char* GetGamemodeName_ServerBrowser(bool localServer = false);
+	virtual const char* GetGamemodeName();
+	virtual const char* GetGamemodeName_ServerBrowser();
 	bool bHasRandomized;
-	int iRandomGamemode;
+	bool bSkipFuncCheck;
+	int iGameMode;
 
 	int iHeadshotCount;
 	virtual int GetHeadshotCount() { return iHeadshotCount; }
@@ -444,6 +445,7 @@ private:
 
 
 extern ConVar g_Language;
+extern ConVar g_gamemode;
 extern ConVar g_fr_classic;
 extern ConVar g_fr_headshotgore;
 extern ConVar g_fr_economy;

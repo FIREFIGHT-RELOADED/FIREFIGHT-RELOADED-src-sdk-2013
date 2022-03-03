@@ -332,21 +332,7 @@ void CNPCMakerFirefight::Precache(void)
 //-----------------------------------------------------------------------------
 void CNPCMakerFirefight::MakerThink(void)
 {
-	if (g_fr_spawneroldfunctionality.GetBool())
-	{
-		if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_ANTLIONASSAULT)
-		{
-			SetNextThink(gpGlobals->curtime + (m_flSpawnFrequency + 15));
-		}
-		else
-		{
-			SetNextThink(gpGlobals->curtime + m_flSpawnFrequency);
-		}
-	}
-	else
-	{
-		SetNextThink(gpGlobals->curtime + m_flSpawnFrequency);
-	}
+	SetNextThink(gpGlobals->curtime + m_flSpawnFrequency);
 
 	if (sk_spawnrareenemies.GetBool())
 	{
@@ -543,7 +529,7 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 
 	if (rareNPC)
 	{
-		if (g_fr_spawneroldfunctionality.GetBool())
+		if (g_pGameRules->bSkipFuncCheck || g_fr_spawneroldfunctionality.GetBool())
 		{
 			if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_COMBINEFIREFIGHT)
 			{
@@ -579,7 +565,7 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 	}
 	else
 	{
-		if (g_fr_spawneroldfunctionality.GetBool())
+		if (g_pGameRules->bSkipFuncCheck || g_fr_spawneroldfunctionality.GetBool())
 		{
 			if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_COMBINEFIREFIGHT)
 			{
