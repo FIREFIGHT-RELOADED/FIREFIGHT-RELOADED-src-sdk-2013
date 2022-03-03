@@ -96,7 +96,6 @@ void CNPC_Player::Spawn( void )
 	m_iNumGrenades = random->RandomInt(2, 3);
 	AddGlowEffect();
 
-	m_fIsAce = true;
 	m_fIsPlayer = true;
 
 	CapabilitiesAdd( bits_CAP_ANIMATEDFACE );
@@ -248,19 +247,6 @@ float CNPC_Player::GetSequenceGroundSpeed(CStudioHdr* pStudioHdr, int iSequence)
 {
 	return fr_new_normspeed.GetFloat();
 }
-
-void CNPC_Player::DeathSound( const CTakeDamageInfo &info )
-{
-	// NOTE: The response system deals with this at the moment
-	if ( GetFlags() & FL_DISSOLVING )
-		return;
-
-	if (IsOnFire())
-		return;
-
-	//GetSentences()->Speak( "COMBINE_DIE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS ); 
-}
-
 
 //-----------------------------------------------------------------------------
 // Purpose: Soldiers use CAN_RANGE_ATTACK2 to indicate whether they can throw

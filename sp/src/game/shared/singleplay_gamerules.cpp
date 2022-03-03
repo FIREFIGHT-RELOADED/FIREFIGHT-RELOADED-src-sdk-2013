@@ -266,7 +266,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 
 		if (bSkipFuncCheck || g_fr_spawneroldfunctionality.GetBool())
 		{
-			if (GetGamemode() <= FIREFIGHT_PRIMARY_DEFAULT)
+			if (GetGamemode() == FIREFIGHT_PRIMARY_DEFAULT)
 			{
 				if (bHasRandomized)
 				{

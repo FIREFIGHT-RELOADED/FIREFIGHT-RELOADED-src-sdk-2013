@@ -1478,9 +1478,13 @@ void CNPC_Combine::AnnounceAssault(void)
 		return;
 
 	// Make sure player can see me
-	if ( FVisible( pBCC ) && !m_fIsPlayer)
+	if ( FVisible( pBCC ))
 	{
-		if (!m_fIsPoliceRank || !m_fIsPlayer)
+		if (m_fIsPoliceRank || m_fIsPlayer)
+		{
+			return;
+		}
+		else
 		{
 			m_Sentences.Speak("COMBINE_ASSAULT");
 		}
@@ -1490,82 +1494,82 @@ void CNPC_Combine::AnnounceAssault(void)
 
 void CNPC_Combine::AnnounceEnemyType( CBaseEntity *pEnemy )
 {
-	if (!m_fIsPoliceRank || !m_fIsPlayer)
+	if (m_fIsPoliceRank || m_fIsPlayer)
+		return;
+
+	const char* pSentenceName = "COMBINE_MONST";
+	switch (pEnemy->Classify())
 	{
-		const char* pSentenceName = "COMBINE_MONST";
-		switch (pEnemy->Classify())
-		{
-		case CLASS_PLAYER:
-		case CLASS_PLAYER_NPC:
-			pSentenceName = "COMBINE_ALERT";
-			break;
+	case CLASS_PLAYER:
+	case CLASS_PLAYER_NPC:
+		pSentenceName = "COMBINE_ALERT";
+		break;
 
-		case CLASS_PLAYER_ALLY:
-		case CLASS_CITIZEN_REBEL:
-		case CLASS_CITIZEN_PASSIVE:
-		case CLASS_VORTIGAUNT:
-			pSentenceName = "COMBINE_MONST_CITIZENS";
-			break;
+	case CLASS_PLAYER_ALLY:
+	case CLASS_CITIZEN_REBEL:
+	case CLASS_CITIZEN_PASSIVE:
+	case CLASS_VORTIGAUNT:
+		pSentenceName = "COMBINE_MONST_CITIZENS";
+		break;
 
-		case CLASS_PLAYER_ALLY_VITAL:
-			pSentenceName = "COMBINE_MONST_CHARACTER";
-			break;
+	case CLASS_PLAYER_ALLY_VITAL:
+		pSentenceName = "COMBINE_MONST_CHARACTER";
+		break;
 
-		case CLASS_ANTLION:
-			pSentenceName = "COMBINE_MONST_BUGS";
-			break;
+	case CLASS_ANTLION:
+		pSentenceName = "COMBINE_MONST_BUGS";
+		break;
 
-		case CLASS_ZOMBIE:
-			pSentenceName = "COMBINE_MONST_ZOMBIES";
-			break;
+	case CLASS_ZOMBIE:
+		pSentenceName = "COMBINE_MONST_ZOMBIES";
+		break;
 
-		case CLASS_HEADCRAB:
-		case CLASS_BARNACLE:
-			pSentenceName = "COMBINE_MONST_PARASITES";
-			break;
-		}
-
-		m_Sentences.Speak(pSentenceName, SENTENCE_PRIORITY_HIGH);
+	case CLASS_HEADCRAB:
+	case CLASS_BARNACLE:
+		pSentenceName = "COMBINE_MONST_PARASITES";
+		break;
 	}
+
+	m_Sentences.Speak(pSentenceName, SENTENCE_PRIORITY_HIGH);
 }
 
 void CNPC_Combine::AnnounceEnemyKill( CBaseEntity *pEnemy )
 {
-	if (!m_fIsPoliceRank || !m_fIsPlayer)
+	if (m_fIsPoliceRank || m_fIsPlayer)
+		return;
+
+	if (!pEnemy)
+		return;
+
+	const char* pSentenceName = "COMBINE_KILL_MONST";
+	switch (pEnemy->Classify())
 	{
-		if (!pEnemy)
-			return;
+	case CLASS_PLAYER:
+		pSentenceName = "COMBINE_PLAYER_DEAD";
+		break;
 
-		const char* pSentenceName = "COMBINE_KILL_MONST";
-		switch (pEnemy->Classify())
-		{
-		case CLASS_PLAYER:
-			pSentenceName = "COMBINE_PLAYER_DEAD";
-			break;
+		// no sentences for these guys yet
+	case CLASS_PLAYER_ALLY:
+	case CLASS_CITIZEN_REBEL:
+	case CLASS_CITIZEN_PASSIVE:
+	case CLASS_VORTIGAUNT:
+		break;
 
-			// no sentences for these guys yet
-		case CLASS_PLAYER_ALLY:
-		case CLASS_CITIZEN_REBEL:
-		case CLASS_CITIZEN_PASSIVE:
-		case CLASS_VORTIGAUNT:
-			break;
+	case CLASS_PLAYER_ALLY_VITAL:
+		break;
 
-		case CLASS_PLAYER_ALLY_VITAL:
-			break;
+	case CLASS_ANTLION:
+		break;
 
-		case CLASS_ANTLION:
-			break;
+	case CLASS_ZOMBIE:
+		break;
 
-		case CLASS_ZOMBIE:
-			break;
-
-		case CLASS_HEADCRAB:
-		case CLASS_BARNACLE:
-			break;
-		}
-
-		m_Sentences.Speak(pSentenceName, SENTENCE_PRIORITY_HIGH);
+	case CLASS_HEADCRAB:
+	case CLASS_BARNACLE:
+		break;
 	}
+
+	m_Sentences.Speak(pSentenceName, SENTENCE_PRIORITY_HIGH);
 }
 
 //-----------------------------------------------------------------------------
@@ -2740,23 +2744,20 @@ Vector CNPC_Combine::Weapon_ShootPosition( )
 //=========================================================
 void CNPC_Combine::SpeakSentence( int sentenceType )
 {
+	if (m_fIsPoliceRank || m_fIsPlayer)
+		return;
+
 	switch( sentenceType )
 	{
 	case 0: // assault
-		if (!m_fIsPoliceRank || !m_fIsPlayer)
-		{
-			AnnounceAssault();
-		}
+		AnnounceAssault();
 		break;
 
 	case 1: // Flanking the player
 		// If I'm moving more than 20ft, I need to talk about it
 		if ( GetNavigator()->GetPath()->GetPathLength() > 20 * 12.0f )
 		{
-			if (!m_fIsPoliceRank || !m_fIsPlayer)
-			{
-				m_Sentences.Speak("COMBINE_FLANK");
-			}
+			m_Sentences.Speak("COMBINE_FLANK");
 		}
 		break;
 	}
@@ -2774,26 +2775,26 @@ void CNPC_Combine::PainSound ( void )
 	if ( GetFlags() & FL_DISSOLVING )
 		return;
 
-	if (!m_fIsPoliceRank || !m_fIsPlayer)
-	{
-		if (gpGlobals->curtime > m_flNextPainSoundTime)
-		{
-			const char* pSentenceName = "COMBINE_PAIN";
-			float healthRatio = (float)GetHealth() / (float)GetMaxHealth();
-			if (!HasMemory(bits_MEMORY_PAIN_LIGHT_SOUND) && healthRatio > 0.9)
-			{
-				Remember(bits_MEMORY_PAIN_LIGHT_SOUND);
-				pSentenceName = "COMBINE_TAUNT";
-			}
-			else if (!HasMemory(bits_MEMORY_PAIN_HEAVY_SOUND) && healthRatio < 0.25)
-			{
-				Remember(bits_MEMORY_PAIN_HEAVY_SOUND);
-				pSentenceName = "COMBINE_COVER";
-			}
+	if (m_fIsPoliceRank || m_fIsPlayer)
+		return;
 
-			m_Sentences.Speak(pSentenceName, SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS);
-			m_flNextPainSoundTime = gpGlobals->curtime + 1;
+	if (gpGlobals->curtime > m_flNextPainSoundTime)
+	{
+		const char* pSentenceName = "COMBINE_PAIN";
+		float healthRatio = (float)GetHealth() / (float)GetMaxHealth();
+		if (!HasMemory(bits_MEMORY_PAIN_LIGHT_SOUND) && healthRatio > 0.9)
+		{
+			Remember(bits_MEMORY_PAIN_LIGHT_SOUND);
+			pSentenceName = "COMBINE_TAUNT";
 		}
+		else if (!HasMemory(bits_MEMORY_PAIN_HEAVY_SOUND) && healthRatio < 0.25)
+		{
+			Remember(bits_MEMORY_PAIN_HEAVY_SOUND);
+			pSentenceName = "COMBINE_COVER";
+		}
+
+		m_Sentences.Speak(pSentenceName, SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS);
+		m_flNextPainSoundTime = gpGlobals->curtime + 1;
 	}
 }
 
@@ -2808,22 +2809,22 @@ void CNPC_Combine::LostEnemySound( void)
 	if ( gpGlobals->curtime <= m_flNextLostSoundTime )
 		return;
 
-	if (!m_fIsPoliceRank || !m_fIsPlayer)
-	{
-		const char* pSentence;
-		if (!(CBaseEntity*)GetEnemy() || gpGlobals->curtime - GetEnemyLastTimeSeen() > 10)
-		{
-			pSentence = "COMBINE_LOST_LONG";
-		}
-		else
-		{
-			pSentence = "COMBINE_LOST_SHORT";
-		}
+	if (m_fIsPoliceRank || m_fIsPlayer)
+		return;
 
-		if (m_Sentences.Speak(pSentence) >= 0)
-		{
-			m_flNextLostSoundTime = gpGlobals->curtime + random->RandomFloat(5.0, 15.0);
-		}
+	const char* pSentence;
+	if (!(CBaseEntity*)GetEnemy() || gpGlobals->curtime - GetEnemyLastTimeSeen() > 10)
+	{
+		pSentence = "COMBINE_LOST_LONG";
+	}
+	else
+	{
+		pSentence = "COMBINE_LOST_SHORT";
+	}
+
+	if (m_Sentences.Speak(pSentence) >= 0)
+	{
+		m_flNextLostSoundTime = gpGlobals->curtime + random->RandomFloat(5.0, 15.0);
 	}
 }
 
@@ -2835,10 +2836,10 @@ void CNPC_Combine::LostEnemySound( void)
 //-----------------------------------------------------------------------------
 void CNPC_Combine::FoundEnemySound( void)
 {
-	if (!m_fIsPoliceRank || !m_fIsPlayer)
-	{
-		m_Sentences.Speak("COMBINE_REFIND_ENEMY", SENTENCE_PRIORITY_HIGH);
-	}
+	if (m_fIsPoliceRank || m_fIsPlayer)
+		return;
+
+	m_Sentences.Speak("COMBINE_REFIND_ENEMY", SENTENCE_PRIORITY_HIGH);
 }
 
 //-----------------------------------------------------------------------------
@@ -2851,13 +2852,13 @@ void CNPC_Combine::FoundEnemySound( void)
 // BUGBUG: It looks like this is never played because combine don't do SCHED_WAKE_ANGRY or anything else that does a TASK_SOUND_WAKE
 void CNPC_Combine::AlertSound( void)
 {
-	if (!m_fIsPoliceRank || !m_fIsPlayer)
+	if (m_fIsPoliceRank || m_fIsPlayer)
+		return;
+
+	if (gpGlobals->curtime > m_flNextAlertSoundTime)
 	{
-		if (gpGlobals->curtime > m_flNextAlertSoundTime)
-		{
-			m_Sentences.Speak("COMBINE_GO_ALERT", SENTENCE_PRIORITY_HIGH);
-			m_flNextAlertSoundTime = gpGlobals->curtime + 10.0f;
-		}
+		m_Sentences.Speak("COMBINE_GO_ALERT", SENTENCE_PRIORITY_HIGH);
+		m_flNextAlertSoundTime = gpGlobals->curtime + 10.0f;
 	}
 }
 
@@ -2866,20 +2867,21 @@ void CNPC_Combine::AlertSound( void)
 //=========================================================
 void CNPC_Combine::NotifyDeadFriend ( CBaseEntity* pFriend )
 {
-	if (!m_fIsPoliceRank || !m_fIsPlayer)
+	if (m_fIsPoliceRank || m_fIsPlayer)
+		return;
+
+	if (GetSquad()->NumMembers() < 2)
 	{
-		if (GetSquad()->NumMembers() < 2)
-		{
-			m_Sentences.Speak("COMBINE_LAST_OF_SQUAD", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_NORMAL);
-			JustMadeSound();
-			return;
-		}
-		// relaxed visibility test so that guys say this more often
-		//if( FInViewCone( pFriend ) && FVisible( pFriend ) )
-		{
-			m_Sentences.Speak("COMBINE_MAN_DOWN");
-		}
+		m_Sentences.Speak("COMBINE_LAST_OF_SQUAD", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_NORMAL);
+		JustMadeSound();
+		return;
 	}
+	// relaxed visibility test so that guys say this more often
+	//if( FInViewCone( pFriend ) && FVisible( pFriend ) )
+	{
+		m_Sentences.Speak("COMBINE_MAN_DOWN");
+	}
+
 	BaseClass::NotifyDeadFriend(pFriend);
 }
 
@@ -2888,17 +2890,17 @@ void CNPC_Combine::NotifyDeadFriend ( CBaseEntity* pFriend )
 //=========================================================
 void CNPC_Combine::DeathSound ( void )
 {
-	if (!m_fIsPoliceRank || !m_fIsPlayer)
-	{
-		// NOTE: The response system deals with this at the moment
-		if (GetFlags() & FL_DISSOLVING)
-			return;
+	if (m_fIsPoliceRank || m_fIsPlayer)
+		return;
 
-		if (IsOnFire())
-			return;
+	// NOTE: The response system deals with this at the moment
+	if (GetFlags() & FL_DISSOLVING)
+		return;
 
-		m_Sentences.Speak("COMBINE_DIE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS);
-	}
+	if (IsOnFire())
+		return;
+
+	m_Sentences.Speak("COMBINE_DIE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS);
 }
 
 //=========================================================
@@ -2906,51 +2908,51 @@ void CNPC_Combine::DeathSound ( void )
 //=========================================================
 void CNPC_Combine::IdleSound( void )
 {
-	if (!m_fIsPoliceRank || !m_fIsPlayer)
+	if (m_fIsPoliceRank || m_fIsPlayer)
+		return;
+
+	if (g_fCombineQuestion || random->RandomInt(0, 1))
 	{
-		if (g_fCombineQuestion || random->RandomInt(0, 1))
+		if (!g_fCombineQuestion)
 		{
-			if (!g_fCombineQuestion)
+			// ask question or make statement
+			switch (random->RandomInt(0, 2))
 			{
-				// ask question or make statement
-				switch (random->RandomInt(0, 2))
+			case 0: // check in
+				if (m_Sentences.Speak("COMBINE_CHECK") >= 0)
 				{
-				case 0: // check in
-					if (m_Sentences.Speak("COMBINE_CHECK") >= 0)
-					{
-						g_fCombineQuestion = 1;
-					}
-					break;
-
-				case 1: // question
-					if (m_Sentences.Speak("COMBINE_QUEST") >= 0)
-					{
-						g_fCombineQuestion = 2;
-					}
-					break;
-
-				case 2: // statement
-					m_Sentences.Speak("COMBINE_IDLE");
-					break;
+					g_fCombineQuestion = 1;
 				}
+				break;
+
+			case 1: // question
+				if (m_Sentences.Speak("COMBINE_QUEST") >= 0)
+				{
+					g_fCombineQuestion = 2;
+				}
+				break;
+
+			case 2: // statement
+				m_Sentences.Speak("COMBINE_IDLE");
+				break;
 			}
-			else
+		}
+		else
+		{
+			switch (g_fCombineQuestion)
 			{
-				switch (g_fCombineQuestion)
+			case 1: // check in
+				if (m_Sentences.Speak("COMBINE_CLEAR") >= 0)
 				{
-				case 1: // check in
-					if (m_Sentences.Speak("COMBINE_CLEAR") >= 0)
-					{
-						g_fCombineQuestion = 0;
-					}
-					break;
-				case 2: // question 
-					if (m_Sentences.Speak("COMBINE_ANSWER") >= 0)
-					{
-						g_fCombineQuestion = 0;
-					}
-					break;
+					g_fCombineQuestion = 0;
 				}
+				break;
+			case 2: // question 
+				if (m_Sentences.Speak("COMBINE_ANSWER") >= 0)
+				{
+					g_fCombineQuestion = 0;
+				}
+				break;
 			}
 		}
 	}
@@ -3090,7 +3092,7 @@ bool CNPC_Combine::CheckCanThrowGrenade( const Vector &vecTarget )
 //-----------------------------------------------------------------------------
 bool CNPC_Combine::CanAltFireEnemy( bool bUseFreeKnowledge )
 {
-	if (!IsElite() || !IsAce())
+	if (!IsElite() || !IsAce() || !m_fIsPlayer)
 		return false;
 
 	if (IsCrouching())
@@ -3260,7 +3262,7 @@ Vector CNPC_Combine::EyePosition( void )
 //-----------------------------------------------------------------------------
 Vector CNPC_Combine::GetAltFireTarget()
 {
-	Assert(IsElite() || IsAce());
+	Assert(IsElite() || IsAce() || m_fIsPlayer);
 
 	return m_vecAltFireTarget;
 }

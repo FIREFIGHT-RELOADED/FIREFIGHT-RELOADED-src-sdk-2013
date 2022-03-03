@@ -24,6 +24,7 @@ ConVar sk_initialspawnertime("sk_initialspawnertime", "5", FCVAR_CHEAT);
 ConVar sk_spawnrareenemies("sk_spawnrareenemies", "1", FCVAR_ARCHIVE);
 ConVar sk_spawnerhidefromplayer("sk_spawnerhidefromplayer", "1", FCVAR_ARCHIVE);
 ConVar sk_spawner_npc_ragdoll_fade("sk_spawner_npc_ragdoll_fade", "1", FCVAR_ARCHIVE);
+ConVar sk_spawner_spamplayers("sk_spawner_spamplayers", "1", FCVAR_ARCHIVE | FCVAR_DEVELOPMENTONLY);
 //ConVar sk_spawnerminclientstospawn("sk_spawnerminclientstospawn", "2", FCVAR_NOTIFY);
 
 //spawn lists (TODO: use KeyValues files)
@@ -525,7 +526,7 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 	if (!CanMakeNPC())
 		return;
 
-	const char* pRandomName = "";
+	const char* pRandomName = sk_spawner_spamplayers.GetBool() ? "npc_player" : "";
 
 	if (rareNPC)
 	{
