@@ -1082,23 +1082,22 @@ bool CNPC_BaseZombie::IsChopped( const CTakeDamageInfo &info )
 	if (info.GetDamageType() & DMG_SLASH)
 		return true;
 
-	/*
-	float flDamageThreshold = MIN( 1, info.GetDamage() / m_iMaxHealth );
+	if (info.GetDamageType() & DMG_CRUSH)
+		return true;
 
-	if ( m_iHealth > 0 || flDamageThreshold <= 0.5 )
-		return false;
-	
-	if ( !( info.GetDamageType() & DMG_SLASH) )
-		return false;
+	if (info.GetDamageType() & DMG_BLAST)
+		return true;
 
-	if ( !( info.GetDamageType() & DMG_CRUSH) )
-		return false;*/
+	float flDamageThreshold = MIN(1, info.GetDamage() / m_iMaxHealth);
+
+	if (m_iHealth > 0 || flDamageThreshold <= 0.5)
+		return false;
 
 	if ( info.GetDamageType() & DMG_REMOVENORAGDOLL )
 		return false;
 
 	// If you take crush and slash damage, you're hit by a sharp physics item.
-	return true;
+	return false;
 }
 
 
