@@ -565,6 +565,10 @@ float CNPC_Combine::MaxYawSpeed( void )
 //-----------------------------------------------------------------------------
 bool CNPC_Combine::ShouldMoveAndShoot()
 {
+	// ace soldiers show no mercy.
+	if (IsAce())
+		return true;
+
 	// Set this timer so that gpGlobals->curtime can't catch up to it. 
 	// Essentially, we're saying that we're not going to interfere with 
 	// what the AI wants to do with move and shoot. 
@@ -874,7 +878,7 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 			}
 			else
 			{
-				if (!m_fIsPoliceRank || !m_fIsPlayer)
+				if (!m_fIsPoliceRank && !m_fIsPlayer)
 				{
 					m_Sentences.Speak("COMBINE_THROW_GRENADE", SENTENCE_PRIORITY_MEDIUM);
 				}
@@ -1013,7 +1017,7 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 							m_pSquad->SquadRemember(bits_MEMORY_PLAYER_HURT);
 						}
 
-						if (!m_fIsPoliceRank || !m_fIsPlayer)
+						if (!m_fIsPoliceRank && !m_fIsPlayer)
 						{
 							m_Sentences.Speak("COMBINE_PLAYERHIT", SENTENCE_PRIORITY_INVALID);
 						}
@@ -1883,7 +1887,7 @@ int CNPC_Combine::SelectSchedule( void )
 					{
 						// I hear something dangerous, probably need to take cover.
 						// dangerous sound nearby!, call it out if we are not elite metropolice
-						if (!m_fIsPoliceRank || !m_fIsPlayer)
+						if (!m_fIsPoliceRank && !m_fIsPlayer)
 						{
 							const char *pSentenceName = "COMBINE_DANGER";
 
@@ -2184,7 +2188,7 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 				// Have to explicitly check innate range attack condition as may have weapon with range attack 2
 				if ((g_pGameRules->IsSkillLevel(SKILL_HARD) || g_pGameRules->IsSkillLevel(SKILL_VERYHARD) || g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE)) && HasCondition(COND_CAN_RANGE_ATTACK2) && OccupyStrategySlot(SQUAD_SLOT_GRENADE1))
 				{
-					if (!m_fIsPoliceRank || !m_fIsPlayer)
+					if (!m_fIsPoliceRank && !m_fIsPlayer)
 					{
 						m_Sentences.Speak("COMBINE_THROW_GRENADE");
 					}
@@ -2667,7 +2671,7 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 					}
 				}			
 
-				if (!m_fIsPoliceRank || !m_fIsPlayer)
+				if (!m_fIsPoliceRank && !m_fIsPlayer)
 				{
 					m_Sentences.Speak("COMBINE_KICK");
 				}
@@ -2676,7 +2680,7 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 			}
 
 		case COMBINE_AE_CAUGHT_ENEMY:
-			if (!m_fIsPoliceRank || !m_fIsPlayer)
+			if (!m_fIsPoliceRank && !m_fIsPlayer)
 			{
 				m_Sentences.Speak("COMBINE_ALERT");
 			}
@@ -2767,9 +2771,12 @@ void CNPC_Combine::SpeakSentence( int sentenceType )
 
 	case 1: // Flanking the player
 		// If I'm moving more than 20ft, I need to talk about it
-		if ( GetNavigator()->GetPath()->GetPathLength() > 20 * 12.0f )
+		if (!m_fIsPoliceRank && !m_fIsPlayer)
 		{
-			m_Sentences.Speak("COMBINE_FLANK");
+			if (GetNavigator()->GetPath()->GetPathLength() > 20 * 12.0f)
+			{
+				m_Sentences.Speak("COMBINE_FLANK");
+			}
 		}
 		break;
 	}
@@ -2780,14 +2787,14 @@ void CNPC_Combine::SpeakSentence( int sentenceType )
 //=========================================================
 void CNPC_Combine::PainSound ( void )
 {
+	if (m_fIsPoliceRank || m_fIsPlayer)
+		return;
+
 	if (IsOnFire())
 		return;
 
 	// NOTE: The response system deals with this at the moment
 	if ( GetFlags() & FL_DISSOLVING )
-		return;
-
-	if (m_fIsPoliceRank || m_fIsPlayer)
 		return;
 
 	if (gpGlobals->curtime > m_flNextPainSoundTime)
@@ -2818,10 +2825,10 @@ void CNPC_Combine::PainSound ( void )
 //-----------------------------------------------------------------------------
 void CNPC_Combine::LostEnemySound( void)
 {
-	if ( gpGlobals->curtime <= m_flNextLostSoundTime )
+	if (m_fIsPoliceRank || m_fIsPlayer)
 		return;
 
-	if (m_fIsPoliceRank || m_fIsPlayer)
+	if ( gpGlobals->curtime <= m_flNextLostSoundTime )
 		return;
 
 	const char* pSentence;
