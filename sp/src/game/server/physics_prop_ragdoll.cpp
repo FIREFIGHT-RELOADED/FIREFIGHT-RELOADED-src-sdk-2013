@@ -1377,14 +1377,18 @@ CBaseEntity *CreateServerRagdoll( CBaseAnimating *pAnimating, int forceBone, con
 
 	if ( vel.LengthSqr() > 0 )
 	{
-		int numbones = pAnimating->GetModelPtr()->numbones();
-		vel *= dt;
-		for ( int i = 0; i < numbones; i++ )
+		CStudioHdr* pstudiohdr = pAnimating->GetModelPtr();
+		if (pstudiohdr)
 		{
-			Vector pos;
-			MatrixGetColumn( pBoneToWorld[i], 3, pos );
-			pos -= vel;
-			MatrixSetColumn( pos, 3, pBoneToWorld[i] );
+			int numbones = pstudiohdr->numbones();
+			vel *= dt;
+			for (int i = 0; i < numbones; i++)
+			{
+				Vector pos;
+				MatrixGetColumn(pBoneToWorld[i], 3, pos);
+				pos -= vel;
+				MatrixSetColumn(pos, 3, pBoneToWorld[i]);
+			}
 		}
 	}
 
