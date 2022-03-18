@@ -239,7 +239,7 @@ protected:
 };
 DECLARE_ACHIEVEMENT(CAchievementKillThousandEnemies, ACHIEVEMENT_FIREFIGHTRELOADED_KILLTHOUSANDENEMIES, "FIREFIGHTRELOADED_KILLTHOUSANDENEMIES", 25);
 
-class CAchievementKillMillionEnemies : public CBaseAchievement
+/*class CAchievementKillMillionEnemies : public CBaseAchievement
 {
 protected:
 
@@ -257,7 +257,7 @@ protected:
 	virtual bool ShouldShowProgressNotification() { return true; }
 #endif
 };
-DECLARE_ACHIEVEMENT(CAchievementKillMillionEnemies, ACHIEVEMENT_FIREFIGHTRELOADED_KILLMILLIONENEMIES, "FIREFIGHTRELOADED_KILLMILLIONENEMIES", 50);
+DECLARE_ACHIEVEMENT(CAchievementKillMillionEnemies, ACHIEVEMENT_FIREFIGHTRELOADED_KILLMILLIONENEMIES, "FIREFIGHTRELOADED_KILLMILLIONENEMIES", 50);*/
 
 class CAchievementKillCombineSoldierWithFlechette : public CBaseAchievement
 {
