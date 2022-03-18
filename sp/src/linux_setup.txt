@@ -1,0 +1,18 @@
+RUN SANDBOX FIRST
+cd /valve/steam-runtime
+./shell.sh --arch=i386
+
+UPDATE BY USING
+sudo git pull origin main
+
+USE cd ../../ TO BACK PUT OF DIR
+
+TO CREATE MAKEFILE
+cd /projects/FIREFIGHT-RELOADED-src-sdk-2013/sp/src
+sudo chmod -R +x devtools/bin
+sudo chmod +x creategameprojects
+sudo chmod +x createallprojects
+sudo bash creategameprojects
+
+TO COMPILE MAKEFILE
+sudo make -f firefight.mak
