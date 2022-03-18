@@ -1063,7 +1063,7 @@ void CBasePlayer::EXPLevelPenalty()
 	}
 	else
 	{
-		if ((GetLevel() != 1) || (GetLevel() != MAX_LEVEL))
+		if ((GetLevel() > 1) && (GetLevel() != MAX_LEVEL))
 		{
 			m_iLevel--;
 		}

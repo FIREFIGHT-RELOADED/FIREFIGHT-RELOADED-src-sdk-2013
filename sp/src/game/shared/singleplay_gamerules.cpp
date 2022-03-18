@@ -615,13 +615,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 		// g_EventQueue.AddEvent( "game_playerdie", "Use", value, 0, pVictim, pVictim );
 		FireTargets("game_playerdie", pVictim, pVictim, USE_TOGGLE, 0);
 
-		// Did the player kill himself?
-		if (pVictim == pScorer)
-		{
-			// Players lose a frag for letting the world kill them			
-			pVictim->IncrementFragCount(-1);
-		}
-		else if (pScorer)
+		if (pScorer && pVictim != pScorer)
 		{
 			if (!pScorer->IsNPC())
 			{
@@ -787,11 +781,6 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 			//variant_t value;
 			//g_EventQueue.AddEvent( "game_playerkill", "Use", value, 0, pScorer, pScorer );
 			FireTargets("game_playerkill", pScorer, pScorer, USE_TOGGLE, 0);
-		}
-		else
-		{
-			// Players lose a frag for letting the world kill them			
-			pVictim->IncrementFragCount(-1);
 		}
 	}
 
