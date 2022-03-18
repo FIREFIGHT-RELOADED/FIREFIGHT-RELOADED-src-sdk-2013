@@ -3609,7 +3609,7 @@ bool C_BaseAnimating::DispatchMuzzleEffect( const char *options, bool isFirstPer
 	int			weaponType = 0;
 
 	// Get the first parameter
-	p = nexttoken( token, p, ' ' );
+	p = nexttoken( token, p, ' ', sizeof(token));
 
 	// Find the weapon type
 	if ( token ) 
@@ -3653,7 +3653,7 @@ bool C_BaseAnimating::DispatchMuzzleEffect( const char *options, bool isFirstPer
 	}
 
 	// Get the second parameter
-	p = nexttoken( token, p, ' ' );
+	p = nexttoken( token, p, ' ', sizeof(token));
 
 	int	attachmentIndex = -1;
 
@@ -3764,7 +3764,7 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 
 			// Get the particle effect name
 			const char *p = options;
-			p = nexttoken(token, p, ' ');
+			p = nexttoken(token, p, ' ', sizeof(token));
 			if ( token ) 
 			{
 				const char* mtoken = ModifyEventParticles( token );
@@ -3774,7 +3774,7 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 			}
 
 			// Get the attachment type
-			p = nexttoken(token, p, ' ');
+			p = nexttoken(token, p, ' ', sizeof(token));
 			if ( token ) 
 			{
 				iAttachType = GetAttachTypeFromString( token );
@@ -3786,7 +3786,7 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 			}
 
 			// Get the attachment point index
-			p = nexttoken(token, p, ' ');
+			p = nexttoken(token, p, ' ', sizeof(token));
 			if ( token )
 			{
 				iAttachment = atoi(token);
@@ -3991,14 +3991,14 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 			const char *p = options;
 
 			// Bodygroup Name
-			p = nexttoken(token, p, ' ');
+			p = nexttoken(token, p, ' ', sizeof(token));
 			if ( token ) 
 			{
 				Q_strncpy( szBodygroupName, token, sizeof(szBodygroupName) );
 			}
 
 			// Get the desired value
-			p = nexttoken(token, p, ' ');
+			p = nexttoken(token, p, ' ', sizeof(token));
 			if ( token ) 
 			{
 				value = atoi( token );
@@ -4038,21 +4038,21 @@ void C_BaseAnimating::FireObsoleteEvent( const Vector& origin, const QAngle& ang
 
 			const char *p = options;
 
-			p = nexttoken(token, p, ' ');
+			p = nexttoken(token, p, ' ', sizeof(token));
 
 			if( token ) 
 			{
 				Q_strncpy( effectFunc, token, sizeof(effectFunc) );
 			}
 
-			p = nexttoken(token, p, ' ');
+			p = nexttoken(token, p, ' ', sizeof(token));
 
 			if( token )
 			{
 				iAttachment = atoi(token);
 			}
 
-			p = nexttoken(token, p, ' ');
+			p = nexttoken(token, p, ' ', sizeof(token));
 
 			if( token )
 			{
