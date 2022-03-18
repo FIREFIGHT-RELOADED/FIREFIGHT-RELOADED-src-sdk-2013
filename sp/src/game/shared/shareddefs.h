@@ -897,7 +897,7 @@ enum FirefightRewardItemIDs
 };
 
 //fr defs
-#define MAX_LEVEL 50
+#define MAX_LEVEL 30
 #define MAX_EXP 60
 
 #define MAX_ACTORS_IN_SCENE 16
