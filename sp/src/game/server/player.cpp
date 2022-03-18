@@ -198,7 +198,6 @@ ConVar  player_debug_print_damage( "player_debug_print_damage", "0", FCVAR_CHEAT
 
 ConVar sv_regeneration("sv_regeneration", "1", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 ConVar sv_regeneration_wait_time("sv_regeneration_wait_time", "2.3", FCVAR_REPLICATED | FCVAR_CHEAT);
-ConVar sv_regeneration_rate_default("sv_regeneration_rate_default", "5.5", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar sv_regeneration_rate("sv_regeneration_rate", "5.5", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar sv_regen_interval("sv_regen_interval", "10", FCVAR_REPLICATED | FCVAR_CHEAT, "Set what interval of health to regen to.\n    i.e. if this is set to the default value (10), if you are damaged to 75 health, you'll regenerate to 80 health.\n    Set this to 0 to disable this mechanic.");
 
@@ -844,7 +843,7 @@ CBasePlayer::CBasePlayer( )
 
 	m_iHealthUpgrades = 0;
 
-	m_fRegenRate = sv_regeneration_rate_default.GetFloat();
+	m_fRegenRate = sv_regeneration_rate.GetFloat();
 }
 
 CBasePlayer::~CBasePlayer( )
@@ -5536,7 +5535,7 @@ void CBasePlayer::PostThink()
 		if (gpGlobals->curtime > m_fTimeLastHurt + sv_regeneration_wait_time.GetFloat())
 		{
 			//Regenerate based on rate, and scale it by the frametime
-			m_fRegenRemander += sv_regeneration_rate.GetFloat() * gpGlobals->frametime;
+			m_fRegenRemander += m_fRegenRate * gpGlobals->frametime;
 
 			if (m_fRegenRemander >= 1)
 			{
