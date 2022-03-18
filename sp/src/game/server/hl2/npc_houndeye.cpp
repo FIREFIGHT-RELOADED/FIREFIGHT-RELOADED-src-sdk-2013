@@ -531,7 +531,7 @@ void CNPC_Houndeye::DeathSound(void)
 //=========================================================
 // PainSound 
 //=========================================================
-void CNPC_Houndeye::PainSound(void)
+void CNPC_Houndeye::PainSound(const CTakeDamageInfo& info)
 {
 	if (IsOnFire())
 		return;

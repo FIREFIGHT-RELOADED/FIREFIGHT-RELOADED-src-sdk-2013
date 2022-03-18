@@ -37,7 +37,7 @@ public:
 	void		Precache( void );
 	void		GiveWeapon(const char* iszWeaponName);
 	void		DeathSound(void) { return; }
-	void		PainSound(void) { return; }
+	void		PainSound(const CTakeDamageInfo& info) { return; }
 	void		IdleSound(void) { return; }
 	void		AlertSound(void) { return; }
 	void		LostEnemySound(void) { return; }

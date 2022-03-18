@@ -2785,7 +2785,7 @@ void CNPC_Combine::SpeakSentence( int sentenceType )
 //=========================================================
 // PainSound
 //=========================================================
-void CNPC_Combine::PainSound ( void )
+void CNPC_Combine::PainSound (const CTakeDamageInfo& info)
 {
 	if (m_fIsPoliceRank || m_fIsPlayer)
 		return;

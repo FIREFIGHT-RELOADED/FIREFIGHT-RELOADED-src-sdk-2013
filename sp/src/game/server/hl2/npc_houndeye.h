@@ -34,7 +34,7 @@ public:
 	void			AlertSound( void );
 	void			DeathSound( void );
 	void			WarnSound( void );
-	void			PainSound( void );
+	void			PainSound(const CTakeDamageInfo& info);
 	void			IdleSound( void );
 	void			StartTask( const Task_t *pTask );
 	void			RunTask( const Task_t *pTask );

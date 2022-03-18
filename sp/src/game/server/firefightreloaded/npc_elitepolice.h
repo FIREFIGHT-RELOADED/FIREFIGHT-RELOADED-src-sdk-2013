@@ -40,7 +40,7 @@ public:
 	void		AnnounceEnemyType(CBaseEntity *pEnemy);
 	void		AnnounceEnemyKill(CBaseEntity *pEnemy);
 	void		NotifyDeadFriend(CBaseEntity* pFriend);
-	void		PainSound(void);
+	void		PainSound(const CTakeDamageInfo& info);
 	void		IdleSound(void);
 	void		AlertSound(void);
 	void		LostEnemySound(void);

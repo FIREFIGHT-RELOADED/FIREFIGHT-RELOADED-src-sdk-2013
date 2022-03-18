@@ -335,7 +335,7 @@ void CNPC_ElitePolice::NotifyDeadFriend(CBaseEntity* pFriend)
 //=========================================================
 // PainSound
 //=========================================================
-void CNPC_ElitePolice::PainSound(void)
+void CNPC_ElitePolice::PainSound(const CTakeDamageInfo& info)
 {
 	if (gpGlobals->curtime < m_flNextPainSoundTime)
 		return;
