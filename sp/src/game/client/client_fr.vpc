@@ -27,6 +27,32 @@ $Project "Client (FR)"
 		$File	"c_team_objectiveresource.h"
 		$File	"$SRCDIR\game\shared\predicted_viewmodel.cpp"
 		$File	"$SRCDIR\game\shared\predicted_viewmodel.h"
+		
+		$Folder	"MOMENTUM MOD DLL"
+		{
+			$File "$SRCDIR\game\shared\momentum\util\engine_patch.h"
+			$File "$SRCDIR\game\shared\momentum\util\engine_patch.cpp"
+			{
+				$Configuration
+				{
+					$Compiler
+					{
+						$Create/UsePrecompiledHeader    "Not Using Precompiled Headers"
+					}
+				}
+			}
+			$File "$SRCDIR\game\shared\momentum\util\os_utils.h"
+			$File "$SRCDIR\game\shared\momentum\util\os_utils.cpp"
+			{
+				$Configuration
+				{
+					$Compiler
+					{
+						$Create/UsePrecompiledHeader    "Not Using Precompiled Headers"
+					}
+				}
+			}
+		}
 
 		$Folder	"HL2 DLL"
 		{

@@ -49,6 +49,32 @@ $Project "Server (FR)"
 		$File	"$SRCDIR\game\shared\weapon_parse_default.cpp"
 		$File	"$SRCDIR\game\shared\predicted_viewmodel.cpp"
 		$File	"$SRCDIR\game\shared\predicted_viewmodel.h"
+		
+		$Folder	"MOMENTUM MOD DLL"
+		{
+			$File "$SRCDIR\game\shared\momentum\util\engine_patch.h"
+			$File "$SRCDIR\game\shared\momentum\util\engine_patch.cpp"
+			{
+				$Configuration
+				{
+					$Compiler
+					{
+						$Create/UsePrecompiledHeader    "Not Using Precompiled Headers"
+					}
+				}
+			}
+			$File "$SRCDIR\game\shared\momentum\util\os_utils.h"
+			$File "$SRCDIR\game\shared\momentum\util\os_utils.cpp"
+			{
+				$Configuration
+				{
+					$Compiler
+					{
+						$Create/UsePrecompiledHeader    "Not Using Precompiled Headers"
+					}
+				}
+			}
+		}
 
 		$Folder	"HL2 DLL"
 		{
