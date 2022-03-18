@@ -57,7 +57,7 @@ const char *g_charNPCSCommon[] =
 	"npc_combine_e",
 	"npc_combine_p",
 	"npc_combine_shot",
-	"npc_antlion"
+	"npc_antlion",
 	"npc_zombie",
 	"npc_zombie_torso",
 	"npc_fastzombie",
