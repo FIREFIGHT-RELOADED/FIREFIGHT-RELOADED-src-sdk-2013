@@ -24,7 +24,7 @@ ConVar sk_initialspawnertime("sk_initialspawnertime", "5", FCVAR_CHEAT);
 ConVar sk_spawnrareenemies("sk_spawnrareenemies", "1", FCVAR_ARCHIVE);
 ConVar sk_spawnerhidefromplayer("sk_spawnerhidefromplayer", "1", FCVAR_ARCHIVE);
 ConVar sk_spawner_npc_ragdoll_fade("sk_spawner_npc_ragdoll_fade", "1", FCVAR_ARCHIVE);
-ConVar sk_spawner_spamplayers("sk_spawner_spamplayers", "1", FCVAR_ARCHIVE | FCVAR_DEVELOPMENTONLY);
+ConVar sk_spawner_spamplayers("sk_spawner_spamplayers", "0", FCVAR_CHEAT | FCVAR_HIDDEN);
 //ConVar sk_spawnerminclientstospawn("sk_spawnerminclientstospawn", "2", FCVAR_NOTIFY);
 
 //spawn lists (TODO: use KeyValues files)
@@ -39,7 +39,8 @@ const char *g_MetropoliceWeapons[] =
 {
 	"weapon_smg1",
 	"weapon_pistol",
-	"weapon_stunstick"
+	"weapon_stunstick",
+	"weapon_crowbar"
 };
 
 const char *g_EliteMetropoliceWeapons[] =
@@ -88,7 +89,7 @@ const char *g_charNPCSRare[] =
 	"npc_rollermine",
 	"npc_cscanner",
 	//temp until we actually set up the wave system.
-	"npc_player"
+	"npc_playerbot"
 };
 
 //precache list
@@ -98,7 +99,8 @@ const char* g_Weapons[] =
 	"weapon_ar2",
 	"weapon_shotgun",
 	"weapon_pistol",
-	"weapon_stunstick"
+	"weapon_stunstick",
+	"weapon_crowbar"
 };
 
 const char* g_NPCS[] =
@@ -136,7 +138,7 @@ const char* g_NPCS[] =
 	"npc_rollermine",
 	"npc_cscanner",
 	//temp until we actually set up the wave system.
-	"npc_player"
+	"npc_playerbot"
 };
 
 const char* g_charNPCSCombineFirefightCommon[] =
@@ -160,7 +162,7 @@ const char* g_charNPCSCombineFirefightRare[] =
 	"npc_rollermine",
 	"npc_cscanner",
 	//temp until we actually set up the wave system.
-	"npc_player"
+	"npc_playerbot"
 };
 
 //why.
@@ -175,7 +177,7 @@ const char* g_charNPCSAntlionAssaultRare[] =
 	"npc_antlionguard",
 	"npc_antlionguardian",
 	//temp until we actually set up the wave system.
-	"npc_player"
+	"npc_playerbot"
 };
 
 const char* g_charNPCSZombieSurvivalCommon[] =
@@ -191,7 +193,7 @@ const char* g_charNPCSZombieSurvivalRare[] =
 	"npc_poisonzombie",
 	"npc_zombine",
 	//temp until we actually set up the wave system.
-	"npc_player"
+	"npc_playerbot"
 };
 
 const char* g_charNPCSXenInvasionCommon[] =
@@ -209,7 +211,7 @@ const char* g_charNPCSXenInvasionRare[] =
 	"npc_vortigaunt",
 	"npc_headcrab",
 	//temp until we actually set up the wave system.
-	"npc_player"
+	"npc_playerbot"
 };
 
 static void DispatchActivate( CBaseEntity *pEntity )
@@ -526,7 +528,7 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 	if (!CanMakeNPC())
 		return;
 
-	const char* pRandomName = sk_spawner_spamplayers.GetBool() ? "npc_player" : "";
+	const char* pRandomName = sk_spawner_spamplayers.GetBool() ? "npc_playerbot" : "";
 
 	if (rareNPC)
 	{
@@ -676,7 +678,7 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 	{
 		pent->m_spawnEquipment = MAKE_STRING("weapon_smg1");
 	}
-	else if (Q_stristr(pRandomName, "npc_player"))
+	else if (Q_stristr(pRandomName, "npc_playerbot"))
 	{
 		//alert all players.
 		for (int i = 1; i <= gpGlobals->maxClients; i++)

@@ -50,7 +50,6 @@ public:
 	//player emulation
 	bool		Weapon_Switch(CBaseCombatWeapon* pWeapon);
 	void		GiveWeapons(void);
-	//void		GiveRandomModel(void);
 	float		GetSequenceGroundSpeed(CStudioHdr* pStudioHdr, int iSequence);
 	void		BuildScheduleTestBits( void );
 	int			SelectSchedule ( void );
@@ -64,14 +63,13 @@ public:
 
 	bool		IsLightDamage( const CTakeDamageInfo &info );
 	bool		IsHeavyDamage( const CTakeDamageInfo &info );
-	//std::vector<const char*>	AvailableModels;
 
 private:
 	float		m_flSoonestWeaponSwitch;
-	/*
-	int			nModelRandomRetries;
-	int			nModelRandomMaxRetries = 10;
-	*/
+
+	float m_fTimeLastHurt;
+	float m_fTimeLastHealed;
+	float m_fRegenRemander;
 };
 
 #endif // NPC_COMBINES_H

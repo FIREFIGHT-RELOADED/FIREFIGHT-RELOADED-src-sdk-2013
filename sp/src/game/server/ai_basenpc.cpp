@@ -8690,10 +8690,12 @@ void CAI_BaseNPC::HandleAnimEvent( animevent_t *pEvent )
 		//Adrian I'll clean this up once the old event system is phased out.
 		if ( pEvent->pSource != this || ( pEvent->type & AE_TYPE_NEWEVENTSYSTEM && pEvent->type & AE_TYPE_WEAPON ) || (pEvent->event >= EVENT_WEAPON && pEvent->event <= EVENT_WEAPON_LAST) )
 		{
+			DevMsg("NPC calling Weapon_HandleAnimEvent\n");
 			Weapon_HandleAnimEvent( pEvent );
 		}
 		else
 		{
+			DevMsg("NPC calling BaseClass::HandleAnimEvent\n");
 			BaseClass::HandleAnimEvent( pEvent );
 		}
 		break;

@@ -2314,6 +2314,7 @@ void CBaseCombatCharacter::Weapon_HandleAnimEvent( animevent_t *pEvent )
 	if ( m_hActiveWeapon )
 	{
 		// UNDONE: Pass to pEvent->pSource instead?
+		DevMsg("Trying to call Operator_HandleAnimEvent\n");
 		m_hActiveWeapon->Operator_HandleAnimEvent( pEvent, this );
 	}
 }

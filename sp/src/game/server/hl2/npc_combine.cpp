@@ -201,7 +201,20 @@ bool CNPC_Combine::CreateComponents()
 	if ( !BaseClass::CreateComponents() )
 		return false;
 
-	m_Sentences.Init( this, "NPC_Combine.SentenceParameters" );
+	if (m_fIsPlayer)
+	{
+		//nothing
+		m_Sentences.Init(this, "");
+	}
+	else if (m_fIsPoliceRank)
+	{
+		m_Sentences.Init(this, "NPC_Metropolice.SentenceParameters");
+	}
+	else
+	{
+		m_Sentences.Init(this, "NPC_Combine.SentenceParameters");
+	}
+
 	return true;
 }
 
@@ -438,8 +451,11 @@ void CNPC_Combine::PrescheduleThink()
 {
 	BaseClass::PrescheduleThink();
 
-	// Speak any queued sentences
-	m_Sentences.UpdateSentenceQueue();
+	if (!m_fIsPlayer)
+	{
+		// Speak any queued sentences
+		m_Sentences.UpdateSentenceQueue();
+	}
 
 	if ( IsOnFire() )
 	{
@@ -1457,6 +1473,9 @@ bool CNPC_Combine::QueryHearSound( CSound *pSound )
 //-----------------------------------------------------------------------------
 void CNPC_Combine::AnnounceAssault(void)
 {
+	if (m_fIsPoliceRank || m_fIsPlayer)
+		return;
+
 	if (random->RandomInt(0,5) > 1)
 		return;
 
@@ -1480,14 +1499,7 @@ void CNPC_Combine::AnnounceAssault(void)
 	// Make sure player can see me
 	if ( FVisible( pBCC ))
 	{
-		if (m_fIsPoliceRank || m_fIsPlayer)
-		{
-			return;
-		}
-		else
-		{
-			m_Sentences.Speak("COMBINE_ASSAULT");
-		}
+		m_Sentences.Speak("COMBINE_ASSAULT");
 	}
 }
 

@@ -45,11 +45,18 @@ extern ConVar sk_plr_dmg_buckshot;
 extern ConVar sk_plr_num_shotgun_pellets;
 extern ConVar sv_player_hardcoremode;
 extern ConVar fr_new_normspeed;
+extern ConVar sv_regeneration;
+extern ConVar sv_regeneration_wait_time;
+extern ConVar sv_regeneration_rate_default;
+extern ConVar sv_regeneration_rate;
+extern ConVar sv_regen_interval;
 
-LINK_ENTITY_TO_CLASS( npc_player, CNPC_Player );
+LINK_ENTITY_TO_CLASS( npc_playerbot, CNPC_Player );
 
 BEGIN_DATADESC(CNPC_Player)
 DEFINE_FIELD(m_flSoonestWeaponSwitch, FIELD_TIME),
+DEFINE_FIELD(m_fTimeLastHurt, FIELD_TIME),
+DEFINE_FIELD(m_fTimeLastHealed, FIELD_TIME),
 END_DATADESC()
 
 IMPLEMENT_SERVERCLASS_ST(CNPC_Player, DT_NPC_Player)
@@ -67,12 +74,35 @@ const char* g_charNPCMidRangeWeapons[] =
 const char* g_charNPCShortRangeWeapons[] =
 {
 	"weapon_shotgun",
-	"weapon_pistol"
+	"weapon_pistol",
+	"weapon_crowbar"
+};
+
+const char* g_charAvailableModels[] =
+{
+	"models/player/playermodels/gordon.mdl",
+	"models/player/playermodels/gordon_old.mdl",
+	"models/player/playermodels/male_01.mdl",
+	"models/player/playermodels/male_02.mdl",
+	"models/player/playermodels/male_03.mdl",
+	"models/player/playermodels/male_04.mdl",
+	"models/player/playermodels/male_05.mdl",
+	"models/player/playermodels/male_06.mdl",
+	"models/player/playermodels/male_07.mdl",
+	"models/player/playermodels/male_08.mdl",
+	"models/player/playermodels/male_09.mdl",
+	"models/player/playermodels/female_01.mdl",
+	"models/player/playermodels/female_02.mdl",
+	"models/player/playermodels/female_03.mdl",
+	"models/player/playermodels/female_04.mdl",
+	"models/player/playermodels/female_06.mdl",
+	"models/player/playermodels/female_07.mdl"
 };
 
 CNPC_Player::CNPC_Player()
 {
 	m_flSoonestWeaponSwitch = gpGlobals->curtime;
+	m_fRegenRemander = 0;
 }
 
 CNPC_Player::~CNPC_Player(void)
@@ -90,10 +120,15 @@ void CNPC_Player::Spawn( void )
 	SetHealth(200);
 	SetMaxHealth(200);
 	SetKickDamage(sk_combine_guard_kick.GetFloat());
-	SetModel("models/player/playermodels/gordon.mdl");
+
+	int nModels = ARRAYSIZE(g_charAvailableModels);
+	int randomChoiceModels = rand() % nModels;
+	const char* pRandomName = g_charAvailableModels[randomChoiceModels];
+
+	SetModel(pRandomName);
 
 	//Give him a random amount of grenades on spawn
-	m_iNumGrenades = random->RandomInt(2, 3);
+	m_iNumGrenades = random->RandomInt(3, 5);
 	AddGlowEffect();
 
 	m_fIsPlayer = true;
@@ -104,16 +139,6 @@ void CNPC_Player::Spawn( void )
 	CapabilitiesAdd( bits_CAP_DOORS_GROUP );
 
 	GiveWeapons();
-	//GiveRandomModel();
-	//do this in the spawner code probably
-	/*
-	CBasePlayer *pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
-	if (pPlayer)
-	{
-		CFmtStr hint;
-		hint.sprintf("#Valve_Hud_AllySpawned");
-		pPlayer->ShowLevelMessage(hint.Access());
-	}*/
 
 	BaseClass::Spawn();
 }
@@ -132,37 +157,6 @@ void CNPC_Player::GiveWeapons(void)
 	GiveWeapon(pRandomNameShort);
 	DevMsg("PLAYER: GIVING SHORT RANGE WEAPON %s.\n", pRandomNameShort);
 }
-
-/*
-void CNPC_Player::GiveRandomModel(void)
-{
-	//Seeding a random value using the current time
-	srand(time(0));
-
-	int nModels = AvailableModels.size();
-	int randomChoice = rand() % nModels;
-	const char* pRandomName = AvailableModels[randomChoice];
-
-	if (pRandomName != NULL)
-	{
-		//Reset counter
-		nModelRandomRetries = 0;
-
-		SetModel(pRandomName);
-		DevMsg("PLAYER: GIVING RANDOM MODEL %s.\n", pRandomName);
-	}
-	else if(nModelRandomRetries <= nModelRandomMaxRetries)
-	{
-		//Mainly for debugging + making sure we don't loop infinitely
-		nModelRandomRetries += 1;
-		//Try again
-		GiveRandomModel();
-	}
-	else
-	{
-		nModelRandomRetries = 0;
-	}
-}*/
 
 void CNPC_Player::GiveWeapon(const char* iszWeaponName)
 {
@@ -198,42 +192,26 @@ void CNPC_Player::GiveWeapon(const char* iszWeaponName)
 //-----------------------------------------------------------------------------
 void CNPC_Player::Precache()
 {
-	FileFindHandle_t findHandle = NULL;
-	const char* pszFilename = g_pFullFileSystem->FindFirst("models/player/playermodels/*.mdl", &findHandle);
-
-	while (pszFilename)
+	for (const char* i : g_charAvailableModels)
 	{
-		char szModelName[2048];
-		Q_snprintf(szModelName, sizeof(szModelName), "models/player/playermodels/%s", pszFilename);
-		CBaseEntity::PrecacheModel(szModelName);
-		DevMsg("Precached Player Model %s\n", szModelName);
-		pszFilename = g_pFullFileSystem->FindNext(findHandle);
+		CBaseEntity::PrecacheModel(i);
 	}
-	g_pFullFileSystem->FindClose(findHandle);
+
+	for (const char* i : g_charNPCShortRangeWeapons)
+	{
+		UTIL_PrecacheOther(i);
+	}
+
+	for (const char* i : g_charNPCMidRangeWeapons)
+	{
+		UTIL_PrecacheOther(i);
+	}
 
 	UTIL_PrecacheOther( "item_healthvial" );
 	UTIL_PrecacheOther( "weapon_frag" );
 	UTIL_PrecacheOther( "item_ammo_ar2_altfire" );
 	UTIL_PrecacheOther( "item_ammo_smg1_grenade" );
 	UTIL_PrecacheOther( "item_oicw_grenade" );
-
-	/*
-	//Precache all models in Playermodels
-	FileFindHandle_t h;
-	const char* szFilename = g_pFullFileSystem->FindFirstEx("models/player/playermodels/*.mdl", NULL, &h);
-
-	//Fill Vector
-	for (; szFilename; szFilename = g_pFullFileSystem->FindNext(h))
-	{
-		AvailableModels.push_back(g_pFullFileSystem->FindNext(h));
-	}
-
-	//Precache all Vector models - Not sure how this affects memory/cpu usage
-	for (size_t i = 0; i < AvailableModels.size(); i++)
-	{
-		if (AvailableModels[i] != NULL)
-			CBaseEntity::PrecacheModel(AvailableModels[i]);
-	}*/
 
 	BaseClass::Precache();
 }
@@ -286,6 +264,34 @@ void CNPC_Player::NPCThink( void )
 		}
 	}
 
+	// regeneration
+	if (IsAlive() && GetHealth() < GetMaxHealth() && (sv_regeneration.GetInt() == 1))
+	{
+		// Color to overlay on the screen while the player is taking damage
+
+		if (gpGlobals->curtime > m_fTimeLastHurt + sv_regeneration_wait_time.GetFloat())
+		{
+			//Regenerate based on rate, and scale it by the frametime
+			m_fRegenRemander += sv_regeneration_rate.GetFloat() * gpGlobals->frametime;
+
+			if (m_fRegenRemander >= 1)
+			{
+				//If the regen interval is set, and the health is evenly divisible by that interval, don't regen.
+				if (sv_regen_interval.GetFloat() > 0 && floor(m_iHealth / sv_regen_interval.GetFloat()) == m_iHealth / sv_regen_interval.GetFloat())
+				{
+					m_fRegenRemander = 0;
+					DevMsg("PLAYER: Player %s health is at %i\n", GetModelName(), GetHealth());
+				}
+				else
+				{
+					TakeHealth(m_fRegenRemander, DMG_GENERIC);
+					m_fRegenRemander = 0;
+					DevMsg("PLAYER: Player %s health is at %i\n", GetModelName(), GetHealth());
+				}
+			}
+		}
+	}
+
 	BaseClass::NPCThink();
 }
 
@@ -293,28 +299,33 @@ void CNPC_Player::NPCThink( void )
 float CNPC_Player::BotWeaponRangeDetermine(CBaseCombatWeapon* pActiveWeapon)
 {
 	if (pActiveWeapon == NULL)
+		DevWarning("PLAYER: DETERMINED MAX RANGE FOR INVALID WEAPON\n");
 		return SKILL_MAX_RANGE;
 
-	float flDeterminedRange = NULL;
-
-	//0 = max range, 1 = melee, 2 = short range, 3 = mid range, 4 = long range
-
-	if (FClassnameIs(pActiveWeapon, "weapon_shotgun") || FClassnameIs(pActiveWeapon, "weapon_pistol"))
+	if (GetEnemy() == NULL)
+		DevMsg("PLAYER: DETERMINED MID RANGE\n");
+		return SKILL_MID_RANGE;
+	
+	for (const char* i : g_charNPCShortRangeWeapons)
 	{
-		flDeterminedRange = SKILL_SHORT_RANGE;
-	}
-	else if (FClassnameIs(pActiveWeapon, "weapon_smg1") || FClassnameIs(pActiveWeapon, "weapon_ar2"))
-	{
-		flDeterminedRange = SKILL_MID_RANGE;
-	}
-	else
-	{
-		flDeterminedRange = SKILL_MAX_RANGE;
+		if (FClassnameIs(pActiveWeapon, i))
+		{
+			DevMsg("PLAYER: DETERMINED SHORT RANGE\n");
+			return SKILL_SHORT_RANGE;
+		}
 	}
 
-	DevMsg("PLAYER: DETERMINED %s RANGE AS %i\n", pActiveWeapon->GetClassname(), (int)flDeterminedRange);
+	for (const char* i : g_charNPCMidRangeWeapons)
+	{
+		if (FClassnameIs(pActiveWeapon, i))
+		{
+			DevMsg("PLAYER: DETERMINED MID RANGE\n");
+			return SKILL_MID_RANGE;
+		}
+	}
 
-	return flDeterminedRange;
+	DevMsg("PLAYER: DETERMINED MAX RANGE\n");
+	return SKILL_MAX_RANGE;
 }
 
 CBaseCombatWeapon* CNPC_Player::GetNextBestWeaponBot(CBaseCombatWeapon* pCurrentWeapon)
@@ -474,100 +485,46 @@ void CNPC_Player::Event_Killed( const CTakeDamageInfo &info )
 
 	if (m_hActiveWeapon)
 	{
+		CBaseEntity* pItem = NULL;
+
 		if (FClassnameIs(GetActiveWeapon(), "weapon_ar2"))
 		{
-			CBaseEntity* pItem = DropItem("item_ammo_ar2_altfire", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
-
-			if (pItem)
-			{
-				IPhysicsObject* pObj = pItem->VPhysicsGetObject();
-
-				if (pObj)
-				{
-					Vector			vel = RandomVector(-64.0f, 64.0f);
-					AngularImpulse	angImp = RandomAngularImpulse(-300.0f, 300.0f);
-
-					vel[2] = 0.0f;
-					pObj->AddVelocity(&vel, &angImp);
-				}
-
-				if (info.GetDamageType() & DMG_DISSOLVE)
-				{
-					CBaseAnimating* pAnimating = dynamic_cast<CBaseAnimating*>(pItem);
-
-					if (pAnimating)
-					{
-						pAnimating->Dissolve(NULL, gpGlobals->curtime, false, ENTITY_DISSOLVE_NORMAL);
-					}
-				}
-				else
-				{
-					WeaponManager_AddManaged(pItem);
-				}
-			}
+			pItem = DropItem("item_ammo_ar2_altfire", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
 		}
 		else if (FClassnameIs(GetActiveWeapon(), "weapon_smg1"))
 		{
-			CBaseEntity* pItem = DropItem("item_ammo_smg1_grenade", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
-
-			if (pItem)
-			{
-				IPhysicsObject* pObj = pItem->VPhysicsGetObject();
-
-				if (pObj)
-				{
-					Vector			vel = RandomVector(-64.0f, 64.0f);
-					AngularImpulse	angImp = RandomAngularImpulse(-300.0f, 300.0f);
-
-					vel[2] = 0.0f;
-					pObj->AddVelocity(&vel, &angImp);
-				}
-
-				if (info.GetDamageType() & DMG_DISSOLVE)
-				{
-					CBaseAnimating* pAnimating = dynamic_cast<CBaseAnimating*>(pItem);
-
-					if (pAnimating)
-					{
-						pAnimating->Dissolve(NULL, gpGlobals->curtime, false, ENTITY_DISSOLVE_NORMAL);
-					}
-				}
-				else
-				{
-					WeaponManager_AddManaged(pItem);
-				}
-			}
+			pItem = DropItem("item_ammo_smg1_grenade", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
 		}
 		else if (FClassnameIs(GetActiveWeapon(), "weapon_oicw"))
 		{
-			CBaseEntity* pItem = DropItem("item_oicw_grenade", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
+			pItem = DropItem("item_oicw_grenade", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
+		}
 
-			if (pItem)
+		if (pItem)
+		{
+			IPhysicsObject* pObj = pItem->VPhysicsGetObject();
+
+			if (pObj)
 			{
-				IPhysicsObject* pObj = pItem->VPhysicsGetObject();
+				Vector			vel = RandomVector(-64.0f, 64.0f);
+				AngularImpulse	angImp = RandomAngularImpulse(-300.0f, 300.0f);
 
-				if (pObj)
+				vel[2] = 0.0f;
+				pObj->AddVelocity(&vel, &angImp);
+			}
+
+			if (info.GetDamageType() & DMG_DISSOLVE)
+			{
+				CBaseAnimating* pAnimating = dynamic_cast<CBaseAnimating*>(pItem);
+
+				if (pAnimating)
 				{
-					Vector			vel = RandomVector(-64.0f, 64.0f);
-					AngularImpulse	angImp = RandomAngularImpulse(-300.0f, 300.0f);
-
-					vel[2] = 0.0f;
-					pObj->AddVelocity(&vel, &angImp);
+					pAnimating->Dissolve(NULL, gpGlobals->curtime, false, ENTITY_DISSOLVE_NORMAL);
 				}
-
-				if (info.GetDamageType() & DMG_DISSOLVE)
-				{
-					CBaseAnimating* pAnimating = dynamic_cast<CBaseAnimating*>(pItem);
-
-					if (pAnimating)
-					{
-						pAnimating->Dissolve(NULL, gpGlobals->curtime, false, ENTITY_DISSOLVE_NORMAL);
-					}
-				}
-				else
-				{
-					WeaponManager_AddManaged(pItem);
-				}
+			}
+			else
+			{
+				WeaponManager_AddManaged(pItem);
 			}
 		}
 	}
