@@ -887,7 +887,7 @@ void CHL2_Player::PreThink(void)
 	CheckBullettime();
 	VPROF_SCOPE_END();
 
-	if (m_lifeState == LIFE_DEAD)
+	if (m_lifeState >= LIFE_DYING)
 	{
 		PlayerDeathThink();
 		if (IsInBullettime())
