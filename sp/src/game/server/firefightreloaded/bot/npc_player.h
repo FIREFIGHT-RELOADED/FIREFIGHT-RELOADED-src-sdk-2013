@@ -42,6 +42,7 @@ public:
 	void		AlertSound(void) { return; }
 	void		LostEnemySound(void) { return; }
 	void		FoundEnemySound(void) { return; }
+	int			OnTakeDamage_Alive(const CTakeDamageInfo& info);
 	void		NPCThink( void );
 	//ported bot funcs
 	float		BotWeaponRangeDetermine(CBaseCombatWeapon* pActiveWeapon);

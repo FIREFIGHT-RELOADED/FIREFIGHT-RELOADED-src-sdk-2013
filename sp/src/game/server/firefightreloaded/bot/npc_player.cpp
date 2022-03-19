@@ -247,6 +247,34 @@ void CNPC_Player::ClearAttackConditions( )
 		SetCondition( COND_CAN_RANGE_ATTACK2 );
 	}
 }
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+int CNPC_Player::OnTakeDamage_Alive(const CTakeDamageInfo& info)
+{
+	CTakeDamageInfo subInfo = info;
+
+	if (subInfo.GetDamageType() != DMG_GENERIC)
+	{
+		if (info.GetAttacker()->IsPlayer())
+		{
+			// no friendly fire.
+			subInfo.SetDamage(0);
+		}
+		else
+		{
+			//only take half of the damage so we can be around for a bit longer.
+			float flDamage = subInfo.GetDamage();
+			float flNewDmg = (flDamage * 0.5);
+			if (flDamage > flNewDmg)
+			{
+				flDamage = flNewDmg;
+				subInfo.SetDamage(flDamage);
+			}
+		}
+	}
+
+	return BaseClass::OnTakeDamage_Alive(subInfo);
+}
 
 void CNPC_Player::NPCThink( void )
 {
