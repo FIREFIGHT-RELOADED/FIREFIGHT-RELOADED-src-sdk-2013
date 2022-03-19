@@ -324,36 +324,14 @@ void CNPC_Player::NPCThink( void )
 	BaseClass::NPCThink();
 }
 
-//ported bot funcs
-float CNPC_Player::BotWeaponRangeDetermine(CBaseCombatWeapon* pActiveWeapon)
+float CNPC_Player::BotWeaponRangeDetermine(float flDist)
 {
-	if (pActiveWeapon == NULL)
-		DevWarning("PLAYER: DETERMINED MAX RANGE FOR INVALID WEAPON\n");
-		return SKILL_MAX_RANGE;
+	if (flDist <= SKILL_MID_RANGE)
+		return SKILL_SHORT_RANGE;
 
-	if (GetEnemy() == NULL)
-		DevMsg("PLAYER: DETERMINED MID RANGE\n");
+	if (flDist >= SKILL_SHORT_RANGE)
 		return SKILL_MID_RANGE;
-	
-	for (const char* i : g_charNPCShortRangeWeapons)
-	{
-		if (FClassnameIs(pActiveWeapon, i))
-		{
-			DevMsg("PLAYER: DETERMINED SHORT RANGE\n");
-			return SKILL_SHORT_RANGE;
-		}
-	}
 
-	for (const char* i : g_charNPCMidRangeWeapons)
-	{
-		if (FClassnameIs(pActiveWeapon, i))
-		{
-			DevMsg("PLAYER: DETERMINED MID RANGE\n");
-			return SKILL_MID_RANGE;
-		}
-	}
-
-	DevMsg("PLAYER: DETERMINED MAX RANGE\n");
 	return SKILL_MAX_RANGE;
 }
 
@@ -376,18 +354,43 @@ CBaseCombatWeapon* CNPC_Player::GetNextBestWeaponBot(CBaseCombatWeapon* pCurrent
 			{
 				float flDist;
 				flDist = (GetLocalOrigin() - GetEnemy()->GetLocalOrigin()).Length();
-				DevMsg("PLAYER: TARGET AT %i\n", (int)flDist);
+				float weaponRange = BotWeaponRangeDetermine(flDist);
 
-				if (BotWeaponRangeDetermine(pCheck) >= flDist)
+				if (weaponRange == SKILL_SHORT_RANGE)
 				{
-					DevMsg("PLAYER: SETTING %s AS BEST.\n", pCheck->GetClassname());
-					// if this weapon is useable, flag it as the best
-					pBest = pCheck;
+					DevMsg("PLAYER: SHORT RANGE DETECTED\n");
+					for (const char* i : g_charNPCShortRangeWeapons)
+					{
+						if (FClassnameIs(pCheck, i))
+						{
+							DevMsg("PLAYER: SETTING %s AS BEST SHORT RANGE.\n", pCheck->GetClassname());
+							// if this weapon is useable, flag it as the best
+							pBest = pCheck;
+						}
+					}
+				}
+				else if (weaponRange == SKILL_MID_RANGE)
+				{
+					DevMsg("PLAYER: MID RANGE DETECTED\n");
+					for (const char* i : g_charNPCMidRangeWeapons)
+					{
+						if (FClassnameIs(pCheck, i))
+						{
+							DevMsg("PLAYER: SETTING %s AS BEST MID RANGE.\n", pCheck->GetClassname());
+							// if this weapon is useable, flag it as the best
+							pBest = pCheck;
+						}
+					}
+				}
+				else
+				{
+					CBaseCombatWeapon* pActiveWeapon = GetActiveWeapon();
+					DevMsg("PLAYER: SETTING CURRENT WEAPON AS BEST.\n");
+					return pActiveWeapon;
 				}
 			}
 		}
-
-		if (!pCheck->HasAnyAmmo())
+		else
 		{
 			CBaseCombatWeapon* pActiveWeapon = GetActiveWeapon();
 			DevMsg("PLAYER: SETTING CURRENT WEAPON AS BEST.\n");

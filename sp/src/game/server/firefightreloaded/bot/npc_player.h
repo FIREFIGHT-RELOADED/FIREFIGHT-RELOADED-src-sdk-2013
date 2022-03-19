@@ -45,7 +45,7 @@ public:
 	int			OnTakeDamage_Alive(const CTakeDamageInfo& info);
 	void		NPCThink( void );
 	//ported bot funcs
-	float		BotWeaponRangeDetermine(CBaseCombatWeapon* pActiveWeapon);
+	float		BotWeaponRangeDetermine(float flDist);
 	CBaseCombatWeapon* GetNextBestWeaponBot(CBaseCombatWeapon* pCurrentWeapon);
 	bool		SwitchToNextBestWeaponBot(CBaseCombatWeapon* pCurrent);
 	//player emulation
