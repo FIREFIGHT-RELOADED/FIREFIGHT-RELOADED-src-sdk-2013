@@ -50,6 +50,7 @@ extern ConVar sv_regeneration_wait_time;
 extern ConVar sv_regeneration_rate_default;
 extern ConVar sv_regeneration_rate;
 extern ConVar sv_regen_interval;
+static ConVar sv_playerbot_friendlyfire("sv_playerbot_friendlyfire", "0", FCVAR_ARCHIVE);
 
 LINK_ENTITY_TO_CLASS( npc_playerbot, CNPC_Player );
 
@@ -255,7 +256,7 @@ int CNPC_Player::OnTakeDamage_Alive(const CTakeDamageInfo& info)
 
 	if (subInfo.GetDamageType() != DMG_GENERIC)
 	{
-		if (info.GetAttacker()->IsPlayer())
+		if (info.GetAttacker()->IsPlayer() && !sv_playerbot_friendlyfire.GetBool())
 		{
 			// no friendly fire.
 			subInfo.SetDamage(0);
