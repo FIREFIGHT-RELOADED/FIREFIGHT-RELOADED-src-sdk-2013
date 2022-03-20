@@ -3581,6 +3581,8 @@ void CHL2_Player::TraceAttack(const CTakeDamageInfo& info, const Vector& vecDir,
 	// Save this bone for the ragdoll.
 	m_nForceBone = ptr->physicsbone;
 	SetLastHitGroup(ptr->hitgroup);
+
+	BaseClass::TraceAttack(info, vecDir, ptr, pAccumulator);
 }
 
 //-----------------------------------------------------------------------------
