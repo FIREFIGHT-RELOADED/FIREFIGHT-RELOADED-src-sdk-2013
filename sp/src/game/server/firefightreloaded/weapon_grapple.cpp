@@ -263,7 +263,17 @@ void CGrappleHook::HookedThink( void )
 
 	m_hPlayer->SetGravity(0.0f);
 	m_hPlayer->SetGroundEntity(NULL);
-	m_hPlayer->SetAbsVelocity(tempVec1*temp_multiplier*650);//400
+
+	float flDistance = (m_hPlayer->GetAbsOrigin() - GetAbsOrigin()).Length();
+
+	if (flDistance < 32.0f)
+	{
+		m_hPlayer->SetAbsVelocity(Vector(0,0,0));
+	}
+	else
+	{
+		m_hPlayer->SetAbsVelocity(tempVec1 * temp_multiplier * 950);//400
+	}
 }
  
 //-----------------------------------------------------------------------------
