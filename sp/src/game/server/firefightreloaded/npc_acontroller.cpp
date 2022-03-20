@@ -1122,6 +1122,7 @@ void CNPC_ControllerHeadBall::HuntThink( void  )
 		UTIL_TraceLine( GetAbsOrigin(), GetEnemy()->WorldSpaceCenter(), MASK_ALL, this, COLLISION_GROUP_NONE, &tr );
 
 		CBaseEntity *pEntity = tr.m_pEnt;
+
 		if (pEntity != NULL && pEntity->m_takedamage == DAMAGE_YES)
 		{
 			ClearMultiDamage( );
