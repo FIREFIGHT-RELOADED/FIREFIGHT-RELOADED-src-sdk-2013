@@ -209,7 +209,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 			Log("Setting the gamemode to %i.\n", GetGamemode());
 		}
 
-		if (V_stristr(mapname, "cf"))
+		if (V_stristr(mapname, "cf_"))
 		{
 			if (!g_fr_spawneroldfunctionality.GetBool())
 			{
@@ -218,7 +218,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 			SetGamemode(FIREFIGHT_PRIMARY_COMBINEFIREFIGHT);
 			Log("Automatically setting the gamemode to COMBINE FIREFIGHT due to mapname.\n");
 		}
-		else if (V_stristr(mapname, "xi"))
+		else if (V_stristr(mapname, "xi_"))
 		{
 			if (!g_fr_spawneroldfunctionality.GetBool())
 			{
@@ -227,7 +227,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 			SetGamemode(FIREFIGHT_PRIMARY_XENINVASION);
 			Log("Automatically setting the gamemode to XEN INVASION due to mapname.\n");
 		}
-		else if (V_stristr(mapname, "aa"))
+		else if (V_stristr(mapname, "aa_"))
 		{
 			if (!g_fr_spawneroldfunctionality.GetBool())
 			{
@@ -236,7 +236,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 			SetGamemode(FIREFIGHT_PRIMARY_ANTLIONASSAULT);
 			Log("Automatically setting the gamemode to ANTLION ASSAULT due to mapname.\n");
 		}
-		else if (V_stristr(mapname, "zs"))
+		else if (V_stristr(mapname, "zs_"))
 		{
 			if (!g_fr_spawneroldfunctionality.GetBool())
 			{
@@ -245,7 +245,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 			SetGamemode(FIREFIGHT_PRIMARY_ZOMBIESURVIVAL);
 			Log("Automatically setting the gamemode to ZOMBIE SURVIVAL due to mapname.\n");
 		}
-		else if (V_stristr(mapname, "fr"))
+		else if (V_stristr(mapname, "fr_"))
 		{
 			if (!g_fr_spawneroldfunctionality.GetBool())
 			{
