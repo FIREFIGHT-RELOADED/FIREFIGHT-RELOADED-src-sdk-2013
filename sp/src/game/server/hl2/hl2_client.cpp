@@ -37,13 +37,6 @@ extern bool			g_fGameOver;
 extern ConVar sv_player_hardcoremode;
 //const char			*szModelName = NULL; //already declared?
 
-void CC_EntityCount(void)
-{
-	Msg("%d/%d entities\n", gEntList.NumberOfEntities(), gpGlobals->maxEntities);
-}
-
-static ConCommand entitycount("entitycount", CC_EntityCount, "Shows map entity and NPC count");
-
 /*
 ===========
 ClientPutInServer

@@ -159,20 +159,15 @@ bool CBaseNPCMaker::HumanHullFits( const Vector &vecLocation )
 	return false;
 }
 
-#define ENTITY_INTOLERANCE	100
-
 //-----------------------------------------------------------------------------
 // Purpose: Returns whether or not it is OK to make an NPC at this instant.
 //-----------------------------------------------------------------------------
 bool CBaseNPCMaker::CanMakeNPC( bool bIgnoreSolidEntities )
 {
-	if ( gEntList.NumberOfEntities() >= (gpGlobals->maxEntities - ENTITY_INTOLERANCE) )
+	if (gEntList.NumberOfEdicts() >= (MAX_EDICTS - g_fr_entitytolerance.GetInt()))
 		return false;
 	
 	if( ai_inhibit_spawners.GetBool() )
-		return false;
-
-	if (g_fr_npclimit.GetInt() > 0 && (g_iNPCLimit >= g_fr_npclimit.GetInt()))
 		return false;
 
 	if ( m_nMaxLiveChildren > 0 && (m_nLiveChildren >= m_nMaxLiveChildren))
