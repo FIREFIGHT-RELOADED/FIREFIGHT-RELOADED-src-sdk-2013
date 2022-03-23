@@ -385,10 +385,6 @@ bool CNPCMakerFirefight::CanMakeNPC(bool bIgnoreSolidEntities)
 {
 	if ( gEntList.NumberOfEdicts() >= (MAX_EDICTS - g_fr_entitytolerance.GetInt()) )
 		return false;
-	else
-	{
-		DevMsg("%i ents", gEntList.NumberOfEdicts());
-	}
 
 	/*
 	int iMinPlayersToSpawn = 0;
