@@ -10,6 +10,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+ConVar npc_playerbot_gloweffect("npc_playerbot_gloweffect", "1", FCVAR_ARCHIVE);
+
 class C_NPC_Player : public C_AI_BaseNPC
 {
 public:
@@ -55,7 +57,7 @@ void C_NPC_Player::OnDataChanged( DataUpdateType_t type )
 	{
 		float r, g, b;
 		GetGlowEffectColor(&r, &g, &b);
-		UpdateGlowEffect(Vector(r, g, b), 1.0);
+		UpdateGlowEffect(Vector(r, g, b), (npc_playerbot_gloweffect.GetBool() ? 1.0 : 0.0));
 	}
 
 	BaseClass::OnDataChanged( type );
