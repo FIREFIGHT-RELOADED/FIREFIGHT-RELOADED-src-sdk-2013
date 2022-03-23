@@ -50,7 +50,7 @@ extern ConVar sv_regeneration_wait_time;
 extern ConVar sv_regeneration_rate_default;
 extern ConVar sv_regeneration_rate;
 extern ConVar sv_regen_interval;
-static ConVar sv_playerbot_friendlyfire("sv_playerbot_friendlyfire", "0", FCVAR_ARCHIVE);
+static ConVar npc_playerbot_friendlyfire("npc_playerbot_friendlyfire", "0", FCVAR_ARCHIVE);
 
 LINK_ENTITY_TO_CLASS( npc_playerbot, CNPC_Player );
 
@@ -134,6 +134,7 @@ void CNPC_Player::Spawn( void )
 	AddGlowEffect();
 
 	m_fIsPlayer = true;
+	m_fIsAce = true;
 
 	CapabilitiesAdd( bits_CAP_ANIMATEDFACE );
 	CapabilitiesAdd( bits_CAP_MOVE_SHOOT );
@@ -258,7 +259,7 @@ int CNPC_Player::OnTakeDamage_Alive(const CTakeDamageInfo& info)
 	if (subInfo.GetDamageType() != DMG_GENERIC)
 	{
 		Relationship_t* relations = FindEntityRelationship(info.GetAttacker());
-		if (info.GetAttacker()->IsPlayer() && relations->disposition == D_LI && !sv_playerbot_friendlyfire.GetBool())
+		if (relations->disposition == D_LI && !npc_playerbot_friendlyfire.GetBool())
 		{
 			// no friendly fire.
 			subInfo.SetDamage(0);
