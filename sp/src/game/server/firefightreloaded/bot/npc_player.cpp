@@ -120,6 +120,7 @@ void CNPC_Player::Spawn( void )
 	// Stronger, tougher.
 	SetHealth(200);
 	SetMaxHealth(200);
+	SetCollisionGroup(COLLISION_GROUP_NPC_ACTOR);
 	SetKickDamage(sk_combine_guard_kick.GetFloat());
 
 	int nModels = ARRAYSIZE(g_charAvailableModels);
@@ -256,7 +257,8 @@ int CNPC_Player::OnTakeDamage_Alive(const CTakeDamageInfo& info)
 
 	if (subInfo.GetDamageType() != DMG_GENERIC)
 	{
-		if (info.GetAttacker()->IsPlayer() && !sv_playerbot_friendlyfire.GetBool())
+		Relationship_t* relations = FindEntityRelationship(info.GetAttacker());
+		if (info.GetAttacker()->IsPlayer() && relations->disposition == D_LI && !sv_playerbot_friendlyfire.GetBool())
 		{
 			// no friendly fire.
 			subInfo.SetDamage(0);
