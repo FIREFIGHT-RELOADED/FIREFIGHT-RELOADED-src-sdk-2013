@@ -120,7 +120,6 @@ void CNPC_Player::Spawn( void )
 	// Stronger, tougher.
 	SetHealth(200);
 	SetMaxHealth(200);
-	SetCollisionGroup(COLLISION_GROUP_NPC_ACTOR);
 	SetKickDamage(sk_combine_guard_kick.GetFloat());
 
 	int nModels = ARRAYSIZE(g_charAvailableModels);
@@ -144,6 +143,8 @@ void CNPC_Player::Spawn( void )
 	GiveWeapons();
 
 	BaseClass::Spawn();
+
+	SetCollisionGroup(COLLISION_GROUP_NPC_ACTOR);
 }
 
 void CNPC_Player::GiveWeapons(void)

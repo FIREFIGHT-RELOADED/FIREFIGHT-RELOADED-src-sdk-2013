@@ -346,10 +346,7 @@ void CNPC_Combine::Spawn( void )
 	// CapabilitiesAdd(bits_CAP_INNATE_RANGE_ATTACK2 );
 
 	// Innate range attack for kicking
-	if (!m_fIsPlayer)
-	{
-		CapabilitiesAdd(bits_CAP_INNATE_MELEE_ATTACK1);
-	}
+	CapabilitiesAdd(bits_CAP_INNATE_MELEE_ATTACK1);
 
 	// Can be in a squad
 	CapabilitiesAdd( bits_CAP_SQUAD);
