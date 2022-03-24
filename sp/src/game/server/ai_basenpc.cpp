@@ -7003,7 +7003,9 @@ void CAI_BaseNPC::LoadAttributes()
 	{
 		KeyValues* attributeData = m_pAttributes->data;
 
-		const char* newModelName = m_pAttributes->LoadStringVal("new_model", "");
+		char CharLocalizedArray[256];
+		Q_strncpy(CharLocalizedArray, m_pAttributes->LoadStringVal("new_model", ""), sizeof(CharLocalizedArray));
+		const char* newModelName = V_strdup(CharLocalizedArray);
 
 		if (strlen(newModelName) > 0)
 		{
@@ -7011,6 +7013,8 @@ void CAI_BaseNPC::LoadAttributes()
 			CBaseEntity::PrecacheModel(STRING(GetModelName()));
 			SetModel(STRING(GetModelName()));
 		}
+
+		delete[] newModelName;
 
 		int healthupgrade = attributeData->GetInt("additional_health");
 		

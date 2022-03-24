@@ -116,6 +116,7 @@ void CNPC_CombineAce::Spawn( void )
 	m_fIsAce = true;
 	m_fIsPlayer = false;
 	m_iUseMarch = true;
+	m_bisEyeForcedDead = false;
 
 	// Stronger, tougher.
 	SetHealth(sk_combine_ace_health.GetFloat());
@@ -185,6 +186,42 @@ void CNPC_CombineAce::Spawn( void )
 	}
 #endif
 	*/
+}
+
+void CNPC_CombineAce::LoadAttributes()
+{
+	if (m_pAttributes != NULL)
+	{
+		KeyValues* attributeData = m_pAttributes->data;
+
+		bool disableeye = attributeData->GetBool("disable_eye");
+
+		if (disableeye)
+		{
+			SetEyeState(ACE_EYE_DEAD);
+			m_bisEyeForcedDead = disableeye;
+		}
+
+		bool armor = attributeData->GetBool("armor");
+
+		if (armor)
+		{
+			if (pArmor == NULL && m_bNoArmor)
+			{
+				SpawnArmorPieces();
+			}
+		}
+		else
+		{
+			if (pArmor != NULL && !m_bNoArmor)
+			{
+				pArmor->Remove();
+				m_bNoArmor = true;
+			}
+		}
+	}
+
+	BaseClass::LoadAttributes();
 }
 
 //-----------------------------------------------------------------------------
@@ -312,31 +349,40 @@ void CNPC_CombineAce::SetEyeState(aceEyeState_t state)
 	{
 	default:
 	case ACE_EYE_ACTIVATE: //Fade in and scale up
-		m_pEyeSprite->SetColor(255, 0, 0);
-		m_pEyeSprite->SetBrightness(164, 0.1f);
-		m_pEyeSprite->SetScale(0.8f, 0.1f);
+		if (!m_bisEyeForcedDead)
+		{
+			m_pEyeSprite->SetColor(255, 0, 0);
+			m_pEyeSprite->SetBrightness(164, 0.1f);
+			m_pEyeSprite->SetScale(0.8f, 0.1f);
 
-		m_pEyeTrail->SetColor(255, 0, 0);
-		m_pEyeTrail->SetScale(2.0f);
-		m_pEyeTrail->SetBrightness(164);
+			m_pEyeTrail->SetColor(255, 0, 0);
+			m_pEyeTrail->SetScale(2.0f);
+			m_pEyeTrail->SetBrightness(164);
+		}
 		break;
 
 	case ACE_EYE_DORMANT: //Fade out and scale down
-		m_pEyeSprite->SetScale(0.4f, 0.5f);
-		m_pEyeSprite->SetBrightness(64, 0.5f);
+		if (!m_bisEyeForcedDead)
+		{
+			m_pEyeSprite->SetScale(0.4f, 0.5f);
+			m_pEyeSprite->SetBrightness(64, 0.5f);
 
-		m_pEyeTrail->SetScale(0.8f);
-		m_pEyeTrail->SetBrightness(64);
+			m_pEyeTrail->SetScale(0.8f);
+			m_pEyeTrail->SetBrightness(64);
+		}
 		break;
 
 	case ACE_EYE_DEAD: //Fade out slowly
-		m_pEyeSprite->SetColor(255, 0, 0);
-		m_pEyeSprite->SetScale(0.1f, 5.0f);
-		m_pEyeSprite->SetBrightness(0, 5.0f);
+		if (!m_bisEyeForcedDead)
+		{
+			m_pEyeSprite->SetColor(255, 0, 0);
+			m_pEyeSprite->SetScale(0.1f, 5.0f);
+			m_pEyeSprite->SetBrightness(0, 5.0f);
 
-		m_pEyeTrail->SetColor(255, 0, 0);
-		m_pEyeTrail->SetScale(0.1f);
-		m_pEyeTrail->SetBrightness(0);
+			m_pEyeTrail->SetColor(255, 0, 0);
+			m_pEyeTrail->SetScale(0.1f);
+			m_pEyeTrail->SetBrightness(0);
+		}
 		break;
 	}
 }

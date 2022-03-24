@@ -5,8 +5,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
 
-ConVar ai_attributes_numpresets("ai_attributes_numpresets", "1", FCVAR_CHEAT);
-ConVar ai_attributes_chance("ai_attributes_chance", "1", FCVAR_CHEAT);
+ConVar ai_attributes_numpresets("ai_attributes_numpresets", "10", FCVAR_CHEAT);
+ConVar ai_attributes_chance("ai_attributes_chance", "10", FCVAR_CHEAT);
 
 CAIAttributesLoader *LoadNPCPresetFile(const char* className)
 {

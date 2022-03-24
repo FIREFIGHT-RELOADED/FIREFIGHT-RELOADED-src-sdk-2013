@@ -42,6 +42,7 @@ class CNPC_CombineAce : public CNPC_Combine
 
 public: 
 	void		Spawn( void );
+	void		LoadAttributes(void);
 	void		Precache( void );
 	void		DeathSound( const CTakeDamageInfo &info );
 	void		PrescheduleThink( void );
@@ -70,6 +71,7 @@ private:
 	CSpriteTrail		*m_pEyeTrail;
 	CArmorPiece			*pArmor;
 	bool					m_bNoArmor;
+	bool					m_bisEyeForcedDead;
 
 #if HL2_EPISODIC
 public:
