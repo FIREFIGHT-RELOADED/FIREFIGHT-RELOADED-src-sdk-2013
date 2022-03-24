@@ -6992,6 +6992,33 @@ void CAI_BaseNPC::NPCInit ( void )
 	SetDeathPoseFrame( 0 );
 
 	m_EnemiesSerialNumber = -1;
+
+	m_pAttributes = LoadNPCPresetFile(GetClassname());
+	LoadAttributes();
+}
+
+void CAI_BaseNPC::LoadAttributes()
+{
+	if (m_pAttributes != NULL)
+	{
+		KeyValues* attributeData = m_pAttributes->data;
+
+		const char* newModelName = m_pAttributes->LoadStringVal("new_model", "");
+
+		if (strlen(newModelName) > 0)
+		{
+			SetModelName(AllocPooledString(newModelName));
+			CBaseEntity::PrecacheModel(STRING(GetModelName()));
+			SetModel(STRING(GetModelName()));
+		}
+
+		int healthupgrade = attributeData->GetInt("additional_health");
+		
+		if (healthupgrade > 0)
+		{
+			SetHealth(GetHealth() + healthupgrade);
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------

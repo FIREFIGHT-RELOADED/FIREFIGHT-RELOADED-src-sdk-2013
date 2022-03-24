@@ -345,6 +345,12 @@ $Project "Server (FR)"
 					$File	"firefightreloaded\bot\npc_player.cpp"
 					$File	"firefightreloaded\bot\npc_player.h"
 				}
+				
+				$Folder	"Attribute Loader"
+				{
+					$File	"firefightreloaded\ai_attributes_loader.cpp"
+					$File	"firefightreloaded\ai_attributes_loader.h"
+				}
 				$File	"firefightreloaded\npc_antlionguardian.cpp"
 				$File	"firefightreloaded\npc_antlionworker.cpp"
 				$File	"firefightreloaded\npc_antlionworker.h"
