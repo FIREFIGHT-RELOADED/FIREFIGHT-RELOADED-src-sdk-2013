@@ -2029,7 +2029,7 @@ int CNPC_Combine::SelectFailSchedule( int failedSchedule, int failedTask, AI_Tas
 //-----------------------------------------------------------------------------
 bool CNPC_Combine::ShouldChargePlayer()
 {
-	return GetEnemy() && GetEnemy()->IsPlayer() /*&& PlayerHasMegaPhysCannon()*/ && !IsLimitingHintGroups();
+	return GetEnemy() /*&& GetEnemy()->IsPlayer() && PlayerHasMegaPhysCannon()*/ && !IsLimitingHintGroups();
 }
 
 
@@ -3111,6 +3111,9 @@ bool CNPC_Combine::CanAltFireEnemy( bool bUseFreeKnowledge )
 	if (!IsElite() || !IsAce() || !m_fIsPlayer)
 		return false;
 
+	if (!GetActiveWeapon()->HasSecondaryAmmo())
+		return false;
+
 	if (IsCrouching())
 		return false;
 
@@ -3777,7 +3780,6 @@ DEFINE_SCHEDULE
  "	Interrupts"
  "		COND_CAN_MELEE_ATTACK1"
  "		COND_CAN_MELEE_ATTACK2"
- "		COND_HEAVY_DAMAGE"
  "		COND_HEAR_DANGER"
  "		COND_HEAR_MOVE_AWAY"
  )

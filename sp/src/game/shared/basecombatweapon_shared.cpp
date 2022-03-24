@@ -468,7 +468,7 @@ bool CBaseCombatWeapon::UsesClipsForAmmo1( void ) const
 
 bool CBaseCombatWeapon::IsMeleeWeapon() const
 {
-	return GetWpnData().m_bMeleeWeapon;
+	return GetWpnData().m_bMeleeWeapon || (GetMaxClip1() == -1);
 }
 
 //-----------------------------------------------------------------------------

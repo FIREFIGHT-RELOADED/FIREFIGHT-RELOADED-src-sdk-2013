@@ -75,8 +75,7 @@ const char* g_charNPCMidRangeWeapons[] =
 const char* g_charNPCShortRangeWeapons[] =
 {
 	"weapon_shotgun",
-	"weapon_pistol",
-	"weapon_crowbar"
+	"weapon_pistol"
 };
 
 const char* g_charAvailableModels[] =
