@@ -78,7 +78,7 @@ itemFlags_t g_ItemFlags[9] =
 	{ "ITEM_FLAG_HIDESELECTION", ITEM_FLAG_HIDESELECTION }
 };
 #else
-extern itemFlags_t g_ItemFlags[7];
+extern itemFlags_t g_ItemFlags[8];
 #endif
 
 
