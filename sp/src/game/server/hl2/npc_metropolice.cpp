@@ -3143,7 +3143,16 @@ void CNPC_MetroPolice::Event_Killed( const CTakeDamageInfo &info )
 		EmitSound("Gore.Headshot");
 		float flFadeTime = 25.0;
 
-		CGib::SpawnSpecificSingleGib(this, 750, 1500, "models/gibs/police_head.mdl", flFadeTime);
+		CBaseEntity* pHeadGib = CGib::SpawnSpecificSingleGib(this, 750, 1500, "models/gibs/police_head.mdl", flFadeTime);
+
+		if (pHeadGib)
+		{
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(pHeadGib, "head_gib_model", STRING(pHeadGib->GetModelName()));
+				m_pAttributes->SwitchEntityColor(pHeadGib, "new_color");
+			}
+		}
 
 		Vector vecRagForce;
 		vecRagForce.x = random->RandomFloat(-400, 400);
@@ -3157,6 +3166,12 @@ void CNPC_MetroPolice::Event_Killed( const CTakeDamageInfo &info )
 		{
 			color32 color = pLeftArmGib->GetRenderColor();
 			pLeftArmGib->SetRenderColor(color.r, color.g, color.b, color.a);
+
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(pLeftArmGib, "left_arm_gib_model", STRING(pLeftArmGib->GetModelName()));
+				m_pAttributes->SwitchEntityColor(pLeftArmGib, "new_color");
+			}
 		}
 
 		CBaseEntity *pRightArmGib = CreateRagGib(this, "models/gibs/police_right_arm.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
@@ -3164,6 +3179,12 @@ void CNPC_MetroPolice::Event_Killed( const CTakeDamageInfo &info )
 		{
 			color32 color = pRightArmGib->GetRenderColor();
 			pRightArmGib->SetRenderColor(color.r, color.g, color.b, color.a);
+
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(pRightArmGib, "right_arm_gib_model", STRING(pRightArmGib->GetModelName()));
+				m_pAttributes->SwitchEntityColor(pRightArmGib, "new_color");
+			}
 		}
 
 		CBaseEntity *pTorsoGib = CreateRagGib(this, "models/gibs/police_torso.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
@@ -3171,6 +3192,12 @@ void CNPC_MetroPolice::Event_Killed( const CTakeDamageInfo &info )
 		{
 			color32 color = pTorsoGib->GetRenderColor();
 			pTorsoGib->SetRenderColor(color.r, color.g, color.b, color.a);
+
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(pTorsoGib, "torso_gib_model", STRING(pTorsoGib->GetModelName()));
+				m_pAttributes->SwitchEntityColor(pTorsoGib, "new_color");
+			}
 		}
 
 		CBaseEntity *pPelvisGib = CreateRagGib(this, "models/gibs/police_pelvis.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
@@ -3178,6 +3205,12 @@ void CNPC_MetroPolice::Event_Killed( const CTakeDamageInfo &info )
 		{
 			color32 color = pPelvisGib->GetRenderColor();
 			pPelvisGib->SetRenderColor(color.r, color.g, color.b, color.a);
+
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(pPelvisGib, "pelvis_gib_model", STRING(pPelvisGib->GetModelName()));
+				m_pAttributes->SwitchEntityColor(pPelvisGib, "new_color");
+			}
 		}
 
 		CBaseEntity *pLeftLegGib = CreateRagGib(this, "models/gibs/police_left_leg.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
@@ -3185,6 +3218,12 @@ void CNPC_MetroPolice::Event_Killed( const CTakeDamageInfo &info )
 		{
 			color32 color = pLeftLegGib->GetRenderColor();
 			pLeftLegGib->SetRenderColor(color.r, color.g, color.b, color.a);
+
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(pLeftLegGib, "left_leg_gib_model", STRING(pLeftLegGib->GetModelName()));
+				m_pAttributes->SwitchEntityColor(pLeftLegGib, "new_color");
+			}
 		}
 
 		CBaseEntity *pRightLegGib = CreateRagGib(this, "models/gibs/police_right_leg.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
@@ -3192,6 +3231,12 @@ void CNPC_MetroPolice::Event_Killed( const CTakeDamageInfo &info )
 		{
 			color32 color = pRightLegGib->GetRenderColor();
 			pRightLegGib->SetRenderColor(color.r, color.g, color.b, color.a);
+
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(pRightLegGib, "right_leg_gib_model", STRING(pRightLegGib->GetModelName()));
+				m_pAttributes->SwitchEntityColor(pRightLegGib, "new_color");
+			}
 		}
 
 		//now add smaller gibs.
@@ -4345,6 +4390,13 @@ float CNPC_MetroPolice::GetHitgroupDamageMultiplier(int iHitGroup, const CTakeDa
 			if ((info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB))
 			{
 				SetModel("models/gibs/police_beheaded.mdl");
+
+				if (m_pAttributes != NULL)
+				{
+					m_pAttributes->SwitchEntityModel(this, "body_decap_model", STRING(this->GetModelName()));
+					m_pAttributes->SwitchEntityColor(this, "new_color");
+				}
+
 				DispatchParticleEffect("smod_headshot_r", PATTACH_POINT_FOLLOW, this, "bloodspurt", true);
 				SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
 				CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p3.mdl", 6);
@@ -4368,9 +4420,26 @@ float CNPC_MetroPolice::GetHitgroupDamageMultiplier(int iHitGroup, const CTakeDa
 			else if ((info.GetDamageType() & (DMG_SLASH)) && !(info.GetDamageType() & DMG_NEVERGIB))
 			{
 				SetModel("models/gibs/police_beheaded.mdl");
+
+				if (m_pAttributes != NULL)
+				{
+					m_pAttributes->SwitchEntityModel(this, "body_decap_model", STRING(this->GetModelName()));
+					m_pAttributes->SwitchEntityColor(this, "new_color");
+				}
+
 				DispatchParticleEffect("smod_blood_decap_r", PATTACH_POINT_FOLLOW, this, "bloodspurt", true);
 				SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
-				CGib::SpawnSpecificSingleGib(this, 150, 450, "models/gibs/police_head.mdl", 6);
+				CBaseEntity* pHeadGib = CGib::SpawnSpecificSingleGib(this, 150, 450, "models/gibs/police_head.mdl", 6);
+
+				if (pHeadGib)
+				{
+					if (m_pAttributes != NULL)
+					{
+						m_pAttributes->SwitchEntityModel(pHeadGib, "head_gib_model", STRING(pHeadGib->GetModelName()));
+						m_pAttributes->SwitchEntityColor(pHeadGib, "new_color");
+					}
+				}
+
 				CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p4.mdl", 6);
 				EmitSound("Gore.Headshot");
 				m_iHealth = 0;

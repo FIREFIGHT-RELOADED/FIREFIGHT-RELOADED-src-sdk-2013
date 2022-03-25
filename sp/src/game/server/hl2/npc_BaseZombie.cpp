@@ -1160,6 +1160,12 @@ void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info, bool event_killed
 	if ( pLegGib )
 	{
 		CopyRenderColorTo( pLegGib );
+
+		if (m_pAttributes != NULL)
+		{
+			m_pAttributes->SwitchEntityModel(pLegGib, "leg_gib_model", STRING(pLegGib->GetModelName()));
+			m_pAttributes->SwitchEntityColor(pLegGib, "new_color");
+		}
 	}
 
 	forceVector *= random->RandomFloat( 0.04, 0.06 );
@@ -1178,6 +1184,14 @@ void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info, bool event_killed
 	CBaseEntity *pTorsoGib = CreateRagGib(this, GetTorsoModel(), GetAbsOrigin() + Vector(0, 0, 64), TorsoAngles, forceVector, flFadeTime, ShouldIgniteZombieGib());
 	if ( pTorsoGib )
 	{
+		CopyRenderColorTo(pTorsoGib);
+
+		if (m_pAttributes != NULL)
+		{
+			m_pAttributes->SwitchEntityModel(pTorsoGib, "torso_gib_model", STRING(pTorsoGib->GetModelName()));
+			m_pAttributes->SwitchEntityColor(pTorsoGib, "new_color");
+		}
+
 		CBaseAnimating *pAnimating = dynamic_cast<CBaseAnimating*>(pTorsoGib);
 		if( pAnimating )
 		{
@@ -1185,7 +1199,6 @@ void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info, bool event_killed
 		}
 
 		pTorsoGib->SetOwnerEntity( this );
-		CopyRenderColorTo( pTorsoGib );
 
 	}
 
