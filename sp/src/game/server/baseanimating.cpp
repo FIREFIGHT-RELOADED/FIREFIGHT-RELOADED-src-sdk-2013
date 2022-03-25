@@ -1000,8 +1000,8 @@ float CBaseAnimating::GetSequenceGroundSpeed( CStudioHdr *pStudioHdr, int iSeque
 			{
 				if (npc->m_pAttributes != NULL)
 				{
-					float additionalSpeedScale = npc->m_pAttributes->GetFloat("additional_speed", 1);
-					return defaultSpeed * additionalSpeedScale;
+					float additionalSpeed = npc->m_pAttributes->GetFloat("additional_speed", 1);
+					return defaultSpeed + additionalSpeed;
 				}
 			}
 
