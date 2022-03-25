@@ -251,7 +251,7 @@ float CNPC_CombineE::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDama
 				SetModel("models/gibs/combine_super_soldier_beheaded.mdl");
 				DispatchParticleEffect("smod_blood_decap_r", PATTACH_POINT_FOLLOW, this, "bloodspurt", true);
 				SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
-				CGib::SpawnSpecificGibs(this, 1, 150, 450, "models/gibs/soldier_elite_head.mdl", 6);
+				CGib::SpawnSpecificSingleGib(this, 150, 450, "models/gibs/soldier_elite_head.mdl", 6);
 				CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p4.mdl", 6);
 				EmitSound("Gore.Headshot");
 				m_iHealth = 0;
@@ -349,7 +349,7 @@ void CNPC_CombineE::Event_Killed( const CTakeDamageInfo &info )
 		EmitSound("Gore.Headshot");
 		float flFadeTime = 25.0;
 
-		CGib::SpawnSpecificGibs(this, 1, 750, 1500, "models/gibs/soldier_elite_head.mdl", flFadeTime);
+		CGib::SpawnSpecificSingleGib(this, 750, 1500, "models/gibs/soldier_elite_head.mdl", flFadeTime);
 
 		Vector vecRagForce;
 		vecRagForce.x = random->RandomFloat(-400, 400);

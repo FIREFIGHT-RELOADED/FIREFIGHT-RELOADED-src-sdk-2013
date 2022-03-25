@@ -6993,30 +6993,25 @@ void CAI_BaseNPC::NPCInit ( void )
 
 	m_EnemiesSerialNumber = -1;
 
-	m_pAttributes = LoadNPCPresetFile(GetClassname());
-	LoadAttributes();
+	if (ai_attributes.GetBool())
+	{
+		m_pAttributes = LoadNPCPresetFile(GetClassname());
+		LoadAttributes();
+	}
+	else
+	{
+		m_pAttributes = NULL;
+	}
 }
 
 void CAI_BaseNPC::LoadAttributes()
 {
 	if (m_pAttributes != NULL)
 	{
-		KeyValues* attributeData = m_pAttributes->data;
+		m_pAttributes->SwitchEntityModel(this, "new_model", STRING(GetModelName()));
+		m_pAttributes->SwitchEntityColor(this, "new_color");
 
-		char CharLocalizedArray[256];
-		Q_strncpy(CharLocalizedArray, m_pAttributes->LoadStringVal("new_model", ""), sizeof(CharLocalizedArray));
-		const char* newModelName = V_strdup(CharLocalizedArray);
-
-		if (strlen(newModelName) > 0)
-		{
-			SetModelName(AllocPooledString(newModelName));
-			CBaseEntity::PrecacheModel(STRING(GetModelName()));
-			SetModel(STRING(GetModelName()));
-		}
-
-		delete[] newModelName;
-
-		int healthupgrade = attributeData->GetInt("additional_health");
+		int healthupgrade = m_pAttributes->GetInt("additional_health");
 		
 		if (healthupgrade > 0)
 		{

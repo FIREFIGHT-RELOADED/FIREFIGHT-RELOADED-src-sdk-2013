@@ -176,6 +176,7 @@ public:
 	void *GetPtr( const char *keyName = NULL, void *defaultValue = (void*)0 );
 	bool GetBool( const char *keyName = NULL, bool defaultValue = false );
 	Color GetColor( const char *keyName = NULL /* default value is all black */);
+	Vector GetVector(const char* keyName = NULL, Vector defaultValue = Vector(0,0,0));
 	bool  IsEmpty(const char *keyName = NULL);
 
 	// Data access

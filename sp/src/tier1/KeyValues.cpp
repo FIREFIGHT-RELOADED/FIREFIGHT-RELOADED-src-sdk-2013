@@ -1504,6 +1504,31 @@ void KeyValues::SetColor( const char *keyName, Color value)
 	}
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: Gets a vector
+//-----------------------------------------------------------------------------
+Vector KeyValues::GetVector(const char* keyName, Vector defaultValue)
+{
+	Vector vector(0, 0, 0);
+	KeyValues* dat = FindKey(keyName, false);
+	float a = 0.0f, b = 0.0f, c = 0.0f;
+	if (dat)
+	{
+		switch (dat->m_iDataType)
+		{
+			case TYPE_STRING:
+				sscanf(dat->m_sValue, "%f %f %f", &a, &b, &c);
+				vector[0] = (unsigned char)a;
+				vector[1] = (unsigned char)b;
+				vector[2] = (unsigned char)c;
+				break;
+			default:
+				return defaultValue;
+		}
+	}
+	return vector;
+}
+
 void KeyValues::SetStringValue( char const *strValue )
 {
 	// delete the old value

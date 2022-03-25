@@ -55,6 +55,7 @@ public:
 	static	void SpawnRandomGibs(CBaseEntity *pVictim, int cGibs, GibType_e eGibType);
 	static  void SpawnStickyGibs(CBaseEntity *pVictim, Vector vecOrigin, int cGibs);
 	static	void SpawnSpecificGibs(CBaseEntity *pVictim, int nNumGibs, float fMaxVelocity, float fMinVelocity, const char* cModelName, float flLifetime = 25);
+	static	CBaseEntity* SpawnSpecificSingleGib(CBaseEntity* pVictim, float fMaxVelocity, float fMinVelocity, const char* cModelName, float flLifetime = 25);
 	static	void SpawnSpecificStickyGibs(CBaseEntity *pVictim, int nNumGibs, float fMaxVelocity, float fMinVelocity, const char* cModelName, float flLifetime = 25);
 
 	void SetPhysicsAttacker(CBasePlayer *pEntity, float flTime);

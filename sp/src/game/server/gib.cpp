@@ -305,6 +305,32 @@ void CGib::SpawnSpecificGibs(CBaseEntity*	pVictim,
 	}
 }
 
+CBaseEntity* CGib::SpawnSpecificSingleGib(CBaseEntity* pVictim,
+	float			vMinVelocity,
+	float			vMaxVelocity,
+	const char* cModelName,
+	float			flLifetime)
+{
+	if (gEntList.NumberOfEntities() >= (gpGlobals->maxEntities - ENTITY_INTOLERANCE))
+	{
+		return NULL;
+	}
+
+	CGib* pGib = CREATE_ENTITY(CGib, "gib");
+	pGib->Spawn(cModelName);
+	pGib->m_nBody = 1;
+	pGib->InitGib(pVictim, vMinVelocity, vMaxVelocity);
+	pGib->m_lifeTime = flLifetime;
+	pGib->SetTouch(&CGib::GibTouch);
+
+	if (pVictim != NULL)
+	{
+		pGib->SetOwnerEntity(pVictim);
+	}
+
+	return pGib;
+}
+
 void CGib::SpawnSpecificStickyGibs(CBaseEntity*	pVictim,
 	int				nNumGibs,
 	float			vMinVelocity,

@@ -192,9 +192,7 @@ void CNPC_CombineAce::LoadAttributes()
 {
 	if (m_pAttributes != NULL)
 	{
-		KeyValues* attributeData = m_pAttributes->data;
-
-		bool disableeye = attributeData->GetBool("disable_eye");
+		bool disableeye = m_pAttributes->GetBool("disable_eye");
 
 		if (disableeye)
 		{
@@ -202,22 +200,28 @@ void CNPC_CombineAce::LoadAttributes()
 			m_bisEyeForcedDead = disableeye;
 		}
 
-		bool armor = attributeData->GetBool("armor");
+		bool armor = m_pAttributes->GetBool("armor");
 
 		if (armor)
 		{
-			if (pArmor == NULL && m_bNoArmor)
+			if (m_bNoArmor)
 			{
 				SpawnArmorPieces();
 			}
 		}
 		else
 		{
-			if (pArmor != NULL && !m_bNoArmor)
+			if (!m_bNoArmor)
 			{
 				pArmor->Remove();
 				m_bNoArmor = true;
 			}
+		}
+
+		if (!m_bNoArmor)
+		{
+			m_pAttributes->SwitchEntityModel(pArmor, "new_armor_model", STRING(pArmor->GetModelName()));
+			m_pAttributes->SwitchEntityColor(pArmor, "new_armor_color");
 		}
 	}
 
@@ -424,7 +428,7 @@ float CNPC_CombineAce::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDa
 				SetModel("models/gibs/combine_ace_soldier_beheaded.mdl");
 				DispatchParticleEffect("smod_blood_decap_r", PATTACH_POINT_FOLLOW, this, "bloodspurt", true);
 				SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
-				CGib::SpawnSpecificGibs(this, 1, 150, 450, "models/gibs/soldier_ace_head.mdl", 6);
+				CGib::SpawnSpecificSingleGib(this, 150, 450, "models/gibs/soldier_ace_head.mdl", 6);
 				CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p4.mdl", 6);
 				EmitSound("Gore.Headshot");
 				m_iHealth = 0;
@@ -522,7 +526,7 @@ void CNPC_CombineAce::Event_Killed( const CTakeDamageInfo &info )
 		EmitSound("Gore.Headshot");
 		float flFadeTime = 25.0;
 
-		CGib::SpawnSpecificGibs(this, 1, 750, 1500, "models/gibs/soldier_ace_head.mdl", flFadeTime);
+		CGib::SpawnSpecificSingleGib(this, 750, 1500, "models/gibs/soldier_ace_head.mdl", flFadeTime);
 
 		Vector vecRagForce;
 		vecRagForce.x = random->RandomFloat(-400, 400);
@@ -577,12 +581,6 @@ void CNPC_CombineAce::Event_Killed( const CTakeDamageInfo &info )
 		CGib::SpawnSpecificGibs(this, 3, 750, 1500, "models/gibs/pgib_p3.mdl", flFadeTime);
 		CGib::SpawnSpecificGibs(this, 3, 750, 1500, "models/gibs/pgib_p4.mdl", flFadeTime);
 
-		if (!m_bNoArmor && combine_ace_shieldspawnmode.GetInt() > 0)
-		{
-			pArmor->Remove();
-			DropItem("item_shield", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
-		}
-
 		Vector forceVector = CalcDamageForceVector(info);
 
 		// Drop any weapon that I own
@@ -617,11 +615,6 @@ void CNPC_CombineAce::Event_Killed( const CTakeDamageInfo &info )
 	}
 
 	SetEyeState(ACE_EYE_DEAD);
-
-	if (!m_bNoArmor && combine_ace_shieldspawnmode.GetInt() > 0)
-	{
-		pArmor->Remove();
-	}
 
 	CBasePlayer *pPlayer = ToBasePlayer( info.GetAttacker() );
 
@@ -695,7 +688,14 @@ void CNPC_CombineAce::Event_Killed( const CTakeDamageInfo &info )
 
 		if (!m_bNoArmor && combine_ace_shieldspawnmode.GetInt() > 0)
 		{
-			DropItem("item_shield", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
+			pArmor->Remove();
+			CBaseEntity* shield = DropItem("item_shield", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
+
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(shield, "new_armor_model", STRING(shield->GetModelName()));
+				m_pAttributes->SwitchEntityColor(shield, "new_armor_color");
+			}
 		}
 	}
 
