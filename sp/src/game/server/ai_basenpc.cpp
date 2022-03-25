@@ -7016,6 +7016,7 @@ void CAI_BaseNPC::LoadAttributes()
 		if (healthupgrade > 0)
 		{
 			SetHealth(GetHealth() + healthupgrade);
+			SetMaxHealth(GetHealth());
 		}
 	}
 }
