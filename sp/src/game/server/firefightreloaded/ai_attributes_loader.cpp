@@ -22,7 +22,6 @@ CAIAttributesLoader *LoadNPCPresetFile(const char* className)
 
 		if (!loader->loadedAttributes)
 		{
-			loader->Die();
 			return NULL;
 		}
 	}
@@ -126,6 +125,9 @@ void CAIAttributesLoader::SwitchEntityColor(CBaseEntity* ent, const char* szStri
 
 void CAIAttributesLoader::Die()
 {
-	data->deleteThis();
+	if (data)
+	{
+		data->deleteThis();
+	}
 	delete this;
 }
