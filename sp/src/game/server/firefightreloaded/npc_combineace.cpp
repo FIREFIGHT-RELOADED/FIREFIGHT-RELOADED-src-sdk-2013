@@ -200,7 +200,7 @@ void CNPC_CombineAce::LoadInitAttributes()
 			m_bisEyeForcedDead = disableeye;
 		}
 
-		bool armor = m_pAttributes->GetBool("armor");
+		bool armor = m_pAttributes->GetBool("shield");
 
 		if (armor)
 		{
@@ -220,8 +220,8 @@ void CNPC_CombineAce::LoadInitAttributes()
 
 		if (!m_bNoArmor)
 		{
-			m_pAttributes->SwitchEntityModel(pArmor, "new_armor_model", STRING(pArmor->GetModelName()));
-			m_pAttributes->SwitchEntityColor(pArmor, "new_armor_color");
+			m_pAttributes->SwitchEntityModel(pArmor, "new_shield_model", STRING(pArmor->GetModelName()));
+			m_pAttributes->SwitchEntityColor(pArmor, "new_shield_color");
 		}
 	}
 
@@ -251,7 +251,7 @@ void CNPC_CombineAce::Precache()
 	UTIL_PrecacheOther( "weapon_frag" );
 	UTIL_PrecacheOther( "item_ammo_ar2_altfire" );
 	UTIL_PrecacheOther( "item_ammo_smg1_grenade" );
-	UTIL_PrecacheOther( "combine_armor_piece" );
+	UTIL_PrecacheOther( "item_shield" );
 
 	PrecacheModel("sprites/redglow1.vmt");
 

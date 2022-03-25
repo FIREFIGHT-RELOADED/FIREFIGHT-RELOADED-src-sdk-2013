@@ -7023,6 +7023,13 @@ void CAI_BaseNPC::LoadInitAttributes()
 			SetHealth(GetHealth() + healthupgrade);
 			SetMaxHealth(GetHealth());
 		}
+
+		bool rare = m_pAttributes->GetBool("is_rare", 0);
+
+		if (rare && !m_isRareEntity)
+		{
+			m_isRareEntity = rare;
+		}
 	}
 }
 

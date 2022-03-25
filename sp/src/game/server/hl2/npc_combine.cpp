@@ -371,6 +371,11 @@ void CNPC_Combine::Spawn( void )
 	NPCInit();
 }
 
+void CNPC_Combine::LoadInitAttributes()
+{
+	BaseClass::LoadInitAttributes();
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Output : Returns true on success, false on failure.

@@ -161,6 +161,7 @@ void CNPC_Assassin::Spawn( void )
 	m_iHealth			= sk_assassin_health.GetFloat();
 	m_flFieldOfView		= 0.2; // indicates the width of this NPC's forward view cone ( as a dotproduct result )
 	m_NPCState			= NPC_STATE_NONE;
+	m_bisEyeForcedDead = false;
 
 	CapabilitiesClear();
 	CapabilitiesAdd( bits_CAP_MOVE_CLIMB | bits_CAP_MOVE_GROUND | bits_CAP_MOVE_JUMP );
@@ -196,6 +197,22 @@ void CNPC_Assassin::Spawn( void )
 
 	m_bEvade = false;
 	m_bAggressive = false;
+}
+
+void CNPC_Assassin::LoadInitAttributes()
+{
+	if (m_pAttributes != NULL)
+	{
+		bool disableeye = m_pAttributes->GetBool("disable_eye");
+
+		if (disableeye)
+		{
+			SetEyeState(ASSASSIN_EYE_DEAD);
+			m_bisEyeForcedDead = disableeye;
+		}
+	}
+
+	BaseClass::LoadInitAttributes();
 }
 
 //-----------------------------------------------------------------------------
@@ -898,59 +915,72 @@ void CNPC_Assassin::SetEyeState( eyeState_t state )
 	{
 	default:
 	case ASSASSIN_EYE_SEE_TARGET: //Fade in and scale up
-		m_pEyeSprite->SetColor( 255, 0, 0 );
-		m_pEyeSprite->SetBrightness( 164, 0.1f );
-		m_pEyeSprite->SetScale( 0.4f, 0.1f );
+		if (!m_bisEyeForcedDead)
+		{
+			m_pEyeSprite->SetColor(255, 0, 0);
+			m_pEyeSprite->SetBrightness(164, 0.1f);
+			m_pEyeSprite->SetScale(0.4f, 0.1f);
 
-		m_pEyeTrail->SetColor( 255, 0, 0 );
-		m_pEyeTrail->SetScale( 8.0f );
-		m_pEyeTrail->SetBrightness( 164 );
-
+			m_pEyeTrail->SetColor(255, 0, 0);
+			m_pEyeTrail->SetScale(8.0f);
+			m_pEyeTrail->SetBrightness(164);
+		}
 		break;
 
 	case ASSASSIN_EYE_SEEKING_TARGET: //Ping-pongs
-		
-		//Toggle our state
-		m_bBlinkState = !m_bBlinkState;
-		m_pEyeSprite->SetColor( 255, 128, 0 );
+		if (!m_bisEyeForcedDead)
+		{
+			//Toggle our state
+			m_bBlinkState = !m_bBlinkState;
+			m_pEyeSprite->SetColor(255, 128, 0);
 
-		if ( m_bBlinkState )
-		{
-			//Fade up and scale up
-			m_pEyeSprite->SetScale( 0.25f, 0.1f );
-			m_pEyeSprite->SetBrightness( 164, 0.1f );
-		}
-		else
-		{
-			//Fade down and scale down
-			m_pEyeSprite->SetScale( 0.2f, 0.1f );
-			m_pEyeSprite->SetBrightness( 64, 0.1f );
+			if (m_bBlinkState)
+			{
+				//Fade up and scale up
+				m_pEyeSprite->SetScale(0.25f, 0.1f);
+				m_pEyeSprite->SetBrightness(164, 0.1f);
+			}
+			else
+			{
+				//Fade down and scale down
+				m_pEyeSprite->SetScale(0.2f, 0.1f);
+				m_pEyeSprite->SetBrightness(64, 0.1f);
+			}
 		}
 
 		break;
 
 	case ASSASSIN_EYE_DORMANT: //Fade out and scale down
-		m_pEyeSprite->SetScale( 0.5f, 0.5f );
-		m_pEyeSprite->SetBrightness( 64, 0.5f );
-		
-		m_pEyeTrail->SetScale( 2.0f );
-		m_pEyeTrail->SetBrightness( 64 );
+		if (!m_bisEyeForcedDead)
+		{
+			m_pEyeSprite->SetScale(0.5f, 0.5f);
+			m_pEyeSprite->SetBrightness(64, 0.5f);
+
+			m_pEyeTrail->SetScale(2.0f);
+			m_pEyeTrail->SetBrightness(64);
+		}
 		break;
 
 	case ASSASSIN_EYE_DEAD: //Fade out slowly
-		m_pEyeSprite->SetColor( 255, 0, 0 );
-		m_pEyeSprite->SetScale( 0.1f, 5.0f );
-		m_pEyeSprite->SetBrightness( 0, 5.0f );
+		if (!m_bisEyeForcedDead)
+		{
+			m_pEyeSprite->SetColor(255, 0, 0);
+			m_pEyeSprite->SetScale(0.1f, 5.0f);
+			m_pEyeSprite->SetBrightness(0, 5.0f);
 
-		m_pEyeTrail->SetColor( 255, 0, 0 );
-		m_pEyeTrail->SetScale( 0.1f );
-		m_pEyeTrail->SetBrightness( 0 );
+			m_pEyeTrail->SetColor(255, 0, 0);
+			m_pEyeTrail->SetScale(0.1f);
+			m_pEyeTrail->SetBrightness(0);
+		}
 		break;
 
 	case ASSASSIN_EYE_ACTIVE:
-		m_pEyeSprite->SetColor( 255, 0, 0 );
-		m_pEyeSprite->SetScale( 0.1f );
-		m_pEyeSprite->SetBrightness( 0 );
+		if (!m_bisEyeForcedDead)
+		{
+			m_pEyeSprite->SetColor(255, 0, 0);
+			m_pEyeSprite->SetScale(0.1f);
+			m_pEyeSprite->SetBrightness(0);
+		}
 		break;
 	}
 }

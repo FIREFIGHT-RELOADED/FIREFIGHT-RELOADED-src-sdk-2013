@@ -47,6 +47,7 @@ public:
 
 	void		Precache( void );
 	void		Spawn( void );
+	void		LoadInitAttributes(void);
 	void		PrescheduleThink( void );
 	void		HandleAnimEvent( animevent_t *pEvent );
 	void		StartTask( const Task_t *pTask );
@@ -80,6 +81,7 @@ private:
 	bool		m_bEvade;
 	bool		m_bAggressive;		// Sets certain state, including whether or not her eye is visible
 	bool		m_bBlinkState;
+	bool		m_bisEyeForcedDead;
 
 	CSprite				*m_pEyeSprite;
 	CSpriteTrail		*m_pEyeTrail;

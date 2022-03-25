@@ -73,6 +73,7 @@ public:
 	bool			UpdateEnemyMemory( CBaseEntity *pEnemy, const Vector &position, CBaseEntity *pInformer = NULL );
 
 	void			Spawn( void );
+	void			LoadInitAttributes(void);
 	void			Precache( void );
 	void			Activate();
 
