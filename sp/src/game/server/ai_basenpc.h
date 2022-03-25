@@ -520,7 +520,7 @@ public:
 	virtual void		Precache( void ); // derived calls at start of Spawn()
 	virtual bool 		CreateVPhysics();
 	virtual void		NPCInit( void ); // derived calls after Spawn()
-	virtual void		LoadAttributes(void);
+	virtual void		LoadInitAttributes(void);
 	void				NPCInitThink( void );
 	virtual void		PostNPCInit() {};// called after NPC_InitThink
 	virtual void		StartNPC( void );

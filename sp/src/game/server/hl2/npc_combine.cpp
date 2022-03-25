@@ -1314,35 +1314,45 @@ void CNPC_Combine::Event_Killed( const CTakeDamageInfo &info )
 		}
 	}
 
-	if (FClassnameIs(this, "npc_combine_p"))
+	bool UseSkins = true;
+
+	if (m_pAttributes != NULL)
 	{
-		if (m_nSkin == COMBINE_SKIN_SHOTGUNNER)
+		UseSkins = m_pAttributes->GetBool("use_death_skins", 1);
+	}
+
+	if (UseSkins)
+	{
+		if (FClassnameIs(this, "npc_combine_p"))
 		{
-			if (m_nSkin != COMBINE_SKIN_SHOTGUNNER_DEAD)
+			if (m_nSkin == COMBINE_SKIN_SHOTGUNNER)
 			{
-				m_nSkin = COMBINE_SKIN_SHOTGUNNER_DEAD;
+				if (m_nSkin != COMBINE_SKIN_SHOTGUNNER_DEAD)
+				{
+					m_nSkin = COMBINE_SKIN_SHOTGUNNER_DEAD;
+				}
+			}
+			else
+			{
+				if (m_nSkin != COMBINE_SKIN_DEADADDITIONAL)
+				{
+					m_nSkin = COMBINE_SKIN_DEADADDITIONAL;
+				}
 			}
 		}
-		else
+		else if (FClassnameIs(this, "npc_combine_s"))
 		{
 			if (m_nSkin != COMBINE_SKIN_DEADADDITIONAL)
 			{
 				m_nSkin = COMBINE_SKIN_DEADADDITIONAL;
 			}
 		}
-	}
-	else if (FClassnameIs(this, "npc_combine_s"))
-	{
-		if (m_nSkin != COMBINE_SKIN_DEADADDITIONAL)
+		else if (!m_fIsPlayer)
 		{
-			m_nSkin = COMBINE_SKIN_DEADADDITIONAL;
-		}
-	}
-	else if (!m_fIsPlayer)
-	{
-		if (m_nSkin != COMBINE_SKIN_DEADDEFAULT)
-		{
-			m_nSkin = COMBINE_SKIN_DEADDEFAULT;
+			if (m_nSkin != COMBINE_SKIN_DEADDEFAULT)
+			{
+				m_nSkin = COMBINE_SKIN_DEADDEFAULT;
+			}
 		}
 	}
 

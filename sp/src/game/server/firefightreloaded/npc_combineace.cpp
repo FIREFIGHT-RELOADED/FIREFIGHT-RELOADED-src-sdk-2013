@@ -188,7 +188,7 @@ void CNPC_CombineAce::Spawn( void )
 	*/
 }
 
-void CNPC_CombineAce::LoadAttributes()
+void CNPC_CombineAce::LoadInitAttributes()
 {
 	if (m_pAttributes != NULL)
 	{
@@ -225,7 +225,7 @@ void CNPC_CombineAce::LoadAttributes()
 		}
 	}
 
-	BaseClass::LoadAttributes();
+	BaseClass::LoadInitAttributes();
 }
 
 //-----------------------------------------------------------------------------

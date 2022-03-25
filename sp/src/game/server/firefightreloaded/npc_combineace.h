@@ -42,7 +42,7 @@ class CNPC_CombineAce : public CNPC_Combine
 
 public: 
 	void		Spawn( void );
-	void		LoadAttributes(void);
+	void		LoadInitAttributes(void);
 	void		Precache( void );
 	void		DeathSound( const CTakeDamageInfo &info );
 	void		PrescheduleThink( void );
