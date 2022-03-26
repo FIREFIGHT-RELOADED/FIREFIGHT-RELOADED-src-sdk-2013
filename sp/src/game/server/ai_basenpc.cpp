@@ -6998,7 +6998,7 @@ void CAI_BaseNPC::NPCInit ( void )
 
 	m_EnemiesSerialNumber = -1;
 
-	if (ai_attributes.GetBool() && g_fr_spawneroldfunctionality.GetBool())
+	if (g_fr_spawneroldfunctionality.GetBool() && ai_attributes.GetBool())
 	{
 		m_pAttributes = LoadRandomNPCPresetFile(GetClassname());
 		LoadInitAttributes();
