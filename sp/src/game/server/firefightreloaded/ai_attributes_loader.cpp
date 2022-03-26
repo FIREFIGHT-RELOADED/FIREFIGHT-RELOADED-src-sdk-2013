@@ -5,11 +5,11 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
 
-ConVar ai_attributes_numpresets("ai_attributes_numpresets", "10", FCVAR_CHEAT);
-ConVar ai_attributes_chance("ai_attributes_chance", "10", FCVAR_CHEAT);
-ConVar ai_attributes("ai_attributes", "1", FCVAR_CHEAT);
+ConVar ai_attributes_numpresets("ai_attributes_numpresets", "10", FCVAR_ARCHIVE);
+ConVar ai_attributes_chance("ai_attributes_chance", "5", FCVAR_ARCHIVE);
+ConVar ai_attributes("ai_attributes", "1", FCVAR_ARCHIVE);
 
-CAIAttributesLoader *LoadNPCPresetFile(const char* className)
+CAIAttributesLoader *LoadRandomNPCPresetFile(const char* className)
 {
 	random->SetSeed(gpGlobals->curtime);
 	int randPreset = random->RandomInt(1, ai_attributes_numpresets.GetInt());
@@ -39,6 +39,18 @@ CAIAttributesLoader *LoadNPCPresetFile(const char* className)
 	}
 }
 
+CAIAttributesLoader* LoadNPCPresetFile(const char* className, int preset)
+{
+	CAIAttributesLoader* loader = new CAIAttributesLoader(className, preset);
+
+	if (!loader->loadedAttributes)
+	{
+		return NULL;
+	}
+
+	return loader;
+}
+
 CAIAttributesLoader::CAIAttributesLoader(const char *className, int preset)
 {
 	Init(className, preset);
@@ -66,6 +78,7 @@ void CAIAttributesLoader::Init(const char *className, int preset)
 	}
 	else
 	{
+		Warning("Failed to load attributes for %s on preset %i!! File may not exist.\n", className, preset);
 		loadedAttributes = false;
 	}
 	

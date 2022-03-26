@@ -29,5 +29,6 @@ private:
 extern ConVar ai_attributes_numpresets;
 extern ConVar ai_attributes_chance;
 extern ConVar ai_attributes;
-CAIAttributesLoader *LoadNPCPresetFile(const char* className);
+CAIAttributesLoader *LoadRandomNPCPresetFile(const char* className);
+CAIAttributesLoader *LoadNPCPresetFile(const char* className, int preset);
 #endif

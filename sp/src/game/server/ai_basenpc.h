@@ -521,6 +521,7 @@ public:
 	virtual bool 		CreateVPhysics();
 	virtual void		NPCInit( void ); // derived calls after Spawn()
 	virtual void		LoadInitAttributes(void);
+	virtual void		GiveAttributes(int preset);
 	void				NPCInitThink( void );
 	virtual void		PostNPCInit() {};// called after NPC_InitThink
 	virtual void		StartNPC( void );
@@ -1827,6 +1828,7 @@ public:
 	void InputForgetEntity( inputdata_t &inputdata );
 	void InputIgnoreDangerSounds( inputdata_t &inputdata );
 	void InputUpdateEnemyMemory( inputdata_t &inputdata );
+	void InputGiveAttributes(inputdata_t& inputdata);
 
 	//---------------------------------
 	

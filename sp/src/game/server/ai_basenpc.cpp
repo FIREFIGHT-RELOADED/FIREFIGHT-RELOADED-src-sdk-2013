@@ -6998,9 +6998,9 @@ void CAI_BaseNPC::NPCInit ( void )
 
 	m_EnemiesSerialNumber = -1;
 
-	if (ai_attributes.GetBool())
+	if (ai_attributes.GetBool() && g_fr_spawneroldfunctionality.GetBool())
 	{
-		m_pAttributes = LoadNPCPresetFile(GetClassname());
+		m_pAttributes = LoadRandomNPCPresetFile(GetClassname());
 		LoadInitAttributes();
 	}
 	else
@@ -7030,6 +7030,20 @@ void CAI_BaseNPC::LoadInitAttributes()
 		{
 			m_isRareEntity = rare;
 		}
+	}
+}
+
+void CAI_BaseNPC::GiveAttributes(int preset)
+{
+	m_pAttributes = LoadNPCPresetFile(GetClassname(), preset);
+
+	if (m_pAttributes == NULL)
+	{
+		Warning("Error: Cannot set NPC Attribute for %s on preset %i.\n", GetClassname(), preset);
+	}
+	else
+	{
+		LoadInitAttributes();
 	}
 }
 
@@ -10864,6 +10878,7 @@ BEGIN_DATADESC( CAI_BaseNPC )
 	DEFINE_INPUTFUNC( FIELD_VOID,	"UnholsterWeapon", InputUnholsterWeapon ),
 	DEFINE_INPUTFUNC( FIELD_STRING,	"ForceInteractionWithNPC", InputForceInteractionWithNPC ),
 	DEFINE_INPUTFUNC( FIELD_STRING, "UpdateEnemyMemory", InputUpdateEnemyMemory ),
+	DEFINE_INPUTFUNC(FIELD_INTEGER, "GiveAttributes", InputGiveAttributes ),
 
 	// Function pointers
 	DEFINE_USEFUNC( NPCUse ),
@@ -11780,6 +11795,12 @@ void CAI_BaseNPC::InputUpdateEnemyMemory( inputdata_t &inputdata )
 	{
 		UpdateEnemyMemory( pEnemy, pEnemy->GetAbsOrigin(), this );
 	}
+}
+
+void CAI_BaseNPC::InputGiveAttributes(inputdata_t& inputdata)
+{
+	int preset = inputdata.value.Int();
+	GiveAttributes(preset);
 }
 
 //-----------------------------------------------------------------------------

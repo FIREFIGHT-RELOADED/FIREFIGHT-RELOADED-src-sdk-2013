@@ -1085,6 +1085,33 @@ CON_COMMAND( ai_test_los, "Test AI LOS from the player's POV" )
 	NDebugOverlay::Cross3D( tr.endpos, 24, 255, 255, 255, true, 5 );
 }
 
+//------------------------------------------------------------------------------
+// Purpose: 
+//------------------------------------------------------------------------------
+void CC_NPC_Attributes(const CCommand& args)
+{
+	if (!UTIL_IsCommandIssuedByServerAdmin())
+		return;
+
+	int preset = 1;
+
+	if (args.ArgC() > 1)
+	{
+		preset = atoi(args[1]);
+	}
+
+	CBaseEntity* pEntity = FindPickerEntity(UTIL_GetCommandClient());
+	if (pEntity)
+	{
+		CAI_BaseNPC* pNPC = pEntity->MyNPCPointer();
+		if (pNPC)
+		{
+			pNPC->GiveAttributes(preset);
+		}
+	}
+}
+static ConCommand npc_giveattributes("npc_giveattributes", CC_NPC_Attributes, "", FCVAR_CHEAT);
+
 #ifdef VPROF_ENABLED
 
 CON_COMMAND(ainet_generate_report, "Generate a report to the console.")
