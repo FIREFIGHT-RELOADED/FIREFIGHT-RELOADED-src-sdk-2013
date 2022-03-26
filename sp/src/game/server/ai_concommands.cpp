@@ -580,7 +580,7 @@ CON_COMMAND_F_COMPLETION(npc_create_equipment, "Equipment for an NPC to be equip
 //------------------------------------------------------------------------------
 // Purpose: Create an NPC of the given type
 //------------------------------------------------------------------------------
-CON_COMMAND_F_COMPLETION(npc_create, "Creates an NPC of the given type where the player is looking (if the given NPC can actually stand at that location).  Note that this only works for npc classes that are already in the world.  You can not create an entity that doesn't have an instance in the level.\n\tArguments:	{npc_class_name}", FCVAR_CHEAT, CreateAutocomplete)
+CON_COMMAND_F_COMPLETION(npc_create, "Creates an NPC of the given type where the player is looking (if the given NPC can actually stand at that location).  Note that this only works for npc classes that are already in the world.  You can not create an entity that doesn't have an instance in the level.\n\tArguments: {npc_class_name} {npc_attribute_preset} {entity_name}", FCVAR_CHEAT, CreateAutocomplete)
 {
 	MDLCACHE_CRITICAL_SECTION();
 
@@ -607,12 +607,18 @@ CON_COMMAND_F_COMPLETION(npc_create, "Creates an NPC of the given type where the
 		baseNPC->KeyValue("additionalequipment", npc_create_equipment_cvar.GetString());
 		baseNPC->Precache();
 
-		if ( args.ArgC() == 3 )
+		if ( args.ArgC() == 4 )
 		{
-			baseNPC->SetName( AllocPooledString( args[2] ) );
+			baseNPC->SetName( AllocPooledString( args[3] ) );
 		}
 
 		DispatchSpawn(baseNPC);
+
+		if (args.ArgC() >= 3)
+		{
+			baseNPC->GiveAttributes(atoi(args[2]));
+		}
+
 		// Now attempt to drop into the world
 		CBasePlayer* pPlayer = UTIL_GetCommandClient();
 		trace_t tr;

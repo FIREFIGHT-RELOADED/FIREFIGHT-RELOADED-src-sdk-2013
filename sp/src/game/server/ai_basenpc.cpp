@@ -7039,7 +7039,7 @@ void CAI_BaseNPC::GiveAttributes(int preset)
 
 	if (m_pAttributes == NULL)
 	{
-		Warning("Error: Cannot set NPC Attribute for %s on preset %i.\n", GetClassname(), preset);
+		Warning("Error: Cannot set NPC Attribute for %s.\n", GetClassname(), preset);
 	}
 	else
 	{
