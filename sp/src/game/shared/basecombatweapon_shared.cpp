@@ -2451,7 +2451,7 @@ void CBaseCombatWeapon::CheckReload( void )
 				// Add them to the clip
 				m_iClip1 += 1;
 
-				if (!pOwner->m_iPerkInfiniteAmmo == 1)
+				if (pOwner->m_iPerkInfiniteAmmo != 1)
 				{
 					pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
 				}
@@ -2503,7 +2503,9 @@ void CBaseCombatWeapon::FinishReload( void )
 
 					if (pOwner->IsPlayer())
 					{
-						if (!((CBasePlayer *)pOwner)->m_iPerkInfiniteAmmo == 1)
+						CBasePlayer* pPlayer = ToBasePlayer(pOwner);
+
+						if (pPlayer && pPlayer->m_iPerkInfiniteAmmo != 1)
 						{
 							pOwner->RemoveAmmo(m_bMagazineStyleReloads ? GetMaxClip1() : primary, m_iPrimaryAmmoType);
 						}
@@ -2515,7 +2517,9 @@ void CBaseCombatWeapon::FinishReload( void )
 
 					if (pOwner->IsPlayer())
 					{
-						if (!((CBasePlayer *)pOwner)->m_iPerkInfiniteAmmo == 1)
+						CBasePlayer* pPlayer = ToBasePlayer(pOwner);
+
+						if (pPlayer && pPlayer->m_iPerkInfiniteAmmo != 1)
 						{
 							pOwner->RemoveAmmo(GetMaxClip1(), m_iPrimaryAmmoType);
 						}
@@ -2528,7 +2532,9 @@ void CBaseCombatWeapon::FinishReload( void )
 
 				if (pOwner->IsPlayer())
 				{
-					if (!((CBasePlayer *)pOwner)->m_iPerkInfiniteAmmo == 1)
+					CBasePlayer* pPlayer = ToBasePlayer(pOwner);
+
+					if (pPlayer && pPlayer->m_iPerkInfiniteAmmo != 1)
 					{
 						pOwner->RemoveAmmo(primary, m_iPrimaryAmmoType);
 					}

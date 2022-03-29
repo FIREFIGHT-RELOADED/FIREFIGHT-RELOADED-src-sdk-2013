@@ -25,6 +25,9 @@
 extern ConVar sk_auto_reload_time;
 extern ConVar sk_plr_num_shotgun_pellets;
 
+ConVar	sv_combine_secondaryfire("sv_combine_secondaryfire", "1", FCVAR_ARCHIVE);
+ConVar	sv_combine_secondaryfire_chance("sv_combine_secondaryfire_chance", "5", FCVAR_CHEAT);
+
 class CWeaponShotgun : public CBaseHLCombatWeapon
 {
 	DECLARE_DATADESC();
@@ -88,7 +91,7 @@ public:
 	void SecondaryAttack( void );
 	void DryFire( void );
 
-	void FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, bool bUseWeaponAngles );
+	void FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, bool bUseWeaponAngles, bool secondary );
 	void Operator_ForceNPCFire( CBaseCombatCharacter  *pOperator, bool bSecondary );
 	void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
 
@@ -179,14 +182,30 @@ void CWeaponShotgun::Precache( void )
 // Purpose: 
 // Input  : *pOperator - 
 //-----------------------------------------------------------------------------
-void CWeaponShotgun::FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, bool bUseWeaponAngles )
+void CWeaponShotgun::FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, bool bUseWeaponAngles, bool bSecondary)
 {
 	Vector vecShootOrigin, vecShootDir;
 	CAI_BaseNPC *npc = pOperator->MyNPCPointer();
 	ASSERT( npc != NULL );
-	WeaponSound( SINGLE_NPC );
+	if (bSecondary)
+	{
+		WeaponSound(DOUBLE_NPC);
+	}
+	else
+	{
+		WeaponSound(SINGLE_NPC);
+	}
+
 	pOperator->DoMuzzleFlash();
-	m_iClip1 = m_iClip1 - 1;
+
+	if (bSecondary)
+	{
+		m_iClip1 = m_iClip1 - 2;
+	}
+	else
+	{
+		m_iClip1 = m_iClip1 - 1;
+	}
 
 	if ( bUseWeaponAngles )
 	{
@@ -200,7 +219,52 @@ void CWeaponShotgun::FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, bool
 		vecShootDir = npc->GetActualShootTrajectory( vecShootOrigin );
 	}
 
-	pOperator->FireBullets( 8, vecShootOrigin, vecShootDir, GetBulletSpread(), MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 0 );
+	if (bSecondary)
+	{
+		pOperator->FireBullets(16, vecShootOrigin, vecShootDir, GetBulletSpread(), MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 0);
+	}
+	else
+	{
+		pOperator->FireBullets(8, vecShootOrigin, vecShootDir, GetBulletSpread(), MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 0);
+	}
+}
+
+bool CanUseSecondaryFire(CBaseCombatCharacter* pOperator)
+{
+	// hate hacks.
+	return sv_combine_secondaryfire.GetBool() && 
+		//enemies get advantage on higher difficuties.
+		(g_pGameRules->GetSkillLevel() >= SKILL_VERYHARD &&
+		(FClassnameIs(pOperator, "npc_combine_p") || 
+		FClassnameIs(pOperator, "npc_combine_shot") || 
+		FClassnameIs(pOperator, "npc_combine_ace"))) ||
+		//playerbot gets advantage on lower difficuties.
+		(g_pGameRules->GetSkillLevel() < SKILL_VERYHARD &&
+		FClassnameIs(pOperator, "npc_playerbot"));
+}
+
+bool ShouldUseSecondaryFire(CBaseCombatCharacter* pOperator)
+{
+	bool fireSecondary = false;
+
+	if (sv_combine_secondaryfire.GetBool())
+	{
+		if (pOperator->IsNPC() && CanUseSecondaryFire(pOperator))
+		{
+			CAI_BaseNPC* pNPC = pOperator->MyNPCPointer();
+
+			if (!pNPC->IsMoving())
+			{
+				fireSecondary = true;
+			}
+			else
+			{
+				fireSecondary = (random->RandomInt(0, sv_combine_secondaryfire.GetInt()) == sv_combine_secondaryfire.GetInt() ? true : false);
+			}
+		}
+	}
+
+	return fireSecondary;
 }
 
 //-----------------------------------------------------------------------------
@@ -211,7 +275,7 @@ void CWeaponShotgun::Operator_ForceNPCFire( CBaseCombatCharacter *pOperator, boo
 	// Ensure we have enough rounds in the clip
 	m_iClip1++;
 
-	FireNPCPrimaryAttack( pOperator, true );
+	FireNPCPrimaryAttack( pOperator, true, ShouldUseSecondaryFire(pOperator));
 }
 
 //-----------------------------------------------------------------------------
@@ -225,7 +289,7 @@ void CWeaponShotgun::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatC
 	{
 		case EVENT_WEAPON_SHOTGUN_FIRE:
 		{
-			FireNPCPrimaryAttack( pOperator, false );
+			FireNPCPrimaryAttack( pOperator, false, ShouldUseSecondaryFire(pOperator));
 		}
 		break;
 
@@ -250,7 +314,9 @@ void CWeaponShotgun::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatC
 //-----------------------------------------------------------------------------
 float CWeaponShotgun::GetMinRestTime()
 {
-	if( hl2_episodic.GetBool() && GetOwner() && GetOwner()->Classify() == CLASS_COMBINE )
+	CBaseCombatCharacter* pOwner = GetOwner();
+
+	if( hl2_episodic.GetBool() && pOwner && pOwner->IsNPC() && pOwner->Classify() == CLASS_COMBINE )
 	{
 		return 1.2f;
 	}
@@ -262,7 +328,9 @@ float CWeaponShotgun::GetMinRestTime()
 //-----------------------------------------------------------------------------
 float CWeaponShotgun::GetMaxRestTime()
 {
-	if( hl2_episodic.GetBool() && GetOwner() && GetOwner()->Classify() == CLASS_COMBINE )
+	CBaseCombatCharacter* pOwner = GetOwner();
+
+	if( hl2_episodic.GetBool() && pOwner && pOwner->IsNPC() && pOwner->Classify() == CLASS_COMBINE )
 	{
 		return 1.5f;
 	}
@@ -276,12 +344,14 @@ float CWeaponShotgun::GetMaxRestTime()
 //-----------------------------------------------------------------------------
 float CWeaponShotgun::GetFireRate()
 {
-	if( hl2_episodic.GetBool() && GetOwner() && GetOwner()->Classify() == CLASS_COMBINE )
+	CBaseCombatCharacter* pOwner = GetOwner();
+
+	if( hl2_episodic.GetBool() && pOwner && pOwner->IsNPC() && pOwner->Classify() == CLASS_COMBINE )
 	{
 		return 0.8f;
 	}
 
-	if (m_iFireMode == 1 && GetOwner()->Classify() == CLASS_PLAYER)
+	if (m_iFireMode == 1 && pOwner->IsPlayer())
 	{
 		return 0.3f;
 	}
@@ -429,7 +499,9 @@ void CWeaponShotgun::FillClip( void )
 
 			if (pOwner->IsPlayer())
 			{
-				if (!((CBasePlayer *)pOwner)->m_iPerkInfiniteAmmo == 1)
+				CBasePlayer* pPlayer = ToBasePlayer(pOwner);
+
+				if (pPlayer && pPlayer->m_iPerkInfiniteAmmo != 1)
 				{
 					pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
 				}
