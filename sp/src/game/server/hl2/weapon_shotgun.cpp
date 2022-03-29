@@ -231,16 +231,20 @@ void CWeaponShotgun::FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, bool
 
 bool CanUseSecondaryFire(CBaseCombatCharacter* pOperator)
 {
+	CAI_BaseNPC* npc = pOperator->MyNPCPointer();
 	// hate hacks.
-	return sv_combine_secondaryfire.GetBool() && 
+	return (sv_combine_secondaryfire.GetBool() && 
 		//enemies get advantage on higher difficuties.
-		(g_pGameRules->GetSkillLevel() >= SKILL_VERYHARD &&
+		(g_pGameRules->GetSkillLevel() >= SKILL_HARD &&
 		(FClassnameIs(pOperator, "npc_combine_p") || 
 		FClassnameIs(pOperator, "npc_combine_shot") || 
 		FClassnameIs(pOperator, "npc_combine_ace"))) ||
 		//playerbot gets advantage on lower difficuties.
-		(g_pGameRules->GetSkillLevel() < SKILL_VERYHARD &&
-		FClassnameIs(pOperator, "npc_playerbot"));
+		(g_pGameRules->GetSkillLevel() <= SKILL_HARD &&
+		FClassnameIs(pOperator, "npc_playerbot"))) ||
+		// npc gets an attribute to do so
+		(npc && npc->m_pAttributes != NULL && 
+		npc->m_pAttributes->GetBool("use_shotgun_secondary"));
 }
 
 bool ShouldUseSecondaryFire(CBaseCombatCharacter* pOperator)
