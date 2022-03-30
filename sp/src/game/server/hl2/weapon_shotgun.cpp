@@ -25,8 +25,8 @@
 extern ConVar sk_auto_reload_time;
 extern ConVar sk_plr_num_shotgun_pellets;
 
-ConVar	sv_combine_secondaryfire("sv_combine_secondaryfire", "1", FCVAR_ARCHIVE);
-ConVar	sv_combine_secondaryfire_chance("sv_combine_secondaryfire_chance", "5", FCVAR_CHEAT);
+ConVar	sv_combine_shotgunner_secondaryfire("sv_combine_shotgunner_secondaryfire", "1", FCVAR_ARCHIVE);
+ConVar	sv_combine_shotgunner_secondaryfire_chance("sv_combine_shotgunner_secondaryfire_chance", "5", FCVAR_CHEAT);
 
 class CWeaponShotgun : public CBaseHLCombatWeapon
 {
@@ -233,25 +233,25 @@ bool CanUseSecondaryFire(CBaseCombatCharacter* pOperator)
 {
 	CAI_BaseNPC* npc = pOperator->MyNPCPointer();
 	// hate hacks.
-	return (sv_combine_secondaryfire.GetBool() && 
+	// npc gets an attribute to do so
+	return (npc && npc->m_pAttributes != NULL &&
+		npc->m_pAttributes->GetBool("use_shotgun_secondary")) 
 		//enemies get advantage on higher difficuties.
+		|| (sv_combine_shotgunner_secondaryfire.GetBool() &&
 		(g_pGameRules->GetSkillLevel() >= SKILL_HARD &&
 		(FClassnameIs(pOperator, "npc_combine_p") || 
 		FClassnameIs(pOperator, "npc_combine_shot") || 
 		FClassnameIs(pOperator, "npc_combine_ace"))) ||
 		//playerbot gets advantage on lower difficuties.
 		(g_pGameRules->GetSkillLevel() <= SKILL_HARD &&
-		FClassnameIs(pOperator, "npc_playerbot"))) ||
-		// npc gets an attribute to do so
-		(npc && npc->m_pAttributes != NULL && 
-		npc->m_pAttributes->GetBool("use_shotgun_secondary"));
+		FClassnameIs(pOperator, "npc_playerbot")));
 }
 
 bool ShouldUseSecondaryFire(CBaseCombatCharacter* pOperator)
 {
 	bool fireSecondary = false;
 
-	if (sv_combine_secondaryfire.GetBool())
+	if (sv_combine_shotgunner_secondaryfire.GetBool())
 	{
 		if (pOperator->IsNPC() && CanUseSecondaryFire(pOperator))
 		{
@@ -263,7 +263,8 @@ bool ShouldUseSecondaryFire(CBaseCombatCharacter* pOperator)
 			}
 			else
 			{
-				fireSecondary = (random->RandomInt(0, sv_combine_secondaryfire.GetInt()) == sv_combine_secondaryfire.GetInt() ? true : false);
+				int chanceVal = sv_combine_shotgunner_secondaryfire_chance.GetInt();
+				fireSecondary = (random->RandomInt(0, chanceVal) == chanceVal ? true : false);
 			}
 		}
 	}
@@ -277,9 +278,18 @@ bool ShouldUseSecondaryFire(CBaseCombatCharacter* pOperator)
 void CWeaponShotgun::Operator_ForceNPCFire( CBaseCombatCharacter *pOperator, bool bSecondary )
 {
 	// Ensure we have enough rounds in the clip
-	m_iClip1++;
+	bool bShouldSecondaryFire = ShouldUseSecondaryFire(pOperator);
 
-	FireNPCPrimaryAttack( pOperator, true, ShouldUseSecondaryFire(pOperator));
+	if (bShouldSecondaryFire)
+	{
+		m_iClip1 += 2;
+	}
+	else
+	{
+		m_iClip1 += 1;
+	}
+
+	FireNPCPrimaryAttack( pOperator, true, bShouldSecondaryFire);
 }
 
 //-----------------------------------------------------------------------------
