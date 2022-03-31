@@ -60,9 +60,6 @@ DEFINE_FIELD(m_fTimeLastHurt, FIELD_TIME),
 DEFINE_FIELD(m_fTimeLastHealed, FIELD_TIME),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST(CNPC_Player, DT_NPC_Player)
-END_SEND_TABLE()
-
 #define	PLAYERNPC_FASTEST_SWITCH_TIME 5.0f
 const int MAX_PLAYER_SQUAD = 4;
 
@@ -129,7 +126,7 @@ void CNPC_Player::Spawn( void )
 
 	//Give him a random amount of grenades on spawn
 	m_iNumGrenades = random->RandomInt(3, 5);
-	AddGlowEffect();
+	GiveOutline(Vector(26, 77, 153));
 
 	m_fIsPlayer = true;
 	m_fIsAce = true;

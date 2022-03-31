@@ -522,6 +522,7 @@ public:
 	virtual void		NPCInit( void ); // derived calls after Spawn()
 	virtual void		LoadInitAttributes(void);
 	virtual void		GiveAttributes(int preset);
+	virtual void		GiveOutline(Vector& outlineColor);
 	void				NPCInitThink( void );
 	virtual void		PostNPCInit() {};// called after NPC_InitThink
 	virtual void		StartNPC( void );
@@ -1397,7 +1398,7 @@ private:
 	CSimpleSimTimer		m_CheckOnGroundTimer;
 
 public:
-	CAIAttributesLoader* m_pAttributes;
+	CAttributesLoader* m_pAttributes;
 	//-----------------------------------------------------
 	//
 	// Eye position, view offset, head direction, eye direction
@@ -2115,6 +2116,7 @@ public:
 	CNetworkVar( bool,	m_bIsMoving );
 	CNetworkVar( bool,  m_bFadeCorpse );
 	CNetworkVar( bool,  m_bImportanRagdoll );
+	CNetworkVector(m_vOutlineColor);
 
 	CNetworkVar( bool,  m_bSpeedModActive );
 	CNetworkVar( int,   m_iSpeedModRadius );
@@ -2259,7 +2261,7 @@ inline void CAI_BaseNPC::ResetScheduleCurTaskIndex()
 //-----------------------------------------------------------------------------
 inline bool CAI_BaseNPC::CrouchIsDesired( void ) const
 {
-	return ( (CapabilitiesGet() & bits_CAP_DUCK) && (m_bCrouchDesired | m_bForceCrouch) );
+	return ( (CapabilitiesGet() & bits_CAP_DUCK) && (m_bCrouchDesired || m_bForceCrouch) );
 }
 
 //-----------------------------------------------------------------------------

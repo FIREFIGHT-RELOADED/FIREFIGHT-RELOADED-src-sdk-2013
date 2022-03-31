@@ -168,11 +168,6 @@ $Project "Client (FR)"
 			
 			$Folder	"NPCs"
 			{
-				$Folder	"Bot"
-				{
-					$File	"firefightreloaded\c_npc_player.cpp"
-				}
-				
 				$File	"firefightreloaded\c_combineguard.cpp"
 				$File	"firefightreloaded\c_npc_antlionguardian.cpp"
 			}

@@ -7004,9 +7004,9 @@ void CAI_BaseNPC::NPCInit ( void )
 
 	m_EnemiesSerialNumber = -1;
 
-	if (g_fr_spawneroldfunctionality.GetBool() && ai_attributes.GetBool())
+	if (g_fr_spawneroldfunctionality.GetBool() && entity_attributes.GetBool())
 	{
-		m_pAttributes = LoadRandomNPCPresetFile(GetClassname());
+		m_pAttributes = LoadRandomPresetFile(GetClassname());
 		LoadInitAttributes();
 	}
 	else
@@ -7036,12 +7036,21 @@ void CAI_BaseNPC::LoadInitAttributes()
 		{
 			m_isRareEntity = rare;
 		}
+
+		bool showOutlines = m_pAttributes->GetBool("has_outlines", 0);
+
+		if (showOutlines)
+		{
+			//we can't transfer Color objects through the server, so we use Vectors.
+			Vector outlineColor = m_pAttributes->GetVector("outline_color");
+			GiveOutline(outlineColor);
+		}
 	}
 }
 
 void CAI_BaseNPC::GiveAttributes(int preset)
 {
-	m_pAttributes = LoadNPCPresetFile(GetClassname(), preset);
+	m_pAttributes = LoadPresetFile(GetClassname(), preset);
 
 	if (m_pAttributes == NULL)
 	{
@@ -7051,6 +7060,17 @@ void CAI_BaseNPC::GiveAttributes(int preset)
 	{
 		LoadInitAttributes();
 	}
+}
+
+void CAI_BaseNPC::GiveOutline(Vector& outlineColor)
+{
+	if (m_bGlowEnabled)
+	{
+		RemoveGlowEffect();
+	}
+
+	m_vOutlineColor = outlineColor;
+	AddGlowEffect();
 }
 
 //-----------------------------------------------------------------------------
@@ -10806,6 +10826,7 @@ BEGIN_DATADESC( CAI_BaseNPC )
 	DEFINE_FIELD( m_bPerformAvoidance,			FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bIsMoving,					FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bFadeCorpse,				FIELD_BOOLEAN ),
+	DEFINE_FIELD(m_vOutlineColor,				FIELD_VECTOR),
 	DEFINE_FIELD( m_iDeathPose,					FIELD_INTEGER ),
 	DEFINE_FIELD( m_iDeathFrame,				FIELD_INTEGER ),
 	DEFINE_FIELD( m_bCheckContacts,				FIELD_BOOLEAN ),
@@ -10912,6 +10933,7 @@ IMPLEMENT_SERVERCLASS_ST( CAI_BaseNPC, DT_AI_BaseNPC )
 	SendPropBool( SENDINFO( m_bPerformAvoidance ) ),
 	SendPropBool( SENDINFO( m_bIsMoving ) ),
 	SendPropBool( SENDINFO( m_bFadeCorpse ) ),
+	SendPropVector(SENDINFO(m_vOutlineColor) ),
 	SendPropInt( SENDINFO( m_iDeathPose ), ANIMATION_SEQUENCE_BITS ),
 	SendPropInt( SENDINFO( m_iDeathFrame ), 5 ),
 	SendPropBool( SENDINFO( m_bSpeedModActive ) ),

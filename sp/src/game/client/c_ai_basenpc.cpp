@@ -17,6 +17,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+static ConVar npc_gloweffect("npc_gloweffect", "1", FCVAR_ARCHIVE);
+
 #define PING_MAX_TIME	2.0
 
 IMPLEMENT_CLIENTCLASS_DT( C_AI_BaseNPC, DT_AI_BaseNPC, CAI_BaseNPC )
@@ -24,6 +26,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_AI_BaseNPC, DT_AI_BaseNPC, CAI_BaseNPC )
 	RecvPropBool( RECVINFO( m_bPerformAvoidance ) ),
 	RecvPropBool( RECVINFO( m_bIsMoving ) ),
 	RecvPropBool( RECVINFO( m_bFadeCorpse ) ),
+	RecvPropVector(RECVINFO(m_vOutlineColor)),
 	RecvPropInt( RECVINFO ( m_iDeathPose) ),
 	RecvPropInt( RECVINFO( m_iDeathFrame) ),
 	RecvPropInt( RECVINFO( m_iSpeedModRadius ) ),
@@ -143,8 +146,26 @@ void C_AI_BaseNPC::ClientThink( void )
 #endif
 }
 
+void C_AI_BaseNPC::GetGlowEffectColor(float* r, float* g, float* b)
+{
+	float vr = m_vOutlineColor.x / 255;
+	float vg = m_vOutlineColor.y / 255;
+	float vb = m_vOutlineColor.z / 255;
+
+	*r = vr;
+	*g = vg;
+	*b = vb;
+}
+
 void C_AI_BaseNPC::OnDataChanged( DataUpdateType_t type )
 {
+	if (IsAlive() && npc_gloweffect.GetBool())
+	{
+		float r, g, b;
+		GetGlowEffectColor(&r, &g, &b);
+		UpdateGlowEffect(Vector(r, g, b), 1.0);
+	}
+
 	BaseClass::OnDataChanged( type );
 
 	if ( ( ShouldModifyPlayerSpeed() == true ) || ( m_flTimePingEffect > gpGlobals->curtime ) )

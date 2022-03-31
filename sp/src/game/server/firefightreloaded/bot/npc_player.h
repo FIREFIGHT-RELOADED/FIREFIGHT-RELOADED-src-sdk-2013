@@ -26,7 +26,6 @@
 class CNPC_Player : public CNPC_Combine
 {
 	DECLARE_CLASS( CNPC_Player, CNPC_Combine );
-	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 
 public: 
