@@ -1,3 +1,3 @@
 @echo off
-devtools\bin\vpc.exe /fr +game /mksln firefight.sln
+devtools\bin\vpc.exe /fr +gameandtools /mksln firefight.sln
 pause

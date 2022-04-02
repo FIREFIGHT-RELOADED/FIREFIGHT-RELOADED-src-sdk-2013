@@ -57,9 +57,9 @@
 // Common limits
 // leaffaces, leafbrushes, planes, and verts are still bounded by
 // 16 bit short limits
-#define	MAX_MAP_MODELS					1024
-#define	MAX_MAP_BRUSHES					8192
-#define	MAX_MAP_ENTITIES				8192
+#define	MAX_MAP_MODELS					1024 //1024
+#define	MAX_MAP_BRUSHES					11264 //8192
+#define	MAX_MAP_ENTITIES				8192 //8192
 #define	MAX_MAP_TEXINFO					12288
 #define MAX_MAP_TEXDATA					2048
 #define MAX_MAP_DISPINFO				2048

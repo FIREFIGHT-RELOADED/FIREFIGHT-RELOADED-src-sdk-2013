@@ -6,9 +6,10 @@
 	type		singleplayer_only
 	supportsvr	1
 	gamelogo 0
-	developer	"Bitl & Cobalt-57"
+	developer	"Bitl Development Studios & Cobalt-57"
 	developer_url	"http://steamcommunity.com/id/bitl/"
 	manual		""
+	GameData	"firefightreloaded.fgd"
 	icon		"resource/game"
 	hidden_maps
 	{
@@ -60,7 +61,8 @@
 			game+mod			|all_source_engine_paths|firefightreloaded_dlc/cstrike/*
 			game+mod			|all_source_engine_paths|firefightreloaded_dlc/dod/*
 			//We need this to load any shared files the DLCs need.
-			game+mod			|all_source_engine_paths|firefightreloaded_dlc/dlc_shared/*
+			game+mod			|all_source_engine_paths|firefightreloaded_dlc/dlc_shared/cstrike_shared.vpk
+			game+mod			|all_source_engine_paths|firefightreloaded_dlc/dlc_shared/dod_shared.vpk
 			game+mod+mod_write+default_write_path		|gameinfo_path|.
 			
 			//Call the VPK
@@ -71,18 +73,13 @@
 			// in folders where they don't exist.  (Searching a VPK is much faster than making an operating
 			// system call.)
 			// this VPK was made so we can load the contents of hl2mp without any config overrides.
-			game+mod			|all_source_engine_paths|sourcebase/hl2mp_shared.vpk
-			//game+mod			|all_source_engine_paths|sourcebase/episodic_shared/ep2.vpk
-			//game+mod			|all_source_engine_paths|sourcebase/episodic_shared/episodic.vpk
-			//this VPK was made so we could lower the file space. previously we used the files above and they added 
-			//3-4 WHOLE gigabytes to the game, making it a WHOPPING 9 GIGABYTES! This method decreases the file size 
-			//by half, while still providing the episodic NPCs.
-			game+mod			|all_source_engine_paths|sourcebase/episodic_content.vpk
-			game				|all_source_engine_paths|sourcebase/main/hl2_textures.vpk
-			game				|all_source_engine_paths|sourcebase/main/hl2_sound_vo_english.vpk
-			game				|all_source_engine_paths|sourcebase/main/hl2_sound_misc.vpk
-			game				|all_source_engine_paths|sourcebase/main/hl2_misc.vpk
-			platform			|all_source_engine_paths|platform/platform_misc.vpk
+			game+mod			|all_source_engine_paths|base/hl2mp_shared.vpk
+			game+mod			|all_source_engine_paths|base/episodic_content.vpk
+			game				|all_source_engine_paths|base/main/hl2_textures.vpk
+			game				|all_source_engine_paths|base/main/hl2_sound_vo_english.vpk
+			game				|all_source_engine_paths|base/main/hl2_sound_misc.vpk
+			game				|all_source_engine_paths|base/main/hl2_misc.vpk
+			platform			|all_source_engine_paths|base/platform/platform_misc.vpk
 
 			// Add the HL2 directory as a game search path.  This is also where where writes
 			// to the "game" path go.
@@ -92,9 +89,9 @@
 			gamebin				|gameinfo_path|bin
 			
 			// Last, mount in shared HL2 loose files
-			game				|all_source_engine_paths|sourcebase/episodic_shared
-			game				|all_source_engine_paths|sourcebase/main
-			platform			|all_source_engine_paths|platform
+			game				|all_source_engine_paths|base/episodic_shared
+			game				|all_source_engine_paths|base/main
+			platform			|all_source_engine_paths|base/platform
 		}
 	}
 }

@@ -25,6 +25,23 @@ $Group "game"
 	//"game_shader_dx9"
 }
 
+$Group "gameandtools"
+{
+	"client"
+	"mathlib"
+	"raytrace"
+	"server"
+	"tier1"
+	"vgui_controls"
+	//tools
+	"fgdlib"
+	"vbsp"
+	"vrad_dll"
+	"vrad_launcher"
+	"vvis_dll"
+	"vvis_launcher"
+}
+
 $Group "shaders"
 {
 	"game_shader_dx9"
