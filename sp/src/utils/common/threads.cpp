@@ -19,7 +19,7 @@
 #include "threads.h"
 #include "pacifier.h"
 
-#define	MAX_THREADS	256
+#define	MAX_THREADS	16
 
 
 class CRunThreadsData
