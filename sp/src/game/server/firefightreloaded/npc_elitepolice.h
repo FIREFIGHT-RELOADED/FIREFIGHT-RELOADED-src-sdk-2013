@@ -63,6 +63,7 @@ public:
 protected:
 	/// whether to use the more casual march anim in ep2_outland_05
 	int			m_iUseMarch;
+	bool		m_bNoDeathSound;
 #endif
 
 };

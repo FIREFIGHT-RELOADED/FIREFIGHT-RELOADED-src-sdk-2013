@@ -2528,6 +2528,9 @@ void CNPC_MetroPolice::AlertSound( void )
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::DeathSound( const CTakeDamageInfo &info )
 {
+	if (m_bNoDeathSound)
+		return;
+
 	if ( IsOnFire() )
 		return;
 
@@ -4406,6 +4409,7 @@ float CNPC_MetroPolice::GetHitgroupDamageMultiplier(int iHitGroup, const CTakeDa
 				CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p3.mdl", 6);
 				CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p4.mdl", 6);
 				EmitSound("Gore.Headshot");
+				m_bNoDeathSound = true;
 				m_iHealth = 0;
 				Event_Killed(info);
 				g_pGameRules->iHeadshotCount += 1;
@@ -4419,7 +4423,7 @@ float CNPC_MetroPolice::GetHitgroupDamageMultiplier(int iHitGroup, const CTakeDa
 					pPlayer->AddXP(7);
 				}
 			}
-			else if ((info.GetDamageType() & (DMG_SLASH)) && !(info.GetDamageType() & DMG_NEVERGIB) && bShouldDamage)
+			else if ((info.GetDamageType() & (DMG_SLASH)) && !(info.GetDamageType() & DMG_NEVERGIB))
 			{
 				SetModel("models/gibs/police_beheaded.mdl");
 
@@ -4444,6 +4448,7 @@ float CNPC_MetroPolice::GetHitgroupDamageMultiplier(int iHitGroup, const CTakeDa
 
 				CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p4.mdl", 6);
 				EmitSound("Gore.Headshot");
+				m_bNoDeathSound = true;
 				m_iHealth = 0;
 				Event_Killed(info);
 				CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);

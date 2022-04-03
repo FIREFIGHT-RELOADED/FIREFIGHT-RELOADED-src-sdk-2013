@@ -2919,7 +2919,7 @@ void CNPC_Combine::NotifyDeadFriend ( CBaseEntity* pFriend )
 //=========================================================
 // DeathSound 
 //=========================================================
-void CNPC_Combine::DeathSound ( void )
+void CNPC_Combine::DeathSound (const CTakeDamageInfo& info)
 {
 	if (m_fIsPoliceRank || m_fIsPlayer)
 		return;

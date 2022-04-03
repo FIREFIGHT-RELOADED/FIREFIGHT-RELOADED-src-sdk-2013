@@ -134,6 +134,9 @@ void CNPC_CombineShot::DeathSound(const CTakeDamageInfo &info)
 	if ( GetFlags() & FL_DISSOLVING )
 		return;
 
+	if (m_bNoDeathSound)
+		return;
+
 	if (IsOnFire())
 		return;
 
@@ -240,6 +243,7 @@ float CNPC_CombineShot::GetHitgroupDamageMultiplier(int iHitGroup, const CTakeDa
 				CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p3.mdl", 6);
 				CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p4.mdl", 6);
 				EmitSound("Gore.Headshot");
+				m_bNoDeathSound = true;
 				m_iHealth = 0;
 				Event_Killed(info);
 				g_pGameRules->iHeadshotCount += 1;
@@ -253,7 +257,7 @@ float CNPC_CombineShot::GetHitgroupDamageMultiplier(int iHitGroup, const CTakeDa
 					pPlayer->AddXP(7);
 				}
 			}
-			else if ((info.GetDamageType() & (DMG_SLASH)) && !(info.GetDamageType() & DMG_NEVERGIB) && bShouldDamage)
+			else if ((info.GetDamageType() & (DMG_SLASH)) && !(info.GetDamageType() & DMG_NEVERGIB))
 			{
 				SetModel("models/gibs/combine_shotgunner_beheaded.mdl");
 
@@ -278,6 +282,7 @@ float CNPC_CombineShot::GetHitgroupDamageMultiplier(int iHitGroup, const CTakeDa
 
 				CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p4.mdl", 6);
 				EmitSound("Gore.Headshot");
+				m_bNoDeathSound = true;
 				m_iHealth = 0;
 				Event_Killed(info);
 				CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
