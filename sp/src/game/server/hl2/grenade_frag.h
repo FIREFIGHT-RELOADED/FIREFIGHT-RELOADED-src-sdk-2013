@@ -12,7 +12,7 @@
 class CBaseGrenade;
 struct edict_t;
 
-CBaseGrenade *Fraggrenade_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, float timer, bool combineSpawned );
+CBaseGrenade *Fraggrenade_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, float timer, bool combineSpawned, bool fire = false );
 bool	Fraggrenade_WasPunted( const CBaseEntity *pEntity );
 bool	Fraggrenade_WasCreatedByCombine( const CBaseEntity *pEntity );
 

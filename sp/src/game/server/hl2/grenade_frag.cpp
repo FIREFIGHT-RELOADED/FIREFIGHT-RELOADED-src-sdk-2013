@@ -14,6 +14,7 @@
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+#include <fire.h>
 
 #define FRAG_GRENADE_BLIP_FREQUENCY			1.0f
 #define FRAG_GRENADE_BLIP_FAST_FREQUENCY	0.3f
@@ -43,6 +44,7 @@ public:
 	void	Spawn( void );
 	void	OnRestore( void );
 	void	Precache( void );
+	void	Detonate(void);
 	bool	CreateVPhysics( void );
 	void	CreateEffects( void );
 	void	SetTimer( float detonateDelay, float warnDelay );
@@ -53,6 +55,7 @@ public:
 	void	VPhysicsUpdate( IPhysicsObject *pPhysics );
 	void	OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason );
 	void	SetCombineSpawned( bool combineSpawned ) { m_combineSpawned = combineSpawned; }
+	void	SetFireGrenade(bool fire) { m_firegrenade = fire; }
 	bool	IsCombineSpawned( void ) const { return m_combineSpawned; }
 	void	SetPunted( bool punt ) { m_punted = punt; }
 	bool	WasPunted( void ) const { return m_punted; }
@@ -72,6 +75,7 @@ protected:
 	bool	m_inSolid;
 	bool	m_combineSpawned;
 	bool	m_punted;
+	bool	m_firegrenade;
 };
 
 LINK_ENTITY_TO_CLASS( npc_grenade_frag, CGrenadeFrag );
@@ -85,6 +89,7 @@ BEGIN_DATADESC( CGrenadeFrag )
 	DEFINE_FIELD( m_inSolid, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_combineSpawned, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_punted, FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_firegrenade, FIELD_BOOLEAN),
 	
 	// Function Pointers
 	DEFINE_THINKFUNC( DelayThink ),
@@ -133,6 +138,7 @@ void CGrenadeFrag::Spawn( void )
 
 	m_combineSpawned	= false;
 	m_punted			= false;
+	m_firegrenade		= false;
 
 	BaseClass::Spawn();
 }
@@ -322,6 +328,71 @@ void CGrenadeFrag::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t r
 	BaseClass::OnPhysGunPickup( pPhysGunUser, reason );
 }
 
+void CGrenadeFrag::Detonate(void)
+{
+	if (m_firegrenade)
+	{
+		trace_t trace;
+		UTIL_TraceLine(GetAbsOrigin(), GetAbsOrigin() + Vector(0, 0, -128), MASK_SOLID_BRUSHONLY,
+			this, COLLISION_GROUP_NONE, &trace);
+
+		// Pull out of the wall a bit
+		if (trace.fraction != 1.0)
+		{
+			SetLocalOrigin(trace.endpos + (trace.plane.normal * (m_flDamage - 24) * 0.6));
+		}
+
+		int contents = UTIL_PointContents(GetAbsOrigin());
+
+		if ((contents & MASK_WATER))
+		{
+			UTIL_Remove(this);
+			return;
+		}
+
+		// Start some fires
+		int i;
+		QAngle vecTraceAngles;
+		Vector vecTraceDir;
+		trace_t firetrace;
+
+		for (i = 0; i < 16; i++)
+		{
+			// build a little ray
+			vecTraceAngles[PITCH] = random->RandomFloat(45, 135);
+			vecTraceAngles[YAW] = random->RandomFloat(0, 360);
+			vecTraceAngles[ROLL] = 0.0f;
+
+			AngleVectors(vecTraceAngles, &vecTraceDir);
+
+			Vector vecStart, vecEnd;
+
+			vecStart = GetAbsOrigin() + (trace.plane.normal * 128);
+			vecEnd = vecStart + vecTraceDir * 512;
+
+			UTIL_TraceLine(vecStart, vecEnd, MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &firetrace);
+
+			Vector	ofsDir = (firetrace.endpos - GetAbsOrigin());
+			float	offset = VectorNormalize(ofsDir);
+
+			if (offset > 128)
+				offset = 128;
+
+			//Get our scale based on distance
+			float scale = 0.1f + (0.75f * (1.0f - (offset / 128.0f)));
+			float growth = 0.1f + (0.75f * (offset / 128.0f));
+
+			if (firetrace.fraction != 1.0)
+			{
+				FireSystem_StartFire(firetrace.endpos, scale, growth, 30.0f, (SF_FIRE_START_ON), (CBaseEntity*)this, FIRE_NATURAL);
+			}
+		}
+		// End Start some fires
+	}
+
+	BaseClass::Detonate();
+}
+
 void CGrenadeFrag::DelayThink() 
 {
 	if( gpGlobals->curtime > m_flDetonateTime )
@@ -416,7 +487,7 @@ void CGrenadeFrag::InputSetTimer( inputdata_t &inputdata )
 	SetTimer( inputdata.value.Float(), inputdata.value.Float() - FRAG_GRENADE_WARN_TIME );
 }
 
-CBaseGrenade *Fraggrenade_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, float timer, bool combineSpawned )
+CBaseGrenade *Fraggrenade_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, float timer, bool combineSpawned, bool fire)
 {
 	// Don't set the owner here, or the player can't interact with grenades he's thrown
 	CGrenadeFrag *pGrenade = (CGrenadeFrag *)CBaseEntity::Create( "npc_grenade_frag", position, angles, pOwner );
@@ -426,6 +497,7 @@ CBaseGrenade *Fraggrenade_Create( const Vector &position, const QAngle &angles, 
 	pGrenade->SetThrower( ToBaseCombatCharacter( pOwner ) );
 	pGrenade->m_takedamage = DAMAGE_EVENTS_ONLY;
 	pGrenade->SetCombineSpawned( combineSpawned );
+	pGrenade->SetFireGrenade(fire);
 
 	return pGrenade;
 }

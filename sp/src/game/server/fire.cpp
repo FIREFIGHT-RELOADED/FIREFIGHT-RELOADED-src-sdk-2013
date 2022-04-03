@@ -1032,6 +1032,14 @@ void CFire::Update( float simTime )
 				if (tr.fraction == 1.0 && !tr.startsolid)
 				{
 					pOther->TakeDamage( CTakeDamageInfo( this, this, outputDamage, damageFlags ) );
+
+					CBaseAnimating* pAnim;
+
+					pAnim = dynamic_cast<CBaseAnimating*>(pOther);
+					if (pAnim)
+					{
+						pAnim->Ignite(30.0f);
+					}
 				}
 			}
 		}
