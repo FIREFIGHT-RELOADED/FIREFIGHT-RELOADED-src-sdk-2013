@@ -804,6 +804,9 @@ HeadcrabRelease_t CNPC_BaseZombie::ShouldReleaseHeadcrab( const CTakeDamageInfo 
 		if (info.GetDamageType() & DMG_REMOVENORAGDOLL && !FClassnameIs(this, "npc_zombine"))
 			return RELEASE_NO;
 
+		if (info.GetDamageType() & DMG_SLASH)
+			return RELEASE_NO;
+
 		if (info.GetDamageType() & DMG_SNIPER)
 			return RELEASE_RAGDOLL;
 
