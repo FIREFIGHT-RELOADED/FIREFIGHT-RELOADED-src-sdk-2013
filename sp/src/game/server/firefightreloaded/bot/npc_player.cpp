@@ -51,6 +51,7 @@ extern ConVar sv_regeneration_rate_default;
 extern ConVar sv_regeneration_rate;
 extern ConVar sv_regen_interval;
 static ConVar npc_playerbot_friendlyfire("npc_playerbot_friendlyfire", "0", FCVAR_ARCHIVE);
+static ConVar npc_playerbot_useplayersmodel("npc_playerbot_useplayersmodel", "1", FCVAR_ARCHIVE);
 
 LINK_ENTITY_TO_CLASS( npc_playerbot, CNPC_Player );
 
@@ -61,7 +62,6 @@ DEFINE_FIELD(m_fTimeLastHealed, FIELD_TIME),
 END_DATADESC()
 
 #define	PLAYERNPC_FASTEST_SWITCH_TIME 5.0f
-const int MAX_PLAYER_SQUAD = 4;
 
 const char* g_charNPCMidRangeWeapons[] =
 {
@@ -93,7 +93,22 @@ const char* g_charAvailableModels[] =
 	"models/player/playermodels/female_03.mdl",
 	"models/player/playermodels/female_04.mdl",
 	"models/player/playermodels/female_06.mdl",
-	"models/player/playermodels/female_07.mdl"
+	"models/player/playermodels/female_07.mdl",
+	"models/player/playermodels/gascit_gmadador.mdl",
+	"models/player/playermodels/american_assault.mdl",
+	"models/player/playermodels/american_mg.mdl",
+	"models/player/playermodels/american_rifleman.mdl",
+	"models/player/playermodels/american_rocket.mdl",
+	"models/player/playermodels/american_sniper.mdl",
+	"models/player/playermodels/american_support.mdl",
+	"models/player/playermodels/ct_gign.mdl",
+	"models/player/playermodels/ct_gsg9.mdl",
+	"models/player/playermodels/ct_sas.mdl",
+	"models/player/playermodels/ct_urban.mdl",
+	"models/player/playermodels/t_arctic.mdl",
+	"models/player/playermodels/t_guerilla.mdl",
+	"models/player/playermodels/t_leet.mdl",
+	"models/player/playermodels/t_phoenix.mdl"
 };
 
 CNPC_Player::CNPC_Player()
@@ -118,14 +133,63 @@ void CNPC_Player::Spawn( void )
 	SetMaxHealth(200);
 	SetKickDamage(sk_combine_guard_kick.GetFloat());
 
+	int iShouldUsePlayersModel = random->RandomInt(0, 3);
+	const char* modelName = "";
+
 	int nModels = ARRAYSIZE(g_charAvailableModels);
 	int randomChoiceModels = rand() % nModels;
-	const char* pRandomName = g_charAvailableModels[randomChoiceModels];
 
-	SetModel(pRandomName);
+	if (iShouldUsePlayersModel == 1 && npc_playerbot_useplayersmodel.GetBool())
+	{
+		CBasePlayer* pLocalPlayer = UTIL_GetNearestVisiblePlayer(this);
+
+		if (pLocalPlayer)
+		{
+			int NPCAnim = pLocalPlayer->LookupSequence("Man_Gun");
+			//oh my god...
+			const char* model = STRING(pLocalPlayer->GetModelName());
+			const char* fixedModelName = STRING(AllocPooledString(model));
+			if (NPCAnim <= 0)
+			{
+				Warning("npc_player: Model %s doesn't include animations from \"combine_soldier_anims.mdl\" and \"elitepolice_animations.mdl\". Please add these before '$includemodel \"player/male_shared.mdl\"' in your QC!\n", fixedModelName);
+				Warning("npc_player: Using pre-selected model.\n", fixedModelName);
+				modelName = g_charAvailableModels[randomChoiceModels];
+			}
+			else
+			{
+				modelName = fixedModelName;
+			}
+		}
+		else
+		{
+			modelName = g_charAvailableModels[randomChoiceModels];
+		}
+	}
+	else
+	{
+		modelName = g_charAvailableModels[randomChoiceModels];
+	}
+
+	SetModel(modelName);
 
 	//Give him a random amount of grenades on spawn
-	m_iNumGrenades = random->RandomInt(3, 5);
+	if (g_pGameRules->IsSkillLevel(SKILL_HARD))
+	{
+		m_iNumGrenades = random->RandomInt(4, 6);
+	}
+	else if (g_pGameRules->IsSkillLevel(SKILL_VERYHARD))
+	{
+		m_iNumGrenades = random->RandomInt(2, 3);
+	}
+	else if (g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE))
+	{
+		m_iNumGrenades = random->RandomInt(0, 2);
+	}
+	else
+	{
+		m_iNumGrenades = random->RandomInt(8, 12);
+	}
+
 	GiveOutline(Vector(26, 77, 153));
 
 	m_fIsPlayer = true;

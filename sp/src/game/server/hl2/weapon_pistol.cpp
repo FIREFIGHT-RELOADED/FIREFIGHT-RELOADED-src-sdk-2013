@@ -143,6 +143,13 @@ acttable_t	CWeaponPistol::m_acttable[] =
 	{ ACT_COVER_LOW,				ACT_COVER_PISTOL_LOW,			false },
 	{ ACT_RANGE_AIM_LOW,			ACT_RANGE_AIM_PISTOL_LOW,		false },
 	{ ACT_GESTURE_RELOAD,			ACT_GESTURE_RELOAD_PISTOL,		false },
+	{ ACT_COVER_LOW,				ACT_COVER_PISTOL_LOW,			false },
+
+	{ ACT_WALK_CROUCH,				ACT_WALK_CROUCH,				true },
+	{ ACT_WALK_CROUCH_AIM,			ACT_WALK_CROUCH,				true },
+	{ ACT_RUN_CROUCH,				ACT_WALK_CROUCH,				true },
+	{ ACT_RUN_CROUCH_AIM,			ACT_WALK_CROUCH,				true },
+
 	{ ACT_WALK,						ACT_WALK_PISTOL,				false },
 	{ ACT_RUN,						ACT_RUN_PISTOL,					false },
 	{ ACT_HL2MP_IDLE,				ACT_HL2MP_IDLE_PISTOL,			false },

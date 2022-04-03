@@ -778,7 +778,14 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 			}
 			else
 			{
-				Crouch();
+				if (!FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
+				{
+					Crouch();
+				}
+				else
+				{
+					Stand();
+				}
 			}
 			TaskComplete();
 		}
@@ -1716,7 +1723,10 @@ int CNPC_Combine::SelectCombatSchedule()
 			{
 				if( GetEnemy() && random->RandomFloat( 0, 100 ) < 50 && CouldShootIfCrouching( GetEnemy() ) )
 				{
-					Crouch();
+					if (!FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
+					{
+						Crouch();
+					}
 				}
 				else
 				{
@@ -2148,7 +2158,11 @@ int CNPC_Combine::SelectScheduleAttack()
 			}
 		}
 
-		DesireCrouch();
+		if (!FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
+		{
+			DesireCrouch();
+		}
+
 		return SCHED_TAKE_COVER_FROM_ENEMY;
 	}
 
@@ -2253,7 +2267,14 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 			{
 				if( GetEnemy() && CouldShootIfCrouching( GetEnemy() ) )
 				{
-					Crouch();
+					if (!FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
+					{
+						Crouch();
+					}
+					else
+					{
+						Stand();
+					}
 					return SCHED_COMBAT_FACE;
 				}
 			}
@@ -2373,12 +2394,19 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 						if (dist > COMBINE_MIN_CROUCH_DISTANCE)
 						{
 							// try crouching
-							Crouch();
+							if (!FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
+							{
+								Crouch();
 
-							Vector targetPos = GetEnemy()->BodyTarget(GetActiveWeapon()->GetLocalOrigin());
+								Vector targetPos = GetEnemy()->BodyTarget(GetActiveWeapon()->GetLocalOrigin());
 
-							// if we can't see it crouched, stand up
-							if (!WeaponLOSCondition(GetLocalOrigin(), targetPos, false))
+								// if we can't see it crouched, stand up
+								if (!WeaponLOSCondition(GetLocalOrigin(), targetPos, false))
+								{
+									Stand();
+								}
+							}
+							else
 							{
 								Stand();
 							}
@@ -2406,12 +2434,19 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 						if (dist > COMBINE_MIN_CROUCH_DISTANCE)
 						{
 							// try crouching
-							Crouch();
+							if (!FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
+							{
+								Crouch();
 
-							Vector targetPos = GetEnemy()->BodyTarget(GetActiveWeapon()->GetLocalOrigin());
+								Vector targetPos = GetEnemy()->BodyTarget(GetActiveWeapon()->GetLocalOrigin());
 
-							// if we can't see it crouched, stand up
-							if (!WeaponLOSCondition(GetLocalOrigin(), targetPos, false))
+								// if we can't see it crouched, stand up
+								if (!WeaponLOSCondition(GetLocalOrigin(), targetPos, false))
+								{
+									Stand();
+								}
+							}
+							else
 							{
 								Stand();
 							}

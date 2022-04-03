@@ -39,8 +39,7 @@ const char *g_MetropoliceWeapons[] =
 {
 	"weapon_smg1",
 	"weapon_pistol",
-	"weapon_stunstick",
-	"weapon_crowbar"
+	"weapon_stunstick"
 };
 
 const char *g_EliteMetropoliceWeapons[] =
