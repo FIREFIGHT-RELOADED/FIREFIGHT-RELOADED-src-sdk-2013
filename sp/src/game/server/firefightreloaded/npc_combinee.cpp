@@ -223,7 +223,7 @@ float CNPC_CombineE::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDama
 	case HITGROUP_HEAD:
 		if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool())
 		{
-			if ((info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB))
+			if ((info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB) && IsHeavilyInjured())
 			{
 				SetModel("models/gibs/combine_super_soldier_beheaded.mdl");
 
@@ -253,7 +253,7 @@ float CNPC_CombineE::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDama
 					pPlayer->AddXP(7);
 				}
 			}
-			else if ((info.GetDamageType() & (DMG_SLASH)) && !(info.GetDamageType() & DMG_NEVERGIB))
+			else if ((info.GetDamageType() & (DMG_SLASH)) && !(info.GetDamageType() & DMG_NEVERGIB) && IsHeavilyInjured())
 			{
 				SetModel("models/gibs/combine_super_soldier_beheaded.mdl");
 
@@ -293,13 +293,13 @@ float CNPC_CombineE::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDama
 			else
 			{
 				// Soldiers take double headshot damage
-				return 2.0f;
+				return 1.5f;
 			}
 		}
 		else
 		{
 			// Soldiers take double headshot damage
-			return 2.0f;
+			return 1.5f;
 		}
 	}
 

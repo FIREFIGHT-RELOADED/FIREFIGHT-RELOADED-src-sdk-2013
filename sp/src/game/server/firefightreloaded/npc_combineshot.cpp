@@ -216,10 +216,12 @@ int CNPC_CombineShot::SelectSchedule(void)
 //-----------------------------------------------------------------------------
 float CNPC_CombineShot::GetHitgroupDamageMultiplier(int iHitGroup, const CTakeDamageInfo &info)
 {
+	bool bShouldDamage = (g_pGameRules->GetSkillLevel() >= SKILL_MEDIUM ? IsHeavilyInjured() : true);
+
 	switch (iHitGroup)
 	{
 	case HITGROUP_HEAD:
-		if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool())
+		if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool() && bShouldDamage)
 		{
 			if ((info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB))
 			{
@@ -251,7 +253,7 @@ float CNPC_CombineShot::GetHitgroupDamageMultiplier(int iHitGroup, const CTakeDa
 					pPlayer->AddXP(7);
 				}
 			}
-			else if ((info.GetDamageType() & (DMG_SLASH)) && !(info.GetDamageType() & DMG_NEVERGIB))
+			else if ((info.GetDamageType() & (DMG_SLASH)) && !(info.GetDamageType() & DMG_NEVERGIB) && bShouldDamage)
 			{
 				SetModel("models/gibs/combine_shotgunner_beheaded.mdl");
 

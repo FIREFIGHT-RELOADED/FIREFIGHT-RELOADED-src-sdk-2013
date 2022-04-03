@@ -151,7 +151,7 @@ ConVar	ai_frametime_limit( "ai_frametime_limit", "50", FCVAR_NONE, "frametime li
 ConVar	ai_disappear("ai_disappear", "1", FCVAR_ARCHIVE, "Makes AI disappear after a specified amount of time.");
 ConVar	ai_disappear_time("ai_disappear_time", "60", FCVAR_ARCHIVE);
 
-ConVar	ai_use_think_optimizations( "ai_use_think_optimizations", "1" );
+ConVar	ai_use_think_optimizations( "ai_use_think_optimizations", "0" );
 
 ConVar	ai_test_moveprobe_ignoresmall( "ai_test_moveprobe_ignoresmall", "0" );
 
@@ -202,8 +202,8 @@ ConVar	ai_shot_stats_term( "ai_shot_stats_term", "1000" );
 ConVar	ai_shot_bias( "ai_shot_bias", "1.0" );
 
 ConVar	ai_spread_defocused_cone_multiplier( "ai_spread_defocused_cone_multiplier","3.0" );
-ConVar	ai_spread_cone_focus_time( "ai_spread_cone_focus_time","0.6" );
-ConVar	ai_spread_pattern_focus_time( "ai_spread_pattern_focus_time","0.8" );
+ConVar	ai_spread_cone_focus_time( "ai_spread_cone_focus_time","2.0" );
+ConVar	ai_spread_pattern_focus_time( "ai_spread_pattern_focus_time","3.0" );
 
 ConVar	ai_reaction_delay_idle( "ai_reaction_delay_idle","0.3" );
 ConVar	ai_reaction_delay_alert( "ai_reaction_delay_alert", "0.1" );

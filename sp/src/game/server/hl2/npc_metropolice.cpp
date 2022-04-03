@@ -4382,12 +4382,14 @@ int CNPC_MetroPolice::SelectSchedule( void )
 
 float CNPC_MetroPolice::GetHitgroupDamageMultiplier(int iHitGroup, const CTakeDamageInfo &info)
 {
+	bool bShouldDamage = (g_pGameRules->GetSkillLevel() >= SKILL_MEDIUM ? IsHeavilyInjured() : true);
+
 	switch (iHitGroup)
 	{
 	case HITGROUP_HEAD:
 		if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool())
 		{
-			if ((info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB))
+			if ((info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB) && bShouldDamage)
 			{
 				SetModel("models/gibs/police_beheaded.mdl");
 
@@ -4417,7 +4419,7 @@ float CNPC_MetroPolice::GetHitgroupDamageMultiplier(int iHitGroup, const CTakeDa
 					pPlayer->AddXP(7);
 				}
 			}
-			else if ((info.GetDamageType() & (DMG_SLASH)) && !(info.GetDamageType() & DMG_NEVERGIB))
+			else if ((info.GetDamageType() & (DMG_SLASH)) && !(info.GetDamageType() & DMG_NEVERGIB) && bShouldDamage)
 			{
 				SetModel("models/gibs/police_beheaded.mdl");
 

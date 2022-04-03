@@ -655,14 +655,15 @@ int CNPC_BaseZombie::MeleeAttack1Conditions ( float flDot, float flDist )
 #define ZOMBIE_BUCKSHOT_TRIPLE_DAMAGE_DIST	96.0f // Triple damage from buckshot at 8 feet (headshot only)
 float CNPC_BaseZombie::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDamageInfo &info )
 {
+	bool bShouldDamage = (g_pGameRules->GetSkillLevel() >= SKILL_MEDIUM ? IsHeavilyInjured() : true);
+
 	switch( iHitGroup )
 	{
 	case HITGROUP_HEAD:
 		{
-			int HeadshotRandom = random->RandomInt(0, 4);
 			if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool())
 			{
-				if (!m_fIsHeadless && HeadshotRandom == 0 && !(info.GetDamageType() & DMG_NEVERGIB) && !FClassnameIs(this, "npc_poisonzombie") || !m_fIsHeadless && info.GetDamageType() & DMG_SNIPER && !(info.GetDamageType() & DMG_NEVERGIB) && !FClassnameIs(this, "npc_poisonzombie"))
+				if (!m_fIsHeadless && (info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB) && !FClassnameIs(this, "npc_poisonzombie") && bShouldDamage)
 				{
 					DispatchParticleEffect("smod_headshot_y", PATTACH_POINT_FOLLOW, this, "headcrab", true);
 					CGib::SpawnSpecificGibs(this, 3, 750, 1500, "models/gibs/agib_p3.mdl", 6);
@@ -1078,9 +1079,26 @@ void CNPC_BaseZombie::MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize )
 //-----------------------------------------------------------------------------
 bool CNPC_BaseZombie::IsChopped( const CTakeDamageInfo &info )
 {
-	//if we are damaged by a katana, return true.
+	bool bShouldDamage = (g_pGameRules->GetSkillLevel() >= SKILL_MEDIUM ? IsHeavilyInjured() : true);
+
+	//if we are damaged by a physics prop, return true
+	//else, check if the zombie should be damaged.
 	if (info.GetDamageType() & DMG_SLASH)
-		return true;
+	{
+		CBaseEntity* pProp = info.GetInflictor();
+		if (pProp && !pProp->IsNPC() && !pProp->IsPlayer())
+		{
+			IPhysicsObject* pPhysicsObject = pProp->VPhysicsGetObject();
+			if (pPhysicsObject != NULL)
+			{
+				return true;
+			}
+		}
+		else
+		{
+			return bShouldDamage;
+		}
+	}
 
 	if (info.GetDamageType() & DMG_CRUSH)
 		return true;
@@ -1088,7 +1106,7 @@ bool CNPC_BaseZombie::IsChopped( const CTakeDamageInfo &info )
 	if (info.GetDamageType() & DMG_BLAST)
 		return true;
 
-	float flDamageThreshold = MIN(1, info.GetDamage() / m_iMaxHealth);
+	float flDamageThreshold = MIN(1, info.GetDamage() / GetMaxHealth());
 
 	if (m_iHealth > 0 || flDamageThreshold <= 0.5)
 		return false;
