@@ -218,14 +218,12 @@ int CNPC_CombineP::SelectSchedule ( void )
 //-----------------------------------------------------------------------------
 float CNPC_CombineP::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDamageInfo &info )
 { 
-	bool bShouldDamage = (g_pGameRules->GetSkillLevel() >= SKILL_MEDIUM ? IsHeavilyInjured() : true);
-
 	switch (iHitGroup)
 	{
 	case HITGROUP_HEAD:
 		if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool())
 		{
-			if ((info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB) && bShouldDamage)
+			if ((info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB))
 			{
 				SetModel("models/gibs/combine_prisonguard_beheaded.mdl");
 

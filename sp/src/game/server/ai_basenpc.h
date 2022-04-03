@@ -1632,8 +1632,6 @@ public:
 	void				SetHintGroup( string_t name, bool bHintGroupNavLimiting = false );
 	bool				IsLimitingHintGroups( void )	{ return m_bHintGroupNavLimiting; }
 
-	bool				IsHeavilyInjured(void) { return (GetHealth() <= GetMaxHealth() * 0.5) ? true : false; }
-
 	//---------------------------------
 
 	CAI_TacticalServices *GetTacticalServices()			{ return m_pTacticalServices; }

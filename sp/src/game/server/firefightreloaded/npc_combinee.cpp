@@ -226,7 +226,7 @@ float CNPC_CombineE::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDama
 	case HITGROUP_HEAD:
 		if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool())
 		{
-			if ((info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB) && IsHeavilyInjured())
+			if ((info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB))
 			{
 				SetModel("models/gibs/combine_super_soldier_beheaded.mdl");
 
