@@ -128,6 +128,10 @@ ConVar sk_kick_shake_propmass("sk_kick_shake_propmass", "150");
 
 ConVar sv_player_shootinzoom("sv_player_shootinzoom", "1", FCVAR_ARCHIVE);
 
+ConVar sv_player_rocketjumping("sv_player_rocketjumping", "1", FCVAR_ARCHIVE);
+ConVar sv_player_damageforce_self("sv_player_damageforce_self", "0");
+ConVar sv_player_damagescale_self("sv_player_damagescale_self", "0");
+
 #define	FLASH_DRAIN_TIME	 1.1111	// 100 units / 90 secs
 #define	FLASH_CHARGE_TIME	 50.0f	// 100 units / 2 secs
 //const char *szModelName = NULL;
@@ -3043,6 +3047,17 @@ void CHL2_Player::NotifyFriendsOfDamage( CBaseEntity *pAttackerEntity )
 	}
 }
 
+void DeliverDamageForce(CHL2_Player* pPlayer, float damage)
+{
+	Vector forward, up;
+	AngleVectors(pPlayer->GetLocalAngles(), &forward, NULL, &up);
+	forward = forward * 100 * damage;
+	up = up * 100 * damage;
+
+	pPlayer->VelocityPunch(-forward);
+	pPlayer->VelocityPunch(up);
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -3084,9 +3099,6 @@ int	CHL2_Player::OnTakeDamage( const CTakeDamageInfo &info )
 		if ( info.GetAttacker() )
 			NotifyFriendsOfDamage( info.GetAttacker() );
 	}
-	
-	// Modify the amount of damage the player takes, based on skill.
-	CTakeDamageInfo playerDamage = info;
 
 	// Should we run this damage through the skill level adjustment?
 	bool bAdjustForSkillLevel = true;
@@ -3097,6 +3109,9 @@ int	CHL2_Player::OnTakeDamage( const CTakeDamageInfo &info )
 		// This prevents damage from SetHealth() inputs from being adjusted for skill level.
 		bAdjustForSkillLevel = false;
 	}
+
+	// Modify the amount of damage the player takes, based on skill.
+	CTakeDamageInfo playerDamage = info;
 
 	if ( GetVehicleEntity() != NULL && GlobalEntity_GetState("gordon_protect_driver") == GLOBAL_ON )
 	{
@@ -3116,6 +3131,13 @@ int	CHL2_Player::OnTakeDamage( const CTakeDamageInfo &info )
 		{
 			playerDamage.AdjustPlayerDamageTakenForSkillLevel();
 		}
+	}
+
+	// if this is our own rocket, scale down the damage
+	if (info.GetAttacker() == this && sv_player_rocketjumping.GetBool())
+	{
+		playerDamage.SetDamage(playerDamage.GetDamage() * sv_player_damagescale_self.GetFloat());
+		DeliverDamageForce(this, sv_player_damageforce_self.GetFloat());
 	}
 
 	gamestats->Event_PlayerDamage( this, info );
