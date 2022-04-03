@@ -1077,33 +1077,18 @@ void CNPC_BaseZombie::MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize )
 //-----------------------------------------------------------------------------
 bool CNPC_BaseZombie::IsChopped( const CTakeDamageInfo &info )
 {
-
-	float flDamageThreshold = MIN(1, info.GetDamage() / GetMaxHealth());
-
 	//if we are damaged by a physics prop, return true
 	//else, check if the zombie should be damaged.
 	if (info.GetDamageType() & DMG_SLASH)
-	{
-		CBaseEntity* pProp = info.GetInflictor();
-		if (pProp && !pProp->IsNPC() && !pProp->IsPlayer())
-		{
-			IPhysicsObject* pPhysicsObject = pProp->VPhysicsGetObject();
-			if (pPhysicsObject != NULL)
-			{
-				return true;
-			}
-		}
-		else
-		{
-			return (flDamageThreshold > 0.5);
-		}
-	}
+		return true;
 
 	if (info.GetDamageType() & DMG_CRUSH)
 		return true;
 
 	if (info.GetDamageType() & DMG_BLAST)
 		return true;
+
+	float flDamageThreshold = MIN(1, info.GetDamage() / GetMaxHealth());
 
 	if (m_iHealth > 0 || flDamageThreshold <= 0.5)
 		return false;
