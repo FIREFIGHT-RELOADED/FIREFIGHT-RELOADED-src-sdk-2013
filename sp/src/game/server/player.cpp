@@ -118,6 +118,7 @@ ConVar cl_backspeed( "cl_backspeed", "450", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 // This is declared in the engine, too
 ConVar	sv_noclipduringpause( "sv_noclipduringpause", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "If cheats are enabled, then you can noclip with the game paused (for doing screenshots, etc.)." );
+ConVar	sv_allowcutweapons("sv_allowcutweapons", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "");
 
 extern ConVar sv_maxunlag;
 extern ConVar sv_turbophysics;
@@ -7186,6 +7187,10 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveAmmo(999, "FlareRound");
 		GiveAmmo(999, "GaussEnergy");
 		GiveAmmo(999, "MP5Ammo");
+		if (sv_allowcutweapons.GetBool())
+		{
+			GiveAmmo(999, "EgonEnergy");
+		}
 //#ifdef HL2_EPISODIC
 		//GiveAmmo( 999, "Hopwire" );
 //#endif		
@@ -7209,7 +7214,10 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveNamedItem("weapon_knife");
 		GiveNamedItem("weapon_gauss");
 		GiveNamedItem("weapon_mp5");
-		GiveNamedItem("weapon_egon");
+		if (sv_allowcutweapons.GetBool())
+		{
+			GiveNamedItem("weapon_egon");
+		}
 		GiveNamedItem("weapon_grapple");
 #ifdef HL2_EPISODIC
 		// GiveNamedItem( "weapon_magnade" );
