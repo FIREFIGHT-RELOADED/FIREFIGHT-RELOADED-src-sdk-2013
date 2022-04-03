@@ -30,6 +30,7 @@
  
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+#include <hl2/hl2_player.h>
 
 #define BEAM_SPRITE "sprites/orangelight1.vmt"
 #define GLOW_SPRITE "sprites/orangeflare1.vmt"
@@ -272,7 +273,13 @@ void CGrappleHook::HookedThink( void )
 	}
 	else
 	{
-		m_hPlayer->SetAbsVelocity(tempVec1 * temp_multiplier * 950);//400
+		float velocity = 950.0f;
+		if (m_hPlayer->m_nButtons & IN_DUCK)
+		{
+			velocity = 1350.0f;
+		}
+
+		m_hPlayer->SetAbsVelocity(tempVec1 * temp_multiplier * velocity);//400
 	}
 }
  
