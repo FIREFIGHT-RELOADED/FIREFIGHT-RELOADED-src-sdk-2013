@@ -3289,6 +3289,11 @@ int CNPC_Combine::MeleeAttack1Conditions ( float flDot, float flDist )
 		return COND_NONE;
 	}
 
+	if (FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
+	{
+		return COND_NONE;
+	}
+
 	// Make sure not trying to kick through a window or something. 
 	trace_t tr;
 	Vector vecSrc, vecEnd;
