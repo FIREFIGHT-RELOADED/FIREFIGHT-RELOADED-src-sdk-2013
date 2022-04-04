@@ -262,19 +262,26 @@ void CGrenadeFrag::VPhysicsUpdate( IPhysicsObject *pPhysics )
 	m_inSolid = false;
 	if ( tr.DidHit() )
 	{
-		Vector dir = vel;
-		VectorNormalize(dir);
-		// send a tiny amount of damage so the character will react to getting bonked
-		CTakeDamageInfo info( this, GetThrower(), pPhysics->GetMass() * vel, GetAbsOrigin(), 0.1f, DMG_CRUSH );
-		tr.m_pEnt->TakeDamage( info );
+		if (tr.m_pEnt)
+		{
+			Detonate();
+		}
+		else
+		{
+			Vector dir = vel;
+			VectorNormalize(dir);
+			// send a tiny amount of damage so the character will react to getting bonked
+			//CTakeDamageInfo info( this, GetThrower(), pPhysics->GetMass() * vel, GetAbsOrigin(), 0.1f, DMG_CRUSH );
+			//tr.m_pEnt->TakeDamage( info );
 
-		// reflect velocity around normal
-		vel = -2.0f * tr.plane.normal * DotProduct(vel,tr.plane.normal) + vel;
-		
-		// absorb 80% in impact
-		vel *= GRENADE_COEFFICIENT_OF_RESTITUTION;
-		angVel *= -0.5f;
-		pPhysics->SetVelocity( &vel, &angVel );
+			// reflect velocity around normal
+			vel = -2.0f * tr.plane.normal * DotProduct(vel,tr.plane.normal) + vel;
+
+			// absorb 80% in impact
+			vel *= GRENADE_COEFFICIENT_OF_RESTITUTION;
+			angVel *= -0.5f;
+			pPhysics->SetVelocity( &vel, &angVel );
+		}
 	}
 }
 
