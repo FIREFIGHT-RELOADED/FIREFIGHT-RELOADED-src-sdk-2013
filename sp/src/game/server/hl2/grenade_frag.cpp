@@ -397,7 +397,7 @@ void CGrenadeFrag::Detonate(void)
 
 			if (firetrace.fraction != 1.0)
 			{
-				FireSystem_StartFire(firetrace.endpos, scale, growth, 30.0f, (SF_FIRE_START_ON), (CBaseEntity*)this, FIRE_NATURAL);
+				FireSystem_StartFire(firetrace.endpos, scale, growth, 30.0f, (SF_FIRE_START_ON | SF_FIRE_BURN_ENTITIES), (CBaseEntity*)this, FIRE_NATURAL);
 			}
 		}
 		// End Start some fires

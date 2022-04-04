@@ -1033,12 +1033,14 @@ void CFire::Update( float simTime )
 				{
 					pOther->TakeDamage( CTakeDamageInfo( this, this, outputDamage, damageFlags ) );
 
-					CBaseAnimating* pAnim;
-
-					pAnim = dynamic_cast<CBaseAnimating*>(pOther);
-					if (pAnim)
+					if (m_spawnflags & SF_FIRE_BURN_ENTITIES)
 					{
-						pAnim->Ignite(30.0f);
+						CBaseAnimating* pAnim;
+						pAnim = dynamic_cast<CBaseAnimating*>(pOther);
+						if (pAnim)
+						{
+							pAnim->Ignite(30.0f);
+						}
 					}
 				}
 			}
