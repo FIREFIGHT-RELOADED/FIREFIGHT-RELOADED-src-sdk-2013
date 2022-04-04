@@ -7145,7 +7145,6 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveAmmo( 999, "357" );
 		GiveAmmo( 999, "XBowBolt" );
 		GiveAmmo( 999, "Sniper" );
-		GiveAmmo( 999, "Deagle" );
 		GiveAmmo( 999, "M249" );
 		GiveAmmo(999, "slam");
 		GiveAmmo(999, "OICW");
@@ -7156,6 +7155,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		{
 			GiveAmmo(999, "EgonEnergy");
 			GiveAmmo(999, "FlareRound");
+			GiveAmmo(999, "Deagle");
 		}
 //#ifdef HL2_EPISODIC
 		//GiveAmmo( 999, "Hopwire" );
@@ -7172,7 +7172,6 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveNamedItem( "weapon_357" );
 		GiveNamedItem( "weapon_crossbow" );
 		GiveNamedItem( "weapon_sniper_rifle" );
-		GiveNamedItem( "weapon_deagle" );
 		GiveNamedItem( "weapon_m249para" );
 		GiveNamedItem("weapon_slam");
 		GiveNamedItem("weapon_oicw");
@@ -7183,6 +7182,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		{
 			GiveNamedItem("weapon_egon");
 			GiveNamedItem("weapon_flaregun");
+			GiveNamedItem("weapon_deagle");
 		}
 		GiveNamedItem("weapon_grapple");
 #ifdef HL2_EPISODIC
