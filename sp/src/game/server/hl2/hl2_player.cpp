@@ -1637,6 +1637,7 @@ void CHL2_Player::Spawn(void)
 			BaseClass::GiveAmmo(120, "Pistol");
 			BaseClass::GiveAmmo(220, "SMG1");
 			BaseClass::GiveAmmo(60, "MP5Ammo");
+			BaseClass::GiveAmmo(5, "smg1_grenade");
 			GiveNamedItem("weapon_smg1");
 			GiveNamedItem("weapon_mp5");
 			GiveNamedItem("weapon_crowbar");
