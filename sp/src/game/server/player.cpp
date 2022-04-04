@@ -1343,15 +1343,6 @@ void CBasePlayer::Reward_GiveItem(void)
 				ShowPerkMessage(hint.Access());
 				break;
 			}
-		case FIREFIGHT_ITEMREWARD_AMMO_DEAGLE:
-			if (Weapon_OwnsThisType("weapon_deagle"))
-			{
-				GiveNamedItem("item_ammo_deagle");
-				GiveNamedItem("item_ammo_deagle");
-				hint.sprintf("#Valve_Hud_Reward_DeagleAmmo");
-				ShowPerkMessage(hint.Access());
-				break;
-			}
 		case FIREFIGHT_ITEMREWARD_AMMO_M249PARA:
 			if (Weapon_OwnsThisType("weapon_m249para"))
 			{
@@ -1374,15 +1365,6 @@ void CBasePlayer::Reward_GiveItem(void)
 			{
 				GiveNamedItem("item_oicw_grenade");
 				hint.sprintf("#Valve_Hud_Reward_OICWGrenade");
-				ShowPerkMessage(hint.Access());
-				break;
-			}
-		case FIREFIGHT_ITEMREWARD_AMMO_FLAREGUN:
-			if (Weapon_OwnsThisType("weapon_flaregun"))
-			{
-				GiveNamedItem("item_box_flare_rounds");
-				GiveNamedItem("item_box_flare_rounds");
-				hint.sprintf("#Valve_Hud_Reward_FlareGunAmmo");
 				ShowPerkMessage(hint.Access());
 				break;
 			}
@@ -1434,14 +1416,6 @@ void CBasePlayer::Reward_GiveItem(void)
 				ShowPerkMessage(hint.Access());
 				break;
 			}
-		case FIREFIGHT_ITEMREWARD_WEAPON_DEAGLE:
-			if (!Weapon_OwnsThisType("weapon_deagle"))
-			{
-				GiveNamedItem("weapon_deagle");
-				hint.sprintf("#Valve_Hud_Reward_Weapon_Deagle");
-				ShowPerkMessage(hint.Access());
-				break;
-			}
 		case FIREFIGHT_ITEMREWARD_WEAPON_M249PARA:
 			if (!Weapon_OwnsThisType("weapon_m249para"))
 			{
@@ -1455,14 +1429,6 @@ void CBasePlayer::Reward_GiveItem(void)
 			{
 				GiveNamedItem("weapon_oicw");
 				hint.sprintf("#Valve_Hud_Reward_Weapon_OCIW");
-				ShowPerkMessage(hint.Access());
-				break;
-			}
-		case FIREFIGHT_ITEMREWARD_WEAPON_FLAREGUN:
-			if (!Weapon_OwnsThisType("weapon_flaregun"))
-			{
-				GiveNamedItem("weapon_flaregun");
-				hint.sprintf("#Valve_Hud_Reward_Weapon_FlareGun");
 				ShowPerkMessage(hint.Access());
 				break;
 			}
@@ -7184,12 +7150,12 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveAmmo(999, "slam");
 		GiveAmmo(999, "OICW");
 		GiveAmmo(999, "OICW_Grenade");
-		GiveAmmo(999, "FlareRound");
 		GiveAmmo(999, "GaussEnergy");
 		GiveAmmo(999, "MP5Ammo");
 		if (sv_allowcutweapons.GetBool())
 		{
 			GiveAmmo(999, "EgonEnergy");
+			GiveAmmo(999, "FlareRound");
 		}
 //#ifdef HL2_EPISODIC
 		//GiveAmmo( 999, "Hopwire" );
@@ -7210,13 +7176,13 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveNamedItem( "weapon_m249para" );
 		GiveNamedItem("weapon_slam");
 		GiveNamedItem("weapon_oicw");
-		GiveNamedItem("weapon_flaregun");
 		GiveNamedItem("weapon_knife");
 		GiveNamedItem("weapon_gauss");
 		GiveNamedItem("weapon_mp5");
 		if (sv_allowcutweapons.GetBool())
 		{
 			GiveNamedItem("weapon_egon");
+			GiveNamedItem("weapon_flaregun");
 		}
 		GiveNamedItem("weapon_grapple");
 #ifdef HL2_EPISODIC
