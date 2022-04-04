@@ -2646,12 +2646,14 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 
 					GetVectors( &forward, NULL, &up );
 					vecThrow = forward * 750 + up * 175;
-					Fraggrenade_Create( vecStart, vec3_angle, vecThrow, vecSpin, this, COMBINE_GRENADE_TIMER, true );
+					bool bFireGrenade = ((random->RandomInt(0, 1) == 1 && g_pGameRules->GetSkillLevel() >= SKILL_HARD) ? true : false);
+					Fraggrenade_Create( vecStart, vec3_angle, vecThrow, vecSpin, this, COMBINE_GRENADE_TIMER, true, bFireGrenade);
 				}
 				else
 				{
 					// Use the Velocity that AI gave us.
-					Fraggrenade_Create( vecStart, vec3_angle, m_vecTossVelocity, vecSpin, this, COMBINE_GRENADE_TIMER, true );
+					bool bFireGrenade = ((random->RandomInt(0, 1) == 1 && g_pGameRules->GetSkillLevel() >= SKILL_HARD) ? true : false);
+					Fraggrenade_Create( vecStart, vec3_angle, m_vecTossVelocity, vecSpin, this, COMBINE_GRENADE_TIMER, true, bFireGrenade);
 					m_iNumGrenades--;
 				}
 
@@ -2686,7 +2688,8 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 				Vector vecStart;
 				GetAttachment( "lefthand", vecStart );
 
-				Fraggrenade_Create( vecStart, vec3_angle, m_vecTossVelocity, vec3_origin, this, COMBINE_GRENADE_TIMER, true );
+				bool bFireGrenade = ((random->RandomInt(0, 1) == 1 && g_pGameRules->GetSkillLevel() >= SKILL_HARD) ? true : false);
+				Fraggrenade_Create( vecStart, vec3_angle, m_vecTossVelocity, vec3_origin, this, COMBINE_GRENADE_TIMER, true, bFireGrenade);
 				m_iNumGrenades--;
 			}
 			handledEvent = true;

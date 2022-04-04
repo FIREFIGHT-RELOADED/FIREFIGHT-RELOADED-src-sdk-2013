@@ -332,14 +332,20 @@ void CGrenadeFrag::Detonate(void)
 {
 	if (m_firegrenade)
 	{
-		trace_t trace;
-		UTIL_TraceLine(GetAbsOrigin(), GetAbsOrigin() + Vector(0, 0, -128), MASK_SOLID_BRUSHONLY,
-			this, COLLISION_GROUP_NONE, &trace);
+		trace_t		tr;
+		Vector		vecSpot;// trace starts here!
 
-		// Pull out of the wall a bit
-		if (trace.fraction != 1.0)
+		SetThink(NULL);
+
+		vecSpot = GetAbsOrigin() + Vector(0, 0, 8);
+		UTIL_TraceLine(vecSpot, vecSpot + Vector(0, 0, -32), MASK_SHOT_HULL, this, COLLISION_GROUP_NONE, &tr);
+
+		if (tr.startsolid)
 		{
-			SetLocalOrigin(trace.endpos + (trace.plane.normal * (m_flDamage - 24) * 0.6));
+			// Since we blindly moved the explosion origin vertically, we may have inadvertently moved the explosion into a solid,
+			// in which case nothing is going to be harmed by the grenade's explosion because all subsequent traces will startsolid.
+			// If this is the case, we do the downward trace again from the actual origin of the grenade. (sjb) 3/8/2007  (for ep2_outland_09)
+			UTIL_TraceLine(GetAbsOrigin(), GetAbsOrigin() + Vector(0, 0, -32), MASK_SHOT_HULL, this, COLLISION_GROUP_NONE, &tr);
 		}
 
 		int contents = UTIL_PointContents(GetAbsOrigin());
@@ -367,7 +373,7 @@ void CGrenadeFrag::Detonate(void)
 
 			Vector vecStart, vecEnd;
 
-			vecStart = GetAbsOrigin() + (trace.plane.normal * 256);
+			vecStart = GetAbsOrigin() + (tr.plane.normal * 256);
 			vecEnd = vecStart + vecTraceDir * 1024;
 
 			UTIL_TraceLine(vecStart, vecEnd, MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &firetrace);
@@ -388,9 +394,20 @@ void CGrenadeFrag::Detonate(void)
 			}
 		}
 		// End Start some fires
-	}
 
-	BaseClass::Detonate();
+		//we need to burn people, not kill them.
+		m_flDamage = m_flDamage * 0.25;
+		Explode(&tr, DMG_BLAST);
+
+		if (GetShakeAmplitude())
+		{
+			UTIL_ScreenShake(GetAbsOrigin(), GetShakeAmplitude(), 150.0, 1.0, GetShakeRadius(), SHAKE_START);
+		}
+	}
+	else
+	{
+		BaseClass::Detonate();
+	}
 }
 
 void CGrenadeFrag::DelayThink() 

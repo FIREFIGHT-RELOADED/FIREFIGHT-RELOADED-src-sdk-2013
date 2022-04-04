@@ -801,7 +801,7 @@ HeadcrabRelease_t CNPC_BaseZombie::ShouldReleaseHeadcrab( const CTakeDamageInfo 
 		if (m_fIsHeadless)
 			return RELEASE_NO;
 
-		if (info.GetDamageType() & DMG_REMOVENORAGDOLL && !FClassnameIs(this, "npc_zombine"))
+		if (info.GetDamageType() & DMG_REMOVENORAGDOLL)
 			return RELEASE_NO;
 
 		if (info.GetDamageType() & DMG_SLASH)
@@ -2372,7 +2372,6 @@ void CNPC_BaseZombie::Event_Killed( const CTakeDamageInfo &info )
 	//this crashes the game for some reason.
 	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && info.GetDamageType() & (DMG_ALWAYSGIB | DMG_BLAST | DMG_CRUSH) && !(info.GetDamageType() & (DMG_NEVERGIB | DMG_DISSOLVE)) && !m_fIsTorso && !FClassnameIs(this, "npc_poisonzombie"))
 	{
-		DieChopped(info, true);
 		Vector vecDamageDir = info.GetDamageForce();
 		VectorNormalize(vecDamageDir);
 		UTIL_BloodSpray(WorldSpaceCenter(), vecDamageDir, BLOOD_COLOR_YELLOW, 13, FX_BLOODSPRAY_ALL);

@@ -486,13 +486,7 @@ void CNPC_Zombine::DropGrenade( Vector vDir )
 
 void CNPC_Zombine::Event_Killed( const CTakeDamageInfo &info )
 {
-	CTakeDamageInfo dInfo = info;
-	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && info.GetDamageType() & (DMG_ALWAYSGIB | DMG_BLAST | DMG_CRUSH) && !(info.GetDamageType() & (DMG_DISSOLVE)) && !m_fIsTorso)
-	{
-		dInfo.SetDamageType(info.GetDamageType() | DMG_REMOVENORAGDOLL);
-	}
-
-	BaseClass::Event_Killed( dInfo );
+	BaseClass::Event_Killed( info );
 
 	if ( HasGrenade() )
 	{
@@ -550,7 +544,8 @@ void CNPC_Zombine::HandleAnimEvent( animevent_t *pEvent )
 		QAngle angles;
 		GetAttachment( "grenade_attachment", vecStart, angles );
 
-		CBaseGrenade *pGrenade = Fraggrenade_Create( vecStart, vec3_angle, vec3_origin, AngularImpulse( 0, 0, 0 ), this, 3.5f, true );
+		bool bFireGrenade = ((random->RandomInt(0, 1) == 1 && g_pGameRules->GetSkillLevel() >= SKILL_HARD) ? true : false);
+		CBaseGrenade *pGrenade = Fraggrenade_Create( vecStart, vec3_angle, vec3_origin, AngularImpulse( 0, 0, 0 ), this, 3.5f, true, bFireGrenade);
 
 		if ( pGrenade )
 		{
@@ -796,6 +791,12 @@ void CNPC_Zombine::FootstepSound( bool fRightFoot )
 //-----------------------------------------------------------------------------
 bool CNPC_Zombine::ShouldBecomeTorso( const CTakeDamageInfo &info, float flDamageThreshold )
 {
+	// Take half or more of max health in DMG_BLAST
+	if ((info.GetDamageType() & DMG_BLAST) && flDamageThreshold >= 0.5)
+	{
+		return true;
+	}
+
 	return false;
 }
 
