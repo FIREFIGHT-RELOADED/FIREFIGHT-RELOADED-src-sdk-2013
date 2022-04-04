@@ -55,7 +55,7 @@ public:
 	void	VPhysicsUpdate( IPhysicsObject *pPhysics );
 	void	OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason );
 	void	SetCombineSpawned( bool combineSpawned ) { m_combineSpawned = combineSpawned; }
-	void	SetFireGrenade(bool fire) { m_firegrenade = fire; }
+	void	SetFireGrenade(bool fire) { m_firegrenade = fire;}
 	bool	IsCombineSpawned( void ) const { return m_combineSpawned; }
 	void	SetPunted( bool punt ) { m_punted = punt; }
 	bool	WasPunted( void ) const { return m_punted; }
@@ -356,7 +356,7 @@ void CGrenadeFrag::Detonate(void)
 		Vector vecTraceDir;
 		trace_t firetrace;
 
-		for (i = 0; i < 16; i++)
+		for (i = 0; i < 32; i++)
 		{
 			// build a little ray
 			vecTraceAngles[PITCH] = random->RandomFloat(45, 135);
@@ -367,20 +367,20 @@ void CGrenadeFrag::Detonate(void)
 
 			Vector vecStart, vecEnd;
 
-			vecStart = GetAbsOrigin() + (trace.plane.normal * 128);
-			vecEnd = vecStart + vecTraceDir * 512;
+			vecStart = GetAbsOrigin() + (trace.plane.normal * 256);
+			vecEnd = vecStart + vecTraceDir * 1024;
 
 			UTIL_TraceLine(vecStart, vecEnd, MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &firetrace);
 
 			Vector	ofsDir = (firetrace.endpos - GetAbsOrigin());
 			float	offset = VectorNormalize(ofsDir);
 
-			if (offset > 128)
-				offset = 128;
+			if (offset > 256)
+				offset = 256;
 
 			//Get our scale based on distance
-			float scale = 0.1f + (0.75f * (1.0f - (offset / 128.0f)));
-			float growth = 0.1f + (0.75f * (offset / 128.0f));
+			float scale = 0.1f + (0.75f * (1.0f - (offset / 256.0f)));
+			float growth = 0.1f + (0.75f * (offset / 256.0f));
 
 			if (firetrace.fraction != 1.0)
 			{
@@ -498,6 +498,7 @@ CBaseGrenade *Fraggrenade_Create( const Vector &position, const QAngle &angles, 
 	pGrenade->m_takedamage = DAMAGE_EVENTS_ONLY;
 	pGrenade->SetCombineSpawned( combineSpawned );
 	pGrenade->SetFireGrenade(fire);
+	pGrenade->m_nSkin = (fire ? 1 : 0);
 
 	return pGrenade;
 }

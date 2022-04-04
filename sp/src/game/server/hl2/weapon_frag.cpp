@@ -15,6 +15,7 @@
 #include "in_buttons.h"
 #include "soundent.h"
 #include "gamestats.h"
+#include "fmtstr.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -68,6 +69,8 @@ private:
 	int		m_AttackPaused;
 	bool	m_fDrawbackFinished;
 
+	int		m_iFireMode;
+
 	DECLARE_ACTTABLE();
 
 	DECLARE_DATADESC();
@@ -78,6 +81,7 @@ BEGIN_DATADESC( CWeaponFrag )
 	DEFINE_FIELD( m_bRedraw, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_AttackPaused, FIELD_INTEGER ),
 	DEFINE_FIELD( m_fDrawbackFinished, FIELD_BOOLEAN ),
+	DEFINE_FIELD(m_iFireMode, FIELD_INTEGER),
 END_DATADESC()
 
 acttable_t	CWeaponFrag::m_acttable[] = 
@@ -102,11 +106,10 @@ PRECACHE_WEAPON_REGISTER(weapon_frag);
 
 
 
-CWeaponFrag::CWeaponFrag() :
-	CBaseHLCombatWeapon(),
-	m_bRedraw( false )
+CWeaponFrag::CWeaponFrag() : CBaseHLCombatWeapon()	
 {
-	NULL;
+	m_bRedraw = false;
+	m_iFireMode = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -129,6 +132,28 @@ bool CWeaponFrag::Deploy( void )
 {
 	m_bRedraw = false;
 	m_fDrawbackFinished = false;
+
+	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
+	CBaseViewModel* vm = pOwner->GetViewModel(m_nViewModelIndex);
+
+	if (m_iFireMode == 0)
+	{
+		m_nSkin = 0;
+
+		if (vm != NULL)
+		{
+			vm->m_nSkin = 0;
+		}
+	}
+	else if (m_iFireMode == 1)
+	{
+		m_nSkin = 1;
+
+		if (vm != NULL)
+		{
+			vm->m_nSkin = 1;
+		}
+	}
 
 	return BaseClass::Deploy();
 }
@@ -394,6 +419,40 @@ void CWeaponFrag::ItemPostFrame( void )
 		}
 	}
 
+	if (pOwner->m_afButtonPressed & IN_ATTACK3)
+	{
+		CBaseViewModel* vm = pOwner->GetViewModel(m_nViewModelIndex);
+
+		if (m_iFireMode == 0)
+		{
+			CFmtStr hint;
+			hint.sprintf("#Valve_Frag_Fire");
+			pOwner->ShowLevelMessage(hint.Access());
+			SendWeaponAnim(ACT_VM_DRAW);
+			m_iFireMode = 1;
+			m_nSkin = 1;
+			if (vm != NULL)
+			{
+				vm->m_nSkin = 1;
+			}
+			WeaponSound(EMPTY);
+		}
+		else if (m_iFireMode == 1)
+		{
+			CFmtStr hint;
+			hint.sprintf("#Valve_Frag_Normal");
+			pOwner->ShowLevelMessage(hint.Access());
+			SendWeaponAnim(ACT_VM_DRAW);
+			m_iFireMode = 0;
+			m_nSkin = 0;
+			if (vm != NULL)
+			{
+				vm->m_nSkin = 0;
+			}
+			WeaponSound(EMPTY);
+		}
+	}
+
 	BaseClass::ItemPostFrame();
 
 	if ( m_bRedraw )
@@ -437,7 +496,7 @@ void CWeaponFrag::ThrowGrenade( CBasePlayer *pPlayer )
 	Vector vecThrow;
 	pPlayer->GetVelocity( &vecThrow, NULL );
 	vecThrow += vForward * 1200;
-	Fraggrenade_Create( vecSrc, vec3_angle, vecThrow, AngularImpulse(600,random->RandomInt(-1200,1200),0), pPlayer, GRENADE_TIMER, false );
+	Fraggrenade_Create( vecSrc, vec3_angle, vecThrow, AngularImpulse(600, random->RandomInt(-1200,1200),0), pPlayer, GRENADE_TIMER, false, (m_iFireMode == 1 ? true : false));
 
 	m_bRedraw = true;
 
@@ -465,7 +524,7 @@ void CWeaponFrag::LobGrenade( CBasePlayer *pPlayer )
 	Vector vecThrow;
 	pPlayer->GetVelocity( &vecThrow, NULL );
 	vecThrow += vForward * 350 + Vector( 0, 0, 50 );
-	Fraggrenade_Create( vecSrc, vec3_angle, vecThrow, AngularImpulse(200,random->RandomInt(-600,600),0), pPlayer, GRENADE_TIMER, false );
+	Fraggrenade_Create( vecSrc, vec3_angle, vecThrow, AngularImpulse(200,random->RandomInt(-600,600),0), pPlayer, GRENADE_TIMER, false, (m_iFireMode == 1 ? true : false));
 
 	WeaponSound( WPN_DOUBLE );
 	// Send the player 'attack' animation.
@@ -511,7 +570,7 @@ void CWeaponFrag::RollGrenade( CBasePlayer *pPlayer )
 	QAngle orientation(0,pPlayer->GetLocalAngles().y,-90);
 	// roll it
 	AngularImpulse rotSpeed(0,0,720);
-	Fraggrenade_Create( vecSrc, orientation, vecThrow, rotSpeed, pPlayer, GRENADE_TIMER, false );
+	Fraggrenade_Create( vecSrc, orientation, vecThrow, rotSpeed, pPlayer, GRENADE_TIMER, false, (m_iFireMode == 1 ? true : false));
 
 	WeaponSound( SPECIAL1 );
 	// Send the player 'attack' animation.
