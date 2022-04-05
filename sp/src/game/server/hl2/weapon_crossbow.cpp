@@ -34,13 +34,16 @@
 #include "tier0/memdbgon.h"
 
 //#define BOLT_MODEL			"models/crossbow_bolt.mdl"
-#define BOLT_MODEL	"models/weapons/w_missile_closed.mdl"
+//#define BOLT_MODEL	"models/weapons/w_missile_closed.mdl"
 
 #define BOLT_AIR_VELOCITY	2500
 #define BOLT_WATER_VELOCITY	1500
+#define	SF_BOLT_KNIFEMODE			0x00000001
 
 extern ConVar sk_plr_dmg_crossbow;
 extern ConVar sk_npc_dmg_crossbow;
+extern ConVar sk_plr_dmg_knife_thrown;
+extern ConVar sk_npc_dmg_knife_thrown;
 
 void TE_StickyBolt( IRecipientFilter& filter, float delay,	Vector vecDirection, const Vector *origin );
 
@@ -164,7 +167,15 @@ void CCrossbowBolt::Spawn( void )
 {
 	Precache( );
 
-	SetModel( "models/crossbow_bolt.mdl" );
+	if (m_spawnflags & SF_BOLT_KNIFEMODE)
+	{
+		SetModel("models/knife_proj.mdl");
+	}
+	else
+	{
+		SetModel("models/crossbow_bolt.mdl");
+	}
+
 	SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_CUSTOM );
 	UTIL_SetSize( this, -Vector(0.3f,0.3f,0.3f), Vector(0.3f,0.3f,0.3f) );
 	SetSolid( SOLID_BBOX );
@@ -187,10 +198,17 @@ void CCrossbowBolt::Spawn( void )
 
 void CCrossbowBolt::Precache( void )
 {
-	PrecacheModel( BOLT_MODEL );
+	//PrecacheModel( BOLT_MODEL );
 
-	// This is used by C_TEStickyBolt, despte being different from above!!!
-	PrecacheModel( "models/crossbow_bolt.mdl" );
+	if (m_spawnflags & SF_BOLT_KNIFEMODE)
+	{
+		PrecacheModel("models/knife_proj.mdl");
+	}
+	else
+	{
+		// This is used by C_TEStickyBolt, despte being different from above!!!
+		PrecacheModel("models/crossbow_bolt.mdl");
+	}
 
 	PrecacheModel( "sprites/light_glow02_noz.vmt" );
 }
@@ -227,9 +245,16 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 		}
 #endif//HL2_EPISODIC
 
+		float curDamage = sk_plr_dmg_crossbow.GetFloat();
+
+		if (m_spawnflags & SF_BOLT_KNIFEMODE)
+		{
+			curDamage = sk_plr_dmg_knife_thrown.GetFloat();
+		}
+
 		if( GetOwnerEntity() && GetOwnerEntity()->IsPlayer() && pOther->IsNPC() )
 		{
-			CTakeDamageInfo	dmgInfo( this, GetOwnerEntity(), sk_plr_dmg_crossbow.GetFloat(), DMG_NEVERGIB );
+			CTakeDamageInfo	dmgInfo( this, GetOwnerEntity(), curDamage, DMG_NEVERGIB );
 			dmgInfo.AdjustPlayerDamageInflictedForSkillLevel();
 			CalculateMeleeDamageForce( &dmgInfo, vecNormalizedVel, tr.endpos, 0.7f );
 			dmgInfo.SetDamagePosition( tr.endpos );
@@ -238,13 +263,20 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 			CBasePlayer *pPlayer = ToBasePlayer( GetOwnerEntity() );
 			if ( pPlayer )
 			{
-				gamestats->Event_WeaponHit( pPlayer, true, "weapon_crossbow", dmgInfo );
+				if (m_spawnflags & SF_BOLT_KNIFEMODE)
+				{
+					gamestats->Event_WeaponHit(pPlayer, true, "weapon_knife", dmgInfo);
+				}
+				else
+				{
+					gamestats->Event_WeaponHit(pPlayer, true, "weapon_crossbow", dmgInfo);
+				}
 			}
 
 		}
 		else
 		{
-			CTakeDamageInfo	dmgInfo( this, GetOwnerEntity(), sk_plr_dmg_crossbow.GetFloat(), DMG_BULLET | DMG_NEVERGIB );
+			CTakeDamageInfo	dmgInfo( this, GetOwnerEntity(), curDamage, DMG_BULLET | DMG_NEVERGIB );
 			CalculateMeleeDamageForce( &dmgInfo, vecNormalizedVel, tr.endpos, 0.7f );
 			dmgInfo.SetDamagePosition( tr.endpos );
 			pOther->DispatchTraceAttack( dmgInfo, vecNormalizedVel, &tr );
@@ -291,7 +323,14 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 				data.m_vNormal = vForward;
 				data.m_nEntIndex = tr2.fraction != 1.0f;
 			
-				DispatchEffect( "BoltImpact", data );
+				if (m_spawnflags & SF_BOLT_KNIFEMODE)
+				{
+					DispatchEffect("KnifeImpact", data);
+				}
+				else
+				{
+					DispatchEffect("BoltImpact", data);
+				}
 			}
 		}
 		
@@ -354,7 +393,14 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 				data.m_vNormal = vForward;
 				data.m_nEntIndex = 0;
 			
-				DispatchEffect( "BoltImpact", data );
+				if (m_spawnflags & SF_BOLT_KNIFEMODE)
+				{
+					DispatchEffect("KnifeImpact", data);
+				}
+				else
+				{
+					DispatchEffect("BoltImpact", data);
+				}
 				
 				UTIL_ImpactTrace( &tr, DMG_BULLET );
 

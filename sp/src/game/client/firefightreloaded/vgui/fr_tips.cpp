@@ -30,7 +30,7 @@ bool CFRTips::Init()
 	{
 		// count how many tips there are for each class and in total
 		m_iTipCountAll = 0;
-		wchar_t *wzTipCount = g_pVGuiLocalize->Find(CFmtStr("FR_Tip_Count"));
+		wchar_t *wzTipCount = g_pVGuiLocalize->Find(CFmtStr("#FR_Tip_Count"));
 		int iTipCount = wzTipCount ? _wtoi(wzTipCount) : 0;
 		m_iTipCountAll += iTipCount;
 		m_bInited = true;

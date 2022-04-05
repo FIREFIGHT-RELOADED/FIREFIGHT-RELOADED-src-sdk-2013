@@ -24,6 +24,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+
 #define BLUDGEON_HULL_DIM		16
 
 static const Vector g_bludgeonMins(-BLUDGEON_HULL_DIM, -BLUDGEON_HULL_DIM, -BLUDGEON_HULL_DIM);
@@ -31,6 +32,8 @@ static const Vector g_bludgeonMaxs(BLUDGEON_HULL_DIM, BLUDGEON_HULL_DIM, BLUDGEO
 
 ConVar    sk_plr_dmg_knife		( "sk_plr_dmg_knife","0");
 ConVar    sk_npc_dmg_knife		( "sk_npc_dmg_knife","0");
+ConVar    sk_plr_dmg_knife_thrown		("sk_plr_dmg_knife_thrown", "0");
+ConVar    sk_npc_dmg_knife_thrown		("sk_npc_dmg_knife_thrown", "0");
 
 //-----------------------------------------------------------------------------
 // CWeaponKnife
@@ -68,6 +71,65 @@ CWeaponKnife::CWeaponKnife( void )
 {
 }
 
+/*void CWeaponKnife::Precache(void)
+{
+	UTIL_PrecacheOther("crossbow_bolt");
+}*/
+
+
+#define THROWNKNIFE_AIR_VELOCITY	2500
+#define THROWNKNIFE_WATER_VELOCITY	1500
+#define	SF_BOLT_KNIFEMODE			0x00000001
+void CWeaponKnife::ThrowKnife(void)
+{
+	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
+
+	if (pOwner == NULL)
+		return;
+
+	Vector vecAiming = pOwner->GetAutoaimVector(0);
+	Vector vecSrc = pOwner->Weapon_ShootPosition();
+
+	QAngle angAiming;
+	VectorAngles(vecAiming, angAiming);
+
+	// Create a new entity with CCrossbowBolt private data
+	CBaseEntity* pBolt = CreateEntityByName("crossbow_bolt");
+	UTIL_SetOrigin(pBolt, vecSrc);
+	pBolt->SetAbsAngles(angAiming);
+	pBolt->AddSpawnFlags(SF_BOLT_KNIFEMODE);
+	pBolt->Spawn();
+	pBolt->SetOwnerEntity(pOwner);
+
+	if (pOwner->GetWaterLevel() == 3)
+	{
+		pBolt->SetAbsVelocity(vecAiming * THROWNKNIFE_WATER_VELOCITY);
+	}
+	else
+	{
+		pBolt->SetAbsVelocity(vecAiming * THROWNKNIFE_AIR_VELOCITY);
+	}
+
+	WeaponSound(WPN_DOUBLE);
+	CSoundEnt::InsertSound(SOUND_COMBAT, GetAbsOrigin(), 200, 0.2);
+
+	SendWeaponAnim(ACT_VM_SECONDARYATTACK);
+
+	m_flNextSecondaryAttack = gpGlobals->curtime + 0.75;
+}
+
+void CWeaponKnife::SecondaryAttack(void)
+{
+	ThrowKnife();
+
+	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+	if (pPlayer)
+	{
+		m_iSecondaryAttacks++;
+		gamestats->Event_WeaponFired(pPlayer, true, GetClassname());
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Get the damage amount for the animation we're doing
 // Input  : hitActivity - currently played activity
@@ -75,12 +137,6 @@ CWeaponKnife::CWeaponKnife( void )
 //-----------------------------------------------------------------------------
 float CWeaponKnife::GetDamageForActivity( Activity hitActivity )
 {
-	if ( ( GetOwner() != NULL ) && ( GetOwner()->IsPlayer() ) )
-		return sk_plr_dmg_knife.GetFloat();
-
-	if ((GetOwner() != NULL) && (GetOwner()->IsPlayer()))
-		return sk_plr_dmg_knife.GetFloat();
-
 	return sk_npc_dmg_knife.GetFloat();
 }
 

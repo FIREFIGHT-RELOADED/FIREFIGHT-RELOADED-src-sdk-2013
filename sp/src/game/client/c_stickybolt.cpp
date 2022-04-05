@@ -126,9 +126,18 @@ private:
 	Vector  m_vWorld;
 };
 
-void CreateCrossbowBolt( const Vector &vecOrigin, const Vector &vecDirection )
+void CreateCrossbowBolt( const Vector &vecOrigin, const Vector &vecDirection, bool knifeMode = false )
 {
-	model_t *pModel = (model_t *)engine->LoadModel( "models/crossbow_bolt.mdl" );
+	model_t* pModel = NULL;
+
+	if (knifeMode)
+	{
+		pModel = (model_t*)engine->LoadModel("models/weapons/w_knife.mdl");
+	}
+	else
+	{
+		pModel = (model_t*)engine->LoadModel("models/crossbow_bolt.mdl");
+	}
 
 	QAngle vAngles;
 
@@ -144,7 +153,7 @@ void CreateCrossbowBolt( const Vector &vecOrigin, const Vector &vecDirection )
 	}
 }
 
-void StickRagdollNow( const Vector &vecOrigin, const Vector &vecDirection )
+void StickRagdollNow( const Vector &vecOrigin, const Vector &vecDirection, bool knifeMode = false)
 {
 	Ray_t	shotRay;
 	trace_t tr;
@@ -161,7 +170,7 @@ void StickRagdollNow( const Vector &vecOrigin, const Vector &vecDirection )
 	CRagdollBoltEnumerator	ragdollEnum( shotRay, vecOrigin );
 	partition->EnumerateElementsAlongRay( PARTITION_CLIENT_RESPONSIVE_EDICTS, shotRay, false, &ragdollEnum );
 	
-	CreateCrossbowBolt( vecOrigin, vecDirection );
+	CreateCrossbowBolt( vecOrigin, vecDirection, knifeMode);
 }
 
 //-----------------------------------------------------------------------------
@@ -174,3 +183,14 @@ void StickyBoltCallback( const CEffectData &data )
 }
 
 DECLARE_CLIENT_EFFECT( "BoltImpact", StickyBoltCallback );
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : &data - 
+//-----------------------------------------------------------------------------
+void StickyKnifeCallback(const CEffectData& data)
+{
+	StickRagdollNow(data.m_vOrigin, data.m_vNormal, true);
+}
+
+DECLARE_CLIENT_EFFECT("KnifeImpact", StickyKnifeCallback);

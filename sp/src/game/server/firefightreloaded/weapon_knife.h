@@ -40,8 +40,10 @@ public:
 	void		AddViewKick( void );
 	float		GetDamageForActivity( Activity hitActivity );
 
+	void 		ThrowKnife(void);
 	virtual int WeaponMeleeAttack1Condition( float flDot, float flDist );
-	void		SecondaryAttack( void )	{	return;	}
+	void		SecondaryAttack(void);
+	//void 		Precache(void);
 
 	// Animation event
 	virtual void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
