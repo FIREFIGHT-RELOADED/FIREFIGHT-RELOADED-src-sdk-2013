@@ -115,7 +115,7 @@ void CWeaponKnife::ThrowKnife(void)
 
 	SendWeaponAnim(ACT_VM_SECONDARYATTACK);
 
-	m_flNextSecondaryAttack = gpGlobals->curtime + 0.75;
+	m_flNextSecondaryAttack = gpGlobals->curtime + 1.75;
 }
 
 void CWeaponKnife::SecondaryAttack(void)

@@ -132,7 +132,7 @@ void CreateCrossbowBolt( const Vector &vecOrigin, const Vector &vecDirection, bo
 
 	if (knifeMode)
 	{
-		pModel = (model_t*)engine->LoadModel("models/weapons/w_knife.mdl");
+		pModel = (model_t*)engine->LoadModel("models/knife_proj.mdl");
 	}
 	else
 	{
@@ -142,14 +142,16 @@ void CreateCrossbowBolt( const Vector &vecOrigin, const Vector &vecDirection, bo
 	QAngle vAngles;
 
 	VectorAngles( vecDirection, vAngles );
+
+	float posKnife = (knifeMode ? 12 : 8);
 	
 	if ( gpGlobals->maxClients > 1 )
 	{
-		tempents->SpawnTempModel( pModel, vecOrigin - vecDirection * 8, vAngles, Vector(0, 0, 0 ), 30.0f, FTENT_NONE );
+		tempents->SpawnTempModel( pModel, vecOrigin - vecDirection * posKnife, vAngles, Vector(0, 0, 0 ), 30.0f, FTENT_NONE );
 	}
 	else
 	{
-		tempents->SpawnTempModel( pModel, vecOrigin - vecDirection * 8, vAngles, Vector(0, 0, 0 ), 1, FTENT_NEVERDIE );
+		tempents->SpawnTempModel( pModel, vecOrigin - vecDirection * posKnife, vAngles, Vector(0, 0, 0 ), 1, FTENT_NEVERDIE );
 	}
 }
 
