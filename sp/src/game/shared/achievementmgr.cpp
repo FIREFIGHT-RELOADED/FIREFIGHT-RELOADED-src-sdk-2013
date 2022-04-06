@@ -1731,7 +1731,7 @@ void CAchievementMgr::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStats
 
 	if ( pUserStatsReceived->m_eResult != k_EResultOK )
 	{
-		DevMsg( "CTFSteamStats: failed to download stats from Steam, EResult %d\n", pUserStatsReceived->m_eResult );
+		DevMsg( "CAchievementMgr: failed to download stats from Steam, EResult %d\n", pUserStatsReceived->m_eResult );
 		return;
 	}
 
