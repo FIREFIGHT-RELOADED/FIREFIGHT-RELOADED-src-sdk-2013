@@ -172,7 +172,7 @@ public:
 	bool ShouldIgniteZombieGib( void );
 	virtual bool IsChopped( const CTakeDamageInfo &info );
 	virtual bool IsSquashed( const CTakeDamageInfo &info ) { return false; }
-	virtual void DieChopped( const CTakeDamageInfo &info, bool event_killed = false);
+	virtual void DieChopped( const CTakeDamageInfo &info);
 	virtual void Ignite( float flFlameLifetime, bool bNPCOnly = true, float flSize = 0.0f, bool bCalledByLevelDesigner = false );
 	void CopyRenderColorTo( CBaseEntity *pOther );
 

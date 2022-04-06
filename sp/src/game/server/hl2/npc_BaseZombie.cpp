@@ -1085,6 +1085,9 @@ bool CNPC_BaseZombie::IsChopped( const CTakeDamageInfo &info )
 	if (m_iHealth > 0 || flDamageThreshold <= 0.5)
 		return false;
 
+	if (info.GetDamageType() & DMG_DISSOLVE)
+		return false;
+
 	if (info.GetDamageType() & DMG_SLASH)
 		return true;
 
@@ -1119,7 +1122,7 @@ bool CNPC_BaseZombie::ShouldIgniteZombieGib( void )
 //-----------------------------------------------------------------------------
 // Purpose: Handle the special case of a zombie killed by a physics chopper.
 //-----------------------------------------------------------------------------
-void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info, bool event_killed )
+void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info)
 {
 	bool bSquashed = IsSquashed(info);
 
@@ -1129,11 +1132,10 @@ void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info, bool event_killed
 
 	if( !m_fIsHeadless && !bSquashed )
 	{
-		if( random->RandomInt( 0, 1 ) == 0 )
-		{
-			// Drop a live crab half of the time.
-			ReleaseHeadcrab( EyePosition(), forceVector * 0.005, true, false, false );
-		}
+		int randInt = random->RandomInt(0, 1);
+		bool SpawnCrabRagdoll = (randInt == 0 ? true : false);
+		// Drop a live crab half of the time.
+		ReleaseHeadcrab(EyePosition(), forceVector * 0.005, true, SpawnCrabRagdoll, false);
 	}
 
 	float flFadeTime = 0.0;
@@ -1241,11 +1243,8 @@ void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info, bool event_killed
 		DispatchParticleEffect("blood_zombie_split", GetAbsOrigin(), GetAbsAngles(), this);
 	}
 
-	if (!event_killed)
-	{
-		m_iHealth = 0;
-		Event_Killed(info);
-	}
+	m_iHealth = 0;
+	Event_Killed(info);
 }
 
 //-----------------------------------------------------------------------------
@@ -2479,7 +2478,14 @@ void CNPC_BaseZombie::ReleaseHeadcrab(const Vector &vecOrigin, const Vector &vec
 	// location of the head with magic numbers.
 	if( !m_fIsTorso )
 	{
-		vecSpot.z -= 16;
+		if (!FClassnameIs(this, "npc_zombine"))
+		{
+			vecSpot.z -= 16;
+		}
+		else
+		{
+			vecSpot.z -= 32;
+		}
 	}
 
 	if( fRagdollCrab )
@@ -2498,7 +2504,7 @@ void CNPC_BaseZombie::ReleaseHeadcrab(const Vector &vecOrigin, const Vector &vec
 				SetHeadcrabSpawnLocation( iCrabAttachment, pAnimatingGib );
 			}
 
-			if (!HeadcrabFits(pAnimatingGib) || fRemoveRagdollCrab)
+			if ((!HeadcrabFits(pAnimatingGib) || fRemoveRagdollCrab))
 			{
 				UTIL_Remove(pGib);
 				return;
@@ -2567,7 +2573,7 @@ void CNPC_BaseZombie::ReleaseHeadcrab(const Vector &vecOrigin, const Vector &vec
 			pCrab->SetAbsAngles( angles );
 		}
 
-		if( !HeadcrabFits(pCrab) )
+		if(!HeadcrabFits(pCrab))
 		{
 			UTIL_Remove(pCrab);
 			return;
