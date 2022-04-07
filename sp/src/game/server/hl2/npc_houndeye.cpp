@@ -680,7 +680,7 @@ void CNPC_Houndeye::SonicAttack ( void )
 	{
 		if (pEntity->m_takedamage != DAMAGE_NO)
 		{
-			if (!FClassnameIs(pEntity, "npc_houndeye"))
+			if (!FClassnameIs(pEntity, "npc_houndeye") || IRelationType(pEntity) == D_LI)
 			{// houndeyes don't hurt other houndeyes with their attack
 
 				// houndeyes do FULL damage if the ent in question is visible. Half damage otherwise.

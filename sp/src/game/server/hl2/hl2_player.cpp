@@ -53,6 +53,7 @@
 #include "cdll_int.h"
 #include "predicted_viewmodel.h"
 #include "firefightreloaded/fr_ragdoll.h"
+#include "func_break.h"
 
 #ifdef HL2_EPISODIC
 #include "npc_alyx_episodic.h"
@@ -1173,6 +1174,22 @@ CBaseEntity* CHL2_Player::CheckKickPropAction(CBaseViewModel* vm, const Vector& 
 			}
 		}
 	}
+	else
+	{
+		CBreakable* pBreak = dynamic_cast <CBreakable*>(pEntity);
+
+		if (pBreak)
+		{
+			dmgInfo.SetDamage(pEntity->GetHealth());
+			Vector hitDirection;
+			EyeVectors(&hitDirection, NULL, NULL);
+			VectorNormalize(hitDirection);
+			CalculateMeleeDamageForce(&dmgInfo, hitDirection, tr.endpos, 0.7f);
+			dmgInfo.SetDamagePosition(tr.endpos);
+			pBreak->DispatchTraceAttack(dmgInfo, hitDirection, &tr);
+			ApplyMultiDamage();
+		}
+	}
 
 	return pEntity;
 }
@@ -1244,6 +1261,13 @@ void CHL2_Player::KickAttack(void)
 					}
 					pDoor->PlayBreakFailSound();
 					pDoor->KickFail();
+					return;
+				}
+
+				CBreakable* pBreak = dynamic_cast <CBreakable*>(CheckKickPropAction(vm, Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), KickDamageProps, KickThrowForceMult));
+				if (pBreak)
+				{
+					EmitSound("HL2Player.kick_wall");
 					return;
 				}
 
