@@ -2410,6 +2410,7 @@ BEGIN_DATADESC( CPhysicsProp )
 	DEFINE_INPUTFUNC( FIELD_VOID, "DisableFloating", InputDisableFloating ),
 
 	DEFINE_FIELD( m_bAwake, FIELD_BOOLEAN ),
+	DEFINE_FIELD(m_flLastKick, FIELD_TIME),
 
 	DEFINE_KEYFIELD( m_massScale, FIELD_FLOAT, "massscale" ),
 	DEFINE_KEYFIELD( m_inertiaScale, FIELD_FLOAT, "inertiascale" ),
@@ -2448,6 +2449,11 @@ bool PropIsGib( CBaseEntity *pEntity )
 		return pProp->IsGib();
 	}
 	return false;
+}
+
+CPhysicsProp::CPhysicsProp(void)
+{
+	m_flLastKick = 0;
 }
 
 CPhysicsProp::~CPhysicsProp()
@@ -2513,7 +2519,6 @@ void CPhysicsProp::Spawn( )
 		SetFadeDistance( -1, 0 );
 		DisableAutoFade();
 	}
-	
 }
 
 //-----------------------------------------------------------------------------
@@ -2801,6 +2806,45 @@ void CPhysicsProp::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reaso
 				pPropInter->OnParentPhysGunDrop( pPhysGunUser, Reason );
 			}
 		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CPhysicsProp::OnPropKicked(CBaseViewModel *vm)
+{
+	if (!vm)
+	{
+		return;
+	}
+
+	int	idealSequence = vm->SelectWeightedSequence(ACT_VM_PRIMARYATTACK);
+
+	if (idealSequence >= 0)
+	{
+		m_flLastKick = gpGlobals->curtime + vm->SequenceDuration(idealSequence) - 1.0f;
+	}
+	else
+	{
+		return;
+	}
+
+	SetThink(&CPhysicsProp::OnKickedThink);
+	SetNextThink(gpGlobals->curtime);
+}
+
+void CPhysicsProp::OnKickedThink(void)
+{
+	if (m_flLastKick < gpGlobals->curtime)
+	{
+		PhysSetGameFlags(VPhysicsGetObject(), FVPHYSICS_WAS_THROWN);
+		m_bFirstCollisionAfterLaunch = true;
+		SetThink(NULL);
+	}
+	else
+	{
+		SetNextThink(gpGlobals->curtime + 0.1f);
 	}
 }
 

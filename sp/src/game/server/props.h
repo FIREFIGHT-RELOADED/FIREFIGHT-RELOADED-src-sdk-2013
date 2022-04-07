@@ -334,9 +334,7 @@ class CPhysicsProp : public CBreakableProp
 
 public:
 	~CPhysicsProp();
-	CPhysicsProp( void ) 
-	{
-	}
+	CPhysicsProp(void);
 
 	void Spawn( void );
 	void Precache();
@@ -356,6 +354,9 @@ public:
 	bool CanBePickedUpByPhyscannon( void );
 	void OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason );
 	void OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t reason );
+
+	void OnPropKicked(CBaseViewModel* vm);
+	void OnKickedThink(void);
 
 	bool GetPropDataAngles( const char *pKeyName, QAngle &vecAngles );
 	float GetCarryDistanceOffset( void );
@@ -402,6 +403,8 @@ private:
 
 	bool		m_bThrownByPlayer;
 	bool		m_bFirstCollisionAfterLaunch;
+
+	CNetworkVar(float, m_flLastKick);
 
 protected:
 	CNetworkVar( bool, m_bAwake );

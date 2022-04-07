@@ -249,6 +249,7 @@ public:
 	bool				IsIlluminatedByFlashlight( CBaseEntity *pEntity, float *flReturnDot );
 	void				SetFlashlightPowerDrainScale( float flScale ) { m_flFlashlightPowerDrainScale = flScale; }
 
+	CBaseEntity* CheckKickPropAction(CBaseViewModel* vm, const Vector& vStart, const Vector& vEnd, const Vector& mins, const Vector& maxs, int iDamage, float flForceScale);
 	void		KickAttack(void);
 	void		SetPlayerModel(void);
 	void		DeterminePlayerModel();

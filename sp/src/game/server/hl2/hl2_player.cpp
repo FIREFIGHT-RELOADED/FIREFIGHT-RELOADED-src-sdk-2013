@@ -124,7 +124,7 @@ ConVar sk_kick_throwforce_mult("sk_kick_throwforce_mult", "1");
 ConVar sk_kick_throwforce_div("sk_kick_throwforce_div", "48");
 ConVar sk_kick_dmg_div("sk_kick_dmg_div", "2");
 ConVar sk_kick_propdmg_div("sk_kick_propdmg_div", "10");
-ConVar sk_kick_shake_propmass("sk_kick_shake_propmass", "150");
+ConVar sk_kick_shake_propmass("sk_kick_shake_propmass", "250");
 
 ConVar sv_player_shootinzoom("sv_player_shootinzoom", "1", FCVAR_ARCHIVE);
 
@@ -1068,6 +1068,114 @@ void CHL2_Player::PreThink(void)
 	}
 }
 
+extern ConVar ai_show_hull_attacks;
+//------------------------------------------------------------------------------
+// Purpose :	start and end trace position, amount 
+//				of damage to do, and damage type. Returns a pointer to
+//				the damaged entity in case the NPC wishes to do
+//				other stuff to the victim (punchangle, etc)
+//
+//				Used for many contact-range melee attacks. Bites, claws, etc.
+// Input   :
+// Output  :
+//------------------------------------------------------------------------------
+CBaseEntity* CHL2_Player::CheckKickPropAction(CBaseViewModel* vm, const Vector& vStart, const Vector& vEnd, const Vector& mins, const Vector& maxs, int iDamage, float flForceScale)
+{
+	if (!vm)
+	{
+		return NULL;
+	}
+
+	// Handy debuging tool to visualize HullAttack trace
+	if (ai_show_hull_attacks.GetBool())
+	{
+		float length = (vEnd - vStart).Length();
+		Vector direction = (vEnd - vStart);
+		VectorNormalize(direction);
+		Vector hullMaxs = maxs;
+		hullMaxs.x = length + hullMaxs.x;
+		NDebugOverlay::BoxDirection(vStart, mins, hullMaxs, direction, 100, 255, 255, 20, 1.0);
+		NDebugOverlay::BoxDirection(vStart, mins, maxs, direction, 255, 0, 0, 20, 1.0);
+	}
+
+	CTakeDamageInfo	dmgInfo(this, this, iDamage, (/*DMG_PHYSGUN |*/ DMG_CLUB | DMG_KICK));
+
+	// COLLISION_GROUP_PROJECTILE does some handy filtering that's very appropriate for this type of attack, as well. (sjb) 7/25/2007
+	CTraceFilterMelee traceFilter(this, COLLISION_GROUP_NONE, &dmgInfo, flForceScale, false);
+
+	Ray_t ray;
+	ray.Init(vStart, vEnd, mins, maxs);
+
+	trace_t tr;
+	enginetrace->TraceRay(ray, MASK_SHOT_HULL, &traceFilter, &tr);
+
+	CBaseEntity* pEntity = traceFilter.m_pHit;
+
+	if (pEntity == NULL)
+	{
+		// See if perhaps I'm trying to claw/bash someone who is standing on my head.
+		Vector vecTopCenter;
+		Vector vecEnd;
+		Vector vecMins, vecMaxs;
+
+		// Do a tracehull from the top center of my bounding box.
+		vecTopCenter = GetAbsOrigin();
+		CollisionProp()->WorldSpaceAABB(&vecMins, &vecMaxs);
+		vecTopCenter.z = vecMaxs.z + 1.0f;
+		vecEnd = vecTopCenter;
+		vecEnd.z += 2.0f;
+
+		ray.Init(vecTopCenter, vEnd, mins, maxs);
+		enginetrace->TraceRay(ray, MASK_SHOT_HULL, &traceFilter, &tr);
+
+		pEntity = traceFilter.m_pHit;
+	}
+
+	if (pEntity && !pEntity->CanBeHitByMeleeAttack(this))
+	{
+		// If we touched something, but it shouldn't be hit, return nothing.
+		pEntity = NULL;
+	}
+
+	CPhysicsProp* pProp = dynamic_cast<CPhysicsProp*>(pEntity);
+	if (pProp)
+	{
+		if ((pProp->GetMoveType() == MOVETYPE_VPHYSICS) || (pProp->GetMoveType() == MOVETYPE_PUSH))
+		{
+			IPhysicsObject* pPhysicsObject = pProp->VPhysicsGetObject();
+			if (pPhysicsObject == NULL)
+			{
+				return NULL;
+			}
+
+			Vector hitDirection;
+			EyeVectors(&hitDirection, NULL, NULL);
+			VectorNormalize(hitDirection);
+			dmgInfo.SetDamagePosition(hitDirection);
+			AngularImpulse angVelocity = RandomAngularImpulse(-600, 600);
+			Vector vecForce = Pickup_DefaultPhysGunLaunchVelocity(hitDirection, pPhysicsObject->GetMass());
+			dmgInfo.SetDamageForce(vecForce);
+			pPhysicsObject->Wake();
+
+			if (pPhysicsObject->GetShadowController())
+			{
+				pPhysicsObject->RemoveShadowController();
+				pPhysicsObject->RecheckCollisionFilter();
+				pPhysicsObject->RecheckContactPoints();
+			}
+
+			pPhysicsObject->SetVelocity(&vecForce, &angVelocity);
+			pProp->OnPropKicked(vm);
+
+			if (pPhysicsObject->GetMass() >= sk_kick_shake_propmass.GetFloat())
+			{
+				UTIL_ScreenShake(this->WorldSpaceCenter(), 15.0, 25.0, 0.5, 150, SHAKE_START);
+			}
+		}
+	}
+
+	return pEntity;
+}
 
 void CHL2_Player::KickAttack(void)
 {
@@ -1124,64 +1232,40 @@ void CHL2_Player::KickAttack(void)
 
 			if (tr.m_pEnt)
 			{
-				if (!(tr.m_pEnt))
+				CBasePropDoor* pDoor = dynamic_cast<CBasePropDoor*>((CBaseEntity*)tr.m_pEnt);
+				if (pDoor)
 				{
-					//	return;
+					if (pDoor->HasSpawnFlags(SF_BREAKABLE_BY_PLAYER))
+					{
+						AngularImpulse angVelocity(random->RandomFloat(0, 45), 18, random->RandomFloat(-45, 45));
+						pDoor->PlayBreakOpenSound();
+						pDoor->BreakDoor(Weapon_ShootPosition(), angVelocity);
+						return;
+					}
+					pDoor->PlayBreakFailSound();
+					pDoor->KickFail();
+					return;
 				}
-				else
+
+				CPhysicsProp* pProp = dynamic_cast<CPhysicsProp*>(CheckKickPropAction(vm, Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), KickDamageProps, KickThrowForceMult));
+				if (pProp)
 				{
-					CBasePropDoor *pDoor = dynamic_cast<CBasePropDoor*>((CBaseEntity*)tr.m_pEnt);
-					if (pDoor)
-					{
-						if (pDoor->HasSpawnFlags(SF_BREAKABLE_BY_PLAYER))
-						{
-							AngularImpulse angVelocity(random->RandomFloat(0, 45), 18, random->RandomFloat(-45, 45));
-							pDoor->PlayBreakOpenSound();
-							pDoor->BreakDoor(Weapon_ShootPosition(), angVelocity);
-							return;
-						}
-						pDoor->PlayBreakFailSound();
-						pDoor->KickFail();
-						return;
-					}
-					CBaseEntity *pProp = this->CheckTraceHullAttack(Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), 5, (DMG_CLUB | DMG_KICK), KickThrowForceMult, false);
-					if (pProp && !pProp->IsNPC())
-					{
-						IPhysicsObject *pPhysicsObject = pProp->VPhysicsGetObject();
-						if (pPhysicsObject == NULL)
-						{
-							return;
-						}
-						CTakeDamageInfo info(this, this, KickDamageProps, (DMG_CLUB | DMG_KICK));
-						Vector hitDirection;
-						EyeVectors(&hitDirection, NULL, NULL);
-						VectorNormalize(hitDirection);
-						info.SetDamagePosition(hitDirection);
-						float flForceScale = info.GetBaseDamage() * ImpulseScale(250, 10);
-						Vector vecForce = hitDirection;
-						VectorNormalize(vecForce);
-						vecForce *= flForceScale;
-						info.SetDamageForce(vecForce);
-						pPhysicsObject->SetVelocity(&vecForce, NULL);
-						if (pPhysicsObject->GetMass() >= sk_kick_shake_propmass.GetFloat())
-						{
-							UTIL_ScreenShake(this->WorldSpaceCenter(), 15.0, 25.0, 0.5, 150, SHAKE_START);
-						}
-						EmitSound("HL2Player.kick_wall");
-						return;
-					}
-					CBaseEntity *Victim = this->CheckTraceHullAttack(Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), KickDamageFlightBoost, (DMG_CLUB | DMG_KICK), KickThrowForceMult, true);
-					if (Victim && Victim->IsNPC())
-					{
-						Vector hitDirection, up;
-						EyeVectors(&hitDirection, NULL, &up);
-						VectorNormalize(hitDirection);
-						Victim->ApplyAbsVelocityImpulse(hitDirection * 800 + up * 300);
-						EmitSound("HL2Player.kick_body");
-						return;
-					}
+					EmitSound("HL2Player.kick_wall");
+					return;
+				}
+
+				CBaseEntity* Victim = CheckTraceHullAttack(Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), KickDamageFlightBoost, (DMG_CLUB | DMG_KICK), KickThrowForceMult, true);
+				if (Victim && Victim->IsNPC())
+				{
+					Vector hitDirection, up;
+					EyeVectors(&hitDirection, NULL, &up);
+					VectorNormalize(hitDirection);
+					Victim->ApplyAbsVelocityImpulse(hitDirection * 800 + up * 300);
+					EmitSound("HL2Player.kick_body");
+					return;
 				}
 			}
+
 			UTIL_TraceLine(Weapon_ShootPosition(), vecEnd, MASK_SHOT_HULL, this, COLLISION_GROUP_NONE, &tr);//IF we hit anything else
 			if (tr.DidHit())
 			{
@@ -1192,7 +1276,6 @@ void CHL2_Player::KickAttack(void)
 			{
 				EmitSound("HL2Player.kick_fire");
 			}
-
 		}
 	}
 }
