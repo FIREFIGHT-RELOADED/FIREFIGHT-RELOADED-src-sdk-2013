@@ -273,8 +273,9 @@ void CGrappleHook::HookedThink( void )
 		SetThink(NULL);
 
 		m_hOwner->NotifyHookDied();
+		m_hPlayer->SelectLastItem();
+
 		UTIL_Remove(this);
-		m_hOwner->SendWeaponAnim(ACT_VM_IDLE);
 	}
 	else
 	{
@@ -628,7 +629,7 @@ void CWeaponGrapple::NotifyHookDied( void )
 		UTIL_Remove( m_pLightGlow ); //Kill sprite
 		m_pLightGlow = NULL;
 
-		SendWeaponAnim( ACT_VM_PRIMARYATTACK );
+		SendWeaponAnim( ACT_VM_IDLE );
 	}
 }
 
