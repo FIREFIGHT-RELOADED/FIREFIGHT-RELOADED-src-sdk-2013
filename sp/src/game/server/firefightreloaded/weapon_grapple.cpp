@@ -269,7 +269,13 @@ void CGrappleHook::HookedThink( void )
 
 	if (flDistance < 32.0f)
 	{
-		m_hPlayer->SetAbsVelocity(Vector(0,0,0));
+		//m_hPlayer->SetAbsVelocity(Vector(0,0,0));
+		
+		SetTouch(NULL);
+		SetThink(NULL);
+
+		m_hOwner->NotifyHookDied();
+		UTIL_Remove(this);
 	}
 	else
 	{
