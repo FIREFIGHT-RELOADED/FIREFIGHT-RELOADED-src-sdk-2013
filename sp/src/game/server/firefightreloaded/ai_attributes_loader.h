@@ -7,8 +7,8 @@
 class CAttributesLoader
 {
 public:
-	CAttributesLoader(const char* className, int preset);
-	virtual void Init(const char* className, int preset);
+	CAttributesLoader(const char* className, int preset, bool noError = false);
+	virtual void Init(const char* className, int preset, bool noError = false);
 	virtual const char* GetString(const char* szString, const char* defaultValue = "");
 	virtual int GetInt(const char* szString, int defaultValue = 0);
 	virtual float GetFloat(const char* szString, float defaultValue = 0.0f);

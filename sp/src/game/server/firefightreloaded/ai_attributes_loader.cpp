@@ -18,22 +18,32 @@ CAttributesLoader *LoadRandomPresetFile(const char* className)
 	if (!loader->loadedAttributes)
 	{
 		//load the first preset.
-		loader = new CAttributesLoader(className, 1);
+		loader = new CAttributesLoader(className, 1, true);
 
 		if (!loader->loadedAttributes)
 		{
+			Warning("CAttributesLoader: Cannot load random attribute preset %i for %s.\n", randPreset, className);
 			return NULL;
 		}
 	}
 
-	int randChance = random->RandomInt(1, entity_attributes_chance.GetInt());
-
-	if (loader->GetBool("persist") || randChance == entity_attributes_chance.GetInt())
+	if (!loader->GetBool("spawner_only"))
 	{
-		return loader;
+		int randChance = random->RandomInt(1, entity_attributes_chance.GetInt());
+
+		if (loader->GetBool("persist") || randChance == entity_attributes_chance.GetInt())
+		{
+			return loader;
+		}
+		else
+		{
+			loader->Die();
+			return NULL;
+		}
 	}
 	else
 	{
+		Warning("CAttributesLoader: Preset %i for %s can only be spawned-in manually. Disable \"spawner_only\" to allow this preset to spawn randomly.\n", randPreset, className);
 		loader->Die();
 		return NULL;
 	}
@@ -51,16 +61,16 @@ CAttributesLoader* LoadPresetFile(const char* className, int preset)
 	return loader;
 }
 
-CAttributesLoader::CAttributesLoader(const char *className, int preset)
+CAttributesLoader::CAttributesLoader(const char *className, int preset, bool noError)
 {
-	Init(className, preset);
+	Init(className, preset, noError);
 }
 
-void CAttributesLoader::Init(const char *className, int preset)
+void CAttributesLoader::Init(const char *className, int preset, bool noError)
 {
 	if (!className || className == NULL || strlen(className) == 0)
 	{
-		Warning("CAttributesLoader definition has no classname!\n");
+		Warning("CAttributesLoader: Definition has no classname!\n");
 		return;
 	}
 	
@@ -78,7 +88,10 @@ void CAttributesLoader::Init(const char *className, int preset)
 	}
 	else
 	{
-		Warning("Failed to load attributes for %s on preset %i!! File may not exist.\n", className, preset);
+		if (!noError)
+		{
+			Warning("CAttributesLoader: Failed to load attributes for %s on preset %i!! File may not exist.\n", className, preset);
+		}
 		loadedAttributes = false;
 	}
 	
