@@ -79,8 +79,8 @@ void CC_Compatibility(void)
 			studioHdr.Init(modelinfo->GetStudiomodel(model));
 		}
 
-		int NPCAnim = LookupSequence(&studioHdr, "Man_Gun");
-		if (NPCAnim <= 0)
+		bool NPCAnim = (LookupSequence(&studioHdr, "Man_Gun") > 0 && LookupSequence(&studioHdr, "activatebaton") > 0) ? true : false;
+		if (!NPCAnim)
 		{
 			Warning("Model %s doesn't include animations from \"combine_soldier_anims.mdl\" and/or \"elitepolice_animations.mdl\".\n", szModelName);
 			incompat++;
@@ -181,7 +181,7 @@ void CNPC_Player::Spawn( void )
 	SetMaxHealth(200);
 	SetKickDamage(sk_combine_guard_kick.GetFloat());
 
-	int iShouldUsePlayersModel = random->RandomInt(0, 3);
+	int iShouldUsePlayersModel = random->RandomInt(0, 5);
 	const char* modelName = "";
 
 	int nModels = ARRAYSIZE(g_charAvailableModels);
@@ -193,13 +193,13 @@ void CNPC_Player::Spawn( void )
 
 		if (pLocalPlayer)
 		{
-			int NPCAnim = pLocalPlayer->LookupSequence("Man_Gun");
+			bool NPCAnim = (pLocalPlayer->LookupSequence("Man_Gun") > 0 && pLocalPlayer->LookupSequence("activatebaton") > 0) ? true : false;
 			//oh my god...
 			const char* model = STRING(pLocalPlayer->GetModelName());
 			const char* fixedModelName = STRING(AllocPooledString(model));
-			if (NPCAnim <= 0)
+			if (!NPCAnim)
 			{
-				Warning("npc_player: Using pre-selected model. Check debug_check_incompatible_models for more info.\n");
+				Warning("npc_player: Using pre-selected model. Use debug_check_incompatible_models for more info.\n");
 				modelName = g_charAvailableModels[randomChoiceModels];
 			}
 			else
