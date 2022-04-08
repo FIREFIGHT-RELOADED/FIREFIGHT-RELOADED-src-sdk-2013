@@ -9,11 +9,11 @@ ConVar entity_attributes_numpresets("entity_attributes_numpresets", "10", FCVAR_
 ConVar entity_attributes_chance("entity_attributes_chance", "5", FCVAR_ARCHIVE);
 ConVar entity_attributes("entity_attributes", "1", FCVAR_ARCHIVE);
 
-CAttributesLoader *LoadRandomPresetFile(const char* className)
+CAttributesLoader *LoadRandomPresetFile(const char* className, bool noNag)
 {
 	random->SetSeed(gpGlobals->curtime);
 	int randPreset = random->RandomInt(1, entity_attributes_numpresets.GetInt());
-	CAttributesLoader* loader = new CAttributesLoader(className, randPreset);
+	CAttributesLoader* loader = new CAttributesLoader(className, randPreset, noNag);
 
 	if (!loader->loadedAttributes)
 	{
@@ -22,7 +22,10 @@ CAttributesLoader *LoadRandomPresetFile(const char* className)
 
 		if (!loader->loadedAttributes)
 		{
-			Warning("CAttributesLoader: Cannot load random attribute preset %i for %s.\n", randPreset, className);
+			if (!noNag)
+			{
+				Warning("CAttributesLoader: Cannot load random attribute preset %i for %s.\n", randPreset, className);
+			}
 			return NULL;
 		}
 	}
@@ -43,7 +46,10 @@ CAttributesLoader *LoadRandomPresetFile(const char* className)
 	}
 	else
 	{
-		Warning("CAttributesLoader: Preset %i for %s can only be spawned-in manually. Disable \"spawner_only\" to allow this preset to spawn randomly.\n", randPreset, className);
+		if (!noNag)
+		{
+			Warning("CAttributesLoader: Preset %i for %s can only be spawned-in manually. Disable \"spawner_only\" to allow this preset to spawn randomly.\n", randPreset, className);
+		}
 		loader->Die();
 		return NULL;
 	}

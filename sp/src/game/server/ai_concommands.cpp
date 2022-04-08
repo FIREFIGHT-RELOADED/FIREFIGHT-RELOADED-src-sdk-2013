@@ -612,6 +612,8 @@ CON_COMMAND_F_COMPLETION(npc_create, "Creates an NPC of the given type where the
 			baseNPC->SetName( AllocPooledString( args[3] ) );
 		}
 
+		baseNPC->m_bDisableAttributeNag = true;
+
 		DispatchSpawn(baseNPC);
 
 		if (args.ArgC() >= 3)

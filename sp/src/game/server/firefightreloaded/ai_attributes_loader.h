@@ -29,6 +29,6 @@ private:
 extern ConVar entity_attributes_numpresets;
 extern ConVar entity_attributes_chance;
 extern ConVar entity_attributes;
-CAttributesLoader *LoadRandomPresetFile(const char* className);
+CAttributesLoader *LoadRandomPresetFile(const char* className, bool noNag = false);
 CAttributesLoader *LoadPresetFile(const char* className, int preset);
 #endif
