@@ -155,5 +155,4 @@ void CAttributesLoader::Die()
 	{
 		data->deleteThis();
 	}
-	delete this;
 }

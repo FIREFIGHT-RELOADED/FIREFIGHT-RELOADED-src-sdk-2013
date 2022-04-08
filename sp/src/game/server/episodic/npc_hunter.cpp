@@ -63,9 +63,11 @@
 #include "weapon_striderbuster.h"
 #include "monstermaker.h"
 #include "weapon_rpg.h"
+#include "hl2/grenade_frag.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
 
 class CNPC_Hunter;
 
@@ -6231,7 +6233,7 @@ void CNPC_Hunter::BeginVolley( int nNum, float flStartTime )
 	m_flNextFlechetteTime = flStartTime;
 }
 
-
+#define COMBINE_GRENADE_TIMER		3.5
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 bool CNPC_Hunter::ShootFlechette( CBaseEntity *pTargetEntity, bool bSingleShot )
@@ -6291,13 +6293,30 @@ bool CNPC_Hunter::ShootFlechette( CBaseEntity *pTargetEntity, bool bSingleShot )
 	QAngle angShoot;
 	VectorAngles( vecShoot, angShoot );
 
-	if (m_pAttributes && m_pAttributes->GetBool("fire_rockets"))
+	if (m_pAttributes)
 	{
-		CMissile* pRocket = (CMissile*)CBaseEntity::Create("rpg_missile", vecSrc, angShoot, this);
+		if (m_pAttributes->GetBool("fire_rockets"))
+		{
+			CMissile* pRocket = (CMissile*)CBaseEntity::Create("rpg_missile", vecSrc, angShoot, this);
 
-		pRocket->DumbFire();
-		pRocket->SetNextThink(gpGlobals->curtime + 0.1f);
-		pRocket->SetAbsVelocity(vecShoot * hunter_flechette_speed.GetFloat());
+			pRocket->DumbFire();
+			pRocket->SetNextThink(gpGlobals->curtime + 0.1f);
+			pRocket->SetAbsVelocity(vecShoot * hunter_flechette_speed.GetFloat());
+		}
+		else if (m_pAttributes->GetBool("fire_grenades"))
+		{
+			Vector vecSpin;
+			vecSpin.x = random->RandomFloat(-1000.0, 1000.0);
+			vecSpin.y = random->RandomFloat(-1000.0, 1000.0);
+			vecSpin.z = random->RandomFloat(-1000.0, 1000.0);
+
+			Vector forward, up, vecThrow;
+
+			GetVectors(&forward, NULL, &up);
+			vecThrow = forward * 750 + up * 175;
+			bool bFireGrenade = ((random->RandomInt(0, 1) == 1 && g_pGameRules->GetSkillLevel() >= SKILL_HARD) ? true : false);
+			Fraggrenade_Create(vecSrc, vec3_angle, vecThrow, vecSpin, this, COMBINE_GRENADE_TIMER, true, bFireGrenade);
+		}
 	}
 	else
 	{

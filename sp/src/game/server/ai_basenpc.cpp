@@ -7073,6 +7073,31 @@ void CAI_BaseNPC::GiveOutline(Vector& outlineColor)
 	AddGlowEffect();
 }
 
+float CAI_BaseNPC::GetSequenceGroundSpeed(CStudioHdr* pStudioHdr, int iSequence)
+{
+	float t = SequenceDuration(pStudioHdr, iSequence);
+	float defaultSpeed = (GetSequenceMoveDist(pStudioHdr, iSequence) / t);
+
+	if (t > 0)
+	{
+		if (m_pAttributes != NULL)
+		{
+			float additionalSpeed = m_pAttributes->GetFloat("additional_speed");
+
+			if (additionalSpeed > 0.0f)
+			{
+				return defaultSpeed + additionalSpeed;
+			}
+		}
+
+		return defaultSpeed;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
 //-----------------------------------------------------------------------------
 
 bool CAI_BaseNPC::CreateVPhysics()

@@ -102,7 +102,7 @@ public:
 	float	GetSequenceCycleRate( CStudioHdr *pStudioHdr, int iSequence );
 	inline float	GetSequenceCycleRate( int iSequence ) { return GetSequenceCycleRate(GetModelPtr(),iSequence); }
 	float	GetLastVisibleCycle( CStudioHdr *pStudioHdr, int iSequence );
-	virtual float	GetSequenceGroundSpeed( CStudioHdr *pStudioHdr, int iSequence );
+	virtual float	GetSequenceGroundSpeed( CStudioHdr *pStudioHdr, int iSequence);
 	inline float GetSequenceGroundSpeed( int iSequence ) { return GetSequenceGroundSpeed(GetModelPtr(), iSequence); }
 	void	ResetActivityIndexes ( void );
 	void    ResetEventIndexes ( void );

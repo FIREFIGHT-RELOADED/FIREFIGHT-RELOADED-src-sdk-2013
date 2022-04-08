@@ -523,6 +523,8 @@ public:
 	virtual void		LoadInitAttributes(void);
 	virtual void		GiveAttributes(int preset);
 	virtual void		GiveOutline(Vector& outlineColor);
+	virtual float		GetSequenceGroundSpeed(CStudioHdr* pStudioHdr, int iSequence);
+	inline float		GetSequenceGroundSpeed(int iSequence) { return GetSequenceGroundSpeed(GetModelPtr(), iSequence); }
 	void				NPCInitThink( void );
 	virtual void		PostNPCInit() {};// called after NPC_InitThink
 	virtual void		StartNPC( void );

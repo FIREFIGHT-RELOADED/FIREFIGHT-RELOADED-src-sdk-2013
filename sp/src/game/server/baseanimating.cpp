@@ -891,7 +891,7 @@ void CBaseAnimating::ResetSequenceInfo ( )
 	}
 
 	CStudioHdr *pStudioHdr = GetModelPtr();
-	m_flGroundSpeed = GetSequenceGroundSpeed( pStudioHdr, GetSequence() ) * GetModelScale();
+	m_flGroundSpeed = GetSequenceGroundSpeed( pStudioHdr, GetSequence()) * GetModelScale();
 	m_bSequenceLoops = ((GetSequenceFlags( pStudioHdr, GetSequence() ) & STUDIO_LOOPING) != 0);
 	// m_flAnimTime = gpGlobals->time;
 	m_flPlaybackRate = 1.0;
@@ -985,32 +985,14 @@ float CBaseAnimating::GetLastVisibleCycle( CStudioHdr *pStudioHdr, int iSequence
 }
 
 
-float CBaseAnimating::GetSequenceGroundSpeed( CStudioHdr *pStudioHdr, int iSequence )
+float CBaseAnimating::GetSequenceGroundSpeed( CStudioHdr *pStudioHdr, int iSequence)
 {
 	float t = SequenceDuration( pStudioHdr, iSequence );
 	float defaultSpeed = (GetSequenceMoveDist(pStudioHdr, iSequence) / t);
 
 	if (t > 0)
 	{
-		if (IsNPC())
-		{
-			CAI_BaseNPC* npc = MyNPCPointer();
-
-			if (npc)
-			{
-				if (npc->m_pAttributes != NULL)
-				{
-					float additionalSpeed = npc->m_pAttributes->GetFloat("additional_speed", 1);
-					return defaultSpeed + additionalSpeed;
-				}
-			}
-
-			return defaultSpeed;
-		}
-		else
-		{
-			return defaultSpeed;
-		}
+		return defaultSpeed;
 	}
 	else
 	{
