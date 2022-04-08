@@ -1726,6 +1726,7 @@ void CNPC_Hunter::Precache()
 	PrecacheMaterial( "effects/water_highlight" );
 
 	UTIL_PrecacheOther( "hunter_flechette" );
+	UTIL_PrecacheOther("rpg_missile");
 	UTIL_PrecacheOther( "sparktrail" );
 
 	m_bInLargeOutdoorMap = false;
@@ -6290,17 +6291,28 @@ bool CNPC_Hunter::ShootFlechette( CBaseEntity *pTargetEntity, bool bSingleShot )
 	QAngle angShoot;
 	VectorAngles( vecShoot, angShoot );
 
-	CHunterFlechette *pFlechette = CHunterFlechette::FlechetteCreate( vecSrc, angShoot, this );
-
-	pFlechette->AddEffects( EF_NOSHADOW );
-
-	vecShoot *= hunter_flechette_speed.GetFloat();
-
-	pFlechette->Shoot( vecShoot, bStriderBuster );
-
-	if ( ShouldSeekTarget( pTargetEntity, bStriderBuster ) )
+	if (m_pAttributes && m_pAttributes->GetBool("fire_rockets"))
 	{
-		pFlechette->SetSeekTarget( pTargetEntity );
+		CMissile* pRocket = (CMissile*)CBaseEntity::Create("rpg_missile", vecSrc, angShoot, this);
+
+		pRocket->DumbFire();
+		pRocket->SetNextThink(gpGlobals->curtime + 0.1f);
+		pRocket->SetAbsVelocity(vecShoot * hunter_flechette_speed.GetFloat());
+	}
+	else
+	{
+		CHunterFlechette* pFlechette = CHunterFlechette::FlechetteCreate(vecSrc, angShoot, this);
+
+		pFlechette->AddEffects(EF_NOSHADOW);
+
+		vecShoot *= hunter_flechette_speed.GetFloat();
+
+		pFlechette->Shoot(vecShoot, bStriderBuster);
+
+		if (ShouldSeekTarget(pTargetEntity, bStriderBuster))
+		{
+			pFlechette->SetSeekTarget(pTargetEntity);
+		}
 	}
 
 	if( nShotNum == 1 && pTargetEntity->Classify() == CLASS_PLAYER_ALLY_VITAL )

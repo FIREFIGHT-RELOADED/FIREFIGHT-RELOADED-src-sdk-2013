@@ -778,7 +778,7 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 			}
 			else
 			{
-				if (!FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
+				if (GetActiveWeapon() && !FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
 				{
 					Crouch();
 				}
@@ -1723,7 +1723,7 @@ int CNPC_Combine::SelectCombatSchedule()
 			{
 				if( GetEnemy() && random->RandomFloat( 0, 100 ) < 50 && CouldShootIfCrouching( GetEnemy() ) )
 				{
-					if (!FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
+					if (GetActiveWeapon() && !FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
 					{
 						Crouch();
 					}
@@ -2158,7 +2158,7 @@ int CNPC_Combine::SelectScheduleAttack()
 			}
 		}
 
-		if (!FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
+		if (GetActiveWeapon() && !FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
 		{
 			DesireCrouch();
 		}
@@ -2267,7 +2267,7 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 			{
 				if( GetEnemy() && CouldShootIfCrouching( GetEnemy() ) )
 				{
-					if (!FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
+					if (GetActiveWeapon() && !FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
 					{
 						Crouch();
 					}
@@ -2394,7 +2394,7 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 						if (dist > COMBINE_MIN_CROUCH_DISTANCE)
 						{
 							// try crouching
-							if (!FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
+							if (GetActiveWeapon() && !FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
 							{
 								Crouch();
 
@@ -2434,7 +2434,7 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 						if (dist > COMBINE_MIN_CROUCH_DISTANCE)
 						{
 							// try crouching
-							if (!FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
+							if (GetActiveWeapon() && !FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
 							{
 								Crouch();
 
@@ -3292,7 +3292,7 @@ int CNPC_Combine::MeleeAttack1Conditions ( float flDot, float flDist )
 		return COND_NONE;
 	}
 
-	if (FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
+	if (GetActiveWeapon() && FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
 	{
 		return COND_NONE;
 	}
