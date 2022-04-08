@@ -76,7 +76,10 @@ void CAttributesLoader::Init(const char *className, int preset, bool noError)
 {
 	if (!className || className == NULL || strlen(className) == 0)
 	{
-		Warning("CAttributesLoader: Definition has no classname!\n");
+		if (!noError)
+		{
+			Warning("CAttributesLoader: Definition has no classname!\n");
+		}
 		return;
 	}
 	

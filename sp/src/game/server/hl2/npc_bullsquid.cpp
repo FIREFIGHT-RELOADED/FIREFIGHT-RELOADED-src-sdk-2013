@@ -29,9 +29,10 @@
 #include "vstdlib/random.h"
 #include "engine/IEngineSound.h"
 #include "movevars_shared.h"
-
+#include "hl2/grenade_frag.h"
 #include "ai_hint.h"
 #include "ai_senses.h"
+#include "hl2/grenade_ar2.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -154,6 +155,8 @@ void CNPC_Bullsquid::Precache()
 	PrecacheModel( "models/bullsquid.mdl" );
 
 	UTIL_PrecacheOther( "grenade_spit" );
+	UTIL_PrecacheOther("npc_grenade_frag");
+	UTIL_PrecacheOther("grenade_ar2");
 
 	PrecacheScriptSound( "NPC_Bullsquid.Idle" );
 	PrecacheScriptSound( "NPC_Bullsquid.Pain" );
@@ -394,6 +397,74 @@ bool CNPC_Bullsquid::GetSpitVector(const Vector &vecStartPos, const Vector &vecT
 	return true;
 }
 
+#define COMBINE_GRENADE_TIMER		3.5
+extern ConVar sk_npc_dmg_smg1_grenade;
+
+void CNPC_Bullsquid::CreateDefaultProjectile(const Vector &vSpitPos, Vector &vecToss, float flVelocity, int i)
+{
+	CGrenadeSpit* pGrenade = (CGrenadeSpit*)CreateEntityByName("grenade_spit");
+	pGrenade->SetAbsOrigin(vSpitPos);
+	pGrenade->SetAbsAngles(vec3_angle);
+	DispatchSpawn(pGrenade);
+	pGrenade->SetThrower(this);
+	pGrenade->SetOwnerEntity(this);
+
+	if (i == 0)
+	{
+		pGrenade->SetSpitSize(SPIT_LARGE);
+		pGrenade->SetAbsVelocity(vecToss * flVelocity);
+	}
+	else
+	{
+		pGrenade->SetAbsVelocity((vecToss + RandomVector(-0.035f, 0.035f)) * flVelocity);
+		pGrenade->SetSpitSize(random->RandomInt(SPIT_SMALL, SPIT_MEDIUM));
+	}
+
+	// Tumble through the air
+	pGrenade->SetLocalAngularVelocity(QAngle(random->RandomFloat(-250, -500),
+		random->RandomFloat(-250, -500),
+		random->RandomFloat(-250, -500)));
+}
+
+void CNPC_Bullsquid::CreateSMGGrenadeProjectile(const Vector& vSpitPos, Vector &vecToss, float flVelocity, int i)
+{
+	//Create the grenade
+	CGrenadeAR2* pGrenade = (CGrenadeAR2*)Create("grenade_ar2", vSpitPos, vec3_angle, this);
+	pGrenade->SetMoveType(MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE);
+	pGrenade->SetThrower(this);
+	pGrenade->SetGravity(0.5);
+	pGrenade->SetDamage(sk_npc_dmg_smg1_grenade.GetFloat());
+
+	if (i == 0)
+	{
+		pGrenade->SetAbsVelocity(vecToss * flVelocity);
+	}
+	else
+	{
+		pGrenade->SetAbsVelocity((vecToss + RandomVector(-0.25f, 0.25f)) * flVelocity);
+	}
+
+	// Tumble through the air
+	pGrenade->SetLocalAngularVelocity(QAngle(random->RandomFloat(-250, -500),
+		random->RandomFloat(-250, -500),
+		random->RandomFloat(-250, -500)));
+}
+
+void CNPC_Bullsquid::CreateFragGrenadeProjectile(const Vector& vSpitPos, Vector &vecToss, float flVelocity)
+{
+	Vector vecSpin;
+	vecSpin.x = random->RandomFloat(-1000.0, 1000.0);
+	vecSpin.y = random->RandomFloat(-1000.0, 1000.0);
+	vecSpin.z = random->RandomFloat(-1000.0, 1000.0);
+
+	Vector forward, up, vecThrow;
+
+	GetVectors(&forward, NULL, &up);
+	vecThrow = forward * flVelocity * 750 + up * 175;
+	bool bFireGrenade = ((random->RandomInt(0, 1) == 1 && g_pGameRules->GetSkillLevel() >= SKILL_HARD) ? true : false);
+	Fraggrenade_Create(vSpitPos, vec3_angle, vecThrow, vecSpin, this, COMBINE_GRENADE_TIMER, true, bFireGrenade);
+}
+
 //=========================================================
 // HandleAnimEvent - catches the monster-specific messages
 // that occur when tagged animation frames are played.
@@ -452,29 +523,27 @@ void CNPC_Bullsquid::HandleAnimEvent( animevent_t *pEvent )
 
 			for (int i = 0; i < 6; i++)
 			{
-				CGrenadeSpit *pGrenade = (CGrenadeSpit*)CreateEntityByName("grenade_spit");
-				pGrenade->SetAbsOrigin(vSpitPos);
-				pGrenade->SetAbsAngles(vec3_angle);
-				DispatchSpawn(pGrenade);
-				pGrenade->SetThrower(this);
-				pGrenade->SetOwnerEntity(this);
-
-				if (i == 0)
+				if (m_pAttributes)
 				{
-					pGrenade->SetSpitSize(SPIT_LARGE);
-					pGrenade->SetAbsVelocity(vecToss * flVelocity);
+					int projInt = m_pAttributes->GetInt("new_projectile");
+
+					switch (projInt)
+					{
+					case 1:
+						CreateFragGrenadeProjectile(vSpitPos, vecToss, flVelocity);
+						break;
+					case 2:
+						CreateSMGGrenadeProjectile(vSpitPos, vecToss, flVelocity, i);
+						break;
+					default:
+						CreateDefaultProjectile(vSpitPos, vecToss, flVelocity, i);
+						break;
+					}
 				}
 				else
 				{
-					pGrenade->SetAbsVelocity((vecToss + RandomVector(-0.035f, 0.035f)) * flVelocity);
-					pGrenade->SetSpitSize(random->RandomInt(SPIT_SMALL, SPIT_MEDIUM));
+					CreateDefaultProjectile(vSpitPos, vecToss, flVelocity, i);
 				}
-
-				// Tumble through the air
-				pGrenade->SetLocalAngularVelocity(QAngle(random->RandomFloat(-250, -500),
-					random->RandomFloat(-250, -500),
-					random->RandomFloat(-250, -500)));
-
 			}
 
 			for (int i = 0; i < 8; i++)
@@ -502,7 +571,18 @@ void CNPC_Bullsquid::HandleAnimEvent( animevent_t *pEvent )
 
 		case BSQUID_AE_WHIP_SND:
 		{
-			EmitSound( "NPC_Bullsquid.TailWhip" );
+			CBaseEntity* pHurt = CheckTraceHullAttack(70, Vector(-16, -16, -16), Vector(16, 16, 16), sk_bullsquid_dmg_whip.GetFloat(), DMG_SLASH | DMG_ALWAYSGIB);
+			if (pHurt)
+			{
+				Vector right, up;
+				AngleVectors(GetAbsAngles(), NULL, &right, &up);
+
+				if (pHurt->GetFlags() & (FL_NPC | FL_CLIENT))
+					pHurt->ViewPunch(QAngle(20, 0, -20));
+
+				pHurt->ApplyAbsVelocityImpulse(100 * (up + 2 * right));
+			}
+			EmitSound("NPC_Bullsquid.TailWhip");
 			break;
 		}
 

@@ -610,10 +610,10 @@ void CAI_BaseNPC::Event_Killed( const CTakeDamageInfo &info )
 		m_bImportanRagdoll = RagdollManager_SaveImportant( this );
 	}
 
-	if (m_pAttributes != NULL)
+	/*if (m_pAttributes != NULL)
 	{
 		m_pAttributes->Die();
-	}
+	}*/
 	
 	// Make sure this condition is fired too (OnTakeDamage breaks out before this happens on death)
 	SetCondition( COND_LIGHT_DAMAGE );
@@ -7004,7 +7004,7 @@ void CAI_BaseNPC::NPCInit ( void )
 
 	m_EnemiesSerialNumber = -1;
 
-	if (g_fr_spawneroldfunctionality.GetBool() && entity_attributes.GetBool())
+	if (!m_bDisableInitAttributes && g_fr_spawneroldfunctionality.GetBool() && entity_attributes.GetBool())
 	{
 		m_pAttributes = LoadRandomPresetFile(GetClassname(), m_bDisableAttributeNag);
 		LoadInitAttributes();

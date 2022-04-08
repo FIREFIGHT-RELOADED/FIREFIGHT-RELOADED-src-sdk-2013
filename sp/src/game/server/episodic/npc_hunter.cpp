@@ -64,6 +64,8 @@
 #include "monstermaker.h"
 #include "weapon_rpg.h"
 #include "hl2/grenade_frag.h"
+#include "hl2/grenade_spit.h"
+#include "hl2/grenade_ar2.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1331,6 +1333,11 @@ private:
 	bool HandleChargeImpact( Vector vecImpact, CBaseEntity *pEntity );
 
 	void BeginVolley( int nNum, float flStartTime );
+	void CreateRPGRocketProjectile(const Vector& vecSrc, Vector& vecShoot, QAngle& angShoot);
+	void CreateFragGrenadeProjectile(const Vector& vecSrc, QAngle& angShoot);
+	void CreateSpitProjectile(const Vector& vecSrc, Vector& vecShoot, QAngle& angShoot, int nShotNum);
+	void CreateCombineBallProjectile(const Vector& vecSrc, Vector& vecShoot, QAngle& angShoot);
+	void CreateDefaultProjectile(CBaseEntity* pTargetEntity, const Vector &vecSrc, Vector& vecShoot, QAngle& angShoot);
 	bool ShootFlechette( CBaseEntity *pTargetEntity, bool bSingleShot );
 	bool ShouldSeekTarget( CBaseEntity *pTargetEntity, bool bStriderBuster );
 	void GetShootDir( Vector &vecDir, const Vector &vecSrc, CBaseEntity *pTargetEntity, bool bStriderbuster, int nShotNum, bool bSingleShot );
@@ -1728,6 +1735,9 @@ void CNPC_Hunter::Precache()
 	PrecacheMaterial( "effects/water_highlight" );
 
 	UTIL_PrecacheOther( "hunter_flechette" );
+	UTIL_PrecacheOther("grenade_spit");
+	UTIL_PrecacheOther("npc_grenade_frag");
+	UTIL_PrecacheOther("grenade_ar2");
 	UTIL_PrecacheOther("rpg_missile");
 	UTIL_PrecacheOther( "sparktrail" );
 
@@ -6234,6 +6244,93 @@ void CNPC_Hunter::BeginVolley( int nNum, float flStartTime )
 }
 
 #define COMBINE_GRENADE_TIMER		3.5
+
+extern ConVar sk_weapon_ar2_alt_fire_duration;
+extern ConVar sk_weapon_ar2_alt_fire_radius;
+extern ConVar sk_weapon_ar2_alt_fire_mass;
+extern ConVar sk_npc_dmg_smg1_grenade;
+
+void CNPC_Hunter::CreateDefaultProjectile(CBaseEntity* pTargetEntity, const Vector& vecSrc, Vector& vecShoot, QAngle& angShoot)
+{
+	bool bStriderBuster = IsStriderBuster(pTargetEntity);
+	CHunterFlechette* pFlechette = CHunterFlechette::FlechetteCreate(vecSrc, angShoot, this);
+
+	pFlechette->AddEffects(EF_NOSHADOW);
+
+	vecShoot *= hunter_flechette_speed.GetFloat();
+
+	pFlechette->Shoot(vecShoot, bStriderBuster);
+
+	if (ShouldSeekTarget(pTargetEntity, bStriderBuster))
+	{
+		pFlechette->SetSeekTarget(pTargetEntity);
+	}
+}
+
+void CNPC_Hunter::CreateCombineBallProjectile(const Vector& vecSrc, Vector& vecShoot, QAngle& angShoot)
+{
+	float flAmmoRatio = 1.0f;
+	float flDuration = RemapValClamped(flAmmoRatio, 0.0f, 1.0f, 0.5f, sk_weapon_ar2_alt_fire_duration.GetFloat());
+	float flRadius = RemapValClamped(flAmmoRatio, 0.0f, 1.0f, 4.0f, sk_weapon_ar2_alt_fire_radius.GetFloat());
+	// Fire the combine ball
+	CreateCombineBall(vecSrc,
+		vecShoot * hunter_flechette_speed.GetFloat(),
+		flRadius,
+		sk_weapon_ar2_alt_fire_mass.GetFloat(),
+		flDuration,
+		this);
+}
+
+void CNPC_Hunter::CreateSpitProjectile(const Vector& vecSrc, Vector& vecShoot, QAngle& angShoot, int nShotNum)
+{
+	CGrenadeSpit* pGrenade = (CGrenadeSpit*)CreateEntityByName("grenade_spit");
+	pGrenade->SetAbsOrigin(vecSrc);
+	pGrenade->SetAbsAngles(angShoot);
+	DispatchSpawn(pGrenade);
+	pGrenade->SetThrower(this);
+	pGrenade->SetOwnerEntity(this);
+
+	if (nShotNum == 0)
+	{
+		pGrenade->SetSpitSize(SPIT_LARGE);
+		pGrenade->SetAbsVelocity(vecShoot * hunter_flechette_speed.GetFloat());
+	}
+	else
+	{
+		pGrenade->SetAbsVelocity((vecShoot + RandomVector(-0.035f, 0.035f)) * hunter_flechette_speed.GetFloat());
+		pGrenade->SetSpitSize(random->RandomInt(SPIT_SMALL, SPIT_MEDIUM));
+	}
+
+	// Tumble through the air
+	pGrenade->SetLocalAngularVelocity(QAngle(random->RandomFloat(-250, -500),
+		random->RandomFloat(-250, -500),
+		random->RandomFloat(-250, -500)));
+}
+
+void CNPC_Hunter::CreateFragGrenadeProjectile(const Vector& vecSrc, QAngle& angShoot)
+{
+	Vector vecSpin;
+	vecSpin.x = random->RandomFloat(-1000.0, 1000.0);
+	vecSpin.y = random->RandomFloat(-1000.0, 1000.0);
+	vecSpin.z = random->RandomFloat(-1000.0, 1000.0);
+
+	Vector forward, up, vecThrow;
+
+	GetVectors(&forward, NULL, &up);
+	vecThrow = forward * 750 + up * 175;
+	bool bFireGrenade = ((random->RandomInt(0, 1) == 1 && g_pGameRules->GetSkillLevel() >= SKILL_HARD) ? true : false);
+	Fraggrenade_Create(vecSrc, angShoot, vecThrow, vecSpin, this, COMBINE_GRENADE_TIMER, true, bFireGrenade);
+}
+
+void CNPC_Hunter::CreateRPGRocketProjectile(const Vector& vecSrc, Vector& vecShoot, QAngle& angShoot)
+{
+	CMissile* pRocket = (CMissile*)CBaseEntity::Create("rpg_missile", vecSrc, angShoot, this);
+
+	pRocket->DumbFire();
+	pRocket->SetNextThink(gpGlobals->curtime + 0.1f);
+	pRocket->SetAbsVelocity(vecShoot * hunter_flechette_speed.GetFloat());
+}
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 bool CNPC_Hunter::ShootFlechette( CBaseEntity *pTargetEntity, bool bSingleShot )
@@ -6295,43 +6392,30 @@ bool CNPC_Hunter::ShootFlechette( CBaseEntity *pTargetEntity, bool bSingleShot )
 
 	if (m_pAttributes)
 	{
-		if (m_pAttributes->GetBool("fire_rockets"))
+		int projInt = m_pAttributes->GetInt("new_projectile");
+
+		switch (projInt)
 		{
-			CMissile* pRocket = (CMissile*)CBaseEntity::Create("rpg_missile", vecSrc, angShoot, this);
-
-			pRocket->DumbFire();
-			pRocket->SetNextThink(gpGlobals->curtime + 0.1f);
-			pRocket->SetAbsVelocity(vecShoot * hunter_flechette_speed.GetFloat());
-		}
-		else if (m_pAttributes->GetBool("fire_grenades"))
-		{
-			Vector vecSpin;
-			vecSpin.x = random->RandomFloat(-1000.0, 1000.0);
-			vecSpin.y = random->RandomFloat(-1000.0, 1000.0);
-			vecSpin.z = random->RandomFloat(-1000.0, 1000.0);
-
-			Vector forward, up, vecThrow;
-
-			GetVectors(&forward, NULL, &up);
-			vecThrow = forward * 750 + up * 175;
-			bool bFireGrenade = ((random->RandomInt(0, 1) == 1 && g_pGameRules->GetSkillLevel() >= SKILL_HARD) ? true : false);
-			Fraggrenade_Create(vecSrc, vec3_angle, vecThrow, vecSpin, this, COMBINE_GRENADE_TIMER, true, bFireGrenade);
+			case 1:
+				CreateRPGRocketProjectile(vecSrc, vecShoot, angShoot);
+				break;
+			case 2:
+				CreateFragGrenadeProjectile(vecSrc, angShoot);
+				break;
+			case 3:
+				CreateSpitProjectile(vecSrc, vecShoot, angShoot, nShotNum);
+				break;
+			case 4:
+				CreateCombineBallProjectile(vecSrc, vecShoot, angShoot);
+				break;
+			default:
+				CreateDefaultProjectile(pTargetEntity, vecSrc, vecShoot, angShoot);
+				break;
 		}
 	}
 	else
 	{
-		CHunterFlechette* pFlechette = CHunterFlechette::FlechetteCreate(vecSrc, angShoot, this);
-
-		pFlechette->AddEffects(EF_NOSHADOW);
-
-		vecShoot *= hunter_flechette_speed.GetFloat();
-
-		pFlechette->Shoot(vecShoot, bStriderBuster);
-
-		if (ShouldSeekTarget(pTargetEntity, bStriderBuster))
-		{
-			pFlechette->SetSeekTarget(pTargetEntity);
-		}
+		CreateDefaultProjectile(pTargetEntity, vecSrc, vecShoot, angShoot);
 	}
 
 	if( nShotNum == 1 && pTargetEntity->Classify() == CLASS_PLAYER_ALLY_VITAL )

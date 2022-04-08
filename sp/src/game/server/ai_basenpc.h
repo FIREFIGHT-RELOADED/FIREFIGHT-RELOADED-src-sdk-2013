@@ -1402,6 +1402,7 @@ private:
 public:
 	CAttributesLoader* m_pAttributes;
 	bool			m_bDisableAttributeNag;
+	bool			m_bDisableInitAttributes;
 	//-----------------------------------------------------
 	//
 	// Eye position, view offset, head direction, eye direction

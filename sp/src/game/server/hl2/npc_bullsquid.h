@@ -36,6 +36,9 @@ public:
 
 	float MaxYawSpeed ( void );
 
+	void CreateDefaultProjectile(const Vector& vSpitPos, Vector &vecToss, float flVelocity, int i);
+	void CreateSMGGrenadeProjectile(const Vector& vSpitPos, Vector &vecToss, float flVelocity, int i);
+	void CreateFragGrenadeProjectile(const Vector& vSpitPos, Vector &vecToss, float flVelocity);
 	void HandleAnimEvent( animevent_t *pEvent );
 
 	int RangeAttack1Conditions( float flDot, float flDist );
