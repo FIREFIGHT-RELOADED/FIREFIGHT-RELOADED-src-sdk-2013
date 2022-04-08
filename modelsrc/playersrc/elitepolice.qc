@@ -2,23 +2,9 @@
 
 $modelname "player/playermodels/ElitePolice.mdl"
 
-$model "police" "elitepolice_reference.smd" {
-
-	flexfile "elitepolice_01.vta" 
-	{
-		defaultflex frame 0
-	}
-
-	flexcontroller head range -30 30 "head_rightleft"
-	flexcontroller head range -15 15 "head_updown"
-	flexcontroller head range -15 15 "head_tilt"
-	flexcontroller eyes range -30 30 "eyes_updown"
-	flexcontroller eyes range -30 30 "eyes_rightleft"
-	flexcontroller body range -30 30 "body_rightleft"
-	flexcontroller chest range -30 30 "chest_rightleft"
-	flexcontroller head range -0.2 0.2 "head_forwardback"
-	flexcontroller gesture range -1 1 "gesture_updown"
-	flexcontroller gesture range -1 1 "gesture_rightleft"
+$bodygroup "police"
+{
+	studio "elitepolice_reference.smd"
 }
 $bodygroup "manhack"
 {

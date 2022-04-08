@@ -35,6 +35,9 @@
 #include "mathlib/vector.h"
 */
 
+#include <animation.h>
+#include <datacache/imdlcache.h>
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -50,8 +53,53 @@ extern ConVar sv_regeneration_wait_time;
 extern ConVar sv_regeneration_rate_default;
 extern ConVar sv_regeneration_rate;
 extern ConVar sv_regen_interval;
+
 static ConVar npc_playerbot_friendlyfire("npc_playerbot_friendlyfire", "0", FCVAR_ARCHIVE);
 static ConVar npc_playerbot_useplayersmodel("npc_playerbot_useplayersmodel", "1", FCVAR_ARCHIVE);
+
+//------------------------------------------------------------------------------
+// Purpose: 
+//------------------------------------------------------------------------------
+void CC_Compatibility(void)
+{
+	MDLCACHE_CRITICAL_SECTION();
+	FileFindHandle_t findHandle = NULL;
+	int incompat = 0;
+
+	const char* pszFilename = g_pFullFileSystem->FindFirst("models/player/playermodels/*.mdl", &findHandle);
+	while (pszFilename)
+	{
+		char szModelName[2048];
+		Q_snprintf(szModelName, sizeof(szModelName), "models/player/playermodels/%s", pszFilename);
+		
+		CStudioHdr studioHdr;
+		const model_t* model = modelinfo->GetModel(modelinfo->GetModelIndex(szModelName));
+		if (model)
+		{
+			studioHdr.Init(modelinfo->GetStudiomodel(model));
+		}
+
+		int NPCAnim = LookupSequence(&studioHdr, "Man_Gun");
+		if (NPCAnim <= 0)
+		{
+			Warning("Model %s doesn't include animations from \"combine_soldier_anims.mdl\" and/or \"elitepolice_animations.mdl\".\n", szModelName);
+			incompat++;
+		}
+
+		pszFilename = g_pFullFileSystem->FindNext(findHandle);
+	}
+
+	if (incompat > 0)
+	{
+		Warning("Please add these before '$includemodel \"player/male_shared.mdl\"' in your models' QCs for npc_playerbots to use the models!\n");
+	}
+	else
+	{
+		Msg("No NPC animation incompatibilities found!\n");
+	}
+	g_pFullFileSystem->FindClose(findHandle);
+}
+static ConCommand debug_check_incompatible_models("debug_check_incompatible_models", CC_Compatibility, "", FCVAR_NONE);
 
 LINK_ENTITY_TO_CLASS( npc_playerbot, CNPC_Player );
 
@@ -151,8 +199,7 @@ void CNPC_Player::Spawn( void )
 			const char* fixedModelName = STRING(AllocPooledString(model));
 			if (NPCAnim <= 0)
 			{
-				Warning("npc_player: Model %s doesn't include animations from \"combine_soldier_anims.mdl\" and \"elitepolice_animations.mdl\". Please add these before '$includemodel \"player/male_shared.mdl\"' in your QC!\n", fixedModelName);
-				Warning("npc_player: Using pre-selected model.\n", fixedModelName);
+				Warning("npc_player: Using pre-selected model. Check debug_check_incompatible_models for more info.\n");
 				modelName = g_charAvailableModels[randomChoiceModels];
 			}
 			else

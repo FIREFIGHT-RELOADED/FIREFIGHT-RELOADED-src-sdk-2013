@@ -33,6 +33,8 @@ extern ConVar in_forceuser;
 #define VIEWMODEL_ANIMATION_PARITY_BITS 3
 #define SCREEN_OVERLAY_MATERIAL "vgui/screens/vgui_overlay"
 
+ConVar ironsight_speed("ironsight_speed", "15", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -392,7 +394,7 @@ void CBaseViewModel::CalcIronsights(Vector &pos, QAngle &ang)
 		return;
 
 	//get delta time for interpolation
-	float delta = (gpGlobals->curtime - pWeapon->m_flIronsightedTime) * 6.5f; //modify this value to adjust how fast the interpolation is
+	float delta = (gpGlobals->curtime - pWeapon->m_flIronsightedTime) * ironsight_speed.GetFloat(); //modify this value to adjust how fast the interpolation is
 	float exp = (pWeapon->IsIronsighted()) ?
 		(delta > 1.0f) ? 1.0f : delta : //normal blending
 		(delta > 1.0f) ? 0.0f : 1.0f - delta; //reverse interpolation
