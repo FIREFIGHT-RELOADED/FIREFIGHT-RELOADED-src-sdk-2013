@@ -13,6 +13,7 @@
 #include <vgui_controls/AnimationController.h>
 #include "iinput.h"
 #include "ienginevgui.h"
+#include "firefightreloaded/fr_storemenuex.h"
 #include "firefightreloaded/fr_storemenu.h"
 #include "firefightreloaded/fr_storemenu_ammo.h"
 #include "firefightreloaded/fr_storemenu_supplies.h"
@@ -72,7 +73,7 @@ IViewPortPanel* CHudViewport::CreatePanelByName(const char *szPanelName)
 
 	if (Q_strcmp(PANEL_BUY, szPanelName) == 0)
 	{
-		newpanel = new CFRStoreMenu(this);
+		newpanel = new CFRStoreMenuEX(this);//new CFRStoreMenu(this);
 		return newpanel;
 	}
 	else if (Q_strcmp(PANEL_BUY_WEAPONS, szPanelName) == 0)

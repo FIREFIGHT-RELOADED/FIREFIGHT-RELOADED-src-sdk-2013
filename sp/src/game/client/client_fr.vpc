@@ -188,6 +188,11 @@ $Project "Client (FR)"
 			
 			$Folder "Store Menu"
 			{
+				$Folder "Experimental"
+				{
+					$File	"firefightreloaded\fr_storemenuex.cpp"
+					$File	"firefightreloaded\fr_storemenuex.h"
+				}
 				$File	"firefightreloaded\fr_storemenu.cpp"
 				$File	"firefightreloaded\fr_storemenu.h"
 				$File	"firefightreloaded\fr_storemenu_ammo.cpp"
