@@ -16,6 +16,7 @@
 #include <KeyValues.h>
 #include <vgui_controls/ImageList.h>
 #include <filesystem.h>
+#include "fmtstr.h"
 
 #include <vgui_controls/RichText.h>
 #include <vgui_controls/Label.h>
@@ -39,6 +40,39 @@ using namespace vgui;
 void UpdateCursorState();
 // void DuckMessage(const char *str);
 
+Panel* CreateItemPanel(Panel *parent, const char *name, int price)
+{
+	Panel* PanelTest = new Panel(parent, "ItemPanel");
+	PanelTest->SetSize(50, 120);
+
+	Label* pLabel = new Label(PanelTest, "Title", name);
+	pLabel->SetPos(10, 25);
+	pLabel->SetWide(256);
+
+	CFmtStr hint;
+	hint.sprintf("%i Kash", price);
+	Label* pLabel2 = new Label(PanelTest, "Price", hint.Access());
+	pLabel2->SetPos(10, 50);
+	pLabel2->SetWide(256);
+
+	Button* pButton = new Button(PanelTest, "BuyButton", "Buy Item");
+	pButton->SetPos(10, 75);
+	pButton->SetWide(120);
+
+	return PanelTest;
+}
+
+void CreateItemPanels(Panel* parent, CPanelListPanel *list)
+{
+	for (int i = 1; i < 15; i++)
+	{
+		CFmtStr hint;
+		hint.sprintf("Test %i", i);
+		Panel* item1 = CreateItemPanel(parent, hint.Access(), 10);
+		list->AddItem(item1);
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
@@ -61,6 +95,11 @@ CFRStoreMenuEX::CFRStoreMenuEX(IViewPort *pViewPort) : Frame(NULL, PANEL_BUY)
 	SetProportional(true);
 
 	m_pItemList = new CPanelListPanel(this, "ItemList");
+	int x, y;
+	m_pItemList->GetSize(x, y);
+	CreateItemPanels(this, m_pItemList);
+	m_pItemList->SetSize(x, y);
+	m_pItemList->m_iScrollSpeed = 30;
 
 	LoadControlSettings("Resource/UI/StoreMenuEX.res");
 	InvalidateLayout();

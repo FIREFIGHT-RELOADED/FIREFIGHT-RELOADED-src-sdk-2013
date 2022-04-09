@@ -57,6 +57,8 @@ public:
 		return _embedded;
 	}
 
+	int m_iScrollSpeed;
+
 protected:
 
 	DATAITEM	*GetDataItem( int itemIndex );

@@ -79,6 +79,8 @@ CPanelListPanel::CPanelListPanel( vgui::Panel *parent, char const *panelName, bo
 	_embedded->SetBounds( 0, 0, 20, 20 );
 	_embedded->SetPaintBackgroundEnabled( false );
 	_embedded->SetPaintBorderEnabled( false );
+
+	m_iScrollSpeed = 5;
 }
 
 //-----------------------------------------------------------------------------
@@ -226,7 +228,7 @@ void CPanelListPanel::DeleteAllItems()
 void CPanelListPanel::OnMouseWheeled(int delta)
 {
 	int val = _vbar->GetValue();
-	val -= (delta * 3 * 5);
+	val -= (delta * 3 * m_iScrollSpeed);
 	_vbar->SetValue(val);
 }
 
