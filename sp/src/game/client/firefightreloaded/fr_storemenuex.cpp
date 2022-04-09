@@ -40,37 +40,54 @@ using namespace vgui;
 void UpdateCursorState();
 // void DuckMessage(const char *str);
 
-Panel* CreateItemPanel(Panel *parent, const char *name, int price)
+wchar_t* GrabLocalizedString(const char* name)
 {
-	Panel* PanelTest = new Panel(parent, "ItemPanel");
-	PanelTest->SetSize(50, 120);
+	wchar_t text[128];
+	wchar_t* tempString = g_pVGuiLocalize->Find(name);
 
-	Label* pLabel = new Label(PanelTest, "Title", name);
-	pLabel->SetPos(10, 25);
-	pLabel->SetWide(256);
+	// setup our localized string
+	if (tempString)
+	{
+#ifdef WIN32
+		_snwprintf(text, sizeof(text) / sizeof(wchar_t) - 1, L"%s", tempString);
+#else
+		_snwprintf(text, sizeof(text) / sizeof(wchar_t) - 1, L"%S", tempString);
+#endif
+		text[sizeof(text) / sizeof(wchar_t) - 1] = 0;
+	}
+	else
+	{
+		// string wasn't found by g_pVGuiLocalize->Find()
+		g_pVGuiLocalize->ConvertANSIToUnicode(name, text, sizeof(text));
+	}
 
-	CFmtStr hint;
-	hint.sprintf("%i Kash", price);
-	Label* pLabel2 = new Label(PanelTest, "Price", hint.Access());
-	pLabel2->SetPos(10, 50);
-	pLabel2->SetWide(256);
-
-	Button* pButton = new Button(PanelTest, "BuyButton", "Buy Item");
-	pButton->SetPos(10, 75);
-	pButton->SetWide(120);
-
-	return PanelTest;
+	wchar_t* textString = text;
+	return textString;
 }
 
-void CreateItemPanels(Panel* parent, CPanelListPanel *list)
+wchar_t* GrabLocalizedNameString(const char* name)
 {
-	for (int i = 1; i < 15; i++)
+	wchar_t text[128];
+	wchar_t* tempString = g_pVGuiLocalize->Find(CFmtStr("#GameUI_Store_Buy_%s", name));
+
+	// setup our localized string
+	if (tempString)
 	{
-		CFmtStr hint;
-		hint.sprintf("Test %i", i);
-		Panel* item1 = CreateItemPanel(parent, hint.Access(), 10);
-		list->AddItem(item1);
+#ifdef WIN32
+		_snwprintf(text, sizeof(text) / sizeof(wchar_t) - 1, L"%s", tempString);
+#else
+		_snwprintf(text, sizeof(text) / sizeof(wchar_t) - 1, L"%S", tempString);
+#endif
+		text[sizeof(text) / sizeof(wchar_t) - 1] = 0;
 	}
+	else
+	{
+		// string wasn't found by g_pVGuiLocalize->Find()
+		g_pVGuiLocalize->ConvertANSIToUnicode(name, text, sizeof(text));
+	}
+
+	wchar_t* textString = text;
+	return textString;
 }
 
 //-----------------------------------------------------------------------------
@@ -97,11 +114,11 @@ CFRStoreMenuEX::CFRStoreMenuEX(IViewPort *pViewPort) : Frame(NULL, PANEL_BUY)
 	m_pItemList = new CPanelListPanel(this, "ItemList");
 	int x, y;
 	m_pItemList->GetSize(x, y);
-	CreateItemPanels(this, m_pItemList);
+	CreateItemPanels();
 	m_pItemList->SetSize(x, y);
 	m_pItemList->m_iScrollSpeed = 30;
 
-	LoadControlSettings("Resource/UI/StoreMenuEX.res");
+	LoadControlSettings("Resource/UI/StoreMenu.res");
 	InvalidateLayout();
 }
 
@@ -120,6 +137,40 @@ void CFRStoreMenuEX::ApplySchemeSettings(IScheme *pScheme)
 	BaseClass::ApplySchemeSettings(pScheme);
 }
 
+Panel* CFRStoreMenuEX::CreateItemPanel(const char* name, int price, const char* command)
+{
+	Panel* PanelTest = new Panel(this, "ItemPanel");
+	PanelTest->SetSize(50, 120);
+
+	wchar_t* titleText = GrabLocalizedNameString(name);
+	Label* pLabel = new Label(PanelTest, "Title", titleText);
+	pLabel->SetPos(10, 25);
+	pLabel->SetWide(384);
+
+	CFmtStr hint;
+	hint.sprintf("%i KASH", price);
+	Label* pLabel2 = new Label(PanelTest, "Price", hint.Access());
+	pLabel2->SetPos(10, 50);
+	pLabel2->SetWide(384);
+
+	Button* pButton = new Button(PanelTest, "BuyButton", GrabLocalizedString("#GameUI_Store_BuyItem"), this, command);
+	pButton->SetPos(10, 75);
+	pButton->SetWide(120);
+
+	return PanelTest;
+}
+
+void CFRStoreMenuEX::CreateItemPanels()
+{
+	//TODO: add KeyValues
+	for (int i = 1; i < 15; i++)
+	{
+		CFmtStr hint;
+		hint.sprintf("Test%i", i);
+		Panel* item1 = CreateItemPanel(hint.Access(), 10, "sv_cheats 1;impulse 101");
+		m_pItemList->AddItem(item1);
+	}
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: shows the team menu
@@ -146,9 +197,12 @@ void CFRStoreMenuEX::ShowPanel(bool bShow)
 		{
 			m_iScoreBoardKey = gameuifuncs->GetButtonCodeForBind( "showscores" );
 		}
+
+		engine->ClientCmd("inshop");
 	}
 	else
 	{
+		engine->ClientCmd("outshop");
 		SetVisible( false );
 		SetMouseInputEnabled( false );
 	}
@@ -157,9 +211,16 @@ void CFRStoreMenuEX::ShowPanel(bool bShow)
 
 void CFRStoreMenuEX::OnCommand(const char *command)
 {
-	engine->ClientCmd(const_cast<char *>(command));
-	Close();
-	gViewPortInterface->ShowBackGround(false);
+	if (!Q_stricmp(command, "storecancel"))
+	{
+		Close();
+		engine->ClientCmd("outshop");
+		gViewPortInterface->ShowBackGround(false);
+	}
+	else
+	{
+		engine->ClientCmd(const_cast<char*>(command));
+	}
 	BaseClass::OnCommand(command);
 }
 

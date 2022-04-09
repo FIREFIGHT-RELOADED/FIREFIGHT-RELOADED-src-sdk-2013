@@ -23,9 +23,6 @@
 #define PANEL_SPECMENU		"specmenu"  // active spectator elements (options menus etc)
 #define PANEL_INFO			"info"
 #define PANEL_BUY			"buy"
-#define PANEL_BUY_WEAPONS			"buy_weapons"
-#define PANEL_BUY_SUPPLIES			"buy_supplies"
-#define PANEL_BUY_AMMO			"buy_ammo"
 #define PANEL_BUY_CT		"buy_ct"
 #define PANEL_BUY_TER		"buy_ter"
 #define PANEL_BUY_EQUIP_CT	"buyequip_ct"

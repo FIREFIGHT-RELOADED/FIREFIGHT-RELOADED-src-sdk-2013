@@ -165,6 +165,8 @@ $Project "Client (FR)"
 			$File	"$SRCDIR\game\shared\firefightreloaded\fr_ragdoll.h"
 			$File 	"firefightreloaded\fr_rendertargets.cpp"
 			$File 	"firefightreloaded\fr_rendertargets.h"
+			$File	"firefightreloaded\fr_storemenuex.cpp"
+			$File	"firefightreloaded\fr_storemenuex.h"
 			
 			$Folder	"NPCs"
 			{
@@ -184,23 +186,6 @@ $Project "Client (FR)"
 				$File	"gameui\NewSingleplayerGameDialog.h"
 				$File	"gameui\PlayerModelDialog.cpp"
 				$File	"gameui\PlayerModelDialog.h"
-			}
-			
-			$Folder "Store Menu"
-			{
-				$Folder "Experimental"
-				{
-					$File	"firefightreloaded\fr_storemenuex.cpp"
-					$File	"firefightreloaded\fr_storemenuex.h"
-				}
-				$File	"firefightreloaded\fr_storemenu.cpp"
-				$File	"firefightreloaded\fr_storemenu.h"
-				$File	"firefightreloaded\fr_storemenu_ammo.cpp"
-				$File	"firefightreloaded\fr_storemenu_ammo.h"
-				$File	"firefightreloaded\fr_storemenu_supplies.cpp"
-				$File	"firefightreloaded\fr_storemenu_supplies.h"
-				$File	"firefightreloaded\fr_storemenu_weapons.cpp"
-				$File	"firefightreloaded\fr_storemenu_weapons.h"
 			}
 			
 			$Folder	"Main Menu"

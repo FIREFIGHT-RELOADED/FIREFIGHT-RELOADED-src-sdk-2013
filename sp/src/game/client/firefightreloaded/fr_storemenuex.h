@@ -41,6 +41,8 @@ public:
 	virtual bool HasInputElements( void ) { return true; }
 	virtual void ShowPanel( bool bShow );
 	void OnCommand(const char *command);
+	Panel* CreateItemPanel(const char* name, int price, const char* command);
+	void CreateItemPanels();
 
 	void MoveToCenterOfScreen();
 

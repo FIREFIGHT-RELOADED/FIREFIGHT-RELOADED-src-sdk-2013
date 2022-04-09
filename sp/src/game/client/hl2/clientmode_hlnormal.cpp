@@ -14,10 +14,6 @@
 #include "iinput.h"
 #include "ienginevgui.h"
 #include "firefightreloaded/fr_storemenuex.h"
-#include "firefightreloaded/fr_storemenu.h"
-#include "firefightreloaded/fr_storemenu_ammo.h"
-#include "firefightreloaded/fr_storemenu_supplies.h"
-#include "firefightreloaded/fr_storemenu_weapons.h"
 #include "firefightreloaded/fr_moddingmenu.h"
 #include "firefightreloaded/fr_moddingmenu_mapping.h"
 #include "firefightreloaded/fr_moddingmenu_mapping_mapadd.h"
@@ -73,22 +69,7 @@ IViewPortPanel* CHudViewport::CreatePanelByName(const char *szPanelName)
 
 	if (Q_strcmp(PANEL_BUY, szPanelName) == 0)
 	{
-		newpanel = new CFRStoreMenuEX(this);//new CFRStoreMenu(this);
-		return newpanel;
-	}
-	else if (Q_strcmp(PANEL_BUY_WEAPONS, szPanelName) == 0)
-	{
-		newpanel = new CFRStoreMenuWeapons(this);
-		return newpanel;
-	}
-	else if (Q_strcmp(PANEL_BUY_SUPPLIES, szPanelName) == 0)
-	{
-		newpanel = new CFRStoreMenuSupplies(this);
-		return newpanel;
-	}
-	else if (Q_strcmp(PANEL_BUY_AMMO, szPanelName) == 0)
-	{
-		newpanel = new CFRStoreMenuAmmo(this);
+		newpanel = new CFRStoreMenuEX(this);
 		return newpanel;
 	}
 	else if (Q_strcmp(PANEL_MODDING_MAIN, szPanelName) == 0)

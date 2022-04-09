@@ -7591,85 +7591,22 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 
 		return true;
 	}
-	else if (stricmp(cmd, "buymenuweapons") == 0)
+	else if (stricmp(cmd, "inshop") == 0)
 	{
-		if (!IsDead() && g_fr_economy.GetBool())
+		if (!g_pGameRules->IsMultiplayer())
 		{
-			KeyValues *data = new KeyValues("data");
-			data->SetString("type", "1");			// show userdata from stringtable entry
-			ShowViewPortPanel(PANEL_BUY_WEAPONS, true, data);
-			if (!g_pGameRules->IsMultiplayer())
-			{
-				engine->ServerCommand("sv_cheats 1; host_timescale 0.05\n");
-			}
+			engine->ServerCommand("sv_cheats 1; host_timescale 0.05\n");
 		}
-		else
-		{
-			if (sv_store_denynotifications.GetBool())
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_StoreUseDenyNoEconomy");
-				ShowLevelMessage(hint.Access());
-			}
-			if (sv_store_denysounds.GetBool())
-			{
-				EmitSound("Store.InsufficientFunds");
-			}
-		}
+
 		return true;
 	}
-	else if (stricmp(cmd, "buymenuammo") == 0)
+	else if (stricmp(cmd, "outshop") == 0)
 	{
-		if (!IsDead() && g_fr_economy.GetBool())
+		if (!g_pGameRules->IsMultiplayer())
 		{
-			KeyValues *data = new KeyValues("data");
-			data->SetString("type", "1");			// show userdata from stringtable entry
-			ShowViewPortPanel(PANEL_BUY_AMMO, true, data);
-			if (!g_pGameRules->IsMultiplayer())
-			{
-				engine->ServerCommand("sv_cheats 1; host_timescale 0.05\n");
-			}
+			engine->ServerCommand("sv_cheats 1; host_timescale 1\n");
 		}
-		else
-		{
-			if (sv_store_denynotifications.GetBool())
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_StoreUseDenyNoEconomy");
-				ShowLevelMessage(hint.Access());
-			}
-			if (sv_store_denysounds.GetBool())
-			{
-				EmitSound("Store.InsufficientFunds");
-			}
-		}
-		return true;
-	}
-	else if (stricmp(cmd, "buymenusupplies") == 0)
-	{
-		if (!IsDead() && g_fr_economy.GetBool())
-		{
-			KeyValues *data = new KeyValues("data");
-			data->SetString("type", "1");			// show userdata from stringtable entry
-			ShowViewPortPanel(PANEL_BUY_SUPPLIES, true, data);
-			if (!g_pGameRules->IsMultiplayer())
-			{
-				engine->ServerCommand("sv_cheats 1; host_timescale 0.05\n");
-			}
-		}
-		else
-		{
-			if (sv_store_denynotifications.GetBool())
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_StoreUseDenyNoEconomy");
-				ShowLevelMessage(hint.Access());
-			}
-			if (sv_store_denysounds.GetBool())
-			{
-				EmitSound("Store.InsufficientFunds");
-			}
-		}
+
 		return true;
 	}
 	else if (stricmp(cmd, "buymenu") == 0)
@@ -7679,10 +7616,6 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 			KeyValues *data = new KeyValues("data");
 			data->SetString("type", "1");			// show userdata from stringtable entry
 			ShowViewPortPanel(PANEL_BUY, true, data);
-			if (!g_pGameRules->IsMultiplayer())
-			{
-				engine->ServerCommand("sv_cheats 1; host_timescale 0.05\n");
-			}
 		}
 		else
 		{
@@ -7699,21 +7632,12 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		}
 		return true;
 	}
-	else if (stricmp(cmd, "storecancel") == 0)
-	{
-		if (!g_pGameRules->IsMultiplayer())
-		{
-			engine->ServerCommand("sv_cheats 1; host_timescale 1\n");
-		}
-		return true;
-	}
 	else if (stricmp(cmd, "buyitem") == 0)
 	{
 		if (!IsDead() && g_fr_economy.GetBool())
 		{
 			int moneyAmount = atoi(args[2]);
 			int canGetMultiple = atoi(args[3]);
-			int menuID = atoi(args[4]);
 			if (GetMoney() < moneyAmount)
 			{
 				if (sv_store_denynotifications.GetBool())
@@ -7755,25 +7679,6 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 					EmitSound("Store.Buy");
 				}
 			}
-
-			if (menuID == 1)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_SUPPLIES, true, data);
-			}
-			else if (menuID == 2)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_AMMO, true, data);
-			}
-			else if (menuID == 3)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_WEAPONS, true, data);
-			}
 		}
 		else
 		{
@@ -7795,7 +7700,6 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		if (!IsDead() && g_fr_economy.GetBool())
 		{
 			int moneyAmount = atoi(args[3]);
-			int menuID = atoi(args[4]);
 			if (GetMoney() < moneyAmount)
 			{
 				if (sv_store_denynotifications.GetBool())
@@ -7824,25 +7728,6 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 					EmitSound("Store.Buy");
 				}
 			}
-
-			if (menuID == 1)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_SUPPLIES, true, data);
-			}
-			else if (menuID == 2)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_AMMO, true, data);
-			}
-			else if (menuID == 3)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_WEAPONS, true, data);
-			}
 		}
 		else
 		{
@@ -7864,7 +7749,6 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		if (!IsDead() && g_fr_economy.GetBool())
 		{
 			int moneyAmount = atoi(args[2]);
-			int menuID = atoi(args[3]);
 			if (GetMoney() < moneyAmount)
 			{
 				if (sv_store_denynotifications.GetBool())
@@ -7902,25 +7786,6 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 					EmitSound("Store.Buy");
 				}
 			}
-
-			if (menuID == 1)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_SUPPLIES, true, data);
-			}
-			else if (menuID == 2)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_AMMO, true, data);
-			}
-			else if (menuID == 3)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_WEAPONS, true, data);
-			}
 		}
 		else
 		{
@@ -7942,7 +7807,6 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		if (!IsDead() && g_fr_economy.GetBool())
 		{
 			int moneyAmount = atoi(args[1]);
-			int menuID = atoi(args[2]);
 			if (GetMoney() < moneyAmount)
 			{
 				if (sv_store_denynotifications.GetBool())
@@ -7980,25 +7844,6 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 					EmitSound("Store.Buy");
 				}
 			}
-
-			if (menuID == 1)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_SUPPLIES, true, data);
-			}
-			else if (menuID == 2)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_AMMO, true, data);
-			}
-			else if (menuID == 3)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_WEAPONS, true, data);
-			}
 		}
 		else
 		{
@@ -8020,7 +7865,6 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		if (!IsDead() && g_fr_economy.GetBool())
 		{
 			int moneyAmount = atoi(args[2]);
-			int menuID = atoi(args[3]);
 			if (GetMoney() < moneyAmount)
 			{
 				if (sv_store_denynotifications.GetBool())
@@ -8058,25 +7902,6 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 					EmitSound("Store.Buy");
 				}
 			}
-
-			if (menuID == 1)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_SUPPLIES, true, data);
-			}
-			else if (menuID == 2)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_AMMO, true, data);
-			}
-			else if (menuID == 3)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_WEAPONS, true, data);
-			}
 		}
 		else
 		{
@@ -8098,7 +7923,6 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		if (!IsDead() && g_fr_economy.GetBool())
 		{
 			int moneyAmount = atoi(args[1]);
-			int menuID = atoi(args[2]);
 			if (GetMoney() < moneyAmount)
 			{
 				if (sv_store_denynotifications.GetBool())
@@ -8136,25 +7960,6 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 					EmitSound("Store.Buy");
 				}
 			}
-
-			if (menuID == 1)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_SUPPLIES, true, data);
-			}
-			else if (menuID == 2)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_AMMO, true, data);
-			}
-			else if (menuID == 3)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_WEAPONS, true, data);
-			}
 		}
 		else
 		{
@@ -8177,7 +7982,6 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		{
 			int upgradeID = atoi(args[1]);
 			int moneyAmount = atoi(args[2]);
-			int menuID = atoi(args[3]);
 
 			if (GetMoney() < moneyAmount)
 			{
@@ -8230,25 +8034,6 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 					}
 				}
 			}
-
-			if (menuID == 1)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_SUPPLIES, true, data);
-			}
-			else if (menuID == 2)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_AMMO, true, data);
-			}
-			else if (menuID == 3)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_WEAPONS, true, data);
-			}
 		}
 		else
 		{
@@ -8271,7 +8056,6 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		{
 			int moneyAmount = atoi(args[2]);
 			int canGetMultiple = atoi(args[3]);
-			int menuID = atoi(args[4]);
 			if (GetMoney() < moneyAmount)
 			{
 				if (sv_store_denynotifications.GetBool())
@@ -8313,25 +8097,6 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 					EmitSound("Store.Buy");
 				}
 			}
-
-			if (menuID == 1)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_SUPPLIES, true, data);
-			}
-			else if (menuID == 2)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_AMMO, true, data);
-			}
-			else if (menuID == 3)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_WEAPONS, true, data);
-			}
 		}
 		else
 		{
@@ -8354,7 +8119,6 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		{
 			int moneyAmount = atoi(args[2]);
 			int canGetMultiple = atoi(args[3]);
-			int menuID = atoi(args[4]);
 			if (GetMoney() < moneyAmount)
 			{
 				if (sv_store_denynotifications.GetBool())
@@ -8395,25 +8159,6 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 				{
 					EmitSound("Store.Buy");
 				}
-			}
-
-			if (menuID == 1)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_SUPPLIES, true, data);
-			}
-			else if (menuID == 2)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_AMMO, true, data);
-			}
-			else if (menuID == 3)
-			{
-				KeyValues *data = new KeyValues("data");
-				data->SetString("type", "1");			// show userdata from stringtable entry
-				ShowViewPortPanel(PANEL_BUY_WEAPONS, true, data);
 			}
 		}
 		else
