@@ -1188,6 +1188,7 @@ void CBasePlayer::Reward_GivePerk(void)
 	}
 }
 
+//todo: streamline giveperk and giveitem code.
 extern ConVar sk_healthkit;
 extern ConVar sk_battery;
 

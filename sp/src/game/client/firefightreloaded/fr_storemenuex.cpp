@@ -194,11 +194,20 @@ Panel* CFRStoreMenuEX::CreateItemPanel(const char* name, int price, const char* 
 	pLabel2->SetPos(10, 50);
 	pLabel2->SetWide(384);
 
-	CFmtStr cmd;
-	cmd.sprintf(command, price);
-	Button* pButton = new Button(PanelTest, "BuyButton", GrabLocalizedString("#GameUI_Store_BuyItem"), this, cmd.Access());
-	pButton->SetPos(10, 75);
-	pButton->SetWide(120);
+	try
+	{
+		CFmtStr cmd;
+		cmd.sprintf(command, price);
+		Button* pButton = new Button(PanelTest, "BuyButton", GrabLocalizedString("#GameUI_Store_BuyItem"), this, cmd.Access());
+		pButton->SetPos(10, 75);
+		pButton->SetWide(120);
+	}
+	catch (...)
+	{
+		Label* pLabel = new Label(PanelTest, "Title", "#Valve_CorruptedItem");
+		pLabel->SetPos(10, 75);
+		pLabel->SetWide(384);
+	}
 
 	return PanelTest;
 }
