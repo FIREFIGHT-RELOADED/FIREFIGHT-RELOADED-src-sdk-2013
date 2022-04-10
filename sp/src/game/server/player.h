@@ -715,8 +715,6 @@ public:
 	virtual void RemoveSuit( void );
 	void	SetMaxSpeed( float flMaxSpeed ) { m_flMaxspeed = flMaxSpeed; }
 
-	virtual int	GetPerkValue(void) { return m_Perk; }
-
 	void	NotifyNearbyRadiationSource( float flRange );
 
 	void	SetAnimationExtension( const char *pExtension );
@@ -853,8 +851,7 @@ public:
 
 	void DetermineReward(void);
 
-	void Reward_GivePerk(void);
-	void Reward_GiveItem(void);
+	void Reward_GiveItem(bool perksOnly = false);
 	void Reward_GiveKashBonus(void);
 
 	void LevelUpClassic( void);
@@ -1115,7 +1112,6 @@ private:
 
 	CNetworkVarForDerived(int, m_MaxHealthVal);
 	CNetworkVarForDerived(int, m_MaxHealthValExtra);
-	int						m_Perk;
 	float					m_AirFinished;
 	float					m_PainFinished;
 
