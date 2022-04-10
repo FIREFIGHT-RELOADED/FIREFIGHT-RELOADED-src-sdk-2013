@@ -7699,7 +7699,7 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 	{
 		if (!IsDead() && g_fr_economy.GetBool())
 		{
-			int moneyAmount = atoi(args[3]);
+			int moneyAmount = atoi(args[2]);
 			if (GetMoney() < moneyAmount)
 			{
 				if (sv_store_denynotifications.GetBool())
@@ -7721,7 +7721,7 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 					hint.sprintf("#Valve_StoreBuySuccessItem");
 					ShowLevelMessage(hint.Access());
 				}
-				GiveAmmo(atoi(args[2]), args[1]);
+				GiveAmmo(atoi(args[3]), args[1]);
 				RemoveMoney(moneyAmount);
 				if (sv_store_buysounds.GetBool())
 				{

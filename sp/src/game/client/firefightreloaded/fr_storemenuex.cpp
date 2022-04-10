@@ -114,7 +114,8 @@ CFRStoreMenuEX::CFRStoreMenuEX(IViewPort *pViewPort) : Frame(NULL, PANEL_BUY)
 	m_pItemList = new CPanelListPanel(this, "ItemList");
 	int x, y;
 	m_pItemList->GetSize(x, y);
-	CreateItemPanels();
+	LoadItemFile("ShopCatalog", "scripts/shopcatalog_default.txt");
+	//todo: custom shop catalogs
 	m_pItemList->SetSize(x, y);
 	m_pItemList->m_iScrollSpeed = 30;
 
@@ -137,6 +138,28 @@ void CFRStoreMenuEX::ApplySchemeSettings(IScheme *pScheme)
 	BaseClass::ApplySchemeSettings(pScheme);
 }
 
+KeyValues* CFRStoreMenuEX::LoadItemFile(const char* kvName, const char* scriptPath)
+{
+	KeyValues* pKV = new KeyValues(kvName);
+	if (pKV->LoadFromFile(filesystem, scriptPath, "GAME"))
+	{
+		KeyValues* pNode = pKV->GetFirstSubKey();
+		while (pNode)
+		{
+			const char* itemName = pNode->GetString("name", "");
+			int itemPrice = pNode->GetInt("price", 0);
+			const char* itemCMD = pNode->GetString("command", 0);
+
+			Panel* item = CreateItemPanel(itemName, itemPrice, itemCMD);
+			m_pItemList->AddItem(item);
+
+			pNode = pNode->GetNextKey();
+		}
+	}
+
+	return pKV;
+}
+
 Panel* CFRStoreMenuEX::CreateItemPanel(const char* name, int price, const char* command)
 {
 	Panel* PanelTest = new Panel(this, "ItemPanel");
@@ -153,23 +176,13 @@ Panel* CFRStoreMenuEX::CreateItemPanel(const char* name, int price, const char* 
 	pLabel2->SetPos(10, 50);
 	pLabel2->SetWide(384);
 
-	Button* pButton = new Button(PanelTest, "BuyButton", GrabLocalizedString("#GameUI_Store_BuyItem"), this, command);
+	CFmtStr cmd;
+	cmd.sprintf(command, price);
+	Button* pButton = new Button(PanelTest, "BuyButton", GrabLocalizedString("#GameUI_Store_BuyItem"), this, cmd.Access());
 	pButton->SetPos(10, 75);
 	pButton->SetWide(120);
 
 	return PanelTest;
-}
-
-void CFRStoreMenuEX::CreateItemPanels()
-{
-	//TODO: add KeyValues
-	for (int i = 1; i < 15; i++)
-	{
-		CFmtStr hint;
-		hint.sprintf("Test%i", i);
-		Panel* item1 = CreateItemPanel(hint.Access(), 10, "sv_cheats 1;impulse 101");
-		m_pItemList->AddItem(item1);
-	}
 }
 
 //-----------------------------------------------------------------------------

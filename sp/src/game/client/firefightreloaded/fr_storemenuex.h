@@ -42,7 +42,7 @@ public:
 	virtual void ShowPanel( bool bShow );
 	void OnCommand(const char *command);
 	Panel* CreateItemPanel(const char* name, int price, const char* command);
-	void CreateItemPanels();
+	KeyValues* LoadItemFile(const char* kvName, const char* scriptPath);
 
 	void MoveToCenterOfScreen();
 
