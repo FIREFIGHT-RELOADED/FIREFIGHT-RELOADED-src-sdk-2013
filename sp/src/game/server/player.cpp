@@ -8050,31 +8050,17 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		}
 		return true;
 	}
-	else if (stricmp(cmd, "buycallclientcmd") == 0)
+	/*else if (stricmp(cmd, "buycmd") == 0)
 	{
 		if (!IsDead() && g_fr_economy.GetBool())
 		{
-			int moneyAmount = atoi(args[2]);
-			int canGetMultiple = atoi(args[3]);
+			int moneyAmount = atoi(args[1]);
 			if (GetMoney() < moneyAmount)
 			{
 				if (sv_store_denynotifications.GetBool())
 				{
 					CFmtStr hint;
 					hint.sprintf("#Valve_StoreBuyDenyInsufficentFunds");
-					ShowLevelMessage(hint.Access());
-				}
-				if (sv_store_denysounds.GetBool())
-				{
-					EmitSound("Store.InsufficientFunds");
-				}
-			}
-			else if (HasNamedPlayerItem(args[1]) && canGetMultiple == 0)
-			{
-				if (sv_store_denynotifications.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_StoreBuyDenyAlreadyHasItem");
 					ShowLevelMessage(hint.Access());
 				}
 				if (sv_store_denysounds.GetBool())
@@ -8090,7 +8076,6 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 					hint.sprintf("#Valve_StoreBuySuccessItem");
 					ShowLevelMessage(hint.Access());
 				}
-				engine->ClientCommand(edict(), args[1]);
 				RemoveMoney(moneyAmount);
 				if (sv_store_buysounds.GetBool())
 				{
@@ -8112,70 +8097,7 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 			}
 		}
 		return true;
-	}
-	else if (stricmp(cmd, "buycallservercmd") == 0)
-	{
-		if (!IsDead() && g_fr_economy.GetBool())
-		{
-			int moneyAmount = atoi(args[2]);
-			int canGetMultiple = atoi(args[3]);
-			if (GetMoney() < moneyAmount)
-			{
-				if (sv_store_denynotifications.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_StoreBuyDenyInsufficentFunds");
-					ShowLevelMessage(hint.Access());
-				}
-				if (sv_store_denysounds.GetBool())
-				{
-					EmitSound("Store.InsufficientFunds");
-				}
-			}
-			else if (HasNamedPlayerItem(args[1]) && canGetMultiple == 0)
-			{
-				if (sv_store_denynotifications.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_StoreBuyDenyAlreadyHasItem");
-					ShowLevelMessage(hint.Access());
-				}
-				if (sv_store_denysounds.GetBool())
-				{
-					EmitSound("Store.InsufficientFunds");
-				}
-			}
-			else
-			{
-				if (sv_store_buynotifications.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_StoreBuySuccessItem");
-					ShowLevelMessage(hint.Access());
-				}
-				engine->ServerCommand(args[1]);
-				RemoveMoney(moneyAmount);
-				if (sv_store_buysounds.GetBool())
-				{
-					EmitSound("Store.Buy");
-				}
-			}
-		}
-		else
-		{
-			if (sv_store_denynotifications.GetBool())
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_StoreBuyDenyNoEconomy");
-				ShowLevelMessage(hint.Access());
-			}
-			if (sv_store_denysounds.GetBool())
-			{
-				EmitSound("Store.InsufficientFunds");
-			}
-		}
-		return true;
-	}
+	}*/
 	else if (stricmp(cmd, "moddingmenu") == 0)
 	{
 		KeyValues *data = new KeyValues("data");

@@ -114,8 +114,26 @@ CFRStoreMenuEX::CFRStoreMenuEX(IViewPort *pViewPort) : Frame(NULL, PANEL_BUY)
 	m_pItemList = new CPanelListPanel(this, "ItemList");
 	int x, y;
 	m_pItemList->GetSize(x, y);
-	LoadItemFile("ShopCatalog", "scripts/shopcatalog_default.txt");
-	//todo: custom shop catalogs
+
+	FileFindHandle_t findHandle;
+
+	const char* pFilename = filesystem->FindFirstEx("scripts/*.txt", "MOD", &findHandle);
+	while (pFilename)
+	{
+		const char* prefix = "shopcatalog_";
+		if (Q_strncmp(pFilename, prefix, sizeof(prefix)) == 0)
+		{
+			char szScriptName[2048];
+			Q_snprintf(szScriptName, sizeof(szScriptName), "scripts/%s", pFilename);
+			LoadItemFile("ShopCatalog", szScriptName);
+			Msg("'%s' added to shop item list!\n", szScriptName);
+		}
+
+		pFilename = filesystem->FindNext(findHandle);
+	}
+
+	filesystem->FindClose(findHandle);
+
 	m_pItemList->SetSize(x, y);
 	m_pItemList->m_iScrollSpeed = 30;
 
