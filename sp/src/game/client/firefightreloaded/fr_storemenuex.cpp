@@ -166,7 +166,7 @@ KeyValues* CFRStoreMenuEX::LoadItemFile(const char* kvName, const char* scriptPa
 		{
 			const char* itemName = pNode->GetString("name", "");
 			int itemPrice = pNode->GetInt("price", 0);
-			const char* itemCMD = pNode->GetString("command", 0);
+			const char* itemCMD = pNode->GetString("command", "");
 
 			Panel* item = CreateItemPanel(itemName, itemPrice, itemCMD);
 			m_pItemList->AddItem(item);

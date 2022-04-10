@@ -8050,54 +8050,6 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		}
 		return true;
 	}
-	/*else if (stricmp(cmd, "buycmd") == 0)
-	{
-		if (!IsDead() && g_fr_economy.GetBool())
-		{
-			int moneyAmount = atoi(args[1]);
-			if (GetMoney() < moneyAmount)
-			{
-				if (sv_store_denynotifications.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_StoreBuyDenyInsufficentFunds");
-					ShowLevelMessage(hint.Access());
-				}
-				if (sv_store_denysounds.GetBool())
-				{
-					EmitSound("Store.InsufficientFunds");
-				}
-			}
-			else
-			{
-				if (sv_store_buynotifications.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_StoreBuySuccessItem");
-					ShowLevelMessage(hint.Access());
-				}
-				RemoveMoney(moneyAmount);
-				if (sv_store_buysounds.GetBool())
-				{
-					EmitSound("Store.Buy");
-				}
-			}
-		}
-		else
-		{
-			if (sv_store_denynotifications.GetBool())
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_StoreBuyDenyNoEconomy");
-				ShowLevelMessage(hint.Access());
-			}
-			if (sv_store_denysounds.GetBool())
-			{
-				EmitSound("Store.InsufficientFunds");
-			}
-		}
-		return true;
-	}*/
 	else if (stricmp(cmd, "moddingmenu") == 0)
 	{
 		KeyValues *data = new KeyValues("data");
