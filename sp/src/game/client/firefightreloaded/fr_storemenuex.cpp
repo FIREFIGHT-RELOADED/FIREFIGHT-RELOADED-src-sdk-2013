@@ -167,9 +167,8 @@ KeyValues* CFRStoreMenuEX::LoadItemFile(const char* kvName, const char* scriptPa
 			const char* itemName = pNode->GetString("name", "");
 			int itemPrice = pNode->GetInt("price", 0);
 			const char* itemCMD = pNode->GetString("command", "");
-			bool isItemCommand = pNode->GetBool("iscommand", false);
 
-			Panel* item = CreateItemPanel(itemName, itemPrice, itemCMD, isItemCommand);
+			Panel* item = CreateItemPanel(itemName, itemPrice, itemCMD);
 			m_pItemList->AddItem(item);
 
 			pNode = pNode->GetNextKey();
@@ -179,7 +178,7 @@ KeyValues* CFRStoreMenuEX::LoadItemFile(const char* kvName, const char* scriptPa
 	return pKV;
 }
 
-Panel* CFRStoreMenuEX::CreateItemPanel(const char* name, int price, const char* command, bool isItemCommand)
+Panel* CFRStoreMenuEX::CreateItemPanel(const char* name, int price, const char* command)
 {
 	Panel* PanelTest = new Panel(this, "ItemPanel");
 	PanelTest->SetSize(50, 120);
@@ -197,14 +196,7 @@ Panel* CFRStoreMenuEX::CreateItemPanel(const char* name, int price, const char* 
 
 	char szCommand[2048];
 
-	if (isItemCommand)
-	{
-		Q_snprintf(szCommand, sizeof(szCommand), "purchase %i \"cmd %s\"", price, command);
-	}
-	else
-	{
-		Q_snprintf(szCommand, sizeof(szCommand), "purchase %i \"%s\"", price, command);
-	}
+	Q_snprintf(szCommand, sizeof(szCommand), "purchase %i \"%s\"", price, command);
 
 	Button* pButton = new Button(PanelTest, "BuyButton", GrabLocalizedString("#GameUI_Store_BuyItem"), this, szCommand);
 	pButton->SetPos(10, 75);
