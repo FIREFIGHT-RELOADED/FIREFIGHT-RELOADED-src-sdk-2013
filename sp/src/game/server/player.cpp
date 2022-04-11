@@ -1131,7 +1131,7 @@ bool GiveNewWeapon(CBasePlayer* pPlayer, const char* pClassname, const char* pAw
 	}
 }
 
-void GiveHealthkit(CBasePlayer* pPlayer, CFmtStr hint, bool big = false)
+void GiveHealthkit(CBasePlayer* pPlayer, CFmtStr hint, bool big = false, bool reward = true)
 {
 	CSingleUserRecipientFilter user(pPlayer);
 	CPASAttenuationFilter hfilter(pPlayer, "HealthKit.Touch");
@@ -1139,15 +1139,24 @@ void GiveHealthkit(CBasePlayer* pPlayer, CFmtStr hint, bool big = false)
 	if (big)
 	{
 		pPlayer->TakeHealth(50, DMG_GENERIC);
-		hint.sprintf("#Valve_Hud_Reward_BigHealthkit");
+		if (reward)
+		{
+			hint.sprintf("#Valve_Hud_Reward_BigHealthkit");
+		}
 	}
 	else
 	{
 		pPlayer->TakeHealth(sk_healthkit.GetInt(), DMG_GENERIC);
-		hint.sprintf("#Valve_Hud_Reward_Healthkit");
+		if (reward)
+		{
+			hint.sprintf("#Valve_Hud_Reward_Healthkit");
+		}
 	}
 
-	pPlayer->ShowPerkMessage(hint.Access());
+	if (reward)
+	{
+		pPlayer->ShowPerkMessage(hint.Access());
+	}
 
 	user.MakeReliable();
 	UserMessageBegin(user, "ItemPickup");
@@ -1156,7 +1165,7 @@ void GiveHealthkit(CBasePlayer* pPlayer, CFmtStr hint, bool big = false)
 	pPlayer->EmitSound(hfilter, pPlayer->entindex(), "HealthKit.Touch");
 }
 
-void GiveBattery(CBasePlayer* pPlayer, CFmtStr hint, bool big = false)
+void GiveBattery(CBasePlayer* pPlayer, CFmtStr hint, bool big = false, bool reward = true)
 {
 	CSingleUserRecipientFilter user(pPlayer);
 	CPASAttenuationFilter bfilter(pPlayer, "ItemBattery.Touch");
@@ -1164,15 +1173,24 @@ void GiveBattery(CBasePlayer* pPlayer, CFmtStr hint, bool big = false)
 	if (big)
 	{
 		pPlayer->IncrementArmorValue(50, pPlayer->GetMaxArmorValue());
-		hint.sprintf("#Valve_Hud_Reward_BigBattery");
+		if (reward)
+		{
+			hint.sprintf("#Valve_Hud_Reward_BigBattery");
+		}
 	}
 	else
 	{
 		pPlayer->IncrementArmorValue(sk_battery.GetInt(), pPlayer->GetMaxArmorValue());
-		hint.sprintf("#Valve_Hud_Reward_Battery");
+		if (reward)
+		{
+			hint.sprintf("#Valve_Hud_Reward_Battery");
+		}
 	}
 
-	pPlayer->ShowPerkMessage(hint.Access());
+	if (reward)
+	{
+		pPlayer->ShowPerkMessage(hint.Access());
+	}
 
 	user.MakeReliable();
 	UserMessageBegin(user, "ItemPickup");
@@ -7485,167 +7503,17 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		}
 		return true;
 	}
-	else if (stricmp(cmd, "buyitem") == 0)
+	else if (stricmp(cmd, "item") == 0)
 	{
-		if (!IsDead() && g_fr_economy.GetBool())
-		{
-			int moneyAmount = atoi(args[2]);
-			int canGetMultiple = atoi(args[3]);
-			if (GetMoney() < moneyAmount)
-			{
-				if (sv_store_denynotifications.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_StoreBuyDenyInsufficentFunds");
-					ShowLevelMessage(hint.Access());
-				}
-				if (sv_store_denysounds.GetBool())
-				{
-					EmitSound("Store.InsufficientFunds");
-				}
-			}
-			else if (HasNamedPlayerItem(args[1]) && canGetMultiple == 0)
-			{
-				if (sv_store_denynotifications.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_StoreBuyDenyAlreadyHasItem");
-					ShowLevelMessage(hint.Access());
-				}
-				if (sv_store_denysounds.GetBool())
-				{
-					EmitSound("Store.InsufficientFunds");
-				}
-			}
-			else
-			{
-				if (sv_store_buynotifications.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_StoreBuySuccessItem");
-					ShowLevelMessage(hint.Access());
-				}
-				GiveNamedItem(args[1]);
-				RemoveMoney(moneyAmount);
-				if (sv_store_buysounds.GetBool())
-				{
-					EmitSound("Store.Buy");
-				}
-			}
-		}
-		else
-		{
-			if (sv_store_denynotifications.GetBool())
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_StoreBuyDenyNoEconomy");
-				ShowLevelMessage(hint.Access());
-			}
-			if (sv_store_denysounds.GetBool())
-			{
-				EmitSound("Store.InsufficientFunds");
-			}
-		}
-		return true;
-	}
-	else if (stricmp(cmd, "buyammo") == 0)
-	{
-		if (!IsDead() && g_fr_economy.GetBool())
-		{
-			int moneyAmount = atoi(args[2]);
-			if (GetMoney() < moneyAmount)
-			{
-				if (sv_store_denynotifications.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_StoreBuyDenyInsufficentFunds");
-					ShowLevelMessage(hint.Access());
-				}
-				if (sv_store_denysounds.GetBool())
-				{
-					EmitSound("Store.InsufficientFunds");
-				}
-			}
-			else
-			{
-				if (sv_store_buynotifications.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_StoreBuySuccessItem");
-					ShowLevelMessage(hint.Access());
-				}
-				GiveAmmo(atoi(args[3]), args[1]);
-				RemoveMoney(moneyAmount);
-				if (sv_store_buysounds.GetBool())
-				{
-					EmitSound("Store.Buy");
-				}
-			}
-		}
-		else
-		{
-			if (sv_store_denynotifications.GetBool())
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_StoreBuyDenyNoEconomy");
-				ShowLevelMessage(hint.Access());
-			}
-			if (sv_store_denysounds.GetBool())
-			{
-				EmitSound("Store.InsufficientFunds");
-			}
-		}
-		return true;
-	}
-	else if (stricmp(cmd, "buyhealth") == 0)
-	{
-		if (!IsDead() && g_fr_economy.GetBool())
-		{
-			int moneyAmount = atoi(args[2]);
-			if (GetMoney() < moneyAmount)
-			{
-				if (sv_store_denynotifications.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_StoreBuyDenyInsufficentFunds");
-					ShowLevelMessage(hint.Access());
-				}
-				if (sv_store_denysounds.GetBool())
-				{
-					EmitSound("Store.InsufficientFunds");
-				}
-			}
-			else
-			{
-				if (sv_store_buynotifications.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_StoreBuySuccessItem");
-					ShowLevelMessage(hint.Access());
-				}
-				TakeHealth(atoi(args[1]), DMG_GENERIC);
-				CSingleUserRecipientFilter user(this);
-				user.MakeReliable();
+		int canGetMultiple = atoi(args[2]);
+		int moneyAmount = atoi(args[3]);
 
-				UserMessageBegin(user, "ItemPickup");
-				WRITE_STRING("item_healthkit");
-				MessageEnd();
-
-				CPASAttenuationFilter filter(this, "HealthKit.Touch");
-				EmitSound(filter, entindex(), "HealthKit.Touch");
-				RemoveMoney(moneyAmount);
-				if (sv_store_buysounds.GetBool())
-				{
-					EmitSound("Store.Buy");
-				}
-			}
-		}
-		else
+		if (HasNamedPlayerItem(args[1]) && canGetMultiple == 0)
 		{
 			if (sv_store_denynotifications.GetBool())
 			{
 				CFmtStr hint;
-				hint.sprintf("#Valve_StoreBuyDenyNoEconomy");
+				hint.sprintf("#Valve_StoreBuyDenyAlreadyHasItem");
 				ShowLevelMessage(hint.Access());
 			}
 			if (sv_store_denysounds.GetBool())
@@ -7653,13 +7521,67 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 				EmitSound("Store.InsufficientFunds");
 			}
 		}
+		else
+		{
+			GiveNamedItem(args[1]);
+			engine->ClientCommand(edict(), "confirm_purchase %i", moneyAmount);
+		}
+
 		return true;
 	}
-	else if (stricmp(cmd, "buyhealthkit") == 0)
+	else if (stricmp(cmd, "ammo") == 0)
+	{
+		int moneyAmount = atoi(args[3]);
+
+		GiveAmmo(atoi(args[2]), args[1]);
+
+		engine->ClientCommand(edict(), "confirm_purchase %i", moneyAmount);
+		
+		return true;
+	}
+	else if (stricmp(cmd, "healthkit") == 0)
+	{
+		int moneyAmount = atoi(args[1]);
+
+		CFmtStr hint;
+		GiveHealthkit(this, hint, false, false);
+
+		engine->ClientCommand(edict(), "confirm_purchase %i", moneyAmount);
+
+		return true;
+	}
+	else if (stricmp(cmd, "battery") == 0)
+	{
+		int moneyAmount = atoi(args[1]);
+
+		CFmtStr hint;
+		GiveBattery(this, hint, false, false);
+
+		engine->ClientCommand(edict(), "confirm_purchase %i", moneyAmount);
+
+		return true;
+	}
+	else if (stricmp(cmd, "upgrade") == 0)
+	{
+		int upgradeID = atoi(args[1]);
+		int moneyAmount = atoi(args[2]);
+
+		//right now we only have the max health upgrade.
+		if (upgradeID == FIREFIGHT_UPGRADE_MAXHEALTH)
+		{
+			Market_SetMaxHealth();
+		}
+
+		engine->ClientCommand(edict(), "confirm_purchase %i", moneyAmount);
+
+		return true;
+	}
+	else if (stricmp(cmd, "purchase") == 0)
 	{
 		if (!IsDead() && g_fr_economy.GetBool())
 		{
 			int moneyAmount = atoi(args[1]);
+			const char *cmdi = args[2];
 			if (GetMoney() < moneyAmount)
 			{
 				if (sv_store_denynotifications.GetBool())
@@ -7675,27 +7597,7 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 			}
 			else
 			{
-				if (sv_store_buynotifications.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_StoreBuySuccessItem");
-					ShowLevelMessage(hint.Access());
-				}
-				TakeHealth(sk_healthkit.GetInt(), DMG_GENERIC);
-				CSingleUserRecipientFilter user(this);
-				user.MakeReliable();
-
-				UserMessageBegin(user, "ItemPickup");
-				WRITE_STRING("item_healthkit");
-				MessageEnd();
-
-				CPASAttenuationFilter filter(this, "HealthKit.Touch");
-				EmitSound(filter, entindex(), "HealthKit.Touch");
-				RemoveMoney(moneyAmount);
-				if (sv_store_buysounds.GetBool())
-				{
-					EmitSound("Store.Buy");
-				}
+				engine->ClientCommand(edict(), "%s %i", cmdi, moneyAmount);
 			}
 		}
 		else
@@ -7713,193 +7615,19 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		}
 		return true;
 	}
-	else if (stricmp(cmd, "buyarmor") == 0)
+	else if (stricmp(cmd, "confirm_purchase") == 0)
 	{
-		if (!IsDead() && g_fr_economy.GetBool())
+		int moneyAmount = atoi(args[1]);
+		if (sv_store_buynotifications.GetBool())
 		{
-			int moneyAmount = atoi(args[2]);
-			if (GetMoney() < moneyAmount)
-			{
-				if (sv_store_denynotifications.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_StoreBuyDenyInsufficentFunds");
-					ShowLevelMessage(hint.Access());
-				}
-				if (sv_store_denysounds.GetBool())
-				{
-					EmitSound("Store.InsufficientFunds");
-				}
-			}
-			else
-			{
-				if (sv_store_buynotifications.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_StoreBuySuccessItem");
-					ShowLevelMessage(hint.Access());
-				}
-				IncrementArmorValue(atoi(args[1]), GetMaxArmorValue());
-				CPASAttenuationFilter filter(this, "ItemBattery.Touch");
-				EmitSound(filter, entindex(), "ItemBattery.Touch");
-
-				CSingleUserRecipientFilter user(this);
-				user.MakeReliable();
-
-				UserMessageBegin(user, "ItemPickup");
-				WRITE_STRING("item_battery");
-				MessageEnd();
-				RemoveMoney(moneyAmount);
-				if (sv_store_buysounds.GetBool())
-				{
-					EmitSound("Store.Buy");
-				}
-			}
+			CFmtStr hint;
+			hint.sprintf("#Valve_StoreBuySuccessItem");
+			ShowLevelMessage(hint.Access());
 		}
-		else
+		RemoveMoney(moneyAmount);
+		if (sv_store_buysounds.GetBool())
 		{
-			if (sv_store_denynotifications.GetBool())
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_StoreBuyDenyNoEconomy");
-				ShowLevelMessage(hint.Access());
-			}
-			if (sv_store_denysounds.GetBool())
-			{
-				EmitSound("Store.InsufficientFunds");
-			}
-		}
-		return true;
-	}
-	else if (stricmp(cmd, "buybattery") == 0)
-	{
-		if (!IsDead() && g_fr_economy.GetBool())
-		{
-			int moneyAmount = atoi(args[1]);
-			if (GetMoney() < moneyAmount)
-			{
-				if (sv_store_denynotifications.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_StoreBuyDenyInsufficentFunds");
-					ShowLevelMessage(hint.Access());
-				}
-				if (sv_store_denysounds.GetBool())
-				{
-					EmitSound("Store.InsufficientFunds");
-				}
-			}
-			else
-			{
-				if (sv_store_buynotifications.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_StoreBuySuccessItem");
-					ShowLevelMessage(hint.Access());
-				}
-				IncrementArmorValue(sk_battery.GetInt(), GetMaxArmorValue());
-				CPASAttenuationFilter filter(this, "ItemBattery.Touch");
-				EmitSound(filter, entindex(), "ItemBattery.Touch");
-
-				CSingleUserRecipientFilter user(this);
-				user.MakeReliable();
-
-				UserMessageBegin(user, "ItemPickup");
-				WRITE_STRING("item_battery");
-				MessageEnd();
-				RemoveMoney(moneyAmount);
-				if (sv_store_buysounds.GetBool())
-				{
-					EmitSound("Store.Buy");
-				}
-			}
-		}
-		else
-		{
-			if (sv_store_denynotifications.GetBool())
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_StoreBuyDenyNoEconomy");
-				ShowLevelMessage(hint.Access());
-			}
-			if (sv_store_denysounds.GetBool())
-			{
-				EmitSound("Store.InsufficientFunds");
-			}
-		}
-		return true;
-	}
-	else if (stricmp(cmd, "buyupgrade") == 0)
-	{
-		if (!IsDead() && g_fr_economy.GetBool())
-		{
-			int upgradeID = atoi(args[1]);
-			int moneyAmount = atoi(args[2]);
-
-			if (GetMoney() < moneyAmount)
-			{
-				if (sv_store_denynotifications.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_StoreBuyDenyInsufficentFunds");
-					ShowLevelMessage(hint.Access());
-				}
-				if (sv_store_denysounds.GetBool())
-				{
-					EmitSound("Store.InsufficientFunds");
-				}
-			}
-			else
-			{
-				//right now we only have the max health upgrade.
-				if (upgradeID == FIREFIGHT_UPGRADE_MAXHEALTH)
-				{
-					if (m_iHealthUpgrades < sv_fr_maxhealthupgrades.GetInt())
-					{
-						if (sv_store_buynotifications.GetBool())
-						{
-							CFmtStr hint;
-							hint.sprintf("#Valve_StoreBuySuccessUpgrade");
-							ShowLevelMessage(hint.Access());
-						}
-
-						Market_SetMaxHealth();
-
-						RemoveMoney(moneyAmount);
-						if (sv_store_buysounds.GetBool())
-						{
-							EmitSound("Store.Buy");
-						}
-					}
-					else
-					{
-						if (sv_store_denynotifications.GetBool())
-						{
-							CFmtStr hint;
-							hint.sprintf("#Valve_StoreBuyDenyTooManyUpgrades");
-							ShowLevelMessage(hint.Access());
-						}
-
-						if(sv_store_denysounds.GetBool())
-						{
-							EmitSound("Store.InsufficientFunds");
-						}
-					}
-				}
-			}
-		}
-		else
-		{
-			if (sv_store_denynotifications.GetBool())
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_StoreBuyDenyNoEconomy");
-				ShowLevelMessage(hint.Access());
-			}
-			if (sv_store_denysounds.GetBool())
-			{
-				EmitSound("Store.InsufficientFunds");
-			}
+			EmitSound("Store.Buy");
 		}
 		return true;
 	}

@@ -65,31 +65,6 @@ wchar_t* GrabLocalizedString(const char* name)
 	return textString;
 }
 
-wchar_t* GrabLocalizedNameString(const char* name)
-{
-	wchar_t text[128];
-	wchar_t* tempString = g_pVGuiLocalize->Find(CFmtStr("#GameUI_Store_Buy_%s", name));
-
-	// setup our localized string
-	if (tempString)
-	{
-#ifdef WIN32
-		_snwprintf(text, sizeof(text) / sizeof(wchar_t) - 1, L"%s", tempString);
-#else
-		_snwprintf(text, sizeof(text) / sizeof(wchar_t) - 1, L"%S", tempString);
-#endif
-		text[sizeof(text) / sizeof(wchar_t) - 1] = 0;
-	}
-	else
-	{
-		// string wasn't found by g_pVGuiLocalize->Find()
-		g_pVGuiLocalize->ConvertANSIToUnicode(name, text, sizeof(text));
-	}
-
-	wchar_t* textString = text;
-	return textString;
-}
-
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
@@ -183,8 +158,7 @@ Panel* CFRStoreMenuEX::CreateItemPanel(const char* name, int price, const char* 
 	Panel* PanelTest = new Panel(this, "ItemPanel");
 	PanelTest->SetSize(50, 120);
 
-	wchar_t* titleText = GrabLocalizedNameString(name);
-	Label* pLabel = new Label(PanelTest, "Title", titleText);
+	Label* pLabel = new Label(PanelTest, "Title", GrabLocalizedString(CFmtStr("#GameUI_Store_Buy_%s", name)));
 	pLabel->SetPos(10, 25);
 	pLabel->SetWide(384);
 
@@ -194,9 +168,10 @@ Panel* CFRStoreMenuEX::CreateItemPanel(const char* name, int price, const char* 
 	pLabel2->SetPos(10, 50);
 	pLabel2->SetWide(384);
 
-	CFmtStr cmd;
-	cmd.sprintf(command, price);
-	Button* pButton = new Button(PanelTest, "BuyButton", GrabLocalizedString("#GameUI_Store_BuyItem"), this, cmd.Access());
+	char szCommand[2048];
+	Q_snprintf(szCommand, sizeof(szCommand), "purchase %i \"%s\"", price, command);
+
+	Button* pButton = new Button(PanelTest, "BuyButton", GrabLocalizedString("#GameUI_Store_BuyItem"), this, szCommand);
 	pButton->SetPos(10, 75);
 	pButton->SetWide(120);
 
@@ -237,6 +212,7 @@ void CFRStoreMenuEX::ShowPanel(bool bShow)
 		SetVisible( false );
 		SetMouseInputEnabled( false );
 	}
+
 	m_pViewPort->ShowBackGround( bShow );
 }
 
