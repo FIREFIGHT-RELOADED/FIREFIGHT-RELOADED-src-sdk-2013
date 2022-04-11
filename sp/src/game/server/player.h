@@ -844,9 +844,34 @@ public:
 	void EXPLevelPenalty();
 
 	int GetMoney() { return m_iMoney; }
-	void SetMoney(int set = 1) { m_iMoney = set; }
-	void AddMoney(int add = 1) { m_iMoney += add; }
-	void RemoveMoney(int remove = 1) { m_iMoney -= remove; }
+	void SetMoney(int set = 1) 
+	{ 
+		m_iMoney = set; 
+
+		if (m_iMoney <= 0)
+		{
+			ResetMoney();
+		}
+	}
+	void AddMoney(int add = 1) 
+	{ 
+		m_iMoney += add; 
+
+		//probably not required but we need to handle negative amounts of money as well.
+		if (m_iMoney <= 0)
+		{
+			ResetMoney();
+		}
+	}
+	void RemoveMoney(int remove = 1) 
+	{
+		m_iMoney -= remove;
+
+		if (m_iMoney <= 0)
+		{
+			ResetMoney();
+		}
+	}
 	void ResetMoney() { m_iMoney = 0; }
 
 	void DetermineReward(void);
