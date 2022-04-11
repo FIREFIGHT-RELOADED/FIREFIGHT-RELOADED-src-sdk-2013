@@ -369,7 +369,7 @@ void CGrenadeFrag::Detonate(void)
 		Vector vecTraceDir;
 		trace_t firetrace;
 
-		for (i = 0; i < 32; i++)
+		for (i = 0; i < 16; i++)
 		{
 			// build a little ray
 			vecTraceAngles[PITCH] = random->RandomFloat(45, 135);
@@ -380,8 +380,8 @@ void CGrenadeFrag::Detonate(void)
 
 			Vector vecStart, vecEnd;
 
-			vecStart = GetAbsOrigin() + (tr.plane.normal * 256);
-			vecEnd = vecStart + vecTraceDir * 1024;
+			vecStart = GetAbsOrigin() + (tr.plane.normal * 128);
+			vecEnd = vecStart + vecTraceDir * 512;
 
 			UTIL_TraceLine(vecStart, vecEnd, MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &firetrace);
 
