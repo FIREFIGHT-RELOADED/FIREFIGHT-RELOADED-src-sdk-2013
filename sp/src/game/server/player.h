@@ -876,7 +876,7 @@ public:
 
 	void DetermineReward(void);
 
-	void Reward_GiveItem(bool perksOnly = false);
+	void Reward_GiveItem();
 	void Reward_GiveKashBonus(void);
 
 	void LevelUpClassic( void);

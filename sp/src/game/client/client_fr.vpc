@@ -27,6 +27,8 @@ $Project "Client (FR)"
 		$File	"c_team_objectiveresource.h"
 		$File	"$SRCDIR\game\shared\predicted_viewmodel.cpp"
 		$File	"$SRCDIR\game\shared\predicted_viewmodel.h"
+		$File	"worldlight.cpp"
+		$File	"worldlight.h"
 		
 		$Folder	"MOMENTUM MOD DLL"
 		{

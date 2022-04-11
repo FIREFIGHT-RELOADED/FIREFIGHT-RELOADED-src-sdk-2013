@@ -232,8 +232,6 @@ ConVar sv_fr_perks_infiniteauxpower("sv_fr_perks_infiniteauxpower", "1", FCVAR_A
 ConVar sv_fr_perks_infiniteammo("sv_fr_perks_infiniteammo", "1", FCVAR_ARCHIVE);
 ConVar sv_fr_perks_healthregenerationrate("sv_fr_perks_healthregenerationrate", "1", FCVAR_ARCHIVE);
 
-ConVar sv_fr_perks_oldperkbehavior("sv_fr_perks_oldperkbehavior", "0", FCVAR_ARCHIVE);
-
 void CC_GiveCurrentAmmo( void )
 {
 	CBasePlayer *pPlayer = UTIL_GetCommandClient();
@@ -1074,14 +1072,7 @@ void CBasePlayer::LevelUp()
 
 void CBasePlayer::DetermineReward(void)
 {
-	if (sv_fr_perks_oldperkbehavior.GetBool())
-	{
-		Reward_GiveItem(true);
-	}
-	else
-	{
-		Reward_GiveItem();
-	}
+	Reward_GiveItem();
 }
 
 extern ConVar sk_healthkit;
@@ -1201,7 +1192,7 @@ void GiveBattery(CBasePlayer* pPlayer, CFmtStr hint, bool big = false, bool rewa
 
 void GiveAltItem(CBasePlayer* pPlayer, CFmtStr hint)
 {
-	int randalt = random->RandomInt(0, 2);
+	int randalt = random->RandomInt(0, 1);
 
 	switch (randalt)
 	{
@@ -1211,27 +1202,17 @@ void GiveAltItem(CBasePlayer* pPlayer, CFmtStr hint)
 	case 1:
 		GiveBattery(pPlayer, hint);
 		break;
-	case 2:
-		pPlayer->Reward_GiveItem(true);
-		break;
 	default:
 		break;
 	}
 }
 
-void CBasePlayer::Reward_GiveItem(bool perksOnly)
+void CBasePlayer::Reward_GiveItem()
 {
 	int randomitemdrop = 0;
 	bool unlocked = true;
 
-	if (perksOnly)
-	{
-		randomitemdrop = random->RandomInt(FIREFIGHT_PERK_INFINITEAUXPOWER, FIREFIGHT_PERK_HEALTHREGENERATIONRATE);
-	}
-	else
-	{
-		randomitemdrop = random->RandomInt(0, FIREFIGHT_LAST_REWARD - 1);
-	}
+	randomitemdrop = random->RandomInt(0, FIREFIGHT_LAST_REWARD - 1);
 
 	CFmtStr hint;
 
@@ -1332,12 +1313,9 @@ void CBasePlayer::Reward_GiveItem(bool perksOnly)
 			{
 				m_iPerkInfiniteAmmo = 1;
 				m_bAlreadyHasInfiniteAmmoPerk = true;
-				if (!g_fr_classic.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_Hud_INFINITEAMMO");
-					ShowPerkMessage(hint.Access());
-				}
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_INFINITEAMMO");
+				ShowPerkMessage(hint.Access());
 			}
 			else
 			{
@@ -1349,12 +1327,9 @@ void CBasePlayer::Reward_GiveItem(bool perksOnly)
 			{
 				m_iPerkInfiniteAuxPower = 1;
 				m_bAlreadyHasInfiniteAuxPowerPerk = true;
-				if (!g_fr_classic.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_Hud_INFINITEAUXPOWER");
-					ShowPerkMessage(hint.Access());
-				}
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_INFINITEAUXPOWER");
+				ShowPerkMessage(hint.Access());
 			}
 			else
 			{
@@ -1365,12 +1340,9 @@ void CBasePlayer::Reward_GiveItem(bool perksOnly)
 			if (sv_fr_perks.GetBool() && sv_fr_perks_healthregenerationrate.GetBool())
 			{
 				m_fRegenRate = m_fRegenRate + 0.5f;
-				if (!g_fr_classic.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_Hud_HEALTHREGENERATIONRATE");
-					ShowPerkMessage(hint.Access());
-				}
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_HEALTHREGENERATIONRATE");
+				ShowPerkMessage(hint.Access());
 			}
 			else
 			{
@@ -1439,10 +1411,7 @@ void CBasePlayer::Market_SetMaxHealth()
 
 void CBasePlayer::LevelUpClassic()
 {
-	if (g_fr_classic.GetBool())
-	{
-		Reward_GiveItem(true);
-	}
+	Reward_GiveItem();
 }
 
 //-----------------------------------------------------------------------------
