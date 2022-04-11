@@ -7444,7 +7444,7 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 	{
 		if (!g_pGameRules->IsMultiplayer())
 		{
-			engine->ServerCommand("sv_cheats 1; host_timescale 1\n");
+			engine->ServerCommand("host_timescale 1;sv_cheats 0\n");
 		}
 
 		return true;
