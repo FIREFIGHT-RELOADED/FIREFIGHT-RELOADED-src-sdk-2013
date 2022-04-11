@@ -7584,6 +7584,15 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		}
 		return true;
 	}
+	else if (stricmp(cmd, "cmd") == 0)
+	{
+		int moneyAmount = atoi(args[2]);
+
+		engine->ClientCommand(edict(), args[1]);
+		engine->ClientCommand(edict(), "confirm_purchase %i", moneyAmount);
+
+		return true;
+	}
 	else if (stricmp(cmd, "confirm_purchase") == 0)
 	{
 		int moneyAmount = atoi(args[1]);
