@@ -411,8 +411,8 @@ void CNPC_CombineGuard::PrescheduleThink( void )
 
 void CNPC_CombineGuard::Event_Killed( const CTakeDamageInfo &info )
 {
-	SetBodygroup(1, 0);
-	DropGun(25, Vector(0, 0, 1));
+	//SetBodygroup(1, 0);
+	//DropGun(25, Vector(0, 0, 1));
 
 	BaseClass::Event_Killed(info);
 }
@@ -948,6 +948,10 @@ int CNPC_CombineGuard::RangeAttack1Conditions( float flDot, float flDist )
 	return COND_CAN_RANGE_ATTACK1;
 }
 
+extern ConVar sk_weapon_ar2_alt_fire_duration;
+extern ConVar sk_weapon_ar2_alt_fire_radius;
+extern ConVar sk_weapon_ar2_alt_fire_mass;
+
 void CNPC_CombineGuard::FireRangeWeapon( void )
 {
 	if ( ( GetEnemy() != NULL ) && ( GetEnemy()->Classify() == CLASS_BULLSEYE ) )
@@ -970,14 +974,26 @@ void CNPC_CombineGuard::FireRangeWeapon( void )
 	QAngle	angShootDir;
 	GetAttachment( LookupAttachment( "muzzle" ), vecShootOrigin, angShootDir );
 
-	trace_t	tr;
+	/*trace_t	tr;
 	AI_TraceLine( vecSrc, impactPoint, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
 // Just using the gunship tracers for a placeholder unless a better effect can be found. Maybe use the strider cannon's tracer or something.
 	UTIL_Tracer( tr.startpos, tr.endpos, 0, TRACER_DONT_USE_ATTACHMENT, 6000 + random->RandomFloat( 0, 2000 ), true, "StriderTracer" );
 	UTIL_Tracer( tr.startpos, tr.endpos, 0, TRACER_DONT_USE_ATTACHMENT, 6000 + random->RandomFloat( 0, 3000 ), true, "StriderTracer" );
 	UTIL_Tracer( tr.startpos, tr.endpos, 0, TRACER_DONT_USE_ATTACHMENT, 6000 + random->RandomFloat( 0, 4000 ), true, "StriderTracer" );
 
-	CreateConcussiveBlast( tr.endpos, tr.plane.normal, this, 1.0 );
+	CreateConcussiveBlast( tr.endpos, tr.plane.normal, this, 2.5 );*/
+
+	float flAmmoRatio = 1.0f;
+	float flDuration = RemapValClamped(flAmmoRatio, 0.0f, 1.0f, 0.5f, sk_weapon_ar2_alt_fire_duration.GetFloat());
+	float flRadius = RemapValClamped(flAmmoRatio, 0.0f, 1.0f, 4.0f, sk_weapon_ar2_alt_fire_radius.GetFloat());
+	// Fire the combine ball
+	CreateCombineBall(vecSrc,
+		vecShootDir * 2500,
+		flRadius,
+		sk_weapon_ar2_alt_fire_mass.GetFloat(),
+		flDuration,
+		this,
+		true);
 }
 
 #define	DEBUG_AIMING 0

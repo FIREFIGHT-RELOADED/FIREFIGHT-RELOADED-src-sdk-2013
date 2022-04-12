@@ -65,7 +65,7 @@ static const char *s_pRemoveContext = "RemoveContext";
 // Input  : radius - 
 // Output : CBaseEntity
 //-----------------------------------------------------------------------------
-CBaseEntity *CreateCombineBall( const Vector &origin, const Vector &velocity, float radius, float mass, float lifetime, CBaseEntity *pOwner )
+CBaseEntity *CreateCombineBall( const Vector &origin, const Vector &velocity, float radius, float mass, float lifetime, CBaseEntity *pOwner, bool instakill )
 {
 	CPropCombineBall *pBall = static_cast<CPropCombineBall*>( CreateEntityByName( "prop_combine_ball" ) );
 	pBall->SetRadius( radius );
@@ -83,6 +83,12 @@ CBaseEntity *CreateCombineBall( const Vector &origin, const Vector &velocity, fl
 	pBall->EmitSound( "NPC_CombineBall.Launch" );
 
 	PhysSetGameFlags( pBall->VPhysicsGetObject(), FVPHYSICS_WAS_THROWN );
+
+	if (instakill)
+	{
+		PhysClearGameFlags(pBall->VPhysicsGetObject(), FVPHYSICS_NO_NPC_IMPACT_DMG);
+		PhysSetGameFlags(pBall->VPhysicsGetObject(), FVPHYSICS_DMG_DISSOLVE | FVPHYSICS_HEAVY_OBJECT);
+	}
 
 	pBall->StartWhizSoundThink();
 
@@ -347,10 +353,10 @@ bool CPropCombineBall::CreateVPhysics()
 	pPhysicsObject->SetDamping( &flDamping, &flAngDamping );
 	pPhysicsObject->SetInertia( Vector( 1e30, 1e30, 1e30 ) );
 
-	if( WasFiredByNPC() )
+	if( WasFiredByNPC())
 	{
 		// Don't do impact damage. Just touch them and do your dissolve damage and move on.
-		PhysSetGameFlags( pPhysicsObject, FVPHYSICS_NO_NPC_IMPACT_DMG );
+		PhysSetGameFlags(pPhysicsObject, FVPHYSICS_NO_NPC_IMPACT_DMG);
 	}
 	else
 	{
