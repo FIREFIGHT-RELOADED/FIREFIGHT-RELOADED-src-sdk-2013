@@ -178,8 +178,8 @@ public:
 	void EnableSprint( bool bEnable);
 
 	//Bullettime Device
-	void StartBullettime(void);
-	void StopBullettime(bool bPlaySound = true, bool bFlashScreen = true);
+	void StartBullettime(bool bInShop = false);
+	void StopBullettime(bool bPlaySound = true, bool bFlashScreen = true, bool bInShop = false);
 	void InitBullettime(void);
 	bool IsInBullettime(void) { return m_HL2Local.m_fIsInBullettime; }
 	void CheckBullettime(void);

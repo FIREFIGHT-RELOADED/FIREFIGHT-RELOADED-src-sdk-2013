@@ -1998,33 +1998,46 @@ bool CHL2_Player::IsZooming( void )
 	return false;
 }
 
-void CHL2_Player::StartBullettime(void)
+void CHL2_Player::StartBullettime(bool bInShop)
 {
 	if (g_pGameRules->IsMultiplayer())
 		return;
 	
-	if (m_HL2Local.m_flSuitPower < 10)
+	if (!bInShop && m_HL2Local.m_flSuitPower < 10)
 	{
 		EmitSound("HL2Player.SprintNoPower");
 		return;
 	}
 
-	if (!SuitPower_AddDevice(SuitDeviceBulletTime))
+	if (!bInShop && !SuitPower_AddDevice(SuitDeviceBulletTime))
 		return;
 
-	color32 white = { 255, 255, 255, 32 };
-	UTIL_ScreenFade(this, white, 0.2f, 0, FFADE_IN);
-	engine->ServerCommand("sv_cheats 1; host_timescale 0.35\n");
+	if (!bInShop)
+	{
+		color32 white = { 255, 255, 255, 32 };
+		UTIL_ScreenFade(this, white, 0.2f, 0, FFADE_IN);
+	}
+
+	if (bInShop)
+	{
+		engine->ServerCommand("sv_cheats 1; host_timescale 0.05\n");
+	}
+	else
+	{
+		engine->ServerCommand("sv_cheats 1; host_timescale 0.35\n");
+	}
+
 	EmitSound("HL2Player.bullettimeon");
 	EmitSound("HL2Player.heartbeat");
 	m_HL2Local.m_fIsInBullettime = true;
 }
 
-void CHL2_Player::StopBullettime(bool bPlaySound, bool bFlashScreen)
+void CHL2_Player::StopBullettime(bool bPlaySound, bool bFlashScreen, bool bInShop)
 {
 	if (g_pGameRules->IsMultiplayer())
 		return;
 	
+	//if we're in the shop with bullettime on, turn it off.
 	if (m_HL2Local.m_bitsActiveDevices & SuitDeviceBulletTime.GetDeviceID())
 	{
 		SuitPower_RemoveDevice(SuitDeviceBulletTime);
@@ -2036,7 +2049,7 @@ void CHL2_Player::StopBullettime(bool bPlaySound, bool bFlashScreen)
 		UTIL_ScreenFade(this, white, 0.2f, 0, FFADE_OUT);
 	}
 
-	engine->ServerCommand("sv_cheats 1; host_timescale 1.0; sv_cheats 0\n");
+	engine->ServerCommand("host_timescale 1.0; sv_cheats 0\n");
 	if (bPlaySound)
 	{
 		EmitSound("HL2Player.bullettimeoff");
@@ -3694,6 +3707,18 @@ bool CHL2_Player::ClientCommand( const CCommand &args )
 		{
 			EmitSound( filter, entindex(), "Test.Sound" );
 		}
+		return true;
+	}
+	else if (stricmp(args[0], "inshop") == 0)
+	{
+		StartBullettime(true);
+
+		return true;
+	}
+	else if (stricmp(args[0], "outshop") == 0)
+	{
+		StopBullettime(true, false, true);
+
 		return true;
 	}
 

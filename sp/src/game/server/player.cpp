@@ -7431,24 +7431,6 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 
 		return true;
 	}
-	else if (stricmp(cmd, "inshop") == 0)
-	{
-		if (!g_pGameRules->IsMultiplayer())
-		{
-			engine->ServerCommand("sv_cheats 1; host_timescale 0.05\n");
-		}
-
-		return true;
-	}
-	else if (stricmp(cmd, "outshop") == 0)
-	{
-		if (!g_pGameRules->IsMultiplayer())
-		{
-			engine->ServerCommand("host_timescale 1;sv_cheats 0\n");
-		}
-
-		return true;
-	}
 	else if (stricmp(cmd, "buymenu") == 0)
 	{
 		if (!IsDead() && g_fr_economy.GetBool())
