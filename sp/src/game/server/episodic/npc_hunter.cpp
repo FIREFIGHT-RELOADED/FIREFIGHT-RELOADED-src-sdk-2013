@@ -6278,7 +6278,8 @@ void CNPC_Hunter::CreateCombineBallProjectile(const Vector& vecSrc, Vector& vecS
 		flRadius,
 		sk_weapon_ar2_alt_fire_mass.GetFloat(),
 		flDuration,
-		this);
+		this,
+		(g_pGameRules->GetSkillLevel() >= SKILL_VERYHARD ? true : false));
 }
 
 void CNPC_Hunter::CreateSpitProjectile(const Vector& vecSrc, Vector& vecShoot, QAngle& angShoot, int nShotNum)

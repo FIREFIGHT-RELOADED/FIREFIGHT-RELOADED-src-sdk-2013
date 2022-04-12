@@ -425,7 +425,8 @@ void CWeaponAR2::FireNPCSecondaryAttack( CBaseCombatCharacter *pOperator, bool b
 		flRadius, 
 		sk_weapon_ar2_alt_fire_mass.GetFloat(),
 		flDuration,
-		pNPC );
+		pNPC,
+		(g_pGameRules->GetSkillLevel() >= SKILL_VERYHARD ? true : false));
 }
 
 //-----------------------------------------------------------------------------
