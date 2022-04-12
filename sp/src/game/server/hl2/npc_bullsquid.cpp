@@ -811,7 +811,15 @@ int CNPC_Bullsquid::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 	}
 #endif
 
-	if ( !FClassnameIs( inputInfo.GetAttacker(), "npc_headcrab" ) )
+	if ((inputInfo.GetInflictor()->ClassMatches(GetClassname()) || inputInfo.GetInflictor() == this || inputInfo.GetAttacker() == this) && !(inputInfo.GetDamageType() == DMG_GENERIC))
+	{
+		return 0;
+	}
+
+	if ( !FClassnameIs( inputInfo.GetAttacker(), "npc_headcrab" ) || 
+		!FClassnameIs(inputInfo.GetAttacker(), "npc_headcrab_poison") || 
+		!FClassnameIs(inputInfo.GetAttacker(), "npc_headcrab_black") || 
+		!FClassnameIs(inputInfo.GetAttacker(), "npc_headcrab_fast") )
 	{
 		// don't forget about headcrabs if it was a headcrab that hurt the squid.
 		m_flLastHurtTime = gpGlobals->curtime;
