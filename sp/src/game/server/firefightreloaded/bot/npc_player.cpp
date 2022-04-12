@@ -240,7 +240,6 @@ void CNPC_Player::Spawn( void )
 	GiveOutline(Vector(26, 77, 153));
 
 	m_fIsPlayer = true;
-	m_fIsAce = true;
 
 	CapabilitiesAdd( bits_CAP_ANIMATEDFACE );
 	CapabilitiesAdd( bits_CAP_MOVE_SHOOT );

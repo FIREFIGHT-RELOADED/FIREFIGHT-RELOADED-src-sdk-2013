@@ -1050,7 +1050,7 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 		{
 			if (GetActiveWeapon())
 			{
-				if (!IsAce())
+				if (!IsAce() || !m_fIsPlayer)
 				{
 					m_nShots = GetActiveWeapon()->GetRandomBurst();
 					m_flShotDelay = GetActiveWeapon()->GetFireRate();
@@ -1838,7 +1838,8 @@ int CNPC_Combine::SelectSchedule( void )
 		{
 			Vector vecTarget = m_hForcedGrenadeTarget->WorldSpaceCenter();
 
-			if ( IsElite() || IsAce() )
+			int rand = random->RandomInt(1, 4);
+			if ( IsElite() || IsAce() || m_fIsPlayer && rand == 4)
 			{
 				if ( FVisible( m_hForcedGrenadeTarget ) )
 				{
@@ -2570,7 +2571,7 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 		}
 		else if ( pEvent->event == COMBINE_AE_ALTFIRE )
 		{
-			if (IsElite() || IsAce())
+			if (IsElite() || IsAce() || m_fIsPlayer)
 			{
 				animevent_t fakeEvent;
 
