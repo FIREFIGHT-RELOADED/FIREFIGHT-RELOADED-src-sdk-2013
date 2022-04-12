@@ -264,7 +264,10 @@ void CGrenadeFrag::VPhysicsUpdate( IPhysicsObject *pPhysics )
 	{
 		if (tr.m_pEnt)
 		{
-			Detonate();
+			if (tr.m_pEnt->IsNPC() && WasPunted())
+			{
+				Detonate();
+			}
 		}
 		else
 		{

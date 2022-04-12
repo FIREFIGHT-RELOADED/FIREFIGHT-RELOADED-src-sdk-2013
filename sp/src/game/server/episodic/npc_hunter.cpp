@@ -5685,7 +5685,7 @@ int CNPC_Hunter::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 			SetCondition( COND_HUNTER_STAGGERED );
 		}
-		else if ( pInflictor->ClassMatches( GetClassname() ) && !( info.GetDamageType() == DMG_GENERIC ) )
+		else if ( (pInflictor->ClassMatches( GetClassname() ) ||  pInflictor == this || pAttacker == this) && !(info.GetDamageType() == DMG_GENERIC))
 		{
 			return 0;
 		}
