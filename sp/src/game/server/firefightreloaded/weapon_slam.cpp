@@ -99,13 +99,13 @@ void CWeapon_SLAM::SetPickupTouch( void )
 // Input  : pOther - the entity that touched me
 // Output :
 //-----------------------------------------------------------------------------
-void CWeapon_SLAM::SlamTouch( CBaseEntity *pOther )
+void CWeapon_SLAM::SlamTouch(CBaseEntity* pOther)
 {
 #ifdef GAME_DLL
-	CBaseCombatCharacter* pBCC = ToBaseCombatCharacter( pOther );
+	CBaseCombatCharacter* pBCC = ToBaseCombatCharacter(pOther);
 
 	// Can I even pick stuff up?
-	if ( pBCC && !pBCC->IsAllowedToPickupWeapons() )
+	if (pBCC && !pBCC->IsAllowedToPickupWeapons())
 		return;
 #endif
 
@@ -120,7 +120,7 @@ void CWeapon_SLAM::SlamTouch( CBaseEntity *pOther )
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-bool CWeapon_SLAM::Holster( CBaseCombatWeapon *pSwitchingTo )
+bool CWeapon_SLAM::Holster(CBaseCombatWeapon* pSwitchingTo)
 {
 	SetThink(NULL);
 	return BaseClass::Holster(pSwitchingTo);
@@ -131,9 +131,9 @@ bool CWeapon_SLAM::Holster( CBaseCombatWeapon *pSwitchingTo )
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-bool CWeapon_SLAM::Reload( void )
+bool CWeapon_SLAM::Reload(void)
 {
-	WeaponIdle( );
+	WeaponIdle();
 	return true;
 }
 
@@ -142,11 +142,11 @@ bool CWeapon_SLAM::Reload( void )
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-void CWeapon_SLAM::PrimaryAttack( void )
+void CWeapon_SLAM::PrimaryAttack(void)
 {
-	CBaseCombatCharacter *pOwner  = GetOwner();
+	CBaseCombatCharacter* pOwner = GetOwner();
 	if (!pOwner)
-	{ 
+	{
 		return;
 	}
 
@@ -157,18 +157,18 @@ void CWeapon_SLAM::PrimaryAttack( void )
 
 	switch (m_tSlamState)
 	{
-		case SLAM_TRIPMINE_READY:
-			if (CanAttachSLAM())
-			{
-				StartTripmineAttach();
-			}
-			break;
-		case SLAM_SATCHEL_THROW:
-			StartSatchelThrow();
-			break;
-		case SLAM_SATCHEL_ATTACH:
-			StartSatchelAttach();
-			break;
+	case SLAM_TRIPMINE_READY:
+		if (CanAttachSLAM())
+		{
+			StartTripmineAttach();
+		}
+		break;
+	case SLAM_SATCHEL_THROW:
+		StartSatchelThrow();
+		break;
+	case SLAM_SATCHEL_ATTACH:
+		StartSatchelAttach();
+		break;
 	}
 }
 
@@ -177,9 +177,9 @@ void CWeapon_SLAM::PrimaryAttack( void )
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-void CWeapon_SLAM::SecondaryAttack( void )
+void CWeapon_SLAM::SecondaryAttack(void)
 {
-	CBaseCombatCharacter *pOwner  = GetOwner();
+	CBaseCombatCharacter* pOwner = GetOwner();
 	if (!pOwner)
 	{
 		return;
@@ -188,6 +188,22 @@ void CWeapon_SLAM::SecondaryAttack( void )
 	if (m_bDetonatorArmed)
 	{
 		StartSatchelDetonate();
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Return true if this weapon can be selected via the weapon selection
+//-----------------------------------------------------------------------------
+bool CWeapon_SLAM::CanBeSelected(void)
+{
+	if (AnyUndetonatedCharges())
+	{
+		//we still have charges out
+		return true;
+	}
+	else
+	{
+		return BaseClass::CanBeSelected();
 	}
 }
 

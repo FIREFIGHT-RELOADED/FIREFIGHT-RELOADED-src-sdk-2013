@@ -50,6 +50,7 @@ public:
 	void				SecondaryAttack( void );
 	void				WeaponIdle( void );
 	void				Weapon_Switch( void );
+	bool				CanBeSelected(void);
 	void				SLAMThink( void );
 	
 	void				SetPickupTouch( void );
