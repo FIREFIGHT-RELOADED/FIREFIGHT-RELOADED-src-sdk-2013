@@ -67,8 +67,11 @@ wchar_t* GrabLocalizedString(const char* name)
 
 wchar_t* GrabLocalizedNameString(const char* name)
 {
+	char szNameString[2048];
+	Q_snprintf(szNameString, sizeof(szNameString), "#GameUI_Store_Buy_%s", name);
+
 	wchar_t text[128];
-	wchar_t* tempString = g_pVGuiLocalize->Find(CFmtStr("#GameUI_Store_Buy_%s", name));
+	wchar_t* tempString = g_pVGuiLocalize->Find(szNameString);
 
 	// setup our localized string
 	if (tempString)
@@ -195,7 +198,6 @@ Panel* CFRStoreMenuEX::CreateItemPanel(const char* name, int price, const char* 
 	pLabel2->SetWide(384);
 
 	char szCommand[2048];
-
 	Q_snprintf(szCommand, sizeof(szCommand), "purchase %i \"%s\"", price, command);
 
 	Button* pButton = new Button(PanelTest, "BuyButton", GrabLocalizedString("#GameUI_Store_BuyItem"), this, szCommand);

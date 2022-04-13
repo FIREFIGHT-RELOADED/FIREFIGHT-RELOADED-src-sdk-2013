@@ -17,10 +17,23 @@ CAttributesLoader *LoadRandomPresetFile(const char* className, bool noNag)
 
 	if (!loader->loadedAttributes)
 	{
-		//load the first preset.
-		loader = new CAttributesLoader(className, 1, true);
+		bool shouldLoadFirstPreset = (random->RandomInt(0, entity_attributes_chance.GetInt()) == entity_attributes_chance.GetInt() ? true : false);
+		
+		if (shouldLoadFirstPreset)
+		{
+			//load the first preset.
+			loader = new CAttributesLoader(className, 1, true);
 
-		if (!loader->loadedAttributes)
+			if (!loader->loadedAttributes)
+			{
+				if (!noNag)
+				{
+					Warning("CAttributesLoader: Cannot load random attribute preset %i for %s.\n", randPreset, className);
+				}
+				return NULL;
+			}
+		}
+		else
 		{
 			if (!noNag)
 			{

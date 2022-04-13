@@ -217,6 +217,11 @@ bool CGameRules::IsSpawnPointValid( CBaseEntity *pSpot, CBasePlayer *pPlayer  )
 		return false;
 	}
 
+	if (pSpot->GetAbsOrigin() == Vector(0, 0, 0))
+	{
+		return false;
+	}
+
 	for ( CEntitySphereQuery sphere( pSpot->GetAbsOrigin(), 128 ); (ent = sphere.GetCurrentEntity()) != NULL; sphere.NextEntity() )
 	{
 		// if ent is a client, don't spawn on 'em
@@ -224,7 +229,18 @@ bool CGameRules::IsSpawnPointValid( CBaseEntity *pSpot, CBasePlayer *pPlayer  )
 			return false;
 	}
 
-	return true;
+	trace_t trace;
+	UTIL_TraceHull(pSpot->GetAbsOrigin(), 
+		pSpot->GetAbsOrigin(), 
+		VEC_HULL_MIN, 
+		VEC_HULL_MAX, 
+		MASK_PLAYERSOLID, 
+		pPlayer, 
+		COLLISION_GROUP_PLAYER_MOVEMENT, 
+		&trace);
+	return (trace.fraction == 1 && 
+		trace.allsolid != 1 && 
+		(trace.startsolid != 1));
 }
 
 //=========================================================
