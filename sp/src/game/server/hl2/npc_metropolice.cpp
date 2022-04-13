@@ -735,8 +735,20 @@ void CNPC_MetroPolice::Spawn( void )
 
 	SetUse( &CNPC_MetroPolice::PrecriminalUse );
 
+	bool manhackoverride = false;
+	//change manhack number
+	if (m_pAttributes != NULL)
+	{
+		manhackoverride = m_pAttributes->GetBool("manhack_override");
+		if (manhackoverride)
+		{
+			int manhacks = m_pAttributes->GetInt("manhack_count");
+			m_iManhacks = manhacks;
+		}
+	}
+
 	//Give him a random number of manhacks on spawn.
-	if (metropolice_spawnwithmanhacks.GetBool())
+	if (!manhackoverride && metropolice_spawnwithmanhacks.GetBool())
 	{
 		if (g_pGameRules->IsSkillLevel(SKILL_HARD))
 		{
@@ -3138,7 +3150,13 @@ void CNPC_MetroPolice::ReleaseManhack( void )
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::Event_Killed( const CTakeDamageInfo &info )
 {
-	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && info.GetDamageType() & (DMG_BLAST | DMG_CRUSH) && !(info.GetDamageType() & (DMG_DISSOLVE)) && !PlayerHasMegaPhysCannon())
+	bool gibs = true;
+	if (m_pAttributes != NULL)
+	{
+		gibs = m_pAttributes->GetBool("gibs");
+	}
+
+	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && info.GetDamageType() & (DMG_BLAST | DMG_CRUSH) && !(info.GetDamageType() & (DMG_DISSOLVE)) && !PlayerHasMegaPhysCannon() && gibs)
 	{
 		Vector vecDamageDir = info.GetDamageForce();
 		SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
@@ -4385,10 +4403,16 @@ int CNPC_MetroPolice::SelectSchedule( void )
 
 float CNPC_MetroPolice::GetHitgroupDamageMultiplier(int iHitGroup, const CTakeDamageInfo &info)
 {
+	bool gibs = true;
+	if (m_pAttributes != NULL)
+	{
+		gibs = m_pAttributes->GetBool("gibs");
+	}
+
 	switch (iHitGroup)
 	{
 	case HITGROUP_HEAD:
-		if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool())
+		if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool() && gibs)
 		{
 			if ((info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB))
 			{

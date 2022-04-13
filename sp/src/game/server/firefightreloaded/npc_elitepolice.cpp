@@ -435,10 +435,16 @@ void CNPC_ElitePolice::AlertSound(void)
 //-----------------------------------------------------------------------------
 float CNPC_ElitePolice::GetHitgroupDamageMultiplier(int iHitGroup, const CTakeDamageInfo &info)
 {
+	bool gibs = true;
+	if (m_pAttributes != NULL)
+	{
+		gibs = m_pAttributes->GetBool("gibs");
+	}
+
 	switch (iHitGroup)
 	{
 	case HITGROUP_HEAD:
-		if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool())
+		if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool() && gibs)
 		{
 			if ((info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB))
 			{
@@ -590,7 +596,13 @@ int CNPC_ElitePolice::MeleeAttack1Conditions(float flDot, float flDist)
 //-----------------------------------------------------------------------------
 void CNPC_ElitePolice::Event_Killed(const CTakeDamageInfo &info)
 {
-	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && info.GetDamageType() & (DMG_BLAST | DMG_CRUSH) && !(info.GetDamageType() & (DMG_DISSOLVE)) && !PlayerHasMegaPhysCannon())
+	bool gibs = true;
+	if (m_pAttributes != NULL)
+	{
+		gibs = m_pAttributes->GetBool("gibs");
+	}
+
+	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && info.GetDamageType() & (DMG_BLAST | DMG_CRUSH) && !(info.GetDamageType() & (DMG_DISSOLVE)) && !PlayerHasMegaPhysCannon() && gibs)
 	{
 		Vector vecDamageDir = info.GetDamageForce();
 		SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
