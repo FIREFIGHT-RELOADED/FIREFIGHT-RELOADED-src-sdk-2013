@@ -16,6 +16,7 @@
 #include "IEffects.h"
 #include "props.h"
 #include "npc_metropolice.h"
+#include "hl2/npc_combine.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -336,22 +337,26 @@ void CNPCMakerFirefight::MakerThink(void)
 {
 	SetNextThink(gpGlobals->curtime + m_flSpawnFrequency);
 
-	if (sk_spawnrareenemies.GetBool())
+	//rare npcs will be handled by the spawnlist
+	if (g_pGameRules->bSkipFuncCheck || g_fr_spawneroldfunctionality.GetBool())
 	{
-		int rarenpcrandom = random->RandomInt(0, m_nRareNPCRarity);
-
-		if (rarenpcrandom == 0 && CanMakeRareNPC())
+		if (sk_spawnrareenemies.GetBool())
 		{
-			MakeNPC(true);
+			int rarenpcrandom = random->RandomInt(0, m_nRareNPCRarity);
+
+			if (rarenpcrandom == 0 && CanMakeRareNPC())
+			{
+				MakeNPC(true);
+			}
+			else
+			{
+				MakeNPC();
+			}
 		}
 		else
 		{
 			MakeNPC();
 		}
-	}
-	else
-	{
-		MakeNPC();
 	}
 }
 
@@ -522,11 +527,13 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 	if (!CanMakeNPC())
 		return;
 
+	bool m_bRareNPC = rareNPC;
+
 	const char* pRandomName = sk_spawner_spamplayers.GetBool() ? "npc_playerbot" : "";
 
-	if (rareNPC)
+	if (g_pGameRules->bSkipFuncCheck || g_fr_spawneroldfunctionality.GetBool())
 	{
-		if (g_pGameRules->bSkipFuncCheck || g_fr_spawneroldfunctionality.GetBool())
+		if (m_bRareNPC)
 		{
 			if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_COMBINEFIREFIGHT)
 			{
@@ -556,14 +563,6 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 		}
 		else
 		{
-			int randomChoice = rand() % ARRAYSIZE(g_charNPCSRare);
-			pRandomName = g_charNPCSRare[randomChoice];
-		}
-	}
-	else
-	{
-		if (g_pGameRules->bSkipFuncCheck || g_fr_spawneroldfunctionality.GetBool())
-		{
 			if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_COMBINEFIREFIGHT)
 			{
 				int randomChoice = rand() % ARRAYSIZE(g_charNPCSCombineFirefightCommon);
@@ -590,11 +589,10 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 				pRandomName = g_charNPCSCommon[randomChoice];
 			}
 		}
-		else
-		{
-			int randomChoice = rand() % ARRAYSIZE(g_charNPCSCommon);
-			pRandomName = g_charNPCSCommon[randomChoice];
-		}
+	}
+	else
+	{
+		//here, we will grab the current spawnlist. m_bRareNPC will be set if the spawnlist wants the npc to be rare.
 	}
 
 	CAI_BaseNPC* pent = (CAI_BaseNPC*)CreateEntityByName(pRandomName);
@@ -621,6 +619,7 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 	pent->SetAbsAngles(angles);
 
 	pent->AddSpawnFlags(SF_NPC_FALL_TO_GROUND);
+	pent->AddSpawnFlags(SF_NPC_LONG_RANGE);
 
 	if (sk_spawner_npc_ragdoll_fade.GetBool() /* || m_spawnflags & SF_NPCMAKER_FADE*/)
 	{
@@ -634,7 +633,6 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 		const char* pRandomNamePolice = g_MetropoliceWeapons[randomChoicePolice];
 		pent->m_spawnEquipment = MAKE_STRING(pRandomNamePolice);
 		pent->AddSpawnFlags(SF_METROPOLICE_ALLOWED_TO_RESPOND);
-		//pent->AddSpawnFlags(SF_METROPOLICE_MID_RANGE_ATTACK);
 	}
 	else if (Q_stristr(pRandomName, "npc_elitepolice"))
 	{
@@ -687,7 +685,15 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 		}
 	}
 
-	pent->m_isRareEntity = rareNPC;
+	CNPC_Combine* combine = (CNPC_Combine*)pent;
+
+	if (pent)
+	{
+		int var = random->RandomInt(TACTICAL_VARIANT_DEFAULT, TACTICAL_VARIANT_PRESSURE_ENEMY_UNTIL_CLOSE);
+		combine->SetTacticalVariant(var);
+	}
+
+	pent->m_isRareEntity = m_bRareNPC;
 	pent->SetSquadName(m_SquadName);
 	pent->SetHintGroup(m_strHintGroup);
 
@@ -705,7 +711,7 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 
 	ChildPostSpawn(pent);
 
-	if (rareNPC)
+	if (m_bRareNPC)
 	{
 		//rare entities have their own value we must consider.
 		m_nLiveRareNPCs++;

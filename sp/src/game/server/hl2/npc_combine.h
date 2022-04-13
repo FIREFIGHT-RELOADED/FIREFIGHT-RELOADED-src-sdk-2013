@@ -27,6 +27,13 @@
 #define SF_COMBINE_NO_GRENADEDROP ( 1 << 17 )
 #define SF_COMBINE_NO_AR2DROP ( 1 << 18 )
 
+enum TacticalVariant_T
+{
+	TACTICAL_VARIANT_DEFAULT = 0,
+	TACTICAL_VARIANT_PRESSURE_ENEMY,				// Always try to close in on the player.
+	TACTICAL_VARIANT_PRESSURE_ENEMY_UNTIL_CLOSE,	// Act like VARIANT_PRESSURE_ENEMY, but go to VARIANT_DEFAULT once within 30 feet
+};
+
 //=========================================================
 //	>> CNPC_Combine
 //=========================================================
@@ -81,6 +88,7 @@ public:
 	bool			IsElite() { return m_fIsElite; }
 	bool			IsAce() { return m_fIsAce; }
 	bool			IsPlayerNPC() { return m_fIsPlayer; }
+	void			SetTacticalVariant(int variant) { m_iTacticalVariant = variant; }
 	void			DelayAltFireAttack( float flDelay );
 	void			DelaySquadAltFireAttack( float flDelay );
 	float			MaxYawSpeed( void );

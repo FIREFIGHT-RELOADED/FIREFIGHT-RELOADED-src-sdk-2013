@@ -112,13 +112,6 @@ enum SquadSlot_T
 	SQUAD_SLOT_OVERWATCH,
 };
 
-enum TacticalVariant_T
-{
-	TACTICAL_VARIANT_DEFAULT = 0,
-	TACTICAL_VARIANT_PRESSURE_ENEMY,				// Always try to close in on the player.
-	TACTICAL_VARIANT_PRESSURE_ENEMY_UNTIL_CLOSE,	// Act like VARIANT_PRESSURE_ENEMY, but go to VARIANT_DEFAULT once within 30 feet
-};
-
 enum PathfindingVariant_T
 {
 	PATHFINDING_VARIANT_DEFAULT = 0,
