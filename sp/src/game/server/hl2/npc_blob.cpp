@@ -46,7 +46,7 @@ ConVar npc_blob_show_centroid( "npc_blob_show_centroid", "0" );
 ConVar npc_blob_straggler_dist( "npc_blob_straggler_dist", "240" );
 
 ConVar npc_blob_use_orientation( "npc_blob_use_orientation", "1" );
-ConVar npc_blob_use_model( "npc_blob_use_model", "2" );
+ConVar npc_blob_use_model( "npc_blob_use_model", "1" );
 
 ConVar npc_blob_think_interval( "npc_blob_think_interval", "0.025" );
 
