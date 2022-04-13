@@ -92,7 +92,7 @@ ConVar hl2_normspeed("hl2_normspeed", "210", FCVAR_CHEAT);
 ConVar hl2_sprintspeed("hl2_sprintspeed", "320", FCVAR_CHEAT);
 ConVar fr_new_normspeed("fr_new_normspeed", "320", FCVAR_CHEAT);
 ConVar fr_new_walkspeed("fr_new_walkspeed", "210", FCVAR_CHEAT);
-ConVar fr_new_btspeed("fr_new_btspeed", "1280", FCVAR_CHEAT);
+ConVar fr_new_btspeed("fr_new_btspeed", "960", FCVAR_CHEAT);
 
 ConVar hl2_darkness_flashlight_factor ( "hl2_darkness_flashlight_factor", "1" );
 ConVar sv_leagcy_maxspeed("sv_leagcy_maxspeed", "0", FCVAR_ARCHIVE);

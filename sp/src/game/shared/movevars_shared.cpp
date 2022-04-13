@@ -45,8 +45,7 @@ ConVar	sv_specspeed	( "sv_specspeed", "3", FCVAR_ARCHIVE | FCVAR_NOTIFY | FCVAR_
 ConVar	sv_specnoclip	( "sv_specnoclip", "1", FCVAR_ARCHIVE | FCVAR_NOTIFY | FCVAR_REPLICATED);
 
 ConVar	sv_maxspeed		( "sv_maxspeed", "100000", FCVAR_NOTIFY | FCVAR_REPLICATED);
-//maybe increase?
-ConVar	sv_accelerate	( "sv_accelerate", "30", FCVAR_NOTIFY | FCVAR_REPLICATED);
+ConVar	sv_accelerate	( "sv_accelerate", "9999", FCVAR_NOTIFY | FCVAR_REPLICATED);
 
 ConVar	sv_airaccelerate("sv_airaccelerate", "150", FCVAR_NOTIFY | FCVAR_REPLICATED);
 ConVar	sv_wateraccelerate("sv_wateraccelerate", "30", FCVAR_NOTIFY | FCVAR_REPLICATED);
