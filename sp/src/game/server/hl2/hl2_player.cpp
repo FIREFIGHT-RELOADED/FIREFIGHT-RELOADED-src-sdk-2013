@@ -92,6 +92,7 @@ ConVar hl2_normspeed("hl2_normspeed", "210", FCVAR_CHEAT);
 ConVar hl2_sprintspeed("hl2_sprintspeed", "320", FCVAR_CHEAT);
 ConVar fr_new_normspeed("fr_new_normspeed", "320", FCVAR_CHEAT);
 ConVar fr_new_walkspeed("fr_new_walkspeed", "210", FCVAR_CHEAT);
+ConVar fr_new_btspeed("fr_new_btspeed", "1280", FCVAR_CHEAT);
 
 ConVar hl2_darkness_flashlight_factor ( "hl2_darkness_flashlight_factor", "1" );
 ConVar sv_leagcy_maxspeed("sv_leagcy_maxspeed", "0", FCVAR_ARCHIVE);
@@ -101,6 +102,7 @@ ConVar sv_leagcy_maxspeed("sv_leagcy_maxspeed", "0", FCVAR_ARCHIVE);
 #define	HL2_SPRINT_SPEED hl2_sprintspeed.GetFloat()
 #define	FR_NORM_SPEED fr_new_normspeed.GetFloat()
 #define	FR_WALK_SPEED fr_new_walkspeed.GetFloat()
+#define	FR_BULLETTIME_SPEED fr_new_btspeed.GetFloat()
 
 ConVar player_showpredictedposition( "player_showpredictedposition", "0" );
 ConVar player_showpredictedposition_timestep( "player_showpredictedposition_timestep", "1.0" );
@@ -132,6 +134,9 @@ ConVar sv_player_shootinzoom("sv_player_shootinzoom", "1", FCVAR_ARCHIVE);
 ConVar sv_player_rocketjumping("sv_player_rocketjumping", "1", FCVAR_ARCHIVE);
 ConVar sv_player_damageforce_self("sv_player_damageforce_self", "0");
 ConVar sv_player_damagescale_self("sv_player_damagescale_self", "0");
+
+ConVar sv_player_bullettime_timescale("sv_player_bullettime_timescale", "0.35", FCVAR_ARCHIVE);
+ConVar sv_player_bullettime_shop_timescale("sv_player_bullettime_shop_timescale", "0.05", FCVAR_ARCHIVE);
 
 #define	FLASH_DRAIN_TIME	 1.1111	// 100 units / 90 secs
 #define	FLASH_CHARGE_TIME	 50.0f	// 100 units / 2 secs
@@ -1393,9 +1398,13 @@ void CHL2_Player::PostThink( void )
 
 	static const ConVar *pHostTimescale = cvar->FindVar("host_timescale");
 
-	if (IsInBullettime() && (pHostTimescale->GetFloat() < 0.35 || pHostTimescale->GetFloat() > 0.35))
+	if (IsInBullettime() && 
+		(pHostTimescale->GetFloat() < sv_player_bullettime_shop_timescale.GetFloat() ||
+		pHostTimescale->GetFloat() > sv_player_bullettime_timescale.GetFloat()))
 	{
-		engine->ServerCommand("sv_cheats 1; host_timescale 0.35\n");
+		char szCommand[2048];
+		Q_snprintf(szCommand, sizeof(szCommand), "sv_cheats 1; host_timescale %f\n", sv_player_bullettime_timescale.GetFloat());
+		engine->ServerCommand(szCommand);
 	}
 }
 
@@ -1654,7 +1663,14 @@ void CHL2_Player::Spawn(void)
 	}
 	else
 	{
-		SetMaxSpeed(FR_NORM_SPEED);
+		if (IsInBullettime())
+		{
+			SetMaxSpeed(FR_BULLETTIME_SPEED);
+		}
+		else
+		{
+			SetMaxSpeed(FR_NORM_SPEED);
+		}
 	}
 
 	InitBullettime();
@@ -1862,7 +1878,14 @@ void CHL2_Player::StopSprinting( void )
 		}
 		else
 		{
-			SetMaxSpeed(FR_NORM_SPEED);
+			if (IsInBullettime())
+			{
+				SetMaxSpeed(FR_BULLETTIME_SPEED);
+			}
+			else
+			{
+				SetMaxSpeed(FR_NORM_SPEED);
+			}
 		}
 	}
 	else
@@ -1928,7 +1951,14 @@ void CHL2_Player::StopWalking( void )
 	}
 	else
 	{
-		SetMaxSpeed(FR_NORM_SPEED);
+		if (IsInBullettime())
+		{
+			SetMaxSpeed(FR_BULLETTIME_SPEED);
+		}
+		else
+		{
+			SetMaxSpeed(FR_NORM_SPEED);
+		}
 		m_fIsWalking = false;
 	}
 }
@@ -2018,15 +2048,20 @@ void CHL2_Player::StartBullettime(bool bInShop)
 		UTIL_ScreenFade(this, white, 0.2f, 0, FFADE_IN);
 	}
 
+	char szCommand[2048];
+
 	if (bInShop)
 	{
-		engine->ServerCommand("sv_cheats 1; host_timescale 0.05\n");
+		Q_snprintf(szCommand, sizeof(szCommand), "sv_cheats 1; host_timescale %f\n", sv_player_bullettime_shop_timescale.GetFloat());
+		engine->ServerCommand(szCommand);
 	}
 	else
 	{
-		engine->ServerCommand("sv_cheats 1; host_timescale 0.35\n");
+		Q_snprintf(szCommand, sizeof(szCommand), "sv_cheats 1; host_timescale %f\n", sv_player_bullettime_timescale.GetFloat());
+		engine->ServerCommand(szCommand);
 	}
 
+	SetMaxSpeed(FR_BULLETTIME_SPEED);
 	EmitSound("HL2Player.bullettimeon");
 	EmitSound("HL2Player.heartbeat");
 	m_HL2Local.m_fIsInBullettime = true;
@@ -2055,6 +2090,7 @@ void CHL2_Player::StopBullettime(bool bPlaySound, bool bFlashScreen, bool bInSho
 		EmitSound("HL2Player.bullettimeoff");
 	}
 	StopSound("HL2Player.heartbeat");
+	SetMaxSpeed(FR_NORM_SPEED);
 	m_HL2Local.m_fIsInBullettime = false;
 }
 
