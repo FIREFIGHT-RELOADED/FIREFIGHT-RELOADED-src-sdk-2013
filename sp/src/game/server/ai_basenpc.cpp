@@ -7021,6 +7021,8 @@ void CAI_BaseNPC::LoadInitAttributes()
 	{
 		m_pAttributes->SwitchEntityModel(this, "new_model", STRING(GetModelName()));
 		m_pAttributes->SwitchEntityColor(this, "new_color");
+		m_pAttributes->SwitchEntityBodygroup(this, "new_bodygroup", "new_bodygroup_num");
+		m_pAttributes->SwitchEntitySkin(this, "new_skin");
 
 		int healthupgrade = m_pAttributes->GetInt("additional_health");
 		

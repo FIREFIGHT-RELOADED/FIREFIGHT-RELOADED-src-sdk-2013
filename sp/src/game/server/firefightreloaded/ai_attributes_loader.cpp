@@ -171,6 +171,21 @@ void CAttributesLoader::SwitchEntityColor(CBaseEntity* ent, const char* szString
 	}
 }
 
+void CAttributesLoader::SwitchEntityBodygroup(CBaseAnimating* ent, const char* szNum, const char* szVal)
+{
+	int num, val;
+	num = GetInt(szNum);
+	val = GetInt(szVal);
+	ent->SetBodygroup(num, val);
+}
+
+void CAttributesLoader::SwitchEntitySkin(CBaseAnimating* ent, const char* szVal)
+{
+	int val;
+	val = GetInt(szVal);
+	ent->m_nSkin = val;
+}
+
 void CAttributesLoader::Die()
 {
 	if (data)

@@ -45,15 +45,15 @@ static const char* ppszIgnoredClasses[] =
 LINK_ENTITY_TO_CLASS( grapple_hook, CGrappleHook );
  
 BEGIN_DATADESC( CGrappleHook )
-	// Function Pointers
-	DEFINE_THINKFUNC( FlyThink ),
-	DEFINE_THINKFUNC( HookedThink ),
-	DEFINE_FUNCTION( HookTouch ),
- 
 	DEFINE_FIELD( m_hPlayer, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hOwner, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hBolt, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_bPlayerWasStanding, FIELD_BOOLEAN ),
+
+	// Function Pointers
+	DEFINE_THINKFUNC(FlyThink),
+	DEFINE_THINKFUNC(HookedThink),
+	DEFINE_ENTITYFUNC(HookTouch),
  
 END_DATADESC()
  

@@ -1306,6 +1306,13 @@ CBaseEntity *CreateServerRagdoll( CBaseAnimating *pAnimating, int forceBone, con
 	pRagdoll->SetName(AllocPooledString("corpse"));
 	const color32 color = pAnimating->GetRenderColor();
 	pRagdoll->SetRenderColor(color.r, color.g, color.b, color.a);
+	
+	for (int i = 0; i <= pAnimating->GetNumBodyGroups(); ++i)
+	{
+		pRagdoll->SetBodygroup(i, pAnimating->GetBodygroup(i));
+	}
+
+	pRagdoll->m_nSkin = pAnimating->m_nSkin;
 
 	pRagdoll->InitRagdollAnimation();
 	matrix3x4_t pBoneToWorld[MAXSTUDIOBONES], pBoneToWorldNext[MAXSTUDIOBONES];
