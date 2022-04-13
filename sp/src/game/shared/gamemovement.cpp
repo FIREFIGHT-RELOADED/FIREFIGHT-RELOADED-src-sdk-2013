@@ -57,7 +57,7 @@ ConVar fr_bunnyhop_boost("fr_bunnyhop_boost", "0", FCVAR_ARCHIVE);
 ConVar fr_autojump("fr_autojump", "0", FCVAR_ARCHIVE);
 
 ConVar fr_doublejump("fr_doublejump", "0", FCVAR_ARCHIVE);
-ConVar fr_doublejump_power("fr_doublejump_power", "20", FCVAR_ARCHIVE);
+ConVar fr_doublejump_power("fr_doublejump_power", "50", FCVAR_ARCHIVE);
 
 // option_duck_method is a carrier convar. Its sole purpose is to serve an easy-to-flip
 // convar which is ONLY set by the X360 controller menu to tell us which way to bind the
