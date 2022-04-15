@@ -33,6 +33,7 @@
 
 #define	HOUNDEYE_MAX_ATTACK_RADIUS		500
 #define	HOUNDEYE_MIN_ATTACK_RADIUS		100
+#define	HOUNDEYE_SQUAD_BONUS			1.1
 
 #define HOUNDEYE_EYE_FRAMES 4 // how many different switchable maps for the eye
 
@@ -629,50 +630,16 @@ void CNPC_Houndeye::Event_Killed( const CTakeDamageInfo &info )
 //=========================================================
 void CNPC_Houndeye::SonicAttack ( void )
 {
-	EmitSound( "NPC_Houndeye.SonicAttack" );
-
 	float		flAdjustedDamage;
 	float		flDist;
+	
+	EmitSound( "NPC_Houndeye.SonicAttack" );
 
 	CBroadcastRecipientFilter filter2;
-	te->BeamRingPoint(filter2, 0.0,
-		GetAbsOrigin(),							//origin
-		16,										//start radius
-		HOUNDEYE_MAX_ATTACK_RADIUS,//end radius
-		m_iSpriteTexture,						//texture
-		0,										//halo index
-		0,										//start frame
-		0,										//framerate
-		0.2,									//life
-		24,									//width
-		16,										//spread
-		0,										//amplitude
-		188,									//r
-		220,									//g
-		255,									//b
-		192,									//a
-		0										//speed
-		);
+	te->BeamRingPoint(filter2, 0.0, GetAbsOrigin(), 16, HOUNDEYE_MAX_ATTACK_RADIUS, m_iSpriteTexture, 0, 0, 0, 0.2, 24, 16, 0, 188, 220, 255, 192, 0);
 
 	CBroadcastRecipientFilter filter3;
-	te->BeamRingPoint(filter3, 0.0,
-		GetAbsOrigin(),									//origin
-		16,												//start radius
-		HOUNDEYE_MAX_ATTACK_RADIUS / 2,											//end radius
-		m_iSpriteTexture,								//texture
-		0,												//halo index
-		0,												//start frame
-		0,												//framerate
-		0.2,											//life
-		24,											//width
-		16,												//spread
-		0,												//amplitude
-		188,											//r
-		220,											//g
-		255,											//b
-		192,											//a
-		0												//speed
-		);
+	te->BeamRingPoint(filter3, 0.0, GetAbsOrigin(), 16, HOUNDEYE_MAX_ATTACK_RADIUS / 2, m_iSpriteTexture, 0, 0, 0, 0.2, 24, 16, 0, 188, 220, 255, 192, 0);
 
 	CBaseEntity *pEntity = NULL;
 	// iterate on all entities in the vicinity.
@@ -688,9 +655,22 @@ void CNPC_Houndeye::SonicAttack ( void )
 				// Calculate full damage first
 
 				flAdjustedDamage = sk_Houndeye_dmg_blast.GetFloat();
+				
+				if ( IsInSquad())
+				{
+					if (GetSquad()->NumMembers() > 1)
+					{
+						// squad gets attack bonus.
+						flAdjustedDamage = (sk_Houndeye_dmg_blast.GetFloat() * 2) * (HOUNDEYE_SQUAD_BONUS * (GetSquad()->NumMembers() - 1));
+					}
+				}
+				else
+				{
+					// solo
+					flAdjustedDamage = sk_Houndeye_dmg_blast.GetFloat();
+				}
 
 				flDist = (pEntity->WorldSpaceCenter() - GetAbsOrigin()).Length();
-
 				flAdjustedDamage -= (flDist / HOUNDEYE_MAX_ATTACK_RADIUS) * flAdjustedDamage;
 
 				if (!FVisible(pEntity))

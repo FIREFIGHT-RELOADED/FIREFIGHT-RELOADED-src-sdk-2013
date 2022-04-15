@@ -771,14 +771,22 @@ void CNPC_Bullsquid::RemoveIgnoredConditions( void )
 	if ( GetEnemy() != NULL )
 	{
 		// ( Unless after a tasty headcrab, yumm ^_^ )
-		if ( FClassnameIs( GetEnemy(), "npc_headcrab" ) )
-			 ClearCondition( COND_SMELL );
+		if (FClassnameIs(GetEnemy(), "npc_headcrab") ||
+			FClassnameIs(GetEnemy(), "npc_headcrab_poison") ||
+			FClassnameIs(GetEnemy(), "npc_headcrab_black") ||
+			FClassnameIs(GetEnemy(), "npc_headcrab_fast"))
+		{
+			ClearCondition(COND_SMELL);
+		}
 	}
 }
 
 Disposition_t CNPC_Bullsquid::IRelationType( CBaseEntity *pTarget )
 {
-	if ( gpGlobals->curtime - m_flLastHurtTime < 5 && FClassnameIs( pTarget, "npc_headcrab" ) )
+	if ( gpGlobals->curtime - m_flLastHurtTime < 5 && (FClassnameIs(pTarget, "npc_headcrab") ||
+		FClassnameIs(pTarget, "npc_headcrab_poison") ||
+		FClassnameIs(pTarget, "npc_headcrab_black") ||
+		FClassnameIs(pTarget, "npc_headcrab_fast")))
 	{
 		// if squid has been hurt in the last 5 seconds, and is getting relationship for a headcrab, 
 		// tell squid to disregard crab. 
