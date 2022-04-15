@@ -306,6 +306,7 @@ int CNPC_Assassin::RangeAttack1Conditions ( float flDot, float flDist )
 	return COND_NONE;
 }
 
+#define COMBINE_GRENADE_THROW_SPEED 650
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : flDot - 
@@ -329,14 +330,14 @@ int CNPC_Assassin::RangeAttack2Conditions ( float flDot, float flDist )
 
 		GetAttachment( "lefthand", vTossPos, vAngles );
 
-		Vector vecToss = VecCheckThrow( this, vTossPos, GetEnemy()->WorldSpaceCenter(), flDist, 0.5 ); // use dist as speed to get there in 1 second
+		Vector vecToss = VecCheckThrow( this, vTossPos, GetEnemy()->WorldSpaceCenter(), COMBINE_GRENADE_THROW_SPEED, 1.0 ); // use dist as speed to get there in 1 second
 
 		if ( vecToss != vec3_origin )
 		{
 			m_vecTossVelocity = vecToss;
 
 			// throw a hand grenade
-			m_fThrowGrenade = TRUE;
+			m_fThrowGrenade = true;
 
 			return COND_CAN_RANGE_ATTACK2;
 		}
