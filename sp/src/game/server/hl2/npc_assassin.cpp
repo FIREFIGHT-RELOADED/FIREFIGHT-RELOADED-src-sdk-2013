@@ -498,6 +498,8 @@ int CNPC_Assassin::SelectSchedule ( void )
 	switch	( m_NPCState )
 	{
 	case NPC_STATE_IDLE:
+		return SCHED_PATROL_WALK;
+		break;
 	case NPC_STATE_ALERT:
 		{
 			if ( HasCondition ( COND_HEAR_DANGER ) || HasCondition ( COND_HEAR_COMBAT ) )
