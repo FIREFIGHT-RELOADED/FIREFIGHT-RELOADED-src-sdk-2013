@@ -56,9 +56,6 @@ ConVar fr_bunnyhop_boost("fr_bunnyhop_boost", "0", FCVAR_ARCHIVE);
 
 ConVar fr_autojump("fr_autojump", "0", FCVAR_ARCHIVE);
 
-ConVar fr_doublejump("fr_doublejump", "0", FCVAR_ARCHIVE);
-ConVar fr_doublejump_power("fr_doublejump_power", "50", FCVAR_ARCHIVE);
-
 // option_duck_method is a carrier convar. Its sole purpose is to serve an easy-to-flip
 // convar which is ONLY set by the X360 controller menu to tell us which way to bind the
 // duck controls. Its value is meaningless anytime we don't have the options window open.
@@ -2419,7 +2416,6 @@ bool CGameMovement::CheckJumpButton( void )
 	}
 
 	bool bOnGround = (player->GetGroundEntity() != NULL);
-	bool bAirDash = false;
 
 	// Cannot jump again until the jump button has been released.
 	if (mv->m_nOldButtons & IN_JUMP)
@@ -2433,23 +2429,8 @@ bool CGameMovement::CheckJumpButton( void )
 	// No more effect
 	if (!bOnGround)
 	{
-		if (fr_doublejump.GetBool())
-		{
-			bAirDash = true;
-		}
-		else
-		{
-			mv->m_nOldButtons |= IN_JUMP;
-			return false;
-		}
-	}
-
-	// Check for an air dash as long as we are not holding the button.
-	//bots could spam jump. this fixes that.
-	if (bAirDash)
-	{
-		AirDash();
-		return true;
+		mv->m_nOldButtons |= IN_JUMP;
+		return false;
 	}
 
 	// Don't allow jumping when the player is in a stasis field.
@@ -2522,7 +2503,7 @@ bool CGameMovement::CheckJumpButton( void )
 	//allow us to bunnyhop regardless if we have more than 1 player.
 	CHLMoveData *pMoveData = (CHLMoveData*)mv;
 	//we might need to reconsider some things
-	if (fr_enable_bunnyhop.GetInt() == 1 && !bAirDash)
+	if (fr_enable_bunnyhop.GetInt() == 1)
 	{
 		Vector vecForward, vecRight;
 		AngleVectors(mv->m_vecViewAngles, &vecForward, &vecRight, NULL);
@@ -2609,53 +2590,6 @@ bool CGameMovement::CheckJumpButton( void )
 	// Flag that we jumped.
 	mv->m_nOldButtons |= IN_JUMP;	// don't jump again until released
 	return true;
-}
-
-void CGameMovement::AirDash(void)
-{
-	if (m_1AirDashes >= AIRDASH_MAXJUMPCOUNT)
-		return;
-
-	// if we are pogojumping, don't do anything. please.
-	if (mv->m_nOldButtons & IN_JUMP)
-		return;
-	
-	float flDashZ = 0.0f;
-
-	// Apply approx. the jump velocity added to an air dash.
-#if defined(HL2_DLL) || defined(HL2_CLIENT_DLL)
-	Assert(GetCurrentGravity() == 600.0f);
-	flDashZ = 160.0f;	// approx. 21 units.
-#else
-	Assert(GetCurrentGravity() == 800.0f);
-	flDashZ = 268.3281572999747f;
-#endif
-
-	// Get the wish direction.
-	Vector vecForward, vecRight;
-	AngleVectors(mv->m_vecViewAngles, &vecForward, &vecRight, NULL);
-	vecForward.z = 0.0f;
-	vecRight.z = 0.0f;
-	VectorNormalize(vecForward);
-	VectorNormalize(vecRight);
-
-	// Copy movement amounts
-	float flForwardMove = mv->m_flForwardMove;
-	float flSideMove = mv->m_flSideMove;
-
-	// Find the direction,velocity in the x,y plane.
-	Vector vecWishDirection(((vecForward.x * flForwardMove) + (vecRight.x * flSideMove)),
-		((vecForward.y * flForwardMove) + (vecRight.y * flSideMove)),
-		0.0f);
-
-	VectorNormalize(vecWishDirection);
-
-	// Update the velocity on the scout.
-	
-	mv->m_vecVelocity = mv->m_vecVelocity + (vecWishDirection * fr_doublejump_power.GetFloat());
-	mv->m_vecVelocity.z += flDashZ;
-
-	m_1AirDashes += 1;
 }
 
 //-----------------------------------------------------------------------------

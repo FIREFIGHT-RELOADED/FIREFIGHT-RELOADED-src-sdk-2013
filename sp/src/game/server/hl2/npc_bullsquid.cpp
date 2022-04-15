@@ -128,11 +128,9 @@ void CNPC_Bullsquid::Spawn()
 	SetSolid( SOLID_BBOX );
 	AddSolidFlags( FSOLID_NOT_STANDABLE );
 	SetMoveType( MOVETYPE_STEP );
-	m_bloodColor		= BLOOD_COLOR_GREEN;
+	SetBloodColor(BLOOD_COLOR_GREEN);
 	
-	SetRenderColor( 255, 255, 255, 255 );
-	
-	m_iHealth			= sk_bullsquid_health.GetFloat();
+	SetHealth(sk_bullsquid_health.GetInt());
 	m_flFieldOfView		= 0.2;// indicates the width of this monster's forward view cone ( as a dotproduct result )
 	m_NPCState			= NPC_STATE_NONE;
 	
@@ -145,6 +143,7 @@ void CNPC_Bullsquid::Spawn()
 	NPCInit();
 
 	m_flDistTooFar		= 784;
+	BaseClass::Spawn();
 }
 
 //=========================================================

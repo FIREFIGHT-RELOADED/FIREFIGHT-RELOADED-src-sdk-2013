@@ -87,6 +87,7 @@ public:
 	void		AddToActiveFlares( void );
 };
 
+#if 0
 //---------------------
 // Flaregun
 //---------------------
@@ -102,6 +103,7 @@ public:
 
 	DECLARE_ACTTABLE();
 };
+#endif
 
 #endif // WEAPON_FLAREGUN_H
 

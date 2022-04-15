@@ -403,74 +403,6 @@ LINK_ENTITY_TO_CLASS(item_ammo_crossbow, CItem_BoxXBowRounds);
 
 
 // ========================================================================
-//	>> FlareRound
-// ========================================================================
-class CItem_FlareRound : public CItem
-{
-public:
-	DECLARE_CLASS( CItem_FlareRound, CItem );
-
-	void Spawn( void )
-	{ 
-		Precache( );
-		SetModel( "models/items/flare.mdl");
-		BaseClass::Spawn( );
-	}
-	void Precache( void )
-	{
-		PrecacheModel ("models/items/flare.mdl");
-	}
-	bool MyTouch( CBasePlayer *pPlayer )
-	{
-		if (ITEM_GiveAmmo( pPlayer, 1, "FlareRound"))
-		{
-			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
-			{
-				UTIL_Remove(this);	
-			}
-			return true;
-		}
-		return false;
-	}
-};
-LINK_ENTITY_TO_CLASS(item_flare_round, CItem_FlareRound);
-
-// ========================================================================
-//	>> BoxFlareRounds
-// ========================================================================
-#define SIZE_BOX_FLARE_ROUNDS 15
-
-class CItem_BoxFlareRounds : public CItem
-{
-public:
-	DECLARE_CLASS( CItem_BoxFlareRounds, CItem );
-
-	void Spawn( void )
-	{ 
-		Precache( );
-		SetModel( "models/items/boxflares.mdl");
-		BaseClass::Spawn( );
-	}
-	void Precache( void )
-	{
-		PrecacheModel ("models/items/boxflares.mdl");
-	}
-	bool MyTouch( CBasePlayer *pPlayer )
-	{
-		if (ITEM_GiveAmmo( pPlayer, SIZE_BOX_FLARE_ROUNDS, "FlareRound"))
-		{
-			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
-			{
-				UTIL_Remove(this);	
-			}
-			return true;
-		}
-		return false;
-	}
-};
-LINK_ENTITY_TO_CLASS(item_box_flare_rounds, CItem_BoxFlareRounds);
-
-// ========================================================================
 // RPG Round
 // ========================================================================
 class CItem_RPG_Round : public CItem
@@ -723,40 +655,6 @@ public:
 LINK_ENTITY_TO_CLASS(item_ammo_sniperrifle, CItem_BoxSniperRifle);
 
 // ========================================================================
-//	>> BoxSRounds
-// ========================================================================
-class CItem_BoxDeagle : public CItem
-{
-public:
-	DECLARE_CLASS(CItem_BoxDeagle, CItem);
-
-	void Spawn(void)
-	{
-		Precache();
-		SetModel("models/items/boxsrounds.mdl");
-		BaseClass::Spawn();
-	}
-	void Precache(void)
-	{
-		PrecacheModel("models/items/boxsrounds.mdl");
-	}
-	bool MyTouch(CBasePlayer *pPlayer)
-	{
-		if (ITEM_GiveAmmo(pPlayer, SIZE_AMMO_DEAGLE, "Deagle"))
-		{
-			if (g_pGameRules->ItemShouldRespawn(this) == GR_ITEM_RESPAWN_NO)
-			{
-				UTIL_Remove(this);
-			}
-
-			return true;
-		}
-		return false;
-	}
-};
-LINK_ENTITY_TO_CLASS(item_ammo_deagle, CItem_BoxDeagle);
-
-// ========================================================================
 //	>> BoxMRounds
 // ========================================================================
 class CItem_BoxM249 : public CItem
@@ -893,36 +791,6 @@ public:
 	}
 };
 LINK_ENTITY_TO_CLASS(item_slam_ammo, CItem_SLAM_Ammo);
-
-class CItem_BoxEgon : public CItem
-{
-public:
-	DECLARE_CLASS(CItem_BoxEgon, CItem);
-
-	void Spawn(void)
-	{
-		Precache();
-		SetModel("models/items/boxmrounds.mdl");
-		BaseClass::Spawn();
-	}
-	void Precache(void)
-	{
-		PrecacheModel("models/items/boxmrounds.mdl");
-	}
-	bool MyTouch(CBasePlayer *pPlayer)
-	{
-		if (ITEM_GiveAmmo(pPlayer, SIZE_AMMO_ENERGY, "EgonEnergy"))
-		{
-			if (g_pGameRules->ItemShouldRespawn(this) == GR_ITEM_RESPAWN_NO)
-			{
-				UTIL_Remove(this);
-			}
-			return true;
-		}
-		return false;
-	}
-};
-LINK_ENTITY_TO_CLASS(item_ammo_egon, CItem_BoxEgon);
 
 class CItem_BoxMP5 : public CItem
 {
