@@ -211,6 +211,7 @@ void CCrossbowBolt::Precache( void )
 	}
 
 	PrecacheModel( "sprites/light_glow02_noz.vmt" );
+	PrecacheScriptSound("Weapon_Physgun.Special1");
 }
 
 //-----------------------------------------------------------------------------
@@ -301,7 +302,14 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 		SetAbsVelocity( Vector( 0, 0, 0 ) );
 
 		// play body "thwack" sound
-		EmitSound( "Weapon_Crossbow.BoltHitBody" );
+		if (m_spawnflags & SF_BOLT_KNIFEMODE)
+		{
+			EmitSound("Weapon_Physgun.Special1");
+		}
+		else
+		{
+			EmitSound("Weapon_Crossbow.BoltHitBody");
+		}
 
 		Vector vForward;
 
@@ -350,7 +358,14 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 		// See if we struck the world
 		if ( pOther->GetMoveType() == MOVETYPE_NONE && !( tr.surface.flags & SURF_SKY ) )
 		{
-			EmitSound( "Weapon_Crossbow.BoltHitWorld" );
+			if (m_spawnflags & SF_BOLT_KNIFEMODE)
+			{
+				EmitSound("Weapon_Physgun.Special1");
+			}
+			else
+			{
+				EmitSound("Weapon_Crossbow.BoltHitWorld");
+			}
 
 			// if what we hit is static architecture, can stay around for a while.
 			Vector vecDir = GetAbsVelocity();
