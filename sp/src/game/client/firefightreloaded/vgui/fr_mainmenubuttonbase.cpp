@@ -11,7 +11,6 @@
 #include <vgui_controls/AnimationController.h>
 #include "basemodelpanel.h"
 
-
 using namespace vgui;
 
 // memdbgon must be the last include file in a .cpp file!!!

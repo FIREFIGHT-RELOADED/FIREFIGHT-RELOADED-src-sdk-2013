@@ -263,7 +263,7 @@ void CFRMainMenuPanel::SetHintLabel()
 {
 	if (m_pHintLabel)
 	{
-		const wchar_t *wzTip = g_FRTips.GetRandomTip();
+		const wchar_t *wzTip = FRTips()->GetRandomTip();
 		m_pHintLabel->SetText(wzTip);
 	}
 };

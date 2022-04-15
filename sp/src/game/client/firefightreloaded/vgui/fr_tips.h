@@ -1,6 +1,6 @@
 //====== Copyright © 1996-2005, Valve Corporation, All rights reserved. =======
 //
-// Purpose: TF implementation of the IPresence interface
+// Purpose: Tips
 //
 //=============================================================================
 
@@ -25,12 +25,18 @@ public:
 
 	const wchar_t *GetRandomTip();
 private:
-	const wchar_t *GetTip( int iTip );
+	const wchar_t *GetLocalizedString( int iTip, const char *token );
 
-	int m_iTipCountAll;								// how many tips there are total
-	int m_iCurrentClassTip;							// index of current per-class tip
-	bool m_bInited;									// have we been initialized
+	int m_iTipCountAll;
+	int m_iSplashCountAll;
+	int m_iCurrentTip;
+	bool m_bInited;
 };
 
-extern CFRTips g_FRTips;
-#endif // TF_TIPS_H
+extern CFRTips *g_FRTips;
+
+inline CFRTips *FRTips()
+{
+	return g_FRTips;
+}
+#endif
