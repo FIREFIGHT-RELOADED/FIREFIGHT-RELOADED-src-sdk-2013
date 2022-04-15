@@ -135,8 +135,8 @@ ConVar sv_player_rocketjumping("sv_player_rocketjumping", "1", FCVAR_ARCHIVE);
 ConVar sv_player_damageforce_self("sv_player_damageforce_self", "0");
 ConVar sv_player_damagescale_self("sv_player_damagescale_self", "0");
 
-ConVar sv_player_bullettime_timescale("sv_player_bullettime_timescale", "0.35", FCVAR_ARCHIVE);
-ConVar sv_player_bullettime_shop_timescale("sv_player_bullettime_shop_timescale", "0.05", FCVAR_ARCHIVE);
+ConVar sv_player_bullettime_timescale("sv_player_bullettime_timescale", "35", FCVAR_ARCHIVE);
+ConVar sv_player_bullettime_shop_timescale("sv_player_bullettime_shop_timescale", "5", FCVAR_ARCHIVE);
 
 #define	FLASH_DRAIN_TIME	 1.1111	// 100 units / 90 secs
 #define	FLASH_CHARGE_TIME	 50.0f	// 100 units / 2 secs
@@ -1398,12 +1398,15 @@ void CHL2_Player::PostThink( void )
 
 	static const ConVar *pHostTimescale = cvar->FindVar("host_timescale");
 
+	float bullettimeTimescale = sv_player_bullettime_timescale.GetFloat() / 100;
+	float shopTimescale = sv_player_bullettime_shop_timescale.GetFloat() / 100;
+
 	if (IsInBullettime() && 
-		(pHostTimescale->GetFloat() < sv_player_bullettime_shop_timescale.GetFloat() ||
-		pHostTimescale->GetFloat() > sv_player_bullettime_timescale.GetFloat()))
+		(pHostTimescale->GetFloat() < shopTimescale ||
+		pHostTimescale->GetFloat() > bullettimeTimescale))
 	{
 		char szCommand[2048];
-		Q_snprintf(szCommand, sizeof(szCommand), "sv_cheats 1; host_timescale %f\n", sv_player_bullettime_timescale.GetFloat());
+		Q_snprintf(szCommand, sizeof(szCommand), "sv_cheats 1; host_timescale %f\n", bullettimeTimescale);
 		engine->ServerCommand(szCommand);
 	}
 }
@@ -2050,14 +2053,17 @@ void CHL2_Player::StartBullettime(bool bInShop)
 
 	char szCommand[2048];
 
+	float bullettimeTimescale = sv_player_bullettime_timescale.GetFloat() / 100;
+	float shopTimescale = sv_player_bullettime_shop_timescale.GetFloat() / 100;
+
 	if (bInShop)
 	{
-		Q_snprintf(szCommand, sizeof(szCommand), "sv_cheats 1; host_timescale %f\n", sv_player_bullettime_shop_timescale.GetFloat());
+		Q_snprintf(szCommand, sizeof(szCommand), "sv_cheats 1; host_timescale %f\n", shopTimescale);
 		engine->ServerCommand(szCommand);
 	}
 	else
 	{
-		Q_snprintf(szCommand, sizeof(szCommand), "sv_cheats 1; host_timescale %f\n", sv_player_bullettime_timescale.GetFloat());
+		Q_snprintf(szCommand, sizeof(szCommand), "sv_cheats 1; host_timescale %f\n", bullettimeTimescale);
 		engine->ServerCommand(szCommand);
 	}
 
