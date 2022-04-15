@@ -3478,6 +3478,17 @@ void CNPC_Hunter::StartTask( const Task_t *pTask )
 
 				// Decide how many shots to fire.
 				int nShots = hunter_flechette_volley_size.GetInt();
+
+				if (m_pAttributes != NULL)
+				{
+					int shots = m_pAttributes->GetInt("volley_size");
+
+					if (shots > 0)
+					{
+						nShots = shots;
+					}
+				}
+
 				if ( g_pGameRules->IsSkillLevel( SKILL_EASY ) )
 				{
 					nShots--;
@@ -3485,6 +3496,17 @@ void CNPC_Hunter::StartTask( const Task_t *pTask )
 
 				// Decide when to fire the first shot.
 				float initialDelay = hunter_first_flechette_delay.GetFloat();
+
+				if (m_pAttributes != NULL)
+				{
+					float firstDelay = m_pAttributes->GetFloat("volley_initial_delay");
+
+					if (firstDelay > 0)
+					{
+						initialDelay = firstDelay;
+					}
+				}
+
 				if ( bIsBuster )
 				{
 					initialDelay = 0; //*= 0.5;
@@ -3499,7 +3521,19 @@ void CNPC_Hunter::StartTask( const Task_t *pTask )
 					m_bMissLeft = true;
 				}
 
-				LockBothEyes( initialDelay + ( nShots * hunter_flechette_delay.GetFloat() ) );
+				float delay = hunter_flechette_delay.GetFloat();
+
+				if (m_pAttributes != NULL)
+				{
+					float normalDelay = m_pAttributes->GetFloat("volley_normal_delay");
+
+					if (normalDelay > 0)
+					{
+						delay = normalDelay;
+					}
+				}
+
+				LockBothEyes( initialDelay + ( nShots * delay) );
 			}
 			else
 			{
@@ -3704,7 +3738,20 @@ void CNPC_Hunter::RunTask( const Task_t *pTask )
 					else
 					{
 						// More shooting to do. Schedule our next flechette.
-						m_flNextFlechetteTime = gpGlobals->curtime + hunter_flechette_delay.GetFloat();
+
+						float delay = hunter_flechette_delay.GetFloat();
+
+						if (m_pAttributes != NULL)
+						{
+							float normalDelay = m_pAttributes->GetFloat("volley_normal_delay");
+
+							if (normalDelay > 0)
+							{
+								delay = normalDelay;
+							}
+						}
+
+						m_flNextFlechetteTime = gpGlobals->curtime + delay;
 					}
 				}
 				else
@@ -6272,6 +6319,19 @@ void CNPC_Hunter::CreateCombineBallProjectile(const Vector& vecSrc, Vector& vecS
 	float flAmmoRatio = 1.0f;
 	float flDuration = RemapValClamped(flAmmoRatio, 0.0f, 1.0f, 0.5f, sk_weapon_ar2_alt_fire_duration.GetFloat());
 	float flRadius = RemapValClamped(flAmmoRatio, 0.0f, 1.0f, 4.0f, sk_weapon_ar2_alt_fire_radius.GetFloat());
+
+	bool bVaporizeOnHit = (g_pGameRules->GetSkillLevel() >= SKILL_VERYHARD ? true : false);
+
+	if (m_pAttributes != NULL)
+	{
+		bool vaporize = m_pAttributes->GetBool("combine_ball_vaprorize_on_hit", 0);
+
+		if (vaporize)
+		{
+			bVaporizeOnHit = vaporize;
+		}
+	}
+
 	// Fire the combine ball
 	CreateCombineBall(vecSrc,
 		vecShoot * hunter_flechette_speed.GetFloat(),
@@ -6279,7 +6339,7 @@ void CNPC_Hunter::CreateCombineBallProjectile(const Vector& vecSrc, Vector& vecS
 		sk_weapon_ar2_alt_fire_mass.GetFloat(),
 		flDuration,
 		this,
-		(g_pGameRules->GetSkillLevel() >= SKILL_VERYHARD ? true : false));
+		bVaporizeOnHit);
 }
 
 void CNPC_Hunter::CreateSpitProjectile(const Vector& vecSrc, Vector& vecShoot, QAngle& angShoot, int nShotNum)
@@ -7031,7 +7091,19 @@ void CAI_HunterEscortBehavior::RunTask( const Task_t *pTask )
 
 									if ( --pHunter->m_nFlechettesQueued > 0 )
 									{
-										pHunter->m_flNextFlechetteTime = gpGlobals->curtime + hunter_flechette_delay.GetFloat();
+										float delay = hunter_flechette_delay.GetFloat();
+
+										if (pHunter->m_pAttributes != NULL)
+										{
+											float normalDelay = pHunter->m_pAttributes->GetFloat("volley_normal_delay");
+
+											if (normalDelay > 0)
+											{
+												delay = normalDelay;
+											}
+										}
+
+										pHunter->m_flNextFlechetteTime = gpGlobals->curtime + delay;
 									}
 									else
 									{

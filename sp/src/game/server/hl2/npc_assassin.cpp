@@ -15,6 +15,7 @@
 #include "ai_squad.h"
 #include "AI_SquadSlot.h"
 #include "ai_moveprobe.h"
+#include "grenade_frag.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -28,10 +29,11 @@ ConVar	g_debug_assassin( "g_debug_assassin", "0" );
 #define	ASSASSIN_AE_FIRE_PISTOL_RIGHT	1
 #define	ASSASSIN_AE_FIRE_PISTOL_LEFT	2
 #define	ASSASSIN_AE_KICK_HIT			3
+#define ASSASSIN_AE_GRENADE				4
 
-int AE_ASSASIN_FIRE_PISTOL_RIGHT;
-int AE_ASSASIN_FIRE_PISTOL_LEFT;
-int AE_ASSASIN_KICK_HIT;
+//int AE_ASSASIN_FIRE_PISTOL_RIGHT;
+//int AE_ASSASIN_FIRE_PISTOL_LEFT;
+//int AE_ASSASIN_KICK_HIT;
 
 //=========================================================
 // Assassin activities
@@ -71,6 +73,8 @@ enum
 	SCHED_ASSASSIN_EVADE,
 	SCHED_ASSASSIN_STALK_ENEMY,
 	SCHED_ASSASSIN_LUNGE,
+	SCHED_ASSASSIN_HUNT_ENEMY,
+	SCHED_ASSASSIN_HUNT_ENEMY_RETRY,
 };
 
 //=========================================================
@@ -119,6 +123,9 @@ BEGIN_DATADESC( CNPC_Assassin )
 	DEFINE_FIELD( m_bBlinkState, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_pEyeSprite,	FIELD_CLASSPTR ),
 	DEFINE_FIELD( m_pEyeTrail,	FIELD_CLASSPTR ),
+	DEFINE_FIELD( m_flNextGrenadeCheck, FIELD_TIME ),
+	DEFINE_FIELD( m_vecTossVelocity, FIELD_VECTOR ),
+	DEFINE_FIELD( m_fThrowGrenade, FIELD_BOOLEAN ),
 END_DATADESC()
 
 //-----------------------------------------------------------------------------
@@ -128,14 +135,18 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 void CNPC_Assassin::Precache( void )
 {
-	PrecacheModel( "models/fassassin.mdl" );
+	PrecacheModel( "models/combine_assassin.mdl" );
 
 	PrecacheScriptSound( "NPC_Assassin.ShootPistol" );
 	PrecacheScriptSound( "Zombie.AttackHit" );
-	PrecacheScriptSound( "Assassin.AttackMiss" );
+	PrecacheScriptSound( "Zombie.AttackMiss" );
 	PrecacheScriptSound( "NPC_Assassin.Footstep" );
 
 	PrecacheModel( "sprites/redglow1.vmt" );
+	PrecacheModel( "sprites/bluelaser1.vmt" );
+
+	UTIL_PrecacheOther( "npc_grenade_frag" );
+	PrecacheModel( "models/Weapons/w_grenade.mdl" ); 
 
 	BaseClass::Precache();
 }
@@ -150,7 +161,7 @@ void CNPC_Assassin::Spawn( void )
 {
 	Precache();
 
-	SetModel( "models/fassassin.mdl" );
+	SetModel( "models/combine_assassin.mdl" );
 
 	SetHullType(HULL_HUMAN);
 	SetHullSizeNormal();
@@ -166,7 +177,7 @@ void CNPC_Assassin::Spawn( void )
 
 	CapabilitiesClear();
 	CapabilitiesAdd( bits_CAP_MOVE_CLIMB | bits_CAP_MOVE_GROUND | bits_CAP_MOVE_JUMP );
-	CapabilitiesAdd( bits_CAP_SQUAD | bits_CAP_USE_WEAPONS | bits_CAP_AIM_GUN | bits_CAP_INNATE_RANGE_ATTACK1 | bits_CAP_INNATE_RANGE_ATTACK2 | bits_CAP_INNATE_MELEE_ATTACK1 );
+	CapabilitiesAdd( bits_CAP_SQUAD | bits_CAP_USE_WEAPONS | bits_CAP_AIM_GUN | bits_CAP_INNATE_RANGE_ATTACK1 | bits_CAP_INNATE_RANGE_ATTACK2 | bits_CAP_INNATE_MELEE_ATTACK1 | bits_CAP_INNATE_MELEE_ATTACK2);
 
 	//Turn on our guns
 	SetBodygroup( 1, 1 );
@@ -238,29 +249,9 @@ int CNPC_Assassin::MeleeAttack1Conditions ( float flDot, float flDist )
 // Purpose: 
 // Input  : flDot - 
 //			flDist - 
-// Output : int CNPC_Assassin::RangeAttack1Conditions
+// Output : int CNPC_Assassin::MeleeAttack2Conditions
 //-----------------------------------------------------------------------------
-int CNPC_Assassin::RangeAttack1Conditions ( float flDot, float flDist )
-{
-	if ( flDist < 84 )
-		return COND_TOO_CLOSE_TO_ATTACK;
-
-	if ( flDist > 1024 )
-		return COND_TOO_FAR_TO_ATTACK;
-
-	if ( flDot < 0.5f )
-		return COND_NOT_FACING_ATTACK;
-
-	return COND_CAN_RANGE_ATTACK1;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : flDot - 
-//			flDist - 
-// Output : int CNPC_Assassin::RangeAttack1Conditions
-//-----------------------------------------------------------------------------
-int CNPC_Assassin::RangeAttack2Conditions ( float flDot, float flDist )
+int CNPC_Assassin::MeleeAttack2Conditions(float flDot, float flDist)
 {
 	if ( m_flNextLungeTime > gpGlobals->curtime )
 		return 0;
@@ -282,11 +273,76 @@ int CNPC_Assassin::RangeAttack2Conditions ( float flDot, float flDist )
 	// Check for a clear path
 	trace_t	tr;
 	UTIL_TraceHull( GetAbsOrigin(), GetEnemy()->GetAbsOrigin(), GetHullMins(), GetHullMaxs(), MASK_NPCSOLID, this, COLLISION_GROUP_NONE, &tr );
-	
+
 	if ( tr.fraction == 1.0f || tr.m_pEnt == GetEnemy() )
-		return COND_CAN_RANGE_ATTACK2;
+		return COND_CAN_MELEE_ATTACK2;
 
 	return 0;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : flDot - 
+//			flDist - 
+// Output : int CNPC_Assassin::RangeAttack1Conditions
+//-----------------------------------------------------------------------------
+int CNPC_Assassin::RangeAttack1Conditions ( float flDot, float flDist )
+{
+	if ( !HasCondition( COND_ENEMY_OCCLUDED ) && flDist > 84 && flDist <= 1024 )
+	{
+		trace_t	tr;
+
+		Vector vecSrc = GetAbsOrigin() + m_HackedGunPos;
+
+		// verify that a bullet fired from the gun will hit the enemy before the world.
+		UTIL_TraceLine( vecSrc, GetEnemy()->BodyTarget(vecSrc), MASK_SOLID, this, COLLISION_GROUP_NONE, &tr);
+
+		if ( tr.fraction == 1.0 || tr.m_pEnt == GetEnemy() )
+		{
+			return COND_CAN_RANGE_ATTACK1;
+		}
+	}
+
+	return COND_NONE;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : flDot - 
+//			flDist - 
+// Output : int CNPC_Assassin::RangeAttack1Conditions
+//-----------------------------------------------------------------------------
+int CNPC_Assassin::RangeAttack2Conditions ( float flDot, float flDist )
+{
+	//Fenix: For throwing grenades. Disable and uncomment the rest for the lunge attack
+	m_fThrowGrenade = false;
+	if ( !FBitSet ( GetEnemy()->GetFlags(), FL_ONGROUND ) )
+	{
+		// don't throw grenades at anything that isn't on the ground!
+		return COND_NONE;
+	}
+
+	if ( m_flNextGrenadeCheck < gpGlobals->curtime && !HasCondition( COND_ENEMY_OCCLUDED ) && flDist <= 512 )
+	{
+		Vector vTossPos;
+		QAngle vAngles;
+
+		GetAttachment( "lefthand", vTossPos, vAngles );
+
+		Vector vecToss = VecCheckThrow( this, vTossPos, GetEnemy()->WorldSpaceCenter(), flDist, 0.5 ); // use dist as speed to get there in 1 second
+
+		if ( vecToss != vec3_origin )
+		{
+			m_vecTossVelocity = vecToss;
+
+			// throw a hand grenade
+			m_fThrowGrenade = TRUE;
+
+			return COND_CAN_RANGE_ATTACK2;
+		}
+	}
+
+	return COND_NONE;
 }
 
 //-----------------------------------------------------------------------------
@@ -329,24 +385,24 @@ void CNPC_Assassin::FirePistol( int hand )
 	EmitSound( filter, entindex(), "NPC_Assassin.ShootPistol" );
 }
 
+#define COMBINE_GRENADE_TIMER		3.5
 //---------------------------------------------------------
 //---------------------------------------------------------
 void CNPC_Assassin::HandleAnimEvent( animevent_t *pEvent )
 {
-	
-	if ( pEvent->event == AE_ASSASIN_FIRE_PISTOL_RIGHT )
+	if ( pEvent->event == ASSASSIN_AE_FIRE_PISTOL_RIGHT )
 	{
 		FirePistol( 0 );
 		return;
 	}
 
-	if ( pEvent->event == AE_ASSASIN_FIRE_PISTOL_LEFT )
+	if ( pEvent->event == ASSASSIN_AE_FIRE_PISTOL_LEFT )
 	{
 		FirePistol( 1 );
 		return;
 	}
 	
-	if ( pEvent->event == AE_ASSASIN_KICK_HIT )
+	if ( pEvent->event == ASSASSIN_AE_KICK_HIT )
 	{
 		Vector	attackDir = BodyDirection2D();
 		Vector	attackPos = WorldSpaceCenter() + ( attackDir * 64.0f );
@@ -376,12 +432,33 @@ void CNPC_Assassin::HandleAnimEvent( animevent_t *pEvent )
 		}
 		else
 		{
-			EmitSound( "Assassin.AttackMiss" );
+			EmitSound( "Zombie.AttackMiss" );
 			//EmitSound( "Assassin.AttackMiss" );
 		}
 
 		return;
 	}
+
+	//Fenix: For throwing grenades
+	if ( pEvent->event == ASSASSIN_AE_GRENADE )
+	{
+		Vector vTossPos;
+		QAngle vAngles;
+
+		GetAttachment( "lefthand", vTossPos, vAngles );
+
+		bool bFireGrenade = ((random->RandomInt(0, 1) == 1 && g_pGameRules->GetSkillLevel() >= SKILL_HARD) ? true : false);
+		CBaseGrenade *pGrenade = Fraggrenade_Create( vTossPos, vAngles, m_vecTossVelocity, vec3_origin, this, COMBINE_GRENADE_TIMER, true, bFireGrenade);
+		if ( pGrenade )
+		{
+			m_flNextGrenadeCheck = gpGlobals->curtime + 6;// wait six seconds before even looking again to see if a grenade can be thrown.
+			m_fThrowGrenade = FALSE;
+			// !!!LATER - when in a group, only try to throw grenade if ordered.
+		}
+		else
+			DevMsg("Assassin failed to create a nade!\n");
+	}
+	return;
 
 	BaseClass::HandleAnimEvent( pEvent );
 }
@@ -422,11 +499,14 @@ int CNPC_Assassin::SelectSchedule ( void )
 	case NPC_STATE_IDLE:
 	case NPC_STATE_ALERT:
 		{
-			if ( HasCondition ( COND_HEAR_DANGER ) )
-				 return SCHED_TAKE_COVER_FROM_BEST_SOUND;
+			if ( HasCondition ( COND_HEAR_DANGER ) || HasCondition ( COND_HEAR_COMBAT ) )
+			{
+				if ( HasCondition ( COND_HEAR_DANGER ) )
+					 return SCHED_TAKE_COVER_FROM_BEST_SOUND;
 				
-			if ( HasCondition ( COND_HEAR_COMBAT ) )
-				return SCHED_INVESTIGATE_SOUND;
+				else
+					return SCHED_INVESTIGATE_SOUND;
+			}
 		}
 		break;
 
@@ -456,18 +536,36 @@ int CNPC_Assassin::SelectSchedule ( void )
 			if ( HasCondition( COND_CAN_MELEE_ATTACK1 ) )
 				return SCHED_MELEE_ATTACK1;
 
-			// Can shoot
-			if ( HasCondition( COND_CAN_RANGE_ATTACK2 ) )
+			// Can lunge
+			if (HasCondition(COND_CAN_MELEE_ATTACK2))
 			{
-				m_flNextLungeTime	= gpGlobals->curtime + 2.0f;
-				m_nLastFlipType		= FLIP_FORWARD;
+				m_flNextLungeTime = gpGlobals->curtime + 2.0f;
+				m_nLastFlipType = FLIP_FORWARD;
 
 				return SCHED_ASSASSIN_LUNGE;
 			}
 
 			// Can shoot
+			if ( HasCondition( COND_CAN_RANGE_ATTACK2 ) )
+			{
+				//Fenix: For throwing grenades. Disable and uncomment the rest for the lunge attack
+				return SCHED_RANGE_ATTACK2;
+			}
+
+			// Can shoot
 			if ( HasCondition( COND_CAN_RANGE_ATTACK1 ) )
 				return SCHED_RANGE_ATTACK1;
+
+			if ( HasCondition( COND_ENEMY_OCCLUDED ) )
+				return SCHED_ASSASSIN_HUNT_ENEMY;
+
+			// Face our enemy
+			if ( HasCondition( COND_SEE_ENEMY ) && !HasCondition( COND_CAN_RANGE_ATTACK1 ) )
+				return SCHED_ASSASSIN_HUNT_ENEMY;
+
+			// new enemy
+			if ( HasCondition( COND_NEW_ENEMY ) )
+				return SCHED_ASSASSIN_HUNT_ENEMY;
 
 			// Face our enemy
 			if ( HasCondition( COND_SEE_ENEMY ) )
@@ -687,12 +785,12 @@ void CNPC_Assassin::StartTask( const Task_t *pTask )
 
 			Vector	goalPos;
 
-			CHintCriteria	criteria;
+			CHintCriteria	hint;
 
 			// Find a disadvantage node near the player, but away from ourselves
-			criteria.SetHintType(HINT_TACTICAL_ENEMY_DISADVANTAGED);
-			criteria.AddExcludePosition(GetAbsOrigin(), 256);
-			criteria.AddExcludePosition(GetEnemy()->GetAbsOrigin(), 256);
+			hint.SetHintType( HINT_TACTICAL_ENEMY_DISADVANTAGED );
+			hint.AddExcludePosition( GetAbsOrigin(), 256 );
+			hint.AddExcludePosition( GetEnemy()->GetAbsOrigin(), 256 );
 
 			if ( ( m_pSquad != NULL ) && ( m_pSquad->NumMembers() > 1 ) )
 			{
@@ -702,13 +800,13 @@ void CNPC_Assassin::StartTask( const Task_t *pTask )
 					if ( pSquadMember == NULL )
 						continue;
 
-					criteria.AddExcludePosition(pSquadMember->GetAbsOrigin(), 128);
+					hint.AddExcludePosition( pSquadMember->GetAbsOrigin(), 128 );
 				}
 			}
 	
-			criteria.SetFlag(bits_HINT_NODE_NEAREST);
+			hint.SetFlag( bits_HINT_NODE_NEAREST );
 
-			CAI_Hint *pHint = CAI_HintManager::FindHint( this, GetEnemy()->GetAbsOrigin(), criteria );
+			CAI_Hint *pHint = CAI_HintManager::FindHint( this, GetEnemy()->GetAbsOrigin(), hint );
 
 			if ( pHint == NULL )
 			{
@@ -729,6 +827,15 @@ void CNPC_Assassin::StartTask( const Task_t *pTask )
 			
 			TaskComplete();
 		}
+		break;
+
+	//Fenix: For throwing grenades
+	case TASK_RANGE_ATTACK2:
+		if (!m_fThrowGrenade)
+			TaskComplete( );
+		else
+			BaseClass::StartTask ( pTask );
+
 		break;
 
 	default:
@@ -973,11 +1080,12 @@ void CNPC_Assassin::BuildScheduleTestBits( void )
 	if ( m_NPCState == NPC_STATE_SCRIPT )
 		return;
 
+	//Fenix: FIXME - Breaks shoot anims
 	//Become interrupted if we're targetted when shooting an enemy
-	if ( IsCurSchedule( SCHED_RANGE_ATTACK1 ) )
+	/*if ( IsCurSchedule( SCHED_RANGE_ATTACK1 ) )
 	{
 		SetCustomInterruptCondition( COND_ASSASSIN_ENEMY_TARGETTING_ME );
-	}
+	}*/
 	
 }
 
@@ -990,12 +1098,35 @@ void CNPC_Assassin::Event_Killed( const CTakeDamageInfo &info )
 	BaseClass::Event_Killed( info );
 
 	// Turn off the eye
-	SetEyeState( ASSASSIN_EYE_DEAD );
+	UTIL_Remove( m_pEyeSprite );
+	m_pEyeSprite = NULL;
+
+	UTIL_Remove( m_pEyeTrail );
+	m_pEyeTrail = NULL;
 	
 	// Turn off the pistols
 	SetBodygroup( 1, 0 );
 
 	// Spawn her guns
+	Vector	vecGunPos,vecGunPos2;
+	QAngle	vecGunAngles,vecGunAngles2;
+
+	GetAttachment( "RightHand", vecGunPos, vecGunAngles );
+	GetAttachment( "LeftHand", vecGunPos2, vecGunAngles2 );
+
+	// If the gun would drop into a wall, spawn it at our origin
+	if ( UTIL_PointContents( vecGunPos ) & CONTENTS_SOLID )
+		vecGunPos = GetAbsOrigin();
+
+	if ( UTIL_PointContents( vecGunPos2 ) & CONTENTS_SOLID )
+		vecGunPos2 = GetAbsOrigin();
+
+	// now spawn the guns.
+	if ( !HasSpawnFlags( SF_NPC_NO_WEAPON_DROP ) )
+	{	
+			DropItem( "weapon_pistol", vecGunPos, vecGunAngles );
+			DropItem( "weapon_pistol", vecGunPos2, vecGunAngles2 );
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1013,9 +1144,9 @@ AI_BEGIN_CUSTOM_NPC( npc_assassin, CNPC_Assassin )
 	DECLARE_ACTIVITY(ACT_ASSASSIN_PERCH)
 
 	//Adrian: events go here
-	DECLARE_ANIMEVENT( AE_ASSASIN_FIRE_PISTOL_RIGHT )
-	DECLARE_ANIMEVENT( AE_ASSASIN_FIRE_PISTOL_LEFT )
-	DECLARE_ANIMEVENT( AE_ASSASIN_KICK_HIT )
+	//DECLARE_ANIMEVENT( AE_ASSASIN_FIRE_PISTOL_RIGHT )
+	//DECLARE_ANIMEVENT( AE_ASSASIN_FIRE_PISTOL_LEFT )
+	//DECLARE_ANIMEVENT( AE_ASSASIN_KICK_HIT )
 
 	DECLARE_TASK(TASK_ASSASSIN_GET_PATH_TO_VANTAGE_POINT)
 	DECLARE_TASK(TASK_ASSASSIN_EVADE)
@@ -1097,5 +1228,57 @@ AI_BEGIN_CUSTOM_NPC( npc_assassin, CNPC_Assassin )
 		"	Interrupts"
 		"		COND_TASK_FAILED"
 	)	
+
+	//=========================================================
+	// Fenix: Pursue and hunt our enemies
+	//=========================================================
+	DEFINE_SCHEDULE
+	(
+		SCHED_ASSASSIN_HUNT_ENEMY,
+
+	"	Tasks"
+	"		TASK_SET_FAIL_SCHEDULE		SCHEDULE:SCHED_ASSASSIN_HUNT_ENEMY_RETRY"
+	"		TASK_GET_PATH_TO_ENEMY		0"
+	"		TASK_RUN_PATH				0"
+	"		TASK_WAIT_FOR_MOVEMENT		0"
+	"	"
+	"	Interrupts"
+	"		COND_NEW_ENEMY"
+	"		COND_ENEMY_DEAD"
+	"		COND_LIGHT_DAMAGE"
+	"		COND_HEAVY_DAMAGE"
+	"		COND_CAN_RANGE_ATTACK1"
+	"		COND_CAN_MELEE_ATTACK1"
+	"		COND_CAN_RANGE_ATTACK2"
+	"		COND_CAN_MELEE_ATTACK2"
+	"		COND_HEAR_DANGER"
+	)
+
+	//=========================================================
+	// This is a schedule I added that borrows some HL2 technology
+	// to be smarter in cases where HL1 was pretty dumb. I've wedged
+	// this between ESTABLISH_LINE_OF_FIRE and TAKE_COVER_FROM_ENEMY (sjb)
+	//=========================================================
+	DEFINE_SCHEDULE
+	(
+		SCHED_ASSASSIN_HUNT_ENEMY_RETRY,
+
+		"	Tasks"
+		"		TASK_SET_FAIL_SCHEDULE			SCHEDULE:SCHED_ASSASSIN_EVADE"
+		"		TASK_GET_PATH_TO_ENEMY_LKP_LOS	0"
+		"		TASK_RUN_PATH					0"
+		"		TASK_WAIT_FOR_MOVEMENT			0"
+		"	"
+		"	Interrupts"
+		"		COND_NEW_ENEMY"
+		"		COND_ENEMY_DEAD"
+		"		COND_LIGHT_DAMAGE"
+		"		COND_HEAVY_DAMAGE"
+		"		COND_CAN_RANGE_ATTACK1"
+		"		COND_CAN_MELEE_ATTACK1"
+		"		COND_CAN_RANGE_ATTACK2"
+		"		COND_CAN_MELEE_ATTACK2"
+		"		COND_HEAR_DANGER"
+	)
 
 AI_END_CUSTOM_NPC()

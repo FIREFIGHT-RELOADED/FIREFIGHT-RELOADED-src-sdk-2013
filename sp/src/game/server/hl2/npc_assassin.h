@@ -38,10 +38,11 @@ public:
 	CNPC_Assassin( void );
 	
 	Class_T		Classify( void )			{ return CLASS_COMBINE;	}
-	int			GetSoundInterests ( void )	{ return (SOUND_WORLD|SOUND_COMBAT|SOUND_PLAYER);	}
+	int			GetSoundInterests ( void )	{ return ( SOUND_WORLD | SOUND_COMBAT | SOUND_PLAYER | SOUND_DANGER | SOUND_PHYSICS_DANGER | SOUND_BULLET_IMPACT | SOUND_MOVE_AWAY );	}
 
 	int			SelectSchedule ( void );
 	int			MeleeAttack1Conditions ( float flDot, float flDist );
+	int			MeleeAttack2Conditions ( float flDot, float flDist );
 	int			RangeAttack1Conditions ( float flDot, float flDist );
 	int			RangeAttack2Conditions ( float flDot, float flDist );
 
@@ -82,6 +83,12 @@ private:
 
 	CSprite				*m_pEyeSprite;
 	CSpriteTrail		*m_pEyeTrail;
+
+public:
+
+	float		m_flNextGrenadeCheck;
+	Vector		m_vecTossVelocity;
+	bool		m_fThrowGrenade;
 
 	DEFINE_CUSTOM_AI;
 };

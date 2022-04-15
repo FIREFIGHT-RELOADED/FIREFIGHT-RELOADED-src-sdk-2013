@@ -60,4 +60,50 @@ void CProxyIsNPC::OnBind( void *pC_BaseEntity )
 
 EXPOSE_INTERFACE( CProxyIsNPC, IMaterialProxy, "IsNPC" IMATERIAL_PROXY_INTERFACE_VERSION );
 
+//-----------------------------------------------------------------------------
+// Returns the player health (from 0 to 1)
+//-----------------------------------------------------------------------------
+class CProxyIsPlayer : public CResultProxy
+{
+public:
+	bool Init(IMaterial* pMaterial, KeyValues* pKeyValues);
+	void OnBind(void* pC_BaseEntity);
+
+private:
+	CFloatInput	m_Factor;
+};
+
+bool CProxyIsPlayer::Init(IMaterial* pMaterial, KeyValues* pKeyValues)
+{
+	if (!CResultProxy::Init(pMaterial, pKeyValues))
+		return false;
+
+	if (!m_Factor.Init(pMaterial, pKeyValues, "scale", 1))
+		return false;
+
+	return true;
+}
+
+void CProxyIsPlayer::OnBind(void* pC_BaseEntity)
+{
+	if (!pC_BaseEntity)
+		return;
+
+	C_BaseEntity* pEntity = BindArgToEntity(pC_BaseEntity);
+	if (pEntity && pEntity->IsPlayer())
+	{
+		SetFloatResult(m_Factor.GetFloat());
+	}
+	else
+	{
+		SetFloatResult(0.0f);
+	}
+	if (ToolsEnabled())
+	{
+		ToolFramework_RecordMaterialParams(GetMaterial());
+	}
+}
+
+EXPOSE_INTERFACE(CProxyIsPlayer, IMaterialProxy, "IsPlayer" IMATERIAL_PROXY_INTERFACE_VERSION);
+
 

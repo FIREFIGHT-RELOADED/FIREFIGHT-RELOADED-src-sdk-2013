@@ -44,6 +44,7 @@ ConVar sk_bullsquid_dmg_bite( "sk_bullsquid_dmg_bite", "0" );
 ConVar sk_bullsquid_dmg_whip( "sk_bullsquid_dmg_whip", "0" );
 ConVar sk_bullsquid_spit_speed("sk_bullsquid_spit_speed", "0");
 ConVar g_debug_bullsquid("g_debug_bullsquid", "0");
+ConVar sk_bullsquid_spit_size("sk_bullsquid_spit_size", "6");
 
 //=========================================================
 // monster-specific schedule types
@@ -520,7 +521,19 @@ void CNPC_Bullsquid::HandleAnimEvent( animevent_t *pEvent )
 			// Don't fire again until this volley would have hit the ground (with some lag behind it)
 			SetNextAttack(gpGlobals->curtime + flTime + random->RandomFloat(0.5f, 2.0f));
 
-			for (int i = 0; i < 6; i++)
+			int nShots = sk_bullsquid_spit_size.GetInt();
+
+			if (m_pAttributes != NULL)
+			{
+				int shots = m_pAttributes->GetInt("spit_size");
+
+				if (shots > 0)
+				{
+					nShots = shots;
+				}
+			}
+
+			for (int i = 0; i < nShots; i++)
 			{
 				if (m_pAttributes)
 				{
