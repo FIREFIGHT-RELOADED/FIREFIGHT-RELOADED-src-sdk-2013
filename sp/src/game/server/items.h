@@ -36,7 +36,6 @@
 #define	SIZE_AMMO_AR2_ALTFIRE		1
 #define SIZE_AMMO_GRENADE			1
 #define SIZE_AMMO_SNIPER			15
-#define SIZE_AMMO_DEAGLE			21
 #define SIZE_AMMO_M249				50
 #define SIZE_AMMO_OICW				30
 #define SIZE_AMMO_ENERGY			30
