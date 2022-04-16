@@ -174,5 +174,5 @@ void CWeaponKatana::PrimaryAttack(void)
 
 	pPlayer->FireBullets(1, vecSrc, vecAiming, vec3_origin, GetRange(), m_iPrimaryAmmoType, 0);
 
-	CSoundEnt::InsertSound(SOUND_COMBAT, GetAbsOrigin(), 600, 0.2, GetOwner());
+	CSoundEnt::InsertSound(SOUND_COMBAT, GetAbsOrigin(), 300, 0.2, GetOwner());
 }
