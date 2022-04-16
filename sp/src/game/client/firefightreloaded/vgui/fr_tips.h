@@ -32,11 +32,4 @@ private:
 	int m_iCurrentTip;
 	bool m_bInited;
 };
-
-extern CFRTips *g_FRTips;
-
-inline CFRTips *FRTips()
-{
-	return g_FRTips;
-}
 #endif

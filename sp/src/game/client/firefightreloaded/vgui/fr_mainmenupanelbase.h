@@ -7,7 +7,6 @@
 #include "fr_controls.h"
 
 #include <vgui/ISurface.h>
-#include "fr_vgui_video.h"
 
 #include <filesystem.h>
 #include <vgui_controls/AnimationController.h>

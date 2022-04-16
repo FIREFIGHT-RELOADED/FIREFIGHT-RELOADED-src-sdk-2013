@@ -35,13 +35,11 @@ private:
 	CFRImagePanel		*m_pBackground;
 	CFRImagePanel		*m_pLogo;
 	EditablePanel		*m_pWeaponIcon;
-	CFRVideoPanel		*m_pVideo;
 	char				m_pzVideoLink[64];
 	bool				b_ShowVideo;
 	float				m_flActionThink;
 	float				m_flAnimationThink;
 	bool				m_bAnimationIn;
-	char*				GetRandomVideo();
 };
 
 #endif // TFMAINMENUPANEL_H

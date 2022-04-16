@@ -40,7 +40,6 @@ CFRMainMenuPanel::CFRMainMenuPanel(vgui::Panel* parent) : CFRMainMenuPanelBase(p
 	m_pResumeGameButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("ResumeGameButton"));
 	m_pSaveGameButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("SaveGameButton"));
 	m_pReloadMapButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("ReloadMapButton"));
-	m_pVideo = dynamic_cast<CFRVideoPanel *>(FindChildByName("BackgroundVideo"));
 	m_pLogo = dynamic_cast<CFRImagePanel *>(FindChildByName("Logo"));
 
 	//Q_strncpy(m_pzVideoLink, GetRandomVideo(), sizeof(m_pzVideoLink));
@@ -99,15 +98,6 @@ void CFRMainMenuPanel::OnCommand(const char* command)
 void CFRMainMenuPanel::OnTick()
 {
 	BaseClass::OnTick();
-
-	if (m_pVideo && m_pVideo->IsVisible() && !InGameLayout && m_flActionThink < gpGlobals->curtime)
-	{
-		m_pVideo->Activate();
-		m_pVideo->BeginPlayback(m_pzVideoLink);
-		m_pVideo->MoveToFront();
-		m_flActionThink = gpGlobals->curtime + m_pVideo->GetActiveVideoLength() - 0.21f;
-		b_ShowVideo = false;
-	}
 };
 
 void CFRMainMenuPanel::OnThink()
@@ -175,10 +165,6 @@ void CFRMainMenuPanel::DefaultLayout()
 			m_pReloadMapButton->SetVisible(true);
 		}
 	}
-	if (m_pVideo)
-	{
-		m_pVideo->SetVisible(true);
-	}
 };
 
 void CFRMainMenuPanel::GameLayout()
@@ -229,10 +215,6 @@ void CFRMainMenuPanel::GameLayout()
 			m_pReloadMapButton->SetVisible(false);
 		}
 	}
-	if (m_pVideo)
-	{
-		m_pVideo->SetVisible(false);
-	}
 };
 
 void CFRMainMenuPanel::SetVersionLabel()
@@ -251,7 +233,7 @@ void CFRMainMenuPanel::SetVersionLabel()
 
 			filesystem->Close(fh);
 
-			Q_snprintf(verString, sizeof(verString), "VERSION: %s", GameInfo + 8);
+			Q_snprintf(verString, sizeof(verString), "%s", GameInfo + 8);
 
 			delete[] GameInfo;
 		}
@@ -263,36 +245,8 @@ void CFRMainMenuPanel::SetHintLabel()
 {
 	if (m_pHintLabel)
 	{
-		const wchar_t *wzTip = FRTips()->GetRandomTip();
+		CFRTips* tips = new CFRTips();
+		const wchar_t *wzTip = tips->GetRandomTip();
 		m_pHintLabel->SetText(wzTip);
 	}
 };
-
-char* CFRMainMenuPanel::GetRandomVideo()
-{
-	char* pszBasePath = "media/bg_0";
-	int iCount = 0;
-
-	for (int i = 0; i < 9; i++)
-	{
-		char szPath[MAX_PATH];
-		char szNumber[5];
-		Q_snprintf(szNumber, sizeof(szNumber), "%d", iCount + 1);
-		Q_strncpy(szPath, pszBasePath, sizeof(szPath));
-		Q_strncat(szPath, szNumber, sizeof(szPath));
-		Q_strncat(szPath, ".bik", sizeof(szPath));
-		if (!g_pFullFileSystem->FileExists(szPath))
-			break;
-		iCount++;
-	}
-
-	int iRand = rand() % iCount + 1;
-	char szPath[MAX_PATH];
-	char szNumber[5];
-	Q_snprintf(szNumber, sizeof(szNumber), "%d", iRand);
-	Q_strncpy(szPath, pszBasePath, sizeof(szPath));
-	Q_strncat(szPath, szNumber, sizeof(szPath));
-	Q_strncat(szPath, ".bik", sizeof(szPath));
-	char *szResult = szPath;
-	return szResult;
-}
