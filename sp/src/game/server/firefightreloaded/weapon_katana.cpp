@@ -166,7 +166,7 @@ void CWeaponKatana::PrimaryAttack(void)
 	}
 
 	//Setup our next attack times
-	m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
+	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
 	m_flNextSecondaryAttack = gpGlobals->curtime + SequenceDuration();
 
 	Vector vecSrc = pPlayer->Weapon_ShootPosition();
