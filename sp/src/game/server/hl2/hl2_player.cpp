@@ -1938,7 +1938,14 @@ void CHL2_Player::StartWalking( void )
 	}
 	else
 	{
-		SetMaxSpeed(FR_WALK_SPEED);
+		if (IsInBullettime())
+		{
+			SetMaxSpeed(FR_NORM_SPEED);
+		}
+		else
+		{
+			SetMaxSpeed(FR_WALK_SPEED);
+		}
 		m_fIsWalking = true;
 	}
 }
@@ -2067,7 +2074,15 @@ void CHL2_Player::StartBullettime(bool bInShop)
 		engine->ServerCommand(szCommand);
 	}
 
-	SetMaxSpeed(FR_BULLETTIME_SPEED);
+	if (m_fIsWalking)
+	{
+		SetMaxSpeed(FR_NORM_SPEED);
+	}
+	else
+	{
+		SetMaxSpeed(FR_BULLETTIME_SPEED);
+	}
+
 	EmitSound("HL2Player.bullettimeon");
 	EmitSound("HL2Player.heartbeat");
 	m_HL2Local.m_fIsInBullettime = true;
@@ -2097,7 +2112,16 @@ void CHL2_Player::StopBullettime(bool bPlaySound, bool bFlashScreen, bool bInSho
 		EmitSound("HL2Player.bullettimeoff");
 	}
 	StopSound("HL2Player.heartbeat");
-	SetMaxSpeed(FR_NORM_SPEED);
+	
+	if (m_fIsWalking)
+	{
+		SetMaxSpeed(FR_WALK_SPEED);
+	}
+	else
+	{
+		SetMaxSpeed(FR_NORM_SPEED);
+	}
+
 	m_HL2Local.m_fIsInBullettime = false;
 	g_pGameRules->isInBullettime = false;
 }
