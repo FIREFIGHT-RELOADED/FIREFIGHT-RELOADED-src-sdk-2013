@@ -6,7 +6,6 @@
 #include <vgui/IInput.h>
 #include "vgui_controls/Button.h"
 #include "vgui_controls/ImagePanel.h"
-#include "fr_controls.h"
 #include <filesystem.h>
 #include <vgui_controls/AnimationController.h>
 #include "basemodelpanel.h"

@@ -6,7 +6,6 @@
 #include <vgui/IInput.h>
 #include "vgui_controls/Button.h"
 #include "vgui_controls/ImagePanel.h"
-#include "fr_controls.h"
 #include <filesystem.h>
 #include <vgui_controls/AnimationController.h>
 #include "basemodelpanel.h"
@@ -21,12 +20,13 @@ DECLARE_BUILD_FACTORY_DEFAULT_TEXT(CFRMainMenuButtonBase, CFRMainMenuButtonBase)
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-CFRMainMenuButtonBase::CFRMainMenuButtonBase(vgui::Panel *parent, const char *panelName, const char *text) : CExButton(parent, panelName, text)
+CFRMainMenuButtonBase::CFRMainMenuButtonBase(vgui::Panel *parent, const char *panelName, const char *text) : vgui::Button(parent, panelName, text)
 {
 	SetProportional(true);
 	pImage = new EditablePanel(this, "BackgroundImage");
 	Init();
 	vgui::ivgui()->AddTickSignal(GetVPanel(), 100);
+	m_szColor[0] = '\0';
 }	
 
 //-----------------------------------------------------------------------------
@@ -87,6 +87,7 @@ void CFRMainMenuButtonBase::ApplySettings(KeyValues *inResourceData)
 	Q_strncpy(m_szCommand, inResourceData->GetString("command", EMPTY_STRING), sizeof(m_szCommand));
 	Q_strncpy(m_szTextAlignment, inResourceData->GetString("textAlignment", "center"), sizeof(m_szTextAlignment));		
 	Q_strncpy(m_szFont, inResourceData->GetString("font", DEFAULT_FONT), sizeof(m_szFont));
+	Q_strncpy(m_szColor, inResourceData->GetString("fgcolor", "Button.TextColor"), sizeof(m_szColor));
 
 	m_bImageVisible = inResourceData->GetBool("bgvisible", false);	
 	m_bBorderVisible = inResourceData->GetBool("bordervisible", false);
@@ -105,6 +106,7 @@ void CFRMainMenuButtonBase::ApplySchemeSettings(vgui::IScheme *pScheme)
 	BaseClass::ApplySchemeSettings(pScheme);
 
 	pFont = pScheme->GetFont(m_szFont);
+	SetFgColor(pScheme->GetColor(m_szColor, Color(255, 255, 255, 255)));
 }
 
 //-----------------------------------------------------------------------------
@@ -201,10 +203,13 @@ void CFRMainMenuButtonBase::SendAnimation(MouseState flag)
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-CFRButtonBase::CFRButtonBase(vgui::Panel *parent, const char *panelName, const char *text) : CExButton(parent, panelName, text)
+CFRButtonBase::CFRButtonBase(vgui::Panel *parent, const char *panelName, const char *text) : vgui::Button(parent, panelName, text)
 {
 	iState = MOUSE_DEFAULT;
 	vgui::ivgui()->AddTickSignal(GetVPanel());
+
+	m_szFont[0] = '\0';
+	m_szColor[0] = '\0';
 }
 
 //-----------------------------------------------------------------------------
@@ -213,6 +218,11 @@ CFRButtonBase::CFRButtonBase(vgui::Panel *parent, const char *panelName, const c
 void CFRButtonBase::ApplySettings(KeyValues *inResourceData)
 {
 	BaseClass::ApplySettings(inResourceData);
+
+	Q_strncpy(m_szFont, inResourceData->GetString("font", "Default"), sizeof(m_szFont));
+	Q_strncpy(m_szColor, inResourceData->GetString("fgcolor", "Button.TextColor"), sizeof(m_szColor));
+
+	InvalidateLayout(false, true); // force ApplySchemeSettings to run
 }
 
 
@@ -306,6 +316,9 @@ void CFRButtonBase::SetSelectedBorder(IBorder *border)
 void CFRButtonBase::ApplySchemeSettings(IScheme *pScheme)
 {
 	BaseClass::ApplySchemeSettings(pScheme);
+
+	SetFont( pScheme->GetFont( m_szFont, true ) );
+	SetFgColor( pScheme->GetColor( m_szColor, Color( 255, 255, 255, 255 ) ) );
 
 	_armedBorder = pScheme->GetBorder("ButtonArmedBorder");
 	_selectedBorder = pScheme->GetBorder("ButtonSelectedBorder");

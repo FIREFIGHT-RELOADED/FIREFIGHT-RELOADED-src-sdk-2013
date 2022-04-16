@@ -1,14 +1,131 @@
 #include "cbase.h"
 #include "fr_mainmenupanel.h"
 #include "fr_mainmenu.h"
-#include "fr_tips.h"
 #include "gameui/SingleplayerAdvancedDialog.h"
 #include "gameui/NewSingleplayerGameDialog.h"
 #include "gameui/PlayerModelDialog.h"
+#include "tier3/tier3.h"
+#include "vgui/ILocalize.h"
+#include "fmtstr.h"
 
 using namespace vgui;
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+DECLARE_BUILD_FACTORY_DEFAULT_TEXT(CHintLabel, CHintLabel);
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+CHintLabel::CHintLabel(Panel* parent, const char* name, const char* wszText) : Label(parent, name, wszText)
+{
+	ConstructorShared();
+}
+
+CHintLabel::CHintLabel(Panel* parent, const char* name, const wchar_t* wszText) : Label(parent, name, wszText)
+{
+	ConstructorShared();
+}
+
+void CHintLabel::ConstructorShared()
+{
+	m_szColor[0] = '\0';
+	m_iTipCountAll = 0;
+	m_iSplashCountAll = 0;
+	m_iCurrentTip = 0;
+	m_bInited = false;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Initializer
+//-----------------------------------------------------------------------------
+void CHintLabel::InitTips()
+{
+	if (!m_bInited)
+	{
+		// count how many tips there are
+		m_iTipCountAll = 0;
+		wchar_t* wzTipCount = g_pVGuiLocalize->Find(CFmtStr("#FR_Tip_Count"));
+		int iTipCount = wzTipCount ? _wtoi(wzTipCount) : 0;
+		m_iTipCountAll += iTipCount;
+
+		// count how many splashes there are
+		m_iSplashCountAll = 0;
+		wchar_t* wzSplashCount = g_pVGuiLocalize->Find(CFmtStr("#FR_Splash_Count"));
+		int iSplashCount = wzSplashCount ? _wtoi(wzSplashCount) : 0;
+		m_iSplashCountAll += iSplashCount;
+
+		m_bInited = true;
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Returns a random tip
+//-----------------------------------------------------------------------------
+void CHintLabel::GetRandomTip()
+{
+	InitTips();
+
+	//we choose if we want splashes or tips.
+	int randChoice = RandomInt(0, 1);
+	int iTip = 0;
+
+	switch (randChoice)
+	{
+	case 1:
+		// pick a random spalsh
+		iTip = RandomInt(1, m_iSplashCountAll);
+		SetText(GetLocalizedString(iTip, CFmtStr("#FR_Splash_%i", iTip)));
+		break;
+	case 0:
+	default:
+		// pick a random tip
+		iTip = RandomInt(1, m_iTipCountAll);
+		SetText(GetLocalizedString(iTip, CFmtStr("#FR_Tip_%i", iTip)));
+		break;
+	}
+
+	const char* szType = (randChoice == 1 ? "Splash" : "Tip");
+
+	DevMsg("Grabbed %s: %i\n", szType, iTip);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Returns specified tip index from string
+//-----------------------------------------------------------------------------
+const wchar_t* CHintLabel::GetLocalizedString(int iTip, const char* token)
+{
+	static wchar_t wzTip[2048] = L"";
+
+	// get the tip
+	const wchar_t* wzFmt = g_pVGuiLocalize->Find(token);
+	// replace any commands with their bound keys
+	UTIL_ReplaceKeyBindings(wzFmt, 0, wzTip, sizeof(wzTip));
+
+	return wzTip;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CHintLabel::ApplySettings(KeyValues* inResourceData)
+{
+	BaseClass::ApplySettings(inResourceData);
+
+	Q_strncpy(m_szColor, inResourceData->GetString("fgcolor", "Label.TextColor"), sizeof(m_szColor));
+
+	InvalidateLayout(false, true); // force ApplySchemeSettings to run
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CHintLabel::ApplySchemeSettings(IScheme* pScheme)
+{
+	BaseClass::ApplySchemeSettings(pScheme);
+
+	SetFgColor(pScheme->GetColor(m_szColor, Color(255, 255, 255, 255)));
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
@@ -29,12 +146,11 @@ CFRMainMenuPanel::CFRMainMenuPanel(vgui::Panel* parent) : CFRMainMenuPanelBase(p
 	vgui::ivgui()->AddTickSignal(GetVPanel(), 100);
 
 	InGameLayout = false;
-	b_ShowVideo = false;
 	m_flActionThink = -1;
 	m_flAnimationThink = -1;
 	m_bAnimationIn = true;
-	m_pVersionLabel = dynamic_cast<CExLabel *>(FindChildByName("VersionLabel"));
-	m_pHintLabel = dynamic_cast<CExLabel *>(FindChildByName("HintLabel"));
+	m_pVersionLabel = dynamic_cast<CHintLabel *>(FindChildByName("VersionLabel"));
+	m_pHintLabel = dynamic_cast<CHintLabel *>(FindChildByName("HintLabel"));
 	m_pBackground = dynamic_cast<CFRImagePanel *>(FindChildByName("Background"));
 	m_pDisconnectButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("DisconnectButton"));
 	m_pResumeGameButton = dynamic_cast<CFRMainMenuButton *>(FindChildByName("ResumeGameButton"));
@@ -245,8 +361,6 @@ void CFRMainMenuPanel::SetHintLabel()
 {
 	if (m_pHintLabel)
 	{
-		CFRTips* tips = new CFRTips();
-		const wchar_t *wzTip = tips->GetRandomTip();
-		m_pHintLabel->SetText(wzTip);
+		m_pHintLabel->GetRandomTip();
 	}
 };

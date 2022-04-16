@@ -192,8 +192,6 @@ $Project "Client (FR)"
 			
 			$Folder	"Main Menu"
 			{
-				$File 	"firefightreloaded\vgui\fr_controls.cpp"
-				$File 	"firefightreloaded\vgui\fr_controls.h"
 				$File 	"firefightreloaded\vgui\fr_imagepanel.cpp"
 				$File 	"firefightreloaded\vgui\fr_imagepanel.h"
 				$File 	"firefightreloaded\vgui\fr_mainmenu.cpp"
@@ -208,8 +206,6 @@ $Project "Client (FR)"
 				$File 	"firefightreloaded\vgui\fr_mainmenupanel.h"
 				$File 	"firefightreloaded\vgui\fr_mainmenupanelbase.cpp"
 				$File 	"firefightreloaded\vgui\fr_mainmenupanelbase.h"
-				$File 	"firefightreloaded\vgui\fr_tips.cpp"
-				$File 	"firefightreloaded\vgui\fr_tips.h"
 			}
 
 			$Folder	"HUD Elements"

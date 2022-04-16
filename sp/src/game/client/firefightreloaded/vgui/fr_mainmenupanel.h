@@ -7,6 +7,32 @@
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
+class CHintLabel : public vgui::Label
+{
+public:
+	DECLARE_CLASS_SIMPLE(CHintLabel, vgui::Label);
+
+	CHintLabel(vgui::Panel* parent, const char* panelName, const char* text);
+	CHintLabel(vgui::Panel* parent, const char* panelName, const wchar_t* wszText);
+
+	virtual void ApplySettings(KeyValues* inResourceData);
+	virtual void ApplySchemeSettings(vgui::IScheme* pScheme);
+	void GetRandomTip();
+private:
+	void ConstructorShared();
+	void InitTips();
+	const wchar_t* GetLocalizedString(int iTip, const char* token);
+private:
+	char		m_szColor[64];
+	int			m_iTipCountAll;
+	int			m_iSplashCountAll;
+	int			m_iCurrentTip;
+	bool		 m_bInited;
+};
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 class CFRMainMenuPanel : public CFRMainMenuPanelBase
 {
 	DECLARE_CLASS_SIMPLE(CFRMainMenuPanel, CFRMainMenuPanelBase);
@@ -26,8 +52,8 @@ public:
 	void SetHintLabel();
 
 private:
-	CExLabel			*m_pVersionLabel;
-	CExLabel			*m_pHintLabel;
+	CHintLabel			*m_pVersionLabel;
+	CHintLabel			*m_pHintLabel;
 	CFRMainMenuButton	*m_pDisconnectButton;
 	CFRMainMenuButton	*m_pResumeGameButton;
 	CFRMainMenuButton	*m_pSaveGameButton;
@@ -35,8 +61,6 @@ private:
 	CFRImagePanel		*m_pBackground;
 	CFRImagePanel		*m_pLogo;
 	EditablePanel		*m_pWeaponIcon;
-	char				m_pzVideoLink[64];
-	bool				b_ShowVideo;
 	float				m_flActionThink;
 	float				m_flAnimationThink;
 	bool				m_bAnimationIn;

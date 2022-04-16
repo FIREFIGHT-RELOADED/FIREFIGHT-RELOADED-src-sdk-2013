@@ -4,9 +4,11 @@
 #pragma once
 #endif
 
-#include <vgui_controls/EditablePanel.h>
+#include <vgui/IScheme.h>
+#include <KeyValues.h>
+#include <vgui/IVGui.h>
+#include <vgui_controls/Button.h>
 #include "fr_imagepanel.h"
-#include "fr_controls.h"
 
 using namespace vgui;
 
@@ -38,11 +40,11 @@ enum MouseState
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-class CFRMainMenuButtonBase : public CExButton
+class CFRMainMenuButtonBase : public vgui::Button
 {
 	friend class CFRButtonBase;
 public:
-	DECLARE_CLASS_SIMPLE(CFRMainMenuButtonBase, CExButton);
+	DECLARE_CLASS_SIMPLE(CFRMainMenuButtonBase, vgui::Button);
 
 	CFRMainMenuButtonBase(vgui::Panel *parent, const char *panelName, const char *text);
 	virtual ~CFRMainMenuButtonBase();
@@ -88,6 +90,7 @@ protected:
 	char			m_szCommand[64];
 	char			m_szText[64];
 	char			m_szFont[64];
+	char			m_szColor[64];
 	char			m_szTextAlignment[64];
 	HFont			pFont;
 	EditablePanel	*pImage;
@@ -100,10 +103,10 @@ protected:
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-class CFRButtonBase : public CExButton
+class CFRButtonBase : public vgui::Button
 {
 public:
-	DECLARE_CLASS_SIMPLE(CFRButtonBase, CExButton);
+	DECLARE_CLASS_SIMPLE(CFRButtonBase, vgui::Button);
 
 	CFRButtonBase(vgui::Panel *parent, const char *panelName, const char *text);
 
@@ -129,6 +132,8 @@ protected:
 	IBorder			*_armedBorder;
 	IBorder			*_selectedBorder;
 	MouseState		iState;
+	char			m_szFont[64];
+	char			m_szColor[64];
 
 //private:
 //	CFRMainMenuButtonBase *m_pParent;

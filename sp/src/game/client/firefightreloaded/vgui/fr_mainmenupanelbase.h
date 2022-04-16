@@ -4,7 +4,6 @@
 #include "GameUI/IGameUI.h"
 #include "vgui_controls/Frame.h"
 #include "fr_mainmenubutton.h"
-#include "fr_controls.h"
 
 #include <vgui/ISurface.h>
 
