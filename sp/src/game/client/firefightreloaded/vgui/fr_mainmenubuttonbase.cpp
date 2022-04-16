@@ -268,10 +268,7 @@ void CFRButtonBase::OnMousePressed(vgui::MouseCode code)
 void CFRButtonBase::OnMouseReleased(vgui::MouseCode code)
 {
 	BaseClass::OnMouseReleased(code);
-	if (code == MOUSE_LEFT && (iState == MOUSE_ENTERED || iState == MOUSE_PRESSED))
-	{
-		//Set this to do something
-	}
+
 	if (code == MOUSE_LEFT && iState == MOUSE_ENTERED)
 	{
 		SetMouseEnteredState(MOUSE_ENTERED);
@@ -282,7 +279,6 @@ void CFRButtonBase::OnMouseReleased(vgui::MouseCode code)
 	}
 }
 
-
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -290,7 +286,6 @@ void CFRButtonBase::SetMouseEnteredState(MouseState flag)
 {
 	iState = flag;
 }
-
 
 //-----------------------------------------------------------------------------
 // Purpose: Set armed button border attributes.

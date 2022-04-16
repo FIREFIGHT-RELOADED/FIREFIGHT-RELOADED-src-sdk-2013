@@ -192,8 +192,6 @@ $Project "Client (FR)"
 			
 			$Folder	"Main Menu"
 			{
-				$File 	"firefightreloaded\vgui\fr_imagepanel.cpp"
-				$File 	"firefightreloaded\vgui\fr_imagepanel.h"
 				$File 	"firefightreloaded\vgui\fr_mainmenu.cpp"
 				$File 	"firefightreloaded\vgui\fr_mainmenu.h"
 				$File 	"firefightreloaded\vgui\fr_mainmenu_interface.cpp"

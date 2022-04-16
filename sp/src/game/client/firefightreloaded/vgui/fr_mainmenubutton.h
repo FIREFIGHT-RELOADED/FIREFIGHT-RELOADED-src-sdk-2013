@@ -40,6 +40,7 @@ protected:
 	CFRButton		*pButton;
 	float			m_fXShift;
 	float			m_fYShift;
+	bool			m_bPlayedAnim;
 };
 
 

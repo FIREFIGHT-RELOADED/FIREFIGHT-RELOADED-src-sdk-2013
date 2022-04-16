@@ -46,6 +46,7 @@ void CFRMainMenuButton::Init()
 	m_bBorderVisible = false;
 	m_fXShift = 0.0;
 	m_fYShift = 0.0;
+	m_bPlayedAnim = false;
 }
 
 void CFRMainMenuButton::ApplySettings(KeyValues *inResourceData)
@@ -94,7 +95,6 @@ void CFRMainMenuButton::PerformLayout()
 
 	GetText(m_szText, sizeof(m_szText));
 	pButton->SetText(m_szText);
-	//Msg("Text: %s\n", m_szText);
 	pButton->SetCommand(GetCommandString());
 	pButton->SetFont(GETSCHEME()->GetFont(m_szFont));
 	pButton->SetVisible(true);
@@ -104,11 +104,9 @@ void CFRMainMenuButton::PerformLayout()
 	pButton->SetWide(GetWide());
 	pButton->SetTall(GetTall());
 	pButton->SetContentAlignment(GetAlignment(m_szTextAlignment));
-	//pButton->SetFont(GetFont());
 	pButton->SetArmedSound("ui/buttonrollover.wav");
 	pButton->SetDepressedSound("ui/buttonclick.wav");
 	pButton->SetReleasedSound("ui/buttonclickrelease.wav");
-
 }
 
 void CFRMainMenuButton::SetText(const char *tokenName)
@@ -154,10 +152,18 @@ void CFRMainMenuButton::SendAnimation(MouseState flag)
 	case MOUSE_DEFAULT:
 		break;
 	case MOUSE_ENTERED:
-		vgui::GetAnimationController()->RunAnimationCommand(pButton, "Position", p_AnimHover, 0.0f, 0.1f, vgui::AnimationController::INTERPOLATOR_LINEAR);
+		if (!m_bPlayedAnim)
+		{
+			vgui::GetAnimationController()->RunAnimationCommand(pButton, "Position", p_AnimHover, 0.0f, 0.1f, vgui::AnimationController::INTERPOLATOR_LINEAR);
+			m_bPlayedAnim = true;
+		}
 		break;
 	case MOUSE_EXITED:
-		vgui::GetAnimationController()->RunAnimationCommand(pButton, "Position", p_AnimLeave, 0.0f, 0.1f, vgui::AnimationController::INTERPOLATOR_LINEAR);
+		if (m_bPlayedAnim)
+		{
+			vgui::GetAnimationController()->RunAnimationCommand(pButton, "Position", p_AnimLeave, 0.0f, 0.1f, vgui::AnimationController::INTERPOLATOR_LINEAR);
+			m_bPlayedAnim = false;
+		}
 		break;
 	case MOUSE_PRESSED:
 		break;

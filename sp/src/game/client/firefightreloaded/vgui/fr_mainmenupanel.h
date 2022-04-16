@@ -58,8 +58,7 @@ private:
 	CFRMainMenuButton	*m_pResumeGameButton;
 	CFRMainMenuButton	*m_pSaveGameButton;
 	CFRMainMenuButton	*m_pReloadMapButton;
-	CFRImagePanel		*m_pBackground;
-	CFRImagePanel		*m_pLogo;
+	ImagePanel			*m_pLogo;
 	EditablePanel		*m_pWeaponIcon;
 	float				m_flActionThink;
 	float				m_flAnimationThink;
