@@ -18,7 +18,7 @@
 #endif
 
 #define	KATANA_RANGE	90.0f
-#define	KATANA_REFIRE	0.30f
+#define	KATANA_REFIRE	0.45f
 
 //-----------------------------------------------------------------------------
 // CWeaponKatana
