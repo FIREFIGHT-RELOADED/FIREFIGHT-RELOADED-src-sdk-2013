@@ -317,7 +317,10 @@ void CGameRules::RefreshSkillData ( bool forceUpdate )
 
 void CGameRules::SetGamemode(int name)
 {
-	iGameMode = name;
+	if (bSkipFuncCheck || g_fr_spawneroldfunctionality.GetBool())
+	{
+		iGameMode = name;
+	}
 }
 
 int CGameRules::GetGamemode()

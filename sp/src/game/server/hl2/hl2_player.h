@@ -181,7 +181,7 @@ public:
 	void StartBullettime(bool bInShop = false);
 	void StopBullettime(bool bPlaySound = true, bool bFlashScreen = true, bool bInShop = false);
 	void InitBullettime(void);
-	bool IsInBullettime(void) { return m_HL2Local.m_fIsInBullettime; }
+	bool IsInBullettime(void) { return m_HL2Local.m_fIsInBullettime && g_pGameRules->isInBullettime; }
 	void CheckBullettime(void);
 	void ToggleBullettime(void);
 

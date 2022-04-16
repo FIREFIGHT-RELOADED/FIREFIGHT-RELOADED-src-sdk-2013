@@ -268,14 +268,8 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 		{
 			if (GetGamemode() == FIREFIGHT_PRIMARY_DEFAULT)
 			{
-				if (bHasRandomized)
-				{
-					bHasRandomized = false;
-					iGameMode = FIREFIGHT_PRIMARY_DEFAULT;
-				}
 				Log("No gamemode defined! Randomizing gamemodes.\n");
 				SetGamemodeRandom(FIREFIGHT_PRIMARY_COMBINEFIREFIGHT, FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE);
-				bHasRandomized = true;
 			}
 
 			const char* cfgfilecf = combinefirefightcfgfile.GetString();

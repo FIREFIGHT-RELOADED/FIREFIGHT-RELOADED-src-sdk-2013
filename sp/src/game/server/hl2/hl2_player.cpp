@@ -2071,6 +2071,7 @@ void CHL2_Player::StartBullettime(bool bInShop)
 	EmitSound("HL2Player.bullettimeon");
 	EmitSound("HL2Player.heartbeat");
 	m_HL2Local.m_fIsInBullettime = true;
+	g_pGameRules->isInBullettime = true;
 }
 
 void CHL2_Player::StopBullettime(bool bPlaySound, bool bFlashScreen, bool bInShop)
@@ -2098,6 +2099,7 @@ void CHL2_Player::StopBullettime(bool bPlaySound, bool bFlashScreen, bool bInSho
 	StopSound("HL2Player.heartbeat");
 	SetMaxSpeed(FR_NORM_SPEED);
 	m_HL2Local.m_fIsInBullettime = false;
+	g_pGameRules->isInBullettime = false;
 }
 
 void CHL2_Player::InitBullettime(void)

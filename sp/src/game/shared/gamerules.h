@@ -263,12 +263,13 @@ public:
 	virtual int GetGamemode();
 	virtual const char* GetGamemodeName();
 	virtual const char* GetGamemodeName_ServerBrowser();
-	bool bHasRandomized;
 	bool bSkipFuncCheck;
 	int iGameMode;
 
 	int iHeadshotCount;
 	virtual int GetHeadshotCount() { return iHeadshotCount; }
+
+	bool isInBullettime;
 
 // Functions to verify the single/multiplayer status of a game
 	virtual bool IsDeathmatch( void ) = 0;//is this a deathmatch game?
