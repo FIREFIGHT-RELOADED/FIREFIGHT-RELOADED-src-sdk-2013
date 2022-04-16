@@ -2,6 +2,7 @@
 #define FRMAINMENUPANEL_H
 
 #include "vgui_controls/Panel.h"
+#include <vgui_controls/ImagePanel.h>
 #include "fr_mainmenupanelbase.h"
 
 //-----------------------------------------------------------------------------

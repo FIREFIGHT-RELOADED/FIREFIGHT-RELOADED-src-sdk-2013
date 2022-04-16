@@ -5,7 +5,6 @@
 #endif
 
 #include <vgui_controls/EditablePanel.h>
-#include "fr_imagepanel.h"
 #include "fr_mainmenubuttonbase.h"
 
 using namespace vgui;

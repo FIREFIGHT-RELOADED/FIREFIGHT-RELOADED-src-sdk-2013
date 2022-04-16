@@ -8,7 +8,6 @@
 #include <KeyValues.h>
 #include <vgui/IVGui.h>
 #include <vgui_controls/Button.h>
-#include "fr_imagepanel.h"
 
 using namespace vgui;
 
