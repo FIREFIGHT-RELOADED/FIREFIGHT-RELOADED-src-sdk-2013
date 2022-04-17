@@ -165,7 +165,7 @@ void CAttributesLoader::SwitchEntityModel(CBaseEntity* ent, const char* szString
 void CAttributesLoader::SwitchEntityColor(CBaseEntity* ent, const char* szString)
 {
 	Color newColor = GetColor(szString);
-	if (newColor.r() > 0 || newColor.g() > 0 || newColor.b() > 0 || newColor.a() > 0)
+	if (newColor.GetRawColor() != 0)
 	{
 		ent->SetRenderColor(newColor.r(), newColor.g(), newColor.b(), newColor.a());
 	}
