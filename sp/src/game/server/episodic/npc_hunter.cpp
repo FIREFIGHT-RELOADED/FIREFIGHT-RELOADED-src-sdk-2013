@@ -6885,8 +6885,6 @@ void CNPC_Hunter::UpdateAim()
 bool CNPC_Hunter::CanBecomeRagdoll()
 {
 	return ( m_nKillingDamageType & DMG_CRUSH ) ||
-		(m_nKillingDamageType & DMG_BLAST) ||
-		(m_nKillingDamageType & DMG_KICK) ||
 		IsCurSchedule( SCHED_DIE, false ) ||								// Finished playing death anim, time to ragdoll
 		IsCurSchedule( SCHED_HUNTER_CHARGE_ENEMY, false ) ||				// While moving, it looks better to ragdoll instantly
 		IsCurSchedule( SCHED_SCRIPTED_RUN, false ) ||
