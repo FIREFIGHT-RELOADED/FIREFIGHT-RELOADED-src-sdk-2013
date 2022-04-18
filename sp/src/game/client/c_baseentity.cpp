@@ -40,6 +40,7 @@
 #include "cdll_bounded_cvars.h"
 #include "inetchannelinfo.h"
 #include "proto_version.h"
+#include "functionproxy.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -459,6 +460,10 @@ BEGIN_RECV_TABLE_NOBASE(C_BaseEntity, DT_BaseEntity)
 	RecvPropEHandle( RECVINFO(m_hEffectEntity) ),
 	RecvPropInt( RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent ),
 	RecvPropInt( RECVINFO( m_iParentAttachment ) ),
+
+	RecvPropFloat(RECVINFO(m_iColorRed)),
+	RecvPropFloat(RECVINFO(m_iColorGreen)),
+	RecvPropFloat(RECVINFO(m_iColorBlue)),
 
 	RecvPropInt( "movetype", 0, SIZEOF_IGNORE, 0, RecvProxy_MoveType ),
 	RecvPropInt( "movecollide", 0, SIZEOF_IGNORE, 0, RecvProxy_MoveCollide ),
@@ -960,6 +965,10 @@ C_BaseEntity::C_BaseEntity() :
 	m_bDeemedInvalid = false;
 	m_bWasDeemedInvalid = false;
 #endif
+
+	m_iColorRed = 0.0;
+	m_iColorGreen = 0.0;
+	m_iColorBlue = 0.0;
 
 	ParticleProp()->Init( this );
 }
@@ -5664,6 +5673,13 @@ RenderGroup_t C_BaseEntity::GetRenderGroup()
 	return renderGroup;
 }
 
+void C_BaseEntity::UpdateMaterialColor(float r, float g, float b)
+{
+	m_iColorRed = r / 255.0f;
+	m_iColorGreen = g / 255.0f;
+	m_iColorBlue = b / 255.0f;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Copy from this entity into one of the save slots (original or intermediate)
 // Input  : slot - 
@@ -6485,3 +6501,42 @@ void CC_CL_Find_Ent_Index( const CCommand& args )
 	}
 }
 static ConCommand cl_find_ent_index("cl_find_ent_index", CC_CL_Find_Ent_Index, "Display data for clientside entity matching specified index.\nFormat: cl_find_ent_index <index>\n", FCVAR_CHEAT);
+
+//-----------------------------------------------------------------------------
+// Returns the entity color
+//-----------------------------------------------------------------------------
+class CColorProxy : public CResultProxy
+{
+public:
+	void OnBind(void* pC_BaseEntity)
+	{
+		Assert(m_pResult);
+
+		if (!pC_BaseEntity)
+			return;
+
+		C_BaseEntity* pEntity = BindArgToEntity(pC_BaseEntity);
+		if (!pEntity)
+			return;
+
+		float colorRed = pEntity->GetColorRed();
+		float colorGreen = pEntity->GetColorGreen();
+		float colorBlue = pEntity->GetColorBlue();
+
+		if (pEntity->AreColorsInvalid())
+		{
+			C_BaseEntity* pOwner = pEntity->GetOwnerEntity();
+			if (pOwner)
+			{
+				colorRed = pOwner->GetColorRed();
+				colorGreen = pOwner->GetColorGreen();
+				colorBlue = pOwner->GetColorBlue();
+			}
+		}
+
+		m_pResult->SetVecValue(colorRed, colorGreen, colorBlue);
+		return;
+	}
+};
+
+EXPOSE_INTERFACE(CColorProxy, IMaterialProxy, "EntityColor" IMATERIAL_PROXY_INTERFACE_VERSION);

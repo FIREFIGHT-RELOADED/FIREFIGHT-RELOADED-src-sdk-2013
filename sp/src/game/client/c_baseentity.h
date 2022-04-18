@@ -1674,6 +1674,24 @@ protected:
 	CThreadFastMutex m_CalcAbsolutePositionMutex;
 	CThreadFastMutex m_CalcAbsoluteVelocityMutex;
 
+public:
+	virtual float GetColorRed(void) { return m_iColorRed; }
+	virtual float GetColorGreen(void) { return m_iColorGreen; }
+	virtual float GetColorBlue(void) { return m_iColorBlue; }
+
+	virtual float GetTrueColorRed(void) { return m_iColorRed * 255; }
+	virtual float GetTrueColorGreen(void) { return m_iColorGreen * 255; }
+	virtual float GetTrueColorBlue(void) { return m_iColorBlue * 255; }
+
+	virtual bool AreColorsInvalid(void) { return (m_iColorRed <= 0 && m_iColorGreen <= 0 && m_iColorBlue <= 0); }
+
+	virtual void UpdateMaterialColor(float r, float g, float b);
+
+private:
+	float		m_iColorRed;
+	float		m_iColorGreen;
+	float		m_iColorBlue;
+
 #ifdef TF_CLIENT_DLL
 	// TF prevents drawing of any entity attached to players that aren't items in the inventory of the player.
 	// This is to prevent servers creating fake cosmetic items and attaching them to players.

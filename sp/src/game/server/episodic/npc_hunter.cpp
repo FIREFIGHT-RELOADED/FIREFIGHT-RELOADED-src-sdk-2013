@@ -87,6 +87,7 @@ ConVar sk_hunter_health( "sk_hunter_health", "210" );
 // Melee attacks
 ConVar sk_hunter_dmg_one_slash( "sk_hunter_dmg_one_slash", "20" );
 ConVar sk_hunter_dmg_charge( "sk_hunter_dmg_charge", "20" );
+ConVar sk_ministrider_dmg_ar2round("sk_ministrider_dmg_ar2round", "5.0");
 
 // Flechette volley attack
 ConVar hunter_flechette_max_range( "hunter_flechette_max_range", "1200" );
@@ -1338,6 +1339,7 @@ private:
 	void CreateSpitProjectile(const Vector& vecSrc, Vector& vecShoot, QAngle& angShoot, int nShotNum);
 	void CreateCombineBallProjectile(const Vector& vecSrc, Vector& vecShoot, QAngle& angShoot);
 	void CreateDefaultProjectile(CBaseEntity* pTargetEntity, const Vector &vecSrc, Vector& vecShoot, QAngle& angShoot);
+	void CreateAR2Round(const Vector& vecSrc, const Vector& vecDir);
 	bool ShootFlechette( CBaseEntity *pTargetEntity, bool bSingleShot );
 	bool ShouldSeekTarget( CBaseEntity *pTargetEntity, bool bStriderBuster );
 	void GetShootDir( Vector &vecDir, const Vector &vecSrc, CBaseEntity *pTargetEntity, bool bStriderbuster, int nShotNum, bool bSingleShot );
@@ -1706,6 +1708,7 @@ void CNPC_Hunter::Precache()
 	PrecacheScriptSound( "NPC_Hunter.BackFootstep" );
 	PrecacheScriptSound( "NPC_Hunter.FlechetteVolleyWarn" );
 	PrecacheScriptSound( "NPC_Hunter.FlechetteShoot" );
+	PrecacheScriptSound("NPC_Ministrider.Shoot");
 	PrecacheScriptSound( "NPC_Hunter.FlechetteShootLoop" );
 	PrecacheScriptSound( "NPC_Hunter.FlankAnnounce" );
 	PrecacheScriptSound( "NPC_Hunter.MeleeAnnounce" );
@@ -1826,7 +1829,6 @@ void CNPC_Hunter::Spawn()
 	//	controller.Play( m_pGunFiringSound, 0.0, 100 );
 	//}
 }
-
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -6123,7 +6125,18 @@ void CNPC_Hunter::GetShootDir( Vector &vecDir, const Vector &vecSrc, CBaseEntity
 {
 	//RestartGesture( ACT_HUNTER_GESTURE_SHOOT );
 
-	EmitSound( "NPC_Hunter.FlechetteShoot" );
+	const char *pSoundName = "NPC_Hunter.FlechetteShoot";
+	if (m_pAttributes != NULL)
+	{
+		bool sounds = m_pAttributes->GetBool("use_ministrider_sounds", 0);
+
+		if (sounds)
+		{
+			pSoundName = "NPC_Ministrider.Shoot";
+		}
+	}
+
+	EmitSound(pSoundName);
 
 	Vector vecBodyTarget;
 
@@ -6143,7 +6156,9 @@ void CNPC_Hunter::GetShootDir( Vector &vecDir, const Vector &vecSrc, CBaseEntity
 	Vector vecDelta = pTargetEntity->GetAbsOrigin() - GetAbsOrigin();
 	float flDist = vecDelta.Length();
 
-	if ( !bStriderBuster )
+	bool isFiringAR2Rounds = (m_pAttributes && m_pAttributes->GetInt("new_projectile") == 5 ? true : false);
+
+	if ( !bStriderBuster && !isFiringAR2Rounds)
 	{
 		// If we're not firing at a strider buster, miss in an entertaining way for the 
 		// first three shots of each volley.
@@ -6324,7 +6339,7 @@ void CNPC_Hunter::CreateCombineBallProjectile(const Vector& vecSrc, Vector& vecS
 
 	if (m_pAttributes != NULL)
 	{
-		bool vaporize = m_pAttributes->GetBool("combine_ball_vaprorize_on_hit", 0);
+		bool vaporize = m_pAttributes->GetBool("combine_ball_vaporize_on_hit", 0);
 
 		if (vaporize)
 		{
@@ -6390,6 +6405,30 @@ void CNPC_Hunter::CreateRPGRocketProjectile(const Vector& vecSrc, Vector& vecSho
 	pRocket->DumbFire();
 	pRocket->SetNextThink(gpGlobals->curtime + 0.1f);
 	pRocket->SetAbsVelocity(vecShoot * hunter_flechette_speed.GetFloat());
+}
+
+void CNPC_Hunter::CreateAR2Round(const Vector& vecSrc, const Vector& vecDir)
+{
+	trace_t tr;
+	// Trace the initial shot from the weapon
+	UTIL_TraceLine(vecSrc, vecSrc + vecDir * MAX_COORD_INTEGER, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr);
+
+	CEffectData data;
+	data.m_vOrigin = tr.endpos + (tr.plane.normal * 1.0f);
+	data.m_vNormal = tr.plane.normal;
+	DispatchEffect("AR2Impact", data);
+	BaseClass::DoImpactEffect(tr, DMG_DISSOLVE);
+
+	UTIL_Tracer(vecSrc, tr.endpos, 0, TRACER_DONT_USE_ATTACHMENT, 5000, true, "AR2Tracer");
+
+	CTakeDamageInfo damageInfo(this, this, sk_ministrider_dmg_ar2round.GetFloat(), DMG_GENERIC | DMG_DISSOLVE); //tr.m_pEnt->GetHealth()
+	Vector force(0, 0, 1.0f);
+	damageInfo.SetDamageForce(force);
+	damageInfo.SetDamagePosition(tr.endpos);
+	if (tr.m_pEnt)
+	{
+		tr.m_pEnt->TakeDamage(damageInfo);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -6468,6 +6507,9 @@ bool CNPC_Hunter::ShootFlechette( CBaseEntity *pTargetEntity, bool bSingleShot )
 				break;
 			case 4:
 				CreateCombineBallProjectile(vecSrc, vecShoot, angShoot);
+				break;
+			case 5:
+				CreateAR2Round(vecSrc, vecDir);
 				break;
 			default:
 				CreateDefaultProjectile(pTargetEntity, vecSrc, vecShoot, angShoot);
@@ -6843,6 +6885,8 @@ void CNPC_Hunter::UpdateAim()
 bool CNPC_Hunter::CanBecomeRagdoll()
 {
 	return ( m_nKillingDamageType & DMG_CRUSH ) ||
+		(m_nKillingDamageType & DMG_BLAST) ||
+		(m_nKillingDamageType & DMG_KICK) ||
 		IsCurSchedule( SCHED_DIE, false ) ||								// Finished playing death anim, time to ragdoll
 		IsCurSchedule( SCHED_HUNTER_CHARGE_ENEMY, false ) ||				// While moving, it looks better to ragdoll instantly
 		IsCurSchedule( SCHED_SCRIPTED_RUN, false ) ||

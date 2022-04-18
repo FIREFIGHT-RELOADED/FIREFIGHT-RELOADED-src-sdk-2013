@@ -1314,6 +1314,8 @@ CBaseEntity *CreateServerRagdoll( CBaseAnimating *pAnimating, int forceBone, con
 
 	pRagdoll->m_nSkin = pAnimating->m_nSkin;
 
+	pRagdoll->UpdateMaterialColor(pAnimating->GetTrueColorRed(), pAnimating->GetTrueColorGreen(), pAnimating->GetTrueColorBlue());
+
 	pRagdoll->InitRagdollAnimation();
 	matrix3x4_t pBoneToWorld[MAXSTUDIOBONES], pBoneToWorldNext[MAXSTUDIOBONES];
 	

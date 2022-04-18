@@ -7,18 +7,17 @@
 
 #ifdef CLIENT_DLL
 
-class C_FRRagdoll_Player : public C_BaseAnimatingOverlay
+class C_FRRagdoll : public C_BaseAnimatingOverlay
 {
 public:
-	DECLARE_CLASS(C_FRRagdoll_Player, C_BaseAnimatingOverlay);
+	DECLARE_CLASS(C_FRRagdoll, C_BaseAnimatingOverlay);
 	DECLARE_CLIENTCLASS();
 
-	C_FRRagdoll_Player();
-	~C_FRRagdoll_Player();
+	C_FRRagdoll();
+	~C_FRRagdoll();
 
 	virtual void OnDataChanged(DataUpdateType_t type);
 
-	int GetPlayerEntIndex() const;
 	IRagdoll* GetIRagdoll() const;
 
 	void ImpactTrace(trace_t* pTrace, int iDamageType, const char* pCustomImpactName);
@@ -30,10 +29,10 @@ public:
 
 private:
 
-	C_FRRagdoll_Player(const C_FRRagdoll_Player&) {}
+	C_FRRagdoll(const C_FRRagdoll&) {}
 
 	void Interp_Copy(C_BaseAnimatingOverlay* pDestinationEntity);
-	void CreateFRRagdoll_Player(void);
+	void CreateFRRagdoll(void);
 
 private:
 
@@ -43,10 +42,10 @@ private:
 };
 #else
 
-class CFRRagdoll_Player : public CBaseAnimatingOverlay
+class CFRRagdoll : public CBaseAnimatingOverlay
 {
 public:
-	DECLARE_CLASS(CFRRagdoll_Player, CBaseAnimatingOverlay);
+	DECLARE_CLASS(CFRRagdoll, CBaseAnimatingOverlay);
 	DECLARE_SERVERCLASS();
 
 	// Transmit ragdolls to everyone.

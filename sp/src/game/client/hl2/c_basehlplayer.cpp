@@ -773,7 +773,7 @@ IRagdoll* C_BaseHLPlayer::GetRepresentativeRagdoll() const
 {
 	if (m_hRagdoll.Get())
 	{
-		C_FRRagdoll_Player *pRagdoll = (C_FRRagdoll_Player*)m_hRagdoll.Get();
+		C_FRRagdoll *pRagdoll = (C_FRRagdoll*)m_hRagdoll.Get();
 
 		return pRagdoll->GetIRagdoll();
 	}

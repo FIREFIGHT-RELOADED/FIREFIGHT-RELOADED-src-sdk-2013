@@ -7021,6 +7021,13 @@ void CAI_BaseNPC::LoadInitAttributes()
 	{
 		m_pAttributes->SwitchEntityModel(this, "new_model", STRING(GetModelName()));
 		m_pAttributes->SwitchEntityColor(this, "new_color");
+		Vector matColor = m_pAttributes->GetVector("new_material_color");
+
+		if (matColor != Vector(0,0,0))
+		{
+			UpdateMaterialColor(matColor.x, matColor.y, matColor.z);
+		}
+
 		m_pAttributes->SwitchEntityBodygroup(this, "new_bodygroup1", "new_bodygroup_num1");
 		m_pAttributes->SwitchEntityBodygroup(this, "new_bodygroup2", "new_bodygroup_num2");
 		m_pAttributes->SwitchEntityBodygroup(this, "new_bodygroup3", "new_bodygroup_num3");

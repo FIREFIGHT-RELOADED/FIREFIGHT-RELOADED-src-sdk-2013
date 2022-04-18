@@ -283,6 +283,10 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE( CBaseEntity, DT_BaseEntity )
 	SendPropEHandle (SENDINFO_NAME(m_hMoveParent, moveparent)),
 	SendPropInt		(SENDINFO(m_iParentAttachment), NUM_PARENTATTACHMENT_BITS, SPROP_UNSIGNED),
 
+	SendPropFloat	(SENDINFO(m_iColorRed)),
+	SendPropFloat	(SENDINFO(m_iColorGreen)),
+	SendPropFloat	(SENDINFO(m_iColorBlue)),
+
 	SendPropInt		(SENDINFO_NAME( m_MoveType, movetype ), MOVETYPE_MAX_BITS, SPROP_UNSIGNED ),
 	SendPropInt		(SENDINFO_NAME( m_MoveCollide, movecollide ), MOVECOLLIDE_MAX_BITS, SPROP_UNSIGNED ),
 #if PREDICTION_ERROR_CHECK_LEVEL > 1 
@@ -687,6 +691,12 @@ Vector CBaseEntity::HeadTarget( const Vector &posSrc )
 	return EyePosition();
 }
 
+void CBaseEntity::UpdateMaterialColor(float r, float g, float b)
+{
+	m_iColorRed = r / 255.0f;
+	m_iColorGreen = g / 255.0f;
+	m_iColorBlue = b / 255.0f;
+}
 
 struct TimedOverlay_t
 {

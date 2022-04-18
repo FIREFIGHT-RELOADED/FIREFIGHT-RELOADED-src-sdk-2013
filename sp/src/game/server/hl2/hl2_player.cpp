@@ -4545,12 +4545,12 @@ void CHL2_Player::CreateRagdollEntity(void)
 	}
 
 	// If we already have a ragdoll, don't make another one.
-	CFRRagdoll_Player* pRagdoll = dynamic_cast<CFRRagdoll_Player*>(m_hRagdoll.Get());
+	CFRRagdoll* pRagdoll = dynamic_cast<CFRRagdoll*>(m_hRagdoll.Get());
 
 	if (!pRagdoll)
 	{
 		// create a new one
-		pRagdoll = dynamic_cast<CFRRagdoll_Player*>(CreateEntityByName("fr_ragdoll_player"));
+		pRagdoll = dynamic_cast<CFRRagdoll*>(CreateEntityByName("fr_ragdoll"));
 	}
 
 	if (pRagdoll)

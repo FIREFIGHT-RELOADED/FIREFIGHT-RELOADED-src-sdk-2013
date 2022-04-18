@@ -84,7 +84,6 @@ const char *g_charNPCSRare[] =
 	"npc_assassin",
 	"npc_headcrab",
 	"npc_combineguard",
-	"npc_ministrider",
 	"npc_rollermine",
 	"npc_cscanner",
 	//temp until we actually set up the wave system.
@@ -132,7 +131,6 @@ const char* g_NPCS[] =
 	"npc_assassin",
 	"npc_headcrab",
 	"npc_combineguard",
-	"npc_ministrider",
 	"npc_rollermine",
 	"npc_cscanner",
 	//temp until we actually set up the wave system.
@@ -155,7 +153,6 @@ const char* g_charNPCSCombineFirefightRare[] =
 	"npc_hunter",
 	"npc_assassin",
 	"npc_combineguard",
-	"npc_ministrider",
 	"npc_rollermine",
 	"npc_cscanner",
 	//temp until we actually set up the wave system.
