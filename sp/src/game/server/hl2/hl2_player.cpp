@@ -132,8 +132,8 @@ ConVar sk_kick_shake_propmass("sk_kick_shake_propmass", "250");
 ConVar sv_player_shootinzoom("sv_player_shootinzoom", "1", FCVAR_ARCHIVE);
 
 ConVar sv_player_rocketjumping("sv_player_rocketjumping", "1", FCVAR_ARCHIVE);
-ConVar sv_player_damageforce_self("sv_player_damageforce_self", "0");
-ConVar sv_player_damagescale_self("sv_player_damagescale_self", "0");
+ConVar sv_player_damageforce_self("sv_player_damageforce_self", "10");
+ConVar sv_player_damagescale_self("sv_player_damagescale_self", "0.3");
 
 ConVar sv_player_bullettime_timescale("sv_player_bullettime_timescale", "35", FCVAR_ARCHIVE);
 ConVar sv_player_bullettime_shop_timescale("sv_player_bullettime_shop_timescale", "5", FCVAR_ARCHIVE);
@@ -3312,7 +3312,7 @@ int	CHL2_Player::OnTakeDamage( const CTakeDamageInfo &info )
 
 	if( bAdjustForSkillLevel )
 	{
-		if (FClassnameIs(info.GetAttacker(), "npc_combine_ace"))
+		if (info.GetAttacker() && FClassnameIs(info.GetAttacker(), "npc_combine_ace"))
 		{
 			playerDamage.AdjustPlayerDamageTakenForSkillLevelCombineAce();
 		}

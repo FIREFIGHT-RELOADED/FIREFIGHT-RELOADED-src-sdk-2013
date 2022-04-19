@@ -19,6 +19,8 @@
 
 #define	KATANA_RANGE	90.0f
 #define	KATANA_REFIRE	0.45f
+#define	KATANA_POSTKILLHEALTHBONUSDELAY	5.0f
+#define	KATANA_MAXKILLHEALTHBONUS	5
 
 //-----------------------------------------------------------------------------
 // CWeaponKatana
@@ -31,6 +33,7 @@ public:
 
 	DECLARE_SERVERCLASS();
 	DECLARE_ACTTABLE();
+	DECLARE_DATADESC();
 
 	CWeaponKatana();
 
@@ -41,6 +44,13 @@ public:
 
 	void		PrimaryAttack(void);
 	void		SecondaryAttack( void )	{	return;	}
+	bool		Holster(CBaseCombatWeapon* pSwitchingTo);
+	bool		Deploy(void);
+	void		ItemPostFrame(void);
+private:
+	int			m_iKillMultiplier;
+	float		m_flLastKill;
+	bool		m_bKillMultiplier;
 };
 
 #endif // WEAPON_KATANA_H

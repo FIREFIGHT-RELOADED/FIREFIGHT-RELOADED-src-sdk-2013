@@ -41,6 +41,12 @@ LINK_ENTITY_TO_CLASS( weapon_katana, CWeaponKatana );
 PRECACHE_WEAPON_REGISTER( weapon_katana );
 #endif
 
+BEGIN_DATADESC(CWeaponKatana)
+DEFINE_FIELD(m_iKillMultiplier, FIELD_INTEGER),
+DEFINE_FIELD(m_flLastKill, FIELD_TIME),
+DEFINE_FIELD(m_bKillMultiplier, FIELD_BOOLEAN),
+END_DATADESC()
+
 acttable_t CWeaponKatana::m_acttable[] = 
 {
 	{ ACT_MELEE_ATTACK1,	ACT_MELEE_ATTACK_SWING, true },
@@ -63,6 +69,9 @@ IMPLEMENT_ACTTABLE(CWeaponKatana);
 //-----------------------------------------------------------------------------
 CWeaponKatana::CWeaponKatana( void )
 {
+	m_iKillMultiplier = 1;
+	m_flLastKill = 0;
+	m_bKillMultiplier = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -172,7 +181,63 @@ void CWeaponKatana::PrimaryAttack(void)
 	Vector vecSrc = pPlayer->Weapon_ShootPosition();
 	Vector vecAiming = pPlayer->GetAutoaimVector(AUTOAIM_SCALE_DEFAULT);
 
-	pPlayer->FireBullets(1, vecSrc, vecAiming, vec3_origin, GetRange(), m_iPrimaryAmmoType, 0);
+	pPlayer->FireBullets(3, vecSrc, vecAiming, VECTOR_CONE_3DEGREES, GetRange(), m_iPrimaryAmmoType, 0);
 
 	CSoundEnt::InsertSound(SOUND_COMBAT, GetAbsOrigin(), 300, 0.2, GetOwner());
+
+	if (traceHit.m_pEnt)
+	{
+		if (traceHit.m_pEnt && !traceHit.m_pEnt->IsAlive() && g_pGameRules->isInBullettime && m_bKillMultiplier)
+		{
+			pPlayer->TakeHealth((traceHit.m_pEnt->GetMaxHealth() * 0.5) * m_iKillMultiplier, DMG_GENERIC);
+			if (m_iKillMultiplier < KATANA_MAXKILLHEALTHBONUS)
+			{ 
+				m_iKillMultiplier += 1;
+				m_flLastKill = gpGlobals->curtime + KATANA_POSTKILLHEALTHBONUSDELAY;
+			}
+		}
+	}
+}
+
+bool CWeaponKatana::Holster(CBaseCombatWeapon* pSwitchingTo)
+{
+	if (m_iKillMultiplier > 0)
+	{
+		m_iKillMultiplier = 0;
+	}
+
+	return BaseClass::Holster(pSwitchingTo);
+}
+
+bool CWeaponKatana::Deploy(void)
+{
+	if (m_flLastKill < gpGlobals->curtime && !m_bKillMultiplier)
+	{
+		m_bKillMultiplier = true;
+	}
+
+	return BaseClass::Deploy();
+}
+
+void CWeaponKatana::ItemPostFrame(void)
+{
+	if (!g_pGameRules->isInBullettime)
+	{
+		if (m_iKillMultiplier > 0)
+		{
+			m_iKillMultiplier = 0;
+		}
+
+		if (m_flLastKill > gpGlobals->curtime)
+		{
+			m_bKillMultiplier = false;
+		}
+	}
+
+	if (m_flLastKill < gpGlobals->curtime && !m_bKillMultiplier)
+	{
+		m_bKillMultiplier = true;
+	}
+
+	BaseClass::ItemPostFrame();
 }
