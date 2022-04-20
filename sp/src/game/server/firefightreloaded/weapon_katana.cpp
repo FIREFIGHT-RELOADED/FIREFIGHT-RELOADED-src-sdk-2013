@@ -187,23 +187,20 @@ void CWeaponKatana::PrimaryAttack(void)
 
 	CSoundEnt::InsertSound(SOUND_COMBAT, GetAbsOrigin(), 300, 0.2, GetOwner());
 
-	if (pPlayer->GetHealth() <= (pPlayer->GetMaxMaxHealthRegenValue() * 0.5))
+	if (traceHit.m_pEnt)
 	{
-		if (traceHit.m_pEnt)
+		if (traceHit.m_pEnt && !traceHit.m_pEnt->IsAlive() && g_pGameRules->isInBullettime && m_bKillMultiplier)
 		{
-			if (traceHit.m_pEnt && !traceHit.m_pEnt->IsAlive() && g_pGameRules->isInBullettime && m_bKillMultiplier)
+			m_iKills += 1;
+			if (m_iKills < KATANA_MAXGIVEHEALTH)
 			{
-				m_iKills += 1;
-				if (m_iKills < KATANA_MAXGIVEHEALTH)
+				pPlayer->TakeHealth((traceHit.m_pEnt->GetMaxHealth() * 0.5) * m_iKillMultiplier, DMG_GENERIC);
+				if (m_iKillMultiplier < KATANA_MAXKILLHEALTHBONUS)
 				{
-					pPlayer->TakeHealth((traceHit.m_pEnt->GetMaxHealth() * 0.5) * m_iKillMultiplier, DMG_GENERIC);
-					if (m_iKillMultiplier < KATANA_MAXKILLHEALTHBONUS)
-					{
-						m_iKillMultiplier += 1;
-						m_flLastKill = gpGlobals->curtime + KATANA_POSTKILLHEALTHBONUSDELAY;
-						const char* hintMultiplier = CFmtStr("%ix!", m_iKillMultiplier);
-						pPlayer->ShowLevelMessage(hintMultiplier);
-					}
+					m_iKillMultiplier += 1;
+					m_flLastKill = gpGlobals->curtime + KATANA_POSTKILLHEALTHBONUSDELAY;
+					const char* hintMultiplier = CFmtStr("%ix!", m_iKillMultiplier);
+					pPlayer->ShowLevelMessage(hintMultiplier);
 				}
 			}
 		}
