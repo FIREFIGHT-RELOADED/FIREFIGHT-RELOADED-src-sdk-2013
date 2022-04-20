@@ -233,6 +233,13 @@ void CWeaponKatana::ItemPostFrame(void)
 			m_bKillMultiplier = false;
 		}
 	}
+	else
+	{
+		if (m_flLastKill < gpGlobals->curtime && m_iKillMultiplier > 0)
+		{
+			m_iKillMultiplier = 0;
+		}
+	}
 
 	if (m_flLastKill < gpGlobals->curtime && !m_bKillMultiplier)
 	{
