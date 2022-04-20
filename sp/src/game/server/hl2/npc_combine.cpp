@@ -1319,14 +1319,20 @@ void CNPC_Combine::Event_Killed( const CTakeDamageInfo &info )
 		}
 	}
 
-	bool UseSkins = true;
+	bool DisableSkins = false;
+	int OverrideSkin = -1;
 
 	if (m_pAttributes != NULL)
 	{
-		UseSkins = m_pAttributes->GetBool("use_death_skins", 1);
+		DisableSkins = m_pAttributes->GetBool("disable_death_skins", 0);
+		OverrideSkin = m_pAttributes->GetInt("death_skin_override", -1);
+		if (!DisableSkins && OverrideSkin > -1)
+		{
+			m_nSkin = OverrideSkin;
+		}
 	}
 
-	if (UseSkins)
+	if (!DisableSkins && OverrideSkin == -1)
 	{
 		if (FClassnameIs(this, "npc_combine_p"))
 		{

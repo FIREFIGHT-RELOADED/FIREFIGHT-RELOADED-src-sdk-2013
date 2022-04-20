@@ -637,7 +637,8 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 					}
 				}
 
-				if (sv_killingspree.GetBool())
+				//make it so the katana hit multiplier shows up.
+				if (sv_killingspree.GetBool() && !isInBullettime)
 				{
 					int m_iKillsInSpree = pScorer->FragCount();
 
@@ -927,7 +928,8 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 					}
 				}
 
-				if (sv_killingspree.GetBool())
+				//make it so the katana hit multiplier shows up.
+				if (sv_killingspree.GetBool() && !isInBullettime)
 				{
 					int m_iKillsInSpree = pEntity->FragCount();
 

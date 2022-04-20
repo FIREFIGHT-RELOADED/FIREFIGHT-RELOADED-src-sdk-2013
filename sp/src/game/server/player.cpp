@@ -7710,7 +7710,10 @@ bool CBasePlayer::BumpWeapon( CBaseCombatWeapon *pWeapon )
 				pWeapon->m_iClip1 = pWeapon->GetMaxClip1();
 			}
 
-			Weapon_Switch(pWeapon);
+			if (GetActiveWeapon() && !FClassnameIs(GetActiveWeapon(), "weapon_katana") && !g_pGameRules->isInBullettime)
+			{
+				Weapon_Switch(pWeapon);
+			}
 #endif
 		}
 		return true;
@@ -8399,18 +8402,23 @@ void CBasePlayer::Weapon_Equip( CBaseCombatWeapon *pWeapon )
 
 	bool bShouldSwitch = g_pGameRules->FShouldSwitchWeapon( this, pWeapon );
 
+	if (GetActiveWeapon() && FClassnameIs(GetActiveWeapon(), "weapon_katana") && g_pGameRules->isInBullettime)
+	{
+		bShouldSwitch = false;
+	}
+
 #ifdef HL2_DLL
-	if ( bShouldSwitch == false && PhysCannonGetHeldEntity( GetActiveWeapon() ) == pWeapon && 
-		 Weapon_OwnsThisType( pWeapon->GetClassname(), pWeapon->GetSubType()) )
+	if (bShouldSwitch == false && PhysCannonGetHeldEntity(GetActiveWeapon()) == pWeapon &&
+		Weapon_OwnsThisType(pWeapon->GetClassname(), pWeapon->GetSubType()))
 	{
 		bShouldSwitch = true;
 	}
 #endif//HL2_DLL
 
 	// should we switch to this item?
-	if ( bShouldSwitch )
+	if (bShouldSwitch)
 	{
-		Weapon_Switch( pWeapon );
+		Weapon_Switch(pWeapon);
 	}
 }
 

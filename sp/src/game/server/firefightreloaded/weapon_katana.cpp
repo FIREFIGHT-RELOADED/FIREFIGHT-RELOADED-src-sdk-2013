@@ -194,6 +194,8 @@ void CWeaponKatana::PrimaryAttack(void)
 			{ 
 				m_iKillMultiplier += 1;
 				m_flLastKill = gpGlobals->curtime + KATANA_POSTKILLHEALTHBONUSDELAY;
+				const char* hintMultiplier = CFmtStr("%ix!", m_iKillMultiplier);
+				pPlayer->ShowLevelMessage(hintMultiplier);
 			}
 		}
 	}
@@ -201,9 +203,24 @@ void CWeaponKatana::PrimaryAttack(void)
 
 bool CWeaponKatana::Holster(CBaseCombatWeapon* pSwitchingTo)
 {
+	if (!g_pGameRules->isInBullettime)
+	{
+		if (m_flLastKill > gpGlobals->curtime)
+		{
+			m_bKillMultiplier = false;
+		}
+	}
+
 	if (m_iKillMultiplier > 0)
 	{
 		m_iKillMultiplier = 0;
+		CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+		if (pPlayer)
+		{
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_KatanaMultiplierReset");
+			pPlayer->ShowLevelMessage(hint.Access());
+		}
 	}
 
 	return BaseClass::Holster(pSwitchingTo);
@@ -213,7 +230,20 @@ bool CWeaponKatana::Deploy(void)
 {
 	if (m_flLastKill < gpGlobals->curtime && !m_bKillMultiplier)
 	{
+		if (m_iKillMultiplier > 0)
+		{
+			m_iKillMultiplier = 0;
+		}
+
 		m_bKillMultiplier = true;
+
+		CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+		if (pPlayer)
+		{
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_KatanaMultiplierEnabled");
+			pPlayer->ShowLevelMessage(hint.Access());
+		}
 	}
 
 	return BaseClass::Deploy();
@@ -238,12 +268,32 @@ void CWeaponKatana::ItemPostFrame(void)
 		if (m_flLastKill < gpGlobals->curtime && m_iKillMultiplier > 0)
 		{
 			m_iKillMultiplier = 0;
+			CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+			if (pPlayer)
+			{
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_KatanaMultiplierReset");
+				pPlayer->ShowLevelMessage(hint.Access());
+			}
 		}
 	}
 
 	if (m_flLastKill < gpGlobals->curtime && !m_bKillMultiplier)
 	{
+		if (m_iKillMultiplier > 0)
+		{
+			m_iKillMultiplier = 0;
+		}
+
 		m_bKillMultiplier = true;
+
+		CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+		if (pPlayer)
+		{
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_KatanaMultiplierEnabled");
+			pPlayer->ShowLevelMessage(hint.Access());
+		}
 	}
 
 	BaseClass::ItemPostFrame();
