@@ -43,6 +43,7 @@ PRECACHE_WEAPON_REGISTER( weapon_katana );
 
 BEGIN_DATADESC(CWeaponKatana)
 DEFINE_FIELD(m_iKillMultiplier, FIELD_INTEGER),
+DEFINE_FIELD(m_iKills, FIELD_INTEGER),
 DEFINE_FIELD(m_flLastKill, FIELD_TIME),
 DEFINE_FIELD(m_bKillMultiplier, FIELD_BOOLEAN),
 END_DATADESC()
@@ -70,6 +71,7 @@ IMPLEMENT_ACTTABLE(CWeaponKatana);
 CWeaponKatana::CWeaponKatana( void )
 {
 	m_iKillMultiplier = 1;
+	m_iKills = 0;
 	m_flLastKill = 0;
 	m_bKillMultiplier = true;
 }
@@ -181,21 +183,28 @@ void CWeaponKatana::PrimaryAttack(void)
 	Vector vecSrc = pPlayer->Weapon_ShootPosition();
 	Vector vecAiming = pPlayer->GetAutoaimVector(AUTOAIM_SCALE_DEFAULT);
 
-	pPlayer->FireBullets(3, vecSrc, vecAiming, VECTOR_CONE_3DEGREES, GetRange(), m_iPrimaryAmmoType, 0);
+	pPlayer->FireBullets(1, vecSrc, vecAiming, vec3_origin, GetRange(), m_iPrimaryAmmoType, 0);
 
 	CSoundEnt::InsertSound(SOUND_COMBAT, GetAbsOrigin(), 300, 0.2, GetOwner());
 
-	if (traceHit.m_pEnt)
+	if (pPlayer->GetHealth() <= (pPlayer->GetMaxMaxHealthRegenValue() * 0.5))
 	{
-		if (traceHit.m_pEnt && !traceHit.m_pEnt->IsAlive() && g_pGameRules->isInBullettime && m_bKillMultiplier)
+		if (traceHit.m_pEnt)
 		{
-			pPlayer->TakeHealth((traceHit.m_pEnt->GetMaxHealth() * 0.5) * m_iKillMultiplier, DMG_GENERIC);
-			if (m_iKillMultiplier < KATANA_MAXKILLHEALTHBONUS)
-			{ 
-				m_iKillMultiplier += 1;
-				m_flLastKill = gpGlobals->curtime + KATANA_POSTKILLHEALTHBONUSDELAY;
-				const char* hintMultiplier = CFmtStr("%ix!", m_iKillMultiplier);
-				pPlayer->ShowLevelMessage(hintMultiplier);
+			if (traceHit.m_pEnt && !traceHit.m_pEnt->IsAlive() && g_pGameRules->isInBullettime && m_bKillMultiplier)
+			{
+				m_iKills += 1;
+				if (m_iKills < KATANA_MAXGIVEHEALTH)
+				{
+					pPlayer->TakeHealth((traceHit.m_pEnt->GetMaxHealth() * 0.5) * m_iKillMultiplier, DMG_GENERIC);
+					if (m_iKillMultiplier < KATANA_MAXKILLHEALTHBONUS)
+					{
+						m_iKillMultiplier += 1;
+						m_flLastKill = gpGlobals->curtime + KATANA_POSTKILLHEALTHBONUSDELAY;
+						const char* hintMultiplier = CFmtStr("%ix!", m_iKillMultiplier);
+						pPlayer->ShowLevelMessage(hintMultiplier);
+					}
+				}
 			}
 		}
 	}
@@ -203,7 +212,21 @@ void CWeaponKatana::PrimaryAttack(void)
 
 bool CWeaponKatana::Holster(CBaseCombatWeapon* pSwitchingTo)
 {
-	if (!FClassnameIs(pSwitchingTo, "weapon_grapple"))
+	bool isGrappling = false;
+
+	if (pSwitchingTo)
+	{
+		if (FClassnameIs(pSwitchingTo, "weapon_grapple"))
+		{
+			isGrappling = true;
+		}
+		else
+		{
+			isGrappling = false;
+		}
+	}
+
+	if (!isGrappling)
 	{
 		if (!g_pGameRules->isInBullettime)
 		{
@@ -216,40 +239,11 @@ bool CWeaponKatana::Holster(CBaseCombatWeapon* pSwitchingTo)
 		if (m_iKillMultiplier > 0)
 		{
 			m_iKillMultiplier = 0;
-			CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
-			if (pPlayer)
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_Hud_KatanaMultiplierReset");
-				pPlayer->ShowLevelMessage(hint.Access());
-			}
+			m_iKills = 0;
 		}
 	}
 
 	return BaseClass::Holster(pSwitchingTo);
-}
-
-bool CWeaponKatana::Deploy(void)
-{
-	if (m_flLastKill < gpGlobals->curtime && !m_bKillMultiplier)
-	{
-		if (m_iKillMultiplier > 0)
-		{
-			m_iKillMultiplier = 0;
-		}
-
-		m_bKillMultiplier = true;
-
-		CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
-		if (pPlayer)
-		{
-			CFmtStr hint;
-			hint.sprintf("#Valve_Hud_KatanaMultiplierEnabled");
-			pPlayer->ShowLevelMessage(hint.Access());
-		}
-	}
-
-	return BaseClass::Deploy();
 }
 
 void CWeaponKatana::ItemPostFrame(void)
@@ -259,6 +253,7 @@ void CWeaponKatana::ItemPostFrame(void)
 		if (m_iKillMultiplier > 0)
 		{
 			m_iKillMultiplier = 0;
+			m_iKills = 0;
 		}
 
 		if (m_flLastKill > gpGlobals->curtime)
@@ -268,15 +263,15 @@ void CWeaponKatana::ItemPostFrame(void)
 	}
 	else
 	{
-		if (m_flLastKill < gpGlobals->curtime && m_iKillMultiplier > 0)
+		if (m_iKills >= KATANA_MAXGIVEHEALTH)
 		{
-			m_iKillMultiplier = 0;
-			CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
-			if (pPlayer)
+			m_bKillMultiplier = false;
+		}
+		else
+		{
+			if (m_flLastKill < gpGlobals->curtime && m_iKillMultiplier > 0)
 			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_Hud_KatanaMultiplierReset");
-				pPlayer->ShowLevelMessage(hint.Access());
+				m_iKillMultiplier = 0;
 			}
 		}
 	}
@@ -286,17 +281,10 @@ void CWeaponKatana::ItemPostFrame(void)
 		if (m_iKillMultiplier > 0)
 		{
 			m_iKillMultiplier = 0;
+			m_iKills = 0;
 		}
 
 		m_bKillMultiplier = true;
-
-		CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
-		if (pPlayer)
-		{
-			CFmtStr hint;
-			hint.sprintf("#Valve_Hud_KatanaMultiplierEnabled");
-			pPlayer->ShowLevelMessage(hint.Access());
-		}
 	}
 
 	BaseClass::ItemPostFrame();

@@ -203,6 +203,8 @@ ConVar sv_regen_interval("sv_regen_interval", "20", FCVAR_REPLICATED | FCVAR_CHE
 
 ConVar sv_decay_wait_time("sv_decay_wait_time", "0.5", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar sv_decay_rate("sv_decay_rate", "8.5", FCVAR_REPLICATED | FCVAR_CHEAT);
+ConVar sv_decay_increaserateminhealth("sv_decay_increaserateminhealth", "1000", FCVAR_REPLICATED | FCVAR_CHEAT);
+ConVar sv_decay_increaseratemultiplier("sv_decay_increaseratemultiplier", "2", FCVAR_REPLICATED | FCVAR_CHEAT);
 
 ConVar sv_fr_maxhealthupgrades("sv_fr_maxhealthupgrades", "15", FCVAR_CHEAT);
 
@@ -5363,7 +5365,9 @@ void CBasePlayer::PostThink()
 	{
 		if (gpGlobals->curtime > m_fTimeLastHealed + sv_decay_wait_time.GetFloat())
 		{
-			m_fDecayRemander += sv_decay_rate.GetFloat() * gpGlobals->frametime;
+			m_fDecayRemander += ((GetHealth() >= sv_decay_increaserateminhealth.GetFloat()) ? 
+				sv_decay_rate.GetFloat() * sv_decay_increaseratemultiplier.GetFloat() : 
+				sv_decay_rate.GetFloat()) * gpGlobals->frametime;
 
 			if (m_fDecayRemander >= 1 && GetHealth() != m_MaxHealthVal)
 			{

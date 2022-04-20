@@ -21,6 +21,7 @@
 #define	KATANA_REFIRE	0.45f
 #define	KATANA_POSTKILLHEALTHBONUSDELAY	5.0f
 #define	KATANA_MAXKILLHEALTHBONUS	5
+#define	KATANA_MAXGIVEHEALTH	10
 
 //-----------------------------------------------------------------------------
 // CWeaponKatana
@@ -45,10 +46,10 @@ public:
 	void		PrimaryAttack(void);
 	void		SecondaryAttack( void )	{	return;	}
 	bool		Holster(CBaseCombatWeapon* pSwitchingTo);
-	bool		Deploy(void);
 	void		ItemPostFrame(void);
 private:
 	int			m_iKillMultiplier;
+	int			m_iKills;
 	float		m_flLastKill;
 	bool		m_bKillMultiplier;
 };
