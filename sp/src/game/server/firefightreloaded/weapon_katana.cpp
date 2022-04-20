@@ -203,23 +203,26 @@ void CWeaponKatana::PrimaryAttack(void)
 
 bool CWeaponKatana::Holster(CBaseCombatWeapon* pSwitchingTo)
 {
-	if (!g_pGameRules->isInBullettime)
+	if (!FClassnameIs(pSwitchingTo, "weapon_grapple"))
 	{
-		if (m_flLastKill > gpGlobals->curtime)
+		if (!g_pGameRules->isInBullettime)
 		{
-			m_bKillMultiplier = false;
+			if (m_flLastKill > gpGlobals->curtime)
+			{
+				m_bKillMultiplier = false;
+			}
 		}
-	}
 
-	if (m_iKillMultiplier > 0)
-	{
-		m_iKillMultiplier = 0;
-		CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
-		if (pPlayer)
+		if (m_iKillMultiplier > 0)
 		{
-			CFmtStr hint;
-			hint.sprintf("#Valve_Hud_KatanaMultiplierReset");
-			pPlayer->ShowLevelMessage(hint.Access());
+			m_iKillMultiplier = 0;
+			CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+			if (pPlayer)
+			{
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_KatanaMultiplierReset");
+				pPlayer->ShowLevelMessage(hint.Access());
+			}
 		}
 	}
 
