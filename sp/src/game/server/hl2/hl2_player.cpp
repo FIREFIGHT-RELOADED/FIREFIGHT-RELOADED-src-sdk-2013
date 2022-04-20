@@ -3326,8 +3326,7 @@ int	CHL2_Player::OnTakeDamage( const CTakeDamageInfo &info )
 	if (info.GetAttacker() == this && sv_player_rocketjumping.GetBool())
 	{
 		playerDamage.SetDamage(playerDamage.GetDamage() * sv_player_damagescale_self.GetFloat());
-		float flDamageForce = IsMoving() ? sv_player_damageforce_self.GetFloat() * 2 : sv_player_damageforce_self.GetFloat();
-		DeliverDamageForce(this, flDamageForce);
+		DeliverDamageForce(this, sv_player_damageforce_self.GetFloat());
 	}
 
 	gamestats->Event_PlayerDamage( this, info );
