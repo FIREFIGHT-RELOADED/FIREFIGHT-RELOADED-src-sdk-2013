@@ -180,19 +180,24 @@ void CWeaponKatana::PrimaryAttack(void)
 		{
 			if (traceHit.m_pEnt)
 			{
-				if (traceHit.m_pEnt->IsNPC() || traceHit.m_pEnt->IsPlayer())
+				if (traceHit.m_pEnt->IsNPC() || traceHit.m_pEnt->IsPlayer() || traceHit.m_pEnt->IsBaseCombatWeapon())
 				{
+					CBaseEntity* ent = (traceHit.m_pEnt->IsBaseCombatWeapon() && 
+						traceHit.m_pEnt->GetOwnerEntity() && 
+						(traceHit.m_pEnt->GetOwnerEntity()->IsNPC() || traceHit.m_pEnt->GetOwnerEntity()->IsPlayer()))
+						? traceHit.m_pEnt->GetOwnerEntity() 
+						: traceHit.m_pEnt;
 					Vector vecSrc = pPlayer->Weapon_ShootPosition();
 					Vector vecAiming = pPlayer->GetAutoaimVector(AUTOAIM_SCALE_DEFAULT);
 
-					pPlayer->FireBullets(3, vecSrc, vecAiming, VECTOR_CONE_4DEGREES, GetRange() * 2, m_iPrimaryAmmoType, 0);
+					pPlayer->FireBullets(3, vecSrc, vecAiming, VECTOR_CONE_4DEGREES, GetRange() * 3, m_iPrimaryAmmoType, 0);
 
-					if (traceHit.m_pEnt && !traceHit.m_pEnt->IsAlive() && g_pGameRules->isInBullettime && m_bKillMultiplier)
+					if (ent && !ent->IsAlive() && g_pGameRules->isInBullettime && m_bKillMultiplier)
 					{
 						m_iKills += 1;
 						if (m_iKills < sv_katana_healthbonus_maxtimestogivebonus.GetInt())
 						{
-							pPlayer->TakeHealth((traceHit.m_pEnt->GetMaxHealth() * 0.5) * m_iKillMultiplier, DMG_GENERIC);
+							pPlayer->TakeHealth((ent->GetMaxHealth() * 0.5) * m_iKillMultiplier, DMG_GENERIC);
 							if (m_iKillMultiplier < sv_katana_healthbonus_maxmultiplier.GetInt())
 							{
 								m_iKillMultiplier += 1;
