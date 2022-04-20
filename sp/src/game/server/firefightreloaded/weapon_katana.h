@@ -19,9 +19,6 @@
 
 #define	KATANA_RANGE	90.0f
 #define	KATANA_REFIRE	0.45f
-#define	KATANA_POSTKILLHEALTHBONUSDELAY	5.0f
-#define	KATANA_MAXKILLHEALTHBONUS	5
-#define	KATANA_MAXGIVEHEALTH	10
 
 //-----------------------------------------------------------------------------
 // CWeaponKatana

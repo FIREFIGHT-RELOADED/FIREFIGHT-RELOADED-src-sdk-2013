@@ -28,6 +28,9 @@
 
 static const Vector g_bludgeonMins(-BLUDGEON_HULL_DIM, -BLUDGEON_HULL_DIM, -BLUDGEON_HULL_DIM);
 static const Vector g_bludgeonMaxs(BLUDGEON_HULL_DIM, BLUDGEON_HULL_DIM, BLUDGEON_HULL_DIM);
+static ConVar sv_katana_healthbonus_postdelay("sv_katana_healthbonus_postdelay", "5.0", FCVAR_CHEAT);
+static ConVar sv_katana_healthbonus_maxmultiplier("sv_katana_healthbonus_maxmultiplier", "5", FCVAR_CHEAT);
+static ConVar sv_katana_healthbonus_maxtimestogivebonus("sv_katana_healthbonus_maxtimestogivebonus", "10", FCVAR_CHEAT);
 
 //-----------------------------------------------------------------------------
 // CWeaponKatana
@@ -192,13 +195,13 @@ void CWeaponKatana::PrimaryAttack(void)
 		if (traceHit.m_pEnt && !traceHit.m_pEnt->IsAlive() && g_pGameRules->isInBullettime && m_bKillMultiplier)
 		{
 			m_iKills += 1;
-			if (m_iKills < KATANA_MAXGIVEHEALTH)
+			if (m_iKills < sv_katana_healthbonus_maxtimestogivebonus.GetInt())
 			{
 				pPlayer->TakeHealth((traceHit.m_pEnt->GetMaxHealth() * 0.5) * m_iKillMultiplier, DMG_GENERIC);
-				if (m_iKillMultiplier < KATANA_MAXKILLHEALTHBONUS)
+				if (m_iKillMultiplier < sv_katana_healthbonus_maxmultiplier.GetInt())
 				{
 					m_iKillMultiplier += 1;
-					m_flLastKill = gpGlobals->curtime + KATANA_POSTKILLHEALTHBONUSDELAY;
+					m_flLastKill = gpGlobals->curtime + sv_katana_healthbonus_postdelay.GetFloat();
 					const char* hintMultiplier = CFmtStr("%ix!", m_iKillMultiplier);
 					pPlayer->ShowLevelMessage(hintMultiplier);
 				}
@@ -260,7 +263,7 @@ void CWeaponKatana::ItemPostFrame(void)
 	}
 	else
 	{
-		if (m_iKills >= KATANA_MAXGIVEHEALTH)
+		if (m_iKills >= sv_katana_healthbonus_maxtimestogivebonus.GetInt())
 		{
 			m_bKillMultiplier = false;
 		}
