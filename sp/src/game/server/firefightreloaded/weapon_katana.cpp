@@ -186,7 +186,7 @@ void CWeaponKatana::PrimaryAttack(void)
 	Vector vecSrc = pPlayer->Weapon_ShootPosition();
 	Vector vecAiming = pPlayer->GetAutoaimVector(AUTOAIM_SCALE_DEFAULT);
 
-	pPlayer->FireBullets(3, vecSrc, vecAiming, VECTOR_CONE_3DEGREES, GetRange(), m_iPrimaryAmmoType, 0);
+	pPlayer->FireBullets(3, vecSrc, vecAiming, VECTOR_CONE_4DEGREES, GetRange(), m_iPrimaryAmmoType, 0);
 
 	CSoundEnt::InsertSound(SOUND_COMBAT, GetAbsOrigin(), 300, 0.2, GetOwner());
 
