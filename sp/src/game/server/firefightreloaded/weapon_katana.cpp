@@ -291,16 +291,13 @@ void CWeaponKatana::ItemPostFrame(void)
 		}
 	}
 
-	if ((m_iKills < sv_katana_healthbonus_maxtimestogivebonus.GetInt() && g_pGameRules->isInBullettime) || !g_pGameRules->isInBullettime)
+	if ((m_iKills < sv_katana_healthbonus_maxtimestogivebonus.GetInt() && m_iKillMultiplier > 0 && g_pGameRules->isInBullettime) || 
+		!g_pGameRules->isInBullettime)
 	{
 		if (m_flLastKill < gpGlobals->curtime && !m_bKillMultiplier)
 		{
-			if (m_iKillMultiplier > 0)
-			{
-				m_iKillMultiplier = 0;
-				m_iKills = 0;
-			}
-
+			m_iKillMultiplier = 0;
+			m_iKills = 0;
 			m_bKillMultiplier = true;
 		}
 	}
