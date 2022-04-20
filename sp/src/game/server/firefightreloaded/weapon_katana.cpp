@@ -1,6 +1,7 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose:		Katana - HATATATATATATATATATATATATATATATATATATATATATATATATATATATA
+// https://twitter.com/SadlyItsBradley/status/1516391717867507712
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -28,6 +29,8 @@
 
 static const Vector g_bludgeonMins(-BLUDGEON_HULL_DIM, -BLUDGEON_HULL_DIM, -BLUDGEON_HULL_DIM);
 static const Vector g_bludgeonMaxs(BLUDGEON_HULL_DIM, BLUDGEON_HULL_DIM, BLUDGEON_HULL_DIM);
+extern ConVar sk_plr_dmg_katana;
+extern ConVar sk_npc_dmg_katana;
 static ConVar sv_katana_healthbonus_postdelay("sv_katana_healthbonus_postdelay", "5.0", FCVAR_CHEAT);
 static ConVar sv_katana_healthbonus_maxmultiplier("sv_katana_healthbonus_maxmultiplier", "5", FCVAR_CHEAT);
 static ConVar sv_katana_healthbonus_maxtimestogivebonus("sv_katana_healthbonus_maxtimestogivebonus", "10", FCVAR_CHEAT);
@@ -170,12 +173,50 @@ void CWeaponKatana::PrimaryAttack(void)
 	{
 		if (traceHit.DidHitWorld())
 		{
+			Hit(traceHit, GetActivity(), false);
 			WeaponSound(MELEE_HIT_WORLD);
 		}
 		else
 		{
-			WeaponSound(MELEE_HIT);
+			if (traceHit.m_pEnt)
+			{
+				if (traceHit.m_pEnt->IsNPC() || traceHit.m_pEnt->IsPlayer())
+				{
+					Vector vecSrc = pPlayer->Weapon_ShootPosition();
+					Vector vecAiming = pPlayer->GetAutoaimVector(AUTOAIM_SCALE_DEFAULT);
+
+					pPlayer->FireBullets(3, vecSrc, vecAiming, VECTOR_CONE_4DEGREES, GetRange() * 2, m_iPrimaryAmmoType, 0);
+
+					if (traceHit.m_pEnt && !traceHit.m_pEnt->IsAlive() && g_pGameRules->isInBullettime && m_bKillMultiplier)
+					{
+						m_iKills += 1;
+						if (m_iKills < sv_katana_healthbonus_maxtimestogivebonus.GetInt())
+						{
+							pPlayer->TakeHealth((traceHit.m_pEnt->GetMaxHealth() * 0.5) * m_iKillMultiplier, DMG_GENERIC);
+							if (m_iKillMultiplier < sv_katana_healthbonus_maxmultiplier.GetInt())
+							{
+								m_iKillMultiplier += 1;
+								m_flLastKill = gpGlobals->curtime + sv_katana_healthbonus_postdelay.GetFloat();
+								const char* hintMultiplier = CFmtStr("%ix!", m_iKillMultiplier);
+								pPlayer->ShowLevelMessage(hintMultiplier);
+							}
+						}
+					}
+
+					WeaponSound(MELEE_HIT);
+				}
+				else
+				{
+					Hit(traceHit, GetActivity(), false);
+					WeaponSound(MELEE_HIT_WORLD);
+				}
+			}
+			else
+			{
+				WeaponSound(SINGLE);
+			}
 		}
+
 		AddViewKick();
 	}
 
@@ -183,31 +224,7 @@ void CWeaponKatana::PrimaryAttack(void)
 	m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
 	m_flNextSecondaryAttack = gpGlobals->curtime + GetFireRate();
 
-	Vector vecSrc = pPlayer->Weapon_ShootPosition();
-	Vector vecAiming = pPlayer->GetAutoaimVector(AUTOAIM_SCALE_DEFAULT);
-
-	pPlayer->FireBullets(3, vecSrc, vecAiming, VECTOR_CONE_4DEGREES, GetRange(), m_iPrimaryAmmoType, 0);
-
 	CSoundEnt::InsertSound(SOUND_COMBAT, GetAbsOrigin(), 300, 0.2, GetOwner());
-
-	if (traceHit.m_pEnt)
-	{
-		if (traceHit.m_pEnt && !traceHit.m_pEnt->IsAlive() && g_pGameRules->isInBullettime && m_bKillMultiplier)
-		{
-			m_iKills += 1;
-			if (m_iKills < sv_katana_healthbonus_maxtimestogivebonus.GetInt())
-			{
-				pPlayer->TakeHealth((traceHit.m_pEnt->GetMaxHealth() * 0.5) * m_iKillMultiplier, DMG_GENERIC);
-				if (m_iKillMultiplier < sv_katana_healthbonus_maxmultiplier.GetInt())
-				{
-					m_iKillMultiplier += 1;
-					m_flLastKill = gpGlobals->curtime + sv_katana_healthbonus_postdelay.GetFloat();
-					const char* hintMultiplier = CFmtStr("%ix!", m_iKillMultiplier);
-					pPlayer->ShowLevelMessage(hintMultiplier);
-				}
-			}
-		}
-	}
 }
 
 bool CWeaponKatana::Holster(CBaseCombatWeapon* pSwitchingTo)
@@ -289,4 +306,30 @@ void CWeaponKatana::ItemPostFrame(void)
 	}
 
 	BaseClass::ItemPostFrame();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CWeaponKatana::ImpactEffect(trace_t& traceHit)
+{
+	// See if we hit water (we don't do the other impact effects in this case)
+	if (ImpactWater(traceHit.startpos, traceHit.endpos))
+		return;
+
+	//FIXME: need new decals
+	UTIL_ImpactTrace(&traceHit, DMG_SLASH);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Get the damage amount for the animation we're doing
+// Input  : hitActivity - currently played activity
+// Output : Damage amount
+//-----------------------------------------------------------------------------
+float CWeaponKatana::GetDamageForActivity(Activity hitActivity)
+{
+	if ((GetOwner() != NULL) && (GetOwner()->IsPlayer()))
+		return sk_plr_dmg_katana.GetFloat();
+
+	return sk_npc_dmg_katana.GetFloat();
 }

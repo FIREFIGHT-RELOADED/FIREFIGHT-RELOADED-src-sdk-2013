@@ -17,7 +17,7 @@
 #error weapon_katana.h must not be included in hl2mp. The windows compiler will use the wrong class elsewhere if it is.
 #endif
 
-#define	KATANA_RANGE	90.0f
+#define	KATANA_RANGE	150.0f
 #define	KATANA_REFIRE	0.45f
 
 //-----------------------------------------------------------------------------
@@ -44,6 +44,8 @@ public:
 	void		SecondaryAttack( void )	{	return;	}
 	bool		Holster(CBaseCombatWeapon* pSwitchingTo);
 	void		ItemPostFrame(void);
+	void		ImpactEffect(trace_t& traceHit);
+	float		GetDamageForActivity(Activity hitActivity);
 private:
 	int			m_iKillMultiplier;
 	int			m_iKills;
