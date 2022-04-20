@@ -73,7 +73,7 @@ IMPLEMENT_ACTTABLE(CWeaponKatana);
 //-----------------------------------------------------------------------------
 CWeaponKatana::CWeaponKatana( void )
 {
-	m_iKillMultiplier = 1;
+	m_iKillMultiplier = 0;
 	m_iKills = 0;
 	m_flLastKill = 0;
 	m_bKillMultiplier = true;
@@ -186,7 +186,7 @@ void CWeaponKatana::PrimaryAttack(void)
 	Vector vecSrc = pPlayer->Weapon_ShootPosition();
 	Vector vecAiming = pPlayer->GetAutoaimVector(AUTOAIM_SCALE_DEFAULT);
 
-	pPlayer->FireBullets(1, vecSrc, vecAiming, vec3_origin, GetRange(), m_iPrimaryAmmoType, 0);
+	pPlayer->FireBullets(3, vecSrc, vecAiming, VECTOR_CONE_3DEGREES, GetRange(), m_iPrimaryAmmoType, 0);
 
 	CSoundEnt::InsertSound(SOUND_COMBAT, GetAbsOrigin(), 300, 0.2, GetOwner());
 
@@ -212,35 +212,33 @@ void CWeaponKatana::PrimaryAttack(void)
 
 bool CWeaponKatana::Holster(CBaseCombatWeapon* pSwitchingTo)
 {
-	bool isGrappling = false;
-
 	if (pSwitchingTo)
 	{
 		if (FClassnameIs(pSwitchingTo, "weapon_grapple"))
 		{
-			isGrappling = true;
-		}
-		else
-		{
-			isGrappling = false;
+			//force switch to the grapple if we want to use it.
+			return BaseClass::Holster(pSwitchingTo);
 		}
 	}
 
-	if (!isGrappling)
+	//this is dumb. why does it bug out when we get the 357??
+	if (g_pGameRules->isInBullettime && m_iKillMultiplier > 0)
 	{
-		if (!g_pGameRules->isInBullettime)
-		{
-			if (m_flLastKill > gpGlobals->curtime)
-			{
-				m_bKillMultiplier = false;
-			}
-		}
+		return false;
+	}
 
-		if (m_iKillMultiplier > 0)
+	if (!g_pGameRules->isInBullettime)
+	{
+		if (m_flLastKill > gpGlobals->curtime && m_bKillMultiplier)
 		{
-			m_iKillMultiplier = 0;
-			m_iKills = 0;
+			m_bKillMultiplier = false;
 		}
+	}
+
+	if (m_iKillMultiplier > 0)
+	{
+		m_iKillMultiplier = 0;
+		m_iKills = 0;
 	}
 
 	return BaseClass::Holster(pSwitchingTo);
@@ -256,7 +254,7 @@ void CWeaponKatana::ItemPostFrame(void)
 			m_iKills = 0;
 		}
 
-		if (m_flLastKill > gpGlobals->curtime)
+		if (m_flLastKill > gpGlobals->curtime && m_bKillMultiplier)
 		{
 			m_bKillMultiplier = false;
 		}
@@ -276,15 +274,18 @@ void CWeaponKatana::ItemPostFrame(void)
 		}
 	}
 
-	if (m_flLastKill < gpGlobals->curtime && !m_bKillMultiplier)
+	if ((m_iKills < sv_katana_healthbonus_maxtimestogivebonus.GetInt() && g_pGameRules->isInBullettime) || !g_pGameRules->isInBullettime)
 	{
-		if (m_iKillMultiplier > 0)
+		if (m_flLastKill < gpGlobals->curtime && !m_bKillMultiplier)
 		{
-			m_iKillMultiplier = 0;
-			m_iKills = 0;
-		}
+			if (m_iKillMultiplier > 0)
+			{
+				m_iKillMultiplier = 0;
+				m_iKills = 0;
+			}
 
-		m_bKillMultiplier = true;
+			m_bKillMultiplier = true;
+		}
 	}
 
 	BaseClass::ItemPostFrame();
