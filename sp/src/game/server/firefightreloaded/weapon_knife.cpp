@@ -115,7 +115,11 @@ void CWeaponKnife::ThrowKnife(void)
 
 	SendWeaponAnim(ACT_VM_SECONDARYATTACK);
 
-	m_flNextSecondaryAttack = gpGlobals->curtime + 1.75;
+	// Send the player 'attack' animation.
+	pOwner->SetAnimation(PLAYER_ATTACK1);
+
+	AddEffects(EF_NODRAW);
+	m_flNextSecondaryAttack = gpGlobals->curtime + KNIFE_REFIRE_THROW;
 }
 
 void CWeaponKnife::SecondaryAttack(void)
@@ -130,6 +134,16 @@ void CWeaponKnife::SecondaryAttack(void)
 	}
 }
 
+void CWeaponKnife::ItemPostFrame(void)
+{
+	if (m_flNextSecondaryAttack <= gpGlobals->curtime)
+	{
+		RemoveEffects(EF_NODRAW);
+	}
+
+	BaseClass::ItemPostFrame();
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Get the damage amount for the animation we're doing
 // Input  : hitActivity - currently played activity
@@ -137,6 +151,9 @@ void CWeaponKnife::SecondaryAttack(void)
 //-----------------------------------------------------------------------------
 float CWeaponKnife::GetDamageForActivity( Activity hitActivity )
 {
+	if ((GetOwner() != NULL) && (GetOwner()->IsPlayer()))
+		return sk_plr_dmg_knife.GetFloat();
+
 	return sk_npc_dmg_knife.GetFloat();
 }
 

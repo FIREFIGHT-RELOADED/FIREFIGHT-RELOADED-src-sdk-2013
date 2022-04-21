@@ -18,7 +18,8 @@
 #endif
 
 #define	KNIFE_RANGE	50.0f
-#define	KNIFE_REFIRE	0.2f
+#define	KNIFE_REFIRE 0.4f
+#define	KNIFE_REFIRE_THROW 1.25f
 
 //-----------------------------------------------------------------------------
 // CWeaponKnife
@@ -44,6 +45,7 @@ public:
 	virtual int WeaponMeleeAttack1Condition( float flDot, float flDist );
 	void		SecondaryAttack(void);
 	//void 		Precache(void);
+	void		ItemPostFrame(void);
 
 	// Animation event
 	virtual void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );

@@ -1957,8 +1957,6 @@ bool C_BasePlayer::ShouldDrawThisPlayer()
 	return false;
 }
 
-
-
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Output : Returns true on success, false on failure.
