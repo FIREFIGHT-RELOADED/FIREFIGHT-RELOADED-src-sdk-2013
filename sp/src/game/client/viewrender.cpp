@@ -1902,6 +1902,7 @@ void CViewRender::FreezeFrame( float flFreezeTime )
 
 const char *COM_GetModDirectory();
 
+ConVar r_seamless_cubemaps("r_seamless_cubemaps", "1", FCVAR_ARCHIVE);
 
 //-----------------------------------------------------------------------------
 // Purpose: This renders the entire 3D view and the in-game hud/viewmodel
@@ -1914,6 +1915,12 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 	m_UnderWaterOverlayMaterial.Shutdown();					// underwater view will set
 
 	m_CurrentView = view;
+
+	if (r_seamless_cubemaps.GetBool())
+	{
+		if (building_cubemaps.GetBool())
+			m_CurrentView.fov = RAD2DEG(2.0f * atanf(64.0f / (64 - 0.5f)));
+	}
 
 	C_BaseAnimating::AutoAllowBoneAccess boneaccess( true, true );
 	VPROF( "CViewRender::RenderView" );

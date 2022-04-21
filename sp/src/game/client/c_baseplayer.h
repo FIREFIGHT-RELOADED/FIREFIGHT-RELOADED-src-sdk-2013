@@ -204,7 +204,7 @@ public:
 	float						MaxSpeed() const		{ return m_flMaxspeed; }
 
 	// Should this object cast shadows?
-	virtual ShadowType_t		ShadowCastType() { return SHADOWS_NONE; }
+	virtual ShadowType_t		ShadowCastType();
 
 	virtual bool				ShouldReceiveProjectedTextures( int flags )
 	{

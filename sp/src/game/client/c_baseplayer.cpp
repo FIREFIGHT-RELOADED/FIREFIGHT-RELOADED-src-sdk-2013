@@ -115,6 +115,8 @@ static ConVar	cl_first_person_uses_world_model ( "cl_first_person_uses_world_mod
 
 ConVar demo_fov_override( "demo_fov_override", "0", FCVAR_CLIENTDLL | FCVAR_DONTRECORD, "If nonzero, this value will be used to override FOV during demo playback." );
 
+static ConVar	cl_player_castshadows("cl_player_castshadows", "1", FCVAR_ARCHIVE);
+
 // This only needs to be approximate - it just controls the distance to the pivot-point of the head ("the neck") of the in-game character, not the player's real-world neck length.
 // Ideally we would find this vector by subtracting the neutral-pose difference between the head bone (the pivot point) and the "eyes" attachment point.
 // However, some characters don't have this attachment point, and finding the neutral pose is a pain.
@@ -1964,6 +1966,18 @@ bool C_BasePlayer::ShouldDrawThisPlayer()
 bool C_BasePlayer::IsLocalPlayer( void ) const
 {
 	return ( GetLocalPlayer() == this );
+}
+
+ShadowType_t C_BasePlayer::ShadowCastType() 
+{ 
+	if (cl_player_castshadows.GetBool())
+	{
+		return SHADOWS_RENDER_TO_TEXTURE_DYNAMIC;
+	}
+	else
+	{
+		return SHADOWS_NONE;
+	}
 }
 
 int	C_BasePlayer::GetUserID( void )
