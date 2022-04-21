@@ -233,6 +233,8 @@ ConVar sv_fr_perks_infiniteauxpower("sv_fr_perks_infiniteauxpower", "1", FCVAR_A
 ConVar sv_fr_perks_infiniteammo("sv_fr_perks_infiniteammo", "1", FCVAR_ARCHIVE);
 ConVar sv_fr_perks_healthregenerationrate("sv_fr_perks_healthregenerationrate", "1", FCVAR_ARCHIVE);
 
+ConVar sv_player_explosionringing("sv_player_explosionringing", "0", FCVAR_ARCHIVE);
+
 void CC_GiveCurrentAmmo( void )
 {
 	CBasePlayer *pPlayer = UTIL_GetCommandClient();
@@ -2146,9 +2148,20 @@ void CBasePlayer::OnDamagedByExplosion( const CTakeDamageInfo &info )
 	if ( !shock && !ear_ringing )
 		return;
 
-	int effect = shock ? 
-		random->RandomInt( 35, 37 ) : 
-		random->RandomInt( 32, 34 );
+	int effect = 0;
+
+	if (sv_player_explosionringing.GetBool())
+	{
+		effect = shock ?
+			random->RandomInt(35, 37) :
+			random->RandomInt(32, 34);
+	}
+	else
+	{
+		effect = shock ?
+			random->RandomInt(32, 34) :
+			random->RandomInt(32, 34);
+	}
 
 	CSingleUserRecipientFilter user( this );
 	enginesound->SetPlayerDSP( user, effect, false );
