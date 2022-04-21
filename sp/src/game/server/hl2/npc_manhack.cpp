@@ -1399,7 +1399,7 @@ void CNPC_Manhack::Splash( const Vector &vecSplashPos )
 //-----------------------------------------------------------------------------
 void CNPC_Manhack::ComputeSliceBounceVelocity( CBaseEntity *pHitEntity, trace_t &tr )
 {
-	if( pHitEntity->IsAlive() && FClassnameIs( pHitEntity, "func_breakable_surf" ) )
+	if( pHitEntity->IsAlive() && (FClassnameIs( pHitEntity, "func_breakable_surf" ) || FClassnameIs(pHitEntity, "func_breakable")))
 	{
 		// We want to see if the manhack hits a breakable pane of glass. To keep from checking
 		// The classname of the HitEntity on each impact, we only do this check if we hit 
