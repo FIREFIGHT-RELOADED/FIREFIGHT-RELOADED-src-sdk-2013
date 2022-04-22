@@ -88,7 +88,6 @@ public:
 	bool			IsElite() { return m_fIsElite; }
 	bool			IsAce() { return m_fIsAce; }
 	bool			IsPlayerNPC() { return m_fIsPlayer; }
-	void			SetTacticalVariant(int variant) { m_iTacticalVariant = variant; }
 	void			DelayAltFireAttack( float flDelay );
 	void			DelaySquadAltFireAttack( float flDelay );
 	float			MaxYawSpeed( void );

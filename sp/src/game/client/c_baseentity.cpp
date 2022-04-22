@@ -825,7 +825,10 @@ void C_BaseEntity::Interp_RestoreToLastNetworked( VarMapping_t *map )
 	{
 		VarMapEntry_t *e = &map->m_Entries[ i ];
 		IInterpolatedVar *watcher = e->watcher;
-		watcher->RestoreToLastNetworked();
+		if (watcher)
+		{
+			watcher->RestoreToLastNetworked();
+		}
 	}
 
 	BaseInterpolatePart2( oldOrigin, oldAngles, oldVel, 0 );

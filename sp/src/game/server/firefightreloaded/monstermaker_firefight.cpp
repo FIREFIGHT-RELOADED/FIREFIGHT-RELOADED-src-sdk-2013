@@ -679,13 +679,13 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 		}
 	}
 
-	CNPC_Combine* combine = (CNPC_Combine*)pent;
+	/*CNPC_Combine* combine = (CNPC_Combine*)pent;
 
 	if (pent)
 	{
 		int var = random->RandomInt(TACTICAL_VARIANT_DEFAULT, TACTICAL_VARIANT_PRESSURE_ENEMY_UNTIL_CLOSE);
-		combine->SetTacticalVariant(var);
-	}
+		combine->m_iTacticalVariant = var;
+	}*/
 
 	pent->m_isRareEntity = m_bRareNPC;
 	pent->SetSquadName(m_SquadName);
