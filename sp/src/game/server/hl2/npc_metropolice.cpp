@@ -740,7 +740,7 @@ void CNPC_MetroPolice::Spawn( void )
 	if (m_pAttributes != NULL)
 	{
 		manhackoverride = m_pAttributes->GetBool("manhack_override");
-		if (manhackoverride)
+		if (manhackoverride && metropolice_spawnwithmanhacks.GetBool())
 		{
 			int manhacks = m_pAttributes->GetInt("manhack_count");
 			m_iManhacks = manhacks;

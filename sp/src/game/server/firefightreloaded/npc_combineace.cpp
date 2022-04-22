@@ -92,8 +92,20 @@ void CNPC_CombineAce::Spawn( void )
 
 	SetModel( "models/combine_ace_soldier.mdl" );
 
+	bool grenadeoverride = false;
+	//change manhack number
+	if (m_pAttributes != NULL)
+	{
+		grenadeoverride = m_pAttributes->GetBool("grenade_override");
+		if (grenadeoverride && combine_ace_spawnwithgrenades.GetBool())
+		{
+			int grenades = m_pAttributes->GetInt("grenade_count");
+			m_iNumGrenades = grenades;
+		}
+	}
+
 	//Give him a random amount of grenades on spawn
-	if (combine_ace_spawnwithgrenades.GetBool())
+	if (!grenadeoverride && combine_ace_spawnwithgrenades.GetBool())
 	{
 		if (g_pGameRules->IsSkillLevel(SKILL_HARD))
 		{

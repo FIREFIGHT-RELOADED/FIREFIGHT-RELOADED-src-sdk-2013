@@ -624,8 +624,6 @@ BEGIN_DATADESC( CBasePlayer )
 	DEFINE_FIELD(m_iMaxExp, FIELD_INTEGER),
 	DEFINE_FIELD(m_iPerkInfiniteAuxPower, FIELD_INTEGER),
 	DEFINE_FIELD(m_iPerkInfiniteAmmo, FIELD_INTEGER),
-	DEFINE_FIELD(m_bAlreadyHasInfiniteAuxPowerPerk, FIELD_BOOLEAN),
-	DEFINE_FIELD(m_bAlreadyHasInfiniteAmmoPerk, FIELD_BOOLEAN),
 	DEFINE_FIELD(m_iMoney, FIELD_INTEGER),
 
 	DEFINE_FIELD(m_fRegenRate, FIELD_FLOAT),
@@ -716,6 +714,11 @@ CBasePlayer *CBasePlayer::CreatePlayer( const char *className, edict_t *ed )
 	CBasePlayer::s_PlayerEdict = ed;
 	player = ( CBasePlayer * )CreateEntityByName( className );
 	return player;
+}
+
+bool GiveHealthRegenPerkOnSpawn()
+{
+	return (!g_fr_classic.GetBool() || !sv_player_hardcoremode.GetBool() || g_pGameRules->GetSkillLevel() < SKILL_VERYHARD);
 }
 
 //-----------------------------------------------------------------------------
@@ -822,8 +825,14 @@ CBasePlayer::CBasePlayer( )
 
 	m_iPerkInfiniteAuxPower = 0;
 	m_iPerkInfiniteAmmo = 0;
-	m_bAlreadyHasInfiniteAuxPowerPerk = false;
-	m_bAlreadyHasInfiniteAmmoPerk = false;
+	if (GiveHealthRegenPerkOnSpawn())
+	{
+		m_iPerkHealthRegen = 1;
+	}
+	else
+	{
+		m_iPerkHealthRegen = 0;
+	}
 
 	m_iMoney = 0;
 
@@ -1312,10 +1321,9 @@ void CBasePlayer::Reward_GiveItem()
 			unlocked = GiveAmmoForWeapon(this, "weapon_mp5", "item_ammo_mp5", "#Valve_Hud_RewardMP5Ammo", hint);
 			break;
 		case FIREFIGHT_PERK_INFINITEAMMO:
-			if (sv_fr_perks.GetBool() && !m_bAlreadyHasInfiniteAmmoPerk && GetLevel() >= 15 && sv_fr_perks_infiniteammo.GetBool())
+			if (sv_fr_perks.GetBool() && m_iPerkInfiniteAmmo == 0 && GetLevel() >= 2 && sv_fr_perks_infiniteammo.GetBool())
 			{
 				m_iPerkInfiniteAmmo = 1;
-				m_bAlreadyHasInfiniteAmmoPerk = true;
 				CFmtStr hint;
 				hint.sprintf("#Valve_Hud_INFINITEAMMO");
 				ShowPerkMessage(hint.Access());
@@ -1326,10 +1334,9 @@ void CBasePlayer::Reward_GiveItem()
 			}
 			break;
 		case FIREFIGHT_PERK_INFINITEAUXPOWER:
-			if (sv_fr_perks.GetBool() && !m_bAlreadyHasInfiniteAuxPowerPerk && GetLevel() >= 10 && sv_fr_perks_infiniteauxpower.GetBool())
+			if (sv_fr_perks.GetBool() && m_iPerkInfiniteAuxPower == 0 && GetLevel() >= 5 && sv_fr_perks_infiniteauxpower.GetBool())
 			{
 				m_iPerkInfiniteAuxPower = 1;
-				m_bAlreadyHasInfiniteAuxPowerPerk = true;
 				CFmtStr hint;
 				hint.sprintf("#Valve_Hud_INFINITEAUXPOWER");
 				ShowPerkMessage(hint.Access());
@@ -1340,7 +1347,7 @@ void CBasePlayer::Reward_GiveItem()
 			}
 			break;
 		case FIREFIGHT_PERK_HEALTHREGENERATIONRATE:
-			if (sv_fr_perks.GetBool() && sv_fr_perks_healthregenerationrate.GetBool())
+			if (sv_fr_perks.GetBool() && sv_fr_perks_healthregenerationrate.GetBool() && m_iPerkHealthRegen == 1 && sv_regeneration.GetBool())
 			{
 				m_fRegenRate = m_fRegenRate + 0.5f;
 				CFmtStr hint;
@@ -1352,8 +1359,22 @@ void CBasePlayer::Reward_GiveItem()
 				unlocked = false;
 			}
 			break;
+		case FIREFIGHT_PERK_HEALTHREGENERATION:
+			//m_iPerkHealthRegen = 1 on non classic mode.
+			if (sv_fr_perks.GetBool() && m_iPerkHealthRegen == 0 && sv_regeneration.GetBool())
+			{
+				m_iPerkHealthRegen = 1;
+				CFmtStr hint;
+				hint.sprintf("#Valve_Hud_HEALTHREGENERATION");
+				ShowPerkMessage(hint.Access());
+			}
+			else
+			{
+				unlocked = false;
+			}
+			break;
 		case FIREFIGHT_REWARD_KASHBONUS:
-			if (GetLevel() >= 10 && g_fr_economy.GetBool())
+			if (g_fr_economy.GetBool())
 			{
 				Reward_GiveKashBonus();
 			}
@@ -5349,7 +5370,7 @@ void CBasePlayer::PostThink()
 #endif
 
 	// Regenerate heath
-	if (IsAlive() && GetHealth() < m_MaxHealthVal && (sv_regeneration.GetInt() == 1))
+	if (IsAlive() && GetHealth() < m_MaxHealthVal && (sv_regeneration.GetInt() == 1) && m_iPerkHealthRegen == 1)
 	{
 		// Color to overlay on the screen while the player is taking damage
 

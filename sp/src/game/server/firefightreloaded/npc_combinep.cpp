@@ -56,8 +56,20 @@ void CNPC_CombineP::Spawn( void )
 	Precache();
 	SetModel( "models/combine_soldier_prisonguard.mdl" );
 
+	bool grenadeoverride = false;
+	//change manhack number
+	if (m_pAttributes != NULL)
+	{
+		grenadeoverride = m_pAttributes->GetBool("grenade_override");
+		if (grenadeoverride && combine_p_spawnwithgrenades.GetBool())
+		{
+			int grenades = m_pAttributes->GetInt("grenade_count");
+			m_iNumGrenades = grenades;
+		}
+	}
+
 	//Give him a random amount of grenades on spawn
-	if (combine_p_spawnwithgrenades.GetBool())
+	if (!grenadeoverride && combine_p_spawnwithgrenades.GetBool())
 	{
 		if (g_pGameRules->IsSkillLevel(SKILL_HARD))
 		{

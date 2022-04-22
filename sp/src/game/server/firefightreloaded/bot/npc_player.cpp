@@ -219,24 +219,6 @@ void CNPC_Player::Spawn( void )
 
 	SetModel(modelName);
 
-	//Give him a random amount of grenades on spawn
-	if (g_pGameRules->IsSkillLevel(SKILL_HARD))
-	{
-		m_iNumGrenades = random->RandomInt(4, 6);
-	}
-	else if (g_pGameRules->IsSkillLevel(SKILL_VERYHARD))
-	{
-		m_iNumGrenades = random->RandomInt(2, 3);
-	}
-	else if (g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE))
-	{
-		m_iNumGrenades = random->RandomInt(0, 2);
-	}
-	else
-	{
-		m_iNumGrenades = random->RandomInt(8, 12);
-	}
-
 	GiveOutline(Vector(26, 77, 153));
 
 	m_fIsPlayer = true;

@@ -979,8 +979,7 @@ public:
 
 	int m_iPerkInfiniteAuxPower;
 	CNetworkVar(int, m_iPerkInfiniteAmmo);
-	bool m_bAlreadyHasInfiniteAuxPowerPerk;
-	bool m_bAlreadyHasInfiniteAmmoPerk;
+	int m_iPerkHealthRegen;
 
 private:
 

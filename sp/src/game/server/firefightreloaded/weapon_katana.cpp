@@ -34,6 +34,7 @@ extern ConVar sk_npc_dmg_katana;
 static ConVar sv_katana_healthbonus_postdelay("sv_katana_healthbonus_postdelay", "5.0", FCVAR_CHEAT);
 static ConVar sv_katana_healthbonus_maxmultiplier("sv_katana_healthbonus_maxmultiplier", "5", FCVAR_CHEAT);
 static ConVar sv_katana_healthbonus_maxtimestogivebonus("sv_katana_healthbonus_maxtimestogivebonus", "10", FCVAR_CHEAT);
+static ConVar sv_katana_antlionguard_damageresistance("sv_katana_antlionguard_damageresistance", "0.2", FCVAR_CHEAT);
 
 //-----------------------------------------------------------------------------
 // CWeaponKatana
@@ -192,7 +193,8 @@ void CWeaponKatana::PrimaryAttack(void)
 
 					Ammo_t *ammodef = GetAmmoDef()->GetAmmoOfIndex(m_iPrimaryAmmoType);
 					bool bIsAntlionGuard = (traceHit.m_pEnt->IsNPC() && (FClassnameIs(traceHit.m_pEnt, "npc_antlionguard") || FClassnameIs(traceHit.m_pEnt, "npc_antlionguardian")));
-					pPlayer->FireBullets(3, vecSrc, vecAiming, VECTOR_CONE_4DEGREES, GetRange() * 3, m_iPrimaryAmmoType, 0, -1, -1, (bIsAntlionGuard ? ammodef->pPlrDmg * 0.3f : ammodef->pPlrDmg));
+					pPlayer->FireBullets(3, vecSrc, vecAiming, VECTOR_CONE_4DEGREES, GetRange() * 3, m_iPrimaryAmmoType, 0, -1, -1, 
+						(bIsAntlionGuard ? (ammodef->pPlrDmgCVar->GetInt() * sv_katana_antlionguard_damageresistance.GetFloat()) : ammodef->pPlrDmgCVar->GetInt()));
 
 					if (ent && !ent->IsAlive() && g_pGameRules->isInBullettime && m_bKillMultiplier)
 					{
