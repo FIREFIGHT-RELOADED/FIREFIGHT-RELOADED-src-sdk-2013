@@ -255,6 +255,8 @@ float CNPC_CombineP::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDama
 				SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
 				CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p3.mdl", 6);
 				CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p4.mdl", 6);
+				CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p3.mdl", 6);
+				CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p4.mdl", 6);
 				EmitSound("Gore.Headshot");
 				m_bNoDeathSound = true;
 				m_iHealth = 0;
@@ -292,6 +294,8 @@ float CNPC_CombineP::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDama
 						m_pAttributes->SwitchEntityColor(pHeadGib, "new_color");
 					}
 				}
+
+				CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p4.mdl", 6);
 				EmitSound("Gore.Headshot");
 				m_bNoDeathSound = true;
 				m_iHealth = 0;
@@ -490,6 +494,10 @@ void CNPC_CombineP::Event_Killed( const CTakeDamageInfo &info )
 				m_pAttributes->SwitchEntityColor(pRightLegGib, "new_color");
 			}
 		}
+
+		//now add smaller gibs.
+		CGib::SpawnSpecificGibs(this, 3, 750, 1500, "models/gibs/pgib_p3.mdl", flFadeTime);
+		CGib::SpawnSpecificGibs(this, 3, 750, 1500, "models/gibs/pgib_p4.mdl", flFadeTime);
 
 		Vector forceVector = CalcDamageForceVector(info);
 
