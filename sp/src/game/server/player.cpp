@@ -1321,7 +1321,7 @@ void CBasePlayer::Reward_GiveItem()
 			unlocked = GiveAmmoForWeapon(this, "weapon_mp5", "item_ammo_mp5", "#Valve_Hud_RewardMP5Ammo", hint);
 			break;
 		case FIREFIGHT_PERK_INFINITEAMMO:
-			if (sv_fr_perks.GetBool() && m_iPerkInfiniteAmmo == 0 && GetLevel() >= 2 && sv_fr_perks_infiniteammo.GetBool())
+			if (sv_fr_perks.GetBool() && m_iPerkInfiniteAmmo == 0 && GetLevel() >= (MAX_LEVEL * 0.5) && sv_fr_perks_infiniteammo.GetBool())
 			{
 				m_iPerkInfiniteAmmo = 1;
 				CFmtStr hint;
@@ -1334,7 +1334,7 @@ void CBasePlayer::Reward_GiveItem()
 			}
 			break;
 		case FIREFIGHT_PERK_INFINITEAUXPOWER:
-			if (sv_fr_perks.GetBool() && m_iPerkInfiniteAuxPower == 0 && GetLevel() >= 5 && sv_fr_perks_infiniteauxpower.GetBool())
+			if (sv_fr_perks.GetBool() && m_iPerkInfiniteAuxPower == 0 && GetLevel() >= (MAX_LEVEL * 0.5) && sv_fr_perks_infiniteauxpower.GetBool())
 			{
 				m_iPerkInfiniteAuxPower = 1;
 				CFmtStr hint;
