@@ -2109,12 +2109,12 @@ int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 
 	if (GetHealth() < m_MaxHealthVal)
 	{
-		m_fTimeLastHurt = gpGlobals->curtime;
+		m_fTimeLastHurt = gpGlobals->curtime + sv_regeneration_wait_time.GetFloat();
 	}
 
 	if (GetHealth() > m_MaxHealthVal)
 	{
-		m_fTimeLastHealed = gpGlobals->curtime;
+		m_fTimeLastHealed = gpGlobals->curtime + sv_decay_wait_time.GetFloat();
 	}
 
 	if (sv_player_voice.GetBool())
@@ -5374,7 +5374,7 @@ void CBasePlayer::PostThink()
 	{
 		// Color to overlay on the screen while the player is taking damage
 
-		if (gpGlobals->curtime > m_fTimeLastHurt + sv_regeneration_wait_time.GetFloat())
+		if (m_fTimeLastHurt < gpGlobals->curtime)
 		{
 			//Regenerate based on rate, and scale it by the frametime
 			m_fRegenRemander += m_fRegenRate * gpGlobals->frametime;
@@ -5397,7 +5397,7 @@ void CBasePlayer::PostThink()
 
 	if (IsAlive() && GetHealth() > m_MaxHealthVal)
 	{
-		if (gpGlobals->curtime > m_fTimeLastHealed + sv_decay_wait_time.GetFloat())
+		if (m_fTimeLastHealed < gpGlobals->curtime)
 		{
 			m_fDecayRemander += ((GetHealth() >= sv_decay_increaserateminhealth.GetFloat()) ? 
 				sv_decay_rate.GetFloat() * sv_decay_increaseratemultiplier.GetFloat() : 
@@ -7545,10 +7545,26 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		//right now we only have the max health upgrade.
 		if (upgradeID == FIREFIGHT_UPGRADE_MAXHEALTH)
 		{
-			Market_SetMaxHealth();
-		}
+			if (m_iHealthUpgrades < sv_fr_maxhealthupgrades.GetInt())
+			{
+				Market_SetMaxHealth();
+				engine->ClientCommand(edict(), "confirm_purchase %i", moneyAmount);
+			}
+			else
+			{
+				if (sv_store_denynotifications.GetBool())
+				{
+					CFmtStr hint;
+					hint.sprintf("#Valve_StoreBuyDenyTooManyUpgrades");
+					ShowLevelMessage(hint.Access());
+				}
 
-		engine->ClientCommand(edict(), "confirm_purchase %i", moneyAmount);
+				if (sv_store_denysounds.GetBool())
+				{
+					EmitSound("Store.InsufficientFunds");
+				}
+			}
+		}
 
 		return true;
 	}

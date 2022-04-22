@@ -198,13 +198,14 @@ void CWeaponKatana::PrimaryAttack(void)
 
 					if (ent && !ent->IsAlive() && g_pGameRules->isInBullettime && m_bKillMultiplier)
 					{
-						m_iKills += 1;
 						if (m_iKills < sv_katana_healthbonus_maxtimestogivebonus.GetInt())
 						{
-							pPlayer->TakeHealth((ent->GetMaxHealth() * 0.5) * m_iKillMultiplier, DMG_GENERIC);
+							m_iKills += 1;
+
 							if (m_iKillMultiplier < sv_katana_healthbonus_maxmultiplier.GetInt())
 							{
 								m_iKillMultiplier += 1;
+								pPlayer->TakeHealth((ent->GetMaxHealth() * 0.5) * m_iKillMultiplier, DMG_GENERIC);
 								m_flLastKill = gpGlobals->curtime + sv_katana_healthbonus_postdelay.GetFloat();
 								const char* hintMultiplier = CFmtStr("%ix!", m_iKillMultiplier);
 								pPlayer->ShowLevelMessage(hintMultiplier);

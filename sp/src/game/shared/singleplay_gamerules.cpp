@@ -797,55 +797,55 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 					case SKILL_EASY:
 						if (g_fr_economy.GetBool())
 						{
-							pEntity->AddMoney(3 * sk_money_multiplier1.GetInt());
+							pEntity->AddMoney(6 * sk_money_multiplier1.GetInt());
 						}
 						if (!g_fr_classic.GetBool())
 						{
-							pEntity->AddXP(5 * sk_exp_multiplier1.GetInt());
+							pEntity->AddXP(10 * sk_exp_multiplier1.GetInt());
 						}
 						break;
 
 					case SKILL_MEDIUM:
 						if (g_fr_economy.GetBool())
 						{
-							pEntity->AddMoney(3 * sk_money_multiplier2.GetInt());
+							pEntity->AddMoney(6 * sk_money_multiplier2.GetInt());
 						}
 						if (!g_fr_classic.GetBool())
 						{
-							pEntity->AddXP(5 * sk_exp_multiplier2.GetInt());
+							pEntity->AddXP(10 * sk_exp_multiplier2.GetInt());
 						}
 						break;
 
 					case SKILL_HARD:
 						if (g_fr_economy.GetBool())
 						{
-							pEntity->AddMoney(3 * sk_money_multiplier3.GetInt());
+							pEntity->AddMoney(6 * sk_money_multiplier3.GetInt());
 						}
 						if (!g_fr_classic.GetBool())
 						{
-							pEntity->AddXP(5 * sk_exp_multiplier3.GetInt());
+							pEntity->AddXP(10 * sk_exp_multiplier3.GetInt());
 						}
 						break;
 
 					case SKILL_VERYHARD:
 						if (g_fr_economy.GetBool())
 						{
-							pEntity->AddMoney(3 * sk_money_multiplier4.GetInt());
+							pEntity->AddMoney(6 * sk_money_multiplier4.GetInt());
 						}
 						if (!g_fr_classic.GetBool())
 						{
-							pEntity->AddXP(5 * sk_exp_multiplier4.GetInt());
+							pEntity->AddXP(10 * sk_exp_multiplier4.GetInt());
 						}
 						break;
 
 					case SKILL_NIGHTMARE:
 						if (g_fr_economy.GetBool())
 						{
-							pEntity->AddMoney(3 * sk_money_multiplier5.GetInt());
+							pEntity->AddMoney(6 * sk_money_multiplier5.GetInt());
 						}
 						if (!g_fr_classic.GetBool())
 						{
-							pEntity->AddXP(5 * sk_exp_multiplier5.GetInt());
+							pEntity->AddXP(10 * sk_exp_multiplier5.GetInt());
 						}
 						break;
 					}
@@ -857,55 +857,55 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 					case SKILL_EASY:
 						if (g_fr_economy.GetBool())
 						{
-							pEntity->AddMoney(2 * sk_money_multiplier1.GetInt());
+							pEntity->AddMoney(4 * sk_money_multiplier1.GetInt());
 						}
 						if (!g_fr_classic.GetBool())
 						{
-							pEntity->AddXP(3 * sk_exp_multiplier1.GetInt());
+							pEntity->AddXP(6 * sk_exp_multiplier1.GetInt());
 						}
 						break;
 
 					case SKILL_MEDIUM:
 						if (g_fr_economy.GetBool())
 						{
-							pEntity->AddMoney(2 * sk_money_multiplier2.GetInt());
+							pEntity->AddMoney(4 * sk_money_multiplier2.GetInt());
 						}
 						if (!g_fr_classic.GetBool())
 						{
-							pEntity->AddXP(3 * sk_exp_multiplier2.GetInt());
+							pEntity->AddXP(6 * sk_exp_multiplier2.GetInt());
 						}
 						break;
 
 					case SKILL_HARD:
 						if (g_fr_economy.GetBool())
 						{
-							pEntity->AddMoney(2 * sk_money_multiplier3.GetInt());
+							pEntity->AddMoney(4 * sk_money_multiplier3.GetInt());
 						}
 						if (!g_fr_classic.GetBool())
 						{
-							pEntity->AddXP(3 * sk_exp_multiplier3.GetInt());
+							pEntity->AddXP(6 * sk_exp_multiplier3.GetInt());
 						}
 						break;
 
 					case SKILL_VERYHARD:
 						if (g_fr_economy.GetBool())
 						{
-							pEntity->AddMoney(2 * sk_money_multiplier4.GetInt());
+							pEntity->AddMoney(4 * sk_money_multiplier4.GetInt());
 						}
 						if (!g_fr_classic.GetBool())
 						{
-							pEntity->AddXP(3 * sk_exp_multiplier4.GetInt());
+							pEntity->AddXP(6 * sk_exp_multiplier4.GetInt());
 						}
 						break;
 
 					case SKILL_NIGHTMARE:
 						if (g_fr_economy.GetBool())
 						{
-							pEntity->AddMoney(2 * sk_money_multiplier5.GetInt());
+							pEntity->AddMoney(4 * sk_money_multiplier5.GetInt());
 						}
 						if (!g_fr_classic.GetBool())
 						{
-							pEntity->AddXP(3 * sk_exp_multiplier5.GetInt());
+							pEntity->AddXP(6 * sk_exp_multiplier5.GetInt());
 						}
 						break;
 					}

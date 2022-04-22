@@ -407,6 +407,9 @@ void CHornet::DieTouch( CBaseEntity *pOther )
 		CalculateBulletDamageForce(&info, GetAmmoDef()->Index("SMG1"), GetAbsVelocity(), GetAbsOrigin());
 		pOther->TakeDamage( info );
 		Event_Killed(info);
+
+		SetThink(&CHornet::SUB_Remove);
+		SetNextThink(gpGlobals->curtime);
 	}
 }
 
