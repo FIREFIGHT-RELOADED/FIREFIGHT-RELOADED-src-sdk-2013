@@ -615,6 +615,15 @@ void CGib::BounceGibTouch(CBaseEntity *pOther)
 	if (pPhysics)
 		return;
 
+	SetThink(&CGib::SUB_Remove);
+	SetNextThink(gpGlobals->curtime + 10);
+
+	if (!FClassnameIs(pOther, "worldspawn"))
+	{
+		SetNextThink(gpGlobals->curtime);
+		return;
+	}
+
 	//if ( random->RandomInt(0,1) )
 	//	return;// don't bleed everytime
 	if (GetFlags() & FL_ONGROUND)
@@ -629,6 +638,9 @@ void CGib::BounceGibTouch(CBaseEntity *pOther)
 		angVel.x = 0;
 		angVel.z = 0;
 		SetLocalAngularVelocity(vec3_angle);
+
+		UTIL_TraceLine(GetAbsOrigin(), GetAbsOrigin() + GetAbsVelocity() * 32, MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &tr);
+		UTIL_BloodDecalTrace(&tr, m_bloodColor);
 	}
 	else
 	{
@@ -803,6 +815,9 @@ void CRagGib::Spawn(CBaseEntity *pVictim, const char *szModel, const Vector &vec
 		{
 			SUB_StartFadeOut(flFadeTime);
 		}
+	}
+	else
+	{
 		SetTouch(&CRagGib::RagGibTouch);
 	}
 }
@@ -810,10 +825,60 @@ void CRagGib::Spawn(CBaseEntity *pVictim, const char *szModel, const Vector &vec
 void CRagGib::RagGibTouch(CBaseEntity *pOther)
 {
 	Vector	vecSpot;
-	trace_t tr;
+	trace_t	tr;
 
-	UTIL_TraceLine(GetAbsOrigin(), GetAbsOrigin() + GetAbsVelocity() * 32, MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &tr);
-	UTIL_BloodDecalTrace(&tr, m_bloodColor);
+	IPhysicsObject* pPhysics = VPhysicsGetObject();
+
+	if (pPhysics)
+		return;
+
+	SetThink(&CGib::SUB_Remove);
+	SetNextThink(gpGlobals->curtime + 10);
+
+	if (!FClassnameIs(pOther, "worldspawn"))
+	{
+		SetNextThink(gpGlobals->curtime);
+		return;
+	}
+
+	//if ( random->RandomInt(0,1) )
+	//	return;// don't bleed everytime
+	if (GetFlags() & FL_ONGROUND)
+	{
+		SetAbsVelocity(GetAbsVelocity() * 0.9);
+		QAngle angles = GetLocalAngles();
+		angles.x = 0;
+		angles.z = 0;
+		SetLocalAngles(angles);
+
+		QAngle angVel = GetLocalAngularVelocity();
+		angVel.x = 0;
+		angVel.z = 0;
+		SetLocalAngularVelocity(vec3_angle);
+
+		UTIL_TraceLine(GetAbsOrigin(), GetAbsOrigin() + GetAbsVelocity() * 32, MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &tr);
+		UTIL_BloodDecalTrace(&tr, m_bloodColor);
+	}
+	else
+	{
+		if (g_Language.GetInt() != LANGUAGE_GERMAN && m_bloodColor != DONT_BLEED)
+		{
+			vecSpot = GetAbsOrigin() + Vector(0, 0, 8);//move up a bit, and trace down.
+			UTIL_TraceLine(vecSpot, vecSpot + Vector(0, 0, -24), MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &tr);
+
+			UTIL_BloodDecalTrace(&tr, m_bloodColor);
+		}
+
+		if (random->RandomInt(0, 2) == 0)
+		{
+			float volume;
+			float zvel = fabs(GetAbsVelocity().z);
+
+			volume = 0.8f * MIN(1.0, ((float)zvel) / 450.0f);
+
+			CBreakable::MaterialSoundRandom(entindex(), matFlesh, volume);
+		}
+	}
 }
 
 void CRagGib::SetBloodColor(int nBloodColor)
