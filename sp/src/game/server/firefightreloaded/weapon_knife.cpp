@@ -32,8 +32,8 @@ static const Vector g_bludgeonMaxs(BLUDGEON_HULL_DIM, BLUDGEON_HULL_DIM, BLUDGEO
 
 ConVar    sk_plr_dmg_knife		( "sk_plr_dmg_knife","0");
 ConVar    sk_npc_dmg_knife		( "sk_npc_dmg_knife","0");
-ConVar    sk_plr_dmg_knife_thrown		("sk_plr_dmg_knife_thrown", "0");
-ConVar    sk_npc_dmg_knife_thrown		("sk_npc_dmg_knife_thrown", "0");
+ConVar    sk_plr_dmg_knife_thrown("sk_plr_dmg_knife_thrown", "0");
+ConVar    sk_npc_dmg_knife_thrown("sk_npc_dmg_knife_thrown", "0");
 
 //-----------------------------------------------------------------------------
 // CWeaponKnife
