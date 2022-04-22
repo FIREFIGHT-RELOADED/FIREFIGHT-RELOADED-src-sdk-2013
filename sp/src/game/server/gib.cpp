@@ -41,6 +41,7 @@ BEGIN_DATADESC(CGib)
 // Function pointers
 DEFINE_ENTITYFUNC(BounceGibTouch),
 DEFINE_ENTITYFUNC(StickyGibTouch),
+DEFINE_ENTITYFUNC(GibTouch),
 DEFINE_THINKFUNC(WaitTillLand),
 DEFINE_THINKFUNC(DieThink),
 
@@ -765,6 +766,11 @@ void CGib::Spawn(const char *szGibModel, float flLifetime)
 
 
 LINK_ENTITY_TO_CLASS(gib, CGib);
+
+BEGIN_DATADESC(CRagGib)
+// gibs are not saved/restored
+DEFINE_ENTITYFUNC(RagGibTouch),
+END_DATADESC()
 
 CBaseEntity *CreateRagGib(CBaseEntity *pVictim, const char *szModel, const Vector &vecOrigin, const QAngle &vecAngles, const Vector &vecForce, float flFadeTime, bool bShouldIgnite)
 {

@@ -115,6 +115,8 @@ public:
 	void RagGibTouch(CBaseEntity *pOther);
 	void SetBloodColor(int nBloodColor);
 
+	DECLARE_DATADESC();
+
 private:
 	int		m_bloodColor;
 

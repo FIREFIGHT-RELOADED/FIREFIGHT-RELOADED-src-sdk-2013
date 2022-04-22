@@ -33,9 +33,7 @@
 
 #define BOLT_AIR_VELOCITY	3500
 #define BOLT_WATER_VELOCITY	1500
- 
-#ifndef CLIENT_DLL
- 
+
 class CWeaponGrapple;
  
 //-----------------------------------------------------------------------------
@@ -44,14 +42,13 @@ class CWeaponGrapple;
 class CGrappleHook : public CBaseCombatCharacter
 {
 	DECLARE_CLASS( CGrappleHook, CBaseCombatCharacter );
+	DECLARE_DATADESC();
  
 public:
 	CGrappleHook() { };
 	~CGrappleHook();
  
 	Class_T Classify( void ) { return CLASS_NONE; }
- 
-public:
 	void Spawn( void );
 	void Precache( void );
 	void FlyThink( void );
@@ -60,10 +57,6 @@ public:
 	bool CreateVPhysics( void );
 	unsigned int PhysicsSolidMaskForEntity() const;
 	static CGrappleHook *HookCreate( const Vector &vecOrigin, const QAngle &angAngles, CBaseEntity *pentOwner = NULL );
- 
-protected:
- 
-	DECLARE_DATADESC();
  
 private:
 
@@ -74,26 +67,17 @@ private:
 	float						m_fSpringLength;
 	bool						m_bPlayerWasStanding;
 };
- 
-#endif
- 
-//-----------------------------------------------------------------------------
-// CWeaponGrapple
-//-----------------------------------------------------------------------------
- 
-#ifdef CLIENT_DLL
-#define CWeaponGrapple C_WeaponGrapple
-#endif
-
-//class CWeaponGrapple : public CBaseHL2MPCombatWeapon       
+     
 class CWeaponGrapple : public CBaseHLCombatWeapon            
 {                                                            
-//	DECLARE_CLASS( CWeaponGrapple, CBaseHL2MPCombatWeapon ); 
-	DECLARE_CLASS( CWeaponGrapple, CBaseHLCombatWeapon );    
+	DECLARE_CLASS( CWeaponGrapple, CBaseHLCombatWeapon );
+	DECLARE_SERVERCLASS();
+	DECLARE_ACTTABLE();
+
 public:
  
 	CWeaponGrapple( void );
- 
+
 	virtual void	Precache( void );
 	virtual void	PrimaryAttack( void );
 	bool			CanHolster( void );
@@ -112,31 +96,15 @@ public:
 
 	bool                        m_bHook;
  
-	DECLARE_NETWORKCLASS(); 
-	DECLARE_PREDICTABLE();
- 
 private:
 
 	void	FireHook( void );
  
-#ifndef CLIENT_DLL
- 
-	DECLARE_ACTTABLE();
-#endif
- 
 private:
  
-#ifndef CLIENT_DLL
 	CHandle<CBeam>        pBeam;
 	CHandle<CSprite>	m_pLightGlow;
-#endif
 	CNetworkHandle( CBaseEntity, m_hHook );
- 
-	CWeaponGrapple( const CWeaponGrapple & );
-
 	CNetworkVar( int, m_nBulletType );
 };
- 
- 
- 
 #endif // WEAPON_GRAPPLE_H
