@@ -664,8 +664,8 @@ float CNPC_BaseZombie::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDa
 				if (!m_fIsHeadless && (info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB) && !FClassnameIs(this, "npc_poisonzombie"))
 				{
 					DispatchParticleEffect("smod_headshot_y", PATTACH_POINT_FOLLOW, this, "headcrab", true);
-					CGib::SpawnSpecificGibs(this, 3, 750, 1500, "models/gibs/agib_p3.mdl", 6);
-					CGib::SpawnSpecificGibs(this, 3, 750, 1500, "models/gibs/agib_p4.mdl", 6);
+					CGib::SpawnSpecificStickyGibs(this, 3, 750, 1500, "models/gibs/agib_p3.mdl", 6);
+					CGib::SpawnSpecificStickyGibs(this, 3, 750, 1500, "models/gibs/agib_p4.mdl", 6);
 					EmitSound("Gore.Headshot");
 					g_pGameRules->iHeadshotCount += 1;
 					RemoveHead();
