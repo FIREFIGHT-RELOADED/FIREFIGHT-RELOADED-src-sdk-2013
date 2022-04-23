@@ -5364,7 +5364,7 @@ void CBasePlayer::PostThink()
 	SimulatePlayerSimulatedEntities();
 #endif
 
-	DevMsg("Health: %i\nMaxHealth: %i\nMaxHealthVal: %i\nMaxHealthValExtra: %i\n", GetHealth(), GetMaxHealth(), m_MaxHealthVal, m_MaxHealthValExtra);
+	//DevMsg("Health: %i\nMaxHealth: %i\nMaxHealthVal: %i\nMaxHealthValExtra: %i\n", GetHealth(), GetMaxHealth(), m_MaxHealthVal, m_MaxHealthValExtra);
 
 	//update the maxhealthvalue before regen so we can't override health
 	int spawnHealth = player_defaulthealth.GetInt() + m_MaxHealthValExtra;
