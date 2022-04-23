@@ -193,7 +193,7 @@ void CWeaponKatana::PrimaryAttack(void)
 
 					Ammo_t *ammodef = GetAmmoDef()->GetAmmoOfIndex(m_iPrimaryAmmoType);
 					bool bIsAntlionGuard = (traceHit.m_pEnt->IsNPC() && (FClassnameIs(traceHit.m_pEnt, "npc_antlionguard") || FClassnameIs(traceHit.m_pEnt, "npc_antlionguardian")));
-					pPlayer->FireBullets(3, vecSrc, vecAiming, VECTOR_CONE_4DEGREES, GetRange() * 3, m_iPrimaryAmmoType, 0, -1, -1, 
+					pPlayer->FireBullets(3, vecSrc, vecAiming, VECTOR_CONE_4DEGREES, GetRange() * 2, m_iPrimaryAmmoType, 0, -1, -1, 
 						(bIsAntlionGuard ? (ammodef->pPlrDmgCVar->GetInt() * sv_katana_antlionguard_damageresistance.GetFloat()) : ammodef->pPlrDmgCVar->GetInt()));
 
 					if (ent && !ent->IsAlive() && g_pGameRules->isInBullettime && m_bKillMultiplier)
