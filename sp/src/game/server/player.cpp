@@ -5414,10 +5414,7 @@ void CBasePlayer::PostThink()
 
 			if (m_fDecayRemander >= 1 && GetHealth() != m_MaxHealthVal)
 			{
-				CTakeDamageInfo info;
-				info.SetDamage(m_fDecayRemander);
-				info.SetDamageType(DMG_GENERIC);
-				TakeDamage(info);
+				TakeHealth(-m_fRegenRemander, DMG_GENERIC);
 				m_fDecayRemander = 0;
 			}
 		}
