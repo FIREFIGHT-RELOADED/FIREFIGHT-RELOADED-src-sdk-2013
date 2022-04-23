@@ -1131,10 +1131,11 @@ private:
 	// from edict_t
 	// CBasePlayer doesn't send this but CCSPlayer does.
 	CNetworkVarForDerived( int, m_ArmorValue );
-	CNetworkVarForDerived( int, m_MaxArmorValue );
+	int						m_MaxArmorValue;
 
-	CNetworkVarForDerived(int, m_MaxHealthVal);
-	CNetworkVarForDerived(int, m_MaxHealthValExtra);
+	int						m_MaxHealthVal;
+	int						m_MaxHealthValExtra;
+	
 	float					m_AirFinished;
 	float					m_PainFinished;
 

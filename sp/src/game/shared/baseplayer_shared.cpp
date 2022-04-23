@@ -92,6 +92,8 @@
 ConVar mp_usehwmmodels( "mp_usehwmmodels", "0", NULL, "Enable the use of the hw morph models. (-1 = never, 1 = always, 0 = based upon GPU)" ); // -1 = never, 0 = if hasfastvertextextures, 1 = always
 #endif
 
+ConVar player_defaulthealth("player_defaulthealth", "200", FCVAR_ARCHIVE, "");
+
 bool UseHWMorphModels()
 {
 // #ifdef CLIENT_DLL 
@@ -1843,7 +1845,7 @@ void CBasePlayer::SharedSpawn()
 
 	pl.deadflag	= false;
 	m_lifeState	= LIFE_ALIVE;
-	m_iHealth = 200;
+	m_iHealth = player_defaulthealth.GetInt();
 	m_takedamage		= DAMAGE_YES;
 
 	m_Local.m_bDrawViewmodel = true;

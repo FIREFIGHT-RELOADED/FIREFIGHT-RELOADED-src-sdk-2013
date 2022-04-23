@@ -5252,6 +5252,8 @@ void CBasePlayer::ForceOrigin( const Vector &vecOrigin )
 	m_vForcedOrigin = vecOrigin;
 }
 
+extern ConVar player_defaulthealth;
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -5369,6 +5371,13 @@ void CBasePlayer::PostThink()
 	SimulatePlayerSimulatedEntities();
 #endif
 
+	//update the maxhealthvalue before regen so we can't override health
+	int spawnHealth = player_defaulthealth.GetInt() + m_MaxHealthValExtra;
+	if (m_MaxHealthVal != spawnHealth)
+	{
+		m_MaxHealthVal = spawnHealth;
+	}
+
 	// Regenerate heath
 	if (IsAlive() && GetHealth() < m_MaxHealthVal && (sv_regeneration.GetInt() == 1) && m_iPerkHealthRegen == 1)
 	{
@@ -5405,7 +5414,10 @@ void CBasePlayer::PostThink()
 
 			if (m_fDecayRemander >= 1 && GetHealth() != m_MaxHealthVal)
 			{
-				TakeHealth(-m_fDecayRemander, DMG_GENERIC);
+				CTakeDamageInfo info;
+				info.SetDamage(m_fDecayRemander);
+				info.SetDamageType(DMG_GENERIC);
+				TakeDamage(info);
 				m_fDecayRemander = 0;
 			}
 		}
@@ -6103,7 +6115,7 @@ void CBasePlayer::IncrementArmorValueNoMax(int nCount)
 
 void CBasePlayer::IncrementMaxHealthValue(int nCount)
 {
-	m_iMaxHealth += nCount;
+	m_MaxHealthVal += nCount;
 }
 
 void CBasePlayer::IncrementMaxHealthRegenValue(int nCount)
