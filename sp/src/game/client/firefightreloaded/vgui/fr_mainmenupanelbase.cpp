@@ -20,6 +20,7 @@ CFRMainMenuPanelBase::CFRMainMenuPanelBase(vgui::Panel* parent) : EditablePanel(
 	surface()->GetScreenSize(width, height);
 	SetSize(width, height);
 	SetPos(0, 0);
+	SetAlpha(0);
 
 	vgui::ivgui()->AddTickSignal(GetVPanel(), 100);
 

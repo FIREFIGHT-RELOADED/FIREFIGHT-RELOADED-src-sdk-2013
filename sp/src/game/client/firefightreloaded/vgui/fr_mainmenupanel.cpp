@@ -142,6 +142,7 @@ CFRMainMenuPanel::CFRMainMenuPanel(vgui::Panel* parent) : CFRMainMenuPanelBase(p
 	surface()->GetScreenSize(width, height);
 	SetSize(width, height);
 	SetPos(0, 0);
+	SetAlpha(0);
 	LoadControlSettings("resource/UI/MainMenu.res");
 	vgui::ivgui()->AddTickSignal(GetVPanel(), 100);
 

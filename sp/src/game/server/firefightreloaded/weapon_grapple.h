@@ -73,9 +73,9 @@ class CWeaponGrapple : public CBaseHLCombatWeapon
 	DECLARE_CLASS( CWeaponGrapple, CBaseHLCombatWeapon );
 	DECLARE_SERVERCLASS();
 	DECLARE_ACTTABLE();
+	DECLARE_DATADESC();
 
 public:
- 
 	CWeaponGrapple( void );
 
 	virtual void	Precache( void );
@@ -94,17 +94,16 @@ public:
 	void   	DrawBeam( const Vector &startPos, const Vector &endPos, float width );
 	void	DoImpactEffect( trace_t &tr, int nDamageType );
 
+public:
 	bool                        m_bHook;
  
 private:
-
 	void	FireHook( void );
  
-private:
- 
-	CHandle<CBeam>        pBeam;
-	CHandle<CSprite>	m_pLightGlow;
-	CNetworkHandle( CBaseEntity, m_hHook );
-	CNetworkVar( int, m_nBulletType );
+private: 
+	CHandle<CBeam>			pBeam;
+	CHandle<CSprite>		m_pLightGlow;
+	CHandle<CBaseEntity>	m_hHook;
+	int						m_nBulletType;
 };
 #endif // WEAPON_GRAPPLE_H
