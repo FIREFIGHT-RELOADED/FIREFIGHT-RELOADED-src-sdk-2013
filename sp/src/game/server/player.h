@@ -945,7 +945,6 @@ public:
 	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_nWaterLevel );
 
 	float					m_fTimeLastHurt;
-	float					m_fTimeLastHealed;
 	int						m_nButtons;
 	int						m_afButtonPressed;
 	int						m_afButtonReleased;

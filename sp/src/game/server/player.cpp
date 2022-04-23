@@ -201,7 +201,6 @@ ConVar sv_regeneration_wait_time("sv_regeneration_wait_time", "2.3", FCVAR_REPLI
 ConVar sv_regeneration_rate("sv_regeneration_rate", "5.5", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar sv_regen_interval("sv_regen_interval", "20", FCVAR_REPLICATED | FCVAR_CHEAT, "Set what interval of health to regen to.\n    i.e. if this is set to the default value (10), if you are damaged to 75 health, you'll regenerate to 80 health.\n    Set this to 0 to disable this mechanic.");
 
-ConVar sv_decay_wait_time("sv_decay_wait_time", "0.5", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar sv_decay_rate("sv_decay_rate", "8.5", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar sv_decay_increaserateminhealth("sv_decay_increaserateminhealth", "1000", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar sv_decay_increaseratemultiplier("sv_decay_increaseratemultiplier", "2", FCVAR_REPLICATED | FCVAR_CHEAT);
@@ -489,7 +488,6 @@ BEGIN_DATADESC( CBasePlayer )
 	DEFINE_FIELD( m_lastDamageAmount, FIELD_INTEGER ),
 	DEFINE_FIELD( m_tbdPrev, FIELD_TIME ),
 	DEFINE_FIELD(m_fTimeLastHurt, FIELD_TIME),
-	DEFINE_FIELD(m_fTimeLastHealed, FIELD_TIME),
 	DEFINE_FIELD( m_flStepSoundTime, FIELD_FLOAT ),
 	DEFINE_ARRAY( m_szNetname, FIELD_CHARACTER, MAX_PLAYER_NAME_LENGTH ),
 
@@ -2110,11 +2108,6 @@ int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 	if (GetHealth() < m_MaxHealthVal)
 	{
 		m_fTimeLastHurt = gpGlobals->curtime + sv_regeneration_wait_time.GetFloat();
-	}
-
-	if (GetHealth() > m_MaxHealthVal)
-	{
-		m_fTimeLastHealed = gpGlobals->curtime + sv_decay_wait_time.GetFloat();
 	}
 
 	if (sv_player_voice.GetBool())
@@ -5371,6 +5364,8 @@ void CBasePlayer::PostThink()
 	SimulatePlayerSimulatedEntities();
 #endif
 
+	DevMsg("Health: %i\nMaxHealth: %i\nMaxHealthVal: %i\nMaxHealthValExtra: %i\n", GetHealth(), GetMaxHealth(), m_MaxHealthVal, m_MaxHealthValExtra);
+
 	//update the maxhealthvalue before regen so we can't override health
 	int spawnHealth = player_defaulthealth.GetInt() + m_MaxHealthValExtra;
 	if (m_MaxHealthVal != spawnHealth)
@@ -5406,17 +5401,14 @@ void CBasePlayer::PostThink()
 
 	if (IsAlive() && GetHealth() > m_MaxHealthVal)
 	{
-		if (m_fTimeLastHealed < gpGlobals->curtime)
-		{
-			m_fDecayRemander += ((GetHealth() >= sv_decay_increaserateminhealth.GetFloat()) ? 
-				sv_decay_rate.GetFloat() * sv_decay_increaseratemultiplier.GetFloat() : 
-				sv_decay_rate.GetFloat()) * gpGlobals->frametime;
+		m_fDecayRemander += ((GetHealth() >= sv_decay_increaserateminhealth.GetFloat()) ?
+			sv_decay_rate.GetFloat() * sv_decay_increaseratemultiplier.GetFloat() :
+			sv_decay_rate.GetFloat()) * gpGlobals->frametime;
 
-			if (m_fDecayRemander >= 1 && GetHealth() != m_MaxHealthVal)
-			{
-				TakeHealth(-m_fRegenRemander, DMG_GENERIC);
-				m_fDecayRemander = 0;
-			}
+		if (m_fDecayRemander >= 1 && GetHealth() != m_MaxHealthVal)
+		{
+			TakeHealth(-m_fDecayRemander, DMG_GENERIC);
+			m_fDecayRemander = 0;
 		}
 	}
 
