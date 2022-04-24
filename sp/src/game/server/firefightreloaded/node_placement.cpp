@@ -20,6 +20,7 @@ CBaseEntity *CreateNode(Vector origin)
 void CC_StartNodes(void)
 {
 	if (bInNodePlacement)
+		Warning("Node placement mode is already on!\n");
 		return;
 
 	// if the text file already exists, load its current nodes
@@ -29,39 +30,41 @@ void CC_StartNodes(void)
 	CUtlBuffer buf(0, 0, CUtlBuffer::TEXT_BUFFER);
 	if (filesystem->ReadFile(szNodeTextFilename, "game", buf))
 	{
-		if (!buf.Size())
-			return;
-
-		const int maxLen = 64;
-		char line[maxLen];
-		CUtlVector<char*> floats;
-		int num = 0;
-
-		// loop through every line of the file, read it in
-		while (true)
+		if (buf.Size())
 		{
-			buf.GetLine(line, maxLen);
-			if (Q_strlen(line) <= 0)
-				break; // reached the end of the file
+			const int maxLen = 64;
+			char line[maxLen];
+			CUtlVector<char*> floats;
+			int num = 0;
 
-			// we've read in a string containing 3 tab separated floats
-			// we need to split this into 3 floats, which we put in a vector
-			V_SplitString(line, "	", floats);
-			Vector origin(atof(floats[0]), atof(floats[1]), atof(floats[2]));
+			// loop through every line of the file, read it in
+			while (true)
+			{
+				buf.GetLine(line, maxLen);
+				if (Q_strlen(line) <= 0)
+					break; // reached the end of the file
 
-			floats.PurgeAndDeleteElements();
+				// we've read in a string containing 3 tab separated floats
+				// we need to split this into 3 floats, which we put in a vector
+				V_SplitString(line, "	", floats);
+				Vector origin(atof(floats[0]), atof(floats[1]), atof(floats[2]));
 
-			CreateNode(origin);
-			num++;
+				floats.PurgeAndDeleteElements();
 
-			if (!buf.IsValid())
-				break;
+				CreateNode(origin);
+				num++;
+
+				if (!buf.IsValid())
+					break;
+			}
 		}
 	}
 
 	bInNodePlacement = true;
+	Msg("-------------------------------------------------------------------------------\n");
 	Msg("Entered node placement mode. Use the 'ai_nodes_add' and 'ai_nodes_undo' commands to place/remove nodes at your feet.\n");
 	Msg("Use the 'ai_nodes_save' command to finish.\n");
+	Msg("-------------------------------------------------------------------------------\n");
 }
 static ConCommand cc_startnodes("ai_nodes_start", CC_StartNodes, "Start manually placing nodegraph elements, with 'ai_nodes_add' and 'ai_nodes_undo' commands. Finish with 'ai_nodes_save'.");
 
@@ -69,6 +72,7 @@ static ConCommand cc_startnodes("ai_nodes_start", CC_StartNodes, "Start manually
 void CC_SaveNodes(void)
 {
 	if (!bInNodePlacement)
+		Warning("Node placement mode isn't on!\n");
 		return;
 
 	// save the nodes
@@ -88,7 +92,9 @@ void CC_SaveNodes(void)
 	// clean up & exit node mode
 	pNodes.PurgeAndDeleteElements();
 	bInNodePlacement = false;
+	Msg("-------------------------------------------------------------------------------\n");
 	Msg("Saved nodes & exited node placement mode. Reload map to build the AI nodegraph.\n");
+	Msg("-------------------------------------------------------------------------------\n");
 }
 static ConCommand cc_savenodes("ai_nodes_save", CC_SaveNodes, "Finish manually placing nodegraph elements, and save the .txt. First, use 'ai_nodes_start'.");
 
@@ -96,6 +102,7 @@ static ConCommand cc_savenodes("ai_nodes_save", CC_SaveNodes, "Finish manually p
 void CC_AddNode(void)
 {
 	if (!bInNodePlacement)
+		Warning("Node placement mode isn't on!\n");
 		return;
 
 	CBasePlayer *pPlayer = UTIL_PlayerByIndex(UTIL_GetCommandClientIndex());
