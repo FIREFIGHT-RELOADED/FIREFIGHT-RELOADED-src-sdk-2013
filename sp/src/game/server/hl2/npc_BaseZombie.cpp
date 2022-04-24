@@ -669,14 +669,22 @@ float CNPC_BaseZombie::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDa
 					EmitSound("Gore.Headshot");
 					g_pGameRules->iHeadshotCount += 1;
 					RemoveHead();
-					CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
-					if (g_fr_economy.GetBool())
+					// Handle all clients
+					for (int i = 1; i <= gpGlobals->maxClients; i++)
 					{
-						pPlayer->AddMoney(2);
-					}
-					if (!g_fr_classic.GetBool())
-					{
-						pPlayer->AddXP(4);
+						CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+
+						if (pPlayer != NULL)
+						{
+							if (g_fr_economy.GetBool())
+							{
+								pPlayer->AddMoney(7);
+							}
+							if (!g_fr_classic.GetBool())
+							{
+								pPlayer->AddXP(9);
+							}
+						}
 					}
 				}
 				else
@@ -1279,9 +1287,9 @@ bool CNPC_BaseZombie::ShouldIgnite( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 // Purpose: Sufficient fire damage has been done. Zombie ignites!
 //-----------------------------------------------------------------------------
-void CNPC_BaseZombie::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize, bool bCalledByLevelDesigner )
+void CNPC_BaseZombie::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize, bool bCalledByLevelDesigner)
 {
-	BaseClass::Ignite( flFlameLifetime, bNPCOnly, flSize, bCalledByLevelDesigner );
+	BaseClass::Ignite( flFlameLifetime, bNPCOnly, flSize, bCalledByLevelDesigner);
 
 #ifdef HL2_EPISODIC
 	if ( HL2GameRules()->IsAlyxInDarknessMode() == true && GetEffectEntity() != NULL )

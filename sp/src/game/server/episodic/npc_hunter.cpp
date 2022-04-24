@@ -2200,24 +2200,30 @@ void CNPC_Hunter::NPCThink()
 	UpdateAim();
 	UpdateEyes();
 
-	CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
 
-	if (hunter_laugh.GetBool() && !pPlayer->IsDead() && !m_bIsLaughing)
-	{
-		if (random->RandomInt(0, hunter_laugh_frequency.GetInt()) == 0 && pPlayer->GetHealth() < hunter_laugh_healthvalue.GetInt() && !m_bIsLaughing)
+		if (pPlayer != NULL)
 		{
-			//laugh at the player's own stupidity while idle.
-			m_bIsLaughing = true;
-			EmitSound("NPC_Hunter.Gloat");
+			if (hunter_laugh.GetBool() && !pPlayer->IsDead() && !m_bIsLaughing)
+			{
+				if (random->RandomInt(0, hunter_laugh_frequency.GetInt()) == 0 && pPlayer->GetHealth() < hunter_laugh_healthvalue.GetInt() && !m_bIsLaughing)
+				{
+					//laugh at the player's own stupidity while idle.
+					m_bIsLaughing = true;
+					EmitSound("NPC_Hunter.Gloat");
+				}
+				else
+				{
+					m_bIsLaughing = false;
+				}
+			}
+			else
+			{
+				m_bIsLaughing = false;
+			}
 		}
-		else
-		{
-			m_bIsLaughing = false;
-		}
-	}
-	else
-	{
-		m_bIsLaughing = false;
 	}
 }
 
@@ -2241,14 +2247,21 @@ void CNPC_Hunter::PrescheduleThink()
 	{
 		if ( m_flPupilDilateTime < gpGlobals->curtime )
 		{
- 			CBasePlayer *pPlayer = UTIL_PlayerByIndex( 1 );
- 			if ( ( pPlayer && !pPlayer->IsIlluminatedByFlashlight( this, NULL ) ) || !PlayerFlashlightOnMyEyes( pPlayer ) )
+			for (int i = 1; i <= gpGlobals->maxClients; i++)
 			{
-				//Msg( "NOT SHINING FLASHLIGHT ON ME\n" );
-			
-				// Remove the actor from the flashlight scene
-				RemoveActorFromScriptedScenes( this, true, false, "scenes/npc/hunter/hunter_eyeclose.vcd" );
-				m_bFlashlightInEyes = false;
+				CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+
+				if (pPlayer != NULL)
+				{
+					if ((!pPlayer->IsIlluminatedByFlashlight(this, NULL)) || !PlayerFlashlightOnMyEyes(pPlayer))
+					{
+						//Msg( "NOT SHINING FLASHLIGHT ON ME\n" );
+
+						// Remove the actor from the flashlight scene
+						RemoveActorFromScriptedScenes(this, true, false, "scenes/npc/hunter/hunter_eyeclose.vcd");
+						m_bFlashlightInEyes = false;
+					}
+				}
 			}
 		}
 	}

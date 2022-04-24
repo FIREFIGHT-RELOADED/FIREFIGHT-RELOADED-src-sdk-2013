@@ -493,14 +493,22 @@ float CNPC_PoisonZombie::GetHitgroupDamageMultiplier(int iHitGroup, const CTakeD
 				EmitSound("Gore.Headshot");
 				g_pGameRules->iHeadshotCount += 1;
 				RemoveHead();
-				CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
-				if (g_fr_economy.GetBool())
+				// Handle all clients
+				for (int i = 1; i <= gpGlobals->maxClients; i++)
 				{
-					pPlayer->AddMoney(3);
-				}
-				if (!g_fr_classic.GetBool())
-				{
-					pPlayer->AddXP(5);
+					CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+
+					if (pPlayer != NULL)
+					{
+						if (g_fr_economy.GetBool())
+						{
+							pPlayer->AddMoney(7);
+						}
+						if (!g_fr_classic.GetBool())
+						{
+							pPlayer->AddXP(9);
+						}
+					}
 				}
 			}
 			else

@@ -406,7 +406,7 @@ void CGrenadeFrag::Detonate(void)
 		// End Start some fires
 
 		//we need to burn people, not kill them.
-		m_flDamage = m_flDamage * 0.25;
+		//m_flDamage = m_flDamage * 0.25;
 		Explode(&tr, DMG_BLAST);
 
 		if (GetShakeAmplitude())

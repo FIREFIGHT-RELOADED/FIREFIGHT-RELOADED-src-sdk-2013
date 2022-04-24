@@ -338,7 +338,7 @@ static ConCommand buyupgrade("buyupgrade", CC_BuyUpgrade, "Buy a upgrade.\n");
 
 void CC_PlayerXP(const CCommand &args)
 {
-	CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
+	CBasePlayer *pPlayer = UTIL_GetCommandClient();
 
 	int XPAmount = atoi(args[1]);
 
@@ -351,7 +351,7 @@ static ConCommand player_givexp("givexp", CC_PlayerXP, "Gives the player XP poin
 
 void CC_PlayerLevel(const CCommand &args)
 {
-	CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
+	CBasePlayer *pPlayer = UTIL_GetCommandClient();
 
 	int LevelNum = atoi(args[1]);
 
@@ -382,7 +382,7 @@ static ConCommand player_setlevel("givelevel", CC_PlayerLevel, "Increases the pl
 
 void CC_PlayerMoney(const CCommand &args)
 {
-	CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
+	CBasePlayer *pPlayer = UTIL_GetCommandClient();
 
 	int MoneyAmount = atoi(args[1]);
 

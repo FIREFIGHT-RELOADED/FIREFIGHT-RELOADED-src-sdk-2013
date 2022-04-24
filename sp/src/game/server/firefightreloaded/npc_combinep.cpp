@@ -260,14 +260,22 @@ float CNPC_CombineP::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDama
 				m_iHealth = 0;
 				Event_Killed(info);
 				g_pGameRules->iHeadshotCount += 1;
-				CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
-				if (g_fr_economy.GetBool())
+				// Handle all clients
+				for (int i = 1; i <= gpGlobals->maxClients; i++)
 				{
-					pPlayer->AddMoney(5);
-				}
-				if (!g_fr_classic.GetBool())
-				{
-					pPlayer->AddXP(7);
+					CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+
+					if (pPlayer != NULL)
+					{
+						if (g_fr_economy.GetBool())
+						{
+							pPlayer->AddMoney(7);
+						}
+						if (!g_fr_classic.GetBool())
+						{
+							pPlayer->AddXP(9);
+						}
+					}
 				}
 			}
 			else if ((info.GetDamageType() & (DMG_SLASH)) && !(info.GetDamageType() & DMG_NEVERGIB))
@@ -298,14 +306,22 @@ float CNPC_CombineP::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDama
 				m_bNoDeathSound = true;
 				m_iHealth = 0;
 				Event_Killed(info);
-				CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
-				if (g_fr_economy.GetBool())
+				// Handle all clients
+				for (int i = 1; i <= gpGlobals->maxClients; i++)
 				{
-					pPlayer->AddMoney(7);
-				}
-				if (!g_fr_classic.GetBool())
-				{
-					pPlayer->AddXP(9);
+					CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+
+					if (pPlayer != NULL)
+					{
+						if (g_fr_economy.GetBool())
+						{
+							pPlayer->AddMoney(7);
+						}
+						if (!g_fr_classic.GetBool())
+						{
+							pPlayer->AddXP(9);
+						}
+					}
 				}
 			}
 			else
