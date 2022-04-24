@@ -10,9 +10,12 @@
 static bool bInNodePlacement = false;
 static CUtlVector<CBaseEntity*> pNodes;
 
-CBaseEntity *CreateNode(Vector origin)
+CBaseEntity* CreateNode(Vector origin)
 {
-	CBaseEntity *pEnt = CSprite::SpriteCreate("sprites/glow01.vmt", origin, false);
+	CBaseEntity::PrecacheModel("sprites/glow01.vmt");
+	CSprite* pEnt = CSprite::SpriteCreate("sprites/glow01.vmt", origin, false);
+	pEnt->SetTransparency(kRenderTransAdd, 0, 255, 255, 255, kRenderFxNone);
+	pEnt->SetScale(0.35, 0.0);
 	pNodes.AddToTail(pEnt);
 	return pEnt;
 }
@@ -20,7 +23,10 @@ CBaseEntity *CreateNode(Vector origin)
 void CC_StartNodes(void)
 {
 	if (bInNodePlacement)
+	{
+		Warning("Node placement mode is already on! Type ai_nodes_save to turn it off!\n");
 		return;
+	}
 
 	// if the text file already exists, load its current nodes
 	char szNodeTextFilename[MAX_PATH];
@@ -60,8 +66,10 @@ void CC_StartNodes(void)
 	}
 
 	bInNodePlacement = true;
+	Msg("===============================================================================\n");
 	Msg("Entered node placement mode. Use the 'ai_nodes_add' and 'ai_nodes_undo' commands to place/remove nodes at your feet.\n");
 	Msg("Use the 'ai_nodes_save' command to finish.\n");
+	Msg("===============================================================================\n");
 }
 static ConCommand cc_startnodes("ai_nodes_start", CC_StartNodes, "Start manually placing nodegraph elements, with 'ai_nodes_add' and 'ai_nodes_undo' commands. Finish with 'ai_nodes_save'.");
 
@@ -69,7 +77,10 @@ static ConCommand cc_startnodes("ai_nodes_start", CC_StartNodes, "Start manually
 void CC_SaveNodes(void)
 {
 	if (!bInNodePlacement)
+	{
+		Warning("Node placement mode isn't on! Type ai_nodes_add to turn it off!\n");
 		return;
+	}
 
 	// save the nodes
 	char szNodeTextFilename[MAX_PATH];
@@ -77,7 +88,7 @@ void CC_SaveNodes(void)
 		"maps/graphs/%s%s.txt", STRING(gpGlobals->mapname), GetPlatformExt());
 
 	CUtlBuffer buf(0, 0, CUtlBuffer::TEXT_BUFFER);
-	for (int i = 0; i<pNodes.Size(); i++)
+	for (int i = 0; i < pNodes.Size(); i++)
 	{
 		buf.PutString(UTIL_VarArgs("%f	%f	%f\n", pNodes[i]->GetAbsOrigin().x,
 			pNodes[i]->GetAbsOrigin().y,
@@ -88,7 +99,9 @@ void CC_SaveNodes(void)
 	// clean up & exit node mode
 	pNodes.PurgeAndDeleteElements();
 	bInNodePlacement = false;
+	Msg("===============================================================================\n");
 	Msg("Saved nodes & exited node placement mode. Reload map to build the AI nodegraph.\n");
+	Msg("===============================================================================\n");
 }
 static ConCommand cc_savenodes("ai_nodes_save", CC_SaveNodes, "Finish manually placing nodegraph elements, and save the .txt. First, use 'ai_nodes_start'.");
 
@@ -96,9 +109,12 @@ static ConCommand cc_savenodes("ai_nodes_save", CC_SaveNodes, "Finish manually p
 void CC_AddNode(void)
 {
 	if (!bInNodePlacement)
+	{
+		Warning("Node placement mode isn't on! Type ai_nodes_add to turn it off!\n");
 		return;
+	}
 
-	CBasePlayer *pPlayer = UTIL_PlayerByIndex(UTIL_GetCommandClientIndex());
+	CBasePlayer* pPlayer = UTIL_PlayerByIndex(UTIL_GetCommandClientIndex());
 	Vector vecOrigin = pPlayer->GetAbsOrigin() + Vector(0, 0, 10);
 	CreateNode(vecOrigin);
 	Msg("Added node at: X: %f, Y: %f, Z: %f\n", vecOrigin.x, vecOrigin.y, vecOrigin.z);
@@ -109,7 +125,10 @@ static ConCommand cc_addnode("ai_nodes_add", CC_AddNode, "Manually place a nodeg
 void CC_UndoNode(void)
 {
 	if (!bInNodePlacement)
+	{
+		Warning("Node placement mode isn't on! Type ai_nodes_add to turn it off!\n");
 		return;
+	}
 
 	if (pNodes.Size() > 0)
 	{
