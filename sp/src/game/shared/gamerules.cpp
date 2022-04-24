@@ -212,7 +212,12 @@ bool CGameRules::IsSpawnPointValid( CBaseEntity *pSpot, CBasePlayer *pPlayer  )
 {
 	CBaseEntity *ent = NULL;
 
-	if ( !pSpot->IsTriggered( pPlayer ) )
+	if (!pSpot)
+	{
+		return false;
+	}
+
+	if (!pSpot->IsTriggered( pPlayer ) )
 	{
 		return false;
 	}
