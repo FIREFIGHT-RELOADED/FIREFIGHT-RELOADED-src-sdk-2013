@@ -8,7 +8,6 @@ $Macro SRCDIR		"..\.."
 $Macro GAMENAME 	"firefightreloaded"
 
 $Include "$SRCDIR\game\server\server_base.vpc"
-$Include "$SRCDIR\game\server\nav_mesh.vpc"
 
 $Configuration
 {
@@ -338,6 +337,7 @@ $Project "Server (FR)"
 			$File	"$SRCDIR\game\shared\firefightreloaded\fr_ragdoll.h"
 			$File	"$SRCDIR\game\shared\firefightreloaded\singleplayer_animstate.cpp"
 			$File	"$SRCDIR\game\shared\firefightreloaded\singleplayer_animstate.h"
+			$File	"firefightreloaded\node_placement.cpp"
 
 			$Folder	"NPCs"
 			{
@@ -409,12 +409,6 @@ $Project "Server (FR)"
 				$File	"firefightreloaded\npc_agrunt.h"
 				$File	"firefightreloaded\npc_acontroller.cpp"
 			}
-		}
-		
-		$Folder	"InSource DLL"
-		{
-			$File	"in\nodes_generation.cpp"
-			$File	"in\nodes_generation.h"
 		}
 		
 		$Folder	"SMMOD DLL"
