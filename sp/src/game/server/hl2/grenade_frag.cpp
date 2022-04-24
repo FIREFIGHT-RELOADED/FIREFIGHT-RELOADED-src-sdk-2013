@@ -383,8 +383,8 @@ void CGrenadeFrag::Detonate(void)
 
 			Vector vecStart, vecEnd;
 
-			vecStart = GetAbsOrigin() + (tr.plane.normal * 128);
-			vecEnd = vecStart + vecTraceDir * 512;
+			vecStart = GetAbsOrigin() + (tr.plane.normal * 64);
+			vecEnd = vecStart + vecTraceDir * 2048;
 
 			UTIL_TraceLine(vecStart, vecEnd, MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &firetrace);
 
