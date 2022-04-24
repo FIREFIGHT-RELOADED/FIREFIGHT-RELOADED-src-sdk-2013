@@ -14,7 +14,7 @@ CBaseEntity* CreateNode(Vector origin)
 {
 	CBaseEntity::PrecacheModel("sprites/glow01.vmt");
 	CSprite* pEnt = CSprite::SpriteCreate("sprites/glow01.vmt", origin, false);
-	pEnt->SetTransparency(kRenderTransAdd, 0, 255, 255, 255, kRenderFxNone);
+	pEnt->SetTransparency(kRenderGlow, 255, 255, 255, 255, kRenderFxNoDissipation);
 	pEnt->SetScale(0.35, 0.0);
 	pNodes.AddToTail(pEnt);
 	return pEnt;
