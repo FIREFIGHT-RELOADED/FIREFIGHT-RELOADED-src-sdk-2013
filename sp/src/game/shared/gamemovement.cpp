@@ -1132,8 +1132,6 @@ void CGameMovement::ReduceTimers( void )
 	}
 }
 
-extern ConVar sv_maxspeed;
-
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : *pMove - 
@@ -1160,7 +1158,7 @@ void CGameMovement::ProcessMovement( CBasePlayer *pPlayer, CMoveData *pMove )
 	player = pPlayer;
 
 	mv = pMove;
-	mv->m_flMaxSpeed = pPlayer->GetPlayerMaxSpeed() <= 0.0f ? sv_maxspeed.GetFloat() : pPlayer->GetPlayerMaxSpeed();
+	mv->m_flMaxSpeed = pPlayer->GetPlayerMaxSpeed() <= 0.0f ? 100000.0f : pPlayer->GetPlayerMaxSpeed();
 	//mv->m_flMaxSpeed = pPlayer->GetPlayerMaxSpeed();
 
 	// CheckV( player->CurrentCommandNumber(), "StartPos", mv->GetAbsOrigin() );
