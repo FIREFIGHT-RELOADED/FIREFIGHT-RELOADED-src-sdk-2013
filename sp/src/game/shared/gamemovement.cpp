@@ -86,8 +86,6 @@ bool g_bMovementOptimizations = true;
 
 #define	NUM_CROUCH_HINTS	3
 
-#define AIRDASH_MAXJUMPCOUNT 1
-
 extern IGameMovement *g_pGameMovement;
 
 #if defined( PLAYER_GETTING_STUCK_TESTING )
@@ -629,8 +627,6 @@ CGameMovement::CGameMovement( void )
 	m_nOldWaterLevel	= WL_NotInWater;
 	m_flWaterEntryTime	= 0;
 	m_nOnLadder			= 0;
-
-	m_1AirDashes		= 0;
 
 	mv					= NULL;
 
@@ -1849,7 +1845,7 @@ void CGameMovement::Accelerate( Vector& wishdir, float wishspeed, float accel )
 		return;
 
 	// See if we are changing direction a bit
-	currentspeed = sqrt(DotProduct(mv->m_vecVelocity, mv->m_vecVelocity));
+	currentspeed = mv->m_vecVelocity.Dot(wishdir);
 
 	// Reduce wishspeed by the amount of veer.
 	addspeed = wishspeed - currentspeed;
@@ -2227,20 +2223,17 @@ void CGameMovement::FullObserverMove( void )
 	VectorCopy (wishvel, wishdir);   // Determine maginitude of speed of move
 	wishspeed = VectorNormalize(wishdir);
 
-	if (fr_enable_bunnyhop.GetInt() == 0 && !fr_bunnyhop_boost.GetBool())
+	//
+	// Clamp to server defined max speed
+	//
+
+	float maxspeed = sv_maxvelocity.GetFloat();
+
+
+	if (wishspeed > maxspeed)
 	{
-		//
-		// Clamp to server defined max speed
-		//
-
-		float maxspeed = sv_maxvelocity.GetFloat();
-
-
-		if (wishspeed > maxspeed)
-		{
-			VectorScale(wishvel, mv->m_flMaxSpeed / wishspeed, wishvel);
-			wishspeed = maxspeed;
-		}
+		VectorScale(wishvel, mv->m_flMaxSpeed / wishspeed, wishvel);
+		wishspeed = maxspeed;
 	}
 
 	// Set pmove velocity, give observer 50% acceration bonus
@@ -2307,13 +2300,13 @@ void CGameMovement::FullNoClipMove( float factor, float maxacceleration )
 	VectorCopy (wishvel, wishdir);   // Determine maginitude of speed of move
 	wishspeed = VectorNormalize(wishdir);
 
-	if (fr_enable_bunnyhop.GetInt() == 0 && !fr_bunnyhop_boost.GetBool())
+	//
+	// Clamp to server defined max speed
+	//
+	if (wishspeed > maxspeed)
 	{
-		if (wishspeed > maxspeed)
-		{
-			VectorScale(wishvel, mv->m_flMaxSpeed / wishspeed, wishvel);
-			wishspeed = maxspeed;
-		}
+		VectorScale(wishvel, maxspeed / wishspeed, wishvel);
+		wishspeed = maxspeed;
 	}
 
 	if ( maxacceleration > 0.0 )
@@ -2371,6 +2364,7 @@ void CGameMovement::PlaySwimSound()
 {
 	MoveHelper()->StartSound( mv->GetAbsOrigin(), "Player.Swim" );
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -3690,12 +3684,6 @@ void CGameMovement::SetGroundEntity( trace_t *pm )
 
 		mv->m_vecVelocity.z = 0.0f;
 	}
-
-
-	if (pm != NULL)
-	{
-		m_1AirDashes = 0;
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -4856,16 +4844,13 @@ void CGameMovement::FullTossMove( void )
 		VectorCopy (wishvel, wishdir);   // Determine maginitude of speed of move
 		wishspeed = VectorNormalize(wishdir);
 
-		if (fr_enable_bunnyhop.GetInt() == 0)
+		//
+		// clamp to server defined max speed
+		//
+		if (wishspeed != 0 && (wishspeed > mv->m_flMaxSpeed))
 		{
-			//
-			// clamp to server defined max speed
-			//
-			if (wishspeed != 0 && (wishspeed > mv->m_flMaxSpeed))
-			{
-				VectorScale(wishvel, mv->m_flMaxSpeed / wishspeed, wishvel);
-				wishspeed = mv->m_flMaxSpeed;
-			}
+			VectorScale(wishvel, mv->m_flMaxSpeed / wishspeed, wishvel);
+			wishspeed = mv->m_flMaxSpeed;
 		}
 
 		// Set pmove velocity

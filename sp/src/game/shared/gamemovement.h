@@ -272,7 +272,6 @@ protected:
 	Vector			m_vecProximityMaxs;
 
 	float			m_fFrameTime;
-	int				m_1AirDashes;
 
 //private:
 	int				m_iSpeedCropped;
