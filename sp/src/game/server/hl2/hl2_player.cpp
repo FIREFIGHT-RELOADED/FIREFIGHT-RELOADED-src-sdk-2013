@@ -1749,7 +1749,6 @@ void CHL2_Player::Spawn(void)
 			GiveNamedItem("weapon_knife");
 			GiveNamedItem("weapon_crowbar");
 			GiveNamedItem("weapon_grapple");
-			GiveNamedItem("weapon_katana");
 		}
 		else if (GetLevel() == MAX_LEVEL)
 		{
@@ -1771,7 +1770,6 @@ void CHL2_Player::Spawn(void)
 			GiveNamedItem("weapon_physcannon");
 			GiveNamedItem("weapon_knife");
 			GiveNamedItem("weapon_grapple");
-			GiveNamedItem("weapon_katana");
 		}
 	}
 }

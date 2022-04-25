@@ -1312,6 +1312,9 @@ void CBasePlayer::Reward_GiveItem()
 		case FIREFIGHT_ITEMREWARD_WEAPON_GAUSS:
 			unlocked = GiveNewWeapon(this, "weapon_gauss", "#Valve_Hud_Reward_Weapon_Gauss", hint, true);
 			break;
+		case FIREFIGHT_ITEMREWARD_WEAPON_KATANA:
+			unlocked = GiveNewWeapon(this, "weapon_katana", "#Valve_Hud_Reward_Weapon_Katana", hint, true);
+			break;
 		case FIREFIGHT_ITEMREWARD_AMMO_GAUSS:
 			unlocked = GiveAmmoForWeapon(this, "weapon_gauss", "item_ammo_gauss", "#Valve_Hud_Reward_GaussAmmo", hint);
 			break;
@@ -7051,6 +7054,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveNamedItem("weapon_gauss");
 		GiveNamedItem("weapon_mp5");
 		GiveNamedItem("weapon_grapple");
+		GiveNamedItem("weapon_katana");
 #ifdef HL2_EPISODIC
 		// GiveNamedItem( "weapon_magnade" );
 #endif
