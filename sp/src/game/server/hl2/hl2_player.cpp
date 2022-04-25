@@ -584,12 +584,6 @@ void CHL2_Player::RemoveSuit( void )
 
 void CHL2_Player::HandleSpeedChanges( void )
 {
-	if (GetMoveType() == MOVETYPE_NOCLIP || GetMoveType() == MOVETYPE_FLY || GetMoveType() == MOVETYPE_FLYGRAVITY)
-	{
-		SetMaxSpeed(HL2_NORM_SPEED);
-		return;
-	}
-
 	int buttonsChanged = m_afButtonPressed | m_afButtonReleased;
 	if (sv_leagcy_maxspeed.GetBool())
 	{
