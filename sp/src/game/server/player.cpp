@@ -716,7 +716,7 @@ CBasePlayer *CBasePlayer::CreatePlayer( const char *className, edict_t *ed )
 
 bool GiveHealthRegenPerkOnSpawn()
 {
-	return (!g_fr_classic.GetBool() || !sv_player_hardcoremode.GetBool() || g_pGameRules->GetSkillLevel() < SKILL_VERYHARD);
+	return (!g_fr_classic.GetBool() && !sv_player_hardcoremode.GetBool() && g_pGameRules->GetSkillLevel() < SKILL_VERYHARD);
 }
 
 //-----------------------------------------------------------------------------
