@@ -270,6 +270,7 @@ void CBaseCombatWeapon::Spawn( void )
 	m_iReloadHudHintCount = 0;
 	m_iAltFireHudHintCount = 0;
 	m_iStoreHudHintCount = 0;
+	m_iStandardHudHintCount = 0;
 	m_flHudHintMinDisplayTime = 0;
 }
 
@@ -1163,10 +1164,7 @@ bool CBaseCombatWeapon::ShouldDisplayStoreHUDHint()
 	if (m_iStoreHudHintCount >= WEAPON_RELOAD_HUD_HINT_COUNT)
 		return false;
 
-	//we have a random chance to create this one.
-	int randHint = random->RandomInt(0,10);
-
-	if (randHint == 10 && g_fr_economy.GetBool())
+	if (g_fr_economy.GetBool())
 	{
 		return true;
 	}
@@ -1199,6 +1197,32 @@ void CBaseCombatWeapon::RescindStoreHudHint()
 #endif//CLIENT_DLL
 }
 
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CBaseCombatWeapon::DisplayStandardHudHint()
+{
+#if !defined( CLIENT_DLL )
+	CFmtStr hint;
+	hint.sprintf("#valve_hint_std_%s", GetClassname());
+	UTIL_HudHintText(GetOwner(), hint.Access());
+	m_iStandardHudHintCount++;
+	m_bStandardHudHintDisplayed = true;
+	m_flHudHintMinDisplayTime = gpGlobals->curtime + MIN_HUDHINT_DISPLAY_TIME;
+#endif//CLIENT_DLL
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CBaseCombatWeapon::RescindStandardHudHint()
+{
+#if !defined( CLIENT_DLL )
+	Assert(m_bStandardHudHintDisplayed);
+
+	UTIL_HudHintText(GetOwner(), "");
+	--m_iStandardHudHintCount;
+	m_bStandardHudHintDisplayed = false;
+#endif//CLIENT_DLL
+}
 
 void CBaseCombatWeapon::SetPickupTouch( void )
 {
@@ -1786,6 +1810,9 @@ bool CBaseCombatWeapon::Holster( CBaseCombatWeapon *pSwitchingTo )
 
 		if (m_bStoreHudHintDisplayed)
 			RescindStoreHudHint();
+
+		if (m_bStandardHudHintDisplayed)
+			RescindStandardHudHint();
 	}
 
 	DisableIronsights();
@@ -1910,7 +1937,7 @@ void CBaseCombatWeapon::ItemPreFrame( void )
 		// display the hint, and the player is not standing still, try to show a hud hint.
 		// If the player IS standing still, assume they could change away from this weapon at
 		// any second.
-		if( (!m_bAltFireHudHintDisplayed || !m_bReloadHudHintDisplayed) && gpGlobals->curtime > m_flHudHintMinDisplayTime && gpGlobals->curtime > m_flHudHintPollTime && GetOwner() && GetOwner()->IsPlayer() )
+		if( (!m_bAltFireHudHintDisplayed || !m_bReloadHudHintDisplayed || !m_bStoreHudHintDisplayed || !m_bStandardHudHintDisplayed) && gpGlobals->curtime > m_flHudHintMinDisplayTime && gpGlobals->curtime > m_flHudHintPollTime && GetOwner() && GetOwner()->IsPlayer() )
 		{
 			CBasePlayer *pPlayer = (CBasePlayer*)(GetOwner());
 
@@ -1929,6 +1956,10 @@ void CBaseCombatWeapon::ItemPreFrame( void )
 				else if (ShouldDisplayStoreHUDHint())
 				{
 					DisplayStoreHudHint();
+				}
+				else
+				{
+					DisplayStandardHudHint();
 				}
 			}
 			else
