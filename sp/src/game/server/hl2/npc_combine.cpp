@@ -64,6 +64,7 @@ int g_fCombineQuestion;				// true if an idle grunt asked a question. Cleared wh
 // This is the index to the name of the shotgun's classname in the string pool
 // so that we can get away with an integer compare rather than a string compare.
 string_t	s_iszShotgunClassname;
+string_t	s_iszPistolClassname;
 
 //-----------------------------------------------------------------------------
 // Interactions
@@ -305,6 +306,7 @@ void CNPC_Combine::Precache()
 void CNPC_Combine::Activate()
 {
 	s_iszShotgunClassname = FindPooledString( "weapon_shotgun" );
+	s_iszPistolClassname = FindPooledString("weapon_pistol");
 	BaseClass::Activate();
 }
 
@@ -580,7 +582,7 @@ float CNPC_Combine::MaxYawSpeed( void )
 bool CNPC_Combine::ShouldMoveAndShoot()
 {
 	// ace soldiers show no mercy.
-	if (IsAce())
+	if (IsAce() || m_fIsPlayer)
 		return true;
 
 	// Set this timer so that gpGlobals->curtime can't catch up to it. 
@@ -1065,24 +1067,24 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 				if (!IsAce() || !m_fIsPlayer)
 				{
 					m_nShots = GetActiveWeapon()->GetRandomBurst();
-					m_flShotDelay = GetActiveWeapon()->GetFireRate();
-
-					m_flNextAttack = gpGlobals->curtime + m_flShotDelay - 0.1;
-					ResetIdealActivity(ACT_RANGE_ATTACK1);
-					m_flLastAttackTime = gpGlobals->curtime;
 				}
 				else
 				{
-					if (m_bfireGrenadeAsAce == false)
-					{
-						m_nShots = GetActiveWeapon()->Clip1();
-						m_flShotDelay = GetActiveWeapon()->GetFireRate();
-
-						m_flNextAttack = gpGlobals->curtime + m_flShotDelay - 0.1;
-						ResetIdealActivity(ACT_RANGE_ATTACK1);
-						m_flLastAttackTime = gpGlobals->curtime;
-					}
+					m_nShots = GetActiveWeapon()->Clip1();
 				}
+
+				if (HasPistol())
+				{
+#define	PISTOL_FASTEST_REFIRE_TIME		0.1f
+					m_flShotDelay = PISTOL_FASTEST_REFIRE_TIME;
+				}
+				else
+				{
+					m_flShotDelay = GetActiveWeapon()->GetFireRate();
+				}
+				m_flNextAttack = gpGlobals->curtime + m_flShotDelay - 0.1;
+				ResetIdealActivity(ACT_RANGE_ATTACK1);
+				m_flLastAttackTime = gpGlobals->curtime;
 			}
 		}
 		break;
@@ -1659,7 +1661,7 @@ int CNPC_Combine::SelectCombatSchedule()
 				AnnounceEnemyType( pEnemy );
 			}
 
-			if ( HasCondition( COND_CAN_RANGE_ATTACK1 ) && OccupyStrategySlot( SQUAD_SLOT_ATTACK1 ) && !IsAce())
+			if ( HasCondition( COND_CAN_RANGE_ATTACK1 ) && OccupyStrategySlot( SQUAD_SLOT_ATTACK1 ))
 			{
 				// Start suppressing if someone isn't firing already (SLOT_ATTACK1). This means
 				// I'm the guy who spotted the enemy, I should react immediately.
@@ -1700,9 +1702,9 @@ int CNPC_Combine::SelectCombatSchedule()
 					}
 				}
 
-				if( !bFirstContact && OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
+				if ((!bFirstContact && OccupyStrategySlotRange(SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2)))
 				{
-					if( random->RandomInt(0, 100) < 60 )
+					if (random->RandomInt(0, 100) < 60)
 					{
 						return SCHED_ESTABLISH_LINE_OF_FIRE;
 					}
@@ -1715,6 +1717,11 @@ int CNPC_Combine::SelectCombatSchedule()
 				return SCHED_TAKE_COVER_FROM_ENEMY;
 			}
 		}
+	}
+
+	if (HasCondition(COND_TOO_CLOSE_TO_ATTACK))
+	{
+		return SCHED_BACK_AWAY_FROM_ENEMY;
 	}
 
 	// ---------------------
@@ -1742,7 +1749,7 @@ int CNPC_Combine::SelectCombatSchedule()
 			{
 				if( GetEnemy() && random->RandomFloat( 0, 100 ) < 50 && CouldShootIfCrouching( GetEnemy() ) )
 				{
-					if (GetActiveWeapon() && !FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
+					if (GetActiveWeapon() && !HasPistol())
 					{
 						Crouch();
 					}
@@ -2074,7 +2081,7 @@ int CNPC_Combine::SelectFailSchedule( int failedSchedule, int failedTask, AI_Tas
 //-----------------------------------------------------------------------------
 bool CNPC_Combine::ShouldChargePlayer()
 {
-	return GetEnemy() /*&& GetEnemy()->IsPlayer() && PlayerHasMegaPhysCannon()*/ && !IsLimitingHintGroups();
+	return GetEnemy() && GetEnemy()->IsPlayer() && PlayerHasMegaPhysCannon() && !m_fIsPlayer && !IsLimitingHintGroups();
 }
 
 
@@ -2178,7 +2185,7 @@ int CNPC_Combine::SelectScheduleAttack()
 			}
 		}
 
-		if (GetActiveWeapon() && !FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
+		if (GetActiveWeapon() && !HasPistol())
 		{
 			DesireCrouch();
 		}
@@ -2287,7 +2294,7 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 			{
 				if( GetEnemy() && CouldShootIfCrouching( GetEnemy() ) )
 				{
-					if (GetActiveWeapon() && !FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
+					if (GetActiveWeapon() && !HasPistol())
 					{
 						Crouch();
 					}
@@ -2414,7 +2421,7 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 						if (dist > COMBINE_MIN_CROUCH_DISTANCE)
 						{
 							// try crouching
-							if (GetActiveWeapon() && !FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
+							if (GetActiveWeapon() && !HasPistol())
 							{
 								Crouch();
 
@@ -2454,7 +2461,7 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 						if (dist > COMBINE_MIN_CROUCH_DISTANCE)
 						{
 							// try crouching
-							if (GetActiveWeapon() && !FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
+							if (GetActiveWeapon() && !HasPistol())
 							{
 								Crouch();
 
@@ -2491,15 +2498,30 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 		}
 	case SCHED_RANGE_ATTACK2:
 		{
-			// If my weapon can range attack 2 use the weapon
-			if (GetActiveWeapon() && GetActiveWeapon()->CapabilitiesGet() & bits_CAP_WEAPON_RANGE_ATTACK2)
+			if (m_fIsPlayer)
 			{
-				return SCHED_RANGE_ATTACK2;
+				if (GetActiveWeapon() && GetActiveWeapon()->CapabilitiesGet() & bits_CAP_WEAPON_RANGE_ATTACK2)
+				{
+					int rand = random->RandomInt(0, 1);
+					return (rand == 1 ? SCHED_RANGE_ATTACK2 : SCHED_COMBINE_RANGE_ATTACK2);
+				}
+				else
+				{
+					return SCHED_COMBINE_RANGE_ATTACK2;
+				}
 			}
-			// Otherwise use innate attack
 			else
 			{
-				return SCHED_COMBINE_RANGE_ATTACK2;
+				// If my weapon can range attack 2 use the weapon
+				if (GetActiveWeapon() && GetActiveWeapon()->CapabilitiesGet() & bits_CAP_WEAPON_RANGE_ATTACK2)
+				{
+					return SCHED_RANGE_ATTACK2;
+				}
+				// Otherwise use innate attack
+				else
+				{
+					return SCHED_COMBINE_RANGE_ATTACK2;
+				}
 			}
 		}
 		// SCHED_COMBAT_FACE:
@@ -3312,11 +3334,6 @@ int CNPC_Combine::MeleeAttack1Conditions ( float flDot, float flDist )
 		return COND_NONE;
 	}
 
-	if (GetActiveWeapon() && FClassnameIs(GetActiveWeapon(), "weapon_pistol"))
-	{
-		return COND_NONE;
-	}
-
 	// Make sure not trying to kick through a window or something. 
 	trace_t tr;
 	Vector vecSrc, vecEnd;
@@ -3444,8 +3461,8 @@ bool CNPC_Combine::OnBeginMoveAndShoot()
 {
 	if ( BaseClass::OnBeginMoveAndShoot() )
 	{
-		if (IsAce())
-			return false;
+		if (IsAce() || m_fIsPlayer)
+			return true;
 
 		if( HasStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
 			return true; // already have the slot I need
@@ -3494,6 +3511,10 @@ WeaponProficiency_t CNPC_Combine::CalcWeaponProficiency( CBaseCombatWeapon *pWea
 	{
 		return WEAPON_PROFICIENCY_GOOD;
 	}
+	else if (FClassnameIs(pWeapon, "weapon_pistol"))
+	{
+		return WEAPON_PROFICIENCY_POOR;
+	}
 
 	return BaseClass::CalcWeaponProficiency( pWeapon );
 }
@@ -3503,6 +3524,18 @@ WeaponProficiency_t CNPC_Combine::CalcWeaponProficiency( CBaseCombatWeapon *pWea
 bool CNPC_Combine::HasShotgun()
 {
 	if( GetActiveWeapon() && GetActiveWeapon()->m_iClassname == s_iszShotgunClassname )
+	{
+		return true;
+	}
+
+	return false;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+bool CNPC_Combine::HasPistol()
+{
+	if (GetActiveWeapon() && GetActiveWeapon()->m_iClassname == s_iszPistolClassname)
 	{
 		return true;
 	}

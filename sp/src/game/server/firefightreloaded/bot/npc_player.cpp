@@ -180,6 +180,7 @@ void CNPC_Player::Spawn( void )
 	SetHealth(200);
 	SetMaxHealth(200);
 	SetKickDamage(sk_combine_guard_kick.GetFloat());
+	m_iNumGrenades = 5;
 
 	int iShouldUsePlayersModel = random->RandomInt(0, 5);
 	const char* modelName = "";
@@ -599,7 +600,7 @@ void CNPC_Player::BuildScheduleTestBits( void )
 int CNPC_Player::SelectSchedule ( void )
 {
 	m_FollowBehavior.SetFollowTarget(UTIL_GetNearestPlayer(GetAbsOrigin()));
-	m_FollowBehavior.SetParameters(AIF_SIMPLE);
+	m_FollowBehavior.SetParameters(AIF_SIDEKICK);
 
 	return BaseClass::SelectSchedule();
 }

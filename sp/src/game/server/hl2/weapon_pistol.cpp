@@ -203,15 +203,15 @@ void CWeaponPistol::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCh
 			Vector vecShootOrigin, vecShootDir;
 			vecShootOrigin = pOperator->Weapon_ShootPosition();
 
-			CAI_BaseNPC *npc = pOperator->MyNPCPointer();
-			ASSERT( npc != NULL );
+			CAI_BaseNPC* npc = pOperator->MyNPCPointer();
+			ASSERT(npc != NULL);
 
-			vecShootDir = npc->GetActualShootTrajectory( vecShootOrigin );
+			vecShootDir = npc->GetActualShootTrajectory(vecShootOrigin);
 
-			CSoundEnt::InsertSound( SOUND_COMBAT|SOUND_CONTEXT_GUNFIRE, pOperator->GetAbsOrigin(), SOUNDENT_VOLUME_PISTOL, 0.2, pOperator, SOUNDENT_CHANNEL_WEAPON, pOperator->GetEnemy() );
+			CSoundEnt::InsertSound(SOUND_COMBAT | SOUND_CONTEXT_GUNFIRE, pOperator->GetAbsOrigin(), SOUNDENT_VOLUME_PISTOL, 0.2, pOperator, SOUNDENT_CHANNEL_WEAPON, pOperator->GetEnemy());
 
-			WeaponSound( SINGLE_NPC );
-			pOperator->FireBullets( 1, vecShootOrigin, vecShootDir, VECTOR_CONE_PRECALCULATED, MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 2 );
+			WeaponSound(SINGLE_NPC);
+			pOperator->FireBullets(1, vecShootOrigin, vecShootDir, VECTOR_CONE_PRECALCULATED, MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 2);
 			pOperator->DoMuzzleFlash();
 			m_iClip1 = m_iClip1 - 1;
 		}

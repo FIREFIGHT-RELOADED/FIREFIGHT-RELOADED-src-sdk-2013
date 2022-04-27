@@ -121,6 +121,7 @@ public:
 	// Combat
 	WeaponProficiency_t CalcWeaponProficiency( CBaseCombatWeapon *pWeapon );
 	bool			HasShotgun();
+	bool			HasPistol();
 	bool			ActiveWeaponIsFullyLoaded();
 
 	bool			HandleInteraction(int interactionType, void *data, CBaseCombatCharacter *sourceEnt);
