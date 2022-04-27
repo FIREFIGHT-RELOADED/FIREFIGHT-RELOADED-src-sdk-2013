@@ -329,7 +329,6 @@ public:
 
 	virtual void			SetLightingOriginRelative( CBaseEntity *pLightingOrigin );
 
-protected:
 	Relationship_t			*FindEntityRelationship( CBaseEntity *pTarget );
 
 public:
@@ -366,6 +365,7 @@ public:
 	virtual void		AddEntityRelationship( CBaseEntity *pEntity, Disposition_t nDisposition, int nPriority );
 	virtual bool		RemoveEntityRelationship( CBaseEntity *pEntity );
 	virtual void		AddClassRelationship( Class_T nClass, Disposition_t nDisposition, int nPriority );
+	virtual bool		RemoveClassRelationship(Class_T nClass);
 
 	virtual void		ChangeTeam( int iTeamNum );
 

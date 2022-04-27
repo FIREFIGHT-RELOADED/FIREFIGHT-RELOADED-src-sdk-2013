@@ -8,6 +8,7 @@
 #include "ai_navigator.h"
 #include "ai_memory.h"
 #include "ai_squad.h"
+#include "hl2/npc_combine.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1504,7 +1505,9 @@ int CAI_AssaultBehavior::SelectSchedule()
 		CBaseEntity *pBlocker = GetOuter()->GetEnemyOccluder();
 		if ( pBlocker && pBlocker->GetHealth() > 0 )
 		{
-			if( GetOuter()->Classify() == CLASS_COMBINE && FClassnameIs(GetOuter(), "npc_combine_s") )
+			// we have multiple soldier entities.
+			CNPC_Combine* pCombine = (CNPC_Combine*)GetOuter();
+			if(pCombine)
 			{
 				return SCHED_SHOOT_ENEMY_COVER;
 			}

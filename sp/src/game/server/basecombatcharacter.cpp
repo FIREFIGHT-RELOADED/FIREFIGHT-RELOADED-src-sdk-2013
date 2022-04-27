@@ -2630,7 +2630,7 @@ void CBaseCombatCharacter::AddEntityRelationship ( CBaseEntity* pEntity, Disposi
 // Input  : *pEntity - Entity with whom the relationship should be ended
 // Output : True is entity was removed, false if it was not found
 //-----------------------------------------------------------------------------
-bool CBaseCombatCharacter::RemoveEntityRelationship( CBaseEntity *pEntity )
+bool CBaseCombatCharacter::RemoveEntityRelationship(CBaseEntity* pEntity)
 {
 	// Find the entity in our list, if it exists
 	for ( int i = m_Relationship.Count()-1; i >= 0; i-- ) 
@@ -2639,6 +2639,22 @@ bool CBaseCombatCharacter::RemoveEntityRelationship( CBaseEntity *pEntity )
 		{
 			// Done, remove it
 			m_Relationship.Remove( i );
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool CBaseCombatCharacter::RemoveClassRelationship(Class_T class_type)
+{
+	// Find the entity in our list, if it exists
+	for (int i = m_Relationship.Count() - 1; i >= 0; i--)
+	{
+		if (m_Relationship[i].classType == class_type)
+		{
+			// Done, remove it
+			m_Relationship.Remove(i);
 			return true;
 		}
 	}

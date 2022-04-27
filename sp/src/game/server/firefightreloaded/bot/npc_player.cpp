@@ -345,25 +345,41 @@ int CNPC_Player::OnTakeDamage_Alive(const CTakeDamageInfo& info)
 {
 	CTakeDamageInfo subInfo = info;
 
-	if (subInfo.GetDamageType() != DMG_GENERIC)
+	if (subInfo.GetAttacker())
 	{
-		Relationship_t* relations = FindEntityRelationship(info.GetAttacker());
-		if (relations->disposition == D_LI && !npc_playerbot_friendlyfire.GetBool())
+		CBaseCombatCharacter* pChar = subInfo.GetAttacker()->MyCombatCharacterPointer();
+		if (pChar)
 		{
-			// no friendly fire.
-			subInfo.SetDamage(0);
-		}
-		else
-		{
-			//only take half of the damage so we can be around for a bit longer.
-			float flDamage = subInfo.GetDamage();
-			float flNewDmg = (flDamage * 0.5);
-			if (flDamage > flNewDmg)
+			Relationship_t* relationsToUs = pChar->FindEntityRelationship(this);
+
+			if (relationsToUs->disposition != D_LI)
 			{
-				flDamage = flNewDmg;
-				subInfo.SetDamage(flDamage);
+				RemoveEntityRelationship(subInfo.GetAttacker());
 			}
 		}
+
+		Relationship_t* relations = FindEntityRelationship(subInfo.GetAttacker());
+
+		if (subInfo.GetDamageType() != DMG_GENERIC)
+		{
+			if (relations->disposition == D_LI && !npc_playerbot_friendlyfire.GetBool())
+			{
+				// no friendly fire.
+				subInfo.SetDamage(0);
+			}
+			else
+			{
+				//only take half of the damage so we can be around for a bit longer.
+				float flDamage = subInfo.GetDamage();
+				float flNewDmg = (flDamage * 0.5);
+				if (flDamage > flNewDmg)
+				{
+					flDamage = flNewDmg;
+					subInfo.SetDamage(flDamage);
+				}
+			}
+		}
+
 	}
 
 	return BaseClass::OnTakeDamage_Alive(subInfo);
@@ -371,16 +387,26 @@ int CNPC_Player::OnTakeDamage_Alive(const CTakeDamageInfo& info)
 
 void CNPC_Player::NPCThink( void )
 {
-	// EXCEPTIONS
-	if (GetEnemy() && (m_flSoonestWeaponSwitch < gpGlobals->curtime))
+	CAI_BaseNPC* pEnemyNPC = (CAI_BaseNPC*)GetEnemy();
+	if (pEnemyNPC)
 	{
-		CBaseCombatWeapon* pActiveWeapon = GetActiveWeapon();
-		if (pActiveWeapon)
+		if (pEnemyNPC->IRelationType(this) == D_LI)
 		{
-			DevMsg("PLAYER: SWITCHING.\n");
-			if (SwitchToNextBestWeaponBot(pActiveWeapon))
+			// the enemy of the enemy is my friend!!!!!!!
+			AddEntityRelationship(pEnemyNPC, D_LI, 0);
+		}
+
+		// EXCEPTIONS
+		if ((m_flSoonestWeaponSwitch < gpGlobals->curtime))
+		{
+			CBaseCombatWeapon* pActiveWeapon = GetActiveWeapon();
+			if (pActiveWeapon)
 			{
-				m_flSoonestWeaponSwitch = gpGlobals->curtime + PLAYERNPC_FASTEST_SWITCH_TIME;
+				DevMsg("PLAYER: SWITCHING.\n");
+				if (SwitchToNextBestWeaponBot(pActiveWeapon))
+				{
+					m_flSoonestWeaponSwitch = gpGlobals->curtime + PLAYERNPC_FASTEST_SWITCH_TIME;
+				}
 			}
 		}
 	}
