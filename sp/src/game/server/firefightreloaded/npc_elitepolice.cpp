@@ -253,6 +253,19 @@ void CNPC_ElitePolice::AnnounceEnemyType(CBaseEntity *pEnemy)
 	switch (pEnemy->Classify())
 	{
 	case CLASS_PLAYER:
+		{
+			CBasePlayer* pPlayer = assert_cast<CBasePlayer*>(pEnemy);
+			if (pPlayer && pPlayer->IsInAVehicle())
+			{
+				pSentenceName = "METROPOLICE_MONST_PLAYER_VEHICLE";
+			}
+			else
+			{
+				pSentenceName = "METROPOLICE_MONST_PLAYER";
+			}
+		}
+		break;
+	case CLASS_PLAYER_NPC:
 		pSentenceName = "METROPOLICE_MONST_PLAYER";
 		break;
 
@@ -293,6 +306,7 @@ void CNPC_ElitePolice::AnnounceEnemyKill(CBaseEntity *pEnemy)
 	switch (pEnemy->Classify())
 	{
 	case CLASS_PLAYER:
+	case CLASS_PLAYER_NPC:
 		pSentenceName = "METROPOLICE_KILL_PLAYER";
 		break;
 

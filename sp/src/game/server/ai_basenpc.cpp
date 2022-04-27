@@ -12253,7 +12253,7 @@ bool CAI_BaseNPC::ShouldFailNav( bool bMovementFailed )
 		if ( pEntity && pEntity->GetServerVehicle() )
 		{
 			// Vital allies never get stuck, and urgent moves cannot be blocked by a vehicle
-			if ( Classify() == CLASS_PLAYER_ALLY_VITAL || IsNavigationUrgent() )
+			if ( Classify() == CLASS_PLAYER_ALLY_VITAL || Classify() == CLASS_PLAYER_NPC || IsNavigationUrgent() )
 				return false;
 		}
 	}

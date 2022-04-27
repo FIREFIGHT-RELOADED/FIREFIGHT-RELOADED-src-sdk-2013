@@ -1598,6 +1598,7 @@ void CNPC_Combine::AnnounceEnemyKill( CBaseEntity *pEnemy )
 	switch (pEnemy->Classify())
 	{
 	case CLASS_PLAYER:
+	case CLASS_PLAYER_NPC:
 		pSentenceName = "COMBINE_PLAYER_DEAD";
 		break;
 

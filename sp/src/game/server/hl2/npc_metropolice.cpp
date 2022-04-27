@@ -1016,6 +1016,9 @@ void CNPC_MetroPolice::AnnounceEnemyType( CBaseEntity *pEnemy )
 				}
 			}
 			break;
+		case CLASS_PLAYER_NPC:
+			pSentenceName = "METROPOLICE_MONST_PLAYER";
+			break;
 
 		case CLASS_PLAYER_ALLY:
 		case CLASS_CITIZEN_REBEL:
@@ -1068,6 +1071,7 @@ void CNPC_MetroPolice::AnnounceEnemyKill( CBaseEntity *pEnemy )
 	switch ( pEnemy->Classify() )
 	{
 	case CLASS_PLAYER:
+	case CLASS_PLAYER_NPC:
 		pSentenceName = "METROPOLICE_KILL_PLAYER";
 		break;
 
