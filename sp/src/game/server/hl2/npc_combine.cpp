@@ -1554,7 +1554,6 @@ void CNPC_Combine::AnnounceEnemyType( CBaseEntity *pEnemy )
 	switch (pEnemy->Classify())
 	{
 	case CLASS_PLAYER:
-	case CLASS_PLAYER_NPC:
 		pSentenceName = "COMBINE_ALERT";
 		break;
 

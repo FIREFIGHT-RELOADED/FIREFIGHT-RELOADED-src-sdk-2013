@@ -310,7 +310,7 @@ void CNPC_Player::Precache()
 
 Class_T	CNPC_Player::Classify(void)
 {
-	return CLASS_PLAYER_NPC;
+	return CLASS_PLAYER_ALLY_VITAL;
 }
 
 float CNPC_Player::GetSequenceGroundSpeed(CStudioHdr* pStudioHdr, int iSequence)
