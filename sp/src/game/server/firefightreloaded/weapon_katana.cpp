@@ -34,7 +34,15 @@ extern ConVar sk_npc_dmg_katana;
 static ConVar sv_katana_healthbonus_postdelay("sv_katana_healthbonus_postdelay", "5.0", FCVAR_CHEAT);
 static ConVar sv_katana_healthbonus_maxmultiplier("sv_katana_healthbonus_maxmultiplier", "5", FCVAR_CHEAT);
 static ConVar sv_katana_healthbonus_maxtimestogivebonus("sv_katana_healthbonus_maxtimestogivebonus", "10", FCVAR_CHEAT);
-static ConVar sv_katana_antlionguard_damageresistance("sv_katana_antlionguard_damageresistance", "0.2", FCVAR_CHEAT);
+static ConVar sv_katana_enemy_damageresistance("sv_katana_enemy_damageresistance", "0.2", FCVAR_CHEAT);
+
+const char* g_charEnemiesWithDamageResistance[] =
+{
+	"npc_antlionguard",
+	"npc_antlionguardian",
+	"npc_hunter",
+	"npc_combine_ace"
+};
 
 //-----------------------------------------------------------------------------
 // CWeaponKatana
@@ -192,12 +200,17 @@ void CWeaponKatana::PrimaryAttack(void)
 					Vector vecAiming = pPlayer->GetAutoaimVector(AUTOAIM_SCALE_DEFAULT);
 
 					Ammo_t *ammodef = GetAmmoDef()->GetAmmoOfIndex(m_iPrimaryAmmoType);
-					bool bIsAntlionGuard = (traceHit.m_pEnt->IsNPC() && 
-						(FClassnameIs(traceHit.m_pEnt, "npc_antlionguard") || 
-						FClassnameIs(traceHit.m_pEnt, "npc_antlionguardian") ||
-						FClassnameIs(traceHit.m_pEnt, "npc_hunter")));
-					pPlayer->FireBullets(3, vecSrc, vecAiming, VECTOR_CONE_4DEGREES, GetRange() * 2, m_iPrimaryAmmoType, 0, -1, -1, 
-						(bIsAntlionGuard ? (ammodef->pPlrDmgCVar->GetInt() * sv_katana_antlionguard_damageresistance.GetFloat()) : ammodef->pPlrDmgCVar->GetInt()));
+					int damage = ammodef->pPlrDmgCVar->GetInt();
+
+					for (const char* i : g_charEnemiesWithDamageResistance)
+					{
+						if (FClassnameIs(ent, i))
+						{
+							damage = ammodef->pPlrDmgCVar->GetInt() * sv_katana_enemy_damageresistance.GetFloat();
+						}
+					}
+
+					pPlayer->FireBullets(3, vecSrc, vecAiming, VECTOR_CONE_4DEGREES, GetRange() * 2, m_iPrimaryAmmoType, 0, -1, -1, damage);
 
 					if (ent && !ent->IsAlive() && g_pGameRules->isInBullettime && m_bKillMultiplier)
 					{
