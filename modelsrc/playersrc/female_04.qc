@@ -357,8 +357,11 @@ $sequence "ragdoll" {
 	ikrule "lfoot" release
 }
 
-$includemodel "combine_soldier_anims.mdl"
-$includemodel "elitepolice_animations.mdl"
+$includemodel "humans/female_shared.mdl" 
+$includemodel "humans/female_ss.mdl"
+$includemodel "humans/female_gestures.mdl"
+$includemodel "humans/female_postures.mdl"
+$includemodel "alyx_animations.mdl"
 $includemodel "player/female_shared.mdl"
 $includemodel "player/female_ss.mdl"
 $includemodel "player/female_gestures.mdl"

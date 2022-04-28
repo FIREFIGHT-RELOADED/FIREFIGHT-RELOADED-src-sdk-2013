@@ -91,7 +91,6 @@ void CNPC_CombineP::Spawn( void )
 
 	m_fIsElite = false;
 	m_fIsAce = false;
-	m_fIsPlayer = false;
 	m_iUseMarch = true;
 
 	SetHealth( sk_combine_p_health.GetFloat() );

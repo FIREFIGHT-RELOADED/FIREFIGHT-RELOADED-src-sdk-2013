@@ -58,7 +58,6 @@ void CNPC_ElitePolice::Spawn(void)
 
 	m_fIsElite = false;
 	m_fIsAce = false;
-	m_fIsPlayer = false;
 	m_fIsPoliceRank = true;
 	if (m_spawnEquipment != MAKE_STRING("weapon_pistol"))
 	{

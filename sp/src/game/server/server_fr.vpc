@@ -341,12 +341,6 @@ $Project "Server (FR)"
 
 			$Folder	"NPCs"
 			{
-				$Folder	"Bots"
-				{
-					$File	"firefightreloaded\bot\npc_player.cpp"
-					$File	"firefightreloaded\bot\npc_player.h"
-				}
-				
 				$Folder	"Attribute Loader"
 				{
 					$File	"firefightreloaded\ai_attributes_loader.cpp"

@@ -126,7 +126,6 @@ void CNPC_CombineAce::Spawn( void )
 	}
 
 	m_fIsAce = true;
-	m_fIsPlayer = false;
 	m_iUseMarch = true;
 	m_bisEyeForcedDead = false;
 

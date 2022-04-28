@@ -87,7 +87,6 @@ public:
 	Class_T			Classify( void );
 	bool			IsElite() { return m_fIsElite; }
 	bool			IsAce() { return m_fIsAce; }
-	bool			IsPlayerNPC() { return m_fIsPlayer; }
 	void			DelayAltFireAttack( float flDelay );
 	void			DelaySquadAltFireAttack( float flDelay );
 	float			MaxYawSpeed( void );
@@ -294,7 +293,6 @@ public:
 	int				m_iLastAnimEventHandled;
 	bool			m_fIsElite;
 	bool			m_fIsAce;
-	bool			m_fIsPlayer;
 	bool			m_fIsPoliceRank;
 	Vector			m_vecAltFireTarget;
 

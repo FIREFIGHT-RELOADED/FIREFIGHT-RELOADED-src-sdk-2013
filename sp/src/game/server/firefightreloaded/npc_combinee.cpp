@@ -91,7 +91,6 @@ void CNPC_CombineE::Spawn( void )
 
 	m_fIsElite = true;
 	m_fIsAce = false;
-	m_fIsPlayer = false;
 	m_iUseMarch = true;
 
 	// Stronger, tougher.

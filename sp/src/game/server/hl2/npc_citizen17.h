@@ -33,6 +33,7 @@ struct SquadCandidate_t;
 #define SF_CITIZEN_RANDOM_HEAD_MALE	( 1 << 22 )	//4194304
 #define SF_CITIZEN_RANDOM_HEAD_FEMALE ( 1 << 23 )//8388608
 #define SF_CITIZEN_USE_RENDER_BOUNDS ( 1 << 24 )//16777216
+#define SF_CITIZEN_USE_PLAYERBOT_AI ( 1 << 25 )//33554432
 
 //-------------------------------------
 // Animation events
@@ -61,16 +62,17 @@ enum CitizenExpressionTypes_t
 	CIT_EXP_LAST_TYPE,
 };
 
+#define SKILL_SHORT_RANGE 150.0f
+#define SKILL_MID_RANGE 350.0f
+#define SKILL_MAX_RANGE FLT_MAX
+
 //-------------------------------------
 
 class CNPC_Citizen : public CNPC_PlayerCompanion
 {
 	DECLARE_CLASS( CNPC_Citizen, CNPC_PlayerCompanion );
 public:
-	CNPC_Citizen()
-	 :	m_iHead( -1 )
-	{
-	}
+	CNPC_Citizen();
 
 	//---------------------------------
 	bool			CreateBehaviors();
@@ -83,6 +85,18 @@ public:
 	void			Activate();
 	virtual void	OnGivenWeapon( CBaseCombatWeapon *pNewWeapon );
 	void			FixupMattWeapon();
+
+	//player ports
+	void		NPCThink( void );
+	//ported bot funcs
+	float		BotWeaponRangeDetermine(float flDist);
+	CBaseCombatWeapon* GetNextBestWeaponBot(CBaseCombatWeapon* pCurrentWeapon);
+	bool		SwitchToNextBestWeaponBot(CBaseCombatWeapon* pCurrent);
+	//player emulation
+	void		GiveWeapon(const char* iszWeaponName);
+	bool		Weapon_Switch(CBaseCombatWeapon* pWeapon);
+	void		GiveWeapons(void);
+	bool		ShouldRegenerateHealth(void);
 
 #ifdef HL2_EPISODIC
 	virtual float	GetJumpGravity() const		{ return 1.8f; }
@@ -285,6 +299,7 @@ private:
 
 	//-----------------------------------------------------
 	
+	float			m_flSoonestWeaponSwitch;
 	int				m_nInspectActivity;
 	float			m_flNextFearSoundTime;
 	float			m_flStopManhackFlinch;
