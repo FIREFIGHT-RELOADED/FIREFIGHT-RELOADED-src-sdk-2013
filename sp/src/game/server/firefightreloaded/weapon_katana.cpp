@@ -192,7 +192,10 @@ void CWeaponKatana::PrimaryAttack(void)
 					Vector vecAiming = pPlayer->GetAutoaimVector(AUTOAIM_SCALE_DEFAULT);
 
 					Ammo_t *ammodef = GetAmmoDef()->GetAmmoOfIndex(m_iPrimaryAmmoType);
-					bool bIsAntlionGuard = (traceHit.m_pEnt->IsNPC() && (FClassnameIs(traceHit.m_pEnt, "npc_antlionguard") || FClassnameIs(traceHit.m_pEnt, "npc_antlionguardian")));
+					bool bIsAntlionGuard = (traceHit.m_pEnt->IsNPC() && 
+						(FClassnameIs(traceHit.m_pEnt, "npc_antlionguard") || 
+						FClassnameIs(traceHit.m_pEnt, "npc_antlionguardian") ||
+						FClassnameIs(traceHit.m_pEnt, "npc_hunter")));
 					pPlayer->FireBullets(3, vecSrc, vecAiming, VECTOR_CONE_4DEGREES, GetRange() * 2, m_iPrimaryAmmoType, 0, -1, -1, 
 						(bIsAntlionGuard ? (ammodef->pPlrDmgCVar->GetInt() * sv_katana_antlionguard_damageresistance.GetFloat()) : ammodef->pPlrDmgCVar->GetInt()));
 
