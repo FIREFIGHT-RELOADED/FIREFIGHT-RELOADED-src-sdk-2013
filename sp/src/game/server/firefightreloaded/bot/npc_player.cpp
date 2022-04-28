@@ -91,7 +91,7 @@ void CC_Compatibility(void)
 
 	if (incompat > 0)
 	{
-		Warning("Please add these before '$includemodel \"player/male_shared.mdl\"' in your models' QCs for npc_playerbots to use the models!\n");
+		Warning("Please add these before '$includemodel \"player/male_shared.mdl\"/$includemodel \"player/female_shared.mdl\"' in your models' QCs for npc_playerbots to use the models!\n");
 	}
 	else
 	{
