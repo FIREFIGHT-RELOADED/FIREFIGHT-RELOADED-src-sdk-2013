@@ -407,6 +407,12 @@ void CNPC_CombineS::Event_Killed( const CTakeDamageInfo &info )
 
 	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && info.GetDamageType() & (DMG_BLAST) && !(info.GetDamageType() & (DMG_DISSOLVE)) && !PlayerHasMegaPhysCannon() && gibs)
 	{
+		if (IsCurSchedule(SCHED_NPC_FREEZE))
+		{
+			// We're frozen; don't die.
+			return;
+		}
+
 		Vector vecDamageDir = info.GetDamageForce();
 		SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
 		DispatchParticleEffect("smod_blood_gib_r", GetAbsOrigin(), GetAbsAngles(), this);
@@ -533,6 +539,15 @@ void CNPC_CombineS::Event_Killed( const CTakeDamageInfo &info )
 		{
 			((CSingleplayRules*)GameRules())->NPCKilled(this, info);
 		}
+
+		Wake(false);
+		m_lifeState = LIFE_DYING;
+		CleanupOnDeath(info.GetAttacker());
+		StopLoopingSounds();
+		DeathSound(info);
+		SetCondition(COND_LIGHT_DAMAGE);
+		SetIdealState(NPC_STATE_DEAD);
+		SetState(NPC_STATE_DEAD);
 
 		UTIL_Remove(this);
 		SetThink(NULL);
