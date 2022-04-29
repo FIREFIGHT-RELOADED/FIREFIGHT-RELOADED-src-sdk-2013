@@ -404,7 +404,7 @@ void CNPC_CombineP::Event_Killed( const CTakeDamageInfo &info )
 		gibs = m_pAttributes->GetBool("gibs");
 	}
 
-	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && info.GetDamageType() & (DMG_BLAST | DMG_CRUSH) && !(info.GetDamageType() & (DMG_DISSOLVE)) && !PlayerHasMegaPhysCannon() && gibs)
+	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && info.GetDamageType() & (DMG_BLAST) && !(info.GetDamageType() & (DMG_DISSOLVE)) && !PlayerHasMegaPhysCannon() && gibs)
 	{
 		Vector vecDamageDir = info.GetDamageForce();
 		SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
