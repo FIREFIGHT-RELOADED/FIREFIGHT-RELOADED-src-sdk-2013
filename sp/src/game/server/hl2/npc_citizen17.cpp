@@ -288,13 +288,15 @@ static const char *g_ppszModelLocs[] =
 const char* g_charPlayerbotMidRangeWeapons[] =
 {
 	"weapon_smg1",
-	"weapon_ar2"
+	"weapon_ar2",
+	"weapon_rpg"
 };
 
 const char* g_charPlayerbotShortRangeWeapons[] =
 {
 	"weapon_shotgun",
-	"weapon_pistol"
+	"weapon_pistol",
+	"weapon_crowbar"
 };
 
 const char* g_charAvailablePlayerbotModels[] =
