@@ -530,7 +530,7 @@ bool CNPCMakerFirefight::CanMakeRareNPC()
 // Purpose: 
 // Input  : *pVictim - 
 //-----------------------------------------------------------------------------
-void CNPCMakerFirefight::KilledNotice(CBaseEntity *pVictim)
+void CNPCMakerFirefight::DeathNotice(CBaseEntity *pVictim)
 {
 	// ok, we've gotten the deathnotice from our child, now clear out its owner if we don't want it to fade.
 	m_nLiveChildren--;
