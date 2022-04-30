@@ -1080,6 +1080,9 @@ bool CNPC_AntlionGuardian::ShouldCharge( const Vector &startPos, const Vector &e
 		}
 	}
 
+	if (FClassnameIs(GetEnemy(), "npc_strider"))
+		return false;
+
 	//FIXME: We'd like to exclude small physics objects from this check!
 
 	// We only need to hit the endpos with the edge of our bounding box

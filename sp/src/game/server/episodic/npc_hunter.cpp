@@ -2706,6 +2706,9 @@ bool CNPC_Hunter::ShouldCharge( const Vector &startPos, const Vector &endPos, bo
 	if ( !GetEnemy() )
 		return false;
 
+	if (FClassnameIs(GetEnemy(), "npc_strider"))
+		return false;
+
 	// Don't check the distance once we start charging
 	if ( !bCheckForCancel && !hunter_charge_test.GetBool() )
 	{
