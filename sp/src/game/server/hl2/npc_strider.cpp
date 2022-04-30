@@ -3081,7 +3081,7 @@ int CNPC_Strider::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	}
 
 	//int healthIncrement = 5 - ( m_iHealth / ( m_iMaxHealth / 5 ) );
-	if ( (info.GetDamageType() & DMG_BLAST) && info.GetMaxDamage() > 50 )
+	if ( (info.GetDamageType() & DMG_BLAST || info.GetDamageType() & DMG_KICK) && info.GetMaxDamage() > 50 )
 	{
 		Vector headPos = BodyTarget( info.GetDamagePosition(), false );
 		
@@ -3337,14 +3337,17 @@ bool CNPC_Strider::ShouldExplodeFromDamage( const CTakeDamageInfo &info )
 	if ( pInflictor == NULL )
 		return false;
 
+	//Rockets only make us explode if we're dying already
+	if ((IsSmoking() && FClassnameIs(pInflictor, "rpg_missile")))
+		return true;
+
 	// Combine balls make us explode
 	if ( UTIL_IsCombineBall( info.GetInflictor() ) )
 		return true;
 
 	// Stickybombs make us explode
 	CBaseEntity *pAttacker = info.GetAttacker();
-	if ( pAttacker != NULL && (FClassnameIs( pAttacker, "weapon_striderbuster" ) ||
-								FClassnameIs( pAttacker, "npc_grenade_magna" )))
+	if ( pAttacker != NULL && ((FClassnameIs( pAttacker, "weapon_striderbuster" ) || FClassnameIs( pAttacker, "npc_grenade_magna" ))))
 		return true;
 
 	if ( pInflictor == this && pAttacker == this )

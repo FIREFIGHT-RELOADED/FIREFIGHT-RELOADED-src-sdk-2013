@@ -75,6 +75,7 @@ public:
 	int		m_nMaxLiveRareNPCs;
 
 	bool	m_bDisabled;
+	bool	m_bLargeNPCsEnabled;
 
 	EHANDLE m_hIgnoreEntity;
 	string_t m_iszIngoreEnt;

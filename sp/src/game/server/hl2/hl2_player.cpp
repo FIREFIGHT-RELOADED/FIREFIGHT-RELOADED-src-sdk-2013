@@ -54,6 +54,7 @@
 #include "predicted_viewmodel.h"
 #include "firefightreloaded/fr_ragdoll.h"
 #include "func_break.h"
+#include "ammodef.h"
 
 #ifdef HL2_EPISODIC
 #include "npc_alyx_episodic.h"
@@ -1286,10 +1287,20 @@ void CHL2_Player::KickAttack(void)
 				CBaseEntity* Victim = CheckTraceHullAttack(Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), KickDamageFlightBoost, (DMG_CLUB | DMG_KICK), KickThrowForceMult, true);
 				if (Victim && Victim->IsNPC())
 				{
-					Vector hitDirection, up;
-					EyeVectors(&hitDirection, NULL, &up);
-					VectorNormalize(hitDirection);
-					Victim->ApplyAbsVelocityImpulse(hitDirection * 800 + up * 300);
+					//don't kick striders, only deliver damage.
+					if (!FClassnameIs(Victim, "npc_strider"))
+					{
+						Vector hitDirection, up;
+						EyeVectors(&hitDirection, NULL, &up);
+						VectorNormalize(hitDirection);
+						Victim->ApplyAbsVelocityImpulse(hitDirection * 800 + up * 300);
+					}
+					else
+					{
+						CAmmoDef *ammodef = GetAmmoDef();
+						Vector vecAiming = BaseClass::GetAutoaimVector(AUTOAIM_SCALE_DEFAULT);
+						FireBullets(3, Weapon_ShootPosition(), vecAiming, VECTOR_CONE_4DEGREES, kick_range, ammodef->Index("RPG_Round"), 0, -1, -1, KickDamageFlightBoost);
+					}
 					EmitSound("HL2Player.kick_body");
 					return;
 				}
@@ -2104,7 +2115,7 @@ void CHL2_Player::StopBullettime(bool bPlaySound, bool bFlashScreen, bool bInSho
 		UTIL_ScreenFade(this, white, 0.2f, 0, FFADE_OUT);
 	}
 
-	engine->ServerCommand("host_timescale 1.0; sv_cheats 0\n");
+	engine->ServerCommand("host_timescale 1.0\n");
 	if (bPlaySound)
 	{
 		EmitSound("HL2Player.bullettimeoff");

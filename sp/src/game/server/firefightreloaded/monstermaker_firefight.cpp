@@ -24,8 +24,10 @@ ConVar sk_initialspawnertime("sk_initialspawnertime", "5", FCVAR_CHEAT);
 ConVar sk_spawnrareenemies("sk_spawnrareenemies", "1", FCVAR_ARCHIVE);
 ConVar sk_spawnerhidefromplayer("sk_spawnerhidefromplayer", "1", FCVAR_ARCHIVE);
 ConVar sk_spawner_npc_ragdoll_fade("sk_spawner_npc_ragdoll_fade", "1", FCVAR_ARCHIVE);
-ConVar sk_spawner_spamplayers("sk_spawner_spamplayers", "0", FCVAR_CHEAT | FCVAR_HIDDEN);
+ConVar debug_spawner_spamplayers("debug_spawner_spamplayers", "0", FCVAR_CHEAT);
 //ConVar sk_spawnerminclientstospawn("sk_spawnerminclientstospawn", "2", FCVAR_NOTIFY);
+ConVar debug_spawner_info("debug_spawner_info", "0", FCVAR_CHEAT);
+ConVar debug_spawner_disable("debug_spawner_disable", "0", FCVAR_CHEAT);
 
 //spawn lists (TODO: use KeyValues files)
 const char *g_CombineSoldierWeapons[] =
@@ -149,12 +151,12 @@ const char* g_charNPCSCombineFirefightCommon[] =
 	"npc_stalker"
 };
 
-#define STRIDER_TESTING
+//#define BIGGUY_TESTING
 
 const char* g_charNPCSCombineFirefightRare[] =
 {
-#ifdef  STRIDER_TESTING
-	"npc_strider"
+#ifdef  BIGGUY_TESTING
+	"npc_strider",
 #else
 	"npc_combine_ace",
 	"npc_hunter",
@@ -231,6 +233,7 @@ BEGIN_DATADESC(CNPCMakerFirefight)
 	DEFINE_KEYFIELD( m_nMaxLiveChildren,		FIELD_INTEGER,	"MaxLiveChildren" ),
 	DEFINE_KEYFIELD( m_flSpawnFrequency,		FIELD_FLOAT,	"SpawnFrequency" ),
 	DEFINE_KEYFIELD( m_bDisabled,			FIELD_BOOLEAN,	"StartDisabled" ),
+	DEFINE_KEYFIELD(m_bLargeNPCsEnabled, FIELD_BOOLEAN, "AllowLargeNPCs" ),
 	DEFINE_KEYFIELD( m_iszNPCClassname, FIELD_STRING, "NPCType" ),
 	DEFINE_KEYFIELD( m_ChildTargetName, FIELD_STRING, "NPCTargetname" ),
 	DEFINE_KEYFIELD( m_SquadName, FIELD_STRING, "NPCSquadName" ),
@@ -286,7 +289,7 @@ void CNPCMakerFirefight::Spawn(void)
 	//m_spawnflags |= SF_NPCMAKER_FADE;
 
 	//Start on?
-	if ( m_bDisabled == false )
+	if ( m_bDisabled == false)
 	{
 		SetThink(&CNPCMakerFirefight::MakerThink);
 		SetNextThink(gpGlobals->curtime + sk_initialspawnertime.GetFloat());
@@ -360,6 +363,18 @@ void CNPCMakerFirefight::MakerThink(void)
 			MakeNPC();
 		}
 	}
+
+	if (debug_spawner_info.GetBool())
+	{
+		m_debugOverlays |= OVERLAY_TEXT_BIT;
+	}
+	else
+	{
+		if (m_debugOverlays & OVERLAY_TEXT_BIT)
+		{
+			m_debugOverlays &= ~OVERLAY_TEXT_BIT;
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -389,6 +404,9 @@ bool CNPCMakerFirefight::HumanHullFits(const Vector &vecLocation)
 //-----------------------------------------------------------------------------
 bool CNPCMakerFirefight::CanMakeNPC(bool bIgnoreSolidEntities)
 {
+	if (debug_spawner_disable.GetBool())
+		return false;
+
 	if ( gEntList.NumberOfEdicts() >= (MAX_EDICTS - g_fr_entitytolerance.GetInt()) )
 		return false;
 
@@ -534,7 +552,7 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 
 	bool m_bRareNPC = rareNPC;
 
-	const char* pRandomName = sk_spawner_spamplayers.GetBool() ? "npc_playerbot" : "";
+	const char* pRandomName = debug_spawner_spamplayers.GetBool() ? "npc_playerbot" : "";
 
 	if (g_pGameRules->bSkipFuncCheck || g_fr_spawneroldfunctionality.GetBool())
 	{
@@ -703,14 +721,24 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 	pent->SetOwnerEntity(this);
 
 	// adding this check to make sure strders will work properly...
-	if (FClassnameIs(pent, "npc_strider"))
+	if (FClassnameIs(pent, "npc_strider") || 
+		FClassnameIs(pent, "npc_helicopter") || 
+		FClassnameIs(pent, "npc_combinegunship") || 
+		FClassnameIs(pent, "npc_combinedropship"))
 	{
-		trace_t tr;
-		UTIL_TraceHull(pent->GetAbsOrigin(), pent->GetAbsOrigin(), pent->WorldAlignMins(), pent->WorldAlignMaxs(), 
-			MASK_NPCSOLID, pent, COLLISION_GROUP_NONE, &tr);
-		if (tr.fraction != 1.0 && tr.m_pEnt)
+		if (m_bLargeNPCsEnabled)
 		{
-			tr.m_pEnt->SUB_Remove();
+			trace_t tr;
+			UTIL_TraceHull(pent->GetAbsOrigin(), pent->GetAbsOrigin(), pent->WorldAlignMins(), pent->WorldAlignMaxs(),
+				MASK_NPCSOLID, pent, COLLISION_GROUP_NONE, &tr);
+			if (tr.fraction != 1.0)
+			{
+				pent->SUB_Remove();
+			}
+		}
+		else
+		{
+			pent->SUB_Remove();
 		}
 	}
 
