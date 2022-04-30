@@ -706,13 +706,11 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 	if (FClassnameIs(pent, "npc_strider"))
 	{
 		trace_t tr;
-		// Can my bounding box fit there?
-		AI_TraceHull(GetAbsOrigin(), GetAbsOrigin(), pent->WorldAlignMins(), pent->WorldAlignMaxs(),
-			MASK_SOLID, pent, COLLISION_GROUP_NONE, &tr);
-
-		if (tr.fraction != 1.0)
+		UTIL_TraceHull(pent->GetAbsOrigin(), pent->GetAbsOrigin(), pent->WorldAlignMins(), pent->WorldAlignMaxs(), 
+			MASK_NPCSOLID, pent, COLLISION_GROUP_NONE, &tr);
+		if (tr.fraction != 1.0 && tr.m_pEnt)
 		{
-			pent->SUB_Remove();
+			tr.m_pEnt->SUB_Remove();
 		}
 	}
 
