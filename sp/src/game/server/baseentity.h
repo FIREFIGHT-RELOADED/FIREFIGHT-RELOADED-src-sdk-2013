@@ -885,6 +885,7 @@ public:
 // still realize that they are teammates. (overridden for NPCs that form groups)
 	virtual Class_T Classify ( void );
 	virtual void	DeathNotice ( CBaseEntity *pVictim ) {}// NPC maker children use this to tell the NPC maker that they have died.
+	virtual void	KilledNotice (CBaseEntity* pVictim) {}// NPC maker children use this to tell the NPC maker that they have died. Trigged by event_killed events.
 	virtual bool	ShouldAttractAutoAim( CBaseEntity *pAimingEnt ) { return ((GetFlags() & FL_AIMTARGET) != 0); }
 	virtual float	GetAutoAimRadius();
 	virtual Vector	GetAutoAimCenter() { return WorldSpaceCenter(); }

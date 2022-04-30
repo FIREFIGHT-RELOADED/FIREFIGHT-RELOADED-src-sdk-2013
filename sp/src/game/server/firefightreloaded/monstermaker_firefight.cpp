@@ -24,6 +24,7 @@ ConVar sk_initialspawnertime("sk_initialspawnertime", "5", FCVAR_CHEAT);
 ConVar sk_spawnrareenemies("sk_spawnrareenemies", "1", FCVAR_ARCHIVE);
 ConVar sk_spawnerhidefromplayer("sk_spawnerhidefromplayer", "1", FCVAR_ARCHIVE);
 ConVar sk_spawner_npc_ragdoll_fade("sk_spawner_npc_ragdoll_fade", "1", FCVAR_ARCHIVE);
+ConVar sk_spawner_largenpc_spawndelay("sk_spawner_largenpc_spawntime", "300", FCVAR_CHEAT);
 ConVar debug_spawner_spamplayers("debug_spawner_spamplayers", "0", FCVAR_CHEAT);
 //ConVar sk_spawnerminclientstospawn("sk_spawnerminclientstospawn", "2", FCVAR_NOTIFY);
 ConVar debug_spawner_info("debug_spawner_info", "0", FCVAR_CHEAT);
@@ -140,8 +141,13 @@ const char* g_NPCS[] =
 	"npc_playerbot"
 };
 
+//#define BIGGUY_TESTING
+
 const char* g_charNPCSCombineFirefightCommon[] =
 {
+#ifdef  BIGGUY_TESTING
+	"npc_strider",
+#else
 	"npc_metropolice",
 	"npc_combine_s",
 	"npc_combine_e",
@@ -149,9 +155,8 @@ const char* g_charNPCSCombineFirefightCommon[] =
 	"npc_combine_shot",
 	"npc_elitepolice",
 	"npc_stalker"
+#endif //  STRIDER_TESTING
 };
-
-//#define BIGGUY_TESTING
 
 const char* g_charNPCSCombineFirefightRare[] =
 {
@@ -245,6 +250,7 @@ BEGIN_DATADESC(CNPCMakerFirefight)
 
 	DEFINE_FIELD(	m_nLiveChildren,		FIELD_INTEGER ),
 	DEFINE_FIELD(	m_nLiveRareNPCs,		FIELD_INTEGER ),
+	DEFINE_FIELD(	m_flLastLargeNPCSpawn,	FIELD_TIME),
 
 	// Inputs
 	DEFINE_INPUTFUNC( FIELD_VOID,	"Spawn",	InputSpawnNPC ),
@@ -284,6 +290,7 @@ void CNPCMakerFirefight::Spawn(void)
 	SetSolid( SOLID_NONE );
 	m_nLiveChildren		= 0;
 	m_nLiveRareNPCs		= 0;
+	m_flLastLargeNPCSpawn = 0;
 	Precache();
 
 	//m_spawnflags |= SF_NPCMAKER_FADE;
@@ -523,7 +530,7 @@ bool CNPCMakerFirefight::CanMakeRareNPC()
 // Purpose: 
 // Input  : *pVictim - 
 //-----------------------------------------------------------------------------
-void CNPCMakerFirefight::DeathNotice(CBaseEntity *pVictim)
+void CNPCMakerFirefight::KilledNotice(CBaseEntity *pVictim)
 {
 	// ok, we've gotten the deathnotice from our child, now clear out its owner if we don't want it to fade.
 	m_nLiveChildren--;
@@ -541,6 +548,8 @@ void CNPCMakerFirefight::DeathNotice(CBaseEntity *pVictim)
 		AssertMsg(m_nLiveRareNPCs >= 0, "npc_maker_firefight receiving child death notice but thinks has no children (RARE)\n");
 	}
 }
+
+#define SF_CAN_STOMP_PLAYER 0x10000
 
 //-----------------------------------------------------------------------------
 // Purpose: Creates the NPC.
@@ -710,6 +719,10 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 			}
 		}
 	}
+	else if (Q_stristr(pRandomName, "npc_strider"))
+	{
+		pent->AddSpawnFlags(SF_CAN_STOMP_PLAYER);
+	}
 
 	pent->m_isRareEntity = m_bRareNPC;
 	pent->SetSquadName(m_SquadName);
@@ -728,17 +741,20 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 	{
 		if (m_bLargeNPCsEnabled)
 		{
-			trace_t tr;
-			UTIL_TraceHull(pent->GetAbsOrigin(), pent->GetAbsOrigin(), pent->WorldAlignMins(), pent->WorldAlignMaxs(),
-				MASK_NPCSOLID, pent, COLLISION_GROUP_NONE, &tr);
-			if (tr.fraction != 1.0)
+			if (m_flLastLargeNPCSpawn < gpGlobals->curtime)
 			{
-				pent->SUB_Remove();
+				m_flLastLargeNPCSpawn = gpGlobals->curtime + sk_spawner_largenpc_spawndelay.GetFloat();
+			}
+			else
+			{
+				UTIL_Remove(pent);
+				return;
 			}
 		}
 		else
 		{
-			pent->SUB_Remove();
+			UTIL_Remove(pent);
+			return;
 		}
 	}
 

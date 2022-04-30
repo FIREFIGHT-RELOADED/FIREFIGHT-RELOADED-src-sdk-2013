@@ -549,6 +549,14 @@ void CNPC_CombineS::Event_Killed( const CTakeDamageInfo &info )
 		SetIdealState(NPC_STATE_DEAD);
 		SetState(NPC_STATE_DEAD);
 
+		// tell owner ( if any ) that we're dead.This is mostly for NPCMaker functionality.
+		CBaseEntity* pOwner = GetOwnerEntity();
+		if (pOwner)
+		{
+			pOwner->KilledNotice(this);
+			SetOwnerEntity(NULL);
+		}
+
 		UTIL_Remove(this);
 		SetThink(NULL);
 		return;

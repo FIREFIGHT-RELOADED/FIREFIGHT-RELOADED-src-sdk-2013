@@ -979,6 +979,18 @@ void CAI_NetworkManager::InitializeAINetworks()
 					num++;
 				}
 
+				//create hint nodes for striders
+
+				// now we want to create a CNodeEnt (info_node) at the location these coordinates describe
+				/*CNodeEnt* pNodeHint = (CNodeEnt*)CreateNoSpawn("info_node_air_hint", origin + Vector(0, 0, 16), vec3_angle, NULL);
+				if (pNodeHint)
+				{//	setting this index stops it moaning, doesn't seem to affect anything else though
+					pNodeHint->m_NodeData.nWCNodeID = g_pAINetworkManager->GetEditOps()->m_nNextWCIndex;
+					pNodeHint->m_NodeData.nHintType = (short)HINT_STRIDER_NODE;
+					pNodeHint->Spawn(); // spawning it adds it into the node graph
+					num++;
+				}*/
+
 				if (!buf.IsValid())
 					break;
 			}

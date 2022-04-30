@@ -844,11 +844,11 @@ void CBaseCombatCharacter::UpdateOnRemove( void )
 	}
 
 	// tell owner ( if any ) that we're dead.This is mostly for NPCMaker functionality.
-	CBaseEntity *pOwner = GetOwnerEntity();
-	if ( pOwner )
+	CBaseEntity* pOwner = GetOwnerEntity();
+	if (pOwner)
 	{
-		pOwner->DeathNotice( this );
-		SetOwnerEntity( NULL );
+		pOwner->DeathNotice(this);
+		SetOwnerEntity(NULL);
 	}
 
 #ifdef GLOWS_ENABLE
@@ -1664,6 +1664,14 @@ void CBaseCombatCharacter::Event_Killed( const CTakeDamageInfo &info )
 	// inform bots
 	TheNextBots().OnKilled( this, info );
 #endif
+
+	// tell owner ( if any ) that we're dead.This is mostly for NPCMaker functionality.
+	CBaseEntity *pOwner = GetOwnerEntity();
+	if ( pOwner )
+	{
+		pOwner->KilledNotice( this );
+		SetOwnerEntity( NULL );
+	}
 
 #ifdef GLOWS_ENABLE
 	RemoveGlowEffect();
