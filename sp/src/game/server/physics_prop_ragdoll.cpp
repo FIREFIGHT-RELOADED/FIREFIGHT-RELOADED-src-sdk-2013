@@ -1595,6 +1595,18 @@ CRagdollProp *CreateServerRagdollAttached( CBaseAnimating *pAnimating, const Vec
 	CRagdollPropAttached *pRagdoll = (CRagdollPropAttached *)CBaseEntity::CreateNoSpawn( "prop_ragdoll_attached", pAnimating->GetAbsOrigin(), vec3_angle, NULL );
 	pRagdoll->CopyAnimationDataFrom( pAnimating );
 
+	const color32 color = pAnimating->GetRenderColor();
+	pRagdoll->SetRenderColor(color.r, color.g, color.b, color.a);
+
+	for (int i = 0; i <= pAnimating->GetNumBodyGroups(); ++i)
+	{
+		pRagdoll->SetBodygroup(i, pAnimating->GetBodygroup(i));
+	}
+
+	pRagdoll->m_nSkin = pAnimating->m_nSkin;
+
+	pRagdoll->UpdateMaterialColor(pAnimating->GetTrueColorRed(), pAnimating->GetTrueColorGreen(), pAnimating->GetTrueColorBlue());
+
 	pRagdoll->InitRagdollAnimation();
 	matrix3x4_t pBoneToWorld[MAXSTUDIOBONES];
 	pAnimating->SetupBones( pBoneToWorld, BONE_USED_BY_ANYTHING );
