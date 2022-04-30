@@ -195,7 +195,7 @@ float CNPC_Stalker::MaxYawSpeed( void )
 //-----------------------------------------------------------------------------
 Class_T CNPC_Stalker::Classify( void )
 {
-	return CLASS_STALKER;
+	return CLASS_COMBINE; //CLASS_STALKER;
 }
 
 //-----------------------------------------------------------------------------
@@ -215,14 +215,14 @@ bool CNPC_Stalker::IsValidEnemy( CBaseEntity *pEnemy )
 {
 	Class_T enemyClass = pEnemy->Classify();
 
-	if( enemyClass == CLASS_PLAYER || enemyClass == CLASS_PLAYER_ALLY || enemyClass == CLASS_PLAYER_ALLY_VITAL )
+	/*if (enemyClass == CLASS_PLAYER || enemyClass == CLASS_PLAYER_ALLY || enemyClass == CLASS_PLAYER_ALLY_VITAL || enemyClass == CLASS_PLAYER_NPC)
 	{
 		// Don't get angry at these folks unless provoked.
 		if( m_iPlayerAggression < STALKER_PLAYER_AGGRESSION )
 		{
 			return false;
 		}
-	}
+	}*/
 
 	if( enemyClass == CLASS_BULLSEYE && pEnemy->GetParent() )
 	{
@@ -1091,7 +1091,7 @@ void CNPC_Stalker::DrawAttackBeam(void)
 			m_bPlayingHitFlesh = false;
 		}
 
-		UTIL_DecalTrace( &tr, "RedGlowFade");
+		//UTIL_DecalTrace( &tr, "RedGlowFade");
 		UTIL_DecalTrace( &tr, "FadingScorch" );
 		
 		tr.endpos.z -= 24.0f;

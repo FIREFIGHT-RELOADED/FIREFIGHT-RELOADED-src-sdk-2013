@@ -119,6 +119,8 @@ int AE_CITIZEN_HEAL;
 //-------------------------------------
 //-------------------------------------
 
+extern ConVar fr_new_normspeed;
+extern ConVar fr_new_btspeed;
 ConVar	ai_follow_move_commands( "ai_follow_move_commands", "1" );
 ConVar	ai_citizen_debug_commander( "ai_citizen_debug_commander", "1" );
 static ConVar npc_playerbot_useplayersmodel("npc_playerbot_useplayersmodel", "1", FCVAR_ARCHIVE);
@@ -1124,6 +1126,25 @@ bool CNPC_Citizen::Weapon_Switch(CBaseCombatWeapon* pWeapon)
 	DevMsg("PLAYER: SWITCHED WEAPON TO: %s\n", pWeapon->GetClassname());
 
 	return pWeapon->Deploy();
+}
+
+float CNPC_Citizen::GetSequenceGroundSpeed(CStudioHdr* pStudioHdr, int iSequence)
+{
+	if (HasSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI))
+	{
+		if (g_pGameRules->isInBullettime)
+		{
+			return fr_new_btspeed.GetFloat();
+		}
+		else
+		{
+			return fr_new_normspeed.GetFloat();
+		}
+	}
+	else
+	{
+		return BaseClass::GetSequenceGroundSpeed(pStudioHdr, iSequence);
+	}
 }
 
 //-----------------------------------------------------------------------------

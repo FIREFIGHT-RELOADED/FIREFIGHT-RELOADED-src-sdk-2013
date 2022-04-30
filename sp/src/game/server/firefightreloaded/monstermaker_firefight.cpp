@@ -65,7 +65,8 @@ const char *g_charNPCSCommon[] =
 	"npc_houndeye",
 	"npc_bullsquid",
 	"npc_elitepolice",
-	"npc_acontroller"
+	"npc_acontroller",
+	"npc_stalker"
 };
 
 const char *g_charNPCSRare[] =
@@ -82,9 +83,9 @@ const char *g_charNPCSRare[] =
 	"npc_vortigaunt",
 	"npc_assassin",
 	"npc_headcrab",
-	"npc_combineguard",
 	"npc_rollermine",
 	"npc_cscanner",
+	"npc_strider",
 	//temp until we actually set up the wave system.
 	"npc_playerbot"
 };
@@ -129,9 +130,10 @@ const char* g_NPCS[] =
 	"npc_vortigaunt",
 	"npc_assassin",
 	"npc_headcrab",
-	"npc_combineguard",
 	"npc_rollermine",
 	"npc_cscanner",
+	"npc_stalker",
+	"npc_strider",
 	//temp until we actually set up the wave system.
 	"npc_playerbot"
 };
@@ -143,19 +145,26 @@ const char* g_charNPCSCombineFirefightCommon[] =
 	"npc_combine_e",
 	"npc_combine_p",
 	"npc_combine_shot",
-	"npc_elitepolice"
+	"npc_elitepolice",
+	"npc_stalker"
 };
+
+#define STRIDER_TESTING
 
 const char* g_charNPCSCombineFirefightRare[] =
 {
+#ifdef  STRIDER_TESTING
+	"npc_strider"
+#else
 	"npc_combine_ace",
 	"npc_hunter",
 	"npc_assassin",
-	"npc_combineguard",
 	"npc_rollermine",
 	"npc_cscanner",
+	"npc_strider",
 	//temp until we actually set up the wave system.
 	"npc_playerbot"
+#endif //  STRIDER_TESTING
 };
 
 //why.
@@ -381,6 +390,9 @@ bool CNPCMakerFirefight::HumanHullFits(const Vector &vecLocation)
 bool CNPCMakerFirefight::CanMakeNPC(bool bIgnoreSolidEntities)
 {
 	if ( gEntList.NumberOfEdicts() >= (MAX_EDICTS - g_fr_entitytolerance.GetInt()) )
+		return false;
+
+	if ((CAI_BaseNPC::m_nDebugBits & bits_debugDisableAI) == bits_debugDisableAI)
 		return false;
 
 	/*
@@ -661,7 +673,10 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 	}
 	else if (Q_stristr(pRandomName, "npc_combine_ace"))
 	{
-		pent->m_spawnEquipment = MAKE_STRING("weapon_smg1");
+		int nWeaponsSoldier = ARRAYSIZE(g_CombineSoldierWeapons);
+		int randomChoiceSoldier = rand() % nWeaponsSoldier;
+		const char* pRandomNameSoldier = g_CombineSoldierWeapons[randomChoiceSoldier];
+		pent->m_spawnEquipment = MAKE_STRING(pRandomNameSoldier);
 	}
 	else if (Q_stristr(pRandomName, "npc_playerbot"))
 	{
@@ -686,6 +701,21 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 
 	DispatchSpawn(pent);
 	pent->SetOwnerEntity(this);
+
+	// adding this check to make sure strders will work properly...
+	if (FClassnameIs(pent, "npc_strider"))
+	{
+		trace_t tr;
+		// Can my bounding box fit there?
+		AI_TraceHull(GetAbsOrigin(), GetAbsOrigin(), pent->WorldAlignMins(), pent->WorldAlignMaxs(),
+			MASK_SOLID, pent, COLLISION_GROUP_NONE, &tr);
+
+		if (tr.fraction != 1.0)
+		{
+			pent->SUB_Remove();
+		}
+	}
+
 	DispatchActivate(pent);
 
 	if (m_ChildTargetName != NULL_STRING)

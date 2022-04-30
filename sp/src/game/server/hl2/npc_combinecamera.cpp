@@ -138,7 +138,7 @@ public:
 
 	int OnTakeDamage(const CTakeDamageInfo &inputInfo);
 
-	Class_T Classify() { return (m_bEnabled) ? CLASS_MILITARY : CLASS_NONE; }
+	Class_T Classify() { return (m_bEnabled) ? CLASS_COMBINE : CLASS_NONE; }
 	
 	bool IsValidEnemy( CBaseEntity *pEnemy );
 	bool FVisible(CBaseEntity *pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = NULL);

@@ -97,6 +97,7 @@ public:
 	bool		Weapon_Switch(CBaseCombatWeapon* pWeapon);
 	void		GiveWeapons(void);
 	bool		ShouldRegenerateHealth(void);
+	float		GetSequenceGroundSpeed(CStudioHdr* pStudioHdr, int iSequence);
 
 #ifdef HL2_EPISODIC
 	virtual float	GetJumpGravity() const		{ return 1.8f; }
