@@ -573,10 +573,14 @@ void CNPC_Bullsquid::HandleAnimEvent( animevent_t *pEvent )
 			CBaseEntity *pHurt = CheckTraceHullAttack( 70, Vector(-16,-16,-16), Vector(16,16,16), sk_bullsquid_dmg_bite.GetFloat(), DMG_SLASH );
 			if ( pHurt )
 			{
-				Vector forward, up;
-				AngleVectors( GetAbsAngles(), &forward, NULL, &up );
-				pHurt->ApplyAbsVelocityImpulse( 100 * (up-forward) );
-				pHurt->SetGroundEntity( NULL );
+				//don't kick striders, only deliver damage.
+				if (!FClassnameIs(pHurt, "npc_strider"))
+				{
+					Vector forward, up;
+					AngleVectors(GetAbsAngles(), &forward, NULL, &up);
+					pHurt->ApplyAbsVelocityImpulse(100 * (up - forward));
+					pHurt->SetGroundEntity(NULL);
+				}
 			}
 		}
 		break;
@@ -586,13 +590,17 @@ void CNPC_Bullsquid::HandleAnimEvent( animevent_t *pEvent )
 			CBaseEntity* pHurt = CheckTraceHullAttack(70, Vector(-16, -16, -16), Vector(16, 16, 16), sk_bullsquid_dmg_whip.GetFloat(), DMG_SLASH | DMG_ALWAYSGIB);
 			if (pHurt)
 			{
-				Vector right, up;
-				AngleVectors(GetAbsAngles(), NULL, &right, &up);
+				//don't kick striders, only deliver damage.
+				if (!FClassnameIs(pHurt, "npc_strider"))
+				{
+					Vector right, up;
+					AngleVectors(GetAbsAngles(), NULL, &right, &up);
 
-				if (pHurt->GetFlags() & (FL_NPC | FL_CLIENT))
-					pHurt->ViewPunch(QAngle(20, 0, -20));
+					if (pHurt->GetFlags() & (FL_NPC | FL_CLIENT))
+						pHurt->ViewPunch(QAngle(20, 0, -20));
 
-				pHurt->ApplyAbsVelocityImpulse(100 * (up + 2 * right));
+					pHurt->ApplyAbsVelocityImpulse(100 * (up + 2 * right));
+				}
 			}
 			EmitSound("NPC_Bullsquid.TailWhip");
 			break;
@@ -648,30 +656,22 @@ void CNPC_Bullsquid::HandleAnimEvent( animevent_t *pEvent )
 
 				if ( pHurt )
 				{
-					pHurt->ViewPunch( QAngle(20,0,-20) );
-							
-					// screeshake transforms the viewmodel as well as the viewangle. No problems with seeing the ends of the viewmodels.
-					UTIL_ScreenShake( pHurt->GetAbsOrigin(), 25.0, 1.5, 0.7, 2, SHAKE_START );
-
-					// If the player, throw him around
-					if ( pHurt->IsPlayer())
+					CBaseCombatCharacter* pVictim = ToBaseCombatCharacter(pHurt);
+					if (pVictim)
 					{
-						Vector forward, up;
-						AngleVectors( GetLocalAngles(), &forward, NULL, &up );
-						pHurt->ApplyAbsVelocityImpulse( forward * 300 + up * 300 );
-					}
-					// If not the player see if has bullsquid throw interatcion
-					else
-					{
-						CBaseCombatCharacter *pVictim = ToBaseCombatCharacter( pHurt );
-						if (pVictim)
+						if (!FClassnameIs(pVictim, "npc_strider") /*pVictim->DispatchInteraction(g_interactionBullsquidThrow, NULL, this)*/)
 						{
-							if ( pVictim->DispatchInteraction( g_interactionBullsquidThrow, NULL, this ) )
+							if (pVictim->IsPlayer())
 							{
-								Vector forward, up;
-								AngleVectors( GetLocalAngles(), &forward, NULL, &up );
-								pVictim->ApplyAbsVelocityImpulse( forward * 300 + up * 250 );
+								pVictim->ViewPunch(QAngle(20, 0, -20));
+
+								// screeshake transforms the viewmodel as well as the viewangle. No problems with seeing the ends of the viewmodels.
+								UTIL_ScreenShake(pVictim->GetAbsOrigin(), 25.0, 1.5, 0.7, 2, SHAKE_START);
 							}
+
+							Vector forward, up;
+							AngleVectors(GetLocalAngles(), &forward, NULL, &up);
+							pVictim->ApplyAbsVelocityImpulse(forward * 300 + up * 250);
 						}
 					}
 				}
