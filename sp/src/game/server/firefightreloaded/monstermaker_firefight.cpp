@@ -384,6 +384,39 @@ void CNPCMakerFirefight::MakerThink(void)
 	}
 }
 
+int CNPCMakerFirefight::DrawDebugTextOverlays(void)
+{
+	int text_offset = BaseClass::DrawDebugTextOverlays();
+
+	if (m_debugOverlays & OVERLAY_TEXT_BIT)
+	{
+		char tempstr[512];
+		Q_snprintf(tempstr, sizeof(tempstr), "NPCs Spawned: %i/%i", m_nLiveChildren, m_nMaxLiveChildren);
+		EntityText(text_offset, tempstr, 0);
+		text_offset++;
+		Q_snprintf(tempstr, sizeof(tempstr), "Rare NPCs Spawned: %i/%i", m_nLiveRareNPCs, m_nMaxLiveRareNPCs);
+		EntityText(text_offset, tempstr, 0);
+		text_offset++;
+		Q_snprintf(tempstr, sizeof(tempstr), "Rare NPC Rarity: 1 in %i", m_nRareNPCRarity);
+		EntityText(text_offset, tempstr, 0);
+		text_offset++;
+		Q_snprintf(tempstr, sizeof(tempstr), "NPC Squad: %s", STRING(m_SquadName));
+		EntityText(text_offset, tempstr, 0);
+		text_offset++;
+		Q_snprintf(tempstr, sizeof(tempstr), "Spawn Frequency: %f", m_flSpawnFrequency);
+		EntityText(text_offset, tempstr, 0);
+		text_offset++;
+		Q_snprintf(tempstr, sizeof(tempstr), "Disabled: %i", m_bDisabled);
+		EntityText(text_offset, tempstr, 0);
+		text_offset++;
+		Q_snprintf(tempstr, sizeof(tempstr), "Large NPCs Enabled: %i", m_bLargeNPCsEnabled);
+		EntityText(text_offset, tempstr, 0);
+		text_offset++;
+	}
+	return text_offset;
+
+}
+
 //-----------------------------------------------------------------------------
 // A not-very-robust check to see if a human hull could fit at this location.
 // used to validate spawn destinations.
@@ -530,7 +563,7 @@ bool CNPCMakerFirefight::CanMakeRareNPC()
 // Purpose: 
 // Input  : *pVictim - 
 //-----------------------------------------------------------------------------
-void CNPCMakerFirefight::DeathNotice(CBaseEntity *pVictim)
+void CNPCMakerFirefight::KilledNotice(CBaseEntity *pVictim)
 {
 	// ok, we've gotten the deathnotice from our child, now clear out its owner if we don't want it to fade.
 	m_nLiveChildren--;
