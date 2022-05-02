@@ -149,7 +149,8 @@ ConVar	ai_debug_efficiency( "ai_debug_efficiency", "0" );
 ConVar	ai_debug_dyninteractions( "ai_debug_dyninteractions", "0", FCVAR_NONE, "Debug the NPC dynamic interaction system." );
 ConVar	ai_frametime_limit( "ai_frametime_limit", "50", FCVAR_NONE, "frametime limit for min efficiency AIE_NORMAL (in sec's)." );
 ConVar	ai_disappear("ai_disappear", "1", FCVAR_ARCHIVE, "Makes AI disappear after a specified amount of time.");
-ConVar	ai_disappear_time("ai_disappear_time", "60", FCVAR_ARCHIVE);
+ConVar	ai_disappear_time("ai_disappear_time", "120", FCVAR_ARCHIVE);
+ConVar	ai_disappear_time_rare("ai_disappear_time_rare", "60", FCVAR_ARCHIVE);
 
 ConVar	ai_use_think_optimizations( "ai_use_think_optimizations", "0" );
 
@@ -4094,7 +4095,7 @@ void CAI_BaseNPC::NPCThink( void )
 		}
 		else
 		{
-			m_fIdleTime = gpGlobals->curtime + ai_disappear_time.GetFloat();
+			m_fIdleTime = gpGlobals->curtime + ai_disappear_time.GetFloat() + (m_isRareEntity ? ai_disappear_time_rare.GetFloat() : 0);
 		}
 	}
 }
@@ -11563,7 +11564,7 @@ CAI_BaseNPC::CAI_BaseNPC(void)
 
 	if (ai_disappear.GetBool())
 	{
-		m_fIdleTime = gpGlobals->curtime + ai_disappear_time.GetFloat();
+		m_fIdleTime = gpGlobals->curtime + ai_disappear_time.GetFloat() + (m_isRareEntity ? ai_disappear_time_rare.GetFloat() : 0);
 	}
 }
 
