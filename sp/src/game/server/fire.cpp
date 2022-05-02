@@ -1037,7 +1037,7 @@ void CFire::Update( float simTime )
 					{
 						CBaseAnimating* pAnim;
 						pAnim = dynamic_cast<CBaseAnimating*>(pOther);
-						if (pAnim)
+						if (pAnim && !pAnim->IsOnFire())
 						{
 							pAnim->Ignite(30.0f);
 						}

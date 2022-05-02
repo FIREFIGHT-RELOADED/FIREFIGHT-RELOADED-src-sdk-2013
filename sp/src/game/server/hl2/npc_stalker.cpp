@@ -44,7 +44,7 @@
 
 //#define		STALKER_DEBUG
 #define	MIN_STALKER_FIRE_RANGE		64
-#define	MAX_STALKER_FIRE_RANGE		3600 // 3600 feet.
+#define	MAX_STALKER_FIRE_RANGE		1600 // 3600 feet.
 #define	STALKER_LASER_ATTACHMENT	1
 #define	STALKER_TRIGGER_DIST		200	// Enemy dist. that wakes up the stalker
 #define	STALKER_SENTENCE_VOLUME		(float)0.35
@@ -64,6 +64,13 @@ enum StalkerBeamPower_e
 
 ConVar	sk_stalker_health( "sk_stalker_health","0");
 ConVar	sk_stalker_melee_dmg( "sk_stalker_melee_dmg","0");
+ConVar	sk_stalker_laser_low_dmg("sk_stalker_laser_low_dmg", "0");
+ConVar	sk_stalker_laser_med_dmg("sk_stalker_laser_med_dmg", "0");
+ConVar	sk_stalker_laser_high_dmg("sk_stalker_laser_high_dmg", "0");
+ConVar	sk_stalker_laser_speed("sk_stalker_laser_speed", "0");
+ConVar	sk_stalker_laser_bullseye_speed("sk_stalker_laser_bullseye_speed", "0");
+
+ConVar	stalker_skilllevellasers("stalker_skilllevellasers", "1", FCVAR_ARCHIVE);
 
 extern void		SpawnBlood(Vector vecSpot, const Vector &vAttackDir, int bloodColor, float flDamage);
 
@@ -278,7 +285,7 @@ void CNPC_Stalker::Spawn( void )
 	SetSolid( SOLID_BBOX );
 	AddSolidFlags( FSOLID_NOT_STANDABLE );
 	SetMoveType( MOVETYPE_STEP );
-	m_bloodColor		= DONT_BLEED;
+	m_bloodColor		= BLOOD_COLOR_RED;
 	m_iHealth			= sk_stalker_health.GetFloat();
 	m_flFieldOfView		= 0.1;// indicates the width of this NPC's forward view cone ( as a dotproduct result )
 	m_NPCState			= NPC_STATE_NONE;
@@ -301,6 +308,34 @@ void CNPC_Stalker::Spawn( void )
 	m_flDistTooFar	= MAX_STALKER_FIRE_RANGE;
 
 	m_iPlayerAggression = 0;
+
+	bool beampoweroverride = false;
+	//change manhack number
+	if (m_pAttributes != NULL)
+	{
+		beampoweroverride = m_pAttributes->GetBool("beam_power_override");
+		if (beampoweroverride && stalker_skilllevellasers.GetBool())
+		{
+			int power = m_pAttributes->GetInt("beam_power_level");
+			m_eBeamPower = power;
+		}
+	}
+
+	if (!beampoweroverride && stalker_skilllevellasers.GetBool())
+	{
+		if (g_pGameRules->GetSkillLevel() == SKILL_EASY)
+		{ 
+			m_eBeamPower = STALKER_BEAM_LOW;
+		}
+		else if (g_pGameRules->GetSkillLevel() == SKILL_MEDIUM || g_pGameRules->GetSkillLevel() == SKILL_HARD)
+		{
+			m_eBeamPower = STALKER_BEAM_MED;
+		}
+		else if (g_pGameRules->GetSkillLevel() > SKILL_HARD)
+		{
+			m_eBeamPower = STALKER_BEAM_HIGH;
+		}
+	}
 
 	GetSenses()->SetDistLook(MAX_STALKER_FIRE_RANGE - 1);
 }
@@ -719,13 +754,7 @@ int CNPC_Stalker::SelectSchedule( void )
 		case NPC_STATE_IDLE:
 		case NPC_STATE_ALERT:
 		{
-			if( HasCondition(COND_IN_PVS) )
-			{
-				return SCHED_STALKER_PATROL;
-			}
-
-			return SCHED_IDLE_STAND;
-
+			return SCHED_STALKER_PATROL;
 			break;
 		}
 
@@ -742,6 +771,11 @@ int CNPC_Stalker::SelectSchedule( void )
 				}
 			}
 
+			if (HasCondition(COND_ENEMY_TOO_FAR) || HasCondition(COND_NOT_FACING_ATTACK))
+			{
+				return SCHED_STALKER_CHASE_ENEMY;
+			}
+
 			if( HasCondition( COND_CAN_RANGE_ATTACK1 ) )
 			{
 				if( OccupyStrategySlotRange(SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2) )
@@ -754,13 +788,12 @@ int CNPC_Stalker::SelectSchedule( void )
 				}
 			}
 
-			if( !HasCondition(COND_SEE_ENEMY) )
+			if (!HasCondition(COND_SEE_ENEMY))
 			{
 				return SCHED_STALKER_PATROL;
 			}
 
 			return SCHED_COMBAT_FACE;
-
 			break;
 		}
 	}
@@ -832,12 +865,12 @@ void CNPC_Stalker::CalcBeamPosition(void)
 		// ---------------------------------------
 		//  Integrate towards target position
 		// ---------------------------------------
-		float	iRate = 0.95;
+		float	iRate = sk_stalker_laser_speed.GetFloat();
 
 		if( GetEnemy()->Classify() == CLASS_BULLSEYE )
 		{
 			// Seek bullseyes faster
-			iRate = 0.8;
+			iRate = sk_stalker_laser_bullseye_speed.GetFloat();
 		}
 
 		m_vLaserDir.x = (iRate * m_vLaserDir.x + (1-iRate) * targetDir.x);
@@ -1035,17 +1068,17 @@ void CNPC_Stalker::DrawAttackBeam(void)
 			switch (m_eBeamPower)
 			{
 				case STALKER_BEAM_LOW:
-					damage = 1;
+					damage = sk_stalker_laser_low_dmg.GetFloat();
 					break;
 				case STALKER_BEAM_MED:
-					damage = 3;
+					damage = sk_stalker_laser_med_dmg.GetFloat();
 					break;
 				case STALKER_BEAM_HIGH:
-					damage = 10;
+					damage = sk_stalker_laser_high_dmg.GetFloat();
 					break;
 			}
 
-			CTakeDamageInfo info( this, this, damage, DMG_SHOCK );
+			CTakeDamageInfo info( this, this, damage, DMG_SHOCK | DMG_BURN );
 			CalculateMeleeDamageForce( &info, m_vLaserDir, tr.endpos );
 			pBCC->DispatchTraceAttack( info, m_vLaserDir, &tr );
 			ApplyMultiDamage();
@@ -1066,11 +1099,18 @@ void CNPC_Stalker::DrawAttackBeam(void)
 				StopSound( m_pBeam->entindex(), "NPC_Stalker.BurnWall" );
 				m_bPlayingHitWall = false;
 			}
-
 			tr.endpos.z -= 24.0f;
 			if (!bInWater)
 			{
 				DoSmokeEffect(tr.endpos + tr.plane.normal * 8);
+
+				if (!pBCC->IsPlayer() && pBCC->GetHealth() <= (pBCC->GetMaxHealth() / 2))
+				{
+					if (!pBCC->IsOnFire())
+					{
+						pBCC->Ignite(30.0f);
+					}
+				}
 			}
 		}
 	}
