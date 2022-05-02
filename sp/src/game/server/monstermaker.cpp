@@ -530,7 +530,7 @@ void CBaseNPCMaker::MakerThink ( void )
 // Purpose: 
 // Input  : *pVictim - 
 //-----------------------------------------------------------------------------
-void CBaseNPCMaker::KilledNotice( CBaseEntity *pVictim )
+bool CBaseNPCMaker::KilledNotice( CBaseEntity *pVictim )
 {
 	// ok, we've gotten the deathnotice from our child, now clear out its owner if we don't want it to fade.
 	m_nLiveChildren--;
@@ -550,6 +550,8 @@ void CBaseNPCMaker::KilledNotice( CBaseEntity *pVictim )
 			m_OnAllSpawnedDead.FireOutput( this, this );
 		}
 	}
+
+	return true;
 }
 
 

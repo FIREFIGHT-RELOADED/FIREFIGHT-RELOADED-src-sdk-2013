@@ -535,11 +535,6 @@ void CNPC_CombineS::Event_Killed( const CTakeDamageInfo &info )
 			}
 		}
 
-		if (info.GetAttacker()->IsPlayer())
-		{
-			((CSingleplayRules*)GameRules())->NPCKilled(this, info);
-		}
-
 		Wake(false);
 		m_lifeState = LIFE_DYING;
 		CleanupOnDeath(info.GetAttacker());
@@ -553,8 +548,15 @@ void CNPC_CombineS::Event_Killed( const CTakeDamageInfo &info )
 		CBaseEntity* pOwner = GetOwnerEntity();
 		if (pOwner)
 		{
-			pOwner->KilledNotice(this);
-			SetOwnerEntity(NULL);
+			if (pOwner->KilledNotice(this))
+			{
+				SetOwnerEntity(NULL);
+			}
+		}
+
+		if (info.GetAttacker()->IsPlayer())
+		{
+			((CSingleplayRules*)GameRules())->NPCKilled(this, info);
 		}
 
 		UTIL_Remove(this);

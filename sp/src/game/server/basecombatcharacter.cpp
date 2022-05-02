@@ -1669,8 +1669,10 @@ void CBaseCombatCharacter::Event_Killed( const CTakeDamageInfo &info )
 	CBaseEntity *pOwner = GetOwnerEntity();
 	if ( pOwner )
 	{
-		pOwner->KilledNotice( this );
-		SetOwnerEntity( NULL );
+		if (pOwner->KilledNotice(this))
+		{
+			SetOwnerEntity(NULL);
+		}
 	}
 
 #ifdef GLOWS_ENABLE

@@ -56,7 +56,7 @@ public:
 	bool HumanHullFits( const Vector &vecLocation );
 	bool CanMakeNPC( bool bIgnoreSolidEntities = false );
 
-	virtual void KilledNotice( CBaseEntity *pChild );// NPC maker children use this to tell the NPC maker that they have died.
+	virtual bool KilledNotice( CBaseEntity *pChild );// NPC maker children use this to tell the NPC maker that they have died.
 	virtual void MakeNPC( void ) = 0;
 
 	virtual	void ChildPreSpawn( CAI_BaseNPC *pChild ) {};

@@ -22,7 +22,7 @@
 
 ConVar sk_initialspawnertime("sk_initialspawnertime", "5", FCVAR_CHEAT);
 ConVar sk_spawnrareenemies("sk_spawnrareenemies", "1", FCVAR_ARCHIVE);
-ConVar sk_spawnerhidefromplayer("sk_spawnerhidefromplayer", "0", FCVAR_ARCHIVE);
+ConVar sk_spawnerhidefromplayer("sk_spawnerhidefromplayer", "1", FCVAR_ARCHIVE);
 ConVar sk_spawner_npc_ragdoll_fade("sk_spawner_npc_ragdoll_fade", "1", FCVAR_ARCHIVE);
 ConVar sk_spawner_largenpc_spawndelay("sk_spawner_largenpc_spawntime", "300", FCVAR_CHEAT);
 ConVar debug_spawner_spamplayers("debug_spawner_spamplayers", "0", FCVAR_CHEAT);
@@ -563,7 +563,7 @@ bool CNPCMakerFirefight::CanMakeRareNPC()
 // Purpose: 
 // Input  : *pVictim - 
 //-----------------------------------------------------------------------------
-void CNPCMakerFirefight::KilledNotice(CBaseEntity *pVictim)
+bool CNPCMakerFirefight::KilledNotice(CBaseEntity *pVictim)
 {
 	// ok, we've gotten the deathnotice from our child, now clear out its owner if we don't want it to fade.
 	m_nLiveChildren--;
@@ -580,6 +580,8 @@ void CNPCMakerFirefight::KilledNotice(CBaseEntity *pVictim)
 		// If we're here, we're getting erroneous death messages from children we haven't created
 		AssertMsg(m_nLiveRareNPCs >= 0, "npc_maker_firefight receiving child death notice but thinks has no children (RARE)\n");
 	}
+
+	return true;
 }
 
 #define SF_CAN_STOMP_PLAYER 0x10000
