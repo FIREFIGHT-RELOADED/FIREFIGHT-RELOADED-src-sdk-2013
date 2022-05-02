@@ -22,7 +22,7 @@
 
 ConVar sk_initialspawnertime("sk_initialspawnertime", "5", FCVAR_CHEAT);
 ConVar sk_spawnrareenemies("sk_spawnrareenemies", "1", FCVAR_ARCHIVE);
-ConVar sk_spawnerhidefromplayer("sk_spawnerhidefromplayer", "1", FCVAR_ARCHIVE);
+ConVar sk_spawnerhidefromplayer("sk_spawnerhidefromplayer", "0", FCVAR_ARCHIVE);
 ConVar sk_spawner_npc_ragdoll_fade("sk_spawner_npc_ragdoll_fade", "1", FCVAR_ARCHIVE);
 ConVar sk_spawner_largenpc_spawndelay("sk_spawner_largenpc_spawntime", "300", FCVAR_CHEAT);
 ConVar debug_spawner_spamplayers("debug_spawner_spamplayers", "0", FCVAR_CHEAT);

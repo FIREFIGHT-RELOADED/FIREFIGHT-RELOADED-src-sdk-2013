@@ -199,7 +199,7 @@ ConVar  player_debug_print_damage( "player_debug_print_damage", "0", FCVAR_CHEAT
 ConVar sv_regeneration("sv_regeneration", "1", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 ConVar sv_regeneration_wait_time("sv_regeneration_wait_time", "2.3", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar sv_regeneration_rate("sv_regeneration_rate", "5.5", FCVAR_REPLICATED | FCVAR_CHEAT);
-ConVar sv_regen_interval("sv_regen_interval", "20", FCVAR_REPLICATED | FCVAR_CHEAT, "Set what interval of health to regen to.\n    i.e. if this is set to the default value (10), if you are damaged to 75 health, you'll regenerate to 80 health.\n    Set this to 0 to disable this mechanic.");
+ConVar sv_regen_interval("sv_regen_interval", "10", FCVAR_REPLICATED | FCVAR_CHEAT, "Set what interval of health to regen to.\n    i.e. if this is set to the default value (10), if you are damaged to 75 health, you'll regenerate to 80 health.\n    Set this to 0 to disable this mechanic.");
 
 ConVar sv_decay_rate("sv_decay_rate", "8.5", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar sv_decay_increaserateminhealth("sv_decay_increaserateminhealth", "1000", FCVAR_REPLICATED | FCVAR_CHEAT);
@@ -7666,7 +7666,7 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 	else if (stricmp(cmd, "givemapadditems") == 0)
 	{
 		GiveNamedItem("weapon_positiongrabber");
-		engine->ServerCommand("sv_cheats 1; debug_spawner_info 1; debug_spawner_disable 1\n");
+		engine->ServerCommand("sv_cheats 1; developer 1; debug_spawner_info 1; debug_spawner_disable 1\n");
 		return true;
 	}
 	else if (stricmp(cmd, "ironsightedit") == 0)
