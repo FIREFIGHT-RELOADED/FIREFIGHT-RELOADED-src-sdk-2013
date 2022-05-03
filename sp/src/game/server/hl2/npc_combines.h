@@ -12,6 +12,10 @@
 
 #include "npc_combine.h"
 
+#define SF_COMBINE_S_ELITE ( 1 << 19 )
+#define SF_COMBINE_S_SHOTGUNNER ( 1 << 20 )
+#define SF_COMBINE_S_PRISONGUARD ( 1 << 21 )
+
 //=========================================================
 //	>> CNPC_CombineS
 //=========================================================
@@ -42,6 +46,11 @@ public:
 	bool		IsLightDamage( const CTakeDamageInfo &info );
 	bool		IsHeavyDamage( const CTakeDamageInfo &info );
 
+	const char* GetSoldierModel();
+	const char* GetGibModel(appendage_t appendage);
+	bool		CorpseGib(const CTakeDamageInfo& info);
+	bool		CorpseDecapitate(const CTakeDamageInfo& info);
+
 private:
 	bool		ShouldHitPlayer( const Vector &targetDir, float targetDist );
 
@@ -54,7 +63,6 @@ protected:
 	int			m_iUseMarch;
 	bool		m_bNoDeathSound;
 #endif
-
 };
 
 #endif // NPC_COMBINES_H

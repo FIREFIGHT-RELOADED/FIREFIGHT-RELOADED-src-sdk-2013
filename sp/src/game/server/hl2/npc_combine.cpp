@@ -1339,7 +1339,7 @@ void CNPC_Combine::Event_Killed( const CTakeDamageInfo &info )
 
 	if (!DisableSkins && OverrideSkin == -1)
 	{
-		if (FClassnameIs(this, "npc_combine_p"))
+		if (Q_strstr(STRING(GetModelName()), "combine_soldier_prisonguard.mdl"))
 		{
 			if (m_nSkin == COMBINE_SKIN_SHOTGUNNER)
 			{
@@ -1356,7 +1356,7 @@ void CNPC_Combine::Event_Killed( const CTakeDamageInfo &info )
 				}
 			}
 		}
-		else if (FClassnameIs(this, "npc_combine_s"))
+		else if (Q_strstr(STRING(GetModelName()), "combine_soldier.mdl"))
 		{
 			if (m_nSkin != COMBINE_SKIN_DEADADDITIONAL)
 			{
@@ -3441,7 +3441,7 @@ WeaponProficiency_t CNPC_Combine::CalcWeaponProficiency( CBaseCombatWeapon *pWea
 	}
 	else if( FClassnameIs( pWeapon, "weapon_shotgun" )	)
 	{
-		if (FClassnameIs(this, "npc_combine_p"))
+		if (Q_strstr(STRING(GetModelName()), "combine_soldier_prisonguard.mdl"))
 		{
 			if (m_nSkin != COMBINE_SKIN_SHOTGUNNER)
 			{

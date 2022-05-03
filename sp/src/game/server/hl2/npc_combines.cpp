@@ -31,6 +31,8 @@
 
 ConVar	sk_combine_s_health( "sk_combine_s_health","0");
 ConVar	sk_combine_s_kick( "sk_combine_s_kick","0");
+ConVar	sk_combine_guard_health("sk_combine_guard_health", "0");
+ConVar	sk_combine_guard_kick("sk_combine_guard_kick", "0");
 
 extern ConVar sk_plr_dmg_buckshot;	
 extern ConVar sk_plr_num_shotgun_pellets;
@@ -39,8 +41,10 @@ extern ConVar sk_plr_num_shotgun_pellets;
 ConVar	combine_spawn_health( "combine_spawn_health", "1" );
 ConVar	combine_soldier_spawnwithgrenades("combine_soldier_spawnwithgrenades", "1", FCVAR_ARCHIVE);
 
-LINK_ENTITY_TO_CLASS( npc_combine_s, CNPC_CombineS );
-
+LINK_ENTITY_TO_CLASS(npc_combine_s, CNPC_CombineS);
+LINK_ENTITY_TO_CLASS(npc_combine_e, CNPC_CombineS);
+LINK_ENTITY_TO_CLASS(npc_combine_p, CNPC_CombineS);
+LINK_ENTITY_TO_CLASS(npc_combine_shot, CNPC_CombineS);
 
 #define AE_SOLDIER_BLOCK_PHYSICS		20 // trying to block an incoming physics object
 
@@ -52,8 +56,22 @@ extern Activity ACT_WALK_MARCH;
 //-----------------------------------------------------------------------------
 void CNPC_CombineS::Spawn( void )
 {
+	if (FClassnameIs(this, "npc_combine_e"))
+	{
+		AddSpawnFlags(SF_COMBINE_S_ELITE);
+	}
+	else if (FClassnameIs(this, "npc_combine_p"))
+	{
+		AddSpawnFlags(SF_COMBINE_S_PRISONGUARD);
+	}
+	else if (FClassnameIs(this, "npc_combine_shot"))
+	{
+		AddSpawnFlags(SF_COMBINE_S_SHOTGUNNER);
+	}
+
 	Precache();
-	SetModel( "models/combine_soldier.mdl" );
+
+	SetModel(GetSoldierModel());
 
 	bool grenadeoverride = false;
 	//change manhack number
@@ -88,13 +106,23 @@ void CNPC_CombineS::Spawn( void )
 		}
 	}
 
-	m_fIsElite = false;
 	m_fIsAce = false;
-	m_iUseMarch = true;
+	m_iUseMarch = false;
 
-	SetHealth( sk_combine_s_health.GetFloat() );
-	SetMaxHealth( sk_combine_s_health.GetFloat() );
-	SetKickDamage( sk_combine_s_kick.GetFloat() );
+	if (HasSpawnFlags(SF_COMBINE_S_ELITE))
+	{
+		m_fIsElite = true;
+		SetHealth(sk_combine_guard_health.GetFloat());
+		SetMaxHealth(sk_combine_guard_health.GetFloat());
+		SetKickDamage(sk_combine_guard_kick.GetFloat());
+	}
+	else
+	{
+		m_fIsElite = false;
+		SetHealth(sk_combine_s_health.GetFloat());
+		SetMaxHealth(sk_combine_s_health.GetFloat());
+		SetKickDamage(sk_combine_s_kick.GetFloat());
+	}
 
 	CapabilitiesAdd( bits_CAP_ANIMATEDFACE );
 	CapabilitiesAdd( bits_CAP_MOVE_SHOOT );
@@ -120,24 +148,471 @@ void CNPC_CombineS::Spawn( void )
 //-----------------------------------------------------------------------------
 void CNPC_CombineS::Precache()
 {
-	PrecacheModel( "models/combine_soldier.mdl" );
-	PrecacheModel("models/gibs/combine_soldier_beheaded.mdl");
+	PrecacheModel(GetSoldierModel());
+	PrecacheModel(GetGibModel(APPENDAGE_DECAP_BODY));
 
 	//GIBS!
-	PrecacheModel("models/gibs/soldier_head.mdl");
-	PrecacheModel("models/gibs/soldier_left_arm.mdl");
-	PrecacheModel("models/gibs/soldier_right_arm.mdl");
-	PrecacheModel("models/gibs/soldier_torso.mdl");
-	PrecacheModel("models/gibs/soldier_pelvis.mdl");
-	PrecacheModel("models/gibs/soldier_left_leg.mdl");
-	PrecacheModel("models/gibs/soldier_right_leg.mdl");
+	PrecacheModel(GetGibModel(APPENDAGE_HEAD));
+	PrecacheModel(GetGibModel(APPENDAGE_TORSO));
+	PrecacheModel(GetGibModel(APPENDAGE_PELVIS));
+	PrecacheModel(GetGibModel(APPENDAGE_ARML));
+	PrecacheModel(GetGibModel(APPENDAGE_ARMR));
+	PrecacheModel(GetGibModel(APPENDAGE_LEGL));
+	PrecacheModel(GetGibModel(APPENDAGE_LEGR));
 
 	UTIL_PrecacheOther( "item_healthvial" );
 	UTIL_PrecacheOther( "weapon_frag" );
+	UTIL_PrecacheOther("item_ammo_ar2_altfire");
+	UTIL_PrecacheOther("item_ammo_smg1_grenade");
 
 	BaseClass::Precache();
 }
 
+const char* CNPC_CombineS::GetSoldierModel()
+{
+	if (HasSpawnFlags(SF_COMBINE_S_ELITE))
+	{
+		return "models/combine_super_soldier.mdl";
+	}
+	else if (HasSpawnFlags(SF_COMBINE_S_SHOTGUNNER))
+	{
+		return "models/combine_soldier_shotgunner.mdl";
+	}
+	else if (HasSpawnFlags(SF_COMBINE_S_PRISONGUARD))
+	{
+		return "models/combine_soldier_prisonguard.mdl";
+	}
+	else
+	{
+		return "models/combine_soldier.mdl";
+	}
+}
+
+const char* CNPC_CombineS::GetGibModel(appendage_t appendage)
+{
+	switch (appendage)
+	{
+		case APPENDAGE_HEAD:
+			if (HasSpawnFlags(SF_COMBINE_S_ELITE))
+			{
+				return "models/gibs/soldier_elite_head.mdl";
+			}
+			else if (HasSpawnFlags(SF_COMBINE_S_SHOTGUNNER))
+			{
+				return "models/gibs/soldier_shotgunner_head.mdl";
+			}
+			else if (HasSpawnFlags(SF_COMBINE_S_PRISONGUARD))
+			{
+				return "models/gibs/soldier_prisonguard_head.mdl";
+			}
+			else
+			{
+				return "models/gibs/soldier_head.mdl";
+			}
+			break;
+		case APPENDAGE_TORSO:
+			if (HasSpawnFlags(SF_COMBINE_S_ELITE))
+			{
+				return "models/gibs/soldier_elite_torso.mdl";
+			}
+			else if (HasSpawnFlags(SF_COMBINE_S_SHOTGUNNER))
+			{
+				return "models/gibs/soldier_shotgunner_torso.mdl";
+			}
+			else if (HasSpawnFlags(SF_COMBINE_S_PRISONGUARD))
+			{
+				return "models/gibs/soldier_prisonguard_torso.mdl";
+			}
+			else
+			{
+				return "models/gibs/soldier_torso.mdl";
+			}
+			break;
+		case APPENDAGE_PELVIS:
+			if (HasSpawnFlags(SF_COMBINE_S_ELITE))
+			{
+				return "models/gibs/soldier_elite_pelvis.mdl";
+			}
+			else if (HasSpawnFlags(SF_COMBINE_S_SHOTGUNNER))
+			{
+				return "models/gibs/soldier_shotgunner_pelvis.mdl";
+			}
+			else if (HasSpawnFlags(SF_COMBINE_S_PRISONGUARD))
+			{
+				return "models/gibs/soldier_prisonguard_pelvis.mdl";
+			}
+			else
+			{
+				return "models/gibs/soldier_pelvis.mdl";
+			}
+			break;
+		case APPENDAGE_ARML:
+			if (HasSpawnFlags(SF_COMBINE_S_ELITE))
+			{
+				return "models/gibs/soldier_elite_left_arm.mdl";
+			}
+			else if (HasSpawnFlags(SF_COMBINE_S_SHOTGUNNER))
+			{
+				return "models/gibs/soldier_shotgunner_left_arm.mdl";
+			}
+			else if (HasSpawnFlags(SF_COMBINE_S_PRISONGUARD))
+			{
+				return "models/gibs/soldier_prisonguard_left_arm.mdl";
+			}
+			else
+			{
+				return "models/gibs/soldier_left_arm.mdl";
+			}
+			break;
+		case APPENDAGE_ARMR:
+			if (HasSpawnFlags(SF_COMBINE_S_ELITE))
+			{
+				return "models/gibs/soldier_elite_right_arm.mdl";
+			}
+			else if (HasSpawnFlags(SF_COMBINE_S_SHOTGUNNER))
+			{
+				return "models/gibs/soldier_shotgunner_right_arm.mdl";
+			}
+			else if (HasSpawnFlags(SF_COMBINE_S_PRISONGUARD))
+			{
+				return "models/gibs/soldier_prisonguard_right_arm.mdl";
+			}
+			else
+			{
+				return "models/gibs/soldier_right_arm.mdl";
+			}
+			break;
+		case APPENDAGE_LEGR:
+			if (HasSpawnFlags(SF_COMBINE_S_ELITE))
+			{
+				return "models/gibs/soldier_elite_right_leg.mdl";
+			}
+			else if (HasSpawnFlags(SF_COMBINE_S_SHOTGUNNER))
+			{
+				return "models/gibs/soldier_shotgunner_right_leg.mdl";
+			}
+			else if (HasSpawnFlags(SF_COMBINE_S_PRISONGUARD))
+			{
+				return "models/gibs/soldier_prisonguard_right_leg.mdl";
+			}
+			else
+			{
+				return "models/gibs/soldier_right_leg.mdl";
+			}
+			break;
+		case APPENDAGE_LEGL:
+			if (HasSpawnFlags(SF_COMBINE_S_ELITE))
+			{
+				return "models/gibs/soldier_elite_left_leg.mdl";
+			}
+			else if (HasSpawnFlags(SF_COMBINE_S_SHOTGUNNER))
+			{
+				return "models/gibs/soldier_shotgunner_left_leg.mdl";
+			}
+			else if (HasSpawnFlags(SF_COMBINE_S_PRISONGUARD))
+			{
+				return "models/gibs/soldier_prisonguard_left_leg.mdl";
+			}
+			else
+			{
+				return "models/gibs/soldier_left_leg.mdl";
+			}
+			break;
+		default:
+		case APPENDAGE_DECAP_BODY:
+			if (HasSpawnFlags(SF_COMBINE_S_ELITE))
+			{
+				return "models/gibs/combine_super_soldier_beheaded.mdl";
+			}
+			else if (HasSpawnFlags(SF_COMBINE_S_SHOTGUNNER))
+			{
+				return "models/gibs/combine_shotgunner_beheaded.mdl";
+			}
+			else if (HasSpawnFlags(SF_COMBINE_S_PRISONGUARD))
+			{
+				return "models/gibs/combine_prisonguard_beheaded.mdl";
+			}
+			else
+			{
+				return "models/gibs/combine_soldier_beheaded.mdl";
+			}
+			break;
+	}
+
+	return "";
+}
+
+bool CNPC_CombineS::CorpseDecapitate(const CTakeDamageInfo& info)
+{
+	bool gibs = true;
+	if (m_pAttributes != NULL)
+	{
+		gibs = m_pAttributes->GetBool("gibs");
+	}
+
+	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool() && gibs)
+	{
+		if ((info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB))
+		{
+			SetModel(GetGibModel(APPENDAGE_DECAP_BODY));
+
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(this, "body_decap_model", STRING(this->GetModelName()));
+				m_pAttributes->SwitchEntityColor(this, "new_color");
+			}
+
+			DispatchParticleEffect("smod_headshot_r", PATTACH_POINT_FOLLOW, this, "bloodspurt", true);
+			SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
+			CGib::SpawnSpecificStickyGibs(this, 6, 150, 450, "models/gibs/pgib_p3.mdl", 6);
+			CGib::SpawnSpecificStickyGibs(this, 6, 150, 450, "models/gibs/pgib_p4.mdl", 6);
+			EmitSound("Gore.Headshot");
+			m_bNoDeathSound = true;
+			m_iHealth = 0;
+			Event_Killed(info);
+			g_pGameRules->iHeadshotCount += 1;
+			// Handle all clients
+			for (int i = 1; i <= gpGlobals->maxClients; i++)
+			{
+				CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+
+				if (pPlayer != NULL)
+				{
+					if (g_fr_economy.GetBool())
+					{
+						pPlayer->AddMoney(7);
+					}
+					if (!g_fr_classic.GetBool())
+					{
+						pPlayer->AddXP(9);
+					}
+				}
+			}
+
+			return true;
+		}
+		else if ((info.GetDamageType() & (DMG_SLASH)) && !(info.GetDamageType() & DMG_NEVERGIB))
+		{
+			SetModel(GetGibModel(APPENDAGE_DECAP_BODY));
+
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(this, "body_decap_model", STRING(this->GetModelName()));
+				m_pAttributes->SwitchEntityColor(this, "new_color");
+			}
+
+			DispatchParticleEffect("smod_blood_decap_r", PATTACH_POINT_FOLLOW, this, "bloodspurt", true);
+			SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
+			CBaseEntity* pHeadGib = CGib::SpawnSpecificSingleGib(this, 150, 450, GetGibModel(APPENDAGE_HEAD), 6);
+
+			if (pHeadGib)
+			{
+				if (m_pAttributes != NULL)
+				{
+					m_pAttributes->SwitchEntityModel(pHeadGib, "head_gib_model", STRING(pHeadGib->GetModelName()));
+					m_pAttributes->SwitchEntityColor(pHeadGib, "new_color");
+				}
+			}
+
+			CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p4.mdl", 6);
+			EmitSound("Gore.Headshot");
+			m_bNoDeathSound = true;
+			m_iHealth = 0;
+			Event_Killed(info);
+			// Handle all clients
+			for (int i = 1; i <= gpGlobals->maxClients; i++)
+			{
+				CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+
+				if (pPlayer != NULL)
+				{
+					if (g_fr_economy.GetBool())
+					{
+						pPlayer->AddMoney(7);
+					}
+					if (!g_fr_classic.GetBool())
+					{
+						pPlayer->AddXP(9);
+					}
+				}
+			}
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool CNPC_CombineS::CorpseGib(const CTakeDamageInfo& info)
+{
+	bool gibs = true;
+	if (m_pAttributes != NULL)
+	{
+		gibs = m_pAttributes->GetBool("gibs");
+	}
+
+	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && info.GetDamageType() & (DMG_BLAST) && !(info.GetDamageType() & (DMG_DISSOLVE)) && !PlayerHasMegaPhysCannon() && gibs)
+	{
+		if (IsCurSchedule(SCHED_NPC_FREEZE))
+		{
+			// We're frozen; don't die.
+			return false;
+		}
+
+		Vector vecDamageDir = info.GetDamageForce();
+		SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
+		DispatchParticleEffect("smod_blood_gib_r", GetAbsOrigin(), GetAbsAngles(), this);
+		EmitSound("Gore.Headshot");
+		float flFadeTime = 25.0;
+
+		CBaseEntity* pHeadGib = CGib::SpawnSpecificSingleGib(this, 750, 1500, GetGibModel(APPENDAGE_HEAD), flFadeTime);
+
+		if (pHeadGib)
+		{
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(pHeadGib, "head_gib_model", STRING(pHeadGib->GetModelName()));
+				m_pAttributes->SwitchEntityColor(pHeadGib, "new_color");
+			}
+		}
+
+		Vector vecRagForce;
+		vecRagForce.x = random->RandomFloat(-400, 400);
+		vecRagForce.y = random->RandomFloat(-400, 400);
+		vecRagForce.z = random->RandomFloat(0, 250);
+
+		Vector vecRagDmgForce = (vecRagForce + vecDamageDir);
+
+		CBaseEntity* pLeftArmGib = CreateRagGib(this, GetGibModel(APPENDAGE_ARML), GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		if (pLeftArmGib)
+		{
+			color32 color = pLeftArmGib->GetRenderColor();
+			pLeftArmGib->SetRenderColor(color.r, color.g, color.b, color.a);
+
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(pLeftArmGib, "left_arm_gib_model", STRING(pLeftArmGib->GetModelName()));
+				m_pAttributes->SwitchEntityColor(pLeftArmGib, "new_color");
+			}
+		}
+
+		CBaseEntity* pRightArmGib = CreateRagGib(this, GetGibModel(APPENDAGE_ARMR), GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		if (pRightArmGib)
+		{
+			color32 color = pRightArmGib->GetRenderColor();
+			pRightArmGib->SetRenderColor(color.r, color.g, color.b, color.a);
+
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(pRightArmGib, "right_arm_gib_model", STRING(pRightArmGib->GetModelName()));
+				m_pAttributes->SwitchEntityColor(pRightArmGib, "new_color");
+			}
+		}
+
+		CBaseEntity* pTorsoGib = CreateRagGib(this, GetGibModel(APPENDAGE_TORSO), GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		if (pTorsoGib)
+		{
+			color32 color = pTorsoGib->GetRenderColor();
+			pTorsoGib->SetRenderColor(color.r, color.g, color.b, color.a);
+
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(pTorsoGib, "torso_gib_model", STRING(pTorsoGib->GetModelName()));
+				m_pAttributes->SwitchEntityColor(pTorsoGib, "new_color");
+			}
+		}
+
+		CBaseEntity* pPelvisGib = CreateRagGib(this, GetGibModel(APPENDAGE_PELVIS), GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		if (pPelvisGib)
+		{
+			color32 color = pPelvisGib->GetRenderColor();
+			pPelvisGib->SetRenderColor(color.r, color.g, color.b, color.a);
+
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(pPelvisGib, "pelvis_gib_model", STRING(pPelvisGib->GetModelName()));
+				m_pAttributes->SwitchEntityColor(pPelvisGib, "new_color");
+			}
+		}
+
+		CBaseEntity* pLeftLegGib = CreateRagGib(this, GetGibModel(APPENDAGE_LEGL), GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		if (pLeftLegGib)
+		{
+			color32 color = pLeftLegGib->GetRenderColor();
+			pLeftLegGib->SetRenderColor(color.r, color.g, color.b, color.a);
+
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(pLeftLegGib, "left_leg_gib_model", STRING(pLeftLegGib->GetModelName()));
+				m_pAttributes->SwitchEntityColor(pLeftLegGib, "new_color");
+			}
+		}
+
+		CBaseEntity* pRightLegGib = CreateRagGib(this, GetGibModel(APPENDAGE_LEGR), GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		if (pRightLegGib)
+		{
+			color32 color = pRightLegGib->GetRenderColor();
+			pRightLegGib->SetRenderColor(color.r, color.g, color.b, color.a);
+
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(pRightLegGib, "right_leg_gib_model", STRING(pRightLegGib->GetModelName()));
+				m_pAttributes->SwitchEntityColor(pRightLegGib, "new_color");
+			}
+		}
+
+		//now add smaller gibs.
+		CGib::SpawnSpecificStickyGibs(this, 3, 750, 1500, "models/gibs/pgib_p3.mdl", flFadeTime);
+		CGib::SpawnSpecificStickyGibs(this, 3, 750, 1500, "models/gibs/pgib_p4.mdl", flFadeTime);
+
+		Vector forceVector = CalcDamageForceVector(info);
+
+		// Drop any weapon that I own
+		if (m_hActiveWeapon)
+		{
+			if (VPhysicsGetObject())
+			{
+				Vector weaponForce = forceVector * VPhysicsGetObject()->GetInvMass();
+				Weapon_Drop(m_hActiveWeapon, NULL, &weaponForce);
+			}
+			else
+			{
+				Weapon_Drop(m_hActiveWeapon);
+			}
+		}
+
+		Wake(false);
+		m_lifeState = LIFE_DYING;
+		CleanupOnDeath(info.GetAttacker());
+		StopLoopingSounds();
+		DeathSound(info);
+		SetCondition(COND_LIGHT_DAMAGE);
+		SetIdealState(NPC_STATE_DEAD);
+		SetState(NPC_STATE_DEAD);
+
+		// tell owner ( if any ) that we're dead.This is mostly for NPCMaker functionality.
+		CBaseEntity* pOwner = GetOwnerEntity();
+		if (pOwner)
+		{
+			if (pOwner->KilledNotice(this))
+			{
+				SetOwnerEntity(NULL);
+			}
+		}
+
+		if (info.GetAttacker()->IsPlayer())
+		{
+			((CSingleplayRules*)GameRules())->NPCKilled(this, info);
+		}
+
+		UTIL_Remove(this);
+		SetThink(NULL);
+		return true;
+	}
+
+	return false;
+}
 
 void CNPC_CombineS::DeathSound( const CTakeDamageInfo &info )
 {
@@ -230,110 +705,25 @@ int CNPC_CombineS::SelectSchedule ( void )
 //-----------------------------------------------------------------------------
 float CNPC_CombineS::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDamageInfo &info )
 {
-	bool gibs = true;
-	if (m_pAttributes != NULL)
-	{
-		gibs = m_pAttributes->GetBool("gibs");
-	}
-
 	switch( iHitGroup )
 	{
 	case HITGROUP_HEAD:
-		if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool() && gibs)
+		// Soldiers take double headshot damage
+		if (CorpseDecapitate(info))
 		{
-			if ((info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB))
-			{
-				SetModel("models/gibs/combine_soldier_beheaded.mdl");
-
-				if (m_pAttributes != NULL)
-				{
-					m_pAttributes->SwitchEntityModel(this, "body_decap_model", STRING(this->GetModelName()));
-					m_pAttributes->SwitchEntityColor(this, "new_color");
-				}
-
-				DispatchParticleEffect("smod_headshot_r", PATTACH_POINT_FOLLOW, this, "bloodspurt", true);
-				SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
-				CGib::SpawnSpecificStickyGibs(this, 6, 150, 450, "models/gibs/pgib_p3.mdl", 6);
-				CGib::SpawnSpecificStickyGibs(this, 6, 150, 450, "models/gibs/pgib_p4.mdl", 6);
-				EmitSound("Gore.Headshot");
-				m_bNoDeathSound = true;
-				m_iHealth = 0;
-				Event_Killed(info);
-				g_pGameRules->iHeadshotCount += 1;
-				// Handle all clients
-				for (int i = 1; i <= gpGlobals->maxClients; i++)
-				{
-					CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
-
-					if (pPlayer != NULL)
-					{
-						if (g_fr_economy.GetBool())
-						{
-							pPlayer->AddMoney(7);
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pPlayer->AddXP(9);
-						}
-					}
-				}
-			}
-			else if ((info.GetDamageType() & (DMG_SLASH)) && !(info.GetDamageType() & DMG_NEVERGIB))
-			{
-				SetModel("models/gibs/combine_soldier_beheaded.mdl");
-
-				if (m_pAttributes != NULL)
-				{
-					m_pAttributes->SwitchEntityModel(this, "body_decap_model", STRING(this->GetModelName()));
-					m_pAttributes->SwitchEntityColor(this, "new_color");
-				}
-
-				DispatchParticleEffect("smod_blood_decap_r", PATTACH_POINT_FOLLOW, this, "bloodspurt", true);
-				SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
-				CBaseEntity* pHeadGib = CGib::SpawnSpecificSingleGib(this, 150, 450, "models/gibs/soldier_head.mdl", 6);
-
-				if (pHeadGib)
-				{
-					if (m_pAttributes != NULL)
-					{
-						m_pAttributes->SwitchEntityModel(pHeadGib, "head_gib_model", STRING(pHeadGib->GetModelName()));
-						m_pAttributes->SwitchEntityColor(pHeadGib, "new_color");
-					}
-				}
-
-				CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p4.mdl", 6);
-				EmitSound("Gore.Headshot");
-				m_bNoDeathSound = true;
-				m_iHealth = 0;
-				Event_Killed(info);
-				// Handle all clients
-				for (int i = 1; i <= gpGlobals->maxClients; i++)
-				{
-					CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
-
-					if (pPlayer != NULL)
-					{
-						if (g_fr_economy.GetBool())
-						{
-							pPlayer->AddMoney(7);
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pPlayer->AddXP(9);
-						}
-					}
-				}
-			}
-			else
-			{
-				// Soldiers take double headshot damage
-				return 2.0f;
-			}
+			//we're dead by this point, lol
+			return BaseClass::GetHitgroupDamageMultiplier(iHitGroup, info);
 		}
 		else
 		{
-			// Soldiers take double headshot damage
-			return 2.0f;
+			if (HasSpawnFlags(SF_COMBINE_S_ELITE))
+			{
+				return 1.5f;
+			}
+			else
+			{
+				return 2.0f;
+			}
 		}
 	}
 
@@ -399,168 +789,8 @@ void CNPC_CombineS::OnListened()
 //-----------------------------------------------------------------------------
 void CNPC_CombineS::Event_Killed( const CTakeDamageInfo &info )
 {
-	bool gibs = true;
-	if (m_pAttributes != NULL)
+	if (CorpseGib(info))
 	{
-		gibs = m_pAttributes->GetBool("gibs");
-	}
-
-	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && info.GetDamageType() & (DMG_BLAST) && !(info.GetDamageType() & (DMG_DISSOLVE)) && !PlayerHasMegaPhysCannon() && gibs)
-	{
-		if (IsCurSchedule(SCHED_NPC_FREEZE))
-		{
-			// We're frozen; don't die.
-			return;
-		}
-
-		Vector vecDamageDir = info.GetDamageForce();
-		SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
-		DispatchParticleEffect("smod_blood_gib_r", GetAbsOrigin(), GetAbsAngles(), this);
-		EmitSound("Gore.Headshot");
-		float flFadeTime = 25.0;
-
-		CBaseEntity* pHeadGib = CGib::SpawnSpecificSingleGib(this, 750, 1500, "models/gibs/soldier_head.mdl", flFadeTime);
-
-		if (pHeadGib)
-		{
-			if (m_pAttributes != NULL)
-			{
-				m_pAttributes->SwitchEntityModel(pHeadGib, "head_gib_model", STRING(pHeadGib->GetModelName()));
-				m_pAttributes->SwitchEntityColor(pHeadGib, "new_color");
-			}
-		}
-		
-		Vector vecRagForce;
-		vecRagForce.x = random->RandomFloat(-400, 400);
-		vecRagForce.y = random->RandomFloat(-400, 400);
-		vecRagForce.z = random->RandomFloat(0, 250);
-
-		Vector vecRagDmgForce = (vecRagForce + vecDamageDir);
-
-		CBaseEntity *pLeftArmGib = CreateRagGib(this, "models/gibs/soldier_left_arm.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
-		if (pLeftArmGib)
-		{ 
-			color32 color = pLeftArmGib->GetRenderColor();
-			pLeftArmGib->SetRenderColor(color.r, color.g, color.b, color.a);
-
-			if (m_pAttributes != NULL)
-			{
-				m_pAttributes->SwitchEntityModel(pLeftArmGib, "left_arm_gib_model", STRING(pLeftArmGib->GetModelName()));
-				m_pAttributes->SwitchEntityColor(pLeftArmGib, "new_color");
-			}
-		}
-
-		CBaseEntity *pRightArmGib = CreateRagGib(this, "models/gibs/soldier_right_arm.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
-		if (pRightArmGib)
-		{
-			color32 color = pRightArmGib->GetRenderColor();
-			pRightArmGib->SetRenderColor(color.r, color.g, color.b, color.a);
-
-			if (m_pAttributes != NULL)
-			{
-				m_pAttributes->SwitchEntityModel(pRightArmGib, "right_arm_gib_model", STRING(pRightArmGib->GetModelName()));
-				m_pAttributes->SwitchEntityColor(pRightArmGib, "new_color");
-			}
-		}
-
-		CBaseEntity *pTorsoGib = CreateRagGib(this, "models/gibs/soldier_torso.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
-		if (pTorsoGib)
-		{
-			color32 color = pTorsoGib->GetRenderColor();
-			pTorsoGib->SetRenderColor(color.r, color.g, color.b, color.a);
-
-			if (m_pAttributes != NULL)
-			{
-				m_pAttributes->SwitchEntityModel(pTorsoGib, "torso_gib_model", STRING(pTorsoGib->GetModelName()));
-				m_pAttributes->SwitchEntityColor(pTorsoGib, "new_color");
-			}
-		}
-
-		CBaseEntity *pPelvisGib = CreateRagGib(this, "models/gibs/soldier_pelvis.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
-		if (pPelvisGib)
-		{
-			color32 color = pPelvisGib->GetRenderColor();
-			pPelvisGib->SetRenderColor(color.r, color.g, color.b, color.a);
-
-			if (m_pAttributes != NULL)
-			{
-				m_pAttributes->SwitchEntityModel(pPelvisGib, "pelvis_gib_model", STRING(pPelvisGib->GetModelName()));
-				m_pAttributes->SwitchEntityColor(pPelvisGib, "new_color");
-			}
-		}
-
-		CBaseEntity *pLeftLegGib = CreateRagGib(this, "models/gibs/soldier_left_leg.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
-		if (pLeftLegGib)
-		{
-			color32 color = pLeftLegGib->GetRenderColor();
-			pLeftLegGib->SetRenderColor(color.r, color.g, color.b, color.a);
-
-			if (m_pAttributes != NULL)
-			{
-				m_pAttributes->SwitchEntityModel(pLeftLegGib, "left_leg_gib_model", STRING(pLeftLegGib->GetModelName()));
-				m_pAttributes->SwitchEntityColor(pLeftLegGib, "new_color");
-			}
-		}
-
-		CBaseEntity *pRightLegGib = CreateRagGib(this, "models/gibs/soldier_right_leg.mdl", GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
-		if (pRightLegGib)
-		{
-			color32 color = pRightLegGib->GetRenderColor();
-			pRightLegGib->SetRenderColor(color.r, color.g, color.b, color.a);
-
-			if (m_pAttributes != NULL)
-			{
-				m_pAttributes->SwitchEntityModel(pRightLegGib, "right_leg_gib_model", STRING(pRightLegGib->GetModelName()));
-				m_pAttributes->SwitchEntityColor(pRightLegGib, "new_color");
-			}
-		}
-
-		//now add smaller gibs.
-		CGib::SpawnSpecificStickyGibs(this, 3, 750, 1500, "models/gibs/pgib_p3.mdl", flFadeTime);
-		CGib::SpawnSpecificStickyGibs(this, 3, 750, 1500, "models/gibs/pgib_p4.mdl", flFadeTime);
-
-		Vector forceVector = CalcDamageForceVector(info);
-
-		// Drop any weapon that I own
-		if (m_hActiveWeapon)
-		{
-			if (VPhysicsGetObject())
-			{
-				Vector weaponForce = forceVector * VPhysicsGetObject()->GetInvMass();
-				Weapon_Drop(m_hActiveWeapon, NULL, &weaponForce);
-			}
-			else
-			{
-				Weapon_Drop(m_hActiveWeapon);
-			}
-		}
-
-		Wake(false);
-		m_lifeState = LIFE_DYING;
-		CleanupOnDeath(info.GetAttacker());
-		StopLoopingSounds();
-		DeathSound(info);
-		SetCondition(COND_LIGHT_DAMAGE);
-		SetIdealState(NPC_STATE_DEAD);
-		SetState(NPC_STATE_DEAD);
-
-		// tell owner ( if any ) that we're dead.This is mostly for NPCMaker functionality.
-		CBaseEntity* pOwner = GetOwnerEntity();
-		if (pOwner)
-		{
-			if (pOwner->KilledNotice(this))
-			{
-				SetOwnerEntity(NULL);
-			}
-		}
-
-		if (info.GetAttacker()->IsPlayer())
-		{
-			((CSingleplayRules*)GameRules())->NPCKilled(this, info);
-		}
-
-		UTIL_Remove(this);
-		SetThink(NULL);
 		return;
 	}
 
@@ -584,6 +814,54 @@ void CNPC_CombineS::Event_Killed( const CTakeDamageInfo &info )
 
 	if ( pPlayer != NULL )
 	{
+		if (m_hActiveWeapon && HasSpawnFlags(SF_COMBINE_S_ELITE))
+		{
+			// Elites drop alt-fire ammo, so long as they weren't killed by dissolving.
+#ifdef HL2_EPISODIC
+			if (HasSpawnFlags(SF_COMBINE_NO_AR2DROP) == false)
+#endif
+			{
+				CBaseEntity* pItem = NULL;
+
+				if (FClassnameIs(GetActiveWeapon(), "weapon_ar2"))
+				{
+					pItem = DropItem("item_ammo_ar2_altfire", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
+				}
+				else if (FClassnameIs(GetActiveWeapon(), "weapon_smg1"))
+				{
+					pItem = DropItem("item_ammo_smg1_grenade", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
+				}
+
+				if (pItem)
+				{
+					IPhysicsObject* pObj = pItem->VPhysicsGetObject();
+
+					if (pObj)
+					{
+						Vector			vel = RandomVector(-64.0f, 64.0f);
+						AngularImpulse	angImp = RandomAngularImpulse(-300.0f, 300.0f);
+
+						vel[2] = 0.0f;
+						pObj->AddVelocity(&vel, &angImp);
+					}
+
+					if (info.GetDamageType() & DMG_DISSOLVE)
+					{
+						CBaseAnimating* pAnimating = dynamic_cast<CBaseAnimating*>(pItem);
+
+						if (pAnimating)
+						{
+							pAnimating->Dissolve(NULL, gpGlobals->curtime, false, ENTITY_DISSOLVE_NORMAL);
+						}
+					}
+					else
+					{
+						WeaponManager_AddManaged(pItem);
+					}
+				}
+			}
+		}
+
 		CHalfLife2 *pHL2GameRules = static_cast<CHalfLife2 *>(g_pGameRules);
 
 		// Attempt to drop health

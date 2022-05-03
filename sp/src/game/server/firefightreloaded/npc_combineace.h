@@ -63,6 +63,10 @@ public:
 
 	void		SpawnArmorPieces(void);
 
+	const char* GetGibModel(appendage_t appendage);
+	bool		CorpseGib(const CTakeDamageInfo& info);
+	bool		CorpseDecapitate(const CTakeDamageInfo& info);
+
 private:
 	bool		ShouldHitPlayer( const Vector &targetDir, float targetDist );
 	void		SetEyeState(aceEyeState_t state);

@@ -106,6 +106,19 @@ enum Interruptability_t
 	DEATH_INTERRUPTABILITY
 };
 
+//used for humanoid NPCs that have gibs (combine, metrocops)
+enum appendage_t
+{
+	APPENDAGE_HEAD,
+	APPENDAGE_TORSO,
+	APPENDAGE_PELVIS,
+	APPENDAGE_ARML,
+	APPENDAGE_ARMR,
+	APPENDAGE_LEGR,
+	APPENDAGE_LEGL,
+	APPENDAGE_DECAP_BODY
+};
+
 //-------------------------------------
 // Memory
 //-------------------------------------

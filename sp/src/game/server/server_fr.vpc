@@ -348,14 +348,6 @@ $Project "Server (FR)"
 				}
 				$File	"firefightreloaded\npc_combineace.cpp"
 				$File	"firefightreloaded\npc_combineace.h"
-				$File	"firefightreloaded\npc_combinee.cpp"
-				$File	"firefightreloaded\npc_combinee.h"
-				$File	"firefightreloaded\npc_combinep.cpp"
-				$File	"firefightreloaded\npc_combinep.h"
-				$File	"firefightreloaded\npc_combineshot.cpp"
-				$File	"firefightreloaded\npc_combineshot.h"
-				$File 	"firefightreloaded\npc_elitepolice.cpp"
-				$File 	"firefightreloaded\npc_elitepolice.h"
 			}
 			
 			$Folder	"Weapons"

@@ -45,13 +45,6 @@ const char *g_MetropoliceWeapons[] =
 	"weapon_stunstick"
 };
 
-const char *g_EliteMetropoliceWeapons[] =
-{
-	"weapon_smg1",
-	"weapon_ar2",
-	"weapon_pistol"
-};
-
 const char *g_charNPCSCommon[] =
 {
 	"npc_metropolice",
@@ -67,7 +60,6 @@ const char *g_charNPCSCommon[] =
 	"npc_agrunt",
 	"npc_houndeye",
 	"npc_bullsquid",
-	"npc_elitepolice",
 	"npc_acontroller",
 	"npc_stalker"
 };
@@ -119,7 +111,6 @@ const char* g_NPCS[] =
 	"npc_agrunt",
 	"npc_houndeye",
 	"npc_bullsquid",
-	"npc_elitepolice",
 	"npc_acontroller",
 	"npc_combine_ace",
 	"npc_hunter",
@@ -153,7 +144,6 @@ const char* g_charNPCSCombineFirefightCommon[] =
 	"npc_combine_e",
 	"npc_combine_p",
 	"npc_combine_shot",
-	"npc_elitepolice",
 	"npc_stalker"
 #endif //  STRIDER_TESTING
 };
@@ -700,13 +690,6 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 		const char* pRandomNamePolice = g_MetropoliceWeapons[randomChoicePolice];
 		pent->m_spawnEquipment = MAKE_STRING(pRandomNamePolice);
 		pent->AddSpawnFlags(SF_METROPOLICE_ALLOWED_TO_RESPOND);
-	}
-	else if (Q_stristr(pRandomName, "npc_elitepolice"))
-	{
-		int nWeaponsElitePolice = ARRAYSIZE(g_EliteMetropoliceWeapons);
-		int randomChoiceElitePolice = rand() % nWeaponsElitePolice;
-		const char* pRandomNameElitePolice = g_EliteMetropoliceWeapons[randomChoiceElitePolice];
-		pent->m_spawnEquipment = MAKE_STRING(pRandomNameElitePolice);
 	}
 	else if (Q_stristr(pRandomName, "npc_combine_shot"))
 	{

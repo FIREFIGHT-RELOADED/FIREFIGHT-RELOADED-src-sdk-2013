@@ -34,7 +34,7 @@ protected:
 
 	virtual void Event_EntityKilled( CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event ) 
 	{
-		if (FClassnameIs(pVictim, "npc_combine_s") || FClassnameIs(pVictim, "npc_combine_e") || FClassnameIs(pVictim, "npc_combine_p") || FClassnameIs(pVictim, "npc_combine_shot") || FClassnameIs(pVictim, "npc_combine_ace") || FClassnameIs(pVictim, "npc_metropolice") || FClassnameIs(pVictim, "npc_assassin") || FClassnameIs(pVictim, "npc_manhack") || FClassnameIs(pVictim, "npc_elitepolice") || FClassnameIs(pVictim, "npc_combineguard"))
+		if (FClassnameIs(pVictim, "npc_combine_s") || FClassnameIs(pVictim, "npc_combine_e") || FClassnameIs(pVictim, "npc_combine_p") || FClassnameIs(pVictim, "npc_combine_shot") || FClassnameIs(pVictim, "npc_combine_ace") || FClassnameIs(pVictim, "npc_metropolice") || FClassnameIs(pVictim, "npc_assassin") || FClassnameIs(pVictim, "npc_manhack"))
 		{
 			IncrementCount();
 		}
@@ -62,7 +62,7 @@ protected:
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_combine_s") || FClassnameIs(pVictim, "npc_combine_e") || FClassnameIs(pVictim, "npc_combine_p") || FClassnameIs(pVictim, "npc_combine_shot") || FClassnameIs(pVictim, "npc_combine_ace") || FClassnameIs(pVictim, "npc_metropolice") || FClassnameIs(pVictim, "npc_assassin") || FClassnameIs(pVictim, "npc_manhack") || FClassnameIs(pVictim, "npc_elitepolice") || FClassnameIs(pVictim, "npc_combineguard"))
+		if (FClassnameIs(pVictim, "npc_combine_s") || FClassnameIs(pVictim, "npc_combine_e") || FClassnameIs(pVictim, "npc_combine_p") || FClassnameIs(pVictim, "npc_combine_shot") || FClassnameIs(pVictim, "npc_combine_ace") || FClassnameIs(pVictim, "npc_metropolice") || FClassnameIs(pVictim, "npc_assassin") || FClassnameIs(pVictim, "npc_manhack"))
 		{
 			IncrementCount();
 		}
@@ -90,7 +90,7 @@ protected:
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_combine_s") || FClassnameIs(pVictim, "npc_combine_e") || FClassnameIs(pVictim, "npc_combine_p") || FClassnameIs(pVictim, "npc_combine_shot") || FClassnameIs(pVictim, "npc_combine_ace") || FClassnameIs(pVictim, "npc_metropolice") || FClassnameIs(pVictim, "npc_assassin") || FClassnameIs(pVictim, "npc_manhack") || FClassnameIs(pVictim, "npc_elitepolice") || FClassnameIs(pVictim, "npc_combineguard"))
+		if (FClassnameIs(pVictim, "npc_combine_s") || FClassnameIs(pVictim, "npc_combine_e") || FClassnameIs(pVictim, "npc_combine_p") || FClassnameIs(pVictim, "npc_combine_shot") || FClassnameIs(pVictim, "npc_combine_ace") || FClassnameIs(pVictim, "npc_metropolice") || FClassnameIs(pVictim, "npc_assassin") || FClassnameIs(pVictim, "npc_manhack"))
 		{
 			IncrementCount();
 		}
