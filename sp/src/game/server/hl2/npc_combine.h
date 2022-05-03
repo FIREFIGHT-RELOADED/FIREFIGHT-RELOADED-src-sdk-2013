@@ -27,6 +27,12 @@
 #define SF_COMBINE_NO_GRENADEDROP ( 1 << 17 )
 #define SF_COMBINE_NO_AR2DROP ( 1 << 18 )
 
+#define COMBINE_SKIN_DEFAULT		0
+#define COMBINE_SKIN_SHOTGUNNER		1
+#define COMBINE_SKIN_DEADDEFAULT	1
+#define COMBINE_SKIN_DEADADDITIONAL		2
+#define COMBINE_SKIN_SHOTGUNNER_DEAD	3
+
 enum TacticalVariant_T
 {
 	TACTICAL_VARIANT_DEFAULT = 0,
@@ -296,6 +302,7 @@ public:
 	int				m_iNumGrenades;
 	int				m_iLastAnimEventHandled;
 	bool			m_fIsElite;
+	bool			m_fIsShotgunner;
 	bool			m_fIsAce;
 	Vector			m_vecAltFireTarget;
 	bool			m_bNoDeathSound;

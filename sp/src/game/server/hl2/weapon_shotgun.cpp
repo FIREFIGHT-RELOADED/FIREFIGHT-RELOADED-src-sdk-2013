@@ -18,6 +18,7 @@
 #include "soundent.h"
 #include "vstdlib/random.h"
 #include "gamestats.h"
+#include "npc_combine.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -232,6 +233,7 @@ void CWeaponShotgun::FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, bool
 bool CanUseSecondaryFire(CBaseCombatCharacter* pOperator)
 {
 	CAI_BaseNPC* npc = pOperator->MyNPCPointer();
+	CNPC_Combine* combinePointer = dynamic_cast<CNPC_Combine*>(npc);
 	// hate hacks.
 	// npc gets an attribute to do so
 	return (npc && npc->m_pAttributes != NULL &&
@@ -239,9 +241,7 @@ bool CanUseSecondaryFire(CBaseCombatCharacter* pOperator)
 		//enemies get advantage on higher difficuties.
 		|| (sv_combine_shotgunner_secondaryfire.GetBool() &&
 		(g_pGameRules->GetSkillLevel() >= SKILL_HARD &&
-		(FClassnameIs(pOperator, "npc_combine_p") || 
-		FClassnameIs(pOperator, "npc_combine_shot") || 
-		FClassnameIs(pOperator, "npc_combine_ace"))) ||
+		combinePointer && combinePointer->m_nSkin == COMBINE_SKIN_SHOTGUNNER) ||
 		//playerbot gets advantage on lower difficuties.
 		(g_pGameRules->GetSkillLevel() <= SKILL_HARD &&
 		FClassnameIs(pOperator, "npc_playerbot")));

@@ -69,9 +69,11 @@ void CNPC_CombineS::Spawn( void )
 		AddSpawnFlags(SF_COMBINE_S_SHOTGUNNER);
 	}
 
+	GetSoldierModel();
+
 	Precache();
 
-	SetModel(GetSoldierModel());
+	SetModel(STRING(GetModelName()));
 
 	bool grenadeoverride = false;
 	//change manhack number
@@ -109,16 +111,14 @@ void CNPC_CombineS::Spawn( void )
 	m_fIsAce = false;
 	m_iUseMarch = false;
 
-	if (HasSpawnFlags(SF_COMBINE_S_ELITE))
+	if (IsElite())
 	{
-		m_fIsElite = true;
 		SetHealth(sk_combine_guard_health.GetFloat());
 		SetMaxHealth(sk_combine_guard_health.GetFloat());
 		SetKickDamage(sk_combine_guard_kick.GetFloat());
 	}
 	else
 	{
-		m_fIsElite = false;
 		SetHealth(sk_combine_s_health.GetFloat());
 		SetMaxHealth(sk_combine_s_health.GetFloat());
 		SetKickDamage(sk_combine_s_kick.GetFloat());
@@ -148,7 +148,18 @@ void CNPC_CombineS::Spawn( void )
 //-----------------------------------------------------------------------------
 void CNPC_CombineS::Precache()
 {
-	PrecacheModel(GetSoldierModel());
+	const char* pModelName = STRING(GetModelName());
+
+	if (!Q_stricmp(pModelName, "models/combine_super_soldier.mdl"))
+	{
+		m_fIsElite = true;
+	}
+	else
+	{
+		m_fIsElite = false;
+	}
+
+	PrecacheModel(pModelName);
 	PrecacheModel(GetGibModel(APPENDAGE_DECAP_BODY));
 
 	//GIBS!
@@ -168,23 +179,27 @@ void CNPC_CombineS::Precache()
 	BaseClass::Precache();
 }
 
-const char* CNPC_CombineS::GetSoldierModel()
+void CNPC_CombineS::GetSoldierModel()
 {
-	if (HasSpawnFlags(SF_COMBINE_S_ELITE))
+	if (!GetModelName())
 	{
-		return "models/combine_super_soldier.mdl";
-	}
-	else if (HasSpawnFlags(SF_COMBINE_S_SHOTGUNNER))
-	{
-		return "models/combine_soldier_shotgunner.mdl";
-	}
-	else if (HasSpawnFlags(SF_COMBINE_S_PRISONGUARD))
-	{
-		return "models/combine_soldier_prisonguard.mdl";
-	}
-	else
-	{
-		return "models/combine_soldier.mdl";
+		if (HasSpawnFlags(SF_COMBINE_S_ELITE))
+		{
+			SetModelName(AllocPooledString("models/combine_super_soldier.mdl"));
+		}
+		else if (HasSpawnFlags(SF_COMBINE_S_SHOTGUNNER))
+		{
+			SetModelName(AllocPooledString("models/combine_soldier.mdl"));
+			m_fIsShotgunner = true;
+		}
+		else if (HasSpawnFlags(SF_COMBINE_S_PRISONGUARD))
+		{
+			SetModelName(AllocPooledString("models/combine_soldier_prisonguard.mdl"));
+		}
+		else
+		{
+			SetModelName(AllocPooledString("models/combine_soldier.mdl"));
+		}
 	}
 }
 
@@ -193,15 +208,15 @@ const char* CNPC_CombineS::GetGibModel(appendage_t appendage)
 	switch (appendage)
 	{
 		case APPENDAGE_HEAD:
-			if (HasSpawnFlags(SF_COMBINE_S_ELITE))
+			if (IsElite())
 			{
 				return "models/gibs/soldier_elite_head.mdl";
 			}
-			else if (HasSpawnFlags(SF_COMBINE_S_SHOTGUNNER))
+			else if (m_fIsShotgunner)
 			{
 				return "models/gibs/soldier_shotgunner_head.mdl";
 			}
-			else if (HasSpawnFlags(SF_COMBINE_S_PRISONGUARD))
+			else if (!Q_stricmp(STRING(GetModelName()), "models/combine_soldier_prisonguard.mdl"))
 			{
 				return "models/gibs/soldier_prisonguard_head.mdl";
 			}
@@ -211,15 +226,15 @@ const char* CNPC_CombineS::GetGibModel(appendage_t appendage)
 			}
 			break;
 		case APPENDAGE_TORSO:
-			if (HasSpawnFlags(SF_COMBINE_S_ELITE))
+			if (IsElite())
 			{
 				return "models/gibs/soldier_elite_torso.mdl";
 			}
-			else if (HasSpawnFlags(SF_COMBINE_S_SHOTGUNNER))
+			else if (m_fIsShotgunner)
 			{
 				return "models/gibs/soldier_shotgunner_torso.mdl";
 			}
-			else if (HasSpawnFlags(SF_COMBINE_S_PRISONGUARD))
+			else if (!Q_stricmp(STRING(GetModelName()), "models/combine_soldier_prisonguard.mdl"))
 			{
 				return "models/gibs/soldier_prisonguard_torso.mdl";
 			}
@@ -229,15 +244,15 @@ const char* CNPC_CombineS::GetGibModel(appendage_t appendage)
 			}
 			break;
 		case APPENDAGE_PELVIS:
-			if (HasSpawnFlags(SF_COMBINE_S_ELITE))
+			if (IsElite())
 			{
 				return "models/gibs/soldier_elite_pelvis.mdl";
 			}
-			else if (HasSpawnFlags(SF_COMBINE_S_SHOTGUNNER))
+			else if (m_fIsShotgunner)
 			{
 				return "models/gibs/soldier_shotgunner_pelvis.mdl";
 			}
-			else if (HasSpawnFlags(SF_COMBINE_S_PRISONGUARD))
+			else if (!Q_stricmp(STRING(GetModelName()), "models/combine_soldier_prisonguard.mdl"))
 			{
 				return "models/gibs/soldier_prisonguard_pelvis.mdl";
 			}
@@ -247,15 +262,15 @@ const char* CNPC_CombineS::GetGibModel(appendage_t appendage)
 			}
 			break;
 		case APPENDAGE_ARML:
-			if (HasSpawnFlags(SF_COMBINE_S_ELITE))
+			if (IsElite())
 			{
 				return "models/gibs/soldier_elite_left_arm.mdl";
 			}
-			else if (HasSpawnFlags(SF_COMBINE_S_SHOTGUNNER))
+			else if (m_fIsShotgunner)
 			{
 				return "models/gibs/soldier_shotgunner_left_arm.mdl";
 			}
-			else if (HasSpawnFlags(SF_COMBINE_S_PRISONGUARD))
+			else if (!Q_stricmp(STRING(GetModelName()), "models/combine_soldier_prisonguard.mdl"))
 			{
 				return "models/gibs/soldier_prisonguard_left_arm.mdl";
 			}
@@ -265,15 +280,15 @@ const char* CNPC_CombineS::GetGibModel(appendage_t appendage)
 			}
 			break;
 		case APPENDAGE_ARMR:
-			if (HasSpawnFlags(SF_COMBINE_S_ELITE))
+			if (IsElite())
 			{
 				return "models/gibs/soldier_elite_right_arm.mdl";
 			}
-			else if (HasSpawnFlags(SF_COMBINE_S_SHOTGUNNER))
+			else if (m_fIsShotgunner)
 			{
 				return "models/gibs/soldier_shotgunner_right_arm.mdl";
 			}
-			else if (HasSpawnFlags(SF_COMBINE_S_PRISONGUARD))
+			else if (!Q_stricmp(STRING(GetModelName()), "models/combine_soldier_prisonguard.mdl"))
 			{
 				return "models/gibs/soldier_prisonguard_right_arm.mdl";
 			}
@@ -283,15 +298,15 @@ const char* CNPC_CombineS::GetGibModel(appendage_t appendage)
 			}
 			break;
 		case APPENDAGE_LEGR:
-			if (HasSpawnFlags(SF_COMBINE_S_ELITE))
+			if (IsElite())
 			{
 				return "models/gibs/soldier_elite_right_leg.mdl";
 			}
-			else if (HasSpawnFlags(SF_COMBINE_S_SHOTGUNNER))
+			else if (m_fIsShotgunner)
 			{
 				return "models/gibs/soldier_shotgunner_right_leg.mdl";
 			}
-			else if (HasSpawnFlags(SF_COMBINE_S_PRISONGUARD))
+			else if (!Q_stricmp(STRING(GetModelName()), "models/combine_soldier_prisonguard.mdl"))
 			{
 				return "models/gibs/soldier_prisonguard_right_leg.mdl";
 			}
@@ -301,15 +316,15 @@ const char* CNPC_CombineS::GetGibModel(appendage_t appendage)
 			}
 			break;
 		case APPENDAGE_LEGL:
-			if (HasSpawnFlags(SF_COMBINE_S_ELITE))
+			if (IsElite())
 			{
 				return "models/gibs/soldier_elite_left_leg.mdl";
 			}
-			else if (HasSpawnFlags(SF_COMBINE_S_SHOTGUNNER))
+			else if (m_fIsShotgunner)
 			{
 				return "models/gibs/soldier_shotgunner_left_leg.mdl";
 			}
-			else if (HasSpawnFlags(SF_COMBINE_S_PRISONGUARD))
+			else if (!Q_stricmp(STRING(GetModelName()), "models/combine_soldier_prisonguard.mdl"))
 			{
 				return "models/gibs/soldier_prisonguard_left_leg.mdl";
 			}
@@ -320,15 +335,15 @@ const char* CNPC_CombineS::GetGibModel(appendage_t appendage)
 			break;
 		default:
 		case APPENDAGE_DECAP_BODY:
-			if (HasSpawnFlags(SF_COMBINE_S_ELITE))
+			if (IsElite())
 			{
 				return "models/gibs/combine_super_soldier_beheaded.mdl";
 			}
-			else if (HasSpawnFlags(SF_COMBINE_S_SHOTGUNNER))
+			else if (m_fIsShotgunner)
 			{
 				return "models/gibs/combine_shotgunner_beheaded.mdl";
 			}
-			else if (HasSpawnFlags(SF_COMBINE_S_PRISONGUARD))
+			else if (!Q_stricmp(STRING(GetModelName()), "models/combine_soldier_prisonguard.mdl"))
 			{
 				return "models/gibs/combine_prisonguard_beheaded.mdl";
 			}
@@ -444,7 +459,7 @@ float CNPC_CombineS::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDama
 		}
 		else
 		{
-			if (HasSpawnFlags(SF_COMBINE_S_ELITE))
+			if (IsElite())
 			{
 				return 1.5f;
 			}
@@ -542,7 +557,7 @@ void CNPC_CombineS::Event_Killed( const CTakeDamageInfo &info )
 
 	if ( pPlayer != NULL )
 	{
-		if (m_hActiveWeapon && HasSpawnFlags(SF_COMBINE_S_ELITE))
+		if (m_hActiveWeapon && IsElite())
 		{
 			// Elites drop alt-fire ammo, so long as they weren't killed by dissolving.
 #ifdef HL2_EPISODIC

@@ -3948,7 +3948,7 @@ bool CNPC_MetroPolice::CorpseDecapitate(const CTakeDamageInfo& info)
 	bool gibs = true;
 	if (m_pAttributes != NULL)
 	{
-		gibs = m_pAttributes->GetBool("gibs");
+		gibs = m_pAttributes->GetBool("gibs", true);
 	}
 
 	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool() && gibs)
@@ -4050,7 +4050,7 @@ bool CNPC_MetroPolice::CorpseGib(const CTakeDamageInfo& info)
 	bool gibs = true;
 	if (m_pAttributes != NULL)
 	{
-		gibs = m_pAttributes->GetBool("gibs");
+		gibs = m_pAttributes->GetBool("gibs", true);
 	}
 
 	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && info.GetDamageType() & (DMG_BLAST) && !(info.GetDamageType() & (DMG_DISSOLVE)) && !PlayerHasMegaPhysCannon() && gibs)

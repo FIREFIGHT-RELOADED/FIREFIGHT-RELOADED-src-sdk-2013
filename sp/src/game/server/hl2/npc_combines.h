@@ -46,7 +46,7 @@ public:
 	bool		IsLightDamage( const CTakeDamageInfo &info );
 	bool		IsHeavyDamage( const CTakeDamageInfo &info );
 
-	const char* GetSoldierModel();
+	void GetSoldierModel();
 	const char* GetGibModel(appendage_t appendage);
 
 private:
