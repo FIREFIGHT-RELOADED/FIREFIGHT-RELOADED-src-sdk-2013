@@ -169,12 +169,6 @@ $Project "Client (FR)"
 			$File 	"firefightreloaded\fr_rendertargets.h"
 			$File	"firefightreloaded\fr_storemenuex.cpp"
 			$File	"firefightreloaded\fr_storemenuex.h"
-			
-			$Folder	"NPCs"
-			{
-				$File	"firefightreloaded\c_combineguard.cpp"
-				$File	"firefightreloaded\c_npc_antlionguardian.cpp"
-			}
 
 			$Folder	"GameUI"
 			{

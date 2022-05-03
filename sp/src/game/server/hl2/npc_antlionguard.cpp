@@ -640,6 +640,7 @@ CNPC_AntlionGuard::CNPC_AntlionGuard( void )
 }
 
 LINK_ENTITY_TO_CLASS( npc_antlionguard, CNPC_AntlionGuard );
+LINK_ENTITY_TO_CLASS( npc_antlionguardian, CNPC_AntlionGuard);
 
 IMPLEMENT_SERVERCLASS_ST(CNPC_AntlionGuard, DT_NPC_AntlionGuard)
 	SendPropBool( SENDINFO( m_bCavernBreed ) ),
@@ -766,6 +767,12 @@ void CNPC_AntlionGuard::CreateGlow( CSprite **pSprite, const char *pAttachName )
 //-----------------------------------------------------------------------------
 void CNPC_AntlionGuard::Spawn( void )
 {
+	if (FClassnameIs(this, "npc_antlionguardian"))
+	{
+		m_bCavernBreed = true;
+		m_bInCavern = true;
+	}
+
 	Precache();
 
 	SetModel( ANTLIONGUARD_MODEL );
@@ -2144,8 +2151,14 @@ int CNPC_AntlionGuard::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	CTakeDamageInfo dInfo = info;
 
 	// Don't take damage from another antlion guard!
-	if (dInfo.GetAttacker() && dInfo.GetAttacker() != this && FClassnameIs(dInfo.GetAttacker(), "npc_antlionguard") && FClassnameIs(dInfo.GetAttacker(), "npc_antlionguardian"))
-		return 0;
+	if (dInfo.GetAttacker() && dInfo.GetAttacker() != this)
+	{
+		CNPC_AntlionGuard* guard = dynamic_cast<CNPC_AntlionGuard *>(dInfo.GetAttacker());
+		if (guard)
+		{
+			return 0;
+		}
+	}
 
 	if ( ( dInfo.GetDamageType() & DMG_CRUSH ) && !( dInfo.GetDamageType() & DMG_VEHICLE ) )
 	{
@@ -2635,8 +2648,8 @@ public:
 					return false;
 			}
 
-			// If we hit an antlion, don't stop, but kill it on easy
-			if ( pEntity->Classify() == CLASS_ANTLION && g_pGameRules->IsSkillLevel(SKILL_EASY) )
+			// If we hit an antlion, don't stop, but kill it
+			if ( pEntity->Classify() == CLASS_ANTLION )
 			{
 				CBaseEntity *pGuard = (CBaseEntity*)EntityFromEntityHandle( m_pPassEnt );
 				ApplyChargeDamage( pGuard, pEntity, pEntity->GetHealth() );
@@ -3061,10 +3074,11 @@ void CNPC_AntlionGuard::RunTask( const Task_t *pTask )
 				}
 				else if ( moveTrace.pObstruction )
 				{
-					// If we hit an antlion, don't stop, but kill it on easy
+					// If we hit an antlion, don't stop, but kill it
 					if ( moveTrace.pObstruction->Classify() == CLASS_ANTLION )
 					{
-						if (FClassnameIs(moveTrace.pObstruction, "npc_antlionguard") || FClassnameIs(moveTrace.pObstruction, "npc_antlionguardian"))
+						CNPC_AntlionGuard* guard = dynamic_cast<CNPC_AntlionGuard*>(moveTrace.pObstruction);
+						if (guard)
 						{
 							// Crash unless we're trying to stop already
 							if ( eActivity != ACT_ANTLIONGUARD_CHARGE_STOP )
@@ -3074,10 +3088,7 @@ void CNPC_AntlionGuard::RunTask( const Task_t *pTask )
 						}
 						else
 						{
-							if (g_pGameRules->IsSkillLevel(SKILL_EASY))
-							{
-								ApplyChargeDamage(this, moveTrace.pObstruction, moveTrace.pObstruction->GetHealth());
-							}
+							ApplyChargeDamage(this, moveTrace.pObstruction, moveTrace.pObstruction->GetHealth());
 						}
 					}
 				}

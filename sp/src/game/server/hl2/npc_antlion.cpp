@@ -188,6 +188,7 @@ CNPC_Antlion::CNPC_Antlion( void )
 }
 
 LINK_ENTITY_TO_CLASS( npc_antlion, CNPC_Antlion );
+LINK_ENTITY_TO_CLASS( npc_antlionworker, CNPC_Antlion);
 
 //==================================================
 // CNPC_Antlion::m_DataDesc
@@ -264,6 +265,11 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 void CNPC_Antlion::Spawn( void )
 {
+	if (FClassnameIs(this, "npc_antlionworker"))
+	{
+		AddSpawnFlags(SF_ANTLION_WORKER);
+	}
+
 	Precache();
 
 #ifdef _XBOX
@@ -430,13 +436,16 @@ void CNPC_Antlion::Precache( void )
 		PrecacheModel( ANTLION_WORKER_MODEL );
 		PropBreakablePrecacheAll( MAKE_STRING( ANTLION_WORKER_MODEL ) );
 		UTIL_PrecacheOther( "grenade_spit" );
+		PrecacheParticleSystem( "blood_impact_antlion_worker_01" );
 		PrecacheParticleSystem( "antlion_gib_02" );
+		PrecacheParticleSystem( "blood_impact_yellow_01" );
 	}
 	else
 #endif // HL2_EPISODIC
 	{
 		PrecacheModel( ANTLION_MODEL );
 		PropBreakablePrecacheAll( MAKE_STRING( ANTLION_MODEL ) );
+		PrecacheParticleSystem( "blood_impact_antlion_01" );
 		PrecacheParticleSystem( "AntlionGib" );
 	}
 
