@@ -84,6 +84,10 @@ public:
 	void			Precache( void );
 	void			Activate();
 
+	virtual const char*		GetGibModel(appendage_t appendage);
+	virtual bool			CorpseGib(const CTakeDamageInfo& info);
+	virtual bool			CorpseDecapitate(const CTakeDamageInfo& info);
+
 	Class_T			Classify( void );
 	bool			IsElite() { return m_fIsElite; }
 	bool			IsAce() { return m_fIsAce; }
@@ -293,8 +297,8 @@ public:
 	int				m_iLastAnimEventHandled;
 	bool			m_fIsElite;
 	bool			m_fIsAce;
-	bool			m_fIsPoliceRank;
 	Vector			m_vecAltFireTarget;
+	bool			m_bNoDeathSound;
 
 	float			m_flNextPainSoundTime;
 	float			m_flNextAlertSoundTime;

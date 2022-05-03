@@ -29,6 +29,7 @@
 #include "weapon_physcannon.h"
 #include "SoundEmitterSystem/isoundemittersystembase.h"
 #include "npc_headcrab.h"
+#include <gib.h>
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -184,6 +185,7 @@ END_DATADESC()
 CNPC_Combine::CNPC_Combine()
 {
 	m_vecTossVelocity = vec3_origin;
+	m_bNoDeathSound = false;
 }
 
 
@@ -195,18 +197,10 @@ bool CNPC_Combine::CreateComponents()
 	if ( !BaseClass::CreateComponents() )
 		return false;
 
-	if (m_fIsPoliceRank)
-	{
-		m_Sentences.Init(this, "NPC_Metropolice.SentenceParameters");
-	}
-	else
-	{
-		m_Sentences.Init(this, "NPC_Combine.SentenceParameters");
-	}
+	m_Sentences.Init(this, "NPC_Combine.SentenceParameters");
 
 	return true;
 }
-
 
 //------------------------------------------------------------------------------
 // Purpose: Don't look, only get info from squad.
@@ -382,6 +376,283 @@ void CNPC_Combine::Spawn( void )
 void CNPC_Combine::LoadInitAttributes()
 {
 	BaseClass::LoadInitAttributes();
+}
+
+const char* CNPC_Combine::GetGibModel(appendage_t appendage)
+{
+	return "";
+}
+
+bool CNPC_Combine::CorpseDecapitate(const CTakeDamageInfo& info)
+{
+	bool gibs = true;
+	if (m_pAttributes != NULL)
+	{
+		gibs = m_pAttributes->GetBool("gibs");
+	}
+
+	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool() && gibs)
+	{
+		if ((info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB))
+		{
+			SetModel(GetGibModel(APPENDAGE_DECAP_BODY));
+
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(this, "body_decap_model", STRING(this->GetModelName()));
+				m_pAttributes->SwitchEntityColor(this, "new_color");
+			}
+
+			DispatchParticleEffect("smod_headshot_r", PATTACH_POINT_FOLLOW, this, "bloodspurt", true);
+			SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
+			CGib::SpawnSpecificStickyGibs(this, 6, 150, 450, "models/gibs/pgib_p3.mdl", 6);
+			CGib::SpawnSpecificStickyGibs(this, 6, 150, 450, "models/gibs/pgib_p4.mdl", 6);
+			EmitSound("Gore.Headshot");
+			m_bNoDeathSound = true;
+			m_iHealth = 0;
+			Event_Killed(info);
+			g_pGameRules->iHeadshotCount += 1;
+			// Handle all clients
+			for (int i = 1; i <= gpGlobals->maxClients; i++)
+			{
+				CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+
+				if (pPlayer != NULL)
+				{
+					if (g_fr_economy.GetBool())
+					{
+						pPlayer->AddMoney(7);
+					}
+					if (!g_fr_classic.GetBool())
+					{
+						pPlayer->AddXP(9);
+					}
+				}
+			}
+
+			return true;
+		}
+		else if ((info.GetDamageType() & (DMG_SLASH)) && !(info.GetDamageType() & DMG_NEVERGIB))
+		{
+			SetModel(GetGibModel(APPENDAGE_DECAP_BODY));
+
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(this, "body_decap_model", STRING(this->GetModelName()));
+				m_pAttributes->SwitchEntityColor(this, "new_color");
+			}
+
+			DispatchParticleEffect("smod_blood_decap_r", PATTACH_POINT_FOLLOW, this, "bloodspurt", true);
+			SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
+			CBaseEntity* pHeadGib = CGib::SpawnSpecificSingleGib(this, 150, 450, GetGibModel(APPENDAGE_HEAD), 6);
+
+			if (pHeadGib)
+			{
+				if (m_pAttributes != NULL)
+				{
+					m_pAttributes->SwitchEntityModel(pHeadGib, "head_gib_model", STRING(pHeadGib->GetModelName()));
+					m_pAttributes->SwitchEntityColor(pHeadGib, "new_color");
+				}
+			}
+
+			CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p4.mdl", 6);
+			EmitSound("Gore.Headshot");
+			m_bNoDeathSound = true;
+			m_iHealth = 0;
+			Event_Killed(info);
+			// Handle all clients
+			for (int i = 1; i <= gpGlobals->maxClients; i++)
+			{
+				CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+
+				if (pPlayer != NULL)
+				{
+					if (g_fr_economy.GetBool())
+					{
+						pPlayer->AddMoney(7);
+					}
+					if (!g_fr_classic.GetBool())
+					{
+						pPlayer->AddXP(9);
+					}
+				}
+			}
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool CNPC_Combine::CorpseGib(const CTakeDamageInfo& info)
+{
+	bool gibs = true;
+	if (m_pAttributes != NULL)
+	{
+		gibs = m_pAttributes->GetBool("gibs");
+	}
+
+	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && info.GetDamageType() & (DMG_BLAST) && !(info.GetDamageType() & (DMG_DISSOLVE)) && !PlayerHasMegaPhysCannon() && gibs)
+	{
+		if (IsCurSchedule(SCHED_NPC_FREEZE))
+		{
+			// We're frozen; don't die.
+			return false;
+		}
+
+		Vector vecDamageDir = info.GetDamageForce();
+		SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
+		DispatchParticleEffect("smod_blood_gib_r", GetAbsOrigin(), GetAbsAngles(), this);
+		EmitSound("Gore.Headshot");
+		float flFadeTime = 25.0;
+
+		CBaseEntity* pHeadGib = CGib::SpawnSpecificSingleGib(this, 750, 1500, GetGibModel(APPENDAGE_HEAD), flFadeTime);
+
+		if (pHeadGib)
+		{
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(pHeadGib, "head_gib_model", STRING(pHeadGib->GetModelName()));
+				m_pAttributes->SwitchEntityColor(pHeadGib, "new_color");
+			}
+		}
+
+		Vector vecRagForce;
+		vecRagForce.x = random->RandomFloat(-400, 400);
+		vecRagForce.y = random->RandomFloat(-400, 400);
+		vecRagForce.z = random->RandomFloat(0, 250);
+
+		Vector vecRagDmgForce = (vecRagForce + vecDamageDir);
+
+		CBaseEntity* pLeftArmGib = CreateRagGib(this, GetGibModel(APPENDAGE_ARML), GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		if (pLeftArmGib)
+		{
+			color32 color = pLeftArmGib->GetRenderColor();
+			pLeftArmGib->SetRenderColor(color.r, color.g, color.b, color.a);
+
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(pLeftArmGib, "left_arm_gib_model", STRING(pLeftArmGib->GetModelName()));
+				m_pAttributes->SwitchEntityColor(pLeftArmGib, "new_color");
+			}
+		}
+
+		CBaseEntity* pRightArmGib = CreateRagGib(this, GetGibModel(APPENDAGE_ARMR), GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		if (pRightArmGib)
+		{
+			color32 color = pRightArmGib->GetRenderColor();
+			pRightArmGib->SetRenderColor(color.r, color.g, color.b, color.a);
+
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(pRightArmGib, "right_arm_gib_model", STRING(pRightArmGib->GetModelName()));
+				m_pAttributes->SwitchEntityColor(pRightArmGib, "new_color");
+			}
+		}
+
+		CBaseEntity* pTorsoGib = CreateRagGib(this, GetGibModel(APPENDAGE_TORSO), GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		if (pTorsoGib)
+		{
+			color32 color = pTorsoGib->GetRenderColor();
+			pTorsoGib->SetRenderColor(color.r, color.g, color.b, color.a);
+
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(pTorsoGib, "torso_gib_model", STRING(pTorsoGib->GetModelName()));
+				m_pAttributes->SwitchEntityColor(pTorsoGib, "new_color");
+			}
+		}
+
+		CBaseEntity* pPelvisGib = CreateRagGib(this, GetGibModel(APPENDAGE_PELVIS), GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		if (pPelvisGib)
+		{
+			color32 color = pPelvisGib->GetRenderColor();
+			pPelvisGib->SetRenderColor(color.r, color.g, color.b, color.a);
+
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(pPelvisGib, "pelvis_gib_model", STRING(pPelvisGib->GetModelName()));
+				m_pAttributes->SwitchEntityColor(pPelvisGib, "new_color");
+			}
+		}
+
+		CBaseEntity* pLeftLegGib = CreateRagGib(this, GetGibModel(APPENDAGE_LEGL), GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		if (pLeftLegGib)
+		{
+			color32 color = pLeftLegGib->GetRenderColor();
+			pLeftLegGib->SetRenderColor(color.r, color.g, color.b, color.a);
+
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(pLeftLegGib, "left_leg_gib_model", STRING(pLeftLegGib->GetModelName()));
+				m_pAttributes->SwitchEntityColor(pLeftLegGib, "new_color");
+			}
+		}
+
+		CBaseEntity* pRightLegGib = CreateRagGib(this, GetGibModel(APPENDAGE_LEGR), GetAbsOrigin(), GetAbsAngles(), vecRagDmgForce, flFadeTime, IsOnFire());
+		if (pRightLegGib)
+		{
+			color32 color = pRightLegGib->GetRenderColor();
+			pRightLegGib->SetRenderColor(color.r, color.g, color.b, color.a);
+
+			if (m_pAttributes != NULL)
+			{
+				m_pAttributes->SwitchEntityModel(pRightLegGib, "right_leg_gib_model", STRING(pRightLegGib->GetModelName()));
+				m_pAttributes->SwitchEntityColor(pRightLegGib, "new_color");
+			}
+		}
+
+		//now add smaller gibs.
+		CGib::SpawnSpecificStickyGibs(this, 3, 750, 1500, "models/gibs/pgib_p3.mdl", flFadeTime);
+		CGib::SpawnSpecificStickyGibs(this, 3, 750, 1500, "models/gibs/pgib_p4.mdl", flFadeTime);
+
+		Vector forceVector = CalcDamageForceVector(info);
+
+		// Drop any weapon that I own
+		if (m_hActiveWeapon)
+		{
+			if (VPhysicsGetObject())
+			{
+				Vector weaponForce = forceVector * VPhysicsGetObject()->GetInvMass();
+				Weapon_Drop(m_hActiveWeapon, NULL, &weaponForce);
+			}
+			else
+			{
+				Weapon_Drop(m_hActiveWeapon);
+			}
+		}
+
+		Wake(false);
+		m_lifeState = LIFE_DYING;
+		CleanupOnDeath(info.GetAttacker());
+		StopLoopingSounds();
+		DeathSound(info);
+		SetCondition(COND_LIGHT_DAMAGE);
+		SetIdealState(NPC_STATE_DEAD);
+		SetState(NPC_STATE_DEAD);
+
+		// tell owner ( if any ) that we're dead.This is mostly for NPCMaker functionality.
+		CBaseEntity* pOwner = GetOwnerEntity();
+		if (pOwner)
+		{
+			if (pOwner->KilledNotice(this))
+			{
+				SetOwnerEntity(NULL);
+			}
+		}
+
+		if (info.GetAttacker()->IsPlayer())
+		{
+			((CSingleplayRules*)GameRules())->NPCKilled(this, info);
+		}
+
+		UTIL_Remove(this);
+		SetThink(NULL);
+		return true;
+	}
+
+	return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -858,10 +1129,7 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 				{
 					m_flLastAttackTime = gpGlobals->curtime;
 
-					if (!m_fIsPoliceRank)
-					{
-						m_Sentences.Speak("COMBINE_ANNOUNCE", SENTENCE_PRIORITY_HIGH);
-					}
+					m_Sentences.Speak("COMBINE_ANNOUNCE", SENTENCE_PRIORITY_HIGH);
 
 					// Wait two seconds
 					SetWait( 2.0 );
@@ -885,10 +1153,7 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 			}
 			else
 			{
-				if (!m_fIsPoliceRank)
-				{
-					m_Sentences.Speak("COMBINE_THROW_GRENADE", SENTENCE_PRIORITY_MEDIUM);
-				}
+				m_Sentences.Speak("COMBINE_THROW_GRENADE", SENTENCE_PRIORITY_MEDIUM);
 				SetActivity(ACT_IDLE);
 
 				// Wait two seconds
@@ -1024,10 +1289,7 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 							m_pSquad->SquadRemember(bits_MEMORY_PLAYER_HURT);
 						}
 
-						if (!m_fIsPoliceRank)
-						{
-							m_Sentences.Speak("COMBINE_PLAYERHIT", SENTENCE_PRIORITY_INVALID);
-						}
+						m_Sentences.Speak("COMBINE_PLAYERHIT", SENTENCE_PRIORITY_INVALID);
 						JustMadeSound( SENTENCE_PRIORITY_HIGH );
 					}
 					if ( pEntity->MyNPCPointer() )
@@ -1500,9 +1762,6 @@ bool CNPC_Combine::QueryHearSound( CSound *pSound )
 //-----------------------------------------------------------------------------
 void CNPC_Combine::AnnounceAssault(void)
 {
-	if (m_fIsPoliceRank)
-		return;
-
 	if (random->RandomInt(0,5) > 1)
 		return;
 
@@ -1533,9 +1792,6 @@ void CNPC_Combine::AnnounceAssault(void)
 
 void CNPC_Combine::AnnounceEnemyType( CBaseEntity *pEnemy )
 {
-	if (m_fIsPoliceRank)
-		return;
-
 	const char* pSentenceName = "COMBINE_MONST";
 	switch (pEnemy->Classify())
 	{
@@ -1574,9 +1830,6 @@ void CNPC_Combine::AnnounceEnemyType( CBaseEntity *pEnemy )
 
 void CNPC_Combine::AnnounceEnemyKill( CBaseEntity *pEnemy )
 {
-	if (m_fIsPoliceRank)
-		return;
-
 	if (!pEnemy)
 		return;
 
@@ -1919,26 +2172,23 @@ int CNPC_Combine::SelectSchedule( void )
 					{
 						// I hear something dangerous, probably need to take cover.
 						// dangerous sound nearby!, call it out if we are not elite metropolice
-						if (!m_fIsPoliceRank)
-						{
-							const char *pSentenceName = "COMBINE_DANGER";
+						const char* pSentenceName = "COMBINE_DANGER";
 
-							CBaseEntity *pSoundOwner = pSound->m_hOwner;
-							if (pSoundOwner)
+						CBaseEntity* pSoundOwner = pSound->m_hOwner;
+						if (pSoundOwner)
+						{
+							CBaseGrenade* pGrenade = dynamic_cast<CBaseGrenade*>(pSoundOwner);
+							if (pGrenade && pGrenade->GetThrower())
 							{
-								CBaseGrenade *pGrenade = dynamic_cast<CBaseGrenade *>(pSoundOwner);
-								if (pGrenade && pGrenade->GetThrower())
+								if (IRelationType(pGrenade->GetThrower()) != D_LI)
 								{
-									if (IRelationType(pGrenade->GetThrower()) != D_LI)
-									{
-										// special case call out for enemy grenades
-										pSentenceName = "COMBINE_GREN";
-									}
+									// special case call out for enemy grenades
+									pSentenceName = "COMBINE_GREN";
 								}
 							}
-
-							m_Sentences.Speak(pSentenceName, SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL);
 						}
+
+						m_Sentences.Speak(pSentenceName, SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL);
 
 						// If the sound is approaching danger, I have no enemy, and I don't see it, turn to face.
 						if( !GetEnemy() && pSound->IsSoundType(SOUND_CONTEXT_DANGER_APPROACH) && pSound->m_hOwner && !FInViewCone(pSound->GetSoundReactOrigin()) )
@@ -2210,10 +2460,7 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 				// Have to explicitly check innate range attack condition as may have weapon with range attack 2
 				if ((g_pGameRules->IsSkillLevel(SKILL_HARD) || g_pGameRules->IsSkillLevel(SKILL_VERYHARD) || g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE)) && HasCondition(COND_CAN_RANGE_ATTACK2) && OccupyStrategySlot(SQUAD_SLOT_GRENADE1))
 				{
-					if (!m_fIsPoliceRank)
-					{
-						m_Sentences.Speak("COMBINE_THROW_GRENADE");
-					}
+					m_Sentences.Speak("COMBINE_THROW_GRENADE");
 					return SCHED_COMBINE_TOSS_GRENADE_COVER1;
 				}
 				else
@@ -2710,19 +2957,13 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 					}
 				}			
 
-				if (!m_fIsPoliceRank)
-				{
-					m_Sentences.Speak("COMBINE_KICK");
-				}
+				m_Sentences.Speak("COMBINE_KICK");
 				handledEvent = true;
 				break;
 			}
 
 		case COMBINE_AE_CAUGHT_ENEMY:
-			if (!m_fIsPoliceRank)
-			{
-				m_Sentences.Speak("COMBINE_ALERT");
-			}
+			m_Sentences.Speak("COMBINE_ALERT");
 			handledEvent = true;
 			break;
 
@@ -2799,9 +3040,6 @@ Vector CNPC_Combine::Weapon_ShootPosition( )
 //=========================================================
 void CNPC_Combine::SpeakSentence( int sentenceType )
 {
-	if (m_fIsPoliceRank)
-		return;
-
 	switch( sentenceType )
 	{
 	case 0: // assault
@@ -2823,9 +3061,6 @@ void CNPC_Combine::SpeakSentence( int sentenceType )
 //=========================================================
 void CNPC_Combine::PainSound (const CTakeDamageInfo& info)
 {
-	if (m_fIsPoliceRank)
-		return;
-
 	if (IsOnFire())
 		return;
 
@@ -2861,9 +3096,6 @@ void CNPC_Combine::PainSound (const CTakeDamageInfo& info)
 //-----------------------------------------------------------------------------
 void CNPC_Combine::LostEnemySound( void)
 {
-	if (m_fIsPoliceRank)
-		return;
-
 	if ( gpGlobals->curtime <= m_flNextLostSoundTime )
 		return;
 
@@ -2891,9 +3123,6 @@ void CNPC_Combine::LostEnemySound( void)
 //-----------------------------------------------------------------------------
 void CNPC_Combine::FoundEnemySound( void)
 {
-	if (m_fIsPoliceRank)
-		return;
-
 	m_Sentences.Speak("COMBINE_REFIND_ENEMY", SENTENCE_PRIORITY_HIGH);
 }
 
@@ -2907,9 +3136,6 @@ void CNPC_Combine::FoundEnemySound( void)
 // BUGBUG: It looks like this is never played because combine don't do SCHED_WAKE_ANGRY or anything else that does a TASK_SOUND_WAKE
 void CNPC_Combine::AlertSound( void)
 {
-	if (m_fIsPoliceRank)
-		return;
-
 	if (gpGlobals->curtime > m_flNextAlertSoundTime)
 	{
 		m_Sentences.Speak("COMBINE_GO_ALERT", SENTENCE_PRIORITY_HIGH);
@@ -2922,9 +3148,6 @@ void CNPC_Combine::AlertSound( void)
 //=========================================================
 void CNPC_Combine::NotifyDeadFriend ( CBaseEntity* pFriend )
 {
-	if (m_fIsPoliceRank)
-		return;
-
 	if (GetSquad()->NumMembers() < 2)
 	{
 		m_Sentences.Speak("COMBINE_LAST_OF_SQUAD", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_NORMAL);
@@ -2945,9 +3168,6 @@ void CNPC_Combine::NotifyDeadFriend ( CBaseEntity* pFriend )
 //=========================================================
 void CNPC_Combine::DeathSound (const CTakeDamageInfo& info)
 {
-	if (m_fIsPoliceRank)
-		return;
-
 	// NOTE: The response system deals with this at the moment
 	if (GetFlags() & FL_DISSOLVING)
 		return;
@@ -2963,9 +3183,6 @@ void CNPC_Combine::DeathSound (const CTakeDamageInfo& info)
 //=========================================================
 void CNPC_Combine::IdleSound( void )
 {
-	if (m_fIsPoliceRank)
-		return;
-
 	if (g_fCombineQuestion || random->RandomInt(0, 1))
 	{
 		if (!g_fCombineQuestion)

@@ -48,8 +48,6 @@ public:
 
 	const char* GetSoldierModel();
 	const char* GetGibModel(appendage_t appendage);
-	bool		CorpseGib(const CTakeDamageInfo& info);
-	bool		CorpseDecapitate(const CTakeDamageInfo& info);
 
 private:
 	bool		ShouldHitPlayer( const Vector &targetDir, float targetDist );
@@ -61,7 +59,6 @@ public:
 protected:
 	/// whether to use the more casual march anim in ep2_outland_05
 	int			m_iUseMarch;
-	bool		m_bNoDeathSound;
 #endif
 };
 
