@@ -34,8 +34,7 @@ ConVar debug_spawner_disable("debug_spawner_disable", "0", FCVAR_CHEAT);
 const char *g_CombineSoldierWeapons[] =
 {
 	"weapon_smg1",
-	"weapon_ar2",
-	"weapon_shotgun"
+	"weapon_ar2"
 };
 
 const char *g_MetropoliceWeapons[] =

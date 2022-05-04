@@ -475,111 +475,117 @@ void CNPC_Bullsquid::HandleAnimEvent( animevent_t *pEvent )
 	{
 		case BSQUID_AE_SPIT:
 		{
-			Vector vSpitPos;
-			GetAttachment("mouth", vSpitPos);
-			vSpitPos.z += 40.0f;
-			Vector	vTarget;
-
-			// If our enemy is looking at us and far enough away, lead him
-			if (HasCondition(COND_ENEMY_FACING_ME) && UTIL_DistApprox(GetAbsOrigin(), GetEnemy()->GetAbsOrigin()) > (40 * 12))
+			if (GetEnemy() != NULL)
 			{
-				UTIL_PredictedPosition(GetEnemy(), 0.5f, &vTarget);
-				vTarget.z = GetEnemy()->GetAbsOrigin().z;
-			}
-			else
-			{
-				// Otherwise he can't see us and he won't be able to dodge
-				vTarget = GetEnemy()->BodyTarget(vSpitPos, true);
-			}
+				Vector vSpitPos;
+				GetAttachment("mouth", vSpitPos);
+				vSpitPos.z += 40.0f;
+				Vector	vTarget;
 
-			vTarget[2] += random->RandomFloat(0.0f, 32.0f);
-
-			// Try and spit at our target
-			Vector vecToss;
-			if (GetSpitVector(vSpitPos, vTarget, &vecToss) == false)
-			{
-				DevMsg("GetSpitVector( vSpitPos, vTarget, &vecToss ) == false\n");
-				// Now try where they were
-				if (GetSpitVector(vSpitPos, m_vSavePosition, &vecToss) == false)
+				// If our enemy is looking at us and far enough away, lead him
+				if (HasCondition(COND_ENEMY_FACING_ME) && UTIL_DistApprox(GetAbsOrigin(), GetEnemy()->GetAbsOrigin()) > (40 * 12))
 				{
-					DevMsg("GetSpitVector( vSpitPos, m_vSavePosition, &vecToss ) == false\n");
-					// Failing that, just shoot with the old velocity we calculated initially!
-					vecToss = m_vecSaveSpitVelocity;
-				}
-			}
-
-			// Find what our vertical theta is to estimate the time we'll impact the ground
-			Vector vecToTarget = (vTarget - vSpitPos);
-			VectorNormalize(vecToTarget);
-			float flVelocity = VectorNormalize(vecToss);
-			float flCosTheta = DotProduct(vecToTarget, vecToss);
-			float flTime = (vSpitPos - vTarget).Length2D() / (flVelocity * flCosTheta);
-
-			// Emit a sound where this is going to hit so that targets get a chance to act correctly
-			CSoundEnt::InsertSound(SOUND_DANGER, vTarget, (15 * 12), flTime, this);
-
-			// Don't fire again until this volley would have hit the ground (with some lag behind it)
-			SetNextAttack(gpGlobals->curtime + flTime + random->RandomFloat(0.5f, 2.0f));
-
-			int nShots = sk_bullsquid_spit_size.GetInt();
-
-			if (m_pAttributes != NULL)
-			{
-				int shots = m_pAttributes->GetInt("spit_size");
-
-				if (shots > 0)
-				{
-					nShots = shots;
-				}
-			}
-
-			for (int i = 0; i < nShots; i++)
-			{
-				if (m_pAttributes)
-				{
-					int projInt = m_pAttributes->GetInt("new_projectile");
-
-					switch (projInt)
-					{
-					case 1:
-						CreateFragGrenadeProjectile(vSpitPos, vecToss, flVelocity);
-						break;
-					case 2:
-						CreateSMGGrenadeProjectile(vSpitPos, vecToss, flVelocity, i);
-						break;
-					default:
-						CreateDefaultProjectile(vSpitPos, vecToss, flVelocity, i);
-						break;
-					}
+					UTIL_PredictedPosition(GetEnemy(), 0.5f, &vTarget);
+					vTarget.z = GetEnemy()->GetAbsOrigin().z;
 				}
 				else
 				{
-					CreateDefaultProjectile(vSpitPos, vecToss, flVelocity, i);
+					// Otherwise he can't see us and he won't be able to dodge
+					vTarget = GetEnemy()->BodyTarget(vSpitPos, true);
 				}
-			}
 
-			for (int i = 0; i < 8; i++)
-			{
-				DispatchParticleEffect("smod_drip_y", vSpitPos + RandomVector(-12.0f, 12.0f), RandomAngle(0, 360));
-			}
+				vTarget[2] += random->RandomFloat(0.0f, 32.0f);
 
-			EmitSound("NPC_Antlion.PoisonShoot");
+				// Try and spit at our target
+				Vector vecToss;
+				if (GetSpitVector(vSpitPos, vTarget, &vecToss) == false)
+				{
+					DevMsg("GetSpitVector( vSpitPos, vTarget, &vecToss ) == false\n");
+					// Now try where they were
+					if (GetSpitVector(vSpitPos, m_vSavePosition, &vecToss) == false)
+					{
+						DevMsg("GetSpitVector( vSpitPos, m_vSavePosition, &vecToss ) == false\n");
+						// Failing that, just shoot with the old velocity we calculated initially!
+						vecToss = m_vecSaveSpitVelocity;
+					}
+				}
+
+				// Find what our vertical theta is to estimate the time we'll impact the ground
+				Vector vecToTarget = (vTarget - vSpitPos);
+				VectorNormalize(vecToTarget);
+				float flVelocity = VectorNormalize(vecToss);
+				float flCosTheta = DotProduct(vecToTarget, vecToss);
+				float flTime = (vSpitPos - vTarget).Length2D() / (flVelocity * flCosTheta);
+
+				// Emit a sound where this is going to hit so that targets get a chance to act correctly
+				CSoundEnt::InsertSound(SOUND_DANGER, vTarget, (15 * 12), flTime, this);
+
+				// Don't fire again until this volley would have hit the ground (with some lag behind it)
+				SetNextAttack(gpGlobals->curtime + flTime + random->RandomFloat(0.5f, 2.0f));
+
+				int nShots = sk_bullsquid_spit_size.GetInt();
+
+				if (m_pAttributes != NULL)
+				{
+					int shots = m_pAttributes->GetInt("spit_size");
+
+					if (shots > 0)
+					{
+						nShots = shots;
+					}
+				}
+
+				for (int i = 0; i < nShots; i++)
+				{
+					if (m_pAttributes)
+					{
+						int projInt = m_pAttributes->GetInt("new_projectile");
+
+						switch (projInt)
+						{
+						case 1:
+							CreateFragGrenadeProjectile(vSpitPos, vecToss, flVelocity);
+							break;
+						case 2:
+							CreateSMGGrenadeProjectile(vSpitPos, vecToss, flVelocity, i);
+							break;
+						default:
+							CreateDefaultProjectile(vSpitPos, vecToss, flVelocity, i);
+							break;
+						}
+					}
+					else
+					{
+						CreateDefaultProjectile(vSpitPos, vecToss, flVelocity, i);
+					}
+				}
+
+				for (int i = 0; i < 8; i++)
+				{
+					DispatchParticleEffect("smod_drip_y", vSpitPos + RandomVector(-12.0f, 12.0f), RandomAngle(0, 360));
+				}
+
+				EmitSound("NPC_Antlion.PoisonShoot");
+			}
 		}
 		break;
 
 		case BSQUID_AE_BITE:
 		{
-		// SOUND HERE!
-			CBaseEntity *pHurt = CheckTraceHullAttack( 70, Vector(-16,-16,-16), Vector(16,16,16), sk_bullsquid_dmg_bite.GetFloat(), DMG_SLASH );
-			if ( pHurt )
+			if (GetEnemy() != NULL)
 			{
-				//don't kick striders, only deliver damage.
-				if (!FClassnameIs(pHurt, "npc_strider"))
+				// SOUND HERE!
+				CBaseEntity* pHurt = CheckTraceHullAttack(70, Vector(-16, -16, -16), Vector(16, 16, 16), sk_bullsquid_dmg_bite.GetFloat(), DMG_SLASH);
+				if (pHurt)
 				{
-					Vector forward, up;
-					AngleVectors(GetAbsAngles(), &forward, NULL, &up);
-					pHurt->ApplyAbsVelocityImpulse(100 * (up - forward));
-					pHurt->SetGroundEntity(NULL);
+					//don't kick striders, only deliver damage.
+					if (!FClassnameIs(pHurt, "npc_strider"))
+					{
+						Vector forward, up;
+						AngleVectors(GetAbsAngles(), &forward, NULL, &up);
+						pHurt->ApplyAbsVelocityImpulse(100 * (up - forward));
+						pHurt->SetGroundEntity(NULL);
+					}
 				}
 			}
 		}
@@ -587,22 +593,25 @@ void CNPC_Bullsquid::HandleAnimEvent( animevent_t *pEvent )
 
 		case BSQUID_AE_WHIP_SND:
 		{
-			CBaseEntity* pHurt = CheckTraceHullAttack(70, Vector(-16, -16, -16), Vector(16, 16, 16), sk_bullsquid_dmg_whip.GetFloat(), DMG_SLASH | DMG_ALWAYSGIB);
-			if (pHurt)
+			if (GetEnemy() != NULL)
 			{
-				//don't kick striders, only deliver damage.
-				if (!FClassnameIs(pHurt, "npc_strider"))
+				CBaseEntity* pHurt = CheckTraceHullAttack(70, Vector(-16, -16, -16), Vector(16, 16, 16), sk_bullsquid_dmg_whip.GetFloat(), DMG_SLASH | DMG_ALWAYSGIB);
+				if (pHurt)
 				{
-					Vector right, up;
-					AngleVectors(GetAbsAngles(), NULL, &right, &up);
+					//don't kick striders, only deliver damage.
+					if (!FClassnameIs(pHurt, "npc_strider"))
+					{
+						Vector right, up;
+						AngleVectors(GetAbsAngles(), NULL, &right, &up);
 
-					if (pHurt->GetFlags() & (FL_NPC | FL_CLIENT))
-						pHurt->ViewPunch(QAngle(20, 0, -20));
+						if (pHurt->GetFlags() & (FL_NPC | FL_CLIENT))
+							pHurt->ViewPunch(QAngle(20, 0, -20));
 
-					pHurt->ApplyAbsVelocityImpulse(100 * (up + 2 * right));
+						pHurt->ApplyAbsVelocityImpulse(100 * (up + 2 * right));
+					}
 				}
+				EmitSound("NPC_Bullsquid.TailWhip");
 			}
-			EmitSound("NPC_Bullsquid.TailWhip");
 			break;
 		}
 
@@ -650,37 +659,40 @@ void CNPC_Bullsquid::HandleAnimEvent( animevent_t *pEvent )
 
 		case BSQUID_AE_THROW:
 			{
-				// squid throws its prey IF the prey is a client. 
-				CBaseEntity *pHurt = CheckTraceHullAttack( 70, Vector(-16,-16,-16), Vector(16,16,16), 0, 0 );
-
-
-				if ( pHurt )
+				if (GetEnemy() != NULL)
 				{
-					pHurt->ViewPunch( QAngle(20,0,-20) );
-							
-					// screeshake transforms the viewmodel as well as the viewangle. No problems with seeing the ends of the viewmodels.
-					UTIL_ScreenShake( pHurt->GetAbsOrigin(), 25.0, 1.5, 0.7, 2, SHAKE_START );
+					// squid throws its prey IF the prey is a client. 
+					CBaseEntity *pHurt = CheckTraceHullAttack( 70, Vector(-16,-16,-16), Vector(16,16,16), 0, 0 );
 
-					// If the player, throw him around
-					if ( pHurt->IsPlayer())
+
+					if (pHurt)
 					{
-						Vector forward, up;
-						AngleVectors( GetLocalAngles(), &forward, NULL, &up );
-						pHurt->ApplyAbsVelocityImpulse( forward * 300 + up * 300 );
-					}
-					// If not the player see if has bullsquid throw interatcion
-					else
-					{
-						CBaseCombatCharacter *pVictim = ToBaseCombatCharacter( pHurt );
-						if (pVictim)
+						pHurt->ViewPunch(QAngle(20, 0, -20));
+
+						// screeshake transforms the viewmodel as well as the viewangle. No problems with seeing the ends of the viewmodels.
+						UTIL_ScreenShake(pHurt->GetAbsOrigin(), 25.0, 1.5, 0.7, 2, SHAKE_START);
+
+						// If the player, throw him around
+						if (pHurt->IsPlayer())
 						{
-							if (!FClassnameIs(pVictim, "npc_strider"))
+							Vector forward, up;
+							AngleVectors(GetLocalAngles(), &forward, NULL, &up);
+							pHurt->ApplyAbsVelocityImpulse(forward * 300 + up * 300);
+						}
+						// If not the player see if has bullsquid throw interatcion
+						else
+						{
+							CBaseCombatCharacter* pVictim = ToBaseCombatCharacter(pHurt);
+							if (pVictim)
 							{
-								if (pVictim->DispatchInteraction(g_interactionBullsquidThrow, NULL, this))
+								if (!FClassnameIs(pVictim, "npc_strider"))
 								{
-									Vector forward, up;
-									AngleVectors(GetLocalAngles(), &forward, NULL, &up);
-									pVictim->ApplyAbsVelocityImpulse(forward * 300 + up * 250);
+									if (pVictim->DispatchInteraction(g_interactionBullsquidThrow, NULL, this))
+									{
+										Vector forward, up;
+										AngleVectors(GetLocalAngles(), &forward, NULL, &up);
+										pVictim->ApplyAbsVelocityImpulse(forward * 300 + up * 250);
+									}
 								}
 							}
 						}
