@@ -233,6 +233,8 @@ ConVar sv_fr_perks_infiniteammo("sv_fr_perks_infiniteammo", "1", FCVAR_ARCHIVE);
 ConVar sv_fr_perks_healthregenerationrate("sv_fr_perks_healthregenerationrate", "1", FCVAR_ARCHIVE);
 ConVar sv_fr_perks_healthregenerationrate_amount("sv_fr_perks_healthregenerationrate_amount", "0.5", FCVAR_CHEAT);
 
+ConVar sv_fr_reward_attemptcount("sv_fr_reward_attemptcount", "3", FCVAR_ARCHIVE);
+
 ConVar sv_player_explosionringing("sv_player_explosionringing", "0", FCVAR_ARCHIVE);
 
 void CC_GiveCurrentAmmo( void )
@@ -1336,7 +1338,7 @@ static void FindRewardsFilesAbsoluteList(CUtlVector< CUtlString >& outAbsolutePa
 	g_pFullFileSystem->FindClose(hFile);
 }
 
-bool CBasePlayer::GiveItemOfType(int itemType, 
+bool CBasePlayer::GiveItemOfType(int itemType,
 	const char* pWeaponClassname, 
 	bool isAmmoPrimary, 
 	int ammoCount, 
@@ -1398,10 +1400,8 @@ bool CBasePlayer::GiveRewardItem(KeyValues* pData)
 	const char* rewardName = pData->GetString("name", "");
 
 	rewarded = GiveItemOfType(pItemType, pWeaponClassName, pIsAmmoPrimary, pAmmoNum, pPerkID, pCMD);
-
 	if (rewarded)
 	{
-		CFmtStr hint;
 		ShowPerkMessage(rewardName);
 
 		if (sv_player_voice.GetBool() && sv_player_voice_perk.GetBool())
@@ -1502,43 +1502,64 @@ void CBasePlayer::Reward_GiveItem()
 
 		if (!unlocked)
 		{
-			DevWarning("Attempting to grab the 1st or 2nd items\n");
-			bool secondCheck = true;
-
-			//if not, give us one of the first 1-2 items.
-			if (count >= 2)
+			DevWarning("Item randomization failed, Grabbing a different item...\n");
+			int attempts = 0;
+			while (attempts < sv_fr_reward_attemptcount.GetInt())
 			{
-				int randomID = randomfile = random->RandomInt(1, 2);
-				secondCheck = ProcessItemData(m_pPerkData, count, randomID);
-			}
-			else if (count == 1)
-			{
-				secondCheck = ProcessItemData(m_pPerkData, count, 1);
-			}
-
-			if (!secondCheck)
-			{
-				DevWarning("Attempting to grab a healthkit or suit battery\n");
-				int randomID = randomfile = random->RandomInt(FR_HEALTHKIT, FR_BATTERY);
-				bool GivenItem = GiveItemOfType(randomID);
-
-				if (GivenItem)
+				DevWarning("Attempt #%i...\n", attempts + 1);
+				bool nextChecks = true;
+				nextChecks = ProcessItemData(m_pPerkData, count);
+				if (!nextChecks)
 				{
-					const char* pBackupRewardName = ((randomID == FR_BATTERY) ? 
-						"#GameUI_Store_Buy_SuitBattery" : 
-						"#GameUI_Store_Buy_HealthKit");
-
-					CFmtStr hint;
-					ShowPerkMessage(pBackupRewardName);
-
-					if (sv_player_voice.GetBool() && sv_player_voice_perk.GetBool())
-					{
-						EmitSound("Player.VoicePerk");
-					}
+					attempts++;
 				}
 				else
 				{
-					Warning("how . . .\n");
+					DevMsg("Attempt #%i successful\n", attempts + 1);
+					break;
+				}
+			}
+
+			if (attempts == sv_fr_reward_attemptcount.GetInt())
+			{
+				DevWarning("Attempting to grab the 1st or 2nd items\n");
+				bool supplyCheck = true;
+
+				//if not, give us one of the first 1-2 items.
+				if (count >= 2)
+				{
+					int randomID = randomfile = random->RandomInt(1, 2);
+					supplyCheck = ProcessItemData(m_pPerkData, count, randomID);
+				}
+				else if (count == 1)
+				{
+					supplyCheck = ProcessItemData(m_pPerkData, count, 1);
+				}
+
+				if (!supplyCheck)
+				{
+					DevWarning("Attempting to grab a healthkit or suit battery\n");
+					int randomID = randomfile = random->RandomInt(FR_HEALTHKIT, FR_BATTERY);
+					bool GivenItem = GiveItemOfType(randomID);
+
+					if (GivenItem)
+					{
+						const char* pBackupRewardName = ((randomID == FR_BATTERY) ?
+							"#GameUI_Store_Buy_SuitBattery" :
+							"#GameUI_Store_Buy_HealthKit");
+
+						CFmtStr hint;
+						ShowPerkMessage(pBackupRewardName);
+
+						if (sv_player_voice.GetBool() && sv_player_voice_perk.GetBool())
+						{
+							EmitSound("Player.VoicePerk");
+						}
+					}
+					else
+					{
+						Warning("how . . .\n");
+					}
 				}
 			}
 		}
