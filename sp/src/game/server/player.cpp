@@ -621,10 +621,10 @@ BEGIN_DATADESC( CBasePlayer )
 	DEFINE_FIELD(m_iExp, FIELD_INTEGER),
 	DEFINE_FIELD(m_iLevel, FIELD_INTEGER),
 	DEFINE_FIELD(m_iMaxExp, FIELD_INTEGER),
-	DEFINE_KEYFIELD(m_iPerkInfiniteAuxPower, FIELD_INTEGER, "auxpower"),
-	DEFINE_KEYFIELD(m_iPerkInfiniteAmmo, FIELD_INTEGER, "infiniteammo"),
-	DEFINE_KEYFIELD(m_iPerkHealthRegen, FIELD_INTEGER, "healthregen"),
-	DEFINE_KEYFIELD(m_fRegenRate, FIELD_FLOAT, "healthregenrate"),
+	DEFINE_FIELD(m_iPerkInfiniteAuxPower, FIELD_INTEGER),
+	DEFINE_FIELD(m_iPerkInfiniteAmmo, FIELD_INTEGER),
+	DEFINE_FIELD(m_iPerkHealthRegen, FIELD_INTEGER),
+	DEFINE_FIELD(m_fRegenRate, FIELD_FLOAT),
 	DEFINE_FIELD(m_iMoney, FIELD_INTEGER),
 
 	// DEFINE_FIELD( m_nBodyPitchPoseParam, FIELD_INTEGER ),
@@ -1093,15 +1093,24 @@ void GiveAmmoWeapon(CBasePlayer* pPlayer, const char* pClassname)
 	pPlayer->GiveNamedItem(pClassname);
 }
 
-bool GiveAmmoForWeapon(CBasePlayer* pPlayer, const char* pParentClassname, const char* pClassname, bool one = false)
+bool GiveAmmoForWeapon(CBasePlayer* pPlayer, const char* pParentClassname, bool isAmmoPrimary, int num)
 {
-	if (pPlayer->Weapon_OwnsThisType(pParentClassname))
+	CBaseCombatWeapon *pWeapon = pPlayer->Weapon_OwnsThisType(pParentClassname);
+
+	if (pWeapon)
 	{
-		pPlayer->GiveNamedItem(pClassname);
-		if (!one)
+		int pAmmoType;
+
+		if (isAmmoPrimary)
 		{
-			pPlayer->GiveNamedItem(pClassname);
+			pAmmoType = pWeapon->GetPrimaryAmmoType();
 		}
+		else
+		{
+			pAmmoType = pWeapon->GetSecondaryAmmoType();
+		}
+
+		pPlayer->GiveAmmo(pAmmoType, num);
 		return true;
 	}
 	else
@@ -1206,14 +1215,45 @@ float GivePerkAdjustValue(CBasePlayer* pPlayer, bool perkBool, int perkInt, floa
 	return perkIncreaseFloat;
 }
 
-bool GiveKashBonus(CBasePlayer* pPlayer, const char* hintText)
+bool GivePerkForID(CBasePlayer* pPlayer, int perkID)
+{
+	bool unlocked = true;
+
+	switch (perkID)
+	{
+		case FIREFIGHT_PERK_INFINITEAMMO:
+			pPlayer->m_iPerkInfiniteAmmo = GivePerk(pPlayer, sv_fr_perks_infiniteammo.GetBool(), pPlayer->m_iPerkInfiniteAmmo);
+			unlocked = (pPlayer->m_iPerkInfiniteAmmo > 0);
+			break;
+		case FIREFIGHT_PERK_HEALTHREGENERATIONRATE:
+		{
+			float regenRateAdd = GivePerkAdjustValue(pPlayer, sv_regeneration.GetBool(), pPlayer->m_iPerkHealthRegen, sv_fr_perks_healthregenerationrate_amount.GetFloat());
+			pPlayer->m_fRegenRate = pPlayer->m_fRegenRate + regenRateAdd;
+			unlocked = (regenRateAdd > 0);
+		}
+		break;
+		case FIREFIGHT_PERK_HEALTHREGENERATION:
+			//m_iPerkHealthRegen = 1 on non classic mode.
+			pPlayer->m_iPerkHealthRegen = GivePerk(pPlayer, sv_regeneration.GetBool(), pPlayer->m_iPerkHealthRegen);
+			unlocked = (pPlayer->m_iPerkHealthRegen > 0);
+			break;
+		default:
+		case FIREFIGHT_PERK_INFINITEAUXPOWER:
+			pPlayer->m_iPerkInfiniteAuxPower = GivePerk(pPlayer, sv_fr_perks_infiniteauxpower.GetBool(), pPlayer->m_iPerkInfiniteAuxPower);
+			unlocked = (pPlayer->m_iPerkInfiniteAuxPower > 0);
+			break;
+	}
+
+	return unlocked;
+}
+
+bool GiveKashBonus(CBasePlayer* pPlayer)
 {
 	bool givenKashBonus = false;
 
 	if (g_fr_economy.GetBool())
 	{
 		pPlayer->AddMoney(pPlayer->GetLevel() * 10);
-		
 		givenKashBonus = true;
 	}
 
@@ -1242,32 +1282,125 @@ static void FindRewardsFilesAbsoluteList(CUtlVector< CUtlString >& outAbsolutePa
 	g_pFullFileSystem->FindClose(hFile);
 }
 
-/*void CBasePlayer::CreatePerkList()
+bool CBasePlayer::GiveItemOfType(int itemType, 
+	const char* pWeaponClassname, 
+	bool isAmmoPrimary, 
+	int ammoCount, 
+	int perkID)
 {
-	FileFindHandle_t findHandle;
-	KeyValues* pKV = new KeyValues("Rewards");
-	const char* pFilename = filesystem->FindFirstEx("scripts/*.txt", "MOD", &findHandle);
-	while (pFilename)
-	{
-		const char* prefix = "rewards_";
-		if (Q_strncmp(pFilename, prefix, sizeof(prefix)) == 0)
-		{
-			char szScriptName[2048];
-			Q_snprintf(szScriptName, sizeof(szScriptName), "scripts/%s", pFilename);
-			if (pKV->LoadFromFile(filesystem, szScriptName, "GAME"))
-			{
-				DevMsg("'%s' added to rewards list!\n", szScriptName);
-			}
-		}
+	bool unlocked = true;
 
-		pFilename = filesystem->FindNext(findHandle);
+	switch (itemType)
+	{
+		case FR_BATTERY:
+			GiveBattery(this);
+			break;
+		case FR_HEALTHKIT_BIG:
+			GiveHealthkit(this, true);
+			break;
+		case FR_BATTERY_BIG:
+			GiveBattery(this, true);
+			break;
+		case FR_WEAPON:
+			unlocked = GiveNewWeapon(this, pWeaponClassname);
+			break;
+		case FR_AMMOWEAPON:
+			GiveAmmoWeapon(this, pWeaponClassname);
+			break;
+		case FR_AMMO:
+			unlocked = GiveAmmoForWeapon(this, pWeaponClassname, isAmmoPrimary, ammoCount);
+			break;
+		case FR_PERK:
+		case FR_PERKVAL:
+			GivePerkForID(this, perkID);
+			break;
+		case FR_KASHBONUS:
+			unlocked = GiveKashBonus(this);
+			break;
+		default:
+		case FR_HEALTHKIT:
+			GiveHealthkit(this);
+			break;
 	}
 
-	m_pPerkData = pKV->MakeCopy();
-}*/
+	return unlocked;
+}
 
-void CBasePlayer::GiveItem(const char* itemName, int itemtype)
+bool CBasePlayer::GiveRewardItem(KeyValues* pData)
 {
+	bool rewarded = true;
+	int pItemType = pData->GetInt("item_type", FR_HEALTHKIT);
+	const char* pWeaponClassName = pData->GetString("weapon_classname", "weapon_crowbar");
+	bool pIsAmmoPrimary = pData->GetBool("ammo_isprimary", true);
+	int pAmmoNum = pData->GetInt("ammo_num", 1);
+	int pPerkID = pData->GetInt("perk_id", FIREFIGHT_PERK_INFINITEAUXPOWER);
+
+	rewarded = GiveItemOfType(pItemType, pWeaponClassName, pIsAmmoPrimary, pAmmoNum, pPerkID);
+
+	if (rewarded)
+	{
+		const char* rewardName = pData->GetString("name", "");
+		CFmtStr hint;
+		ShowPerkMessage(rewardName);
+
+		if (sv_player_voice.GetBool() && sv_player_voice_perk.GetBool())
+		{
+			EmitSound("Player.VoicePerk");
+		}
+	}
+
+	return rewarded;
+}
+
+KeyValues* CBasePlayer::LoadItemData(KeyValues* pData, int count, int itemID)
+{
+	int itemdrop = itemID;
+	//then, we randomize them.
+	DevMsg("%i items loaded.\n", count);
+	if (itemdrop == -1)
+	{
+		itemdrop = random->RandomInt(1, count);
+	}
+	DevMsg("Trying to load Node ID %i\n", itemdrop);
+	CFmtStr sectionName;
+	sectionName.sprintf("%i", itemdrop);
+	KeyValues* pNode = pData->FindKey(sectionName.Access());
+	while (pNode)
+	{
+		//if we found a key, then give the player an item.
+		DevMsg("Node %i found\n", itemdrop);
+		return pNode;
+	}
+
+	return NULL;
+}
+
+bool CBasePlayer::ProcessItemData(KeyValues* pData, int count, int itemID)
+{
+	KeyValues* pNode = LoadItemData(pData, count);
+
+	if (pNode != NULL)
+	{
+		int minLevel = pNode->GetInt("min_level", 0);
+		//check to see if we're at the min level.
+		if (GetLevel() >= minLevel)
+		{
+			if (GiveRewardItem(pNode))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	return false;
 }
 
 void CBasePlayer::Reward_GiveItem()
@@ -1284,10 +1417,7 @@ void CBasePlayer::Reward_GiveItem()
 		DevMsg("'%s' loaded as rewards list!\n", filename);
 	}
 
-	int randomitemdrop = 0;
 	int count = 0;
-	//bool unlocked = true;
-	//CFmtStr hint;
 
 	//we get the number of keys in the file.
 	for (KeyValues* kv = m_pPerkData->GetFirstSubKey(); kv != NULL; kv = kv->GetNextKey())
@@ -1298,175 +1428,28 @@ void CBasePlayer::Reward_GiveItem()
 	// if we have more than 0, begin randomizing.
 	if (count > 0)
 	{
-		//then, we randomize them.
-		DevMsg("%i items loaded.\n", count);
-		randomitemdrop = random->RandomInt(1, count);
-		DevMsg("Trying to load Node %i\n", randomitemdrop);
-		CFmtStr sectionName;
-		sectionName.sprintf("%i", randomitemdrop);
-		KeyValues* pNode = m_pPerkData->FindKey(sectionName.Access());
-		while (pNode)
-		{
-			//if we found a key, then give the player an item.
-			DevMsg("Node %i found\n", randomitemdrop);
-			const char* rewardName = pNode->GetString("name", "");
-			int rewardType = pNode->GetInt("itemtype", 0);
-			int minLevel = pNode->GetInt("min_level", 0);
-			DevMsg("%s | Type: %i | Min. Level: %i\n", rewardName, rewardType, minLevel);
-
-			//TODO: add item types!!!
-			//check to see if we're at the min level.
-			if (GetLevel() >= minLevel)
-			{
-			}
-			else
-			{
-				//if not, give us one of the first 1-2 items.
-				if (count >= 2)
-				{
-				}
-				else if (count == 1)
-				{
-				}
-			}
-
-			CFmtStr hint;
-			ShowPerkMessage(rewardName);
-
-			pNode = NULL;
-		}
-
-		/*switch (randomitemdrop)
-		{
-			case FIREFIGHT_ITEMREWARD_HEALTHKIT:
-				GiveHealthkit(this, hint, "Healthkit");
-				break;
-			case FIREFIGHT_ITEMREWARD_SUITBATTERY:
-				GiveBattery(this, hint, "Battery");
-				break;
-			case FIREFIGHT_ITEMREWARD_AMMO_FRAGGRENADE:
-				GiveAmmoWeapon(this, "item_ammo_grenade", "#Valve_Hud_Reward_FragGrenade", hint);
-				break;
-			case FIREFIGHT_ITEMREWARD_AMMO_SLAM:
-				GiveAmmoWeapon(this, "item_slam_ammo", "#Valve_Hud_Reward_SLAMAmmo", hint);
-				break;
-			case FIREFIGHT_ITEMREWARD_BIGHEALTHKIT:
-				GiveHealthkit(this, hint, "BigHealthkit", true);
-				break;
-			case FIREFIGHT_ITEMREWARD_BIGSUITBATTERY:
-				GiveBattery(this, hint, "BigBattery", true);
-				break;
-			case FIREFIGHT_ITEMREWARD_AMMO_357:
-				unlocked = GiveAmmoForWeapon(this, "weapon_357", "item_ammo_357", "#Valve_Hud_Reward_357Ammo", hint);
-				break;
-			case FIREFIGHT_ITEMREWARD_AMMO_AR2:
-				unlocked = GiveAmmoForWeapon(this, "weapon_ar2", "item_ammo_ar2", "#Valve_Hud_Reward_AR2Ammo", hint);
-				break;
-			case FIREFIGHT_ITEMREWARD_AMMO_CROSSBOW:
-				unlocked = GiveAmmoForWeapon(this, "weapon_crossbow", "item_ammo_crossbow", "#Valve_Hud_Reward_CrossbowAmmo", hint);
-				break;
-			case FIREFIGHT_ITEMREWARD_AMMO_PISTOL:
-				unlocked = GiveAmmoForWeapon(this, "weapon_pistol", "item_ammo_pistol", "#Valve_Hud_Reward_PistolAmmo", hint);
-				break;
-			case FIREFIGHT_ITEMREWARD_AMMO_SMG1:
-				unlocked = GiveAmmoForWeapon(this, "weapon_smg1", "item_ammo_smg1", "#Valve_Hud_Reward_SMG1Ammo", hint);
-				break;
-			case FIREFIGHT_ITEMREWARD_AMMO_SHOTGUN:
-				unlocked = GiveAmmoForWeapon(this, "weapon_shotgun", "item_box_buckshot", "#Valve_Hud_Reward_ShotgunAmmo", hint);
-				break;
-			case FIREFIGHT_ITEMREWARD_AMMO_SMG1GRENADE:
-				unlocked = GiveAmmoForWeapon(this, "weapon_smg1", "item_ammo_smg1_grenade", "#Valve_Hud_Reward_SMG1Grenade", hint, true);
-				break;
-			case FIREFIGHT_ITEMREWARD_AMMO_AR2BALL:
-				unlocked = GiveAmmoForWeapon(this, "weapon_ar2", "item_ammo_ar2_altfire", "#Valve_Hud_Reward_AR2Ball", hint, true);
-				break;
-			case FIREFIGHT_ITEMREWARD_AMMO_RPGROCKET:
-				unlocked = GiveAmmoForWeapon(this, "weapon_rpg", "item_rpg_round", "#Valve_Hud_Reward_RPGRocket", hint, true);
-				break;
-			case FIREFIGHT_ITEMREWARD_AMMO_SNIPERRIFLE:
-				unlocked = GiveAmmoForWeapon(this, "weapon_sniper_rifle", "item_ammo_sniperrifle", "#Valve_Hud_Reward_SniperRifleAmmo", hint);
-				break;
-			case FIREFIGHT_ITEMREWARD_AMMO_M249PARA:
-				unlocked = GiveAmmoForWeapon(this, "weapon_m249para", "item_ammo_m249para", "#Valve_Hud_Reward_M249ParaAmmo", hint);
-				break;
-			case FIREFIGHT_ITEMREWARD_AMMO_OCIW:
-				unlocked = GiveAmmoForWeapon(this, "weapon_oicw", "item_ammo_oicw", "#Valve_Hud_Reward_OICWAmmo", hint);
-				break;
-			case FIREFIGHT_ITEMREWARD_AMMO_OCIWGRENADE:
-				unlocked = GiveAmmoForWeapon(this, "weapon_oicw", "item_oicw_grenade", "#Valve_Hud_Reward_OICWGrenade", hint, true);
-				break;
-			case FIREFIGHT_ITEMREWARD_WEAPON_357:
-				unlocked = GiveNewWeapon(this, "weapon_357", "#Valve_Hud_Reward_Weapon_357", hint);
-				break;
-			case FIREFIGHT_ITEMREWARD_WEAPON_AR2:
-				unlocked = GiveNewWeapon(this, "weapon_ar2", "#Valve_Hud_Reward_Weapon_AR2", hint);
-				break;
-			case FIREFIGHT_ITEMREWARD_WEAPON_CROSSBOW:
-				unlocked = GiveNewWeapon(this, "weapon_crossbow", "#Valve_Hud_Reward_Weapon_Crossbow", hint);
-				break;
-			case FIREFIGHT_ITEMREWARD_WEAPON_SHOTGUN:
-				unlocked = GiveNewWeapon(this, "weapon_shotgun", "#Valve_Hud_Reward_Weapon_Shotgun", hint);
-				break;
-			case FIREFIGHT_ITEMREWARD_WEAPON_RPG:
-				unlocked = GiveNewWeapon(this, "weapon_rpg", "#Valve_Hud_Reward_Weapon_RPG", hint, true);
-				break;
-			case FIREFIGHT_ITEMREWARD_WEAPON_SNIPERRIFLE:
-				unlocked = GiveNewWeapon(this, "weapon_sniper_rifle", "#Valve_Hud_Reward_Weapon_Sniper_Rifle", hint, true);
-				break;
-			case FIREFIGHT_ITEMREWARD_WEAPON_M249PARA:
-				unlocked = GiveNewWeapon(this, "weapon_m249para", "#Valve_Hud_Reward_Weapon_M249Para", hint, true);
-				break;
-			case FIREFIGHT_ITEMREWARD_WEAPON_OCIW:
-				unlocked = GiveNewWeapon(this, "weapon_oicw", "#Valve_Hud_Reward_Weapon_OCIW", hint);
-				break;
-			case FIREFIGHT_ITEMREWARD_WEAPON_GAUSS:
-				unlocked = GiveNewWeapon(this, "weapon_gauss", "#Valve_Hud_Reward_Weapon_Gauss", hint, true);
-				break;
-			case FIREFIGHT_ITEMREWARD_WEAPON_KATANA:
-				unlocked = GiveNewWeapon(this, "weapon_katana", "#Valve_Hud_Reward_Weapon_Katana", hint, true);
-				break;
-			case FIREFIGHT_ITEMREWARD_AMMO_GAUSS:
-				unlocked = GiveAmmoForWeapon(this, "weapon_gauss", "item_ammo_gauss", "#Valve_Hud_Reward_GaussAmmo", hint);
-				break;
-			case FIREFIGHT_ITEMREWARD_AMMO_MP5:
-				unlocked = GiveAmmoForWeapon(this, "weapon_mp5", "item_ammo_mp5", "#Valve_Hud_Reward_MP5Ammo", hint);
-				break;
-			case FIREFIGHT_PERK_INFINITEAMMO:
-				m_iPerkInfiniteAmmo = GivePerk(this, hint, sv_fr_perks_infiniteammo.GetBool(), m_iPerkInfiniteAmmo, (MAX_LEVEL * 0.5), "#Valve_Hud_INFINITEAMMO");
-				unlocked = (m_iPerkInfiniteAmmo > 0);
-				break;
-			case FIREFIGHT_PERK_INFINITEAUXPOWER:
-				m_iPerkInfiniteAuxPower = GivePerk(this, hint, sv_fr_perks_infiniteauxpower.GetBool(), m_iPerkInfiniteAuxPower, (MAX_LEVEL * 0.5), "#Valve_Hud_INFINITEAUXPOWER");
-				unlocked = (m_iPerkInfiniteAuxPower > 0);
-				break;
-			case FIREFIGHT_PERK_HEALTHREGENERATIONRATE:
-				{
-					float regenRateAdd = GivePerkAdjustValue(this, hint, sv_regeneration.GetBool(), m_iPerkHealthRegen, sv_fr_perks_healthregenerationrate_amount.GetFloat(), 1, "#Valve_Hud_HEALTHREGENERATIONRATE");
-					m_fRegenRate = m_fRegenRate + regenRateAdd;
-					unlocked = (regenRateAdd > 0);
-				}
-				break;
-			case FIREFIGHT_PERK_HEALTHREGENERATION:
-				//m_iPerkHealthRegen = 1 on non classic mode.
-				m_iPerkHealthRegen = GivePerk(this, hint, sv_regeneration.GetBool(), m_iPerkHealthRegen, 1, "#Valve_Hud_HEALTHREGENERATION");
-				unlocked = (m_iPerkHealthRegen > 0);
-				break;
-			case FIREFIGHT_REWARD_KASHBONUS:
-				unlocked = GiveKashBonus(this);
-				break;
-			default:
-				GiveAltItem(this, hint);
-				break;
-		}
+		bool unlocked = ProcessItemData(m_pPerkData, count);
 
 		if (!unlocked)
 		{
-			GiveAltItem(this, hint);
-		}*/
+			bool secondCheck = true;
 
-		if (sv_player_voice.GetBool() && sv_player_voice_perk.GetBool())
-		{
-			EmitSound("Player.VoicePerk");
+			//if not, give us one of the first 1-2 items.
+			if (count >= 2)
+			{
+				int randomID = randomfile = random->RandomInt(1, 2);
+				secondCheck = ProcessItemData(m_pPerkData, count, randomID);
+			}
+			else if (count == 1)
+			{
+				secondCheck = ProcessItemData(m_pPerkData, count, 1);
+			}
+
+			if (!secondCheck)
+			{
+				int randomID = randomfile = random->RandomInt(FR_HEALTHKIT, FR_BATTERY);
+				GiveItemOfType(randomID);
+			}
 		}
 	}
 	else
@@ -7592,7 +7575,7 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		int moneyAmount = atoi(args[1]);
 
 		CFmtStr hint;
-		GiveHealthkit(this, false);
+		GiveHealthkit(this);
 
 		engine->ClientCommand(edict(), "confirm_purchase %i", moneyAmount);
 
@@ -7603,7 +7586,7 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		int moneyAmount = atoi(args[1]);
 
 		CFmtStr hint;
-		GiveBattery(this, false);
+		GiveBattery(this);
 
 		engine->ClientCommand(edict(), "confirm_purchase %i", moneyAmount);
 

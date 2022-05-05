@@ -30,12 +30,25 @@ enum FR_ItemTypes_t
 	FR_BATTERY,
 	FR_HEALTHKIT_BIG,
 	FR_BATTERY_BIG,
-	FR_UPGRADE,
 	FR_WEAPON,
 	FR_AMMOWEAPON,
 	FR_AMMO,
 	FR_PERK,
-	FR_PERKVAL
+	FR_PERKVAL,
+	FR_KASHBONUS
+};
+
+enum FR_PerkIDs_t
+{
+	FIREFIGHT_PERK_INFINITEAUXPOWER = 1,
+	FIREFIGHT_PERK_INFINITEAMMO,
+	FIREFIGHT_PERK_HEALTHREGENERATIONRATE,
+	FIREFIGHT_PERK_HEALTHREGENERATION
+};
+
+enum FR_UpgradeIDs_t
+{
+	FIREFIGHT_UPGRADE_MAXHEALTH
 };
 
 // For queuing and processing usercmds
@@ -888,7 +901,10 @@ public:
 	void ResetMoney() { m_iMoney = 0; }
 
 	void DetermineReward(void);
-	void GiveItem(const char* itemName, int itemtype);
+	KeyValues *LoadItemData(KeyValues* pData, int count, int itemID = -1);
+	bool ProcessItemData(KeyValues* pData, int count, int itemID = -1);
+	bool GiveRewardItem(KeyValues *pData);
+	bool GiveItemOfType(int itemType, const char *pWeaponClassname = "", bool isAmmoPrimary = true, int ammoCount = 999, int perkID = -1);
 
 	void Reward_GiveItem();
 
@@ -993,6 +1009,7 @@ public:
 	int m_iPerkInfiniteAuxPower;
 	CNetworkVar(int, m_iPerkInfiniteAmmo);
 	int m_iPerkHealthRegen;
+	float m_fRegenRate;
 
 private:
 
@@ -1155,7 +1172,6 @@ private:
 	// player locking
 	int						m_iPlayerLocked;
 
-	float					m_fRegenRate;
 	int						m_iHealthUpgrades;
 		
 protected:

@@ -145,7 +145,7 @@ void CHudPerkHintDisplay::OnThink()
 
 wchar_t* GrabLocalizedItemString(const char* name)
 {
-	wchar_t text[128];
+	wchar_t text[256];
 	wchar_t* tempString = g_pVGuiLocalize->Find(name);
 
 	// setup our localized string
@@ -184,8 +184,9 @@ bool CHudPerkHintDisplay::SetHintText(const char *text)
 	m_Labels.RemoveAll();
 
 	wchar_t* ws;
+	wchar_t* convertedText = GrabLocalizedItemString(text);
 	wchar_t wszLocalized[256];
-	g_pVGuiLocalize->ConstructString(wszLocalized, sizeof(wszLocalized), g_pVGuiLocalize->Find("#Valve_Hud_Reward"), 1, GrabLocalizedItemString(text));
+	g_pVGuiLocalize->ConstructString(wszLocalized, sizeof(wszLocalized), g_pVGuiLocalize->Find("#Valve_Hud_Reward"), 1, convertedText);
 	ws = wszLocalized;
 
 	// parse out the text into a label set
