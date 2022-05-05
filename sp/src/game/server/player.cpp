@@ -1421,7 +1421,6 @@ KeyValues* CBasePlayer::LoadItemData(KeyValues* pData, int count, int itemID)
 {
 	int itemdrop = itemID;
 	//then, we randomize them.
-	DevMsg("%i items loaded.\n", count);
 	if (itemdrop == -1)
 	{
 		itemdrop = random->RandomInt(1, count);
@@ -1494,6 +1493,8 @@ void CBasePlayer::Reward_GiveItem()
 	{
 		count++;
 	}
+
+	DevMsg("%i items loaded.\n", count);
 
 	// if we have more than 0, begin randomizing.
 	if (count > 0)
