@@ -1334,12 +1334,12 @@ bool CBasePlayer::GiveRewardItem(KeyValues* pData)
 	bool pIsAmmoPrimary = pData->GetBool("ammo_isprimary", true);
 	int pAmmoNum = pData->GetInt("ammo_num", 1);
 	int pPerkID = pData->GetInt("perk_id", FIREFIGHT_PERK_INFINITEAUXPOWER);
+	const char* rewardName = pData->GetString("name", "");
 
 	rewarded = GiveItemOfType(pItemType, pWeaponClassName, pIsAmmoPrimary, pAmmoNum, pPerkID);
 
 	if (rewarded)
 	{
-		const char* rewardName = pData->GetString("name", "");
 		CFmtStr hint;
 		ShowPerkMessage(rewardName);
 
@@ -1347,6 +1347,10 @@ bool CBasePlayer::GiveRewardItem(KeyValues* pData)
 		{
 			EmitSound("Player.VoicePerk");
 		}
+	}
+	else
+	{
+		Warning("%s is not working properly. Check the reward script file/s.\n", rewardName);
 	}
 
 	return rewarded;
@@ -1372,6 +1376,7 @@ KeyValues* CBasePlayer::LoadItemData(KeyValues* pData, int count, int itemID)
 		return pNode;
 	}
 
+	Warning("Item node %i is not loading. Check the reward script file/s.\n", itemdrop);
 	return NULL;
 }
 
@@ -1382,6 +1387,7 @@ bool CBasePlayer::ProcessItemData(KeyValues* pData, int count, int itemID)
 	if (pNode != NULL)
 	{
 		int minLevel = pNode->GetInt("min_level", 0);
+
 		//check to see if we're at the min level.
 		if (GetLevel() >= minLevel)
 		{
@@ -1391,15 +1397,18 @@ bool CBasePlayer::ProcessItemData(KeyValues* pData, int count, int itemID)
 			}
 			else
 			{
+				Warning("Failed to give item! Internal script error\n");
 				return false;
 			}
 		}
 		else
 		{
+			Warning("Failed to give item! Not at the minimum level for item.\n");
 			return false;
 		}
 	}
 
+	Warning("Failed to give item! Script file is invalid.\n");
 	return false;
 }
 
@@ -1448,7 +1457,26 @@ void CBasePlayer::Reward_GiveItem()
 			if (!secondCheck)
 			{
 				int randomID = randomfile = random->RandomInt(FR_HEALTHKIT, FR_BATTERY);
-				GiveItemOfType(randomID);
+				bool GivenItem = GiveItemOfType(randomID);
+
+				if (GivenItem)
+				{
+					const char* pBackupRewardName = ((randomID == FR_BATTERY) ? 
+						"#GameUI_Store_Buy_SuitBattery" : 
+						"#GameUI_Store_Buy_HealthKit");
+
+					CFmtStr hint;
+					ShowPerkMessage(pBackupRewardName);
+
+					if (sv_player_voice.GetBool() && sv_player_voice_perk.GetBool())
+					{
+						EmitSound("Player.VoicePerk");
+					}
+				}
+				else
+				{
+					Warning("how . . .\n");
+				}
 			}
 		}
 	}

@@ -42,7 +42,7 @@ void UpdateCursorState();
 
 wchar_t* GrabLocalizedString(const char* name)
 {
-	wchar_t text[128];
+	wchar_t text[256];
 	wchar_t* tempString = g_pVGuiLocalize->Find(name);
 
 	// setup our localized string
@@ -70,7 +70,7 @@ wchar_t* GrabLocalizedNameString(const char* name)
 	char szNameString[2048];
 	Q_snprintf(szNameString, sizeof(szNameString), "#GameUI_Store_Buy_%s", name);
 
-	wchar_t text[128];
+	wchar_t text[256];
 	wchar_t* tempString = g_pVGuiLocalize->Find(szNameString);
 
 	// setup our localized string
