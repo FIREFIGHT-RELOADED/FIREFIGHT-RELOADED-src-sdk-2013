@@ -621,12 +621,11 @@ BEGIN_DATADESC( CBasePlayer )
 	DEFINE_FIELD(m_iExp, FIELD_INTEGER),
 	DEFINE_FIELD(m_iLevel, FIELD_INTEGER),
 	DEFINE_FIELD(m_iMaxExp, FIELD_INTEGER),
-	DEFINE_KEYFIELD(m_iPerkInfiniteAuxPower, FIELD_INTEGER, "perkauxpower"),
-	DEFINE_KEYFIELD(m_iPerkInfiniteAmmo, FIELD_INTEGER, "perkinfiniteammo"),
-	DEFINE_KEYFIELD(m_iPerkHealthRegen, FIELD_INTEGER, "perkhealthregen"),
+	DEFINE_KEYFIELD(m_iPerkInfiniteAuxPower, FIELD_INTEGER, "auxpower"),
+	DEFINE_KEYFIELD(m_iPerkInfiniteAmmo, FIELD_INTEGER, "infiniteammo"),
+	DEFINE_KEYFIELD(m_iPerkHealthRegen, FIELD_INTEGER, "healthregen"),
+	DEFINE_KEYFIELD(m_fRegenRate, FIELD_FLOAT, "healthregenrate"),
 	DEFINE_FIELD(m_iMoney, FIELD_INTEGER),
-
-	DEFINE_FIELD(m_fRegenRate, FIELD_FLOAT),
 
 	// DEFINE_FIELD( m_nBodyPitchPoseParam, FIELD_INTEGER ),
 	// DEFINE_ARRAY( m_StepSoundCache, StepSoundCache_t,  2  ),
