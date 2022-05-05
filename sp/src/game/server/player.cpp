@@ -1191,9 +1191,9 @@ void GiveBattery(CBasePlayer* pPlayer, bool big = false)
 	}
 }*/
 
-int GivePerk(CBasePlayer* pPlayer, bool perkBool, int perkIntVal)
+int GivePerk(CBasePlayer* pPlayer, bool perkBool)
 {
-	int perkInt = perkIntVal;
+	int perkInt = 0;
 
 	if (sv_fr_perks.GetBool() && perkInt == 0 && perkBool)
 	{
@@ -1203,11 +1203,11 @@ int GivePerk(CBasePlayer* pPlayer, bool perkBool, int perkIntVal)
 	return perkInt;
 }
 
-float GivePerkAdjustValue(CBasePlayer* pPlayer, bool perkBool, int perkInt, float perkAmount)
+float GivePerkAdjustValue(CBasePlayer* pPlayer, bool perkBool, float perkAmount)
 {
 	float perkIncreaseFloat = 0;
 
-	if (sv_fr_perks.GetBool() && perkInt == 0 && perkBool)
+	if (sv_fr_perks.GetBool() && perkBool)
 	{
 		perkIncreaseFloat = perkAmount;
 	}
@@ -1217,30 +1217,42 @@ float GivePerkAdjustValue(CBasePlayer* pPlayer, bool perkBool, int perkInt, floa
 
 bool GivePerkForID(CBasePlayer* pPlayer, int perkID)
 {
-	bool unlocked = true;
+	bool unlocked = false;
 
 	switch (perkID)
 	{
 		case FIREFIGHT_PERK_INFINITEAMMO:
-			pPlayer->m_iPerkInfiniteAmmo = GivePerk(pPlayer, sv_fr_perks_infiniteammo.GetBool(), pPlayer->m_iPerkInfiniteAmmo);
-			unlocked = (pPlayer->m_iPerkInfiniteAmmo > 0);
+			if (pPlayer->m_iPerkInfiniteAmmo == 0)
+			{
+				pPlayer->m_iPerkInfiniteAmmo = GivePerk(pPlayer, sv_fr_perks_infiniteammo.GetBool());
+				unlocked = (pPlayer->m_iPerkInfiniteAmmo > 0);
+			}
 			break;
 		case FIREFIGHT_PERK_HEALTHREGENERATIONRATE:
 		{
-			float regenRateAdd = GivePerkAdjustValue(pPlayer, sv_regeneration.GetBool(), pPlayer->m_iPerkHealthRegen, sv_fr_perks_healthregenerationrate_amount.GetFloat());
-			pPlayer->m_fRegenRate = pPlayer->m_fRegenRate + regenRateAdd;
-			unlocked = (regenRateAdd > 0);
+			if (pPlayer->m_iPerkHealthRegen == 1)
+			{
+				float regenRateAdd = GivePerkAdjustValue(pPlayer, sv_regeneration.GetBool(), sv_fr_perks_healthregenerationrate_amount.GetFloat());
+				pPlayer->m_fRegenRate = pPlayer->m_fRegenRate + regenRateAdd;
+				unlocked = (regenRateAdd > 0);
+			}
 		}
 		break;
 		case FIREFIGHT_PERK_HEALTHREGENERATION:
-			//m_iPerkHealthRegen = 1 on non classic mode.
-			pPlayer->m_iPerkHealthRegen = GivePerk(pPlayer, sv_regeneration.GetBool(), pPlayer->m_iPerkHealthRegen);
-			unlocked = (pPlayer->m_iPerkHealthRegen > 0);
+			if (pPlayer->m_iPerkHealthRegen == 0)
+			{
+				//m_iPerkHealthRegen = 1 on non classic mode.
+				pPlayer->m_iPerkHealthRegen = GivePerk(pPlayer, sv_regeneration.GetBool());
+				unlocked = (pPlayer->m_iPerkHealthRegen > 0);
+			}
 			break;
 		default:
 		case FIREFIGHT_PERK_INFINITEAUXPOWER:
-			pPlayer->m_iPerkInfiniteAuxPower = GivePerk(pPlayer, sv_fr_perks_infiniteauxpower.GetBool(), pPlayer->m_iPerkInfiniteAuxPower);
-			unlocked = (pPlayer->m_iPerkInfiniteAuxPower > 0);
+			if (pPlayer->m_iPerkInfiniteAuxPower == 0)
+			{
+				pPlayer->m_iPerkInfiniteAuxPower = GivePerk(pPlayer, sv_fr_perks_infiniteauxpower.GetBool());
+				unlocked = (pPlayer->m_iPerkInfiniteAuxPower > 0);
+			}
 			break;
 	}
 
@@ -1312,8 +1324,7 @@ bool CBasePlayer::GiveItemOfType(int itemType,
 			unlocked = GiveAmmoForWeapon(this, pWeaponClassname, isAmmoPrimary, ammoCount);
 			break;
 		case FR_PERK:
-		case FR_PERKVAL:
-			GivePerkForID(this, perkID);
+			unlocked = GivePerkForID(this, perkID);
 			break;
 		case FR_KASHBONUS:
 			unlocked = GiveKashBonus(this);
@@ -1405,13 +1416,13 @@ bool CBasePlayer::ProcessItemData(KeyValues* pData, int count, int itemID)
 			}
 			else
 			{
-				Warning("Failed to give item! Internal script error\n");
+				Warning("Failed to give item! Internal script error or the player doesn't have an item.\n");
 				return false;
 			}
 		}
 		else
 		{
-			Warning("Failed to give item! Not at the minimum level for item.\n");
+			DevWarning("Failed to give item! Not at the minimum level for item.\n");
 			return false;
 		}
 	}
@@ -1449,6 +1460,7 @@ void CBasePlayer::Reward_GiveItem()
 
 		if (!unlocked)
 		{
+			DevWarning("Attempting to grab the 1st or 2nd items\n");
 			bool secondCheck = true;
 
 			//if not, give us one of the first 1-2 items.
@@ -1464,6 +1476,7 @@ void CBasePlayer::Reward_GiveItem()
 
 			if (!secondCheck)
 			{
+				DevWarning("Attempting to grab a healthkit or suit battery\n");
 				int randomID = randomfile = random->RandomInt(FR_HEALTHKIT, FR_BATTERY);
 				bool GivenItem = GiveItemOfType(randomID);
 
