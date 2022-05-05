@@ -129,7 +129,7 @@ CFRStoreMenuEX::CFRStoreMenuEX(IViewPort *pViewPort) : Frame(NULL, PANEL_BUY)
 			char szScriptName[2048];
 			Q_snprintf(szScriptName, sizeof(szScriptName), "scripts/%s", pFilename);
 			LoadItemFile("ShopCatalog", szScriptName);
-			Msg("'%s' added to shop item list!\n", szScriptName);
+			DevMsg("'%s' added to shop item list!\n", szScriptName);
 		}
 
 		pFilename = filesystem->FindNext(findHandle);

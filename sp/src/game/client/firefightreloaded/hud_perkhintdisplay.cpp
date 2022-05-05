@@ -38,7 +38,7 @@ public:
 	void MsgFunc_PerkHintText(bf_read &msg);
 	bool ShouldDraw();
 
-	bool SetHintText( const char *text );
+	bool SetHintText( const char *text);
 	virtual void	OnTick(void);
 
 protected:
@@ -89,7 +89,7 @@ void CHudPerkHintDisplay::Init()
 //-----------------------------------------------------------------------------
 void CHudPerkHintDisplay::Reset()
 {
-	SetHintText( NULL );
+	SetHintText( NULL);
 	SetAlpha( 0 );
 }
 
@@ -148,7 +148,7 @@ void CHudPerkHintDisplay::OnThink()
 //-----------------------------------------------------------------------------
 bool CHudPerkHintDisplay::SetHintText(const char *text)
 {
-	if ( text == NULL || text[0] == L'\0' )
+	if ( text == NULL)
 		return false;
 
 	// clear the existing text
@@ -158,21 +158,12 @@ bool CHudPerkHintDisplay::SetHintText(const char *text)
 	}
 	m_Labels.RemoveAll();
 
-	// look up the text string
-	wchar_t *ws = g_pVGuiLocalize->Find( text );
-
+	wchar_t* ws;
 	wchar_t wszBuf[256];
-	if ( !ws || wcslen(ws) <= 0)
-	{
-		if (text[0] == '#')
-		{
-			// We don't want to display a localization placeholder, do we?
-			return false;
-		}
-		// use plain ASCII string 
-		g_pVGuiLocalize->ConvertANSIToUnicode(text, wszBuf, sizeof(wszBuf));
-		ws = wszBuf;
-	}
+	g_pVGuiLocalize->ConvertANSIToUnicode(text, wszBuf, sizeof(wszBuf));
+	wchar_t wszLocalized[256];
+	g_pVGuiLocalize->ConstructString(wszLocalized, sizeof(wszLocalized), g_pVGuiLocalize->Find("#Valve_Hud_Reward"), 1, wszBuf);
+	ws = wszLocalized;
 
 	// parse out the text into a label set
 	while ( *ws )

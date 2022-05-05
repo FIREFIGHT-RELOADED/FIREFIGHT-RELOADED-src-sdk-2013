@@ -24,6 +24,20 @@
 #include "econ_item_view.h"
 #endif
 
+enum FR_ItemTypes_t
+{
+	FR_HEALTHKIT = 1,
+	FR_BATTERY,
+	FR_HEALTHKIT_BIG,
+	FR_BATTERY_BIG,
+	FR_UPGRADE,
+	FR_WEAPON,
+	FR_AMMOWEAPON,
+	FR_AMMO,
+	FR_PERK,
+	FR_PERKVAL
+};
+
 // For queuing and processing usercmds
 class CCommandContext
 {
@@ -874,9 +888,9 @@ public:
 	void ResetMoney() { m_iMoney = 0; }
 
 	void DetermineReward(void);
+	void GiveItem(const char* itemName, int itemtype);
 
 	void Reward_GiveItem();
-	void Reward_GiveKashBonus(void);
 
 	void LevelUpClassic( void);
 
