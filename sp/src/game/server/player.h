@@ -35,7 +35,9 @@ enum FR_ItemTypes_t
 	FR_AMMO,
 	FR_PERK,
 	FR_PERKVAL,
-	FR_KASHBONUS
+	FR_KASHBONUS,
+	FR_SERVERCMD,
+	FR_CLIENTCMD
 };
 
 enum FR_PerkIDs_t
@@ -904,7 +906,7 @@ public:
 	KeyValues *LoadItemData(KeyValues* pData, int count, int itemID = -1);
 	bool ProcessItemData(KeyValues* pData, int count, int itemID = -1);
 	bool GiveRewardItem(KeyValues *pData);
-	bool GiveItemOfType(int itemType, const char *pWeaponClassname = "", bool isAmmoPrimary = true, int ammoCount = 999, int perkID = -1);
+	bool GiveItemOfType(int itemType, const char *pWeaponClassname = "", bool isAmmoPrimary = true, int ammoCount = 999, int perkID = -1, const char* pCMD = "");
 
 	void Reward_GiveItem();
 

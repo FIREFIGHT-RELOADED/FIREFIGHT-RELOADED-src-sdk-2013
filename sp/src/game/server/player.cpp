@@ -1286,7 +1286,8 @@ bool CBasePlayer::GiveItemOfType(int itemType,
 	const char* pWeaponClassname, 
 	bool isAmmoPrimary, 
 	int ammoCount, 
-	int perkID)
+	int perkID,
+	const char* pCMD)
 {
 	bool unlocked = true;
 
@@ -1317,6 +1318,12 @@ bool CBasePlayer::GiveItemOfType(int itemType,
 		case FR_KASHBONUS:
 			unlocked = GiveKashBonus(this);
 			break;
+		case FR_SERVERCMD:
+			engine->ServerCommand(pCMD);
+			break;
+		case FR_CLIENTCMD:
+			engine->ClientCommand(edict(), pCMD);
+			break;
 		default:
 		case FR_HEALTHKIT:
 			GiveHealthkit(this);
@@ -1334,9 +1341,10 @@ bool CBasePlayer::GiveRewardItem(KeyValues* pData)
 	bool pIsAmmoPrimary = pData->GetBool("ammo_isprimary", true);
 	int pAmmoNum = pData->GetInt("ammo_num", 1);
 	int pPerkID = pData->GetInt("perk_id", FIREFIGHT_PERK_INFINITEAUXPOWER);
+	const char* pCMD = pData->GetString("command", "");
 	const char* rewardName = pData->GetString("name", "");
 
-	rewarded = GiveItemOfType(pItemType, pWeaponClassName, pIsAmmoPrimary, pAmmoNum, pPerkID);
+	rewarded = GiveItemOfType(pItemType, pWeaponClassName, pIsAmmoPrimary, pAmmoNum, pPerkID, pCMD);
 
 	if (rewarded)
 	{
