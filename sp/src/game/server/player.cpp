@@ -1228,7 +1228,7 @@ static void FindRewardsFilesAbsoluteList(CUtlVector< CUtlString >& outAbsolutePa
 {
 	FileFindHandle_t hFile = FILESYSTEM_INVALID_FIND_HANDLE;
 
-	for (const char* pszFoundFile = g_pFullFileSystem->FindFirstEx("scripts/*.txt", "MOD", &hFile); pszFoundFile && hFile != FILESYSTEM_INVALID_FIND_HANDLE; pszFoundFile = g_pFullFileSystem->FindNext(hFile))
+	for (const char* pszFoundFile = g_pFullFileSystem->FindFirst("scripts/*.txt", &hFile); pszFoundFile && hFile != FILESYSTEM_INVALID_FIND_HANDLE; pszFoundFile = g_pFullFileSystem->FindNext(hFile))
 	{
 		const char* prefix = "rewards_";
 		if (Q_strncmp(pszFoundFile, prefix, sizeof(prefix)) == 0)
@@ -1279,7 +1279,7 @@ void CBasePlayer::Reward_GiveItem()
 	randomfile = random->RandomInt(0, findFileList.Count() - 1);
 	const char* filename = findFileList[randomfile].String();
 	KeyValues* m_pPerkData = new KeyValues("Rewards");
-	if (m_pPerkData->LoadFromFile(filesystem, filename, "GAME"))
+	if (m_pPerkData->LoadFromFile(filesystem, filename))
 	{
 		DevMsg("'%s' loaded as rewards list!\n", filename);
 	}

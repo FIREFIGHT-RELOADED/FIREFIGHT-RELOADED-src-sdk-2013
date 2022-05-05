@@ -49,7 +49,7 @@ bool CMapAdd::RunLabel( const char *mapaddMap, const char *szLabel)
 	//FileHandle_t fh = filesystem->Open(szMapadd,"r","MOD");
 	// Open the mapadd data file, and abort if we can't
 	KeyValues *pMapAdd = new KeyValues( "MapAdd" );
-	if(pMapAdd->LoadFromFile( filesystem, mapaddMap, "MOD" ))
+	if(pMapAdd->LoadFromFile( filesystem, mapaddMap))
 	{
 		KeyValues *pMapAdd2 = pMapAdd->FindKey(szLabel);
 		if(pMapAdd2)

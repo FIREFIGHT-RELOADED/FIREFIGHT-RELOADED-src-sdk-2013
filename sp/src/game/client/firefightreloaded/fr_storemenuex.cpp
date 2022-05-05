@@ -120,7 +120,7 @@ CFRStoreMenuEX::CFRStoreMenuEX(IViewPort *pViewPort) : Frame(NULL, PANEL_BUY)
 
 	FileFindHandle_t findHandle;
 
-	const char* pFilename = filesystem->FindFirstEx("scripts/*.txt", "MOD", &findHandle);
+	const char* pFilename = filesystem->FindFirst("scripts/*.txt", &findHandle);
 	while (pFilename)
 	{
 		const char* prefix = "shopcatalog_";
@@ -162,7 +162,7 @@ void CFRStoreMenuEX::ApplySchemeSettings(IScheme *pScheme)
 KeyValues* CFRStoreMenuEX::LoadItemFile(const char* kvName, const char* scriptPath)
 {
 	KeyValues* pKV = new KeyValues(kvName);
-	if (pKV->LoadFromFile(filesystem, scriptPath, "GAME"))
+	if (pKV->LoadFromFile(filesystem, scriptPath))
 	{
 		KeyValues* pNode = pKV->GetFirstSubKey();
 		while (pNode)

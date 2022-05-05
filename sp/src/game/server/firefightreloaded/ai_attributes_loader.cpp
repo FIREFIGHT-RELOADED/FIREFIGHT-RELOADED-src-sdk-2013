@@ -103,7 +103,7 @@ void CAttributesLoader::Init(const char *className, int preset, bool noError)
 	Q_snprintf(szFullKVName, sizeof(szFullKVName), "%s_preset%i", className, preset);
 	
 	KeyValues* pKV = new KeyValues(className);
-	if (pKV->LoadFromFile(filesystem, szFullName, "GAME"))
+	if (pKV->LoadFromFile(filesystem, szFullName))
 	{
 		data = pKV->MakeCopy();
 		loadedAttributes = true;
