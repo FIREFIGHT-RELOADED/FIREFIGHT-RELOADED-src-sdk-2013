@@ -42,7 +42,7 @@ void UpdateCursorState();
 
 wchar_t* GrabLocalizedString(const char* name)
 {
-	wchar_t text[256];
+	wchar_t text[128];
 	wchar_t* tempString = g_pVGuiLocalize->Find(name);
 
 	// setup our localized string

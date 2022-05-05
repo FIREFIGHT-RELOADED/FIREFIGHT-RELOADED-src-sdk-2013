@@ -394,7 +394,49 @@ void CC_PlayerMoney(const CCommand &args)
 }
 static ConCommand player_givemoney("givemoney", CC_PlayerMoney, "Gives the player money. DOSH!\n", FCVAR_CHEAT);
 
+void CC_PlayerReward(const CCommand& args)
+{
+	CBasePlayer* pPlayer = UTIL_GetCommandClient();
 
+	if (pPlayer)
+	{
+		const char* filename = args[1];
+		KeyValues* m_pPerkData = new KeyValues("Rewards");
+		if (m_pPerkData->LoadFromFile(filesystem, filename))
+		{
+			DevMsg("'%s' loaded as rewards list!\n", filename);
+		}
+
+		int count = 0;
+
+		//we get the number of keys in the file.
+		for (KeyValues* kv = m_pPerkData->GetFirstSubKey(); kv != NULL; kv = kv->GetNextKey())
+		{
+			count++;
+		}
+
+		// if we have more than 0, begin randomizing.
+		if (count > 0)
+		{
+			int itemID = atoi(args[2]);
+			bool unlocked = pPlayer->ProcessItemData(m_pPerkData, count, itemID);
+
+			if (!unlocked)
+			{
+				Warning("Item %i cannot be given!\n", itemID);
+			}
+			else
+			{
+				Msg("Item %i given!\n", itemID);
+			}
+		}
+		else
+		{
+			return;
+		}
+	}
+}
+static ConCommand player_giverewardbyid("giverewardbyid", CC_PlayerReward, "<item script path> <item ID>\n", FCVAR_CHEAT);
 // pl
 BEGIN_SIMPLE_DATADESC( CPlayerState )
 	// DEFINE_FIELD( netname, FIELD_STRING ),  // Don't stomp player name with what's in save/restore
@@ -1110,7 +1152,7 @@ bool GiveAmmoForWeapon(CBasePlayer* pPlayer, const char* pParentClassname, bool 
 			pAmmoType = pWeapon->GetSecondaryAmmoType();
 		}
 
-		pPlayer->GiveAmmo(pAmmoType, num);
+		pPlayer->GiveAmmo(num, pAmmoType);
 		return true;
 	}
 	else
@@ -1352,7 +1394,7 @@ bool CBasePlayer::GiveRewardItem(KeyValues* pData)
 	bool pIsAmmoPrimary = pData->GetBool("ammo_isprimary", true);
 	int pAmmoNum = pData->GetInt("ammo_num", 1);
 	int pPerkID = pData->GetInt("perk_id", FIREFIGHT_PERK_INFINITEAUXPOWER);
-	const char* pCMD = pData->GetString("command", "");
+	const char* pCMD = pData->GetString("command", "echo \"No command specified\"");
 	const char* rewardName = pData->GetString("name", "");
 
 	rewarded = GiveItemOfType(pItemType, pWeaponClassName, pIsAmmoPrimary, pAmmoNum, pPerkID, pCMD);
@@ -1401,7 +1443,7 @@ KeyValues* CBasePlayer::LoadItemData(KeyValues* pData, int count, int itemID)
 
 bool CBasePlayer::ProcessItemData(KeyValues* pData, int count, int itemID)
 {
-	KeyValues* pNode = LoadItemData(pData, count);
+	KeyValues* pNode = LoadItemData(pData, count, itemID);
 
 	if (pNode != NULL)
 	{
