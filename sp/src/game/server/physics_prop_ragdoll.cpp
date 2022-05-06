@@ -21,6 +21,7 @@
 #include "ragdoll_shared.h"
 #include "hierarchy.h"
 #include "firefightreloaded/fr_ragdoll.h"
+#include "hl2/hl2_gamerules.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -371,6 +372,17 @@ void CRagdollProp::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t r
 			CRagdollBoogie::Create( this, 150, gpGlobals->curtime, 2.0f, 0.0f );
 		}
 	}
+	else
+	{
+		//boogie anyways if we are in megaphyscannon mode!!
+		if (HL2GameRules() && HL2GameRules()->MegaPhyscannonActive())
+		{
+			if (reason == PUNTED_BY_CANNON)
+			{
+				CRagdollBoogie::Create(this, 150, gpGlobals->curtime, 3.0f, SF_RAGDOLL_BOOGIE_ELECTRICAL);
+			}
+		}
+	}
 
 	if ( HasSpawnFlags( SF_RAGDOLLPROP_USE_LRU_RETIREMENT ) )
 	{
@@ -401,6 +413,14 @@ void CRagdollProp::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reaso
 	if( HasPhysgunInteraction( "onpickup", "boogie" ) )
 	{
 		CRagdollBoogie::Create( this, 150, gpGlobals->curtime, 3.0f, SF_RAGDOLL_BOOGIE_ELECTRICAL );
+	}
+	else
+	{
+		//boogie anyways if we are in megaphyscannon mode!!
+		if (HL2GameRules() && HL2GameRules()->MegaPhyscannonActive())
+		{
+			CRagdollBoogie::Create(this, 150, gpGlobals->curtime, 3.0f, SF_RAGDOLL_BOOGIE_ELECTRICAL);
+		}
 	}
 
 	if ( HasSpawnFlags( SF_RAGDOLLPROP_USE_LRU_RETIREMENT ) )

@@ -75,6 +75,13 @@ public:
 
 const int NUM_STRIDER_IK_TARGETS = 6;
 
+// Spawnflags
+enum
+{
+	SF_CAN_STOMP_PLAYER = 0x10000,
+	SF_TAKE_MINIMAL_DAMAGE_FROM_NPCS = 0x20000
+};
+
 //---------------------------------------------------------
 
 class CNPC_Strider : public CAI_BlendingHost<CAI_BaseNPC>,

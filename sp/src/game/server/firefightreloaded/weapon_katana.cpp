@@ -253,23 +253,19 @@ void CWeaponKatana::PrimaryAttack(void)
 	CSoundEnt::InsertSound(SOUND_COMBAT, GetAbsOrigin(), 300, 0.2, GetOwner());
 }
 
-bool CWeaponKatana::Holster(CBaseCombatWeapon* pSwitchingTo)
+bool CWeaponKatana::CanHolster(void)
 {
-	if (pSwitchingTo)
-	{
-		if (FClassnameIs(pSwitchingTo, "weapon_grapple"))
-		{
-			//force switch to the grapple if we want to use it.
-			return BaseClass::Holster(pSwitchingTo);
-		}
-	}
-
 	//this is dumb. why does it bug out when we get the 357??
 	if (g_pGameRules->isInBullettime && m_iKillMultiplier > 0)
 	{
 		return false;
 	}
 
+	return BaseClass::CanHolster();
+}
+
+bool CWeaponKatana::Holster(CBaseCombatWeapon* pSwitchingTo)
+{
 	if (!g_pGameRules->isInBullettime)
 	{
 		if (m_flLastKill > gpGlobals->curtime && m_bKillMultiplier)

@@ -2246,7 +2246,7 @@ void CWeaponPhysCannon::PrimaryAttack( void )
 
 		if ( IsMegaPhysCannon() )
 		{
-			if ( pEntity->IsNPC() && !pEntity->IsEFlagSet( EFL_NO_MEGAPHYSCANNON_RAGDOLL ) && pEntity->MyNPCPointer()->CanBecomeRagdoll() )
+			if ( pEntity->IsNPC() && !pEntity->IsEFlagSet( EFL_NO_MEGAPHYSCANNON_RAGDOLL ) && pEntity->MyNPCPointer()->CanBecomeRagdoll() && (pEntity->MyNPCPointer()->IRelationType(pOwner) != D_LI))
 			{
 				CTakeDamageInfo info( pOwner, pOwner, 1.0f, DMG_GENERIC );
 				CBaseEntity *pRagdoll = CreateServerRagdoll( pEntity->MyNPCPointer(), 0, info, COLLISION_GROUP_INTERACTIVE_DEBRIS, true );
@@ -2383,6 +2383,11 @@ bool CWeaponPhysCannon::AttachObject( CBaseEntity *pObject, const Vector &vPosit
 	if ( CanPickupObject( pObject ) == false )
 		return false;
 
+	CHL2_Player* pOwner = (CHL2_Player*)ToBasePlayer(GetOwner());
+
+	if (!pOwner)
+		return false;
+
 	m_grabController.SetIgnorePitch( false );
 	m_grabController.SetAngleAlignment( 0 );
 
@@ -2391,7 +2396,7 @@ bool CWeaponPhysCannon::AttachObject( CBaseEntity *pObject, const Vector &vPosit
 	bool bIsMegaPhysCannon = IsMegaPhysCannon();
 	if ( bIsMegaPhysCannon )
 	{
-		if ( pObject->IsNPC() && !pObject->IsEFlagSet( EFL_NO_MEGAPHYSCANNON_RAGDOLL ) )
+		if ( pObject->IsNPC() && !pObject->IsEFlagSet( EFL_NO_MEGAPHYSCANNON_RAGDOLL ) && (pObject->MyNPCPointer()->IRelationType(pOwner) != D_LI))
 		{
 			Assert( pObject->MyNPCPointer()->CanBecomeRagdoll() );
 			CTakeDamageInfo info( GetOwner(), GetOwner(), 1.0f, DMG_GENERIC );
@@ -2416,48 +2421,40 @@ bool CWeaponPhysCannon::AttachObject( CBaseEntity *pObject, const Vector &vPosit
 	if ( !pPhysics )
 		return false;
 
-	CHL2_Player *pOwner = (CHL2_Player *)ToBasePlayer( GetOwner() );
-
 	m_bActive = true;
-	if( pOwner )
-	{
 #ifdef HL2_EPISODIC
-		CBreakableProp *pProp = dynamic_cast< CBreakableProp * >( pObject );
+	CBreakableProp* pProp = dynamic_cast<CBreakableProp*>(pObject);
 
-		if ( pProp && pProp->HasInteraction( PROPINTER_PHYSGUN_CREATE_FLARE ) )
-		{
-			pOwner->FlashlightTurnOff();
-		}
+	if (pProp && pProp->HasInteraction(PROPINTER_PHYSGUN_CREATE_FLARE))
+	{
+		pOwner->FlashlightTurnOff();
+	}
 #endif
 
-		// NOTE: This can change the mass; so it must be done before max speed setting
-		Physgun_OnPhysGunPickup( pObject, pOwner, PICKED_UP_BY_CANNON );
-	}
+	// NOTE: This can change the mass; so it must be done before max speed setting
+	Physgun_OnPhysGunPickup(pObject, pOwner, PICKED_UP_BY_CANNON);
 
 	// NOTE :This must happen after OnPhysGunPickup because that can change the mass
 	m_grabController.AttachEntity( pOwner, pObject, pPhysics, bIsMegaPhysCannon, vPosition, (!bKilledByGrab) );
 
-	if( pOwner )
-	{
 #if defined( WIN32 ) && !defined( _X360 )
-		// NVNT set the players constant force to simulate holding mass
-		HapticSetConstantForce(pOwner,clamp(m_grabController.GetLoadWeight()*0.05,1,5)*Vector(0,-1,0));
+	// NVNT set the players constant force to simulate holding mass
+	HapticSetConstantForce(pOwner, clamp(m_grabController.GetLoadWeight() * 0.05, 1, 5) * Vector(0, -1, 0));
 #endif
 
-		if (sv_leagcy_maxspeed.GetBool())
-		{
-			pOwner->EnableSprint(false);
+	if (sv_leagcy_maxspeed.GetBool())
+	{
+		pOwner->EnableSprint(false);
 
-			float	loadWeight = ( 1.0f - GetLoadPercentage() );
-			float	maxSpeed = hl2_walkspeed.GetFloat() + ( ( hl2_normspeed.GetFloat() - hl2_walkspeed.GetFloat() ) * loadWeight );
+		float	loadWeight = (1.0f - GetLoadPercentage());
+		float	maxSpeed = hl2_walkspeed.GetFloat() + ((hl2_normspeed.GetFloat() - hl2_walkspeed.GetFloat()) * loadWeight);
 
-			//Msg( "Load perc: %f -- Movement speed: %f/%f\n", loadWeight, maxSpeed, hl2_normspeed.GetFloat() );
-			pOwner->SetMaxSpeed( maxSpeed );
-		}
-		else
-		{
-			pOwner->SetMaxSpeed(fr_new_normspeed.GetFloat());
-		}
+		//Msg( "Load perc: %f -- Movement speed: %f/%f\n", loadWeight, maxSpeed, hl2_normspeed.GetFloat() );
+		pOwner->SetMaxSpeed(maxSpeed);
+	}
+	else
+	{
+		pOwner->SetMaxSpeed(fr_new_normspeed.GetFloat());
 	}
 
 	// Don't drop again for a slight delay, in case they were pulling objects near them
@@ -3499,7 +3496,7 @@ bool CWeaponPhysCannon::CanPickupObject( CBaseEntity *pTarget )
 		return CBasePlayer::CanPickupObject( pTarget, physcannon_maxmass.GetFloat(), 0 );
 	}
 
-	if ( pTarget->IsNPC() && pTarget->MyNPCPointer()->CanBecomeRagdoll() )
+	if ( pTarget->IsNPC() && pTarget->MyNPCPointer()->CanBecomeRagdoll() && (pTarget->MyNPCPointer()->IRelationType(pOwner) != D_LI))
 		return true;
 
 	if ( dynamic_cast<CRagdollProp*>(pTarget) )

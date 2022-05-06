@@ -331,7 +331,6 @@ protected:
 	float	m_flShockTime;
 	float	m_flForwardSpeed;
 	int		m_iSoundEventFlags;
-	int		m_iRollerHealth;
 	rollingsoundstate_t m_rollingSoundState;
 
 	CNetworkVar( bool, m_bIsOpen );
@@ -398,8 +397,6 @@ BEGIN_DATADESC( CNPC_RollerMine )
 	DEFINE_FIELD( m_bPowerDown,	FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_flPowerDownTime,	FIELD_TIME ),
 	DEFINE_FIELD( m_flPowerDownDetonateTime,	FIELD_TIME ),
-
-	DEFINE_FIELD(m_iRollerHealth, FIELD_INTEGER),
 
 	DEFINE_PHYSPTR( m_pConstraint ),
 
@@ -565,7 +562,7 @@ void CNPC_RollerMine::Spawn( void )
 	m_flFieldOfView		= -1.0f;
 	m_flForwardSpeed	= -1200;
 	m_bloodColor		= DONT_BLEED;
-	m_iRollerHealth		= sk_rollermine_health.GetInt();
+	m_iHealth		= sk_rollermine_health.GetInt();
 
 	SetHullType(HULL_SMALL_CENTERED);
 
@@ -2498,10 +2495,26 @@ int CNPC_RollerMine::OnTakeDamage( const CTakeDamageInfo &info )
 		}
 	}
 
-	m_iRollerHealth -= info.GetDamage();
+	m_iHealth -= info.GetDamage();
 
-	if (m_iRollerHealth <= 0)
+	if (m_iHealth <= 0)
 	{
+		//remove us from the spawner early
+		// tell owner ( if any ) that we're dead.This is mostly for NPCMaker functionality.
+		CBaseEntity* pOwner = GetOwnerEntity();
+		if (pOwner)
+		{
+			if (pOwner->KilledNotice(this))
+			{
+				SetOwnerEntity(NULL);
+			}
+		}
+
+		if (info.GetAttacker()->IsPlayer())
+		{
+			((CSingleplayRules*)GameRules())->NPCKilled(this, info);
+		}
+
 		SetThink(&CNPC_RollerMine::PreDetonate);
 		SetNextThink(gpGlobals->curtime + random->RandomFloat(0.1f, 0.5f));
 	}

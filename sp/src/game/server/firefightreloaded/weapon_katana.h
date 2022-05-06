@@ -42,6 +42,7 @@ public:
 
 	void		PrimaryAttack(void);
 	void		SecondaryAttack( void )	{	return;	}
+	bool		CanHolster(void);
 	bool		Holster(CBaseCombatWeapon* pSwitchingTo);
 	void		ItemPostFrame(void);
 	void		ImpactEffect(trace_t& traceHit);

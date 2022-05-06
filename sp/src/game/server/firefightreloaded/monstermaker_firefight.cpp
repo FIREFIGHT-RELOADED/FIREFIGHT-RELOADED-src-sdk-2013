@@ -16,6 +16,8 @@
 #include "IEffects.h"
 #include "props.h"
 #include "npc_metropolice.h"
+#include "npc_strider.h"
+#include "npc_scanner.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -573,8 +575,6 @@ bool CNPCMakerFirefight::KilledNotice(CBaseEntity *pVictim)
 	return true;
 }
 
-#define SF_CAN_STOMP_PLAYER 0x10000
-
 //-----------------------------------------------------------------------------
 // Purpose: Creates the NPC.
 //-----------------------------------------------------------------------------
@@ -739,6 +739,13 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 	else if (Q_stristr(pRandomName, "npc_strider"))
 	{
 		pent->AddSpawnFlags(SF_CAN_STOMP_PLAYER);
+	}
+	else if (Q_stristr(pRandomName, "npc_cscanner"))
+	{
+		if (g_pGameRules->GetSkillLevel() > SKILL_HARD)
+		{
+			pent->AddSpawnFlags(SF_CSCANNER_STRIDER_SCOUT);
+		}
 	}
 
 	pent->m_isRareEntity = m_bRareNPC;

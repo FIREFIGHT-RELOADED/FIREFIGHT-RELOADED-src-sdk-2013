@@ -610,7 +610,7 @@ public:
 		}
 		else
 		{
-			pPlayer->GiveNamedItem("weapon_frag");
+			pPlayer->GiveNamedItem("weapon_frag", 0, true);
 
 			if (g_pGameRules->ItemShouldRespawn(this) == GR_ITEM_RESPAWN_NO)
 			{
@@ -778,7 +778,7 @@ public:
 		}
 		else
 		{
-			pPlayer->GiveNamedItem("weapon_slam");
+			pPlayer->GiveNamedItem("weapon_slam", 0, true);
 
 			if (g_pGameRules->ItemShouldRespawn(this) == GR_ITEM_RESPAWN_NO)
 			{

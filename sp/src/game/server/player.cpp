@@ -237,6 +237,8 @@ ConVar sv_fr_reward_attemptcount("sv_fr_reward_attemptcount", "3", FCVAR_ARCHIVE
 
 ConVar sv_player_explosionringing("sv_player_explosionringing", "0", FCVAR_ARCHIVE);
 
+ConVar sv_player_autoswitchonreward("sv_player_autoswitchonreward", "0", FCVAR_ARCHIVE);
+
 void CC_GiveCurrentAmmo( void )
 {
 	CBasePlayer *pPlayer = UTIL_GetCommandClient();
@@ -1167,7 +1169,7 @@ bool GiveNewWeapon(CBasePlayer* pPlayer, const char* pClassname)
 {
 	if (!pPlayer->Weapon_OwnsThisType(pClassname))
 	{
-		pPlayer->GiveNamedItem(pClassname);
+		pPlayer->GiveNamedItem(pClassname, 0, true);
 		return true;
 	}
 	else
@@ -6687,7 +6689,7 @@ void CBloodSplat::Think( void )
 //-----------------------------------------------------------------------------
 // Purpose: Create and give the named item to the player. Then return it.
 //-----------------------------------------------------------------------------
-CBaseEntity	*CBasePlayer::GiveNamedItem( const char *pszName, int iSubType )
+CBaseEntity	*CBasePlayer::GiveNamedItem( const char *pszName, int iSubType, bool isReward)
 {
 	// If I already own this type don't create one
 	if ( Weapon_OwnsThisType(pszName, iSubType) )
@@ -6712,9 +6714,17 @@ CBaseEntity	*CBasePlayer::GiveNamedItem( const char *pszName, int iSubType )
 
 	if ( pWeapon )
 	{
-		if (pActiveWeapon)
+		if (isReward && !sv_player_autoswitchonreward.GetBool())
 		{
-			pActiveWeapon->Holster();
+			pWeapon->AddSpawnFlags(SF_WEAPON_NO_INITIALWEAPONSWITCH);
+		}
+
+		if (!pWeapon->HasSpawnFlags(SF_WEAPON_NO_INITIALWEAPONSWITCH))
+		{
+			if (pActiveWeapon)
+			{
+				pActiveWeapon->Holster();
+			}
 		}
 		pWeapon->SetSubType( iSubType );
 	}
@@ -7853,6 +7863,7 @@ extern bool UTIL_ItemCanBeTouchedByPlayer( CBaseEntity *pItem, CBasePlayer *pPla
 bool CBasePlayer::BumpWeapon( CBaseCombatWeapon *pWeapon )
 {
 	CBaseCombatCharacter *pOwner = pWeapon->GetOwner();
+	CBaseCombatWeapon* pActive = GetActiveWeapon();
 
 	// Can I have this weapon type?
 	if ( !IsAllowedToPickupWeapons() )
@@ -7932,7 +7943,17 @@ bool CBasePlayer::BumpWeapon( CBaseCombatWeapon *pWeapon )
 				pWeapon->m_iClip1 = pWeapon->GetMaxClip1();
 			}
 
-			Weapon_Switch(pWeapon);
+			if (!pWeapon->HasSpawnFlags(SF_WEAPON_NO_INITIALWEAPONSWITCH))
+			{
+				Weapon_Switch(pWeapon);
+			}
+			else
+			{
+				if (pActive)
+				{
+					Weapon_Switch(pActive);
+				}
+			}
 #endif
 		}
 		return true;

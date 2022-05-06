@@ -188,13 +188,6 @@ enum bodygroups
 // Time after which if you haven't seen your enemy you stop facing him
 #define STRIDER_TIME_STOP_FACING_ENEMY 3.0 
 
-// Spawnflags
-enum
-{
-	SF_CAN_STOMP_PLAYER					= 0x10000,
-	SF_TAKE_MINIMAL_DAMAGE_FROM_NPCS	= 0x20000
-};
-
 const float STRIDER_SPEED = 500;
 const float STRIDER_SPEED_CHANGE = .0067; // per think
 
