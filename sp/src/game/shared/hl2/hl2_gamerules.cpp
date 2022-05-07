@@ -1700,7 +1700,7 @@ CAmmoDef *GetAmmoDef()
 		def.AddAmmoType("357",				DMG_BULLET | DMG_SNIPER, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_357", "sk_npc_dmg_357", "sk_max_357", BULLET_IMPULSE(800, 5000), 0);
 		def.AddAmmoType("XBowBolt",			DMG_BULLET,					TRACER_LINE,			"sk_plr_dmg_crossbow",		"sk_npc_dmg_crossbow",		"sk_max_crossbow",		BULLET_IMPULSE(800, 8000), 0 );
 
-		def.AddAmmoType("Buckshot",			DMG_BULLET | DMG_BUCKSHOT | DMG_ALWAYSGIB | DMG_SNIPER, TRACER_LINE, "sk_plr_dmg_buckshot", "sk_npc_dmg_buckshot", "sk_max_buckshot", BULLET_IMPULSE(400, 1200), 0);
+		def.AddAmmoType("Buckshot",			DMG_BULLET | DMG_BUCKSHOT | DMG_SNIPER, TRACER_LINE, "sk_plr_dmg_buckshot", "sk_npc_dmg_buckshot", "sk_max_buckshot", BULLET_IMPULSE(400, 1200), 0);
 		def.AddAmmoType("RPG_Round",		DMG_BURN | DMG_BLAST,					TRACER_NONE,			"sk_plr_dmg_rpg_round",		"sk_npc_dmg_rpg_round",		"sk_max_rpg_round",		0, 0 );
 		def.AddAmmoType("SMG1_Grenade",		DMG_BURN | DMG_ALWAYSGIB | DMG_BLAST, TRACER_NONE, "sk_plr_dmg_smg1_grenade", "sk_npc_dmg_smg1_grenade", "sk_max_smg1_grenade", 0, 0);
 		def.AddAmmoType("SniperRound",		DMG_BULLET | DMG_SNIPER,	TRACER_NONE,			"sk_plr_dmg_sniper_round",	"sk_npc_dmg_sniper_round",	"sk_max_sniper_round",	BULLET_IMPULSE(650, 6000), 0 );
@@ -1767,7 +1767,7 @@ CAmmoDef *GetAmmoDef()
 		def.AddAmmoType("OICW",				DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_oicw", "sk_npc_dmg_oicw", "sk_max_oicw", BULLET_IMPULSE(200, 1225), 0);
 		def.AddAmmoType("OICW_Grenade",		DMG_BURN | DMG_ALWAYSGIB, TRACER_NONE, "sk_plr_dmg_oicw_grenade", "sk_npc_dmg_oicw_grenade", "sk_max_oicw_grenade", 0, 0);
 		def.AddAmmoType("MP5Ammo", DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_mp5", "sk_npc_dmg_mp5", "sk_max_mp5", BULLET_IMPULSE(200, 1225), 0);
-		def.AddAmmoType("Katana", DMG_SLASH, TRACER_NONE, "sk_plr_dmg_katana", "sk_npc_dmg_katana", 1, BULLET_IMPULSE(200, 1225), 0);
+		def.AddAmmoType("Katana", DMG_SLASH | DMG_NEVERGIB, TRACER_NONE, "sk_plr_dmg_katana", "sk_npc_dmg_katana", 1, BULLET_IMPULSE(200, 1225), 0);
 		//CUSTOM AMMO TYPES HERE.
 		def.AddAmmoType("CustomBullet1_Normal", DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_custom_normal", "sk_npc_dmg_custom_normal", "sk_max_custom_normal", BULLET_IMPULSE(800, 5000), 0);
 		def.AddAmmoType("CustomBullet2_NormalBurn", DMG_BULLET | DMG_BURN, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_custom_normal", "sk_npc_dmg_custom_normal", "sk_max_custom_normal", BULLET_IMPULSE(800, 5000), 0);

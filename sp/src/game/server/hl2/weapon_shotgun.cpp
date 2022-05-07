@@ -325,12 +325,16 @@ void CWeaponShotgun::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatC
 //			reasonable defaults for the weapon. To address difficulty concerns,
 //			we are going to fix the combine's rate of shotgun fire in episodic.
 //			This change will not affect Alyx using a shotgun in EP1. (sjb)
+//
+// 
+//			Bitl's note: in FR, we decided to disable this on Very Hard and 
+//			Nightmare for the difficulty increase.
 //-----------------------------------------------------------------------------
 float CWeaponShotgun::GetMinRestTime()
 {
 	CBaseCombatCharacter* pOwner = GetOwner();
 
-	if( hl2_episodic.GetBool() && pOwner && pOwner->IsNPC() && pOwner->Classify() == CLASS_COMBINE )
+	if( hl2_episodic.GetBool() && pOwner && pOwner->IsNPC() && pOwner->Classify() == CLASS_COMBINE && g_pGameRules->GetSkillLevel() < SKILL_VERYHARD )
 	{
 		return 1.2f;
 	}
