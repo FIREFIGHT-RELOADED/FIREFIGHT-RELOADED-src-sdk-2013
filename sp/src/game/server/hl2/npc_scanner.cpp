@@ -73,6 +73,11 @@ extern IMaterialSystemHardwareConfig *g_pMaterialSystemHardwareConfig;
 
 ConVar	sk_scanner_health( "sk_scanner_health","0");
 ConVar	g_debug_cscanner( "g_debug_cscanner", "0" );
+ConVar	sv_cscanner_blindplayer("sv_cscanner_blindplayer", "1", FCVAR_ARCHIVE);
+ConVar	sv_cscanner_blindtime("sv_cscanner_blindtime", "2", FCVAR_ARCHIVE);
+ConVar	sv_cscanner_blindholdtime("sv_cscanner_blindholdtime", "2", FCVAR_ARCHIVE);
+ConVar	sv_cscanner_blindtime_custom("sv_cscanner_blindtime_custom", "0", FCVAR_ARCHIVE);
+ConVar	sv_cscanner_blindholdtime_custom("sv_cscanner_blindholdtime_custom", "0", FCVAR_ARCHIVE);
 
 //-----------------------------------------------------------------------------
 // Private activities.
@@ -984,6 +989,16 @@ void CNPC_CScanner::DeployMine()
 			{
 				// Make sure the mine's awake
 				pPhysObj->Wake();
+			}
+			else
+			{
+				child->CreateVPhysics();
+				IPhysicsObject* pPhysObjTake2 = child->VPhysicsGetObject();
+				if (pPhysObjTake2)
+				{
+					// Make sure the mine's awake
+					pPhysObjTake2->Wake();
+				}
 			}
 
 			SetActivity(ACT_DISARM);
@@ -2031,8 +2046,10 @@ void CNPC_CScanner::BlindFlashTarget( CBaseEntity *pTarget )
 				white.a = ( byte )( ( float )white.a * 0.9f );
 			}
 
-			float flFadeTime = ( IsX360() ) ? 0.5f : 3.0f;
-			UTIL_ScreenFade( pTarget, white, flFadeTime, 0.5, FFADE_IN );
+			UTIL_ScreenFade( pTarget, white, 
+				(sv_cscanner_blindtime_custom.GetFloat() == 0 ? (sv_cscanner_blindtime.GetInt() == 2 ? 0.5f : 3.0f) : sv_cscanner_blindtime_custom.GetFloat()),
+				(sv_cscanner_blindholdtime_custom.GetFloat() == 0 ? (sv_cscanner_blindholdtime.GetInt() == 2 ? 0.3f : 0.5f) : sv_cscanner_blindholdtime_custom.GetFloat()),
+				FFADE_IN );
 		}
 	}
 }
@@ -2042,7 +2059,7 @@ void CNPC_CScanner::BlindFlashTarget( CBaseEntity *pTarget )
 //------------------------------------------------------------------------------
 void CNPC_CScanner::AttackFlashBlind(void)
 {
-	if( GetEnemy() )
+	if( GetEnemy() && sv_cscanner_blindplayer.GetBool())
 	{
 		BlindFlashTarget( GetEnemy() );
 	}

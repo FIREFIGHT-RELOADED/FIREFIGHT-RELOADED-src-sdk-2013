@@ -32,6 +32,9 @@
 
 #define DEATH_ANIMATION_TIME	3.0f
 
+#define DEATH_MESSAGE_TIME		3.0f
+#define DEATH_WAIT_TIME			10.0f
+
 typedef struct 
 {
 	Vector		m_vecAutoAimDir;		// The direction autoaim wishes to point.

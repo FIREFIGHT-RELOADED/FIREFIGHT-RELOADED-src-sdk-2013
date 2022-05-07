@@ -2104,7 +2104,10 @@ int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 	}
 
 	// Display any effect associate with this damage type
-	DamageEffect(info.GetDamage(),bitsDamage);
+	if (!IsDead())
+	{
+		DamageEffect(info.GetDamage(),bitsDamage);
+	}
 
 	// how bad is it, doc?
 	ftrivial = (m_iHealth > 75 || m_lastDamageAmount < 5);
@@ -2636,8 +2639,9 @@ void CBasePlayer::Event_Killed( const CTakeDamageInfo &info )
 
 	if ((GetLevel() == MAX_LEVEL || sv_player_hardcoremode.GetBool()) && !g_pGameRules->IsMultiplayer())
 	{
-		color32 black = { 0, 0, 0, 255 };
-		UTIL_ScreenFade(this, black, 0.6, 9999, FFADE_OUT | FFADE_PURGE | FFADE_STAYOUT);
+		// Clear any screenfade
+		color32 nothing = { 0, 0, 0, 255 };
+		UTIL_ScreenFade(this, nothing, 0.6, 9999, FFADE_OUT | FFADE_PURGE | FFADE_STAYOUT);
 	}
 	else
 	{
@@ -3070,11 +3074,37 @@ void CBasePlayer::PlayerDeathThink(void)
 		// go to dead camera. 
 		StartObserverMode( m_iObserverLastMode );
 	}
+
+	if ((GetLevel() == MAX_LEVEL || sv_player_hardcoremode.GetBool()) && !g_pGameRules->IsMultiplayer())
+	{
+		if ((gpGlobals->curtime > (m_flDeathTime + DEATH_MESSAGE_TIME)))
+		{
+			if (!m_bDeathMessage)
+			{
+				if (sv_player_hardcoremode.GetBool() && GetLevel() != MAX_LEVEL)
+				{
+					UTIL_ShowMessage("FR_HardcoreEnding", this);
+				}
+				else
+				{
+					UTIL_ShowMessage("FR_ENDING", this);
+				}
+				m_bDeathMessage = true;
+			}
+		}
+	}
 	
 // wait for any button down,  or mp_forcerespawn is set and the respawn time is up
-	if (!fAnyButtonDown 
-		&& !( g_pGameRules->IsMultiplayer() && forcerespawn.GetInt() > 0 && (gpGlobals->curtime > (m_flDeathTime + 5))) )
-		return;
+	if ((GetLevel() == MAX_LEVEL || sv_player_hardcoremode.GetBool()) && !g_pGameRules->IsMultiplayer())
+	{
+		if (!(gpGlobals->curtime > (m_flDeathTime + DEATH_WAIT_TIME) && m_bDeathMessage))
+			return;
+	}
+	else
+	{
+		if (!fAnyButtonDown && !(g_pGameRules->IsMultiplayer() && forcerespawn.GetInt() > 0 && (gpGlobals->curtime > (m_flDeathTime + 5))))
+			return;
+	}
 
 	m_nButtons = 0;
 	m_iRespawnFrames = 0;

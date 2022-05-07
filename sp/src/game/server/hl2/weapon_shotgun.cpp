@@ -737,6 +737,11 @@ void CWeaponShotgun::ItemPostFrame( void )
 	{
 		if (m_iFireMode == 0)
 		{
+			//allow us to fire off shots even if we're in the middle of pumping.
+			if (m_bNeedPump)
+			{
+				m_bNeedPump = false;
+			}
 			CFmtStr hint;
 			hint.sprintf("#Valve_Shotgun_SemiAuto");
 			pOwner->ShowLevelMessage(hint.Access());

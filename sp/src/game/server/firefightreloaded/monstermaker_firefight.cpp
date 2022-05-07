@@ -134,11 +134,14 @@ const char* g_NPCS[] =
 };
 
 //#define BIGGUY_TESTING
+//#define SCANNER_TESTING
 
 const char* g_charNPCSCombineFirefightCommon[] =
 {
-#ifdef  BIGGUY_TESTING
-	"npc_strider",
+#if  defined(BIGGUY_TESTING)
+	"npc_strider"
+#elif defined(SCANNER_TESTING)
+	"npc_cscanner"
 #else
 	"npc_metropolice",
 	"npc_combine_s",
@@ -151,8 +154,10 @@ const char* g_charNPCSCombineFirefightCommon[] =
 
 const char* g_charNPCSCombineFirefightRare[] =
 {
-#ifdef  BIGGUY_TESTING
-	"npc_strider",
+#if  defined(BIGGUY_TESTING)
+	"npc_strider"
+#elif  defined(SCANNER_TESTING)
+	"npc_cscanner"
 #else
 	"npc_combine_ace",
 	"npc_hunter",

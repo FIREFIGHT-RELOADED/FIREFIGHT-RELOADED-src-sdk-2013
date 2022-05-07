@@ -342,11 +342,11 @@ void CHudDamageIndicator::MsgFunc_Damage( bf_read &msg )
 		return;
 
 	// player has just died, just run the dead damage animation
-	if ( pPlayer->GetHealth() <= 0 )
+	/*if (pPlayer->GetHealth() <= 0)
 	{
 		g_pClientMode->GetViewportAnimationController()->StartAnimationSequence( "HudPlayerDeath" );
 		return;
-	}
+	}*/
 
 	// ignore damage without direction
 	// this should never happen, unless it's drowning damage, 
