@@ -134,7 +134,14 @@ bool CWeaponFrag::Deploy( void )
 	m_fDrawbackFinished = false;
 
 	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
+
+	if (!pOwner)
+		return false;
+
 	CBaseViewModel* vm = pOwner->GetViewModel(m_nViewModelIndex);
+
+	if (!vm)
+		return false;
 
 	if (m_iFireMode == 0)
 	{
