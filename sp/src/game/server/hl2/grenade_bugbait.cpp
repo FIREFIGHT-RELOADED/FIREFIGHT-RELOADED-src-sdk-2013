@@ -14,6 +14,7 @@
 #include "entitylist.h"
 #include "antlion_maker.h"
 #include "eventqueue.h"
+#include "globalstate.h"
 
 #ifdef PORTAL
 	#include "portal_util_shared.h"
@@ -196,6 +197,42 @@ void CGrenadeBugBait::BugBaitTouch( CBaseEntity *pOther )
 		//Alert any antlions around
 		CSoundEnt::InsertSound( SOUND_BUGBAIT, GetAbsOrigin(), bugbait_hear_radius.GetInt(), bugbait_distract_time.GetFloat(), GetThrower() );
 	}
+
+#if defined(FR_DLL)
+	//in FR, allow us to use bugbait to get antlions over to our side.
+	if (GlobalEntity_GetState("antlion_allied") != GLOBAL_ON && g_pGameRules->GetGamemode() != FIREFIGHT_PRIMARY_ANTLIONASSAULT)
+	{
+		if (!GlobalEntity_IsInTable("antlion_allied"))
+		{
+			GlobalEntity_Add(MAKE_STRING("antlion_allied"), gpGlobals->mapname, GLOBAL_ON);
+		}
+		else
+		{
+			GlobalEntity_SetState(MAKE_STRING("antlion_allied"), GLOBAL_ON);
+		}
+
+		for (int i = 0; i < g_AI_Manager.NumAIs(); i++)
+		{
+			CAI_BaseNPC* pNpc = g_AI_Manager.AccessAIs()[i];
+			if (pNpc)
+			{
+				if (FClassnameIs(pNpc, "npc_antlion") || FClassnameIs(pNpc, "npc_antlionworker"))
+				{
+					//enable relationships.
+					pNpc->Activate();
+					if (g_pGameRules->GetSkillLevel() < SKILL_VERYHARD)
+					{
+						// heal them.
+						if (pNpc->GetHealth() < pNpc->GetMaxHealth())
+						{
+							pNpc->SetHealth(pNpc->GetMaxHealth());
+						}
+					}
+				}
+			}
+		}
+	}
+#endif
 
 	// Tell all spawners to now fight to this position
 	g_AntlionMakerManager.BroadcastFightGoal( GetAbsOrigin() );

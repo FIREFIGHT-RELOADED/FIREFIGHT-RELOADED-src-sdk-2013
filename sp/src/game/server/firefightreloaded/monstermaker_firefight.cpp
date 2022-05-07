@@ -18,6 +18,7 @@
 #include "npc_metropolice.h"
 #include "npc_strider.h"
 #include "npc_scanner.h"
+#include "globalstate.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -580,6 +581,21 @@ bool CNPCMakerFirefight::KilledNotice(CBaseEntity *pVictim)
 	return true;
 }
 
+void AllyAlert()
+{
+	//alert all players.
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+		if (pPlayer)
+		{
+			CFmtStr hint;
+			hint.sprintf("#Valve_Hud_AllySpawned");
+			pPlayer->ShowLevelMessage(hint.Access());
+		}
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Creates the NPC.
 //-----------------------------------------------------------------------------
@@ -730,16 +746,7 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 	else if (Q_stristr(pRandomName, "npc_playerbot"))
 	{
 		//alert all players.
-		for (int i = 1; i <= gpGlobals->maxClients; i++)
-		{
-			CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
-			if (pPlayer)
-			{
-				CFmtStr hint;
-				hint.sprintf("#Valve_Hud_AllySpawned");
-				pPlayer->ShowLevelMessage(hint.Access());
-			}
-		}
+		AllyAlert();
 	}
 	else if (Q_stristr(pRandomName, "npc_strider"))
 	{
@@ -750,6 +757,14 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 		if (g_pGameRules->GetSkillLevel() > SKILL_HARD)
 		{
 			pent->AddSpawnFlags(SF_CSCANNER_STRIDER_SCOUT);
+		}
+	}
+	else if (Q_stristr(pRandomName, "npc_antlion"))
+	{
+		if (GlobalEntity_GetState("antlion_allied") == GLOBAL_ON)
+		{
+			//alert all players.
+			AllyAlert();
 		}
 	}
 

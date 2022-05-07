@@ -4978,26 +4978,18 @@ uint64 devmask = 0xFAB2423BFFA352AF;
 uint64 dev_ids[] =
 {
 	76561198029641087 ^ devmask, // Bitl
-	76561197997923705 ^ devmask, // Theuaredead'
-	76561198009315760 ^ devmask, // LeonelC
-	76561198092604516 ^ devmask, // Slartibarty
+	76561199088292414 ^ devmask, // Bitl Development Studios
 };
 
 uint64 vip_ids[] =
 {
+	76561197997923705 ^ devmask, // Theuaredead'
+	76561198009315760 ^ devmask, // LeonelC
+	76561198092604516 ^ devmask, // Slartibarty
 	76561198090680426 ^ devmask, // Tytygigas
-	76561198102150628 ^ devmask, // BlackSnow
-	76561198099919776 ^ devmask, // TheScat
-	76561197996860808 ^ devmask, // FreeKill
-	76561197980014606 ^ devmask, // BIZ
-	76561198095040360 ^ devmask, // Rara
-	76561198095839204 ^ devmask, // Gmadador
-	76561198052032488 ^ devmask, // sparrowstar
-	76561198048089766 ^ devmask, // xDShot
 	76561198214768344 ^ devmask, // herbj54
 	76561198249408984 ^ devmask, // bfbc2143
-	76561198070739495 ^ devmask, // Real Beb
-	76561198069277486 ^ devmask, // Chous
+	76561197998159285 ^ devmask, // DeviantXS
 };
 
 //-----------------------------------------------------------------------------

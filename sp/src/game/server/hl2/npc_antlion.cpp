@@ -375,7 +375,7 @@ void CNPC_Antlion::Spawn( void )
 void CNPC_Antlion::Activate( void )
 {
 	// If we're friendly to the player, setup a relationship to reflect it
-	if ( IsAllied() )
+	if ( IsAllied())
 	{
 		// Handle all clients
 		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
@@ -385,8 +385,30 @@ void CNPC_Antlion::Activate( void )
 			if ( pPlayer != NULL )
 			{
 				AddEntityRelationship( pPlayer, D_LI, 99 );
+				pPlayer->AddEntityRelationship(this, D_LI, 99);
 			}
 		}
+
+		//make player allies want to help us
+
+		for (int i = 0; i < g_AI_Manager.NumAIs(); i++)
+		{
+			CAI_BaseNPC* pNpc = g_AI_Manager.AccessAIs()[i];
+			if (pNpc && pNpc != this)
+			{
+				if (pNpc->Classify() == CLASS_PLAYER_ALLY ||
+					pNpc->Classify() == CLASS_PLAYER_ALLY_VITAL ||
+					pNpc->Classify() == CLASS_PLAYER_NPC)
+				{
+					AddEntityRelationship(pNpc, D_LI, 0);
+					pNpc->AddEntityRelationship(this, D_LI, 0);
+				}
+			}
+		}
+
+		//make us immune from player/ally damage
+		CapabilitiesAdd(bits_CAP_FRIENDLY_DMG_IMMUNE);
+		GiveOutline(Vector(26, 77, 153));
 	}
 
 	BaseClass::Activate();
@@ -664,7 +686,7 @@ void CNPC_Antlion::MeleeAttack( float distance, float damage, QAngle &viewPunch,
 
 		//FIXME: Until the interaction is setup, kill combine soldiers in one hit -- jdw
 		// kill them on easy.
-		if (g_pGameRules->GetSkillLevel() == SKILL_EASY)
+		if (g_pGameRules->GetSkillLevel() == SKILL_EASY || IsAllied())
 		{
 			if (FClassnameIs(pHurt, "npc_combine_s") || FClassnameIs(pHurt, "npc_combine_e") || FClassnameIs(pHurt, "npc_combine_p") || FClassnameIs(pHurt, "npc_combine_shot") || FClassnameIs(pHurt, "npc_combine_ace"))
 			{
@@ -3848,7 +3870,7 @@ bool CNPC_Antlion::IsLightDamage( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 bool CNPC_Antlion::IsAllied( void )
 {
-	return ( GlobalEntity_GetState( "antlion_allied" ) == GLOBAL_ON );
+	return ( GlobalEntity_GetState( "antlion_allied" ) == GLOBAL_ON && g_pGameRules->GetGamemode() != FIREFIGHT_PRIMARY_ANTLIONASSAULT);
 }
 
 //-----------------------------------------------------------------------------
@@ -4014,8 +4036,8 @@ bool CNPC_Antlion::ShouldGib( const CTakeDamageInfo &info )
 	if ( info.GetDamageType() & (DMG_ALWAYSGIB|DMG_BLAST) )
 		return true;
 
-	if ( m_iHealth < -20 )
-		return true;
+	/*if (m_iHealth < -20)
+		return true;*/
 	
 	return false;
 }

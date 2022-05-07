@@ -1068,7 +1068,16 @@ void CBasePlayer::CheckLevel()
 			}
 
 			RemoveAllItems(false);
-			HL2GameRules()->SetMegaPhyscannonActive();
+
+			if (!GlobalEntity_IsInTable("super_phys_gun"))
+			{
+				GlobalEntity_Add(MAKE_STRING("super_phys_gun"), gpGlobals->mapname, GLOBAL_ON);
+			}
+			else
+			{
+				GlobalEntity_SetState(MAKE_STRING("super_phys_gun"), GLOBAL_ON);
+			}
+
 			GiveNamedItem("weapon_grapple");
 			GiveNamedItem("weapon_physcannon");
 
