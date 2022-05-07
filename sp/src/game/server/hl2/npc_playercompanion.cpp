@@ -1274,6 +1274,23 @@ void CNPC_PlayerCompanion::PrepareReadinessRemap( void )
 //-----------------------------------------------------------------------------
 void CNPC_PlayerCompanion::Activate( void )
 {
+	// If we're friendly to the player, setup a relationship to reflect it
+	if (GlobalEntity_GetState("antlion_allied") == GLOBAL_ON && g_pGameRules->GetGamemode() != FIREFIGHT_PRIMARY_ANTLIONASSAULT)
+	{
+		for (int i = 0; i < g_AI_Manager.NumAIs(); i++)
+		{
+			CAI_BaseNPC* pNpc = g_AI_Manager.AccessAIs()[i];
+			if (pNpc)
+			{
+				if (FClassnameIs(pNpc, "npc_antlion") || FClassnameIs(pNpc, "npc_antlionworker"))
+				{
+					AddEntityRelationship(pNpc, D_LI, 0);
+					pNpc->AddEntityRelationship(this, D_LI, 0);
+				}
+			}
+		}
+	}
+
 	BaseClass::Activate();
 
 	PrepareReadinessRemap();

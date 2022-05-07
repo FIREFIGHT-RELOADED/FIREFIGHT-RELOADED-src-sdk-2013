@@ -761,7 +761,7 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 	}
 	else if (Q_stristr(pRandomName, "npc_antlion"))
 	{
-		if (GlobalEntity_GetState("antlion_allied") == GLOBAL_ON)
+		if (GlobalEntity_GetState("antlion_allied") == GLOBAL_ON && g_pGameRules->GetGamemode() != FIREFIGHT_PRIMARY_ANTLIONASSAULT)
 		{
 			//alert all players.
 			AllyAlert();

@@ -13,6 +13,7 @@
 #include "antlion_maker.h"
 #include "grenade_bugbait.h"
 #include "gamestats.h"
+#include "globalstate.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -247,6 +248,28 @@ void CWeaponBugBait::SecondaryAttack( void )
 	{
 		g_AntlionMakerManager.BroadcastFollowGoal( GetOwner() );
 	}
+
+#if defined(FR_DLL)
+	//in FR, allow us to use bugbait to get antlions over to our side.
+	if (GlobalEntity_GetState("antlion_allied") == GLOBAL_ON && g_pGameRules->GetGamemode() != FIREFIGHT_PRIMARY_ANTLIONASSAULT)
+	{
+		for (int i = 0; i < g_AI_Manager.NumAIs(); i++)
+		{
+			CAI_BaseNPC* pNpc = g_AI_Manager.AccessAIs()[i];
+			if (pNpc)
+			{
+				if (FClassnameIs(pNpc, "npc_antlion") || FClassnameIs(pNpc, "npc_antlionworker"))
+				{
+					CNPC_Antlion* pAntlion = (CNPC_Antlion*)pNpc;
+					if (pAntlion)
+					{
+						pAntlion->SetMoveState(ANTLION_MOVE_FOLLOW);
+					}
+				}
+			}
+		}
+	}
+#endif
 
 	SendWeaponAnim( ACT_VM_SECONDARYATTACK );
 	m_flNextSecondaryAttack = gpGlobals->curtime + SequenceDuration();
