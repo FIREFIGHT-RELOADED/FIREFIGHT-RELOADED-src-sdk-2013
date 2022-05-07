@@ -663,12 +663,16 @@ void CNPC_Antlion::MeleeAttack( float distance, float damage, QAngle &viewPunch,
 		vecForceDir = ( pHurt->WorldSpaceCenter() - WorldSpaceCenter() );
 
 		//FIXME: Until the interaction is setup, kill combine soldiers in one hit -- jdw
-		if (FClassnameIs(pHurt, "npc_combine_s") || FClassnameIs(pHurt, "npc_combine_e") || FClassnameIs(pHurt, "npc_combine_p") || FClassnameIs(pHurt, "npc_combine_shot") || FClassnameIs(pHurt, "npc_combine_ace"))
+		// kill them on easy.
+		if (g_pGameRules->GetSkillLevel() == SKILL_EASY)
 		{
-			CTakeDamageInfo	dmgInfo( this, this, pHurt->m_iHealth+25, DMG_SLASH );
-			CalculateMeleeDamageForce( &dmgInfo, vecForceDir, pHurt->GetAbsOrigin() );
-			pHurt->TakeDamage( dmgInfo );
-			return;
+			if (FClassnameIs(pHurt, "npc_combine_s") || FClassnameIs(pHurt, "npc_combine_e") || FClassnameIs(pHurt, "npc_combine_p") || FClassnameIs(pHurt, "npc_combine_shot") || FClassnameIs(pHurt, "npc_combine_ace"))
+			{
+				CTakeDamageInfo	dmgInfo(this, this, pHurt->m_iHealth + 25, DMG_SLASH);
+				CalculateMeleeDamageForce(&dmgInfo, vecForceDir, pHurt->GetAbsOrigin());
+				pHurt->TakeDamage(dmgInfo);
+				return;
+			}
 		}
 
 		CBasePlayer *pPlayer = ToBasePlayer( pHurt );
