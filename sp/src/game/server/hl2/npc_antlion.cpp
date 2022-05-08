@@ -2457,18 +2457,6 @@ int CNPC_Antlion::SelectSchedule( void )
 	//Otherwise do basic state schedule selection
 	switch ( m_NPCState )
 	{
-	case NPC_STATE_IDLE:
-		{
-			return SCHED_PATROL_WALK_LOOP;
-		}
-		break;
-
-	case NPC_STATE_ALERT:
-		{
-			return SCHED_PATROL_WALK_LOOP;
-		}
-		break;
-
 	case NPC_STATE_COMBAT:
 		{
 			// Worker-only AI
@@ -2555,44 +2543,51 @@ int CNPC_Antlion::SelectSchedule( void )
 		}
 		break;
 
+	case NPC_STATE_IDLE:
+	case NPC_STATE_ALERT:
 	default:
-		{
-			int	moveSched = ChooseMoveSchedule();
-
-			if ( moveSched != SCHED_NONE )
-				return moveSched;
-
-			if ( GetEnemy() == NULL && ( HasCondition( COND_LIGHT_DAMAGE ) || HasCondition( COND_HEAVY_DAMAGE ) ) )
-			{
-				Vector vecEnemyLKP;
-
-				// Retrieve a memory for the damage taken
-				// Fill in where we're trying to look
-				if ( GetEnemies()->Find( AI_UNKNOWN_ENEMY ) )
-				{
-					vecEnemyLKP = GetEnemies()->LastKnownPosition( AI_UNKNOWN_ENEMY );
-				}
-				else
-				{
-					// Don't have an enemy, so face the direction the last attack came from (don't face north)
-					vecEnemyLKP = WorldSpaceCenter() + ( g_vecAttackDir * 128 );
-				}
-				
-				// If we're already facing the attack direction, then take cover from it
-				if ( FInViewCone( vecEnemyLKP ) )
-				{
-					// Save this position for our cover search
-					m_vSavePosition = vecEnemyLKP;
-					return SCHED_ANTLION_TAKE_COVER_FROM_SAVEPOSITION;
-				}
-				
-				// By default, we'll turn to face the attack
-			}
-		}
+		return DefaultSchedule();
 		break;
 	}
 
 	return BaseClass::SelectSchedule();
+}
+
+int CNPC_Antlion::DefaultSchedule(void)
+{
+	int	moveSched = ChooseMoveSchedule();
+
+	if (moveSched != SCHED_NONE)
+		return moveSched;
+
+	if (GetEnemy() == NULL && (HasCondition(COND_LIGHT_DAMAGE) || HasCondition(COND_HEAVY_DAMAGE)))
+	{
+		Vector vecEnemyLKP;
+
+		// Retrieve a memory for the damage taken
+		// Fill in where we're trying to look
+		if (GetEnemies()->Find(AI_UNKNOWN_ENEMY))
+		{
+			vecEnemyLKP = GetEnemies()->LastKnownPosition(AI_UNKNOWN_ENEMY);
+		}
+		else
+		{
+			// Don't have an enemy, so face the direction the last attack came from (don't face north)
+			vecEnemyLKP = WorldSpaceCenter() + (g_vecAttackDir * 128);
+		}
+
+		// If we're already facing the attack direction, then take cover from it
+		if (FInViewCone(vecEnemyLKP))
+		{
+			// Save this position for our cover search
+			m_vSavePosition = vecEnemyLKP;
+			return SCHED_ANTLION_TAKE_COVER_FROM_SAVEPOSITION;
+		}
+
+		// By default, we'll turn to face the attack
+	}
+
+	return SCHED_PATROL_WALK_LOOP;
 }
 
 void CNPC_Antlion::Ignite ( float flFlameLifetime, bool bNPCOnly, float flSize, bool bCalledByLevelDesigner )
@@ -3882,7 +3877,7 @@ bool CNPC_Antlion::ShouldResumeFollow( void )
 	if ( IsAllied() == false )
 		return false;
 
-	if ( m_MoveState == ANTLION_MOVE_FOLLOW || m_hFollowTarget == NULL )
+	if ( m_MoveState == ANTLION_MOVE_FOLLOW && m_hFollowTarget == NULL )
 		return false;
 
 	if ( m_flSuppressFollowTime > gpGlobals->curtime )
@@ -4215,6 +4210,21 @@ void CNPC_Antlion::Touch( CBaseEntity *pOther )
 //-----------------------------------------------------------------------------
 bool CNPC_Antlion::OverrideMoveFacing( const AILocalMoveGoal_t &move, float flInterval )
 {
+	if (GetMoveState() == ANTLION_MOVE_FOLLOW)
+	{
+		if (m_hFollowTarget)
+		{
+			AddFacingTarget(m_hFollowTarget, m_hFollowTarget->WorldSpaceCenter(), 1.0f, 0.2f);
+		}
+	}
+	else if (GetMoveState() == ANTLION_MOVE_FIGHT_TO_GOAL)
+	{
+		if (m_hFightGoalTarget)
+		{
+			AddFacingTarget(m_hFightGoalTarget, m_hFightGoalTarget->WorldSpaceCenter(), 1.0f, 0.2f);
+		}
+	}
+
 	if ( hl2_episodic.GetBool() )
 	{
 		if ( IsWorker() && GetEnemy() )
@@ -4327,7 +4337,6 @@ void CNPC_Antlion::SetMoveState( AntlionMoveState_e state )
 	switch( m_MoveState )
 	{
 	case ANTLION_MOVE_FOLLOW:
-
 		m_FollowBehavior.SetFollowTarget( m_hFollowTarget );
 		
 		// Clear any previous state
@@ -4336,11 +4345,10 @@ void CNPC_Antlion::SetMoveState( AntlionMoveState_e state )
 		break;
 	
 	case ANTLION_MOVE_FIGHT_TO_GOAL:
-		
-		m_FollowBehavior.SetFollowTarget( NULL );
+		m_FollowBehavior.SetFollowTarget(NULL);
 
 		// Keep the time we started this
-		m_flSuppressFollowTime = gpGlobals->curtime + random->RandomInt( 10, 15 );
+		m_flSuppressFollowTime = gpGlobals->curtime + random->RandomInt(10, 15);
 		break;
 
 	default:

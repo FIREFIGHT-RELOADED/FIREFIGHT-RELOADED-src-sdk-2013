@@ -116,6 +116,7 @@ public:
 	bool		CreateBehaviors( void );
 	bool		ShouldHearBugbait( void ) { return ( m_bIgnoreBugbait == false ); }
 	int			SelectSchedule( void );
+	int			DefaultSchedule(void);
 
 	void		Touch( CBaseEntity *pOther );
 
@@ -151,6 +152,7 @@ public:
 	bool		ShouldAbandonFollow( void );
 
 	void		SetMoveState( AntlionMoveState_e state );
+	AntlionMoveState_e		GetMoveState(void) { return m_MoveState; }
 	int			ChooseMoveSchedule( void );
 
 	DECLARE_DATADESC();

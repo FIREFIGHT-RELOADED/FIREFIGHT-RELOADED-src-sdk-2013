@@ -239,15 +239,14 @@ void CWeaponBugBait::PrimaryAttack( void )
 //-----------------------------------------------------------------------------
 void CWeaponBugBait::SecondaryAttack( void )
 {
+	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
+	if (!pOwner)
+		return;
+
 	// Squeeze!
 	CPASAttenuationFilter filter( this );
 
 	EmitSound( filter, entindex(), "Weapon_Bugbait.Splat" );
-
-	if ( CGrenadeBugBait::ActivateBugbaitTargets( GetOwner(), GetAbsOrigin(), true ) == false )
-	{
-		g_AntlionMakerManager.BroadcastFollowGoal( GetOwner() );
-	}
 
 #if defined(FR_DLL)
 	//in FR, allow us to use bugbait to get antlions over to our side.
@@ -263,23 +262,25 @@ void CWeaponBugBait::SecondaryAttack( void )
 					CNPC_Antlion* pAntlion = (CNPC_Antlion*)pNpc;
 					if (pAntlion)
 					{
+						pAntlion->SetFollowTarget(pOwner);
 						pAntlion->SetMoveState(ANTLION_MOVE_FOLLOW);
 					}
 				}
 			}
 		}
 	}
+#else
+	if (CGrenadeBugBait::ActivateBugbaitTargets(pOwner, GetAbsOrigin(), true) == false)
+	{
+		g_AntlionMakerManager.BroadcastFollowGoal(pOwner);
+	}
 #endif
 
 	SendWeaponAnim( ACT_VM_SECONDARYATTACK );
 	m_flNextSecondaryAttack = gpGlobals->curtime + SequenceDuration();
 
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
-	if ( pOwner )
-	{
-		m_iSecondaryAttacks++;
-		gamestats->Event_WeaponFired( pOwner, false, GetClassname() );
-	}
+	m_iSecondaryAttacks++;
+	gamestats->Event_WeaponFired(pOwner, false, GetClassname());
 }
 
 //-----------------------------------------------------------------------------

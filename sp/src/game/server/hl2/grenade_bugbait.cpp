@@ -192,10 +192,10 @@ void CGrenadeBugBait::BugBaitTouch( CBaseEntity *pOther )
 	EmitSound( filter, entindex(), "GrenadeBugBait.Splat" );
 
 	//Make sure we want to call antlions
-	if ( ActivateBugbaitTargets( GetThrower(), GetAbsOrigin(), false ) == false )
+	if (ActivateBugbaitTargets(GetThrower(), GetAbsOrigin(), false) == false)
 	{
 		//Alert any antlions around
-		CSoundEnt::InsertSound( SOUND_BUGBAIT, GetAbsOrigin(), bugbait_hear_radius.GetInt(), bugbait_distract_time.GetFloat(), GetThrower() );
+		CSoundEnt::InsertSound(SOUND_BUGBAIT, GetAbsOrigin(), bugbait_hear_radius.GetInt(), bugbait_distract_time.GetFloat(), GetThrower());
 	}
 
 #if defined(FR_DLL)
@@ -228,14 +228,21 @@ void CGrenadeBugBait::BugBaitTouch( CBaseEntity *pOther )
 							pNpc->SetHealth(pNpc->GetMaxHealth());
 						}
 					}
+
+					CNPC_Antlion* pAntlion = (CNPC_Antlion*)pNpc;
+					if (pAntlion)
+					{
+						pAntlion->SetFightTarget(this);
+						pAntlion->SetMoveState(ANTLION_MOVE_FIGHT_TO_GOAL);
+					}
 				}
 			}
 		}
 	}
-#endif
-
+#else
 	// Tell all spawners to now fight to this position
-	g_AntlionMakerManager.BroadcastFightGoal( GetAbsOrigin() );
+	g_AntlionMakerManager.BroadcastFightGoal(GetAbsOrigin());
+#endif
 
 	//Go away
 	UTIL_Remove( this );
