@@ -769,6 +769,7 @@ bool GiveHealthRegenPerkOnSpawn()
 		return !sv_fr_perks_healthregeneration_perkmode.GetBool() && 
 			(!g_fr_classic.GetBool() && 
 			!g_fr_hardcore.GetBool() && 
+			!g_fr_ironkick.GetBool() &&
 			g_pGameRules->GetSkillLevel() < SKILL_VERYHARD);
 	}
 	else
@@ -1477,6 +1478,7 @@ bool CBasePlayer::ProcessItemData(KeyValues* pData, int count, int itemID)
 		bool unlockInClassic = true;
 		bool unlockInHardcore = true;
 		bool unlockInLoneWolf = true;
+		bool unlockInIronKick = true;
 
 		if (g_fr_classic.GetBool())
 		{
@@ -1493,9 +1495,16 @@ bool CBasePlayer::ProcessItemData(KeyValues* pData, int count, int itemID)
 			unlockInLoneWolf = pNode->GetBool("unlocks_in_lone_wolf", 1);
 		}
 
+		if (g_fr_ironkick.GetBool())
+		{
+			// no weapons are allowed in iron kick.
+			unlockInIronKick = pNode->GetBool("unlocks_in_iron_kick", 0);
+		}
+
 		bool unlocksInAnyMutator = (unlockInClassic && 
 			unlockInHardcore && 
-			unlockInLoneWolf);
+			unlockInLoneWolf &&
+			unlockInIronKick);
 
 		//check to see if we're at the min level.
 		if (GetLevel() >= minLevel && unlocksInAnyMutator)
