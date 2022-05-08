@@ -707,7 +707,7 @@ void CHL2_Player::HandleArmorReduction( void )
 
 void CHL2_Player::HandleGrapple(void)
 {
-	if (sv_player_grapple.GetBool())
+	if (sv_player_grapple.GetBool() || g_fr_ironkick.GetBool())
 	{
 		if (m_afButtonPressed & IN_GRAPPLE)
 		{
@@ -1275,10 +1275,10 @@ void CHL2_Player::KickAttack(void)
 			UTIL_TraceHull(Weapon_ShootPosition(), vecAdjustedEnd, Vector(-16, -16, -16), Vector(16, 16, 16), MASK_SHOT_HULL, this, COLLISION_GROUP_NONE, &tr);
 
 			// did I hit someone?
-			float KickThrowForceMult = g_fr_ironkick.GetBool() ? 9999999.0f : (sk_kick_throwforce.GetFloat() + (sk_kick_throwforce_mult.GetFloat() * ((fabs(GetAbsVelocity().x) + fabs(GetAbsVelocity().y) + fabs(GetAbsVelocity().z)) / sk_kick_throwforce_div.GetFloat())));
+			float KickThrowForceMult = sk_kick_throwforce.GetFloat() + (sk_kick_throwforce_mult.GetFloat() * ((fabs(GetAbsVelocity().x) + fabs(GetAbsVelocity().y) + fabs(GetAbsVelocity().z)) / sk_kick_throwforce_div.GetFloat()));
 			float KickDamageMult = KickThrowForceMult / sk_kick_dmg_div.GetFloat();
 			float KickDamageFlightBoost = g_fr_ironkick.GetBool() ? 9999999.0f : (m_bInGrapple ? KickDamageMult * 3 : KickDamageMult);
-			float KickDamageProps = g_fr_ironkick.GetBool() ? 9999999.0f : (KickThrowForceMult / sk_kick_propdmg_div.GetFloat());
+			float KickDamageProps = KickThrowForceMult / sk_kick_propdmg_div.GetFloat();
 
 			if (tr.m_pEnt)
 			{
@@ -1343,6 +1343,8 @@ void CHL2_Player::KickAttack(void)
 			{
 				EmitSound("HL2Player.kick_fire");
 			}
+
+			m_bIsKicking = false;
 		}
 	}
 }
