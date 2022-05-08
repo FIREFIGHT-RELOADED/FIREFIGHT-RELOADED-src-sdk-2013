@@ -238,7 +238,8 @@ ConVar sv_player_explosionringing("sv_player_explosionringing", "0", FCVAR_ARCHI
 
 ConVar sv_player_autoswitchonreward("sv_player_autoswitchonreward", "0", FCVAR_ARCHIVE);
 
-ConVar sv_fr_perks_healthregeneration_perkmode("sv_fr_perks_healthregeneration_perkmodee", "0", FCVAR_ARCHIVE);
+ConVar sv_fr_perks_healthregeneration_perkmode("sv_fr_perks_healthregeneration_perkmode", "0", FCVAR_ARCHIVE);
+ConVar sv_fr_perks_healthregeneration_perkmode_inmutators("sv_fr_perks_healthregeneration_perkmode_inmutators", "1", FCVAR_ARCHIVE);
 
 void CC_GiveCurrentAmmo( void )
 {
@@ -763,7 +764,17 @@ CBasePlayer *CBasePlayer::CreatePlayer( const char *className, edict_t *ed )
 
 bool GiveHealthRegenPerkOnSpawn()
 {
-	return (!sv_fr_perks_healthregeneration_perkmode.GetBool() && !g_fr_classic.GetBool() && !g_fr_hardcore.GetBool() && g_pGameRules->GetSkillLevel() < SKILL_VERYHARD);
+	if (sv_fr_perks_healthregeneration_perkmode_inmutators.GetBool())
+	{
+		return !sv_fr_perks_healthregeneration_perkmode.GetBool() && 
+			(!g_fr_classic.GetBool() && 
+			!g_fr_hardcore.GetBool() && 
+			g_pGameRules->GetSkillLevel() < SKILL_VERYHARD);
+	}
+	else
+	{
+		return !sv_fr_perks_healthregeneration_perkmode.GetBool();
+	}
 }
 
 //-----------------------------------------------------------------------------
