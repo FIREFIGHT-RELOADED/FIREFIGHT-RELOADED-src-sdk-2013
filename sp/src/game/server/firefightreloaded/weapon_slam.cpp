@@ -337,6 +337,8 @@ void CWeapon_SLAM::TripmineAttach( void )
 
 
 			pOwner->RemoveAmmo( 1, m_iSecondaryAmmoType );
+
+			AddEffects(EF_NODRAW);
 		}
 	}
 }
@@ -450,6 +452,7 @@ void CWeapon_SLAM::SatchelThrow( void )
 	pPlayer->RemoveAmmo( 1, m_iSecondaryAmmoType );
 	pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
+	AddEffects(EF_NODRAW);
 
 	// Play throw sound
 	EmitSound( "Weapon_SLAM.SatchelThrow" );
@@ -528,6 +531,8 @@ void CWeapon_SLAM::SatchelAttach( void )
 			pSatchel->m_pMyWeaponSLAM	= this;
 
 			pOwner->RemoveAmmo( 1, m_iSecondaryAmmoType );
+
+			AddEffects(EF_NODRAW);
 		}
 	}
 }
@@ -698,6 +703,11 @@ bool CWeapon_SLAM::CanAttachSLAM( void )
 //-----------------------------------------------------------------------------
 void CWeapon_SLAM::ItemPostFrame( void )
 {
+	if (m_flNextPrimaryAttack <= gpGlobals->curtime)
+	{
+		RemoveEffects(EF_NODRAW);
+	}
+
 	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
 	if (!pOwner)
 	{

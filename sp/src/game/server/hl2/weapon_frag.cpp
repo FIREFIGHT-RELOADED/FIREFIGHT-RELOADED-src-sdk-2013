@@ -260,6 +260,7 @@ bool CWeaponFrag::Reload( void )
 		m_flNextPrimaryAttack	= gpGlobals->curtime + SequenceDuration();
 		m_flNextSecondaryAttack	= gpGlobals->curtime + SequenceDuration();
 		m_flTimeWeaponIdle = gpGlobals->curtime + SequenceDuration();
+		RemoveEffects(EF_NODRAW);
 
 		//Mark this as done
 		m_bRedraw = false;
@@ -380,6 +381,11 @@ void CWeaponFrag::DecrementAmmo( CBaseCombatCharacter *pOwner )
 //-----------------------------------------------------------------------------
 void CWeaponFrag::ItemPostFrame( void )
 {
+	if (m_flNextPrimaryAttack <= gpGlobals->curtime)
+	{
+		RemoveEffects(EF_NODRAW);
+	}
+
 	CBasePlayer *pOwner = ToBasePlayer(GetOwner());
 	
 	if (pOwner && (pOwner->m_afButtonPressed & IN_GRENADE1))
@@ -443,6 +449,7 @@ void CWeaponFrag::ItemPostFrame( void )
 				vm->m_nSkin = 1;
 			}
 			WeaponSound(EMPTY);
+			RemoveEffects(EF_NODRAW);
 		}
 		else if (m_iFireMode == 1)
 		{
@@ -457,6 +464,7 @@ void CWeaponFrag::ItemPostFrame( void )
 				vm->m_nSkin = 0;
 			}
 			WeaponSound(EMPTY);
+			RemoveEffects(EF_NODRAW);
 		}
 	}
 
@@ -513,6 +521,8 @@ void CWeaponFrag::ThrowGrenade( CBasePlayer *pPlayer )
 
 	m_iPrimaryAttacks++;
 	gamestats->Event_WeaponFired( pPlayer, true, GetClassname() );
+
+	AddEffects(EF_NODRAW);
 }
 
 //-----------------------------------------------------------------------------
@@ -541,6 +551,8 @@ void CWeaponFrag::LobGrenade( CBasePlayer *pPlayer )
 
 	m_iPrimaryAttacks++;
 	gamestats->Event_WeaponFired( pPlayer, true, GetClassname() );
+
+	AddEffects(EF_NODRAW);
 }
 
 //-----------------------------------------------------------------------------
@@ -587,5 +599,7 @@ void CWeaponFrag::RollGrenade( CBasePlayer *pPlayer )
 
 	m_iPrimaryAttacks++;
 	gamestats->Event_WeaponFired( pPlayer, true, GetClassname() );
+
+	AddEffects(EF_NODRAW);
 }
 
