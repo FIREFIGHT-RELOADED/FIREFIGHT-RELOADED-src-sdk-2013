@@ -1053,6 +1053,8 @@ int CBasePlayer::GetXpToLevelUp(int level)
 	return MAX_EXP * (level);
 }
 
+extern ConVar sv_player_grapple;
+
 void CBasePlayer::CheckLevel()
 {
 	if (!g_fr_classic.GetBool())
@@ -1091,7 +1093,11 @@ void CBasePlayer::CheckLevel()
 				GlobalEntity_SetState(MAKE_STRING("super_phys_gun"), GLOBAL_ON);
 			}
 
-			GiveNamedItem("weapon_grapple");
+			if (sv_player_grapple.GetBool())
+			{
+				GiveNamedItem("weapon_grapple");
+			}
+
 			GiveNamedItem("weapon_physcannon");
 
 			CFmtStr hint;

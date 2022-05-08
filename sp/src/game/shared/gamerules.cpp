@@ -42,16 +42,31 @@ ConVar log_verbose_enable( "log_verbose_enable", "0", FCVAR_GAMEDLL, "Set to 1 t
 ConVar log_verbose_interval( "log_verbose_interval", "3.0", FCVAR_GAMEDLL, "Determines the interval (in seconds) for the verbose server log." );
 #endif // CLIENT_DLL
 
+void gametype_callback(IConVar* pConVar, char const* pOldString, float flOldValue);
+
 ConVar g_skill("g_skill", "0", FCVAR_ARCHIVE | FCVAR_REPLICATED);
 ConVar g_gamemode("g_gamemode", "0", FCVAR_ARCHIVE | FCVAR_REPLICATED);
-ConVar g_fr_classic("g_fr_classic", "0", FCVAR_ARCHIVE | FCVAR_REPLICATED);
-ConVar g_fr_hardcore("g_fr_hardcore", "0", FCVAR_ARCHIVE | FCVAR_REPLICATED);
-ConVar g_fr_lonewolf("g_fr_lonewolf", "0", FCVAR_ARCHIVE | FCVAR_REPLICATED);
-ConVar g_fr_ironkick("g_fr_ironkick", "0", FCVAR_ARCHIVE | FCVAR_REPLICATED);
+ConVar g_fr_classic("g_fr_classic", "0", FCVAR_ARCHIVE | FCVAR_REPLICATED, "", gametype_callback);
+ConVar g_fr_hardcore("g_fr_hardcore", "0", FCVAR_ARCHIVE | FCVAR_REPLICATED, "", gametype_callback);
+ConVar g_fr_lonewolf("g_fr_lonewolf", "0", FCVAR_ARCHIVE | FCVAR_REPLICATED, "", gametype_callback);
+ConVar g_fr_ironkick("g_fr_ironkick", "0", FCVAR_ARCHIVE | FCVAR_REPLICATED, "" , gametype_callback);
 ConVar g_fr_headshotgore("g_fr_headshotgore", "1", FCVAR_ARCHIVE | FCVAR_REPLICATED);
 ConVar g_fr_economy("g_fr_economy", "1", FCVAR_ARCHIVE | FCVAR_REPLICATED);
 ConVar g_fr_entitytolerance("g_fr_entitytolerance", "32", FCVAR_ARCHIVE | FCVAR_REPLICATED);
 ConVar g_fr_spawneroldfunctionality("g_fr_spawneroldfunctionality", "0", FCVAR_ARCHIVE | FCVAR_REPLICATED);
+
+void gametype_callback(IConVar* pConVar, char const* pOldString, float flOldValue)
+{
+#ifndef CLIENT_DLL
+	CBasePlayer* pPlayer = UTIL_GetCommandClient();
+
+	if (pPlayer)
+	{
+		CTakeDamageInfo info = CTakeDamageInfo(pPlayer, pPlayer, pPlayer->GetMaxHealth(), DMG_DIRECT);
+		pPlayer->TakeDamage(info);
+	}
+#endif
+}
 
 static CViewVectors g_DefaultViewVectors(
 	Vector( 0, 0, 64 ),			//VEC_VIEW (m_vView)

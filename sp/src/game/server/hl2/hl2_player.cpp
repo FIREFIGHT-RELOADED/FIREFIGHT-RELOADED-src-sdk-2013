@@ -139,6 +139,21 @@ ConVar sv_player_damagescale_self("sv_player_damagescale_self", "0.35", FCVAR_CH
 ConVar sv_player_bullettime_timescale("sv_player_bullettime_timescale", "35", FCVAR_ARCHIVE);
 ConVar sv_player_bullettime_shop_timescale("sv_player_bullettime_shop_timescale", "5", FCVAR_ARCHIVE);
 
+void grapple_callback(IConVar* pConVar, char const* pOldString, float flOldValue);
+
+ConVar sv_player_grapple("sv_player_grapple", "1", FCVAR_ARCHIVE, "", grapple_callback);
+
+void grapple_callback(IConVar* pConVar, char const* pOldString, float flOldValue)
+{
+	CBasePlayer* pPlayer = UTIL_GetCommandClient();
+
+	if (pPlayer)
+	{
+		CTakeDamageInfo info = CTakeDamageInfo(pPlayer, pPlayer, pPlayer->GetMaxHealth(), DMG_DIRECT);
+		pPlayer->TakeDamage(info);
+	}
+}
+
 #define	FLASH_DRAIN_TIME	 1.1111	// 100 units / 90 secs
 #define	FLASH_CHARGE_TIME	 50.0f	// 100 units / 2 secs
 //const char *szModelName = NULL;
@@ -692,31 +707,43 @@ void CHL2_Player::HandleArmorReduction( void )
 
 void CHL2_Player::HandleGrapple(void)
 {
-	if (m_afButtonPressed & IN_GRAPPLE)
+	if (sv_player_grapple.GetBool())
 	{
-		engine->ClientCommand(edict(), "cancelselect");
-		SelectItem("weapon_grapple");
-		CBaseCombatWeapon *pGrapple = GetActiveWeapon();
-		if (pGrapple)
+		if (m_afButtonPressed & IN_GRAPPLE)
 		{
-			pGrapple->PrimaryAttack();
-		}
-
-		m_bInGrapple = true;
-	}
-	else if (!(m_nButtons & IN_GRAPPLE))
-	{
-		CBaseCombatWeapon *pWeapon = GetActiveWeapon();
-		const char *pWeaponClass = "weapon_grapple";
-
-		if (pWeapon)
-		{
-			const char *strWeaponName = pWeapon->GetName();
-
-			if (!Q_stricmp(strWeaponName, pWeaponClass))
+			engine->ClientCommand(edict(), "cancelselect");
+			SelectItem("weapon_grapple");
+			CBaseCombatWeapon* pGrapple = GetActiveWeapon();
+			if (pGrapple)
 			{
-				SelectLastItem();
+				pGrapple->PrimaryAttack();
 			}
+
+			m_bInGrapple = true;
+		}
+		else if (!(m_nButtons & IN_GRAPPLE))
+		{
+			CBaseCombatWeapon* pWeapon = GetActiveWeapon();
+			const char* pWeaponClass = "weapon_grapple";
+
+			if (pWeapon)
+			{
+				const char* strWeaponName = pWeapon->GetName();
+
+				if (!Q_stricmp(strWeaponName, pWeaponClass))
+				{
+					SelectLastItem();
+				}
+			}
+
+			m_bInGrapple = false;
+		}
+	}
+	else
+	{
+		if (m_afButtonPressed & IN_GRAPPLE)
+		{
+			EmitSound("Weapon_SMG1.Empty");
 		}
 
 		m_bInGrapple = false;
@@ -1750,6 +1777,8 @@ void CHL2_Player::Spawn(void)
 	Q_FixSlashes(mapname);
 	Q_strlower(mapname);
 
+	SetPreventWeaponPickup(false);
+
 	if (sk_player_weapons.GetBool() && gpGlobals->eLoadType != MapLoad_Background && !V_stristr(mapname, "credits"))
 	{
 		if (g_fr_hardcore.GetBool())
@@ -1758,19 +1787,23 @@ void CHL2_Player::Spawn(void)
 			GiveNamedItem("weapon_physcannon");
 			GiveNamedItem("weapon_knife");
 			GiveNamedItem("weapon_crowbar");
-			GiveNamedItem("weapon_grapple");
+			if (sv_player_grapple.GetBool())
+			{
+				GiveNamedItem("weapon_grapple");
+			}
 		}
 		else if (g_fr_ironkick.GetBool())
 		{
-			SetPreventWeaponPickup(false);
 			EquipSuit();
-			GiveNamedItem("weapon_grapple");
 			SetPreventWeaponPickup(true);
 		}
 		else if (GetLevel() == MAX_LEVEL)
 		{
 			EquipSuit();
-			GiveNamedItem("weapon_grapple");
+			if (sv_player_grapple.GetBool())
+			{
+				GiveNamedItem("weapon_grapple");
+			}
 			GiveNamedItem("weapon_physcannon");
 		}
 		else
@@ -1786,7 +1819,10 @@ void CHL2_Player::Spawn(void)
 			GiveNamedItem("weapon_pistol");
 			GiveNamedItem("weapon_physcannon");
 			GiveNamedItem("weapon_knife");
-			GiveNamedItem("weapon_grapple");
+			if (sv_player_grapple.GetBool())
+			{
+				GiveNamedItem("weapon_grapple");
+			}
 		}
 	}
 }
