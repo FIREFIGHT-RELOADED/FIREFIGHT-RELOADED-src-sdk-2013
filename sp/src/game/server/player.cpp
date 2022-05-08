@@ -882,14 +882,7 @@ CBasePlayer::CBasePlayer( )
 
 	m_iPerkInfiniteAuxPower = 0;
 	m_iPerkInfiniteAmmo = 0;
-	if (GiveHealthRegenPerkOnSpawn())
-	{
-		m_iPerkHealthRegen = 1;
-	}
-	else
-	{
-		m_iPerkHealthRegen = 0;
-	}
+	m_iPerkHealthRegen = 0;
 
 	m_iMoney = 0;
 
@@ -6042,6 +6035,16 @@ void CBasePlayer::Spawn( void )
 	m_bitsDamageType = 0;
 	m_bitsHUDDamage = -1;
 	SetPlayerUnderwater( false );
+
+	if (GiveHealthRegenPerkOnSpawn())
+	{
+		m_iPerkHealthRegen = 1;
+	}
+
+	if (m_iPerkHealthRegen == 0 && !GiveHealthRegenPerkOnSpawn())
+	{
+		m_iPerkHealthRegen = 0;
+	}
 
 	m_iTrain = TRAIN_NEW;
 	

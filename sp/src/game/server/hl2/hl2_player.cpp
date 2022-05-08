@@ -149,7 +149,7 @@ void grapple_callback(IConVar* pConVar, char const* pOldString, float flOldValue
 
 	if (pPlayer)
 	{
-		CTakeDamageInfo info = CTakeDamageInfo(pPlayer, pPlayer, pPlayer->GetMaxHealth(), DMG_DIRECT);
+		CTakeDamageInfo info = CTakeDamageInfo(pPlayer, pPlayer, pPlayer->GetMaxHealth(), DMG_BULLET);
 		pPlayer->TakeDamage(info);
 	}
 }
