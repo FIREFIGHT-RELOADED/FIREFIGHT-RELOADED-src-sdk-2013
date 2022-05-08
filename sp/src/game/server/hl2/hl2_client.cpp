@@ -34,7 +34,6 @@ void Host_Say( edict_t *pEdict, bool teamonly );
 
 extern CBaseEntity*	FindPickerEntityClass( CBasePlayer *pPlayer, char *classname );
 extern bool			g_fGameOver;
-extern ConVar sv_player_hardcoremode;
 //const char			*szModelName = NULL; //already declared?
 
 /*
@@ -155,7 +154,7 @@ void respawn( CBaseEntity *pEdict, bool fCopyCorpse )
 	CHL2_Player *pPlayer = (CHL2_Player *)pEdict;
 	if (pPlayer)
 	{
-		if ((pPlayer->GetLevel() == MAX_LEVEL || sv_player_hardcoremode.GetBool()) && !g_pGameRules->IsMultiplayer())
+		if ((pPlayer->GetLevel() == MAX_LEVEL || g_fr_hardcore.GetBool()) && !g_pGameRules->IsMultiplayer())
 		{
 			char szMapCommand[1024];
 			// create the command to execute

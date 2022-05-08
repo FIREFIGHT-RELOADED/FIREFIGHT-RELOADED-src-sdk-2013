@@ -220,7 +220,6 @@ ConVar sv_player_voice_hit("sv_player_voice_hit", "1", FCVAR_ARCHIVE);
 ConVar sv_player_voice_perk("sv_player_voice_perk", "1", FCVAR_ARCHIVE);
 ConVar sv_player_startingmoney("sv_player_startingmoney", "0", FCVAR_ARCHIVE);
 ConVar sv_player_startingmoney_amount("sv_player_startingmoney_amount", "300", FCVAR_ARCHIVE);
-ConVar sv_player_hardcoremode("sv_player_hardcoremode", "0", FCVAR_ARCHIVE);
 ConVar sv_store_buynotifications("sv_store_buynotifications", "1", FCVAR_ARCHIVE);
 ConVar sv_store_denynotifications("sv_store_denynotifications", "1", FCVAR_ARCHIVE);
 ConVar sv_store_buysounds("sv_store_buysounds", "1", FCVAR_ARCHIVE);
@@ -762,7 +761,7 @@ CBasePlayer *CBasePlayer::CreatePlayer( const char *className, edict_t *ed )
 
 bool GiveHealthRegenPerkOnSpawn()
 {
-	return (!g_fr_classic.GetBool() && !sv_player_hardcoremode.GetBool() && g_pGameRules->GetSkillLevel() < SKILL_VERYHARD);
+	return (!g_fr_classic.GetBool() && !g_fr_hardcore.GetBool() && g_pGameRules->GetSkillLevel() < SKILL_VERYHARD);
 }
 
 //-----------------------------------------------------------------------------
@@ -1458,9 +1457,35 @@ bool CBasePlayer::ProcessItemData(KeyValues* pData, int count, int itemID)
 	if (pNode != NULL)
 	{
 		int minLevel = pNode->GetInt("min_level", 0);
+		//g_fr_lonewolf
+		//g_fr_hardcore
+		//g_fr_classic
+
+		bool unlockInClassic = true;
+		bool unlockInHardcore = true;
+		bool unlockInLoneWolf = true;
+
+		if (g_fr_classic.GetBool())
+		{
+			unlockInClassic = pNode->GetBool("unlocks_in_classic", 1);
+		}
+
+		if (g_fr_hardcore.GetBool())
+		{
+			unlockInHardcore = pNode->GetBool("unlocks_in_hardcore", 1);
+		}
+
+		if (g_fr_lonewolf.GetBool())
+		{
+			unlockInLoneWolf = pNode->GetBool("unlocks_in_lone_wolf", 1);
+		}
+
+		bool unlocksInAnyMutator = (unlockInClassic && 
+			unlockInHardcore && 
+			unlockInLoneWolf);
 
 		//check to see if we're at the min level.
-		if (GetLevel() >= minLevel)
+		if (GetLevel() >= minLevel && unlocksInAnyMutator)
 		{
 			if (GiveRewardItem(pNode))
 			{
@@ -2646,7 +2671,7 @@ void CBasePlayer::Event_Killed( const CTakeDamageInfo &info )
 
 	ClearLastKnownArea();
 
-	if ((GetLevel() == MAX_LEVEL || sv_player_hardcoremode.GetBool()) && !g_pGameRules->IsMultiplayer())
+	if ((GetLevel() == MAX_LEVEL || g_fr_hardcore.GetBool()) && !g_pGameRules->IsMultiplayer())
 	{
 		// Clear any screenfade
 		color32 nothing = { 0, 0, 0, 255 };
@@ -3084,13 +3109,13 @@ void CBasePlayer::PlayerDeathThink(void)
 		StartObserverMode( m_iObserverLastMode );
 	}
 
-	if ((GetLevel() == MAX_LEVEL || sv_player_hardcoremode.GetBool()) && !g_pGameRules->IsMultiplayer())
+	if ((GetLevel() == MAX_LEVEL || g_fr_hardcore.GetBool()) && !g_pGameRules->IsMultiplayer())
 	{
 		if ((gpGlobals->curtime > (m_flDeathTime + DEATH_MESSAGE_TIME)))
 		{
 			if (!m_bDeathMessage)
 			{
-				if (sv_player_hardcoremode.GetBool() && GetLevel() != MAX_LEVEL)
+				if (g_fr_hardcore.GetBool() && GetLevel() != MAX_LEVEL)
 				{
 					UTIL_ShowMessage("FR_HardcoreEnding", this);
 				}
@@ -3104,7 +3129,7 @@ void CBasePlayer::PlayerDeathThink(void)
 	}
 	
 // wait for any button down,  or mp_forcerespawn is set and the respawn time is up
-	if ((GetLevel() == MAX_LEVEL || sv_player_hardcoremode.GetBool()) && !g_pGameRules->IsMultiplayer())
+	if ((GetLevel() == MAX_LEVEL || g_fr_hardcore.GetBool()) && !g_pGameRules->IsMultiplayer())
 	{
 		if (!(gpGlobals->curtime > (m_flDeathTime + DEATH_WAIT_TIME) && m_bDeathMessage))
 			return;

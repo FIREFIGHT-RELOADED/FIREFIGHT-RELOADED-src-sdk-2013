@@ -745,8 +745,16 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 	}
 	else if (Q_stristr(pRandomName, "npc_playerbot"))
 	{
-		//alert all players.
-		AllyAlert();
+		if (!g_fr_lonewolf.GetBool())
+		{
+			//alert all players.
+			AllyAlert();
+		}
+		else
+		{
+			UTIL_Remove(pent);
+			return;
+		}
 	}
 	else if (Q_stristr(pRandomName, "npc_strider"))
 	{
@@ -761,7 +769,7 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 	}
 	else if (Q_stristr(pRandomName, "npc_antlion"))
 	{
-		if (GlobalEntity_GetState("antlion_allied") == GLOBAL_ON && g_pGameRules->GetGamemode() != FIREFIGHT_PRIMARY_ANTLIONASSAULT)
+		if (GlobalEntity_GetState("antlion_allied") == GLOBAL_ON && g_pGameRules->GetGamemode() != FIREFIGHT_PRIMARY_ANTLIONASSAULT && !g_fr_lonewolf.GetBool())
 		{
 			//alert all players.
 			AllyAlert();

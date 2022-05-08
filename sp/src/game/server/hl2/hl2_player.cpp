@@ -1633,7 +1633,6 @@ void CHL2_Player::InitialSpawn(void)
 }
 
 extern ConVar sk_player_weapons;
-extern ConVar sv_player_hardcoremode;
 
 //-----------------------------------------------------------------------------
 // Purpose: Sets HL2 specific defaults.
@@ -1753,7 +1752,7 @@ void CHL2_Player::Spawn(void)
 
 	if (sk_player_weapons.GetBool() && gpGlobals->eLoadType != MapLoad_Background && !V_stristr(mapname, "credits"))
 	{
-		if (sv_player_hardcoremode.GetBool())
+		if (g_fr_hardcore.GetBool())
 		{
 			EquipSuit();
 			GiveNamedItem("weapon_physcannon");
