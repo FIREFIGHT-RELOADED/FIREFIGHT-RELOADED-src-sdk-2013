@@ -1011,6 +1011,7 @@ public:
 	int m_iPerkInfiniteAuxPower;
 	CNetworkVar(int, m_iPerkInfiniteAmmo);
 	int m_iPerkHealthRegen;
+	bool m_bGotPerkHealthRegen;
 	float m_fRegenRate;
 
 private:

@@ -672,6 +672,7 @@ BEGIN_DATADESC( CBasePlayer )
 	DEFINE_FIELD(m_iPerkInfiniteAuxPower, FIELD_INTEGER),
 	DEFINE_FIELD(m_iPerkInfiniteAmmo, FIELD_INTEGER),
 	DEFINE_FIELD(m_iPerkHealthRegen, FIELD_INTEGER),
+	DEFINE_FIELD(m_bGotPerkHealthRegen, FIELD_BOOLEAN),
 	DEFINE_FIELD(m_fRegenRate, FIELD_FLOAT),
 	DEFINE_FIELD(m_iMoney, FIELD_INTEGER),
 
@@ -883,6 +884,7 @@ CBasePlayer::CBasePlayer( )
 	m_iPerkInfiniteAuxPower = 0;
 	m_iPerkInfiniteAmmo = 0;
 	m_iPerkHealthRegen = 0;
+	m_bGotPerkHealthRegen = false;
 
 	m_iMoney = 0;
 
@@ -1301,6 +1303,7 @@ bool GivePerkForID(CBasePlayer* pPlayer, int perkID)
 			{
 				float regenRateAdd = GivePerkAdjustValue(pPlayer, sv_regeneration.GetBool(), sv_fr_perks_healthregenerationrate_amount.GetFloat());
 				pPlayer->m_fRegenRate = pPlayer->m_fRegenRate + regenRateAdd;
+				pPlayer->m_bGotPerkHealthRegen = true;
 				unlocked = (regenRateAdd > 0);
 			}
 		}
@@ -6040,10 +6043,12 @@ void CBasePlayer::Spawn( void )
 	{
 		m_iPerkHealthRegen = 1;
 	}
-
-	if (m_iPerkHealthRegen == 0 && !GiveHealthRegenPerkOnSpawn())
+	else
 	{
-		m_iPerkHealthRegen = 0;
+		if (!m_bGotPerkHealthRegen)
+		{
+			m_iPerkHealthRegen = 0;
+		}
 	}
 
 	m_iTrain = TRAIN_NEW;
