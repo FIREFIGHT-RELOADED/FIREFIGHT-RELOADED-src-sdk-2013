@@ -836,7 +836,7 @@ bool UTIL_IsLowViolence( void )
 
 bool UTIL_ShouldShowBlood( int color )
 {
-	if ( color != DONT_BLEED )
+	if ( color != DONT_BLEED || color != BLOOD_COLOR_MECH)
 	{
 		if ( color == BLOOD_COLOR_RED )
 		{
