@@ -139,20 +139,7 @@ ConVar sv_player_damagescale_self("sv_player_damagescale_self", "0.35", FCVAR_CH
 ConVar sv_player_bullettime_timescale("sv_player_bullettime_timescale", "35", FCVAR_ARCHIVE);
 ConVar sv_player_bullettime_shop_timescale("sv_player_bullettime_shop_timescale", "5", FCVAR_ARCHIVE);
 
-void grapple_callback(IConVar* pConVar, char const* pOldString, float flOldValue);
-
-ConVar sv_player_grapple("sv_player_grapple", "1", FCVAR_ARCHIVE, "", grapple_callback);
-
-void grapple_callback(IConVar* pConVar, char const* pOldString, float flOldValue)
-{
-	CBasePlayer* pPlayer = UTIL_GetCommandClient();
-
-	if (pPlayer)
-	{
-		CTakeDamageInfo info = CTakeDamageInfo(pPlayer, pPlayer, pPlayer->GetMaxHealth(), DMG_BULLET);
-		pPlayer->TakeDamage(info);
-	}
-}
+ConVar sv_player_grapple("sv_player_grapple", "1", FCVAR_ARCHIVE, "");
 
 #define	FLASH_DRAIN_TIME	 1.1111	// 100 units / 90 secs
 #define	FLASH_CHARGE_TIME	 50.0f	// 100 units / 2 secs

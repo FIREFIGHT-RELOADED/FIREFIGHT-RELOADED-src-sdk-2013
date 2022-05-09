@@ -30,6 +30,7 @@
 #include "props.h"
 #include "particle_parse.h"
 #include "ai_tacticalservices.h"
+#include "firefightreloaded/npc_combineace.h"
 
 #ifdef HL2_EPISODIC
 #include "grenade_spit.h"
@@ -688,12 +689,29 @@ void CNPC_Antlion::MeleeAttack( float distance, float damage, QAngle &viewPunch,
 		// kill them on easy.
 		if (g_pGameRules->GetSkillLevel() == SKILL_EASY || IsAllied())
 		{
-			if (FClassnameIs(pHurt, "npc_combine_s") || FClassnameIs(pHurt, "npc_combine_e") || FClassnameIs(pHurt, "npc_combine_p") || FClassnameIs(pHurt, "npc_combine_shot") || FClassnameIs(pHurt, "npc_combine_ace"))
+			if (FClassnameIs(pHurt, "npc_combine_s") || FClassnameIs(pHurt, "npc_combine_e") || FClassnameIs(pHurt, "npc_combine_p") || FClassnameIs(pHurt, "npc_combine_shot"))
 			{
 				CTakeDamageInfo	dmgInfo(this, this, pHurt->m_iHealth + 25, DMG_SLASH);
 				CalculateMeleeDamageForce(&dmgInfo, vecForceDir, pHurt->GetAbsOrigin());
 				pHurt->TakeDamage(dmgInfo);
 				return;
+			}
+		}
+
+		//only instakill them if their bullet resistance is broken.
+		if (FClassnameIs(pHurt, "npc_combine_ace"))
+		{
+			CNPC_CombineAce* pCombineAce = (CNPC_CombineAce*)pHurt;
+
+			if (pCombineAce)
+			{
+				if ((g_pGameRules->GetSkillLevel() == SKILL_EASY || IsAllied()) && pCombineAce->m_bBulletResistanceBroken)
+				{
+					CTakeDamageInfo	dmgInfo(this, this, pHurt->m_iHealth + 25, DMG_SLASH);
+					CalculateMeleeDamageForce(&dmgInfo, vecForceDir, pHurt->GetAbsOrigin());
+					pHurt->TakeDamage(dmgInfo);
+					return;
+				}
 			}
 		}
 

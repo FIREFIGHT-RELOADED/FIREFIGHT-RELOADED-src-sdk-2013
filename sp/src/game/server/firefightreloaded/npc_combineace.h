@@ -69,6 +69,9 @@ public:
 
 	const char* GetGibModel(appendage_t appendage);
 
+public:
+	bool					m_bBulletResistanceBroken;
+
 private:
 	bool		ShouldHitPlayer( const Vector &targetDir, float targetDist );
 	void		SetEyeState(aceEyeState_t state);
@@ -78,7 +81,6 @@ private:
 	CArmorPiece			*pArmor;
 	bool					m_bNoArmor;
 	bool					m_bisEyeForcedDead;
-	bool					m_bBulletResistanceBroken;
 
 #if HL2_EPISODIC
 public:

@@ -482,9 +482,9 @@ CTakeDamageInfo CNPC_CombineAce::BulletResistanceLogic(const CTakeDamageInfo& in
 {
 	CTakeDamageInfo outputInfo = info;
 
-	if ((GetHealth() > GetMaxHealth() * 0.5) && !FStrEq(info.GetAmmoName(), "Katana") && !m_bBulletResistanceBroken)
+	if ((GetHealth() > GetMaxHealth() * 0.5) && !FStrEq(outputInfo.GetAmmoName(), "Katana") && !m_bBulletResistanceBroken)
 	{
-		if (!(info.GetDamageType() & (DMG_GENERIC)))
+		if (!(outputInfo.GetDamageType() & (DMG_GENERIC)))
 		{
 			if (ptr != NULL)
 			{
@@ -496,13 +496,9 @@ CTakeDamageInfo CNPC_CombineAce::BulletResistanceLogic(const CTakeDamageInfo& in
 
 			if (g_pGameRules->GetSkillLevel() < SKILL_VERYHARD)
 			{
-				fDifficultyBasedDamage = 0.5f;
-			}
-			else if (g_pGameRules->GetSkillLevel() == SKILL_VERYHARD)
-			{
 				fDifficultyBasedDamage = 0.2f;
 			}
-			else if (g_pGameRules->GetSkillLevel() == SKILL_NIGHTMARE)
+			else if (g_pGameRules->GetSkillLevel() > SKILL_VERYHARD)
 			{
 				fDifficultyBasedDamage = 0.1f;
 			}
@@ -515,6 +511,8 @@ CTakeDamageInfo CNPC_CombineAce::BulletResistanceLogic(const CTakeDamageInfo& in
 			{
 				outputInfo.SetDamage(info.GetDamage() * 0.5f);
 			}
+
+			outputInfo.AddDamageType(DMG_NEVERGIB);
 		}
 	}
 
