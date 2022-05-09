@@ -25,6 +25,7 @@
 #include "gameweaponmanager.h"
 #include "vehicle_base.h"
 #include "gib.h"
+#include "IEffects.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -437,6 +438,40 @@ void CNPC_CombineAce::SetEyeState(aceEyeState_t state)
 		}
 		break;
 	}
+}
+
+//---------------------------------------------------------
+//---------------------------------------------------------
+void CNPC_CombineAce::TraceAttack(const CTakeDamageInfo& inputInfo, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator)
+{
+	CTakeDamageInfo info = inputInfo;
+
+	if ((GetHealth() > GetMaxHealth() * 0.5) && !FStrEq(info.GetAmmoName(), "Katana"))
+	{
+		SetBloodColor(BLOOD_COLOR_MECH);
+
+		if ((info.GetDamageType() & (DMG_BULLET | DMG_SLASH | DMG_CLUB)))
+		{
+			if (ptr->hitgroup != HITGROUP_HEAD)
+			{
+				info.SetDamage(0.5);
+			}
+		}
+
+		if ((info.GetDamageType() & (DMG_BULLET | DMG_SLASH | DMG_CLUB | DMG_BLAST)))
+		{
+			info.AddDamageType(DMG_NEVERGIB);
+		}
+	}
+	else
+	{
+		if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()))
+		{
+			SetBloodColor(BLOOD_COLOR_RED);
+		}
+	}
+
+	BaseClass::TraceAttack(info, vecDir, ptr, pAccumulator);
 }
 
 //-----------------------------------------------------------------------------

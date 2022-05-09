@@ -384,9 +384,12 @@ bool CNPC_Combine::CorpseDecapitate(const CTakeDamageInfo& info)
 		gibs = m_pAttributes->GetBool("gibs", true);
 	}
 
+	if (info.GetDamageType() & DMG_NEVERGIB)
+		return false;
+
 	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool() && gibs)
 	{
-		if ((info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB))
+		if ((info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)))
 		{
 			SetModel(GetGibModel(APPENDAGE_DECAP_BODY));
 
@@ -425,7 +428,7 @@ bool CNPC_Combine::CorpseDecapitate(const CTakeDamageInfo& info)
 
 			return true;
 		}
-		else if ((info.GetDamageType() & (DMG_SLASH)) && !(info.GetDamageType() & DMG_NEVERGIB))
+		else if ((info.GetDamageType() & (DMG_SLASH)))
 		{
 			SetModel(GetGibModel(APPENDAGE_DECAP_BODY));
 
@@ -485,6 +488,9 @@ bool CNPC_Combine::CorpseGib(const CTakeDamageInfo& info)
 	{
 		gibs = m_pAttributes->GetBool("gibs", true);
 	}
+
+	if (info.GetDamageType() & DMG_NEVERGIB)
+		return false;
 
 	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && info.GetDamageType() & (DMG_BLAST) && !(info.GetDamageType() & (DMG_DISSOLVE)) && !PlayerHasMegaPhysCannon() && gibs)
 	{
