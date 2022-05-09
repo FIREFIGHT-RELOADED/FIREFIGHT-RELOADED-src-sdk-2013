@@ -3365,14 +3365,7 @@ int	CHL2_Player::OnTakeDamage( const CTakeDamageInfo &info )
 
 	if( bAdjustForSkillLevel )
 	{
-		if (info.GetAttacker() && FClassnameIs(info.GetAttacker(), "npc_combine_ace"))
-		{
-			playerDamage.AdjustPlayerDamageTakenForSkillLevelCombineAce();
-		}
-		else
-		{
-			playerDamage.AdjustPlayerDamageTakenForSkillLevel();
-		}
+		playerDamage.AdjustPlayerDamageTakenForSkillLevel();
 	}
 
 	// if this is our own rocket, scale down the damage

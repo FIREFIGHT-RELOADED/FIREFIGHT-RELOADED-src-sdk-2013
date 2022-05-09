@@ -135,14 +135,6 @@ void CTakeDamageInfo::AdjustPlayerDamageTakenForSkillLevel()
 #endif
 }
 
-void CTakeDamageInfo::AdjustPlayerDamageTakenForSkillLevelCombineAce()
-{
-#ifndef CLIENT_DLL
-	CopyDamageToBaseDamage();
-	g_pGameRules->AdjustPlayerDamageTakenCombineAce(this);
-#endif
-}
-
 //-----------------------------------------------------------------------------
 // Purpose: get the name of the ammo that caused damage
 // Note: returns the ammo name, or the classname of the object, or the model name in the case of physgun ammo.

@@ -72,6 +72,7 @@ ConVar sk_combine_ace_kick( "sk_combine_ace_kick", "0");
 ConVar combine_ace_spawn_health("combine_ace_spawn_health", "1");
 ConVar combine_ace_spawnwithgrenades("combine_ace_spawnwithgrenades", "1", FCVAR_ARCHIVE);
 ConVar combine_ace_shieldspawnmode("combine_ace_shieldspawnmode", "2", FCVAR_ARCHIVE);
+ConVar combine_ace_disablebulletresistance("combine_ace_disablebulletresistance", "0", FCVAR_ARCHIVE);
 
 extern ConVar sk_plr_dmg_buckshot;	
 extern ConVar sk_plr_num_shotgun_pellets;
@@ -189,7 +190,14 @@ void CNPC_CombineAce::Spawn( void )
 		m_bNoArmor = true;
 	}
 
-	m_bBulletResistanceBroken = false;
+	if (g_pGameRules->GetSkillLevel() > SKILL_EASY)
+	{
+		m_bBulletResistanceBroken = combine_ace_disablebulletresistance.GetBool();
+	}
+	else
+	{
+		m_bBulletResistanceBroken = true;
+	}
 
 	BaseClass::Spawn();
 
@@ -237,6 +245,23 @@ void CNPC_CombineAce::LoadInitAttributes()
 		{
 			m_pAttributes->SwitchEntityModel(pArmor, "new_shield_model", STRING(pArmor->GetModelName()));
 			m_pAttributes->SwitchEntityColor(pArmor, "new_shield_color");
+		}
+
+		bool disableBulletResistance = m_pAttributes->GetBool("disable_bullet_resistance", m_bBulletResistanceBroken);
+
+		if (disableBulletResistance)
+		{
+			if (m_bBulletResistanceBroken)
+			{
+				m_bBulletResistanceBroken = false;
+			}
+		}
+		else
+		{
+			if (!m_bBulletResistanceBroken)
+			{
+				m_bBulletResistanceBroken = true;
+			}
 		}
 	}
 
@@ -466,8 +491,30 @@ CTakeDamageInfo CNPC_CombineAce::BulletResistanceLogic(const CTakeDamageInfo& in
 				CPVSFilter filter(ptr->endpos);
 				te->ArmorRicochet(filter, 0.0, &ptr->endpos, &ptr->plane.normal);
 			}
-			outputInfo.SetDamage(info.GetDamage() * 0.1f);
-			outputInfo.AddDamageType(DMG_NEVERGIB);
+			
+			float fDifficultyBasedDamage = 0.0f;
+
+			if (g_pGameRules->GetSkillLevel() < SKILL_VERYHARD)
+			{
+				fDifficultyBasedDamage = 0.5f;
+			}
+			else if (g_pGameRules->GetSkillLevel() == SKILL_VERYHARD)
+			{
+				fDifficultyBasedDamage = 0.2f;
+			}
+			else if (g_pGameRules->GetSkillLevel() == SKILL_NIGHTMARE)
+			{
+				fDifficultyBasedDamage = 0.1f;
+			}
+
+			if (ptr->hitgroup != HITGROUP_HEAD)
+			{
+				outputInfo.SetDamage(info.GetDamage() * fDifficultyBasedDamage);
+			}
+			else
+			{
+				outputInfo.SetDamage(info.GetDamage() * 0.5f);
+			}
 		}
 	}
 
@@ -516,11 +563,18 @@ float CNPC_CombineAce::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDa
 	switch (iHitGroup)
 	{
 	case HITGROUP_HEAD:
-		// Soldiers take double headshot damage
-		if (CorpseDecapitate(info))
+		if (m_bBulletResistanceBroken)
 		{
-			//we're dead by this point, lol
-			return BaseClass::GetHitgroupDamageMultiplier(iHitGroup, info);
+			// Soldiers take double headshot damage
+			if (CorpseDecapitate(info))
+			{
+				//we're dead by this point, lol
+				return BaseClass::GetHitgroupDamageMultiplier(iHitGroup, info);
+			}
+			else
+			{
+				return 1.5f;
+			}
 		}
 		else
 		{

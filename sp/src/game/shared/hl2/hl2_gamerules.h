@@ -124,7 +124,6 @@ private:
 	float m_flTimeLastMapChangeOrPlayerWasConnected;
 
 	void AdjustPlayerDamageTaken( CTakeDamageInfo *pInfo );
-	void AdjustPlayerDamageTakenCombineAce(CTakeDamageInfo *pInfo);
 	float AdjustPlayerDamageInflicted( float damage );
 
 	int						DefaultFOV( void ) { return 75; }

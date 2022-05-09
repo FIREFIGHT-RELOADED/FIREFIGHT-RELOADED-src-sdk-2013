@@ -1448,40 +1448,6 @@ float CHalfLife2::AdjustPlayerDamageInflicted( float damage )
 		break;
 	}
 }
-
-//---------------------------------------------------------
-//---------------------------------------------------------
-void CHalfLife2::AdjustPlayerDamageTakenCombineAce(CTakeDamageInfo *pInfo)
-{
-	if (pInfo->GetDamageType() & (DMG_DROWN | DMG_CRUSH | DMG_FALL | DMG_POISON | DMG_SNIPER))
-	{
-		// Skill level doesn't affect these types of damage.
-		return;
-	}
-
-	switch (GetSkillLevel())
-	{
-	case SKILL_EASY:
-		pInfo->ScaleDamage(sk_dmg_take_scale1_ace.GetFloat());
-		break;
-
-	case SKILL_MEDIUM:
-		pInfo->ScaleDamage(sk_dmg_take_scale2_ace.GetFloat());
-		break;
-
-	case SKILL_HARD:
-		pInfo->ScaleDamage(sk_dmg_take_scale3_ace.GetFloat());
-		break;
-
-	case SKILL_VERYHARD:
-		pInfo->ScaleDamage(sk_dmg_take_scale4_ace.GetFloat());
-		break;
-
-	case SKILL_NIGHTMARE:
-		pInfo->ScaleDamage(sk_dmg_take_scale5_ace.GetFloat());
-		break;
-	}
-}
 #endif//CLIENT_DLL
 
 //---------------------------------------------------------
