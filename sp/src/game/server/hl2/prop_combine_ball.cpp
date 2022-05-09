@@ -1270,7 +1270,7 @@ void CPropCombineBall::OnHitEntity( CBaseEntity *pHitEntity, float flSpeed, int 
 					}
 
 					DissolveEntity( pHitEntity );
-					if ( pHitEntity->ClassMatches( "npc_hunter" ) )
+					if ( pHitEntity->ClassMatches( "npc_hunter" ) || pHitEntity->ClassMatches("npc_combine_ace"))
 					{
 						DoExplosion();
 						return;

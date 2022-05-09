@@ -26,6 +26,7 @@
 #include "vehicle_base.h"
 #include "gib.h"
 #include "IEffects.h"
+#include "hl2/prop_combine_ball.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -188,6 +189,8 @@ void CNPC_CombineAce::Spawn( void )
 		m_bNoArmor = true;
 	}
 
+	m_bBulletResistanceBroken = false;
+
 	BaseClass::Spawn();
 
 	/*
@@ -212,7 +215,7 @@ void CNPC_CombineAce::LoadInitAttributes()
 			m_bisEyeForcedDead = disableeye;
 		}
 
-		bool armor = m_pAttributes->GetBool("shield");
+		bool armor = m_pAttributes->GetBool("shield", m_bNoArmor);
 
 		if (armor)
 		{
@@ -319,6 +322,16 @@ void CNPC_CombineAce::DeathSound( const CTakeDamageInfo &info )
 	GetSentences()->Speak( "COMBINE_DIE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS ); 
 }
 
+void CNPC_CombineAce::PainSound(const CTakeDamageInfo& info)
+{
+	if (!m_bBulletResistanceBroken)
+	{
+		m_Sentences.Speak("COMBINE_TAUNT", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS);
+		return;
+	}
+
+	BaseClass::PainSound(info);
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Soldiers use CAN_RANGE_ATTACK2 to indicate whether they can throw
@@ -413,7 +426,7 @@ void CNPC_CombineAce::SetEyeState(aceEyeState_t state)
 			m_pEyeTrail->SetBrightness(164);
 		}
 		break;
-
+	
 	case ACE_EYE_DORMANT: //Fade out and scale down
 		if (!m_bisEyeForcedDead)
 		{
@@ -440,38 +453,60 @@ void CNPC_CombineAce::SetEyeState(aceEyeState_t state)
 	}
 }
 
+CTakeDamageInfo CNPC_CombineAce::BulletResistanceLogic(const CTakeDamageInfo& info, trace_t* ptr)
+{
+	CTakeDamageInfo outputInfo = info;
+
+	if ((GetHealth() > GetMaxHealth() * 0.5) && !FStrEq(info.GetAmmoName(), "Katana") && !m_bBulletResistanceBroken)
+	{
+		if (!(info.GetDamageType() & (DMG_GENERIC)))
+		{
+			if (ptr != NULL)
+			{
+				CPVSFilter filter(ptr->endpos);
+				te->ArmorRicochet(filter, 0.0, &ptr->endpos, &ptr->plane.normal);
+			}
+			outputInfo.SetDamage(info.GetDamage() * 0.1f);
+			outputInfo.AddDamageType(DMG_NEVERGIB);
+		}
+	}
+
+	if ((GetHealth() <= GetMaxHealth() * 0.5) && !m_bBulletResistanceBroken)
+	{
+		m_bBulletResistanceBroken = true;
+	}
+
+	return outputInfo;
+}
+
 //---------------------------------------------------------
 //---------------------------------------------------------
 void CNPC_CombineAce::TraceAttack(const CTakeDamageInfo& inputInfo, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator)
 {
-	CTakeDamageInfo info = inputInfo;
-
-	if ((GetHealth() > GetMaxHealth() * 0.5) && !FStrEq(info.GetAmmoName(), "Katana"))
+	// special interaction with combine balls
+	if (!m_bBulletResistanceBroken)
 	{
-		SetBloodColor(BLOOD_COLOR_MECH);
-
-		if ((info.GetDamageType() & (DMG_BULLET | DMG_SLASH | DMG_CLUB)))
-		{
-			if (ptr->hitgroup != HITGROUP_HEAD)
-			{
-				info.SetDamage(0.5);
-			}
-		}
-
-		if ((info.GetDamageType() & (DMG_BULLET | DMG_SLASH | DMG_CLUB | DMG_BLAST)))
-		{
-			info.AddDamageType(DMG_NEVERGIB);
-		}
+		CTakeDamageInfo bulletResistanceInfo = BulletResistanceLogic(inputInfo, ptr);
+		BaseClass::TraceAttack(bulletResistanceInfo, vecDir, ptr, pAccumulator);
 	}
 	else
 	{
-		if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()))
-		{
-			SetBloodColor(BLOOD_COLOR_RED);
-		}
+		BaseClass::TraceAttack(inputInfo, vecDir, ptr, pAccumulator);
 	}
+}
 
-	BaseClass::TraceAttack(info, vecDir, ptr, pAccumulator);
+int CNPC_CombineAce::OnTakeDamage_Alive(const CTakeDamageInfo& info)
+{
+	// special interaction with combine balls
+	if (UTIL_IsAR2CombineBall(info.GetInflictor()) && !m_bBulletResistanceBroken)
+	{
+		CTakeDamageInfo bulletResistanceInfo = BulletResistanceLogic(info, NULL);
+		return BaseClass::OnTakeDamage_Alive(bulletResistanceInfo);
+	}
+	else
+	{
+		return BaseClass::OnTakeDamage_Alive(info);
+	}
 }
 
 //-----------------------------------------------------------------------------

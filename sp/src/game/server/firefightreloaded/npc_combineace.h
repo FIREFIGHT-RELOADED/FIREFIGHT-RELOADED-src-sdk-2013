@@ -44,6 +44,9 @@ public:
 	void		Spawn( void );
 	void		LoadInitAttributes(void);
 	void		Precache( void );
+	void		PainSound(const CTakeDamageInfo& info);
+	int			OnTakeDamage_Alive(const CTakeDamageInfo& info);
+	CTakeDamageInfo		BulletResistanceLogic(const CTakeDamageInfo& info, trace_t* ptr);
 	void		DeathSound( const CTakeDamageInfo &info );
 	void		PrescheduleThink( void );
 	void		BuildScheduleTestBits( void );
@@ -75,6 +78,7 @@ private:
 	CArmorPiece			*pArmor;
 	bool					m_bNoArmor;
 	bool					m_bisEyeForcedDead;
+	bool					m_bBulletResistanceBroken;
 
 #if HL2_EPISODIC
 public:
