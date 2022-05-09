@@ -92,12 +92,6 @@ ConVar	sk_dmg_take_scale3("sk_dmg_take_scale3", "1.50", FCVAR_REPLICATED);
 ConVar	sk_dmg_take_scale4("sk_dmg_take_scale4", "2.00", FCVAR_REPLICATED);
 ConVar	sk_dmg_take_scale5("sk_dmg_take_scale5", "2.50", FCVAR_REPLICATED);
 
-ConVar	sk_dmg_take_scale1_ace("sk_dmg_take_scale1_ace", "0.50", FCVAR_REPLICATED);
-ConVar	sk_dmg_take_scale2_ace("sk_dmg_take_scale2_ace", "1.00", FCVAR_REPLICATED);
-ConVar	sk_dmg_take_scale3_ace("sk_dmg_take_scale3_ace", "1.50", FCVAR_REPLICATED);
-ConVar	sk_dmg_take_scale4_ace("sk_dmg_take_scale4_ace", "2.00", FCVAR_REPLICATED);
-ConVar	sk_dmg_take_scale5_ace("sk_dmg_take_scale5_ace", "2.50", FCVAR_REPLICATED);
-
 ConVar	sk_allow_autoaim( "sk_allow_autoaim", "1", FCVAR_REPLICATED | FCVAR_ARCHIVE_XBOX );
 
 ConVar	firefightrumble_enemyattack("firefightrumble_enemyattack", "1", FCVAR_REPLICATED | FCVAR_ARCHIVE);
