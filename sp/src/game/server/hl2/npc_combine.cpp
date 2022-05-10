@@ -1969,9 +1969,9 @@ int CNPC_Combine::SelectCombatSchedule()
 	// ---------------------
 	// no ammo
 	// ---------------------
-	int randReload = random->RandomInt(1, 50);
+	int randReload = random->RandomInt(1, 30);
 
-	if (IsAce() && randReload < 50)
+	if (IsAce() && randReload < 30)
 	{
 		// We never actually run out of ammo, just need to refill the clip
 		if (GetActiveWeapon())

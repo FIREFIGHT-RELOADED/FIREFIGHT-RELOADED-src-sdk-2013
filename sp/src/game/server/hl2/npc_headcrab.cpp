@@ -32,6 +32,7 @@
 #include "physics_npc_solver.h"
 #include "hl2_gamerules.h"
 #include "decals.h"
+#include "explode.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -934,7 +935,29 @@ void CBaseHeadcrab::LeapTouch( CBaseEntity *pOther )
 	 		if ( pOther->m_takedamage != DAMAGE_NO )
 			{
 				BiteSound();
-				TouchDamage( pOther );
+
+				if (m_pAttributes != NULL)
+				{
+					bool Kamikaze = m_pAttributes->GetBool("kamikaze");
+
+					if (Kamikaze)
+					{
+						ExplosionCreate(GetAbsOrigin(), GetAbsAngles(), this, 50, 100, true, 1000, false, false);
+						if (pOther->IsPlayer())
+						{
+							CBasePlayer* pPlayer = (CBasePlayer*)pOther;
+							UTIL_ScreenShake(pPlayer->GetAbsOrigin(), 16.0f, 150.0, 1.0, 400.0f, SHAKE_START);
+						}
+					}
+					else
+					{
+						TouchDamage(pOther);
+					}
+				}
+				else
+				{
+					TouchDamage(pOther);
+				}
 
 				// attack succeeded, so don't delay our next attack if we previously thought we failed
 				m_bAttackFailed = false;
@@ -1780,6 +1803,16 @@ void CBaseHeadcrab::ClampRagdollForce( const Vector &vecForceIn, Vector *vecForc
 //-----------------------------------------------------------------------------
 void CBaseHeadcrab::Event_Killed( const CTakeDamageInfo &info )
 {
+	if (m_pAttributes != NULL)
+	{
+		bool Kamikaze = m_pAttributes->GetBool("kamikaze");
+
+		if (Kamikaze)
+		{
+			ExplosionCreate(GetAbsOrigin(), GetAbsAngles(), this, 1, 10, false, 250, false, false);
+		}
+	}
+
 	// Create a little decal underneath the headcrab
 	// This type of damage combination happens from dynamic scripted sequences
 	if ( info.GetDamageType() & (DMG_GENERIC | DMG_PREVENT_PHYSICS_FORCE) )

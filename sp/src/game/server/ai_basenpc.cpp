@@ -7036,11 +7036,21 @@ void CAI_BaseNPC::LoadInitAttributes()
 		m_pAttributes->SwitchEntitySkin(this, "new_skin");
 
 		int healthupgrade = m_pAttributes->GetInt("additional_health");
-		
+
 		if (healthupgrade > 0)
 		{
 			SetHealth(GetHealth() + healthupgrade);
 			SetMaxHealth(GetHealth());
+		}
+		else
+		{
+			float healthmulti = m_pAttributes->GetFloat("health_multiplier");
+
+			if (healthmulti > 0.0f)
+			{
+				SetHealth(GetHealth() * healthmulti);
+				SetMaxHealth(GetHealth());
+			}
 		}
 
 		bool rare = m_pAttributes->GetBool("is_rare", 0);
@@ -7100,6 +7110,15 @@ float CAI_BaseNPC::GetSequenceGroundSpeed(CStudioHdr* pStudioHdr, int iSequence)
 			if (additionalSpeed > 0.0f)
 			{
 				return defaultSpeed + additionalSpeed;
+			}
+			else
+			{
+				float speedMulti = m_pAttributes->GetFloat("speed_multiplier");
+
+				if (speedMulti > 0.0f)
+				{
+					return defaultSpeed * speedMulti;
+				}
 			}
 		}
 

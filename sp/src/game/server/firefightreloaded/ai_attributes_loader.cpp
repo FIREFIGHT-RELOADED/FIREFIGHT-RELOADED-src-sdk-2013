@@ -6,7 +6,7 @@
 #include <tier0/memdbgon.h>
 
 ConVar entity_attributes_numpresets("entity_attributes_numpresets", "10", FCVAR_ARCHIVE);
-ConVar entity_attributes_chance("entity_attributes_chance", "5", FCVAR_ARCHIVE);
+ConVar entity_attributes_chance("entity_attributes_chance", "3", FCVAR_ARCHIVE);
 ConVar entity_attributes("entity_attributes", "1", FCVAR_ARCHIVE);
 
 CAttributesLoader *LoadRandomPresetFile(const char* className, bool noNag)
