@@ -478,6 +478,28 @@ void CNPC_CombineAce::SetEyeState(aceEyeState_t state)
 	}
 }
 
+//=========================================================
+// RangeAttack1Conditions
+//=========================================================
+int CNPC_CombineAce::RangeAttack1Conditions(float flDot, float flDist)
+{
+	if (flDist > 784)
+	{
+		return COND_TOO_FAR_TO_ATTACK;
+	}
+	else if (flDot < 0.5)
+	{
+		return COND_NOT_FACING_ATTACK;
+	}
+
+	return COND_CAN_RANGE_ATTACK1;
+}
+
+Vector CNPC_CombineAce::CalcThrowVelocity(const Vector& startPos, const Vector& endPos, float fGravity, float fArcSize)
+{
+	return BaseClass::CalcThrowVelocity(startPos, endPos, fGravity, fArcSize) * 2.0f;
+}
+
 CTakeDamageInfo CNPC_CombineAce::BulletResistanceLogic(const CTakeDamageInfo& info, trace_t* ptr)
 {
 	CTakeDamageInfo outputInfo = info;
@@ -494,25 +516,33 @@ CTakeDamageInfo CNPC_CombineAce::BulletResistanceLogic(const CTakeDamageInfo& in
 			
 			float fDifficultyBasedDamage = 0.0f;
 
-			if (g_pGameRules->GetSkillLevel() < SKILL_VERYHARD)
+			//squad doesn't cause any damage unless our shield is down.
+			if (!(IRelationType(outputInfo.GetAttacker()) == D_LI))
 			{
-				fDifficultyBasedDamage = 0.2f;
-			}
-			else if (g_pGameRules->GetSkillLevel() > SKILL_VERYHARD)
-			{
-				fDifficultyBasedDamage = 0.1f;
-			}
+				if (g_pGameRules->GetSkillLevel() < SKILL_VERYHARD)
+				{
+					fDifficultyBasedDamage = 0.3f;
+				}
+				else if (g_pGameRules->GetSkillLevel() >= SKILL_VERYHARD)
+				{
+					fDifficultyBasedDamage = 0.2f;
+				}
 
-			if (ptr->hitgroup != HITGROUP_HEAD)
-			{
-				outputInfo.SetDamage(info.GetDamage() * fDifficultyBasedDamage);
+				if (ptr->hitgroup != HITGROUP_HEAD)
+				{
+					outputInfo.SetDamage(outputInfo.GetDamage() * fDifficultyBasedDamage);
+				}
+				else
+				{
+					outputInfo.SetDamage(outputInfo.GetDamage() * 0.5f);
+				}
+
+				outputInfo.AddDamageType(DMG_NEVERGIB);
 			}
 			else
 			{
-				outputInfo.SetDamage(info.GetDamage() * 0.5f);
+				outputInfo.SetDamage(fDifficultyBasedDamage);
 			}
-
-			outputInfo.AddDamageType(DMG_NEVERGIB);
 		}
 	}
 
@@ -642,32 +672,23 @@ void CNPC_CombineAce::OnListened()
 //-----------------------------------------------------------------------------
 void CNPC_CombineAce::Event_Killed( const CTakeDamageInfo &info )
 {
-	if (CorpseGib(info))
-	{
-		return;
-	}
+	CBasePlayer* pPlayer = ToBasePlayer(info.GetAttacker());
 
-	// Don't bother if we've been told not to, or the player has a megaphyscannon
-	if ( combine_ace_spawn_health.GetBool() == false || PlayerHasMegaPhysCannon() )
+	if (!m_bNoArmor)
 	{
-		BaseClass::Event_Killed( info );
-		return;
+		pArmor->Remove();
+		CBaseEntity* shield = DropItem("item_shield", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
+
+		if (m_pAttributes != NULL)
+		{
+			m_pAttributes->SwitchEntityModel(shield, "new_armor_model", STRING(shield->GetModelName()));
+			m_pAttributes->SwitchEntityColor(shield, "new_armor_color");
+		}
 	}
 
 	SetEyeState(ACE_EYE_DEAD);
 
-	CBasePlayer *pPlayer = ToBasePlayer( info.GetAttacker() );
-
-	if ( !pPlayer )
-	{
-		CPropVehicleDriveable *pVehicle = dynamic_cast<CPropVehicleDriveable *>( info.GetAttacker() ) ;
-		if ( pVehicle && pVehicle->GetDriver() && pVehicle->GetDriver()->IsPlayer() )
-		{
-			pPlayer = assert_cast<CBasePlayer *>( pVehicle->GetDriver() );
-		}
-	}
-
-	if ( pPlayer != NULL )
+	if (pPlayer != NULL && combine_ace_spawn_health.GetBool() && !PlayerHasMegaPhysCannon())
 	{
 		if (m_hActiveWeapon)
 		{
@@ -717,25 +738,27 @@ void CNPC_CombineAce::Event_Killed( const CTakeDamageInfo &info )
 			}
 		}
 
-		CHalfLife2 *pHL2GameRules = static_cast<CHalfLife2 *>(g_pGameRules);
+		CHalfLife2* pHL2GameRules = static_cast<CHalfLife2*>(g_pGameRules);
 
 		// Attempt to drop health
-		if ( pHL2GameRules->NPC_ShouldDropHealth( pPlayer ) )
+		if (pHL2GameRules->NPC_ShouldDropHealth(pPlayer))
 		{
-			DropItem( "item_healthvial", WorldSpaceCenter()+RandomVector(-4,4), RandomAngle(0,360) );
+			DropItem("item_healthvial", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
 			pHL2GameRules->NPC_DroppedHealth();
 		}
+	}
 
-		if (!m_bNoArmor && combine_ace_shieldspawnmode.GetInt() > 0)
+	if (CorpseGib(info))
+	{
+		return;
+	}
+
+	if ( !pPlayer )
+	{
+		CPropVehicleDriveable *pVehicle = dynamic_cast<CPropVehicleDriveable *>( info.GetAttacker() ) ;
+		if ( pVehicle && pVehicle->GetDriver() && pVehicle->GetDriver()->IsPlayer() )
 		{
-			pArmor->Remove();
-			CBaseEntity* shield = DropItem("item_shield", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
-
-			if (m_pAttributes != NULL)
-			{
-				m_pAttributes->SwitchEntityModel(shield, "new_armor_model", STRING(shield->GetModelName()));
-				m_pAttributes->SwitchEntityColor(shield, "new_armor_color");
-			}
+			pPlayer = assert_cast<CBasePlayer *>( pVehicle->GetDriver() );
 		}
 	}
 

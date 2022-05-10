@@ -1439,6 +1439,11 @@ void CNPC_AntlionGuard::Shove( void )
 
 	float damage = ( pTarget->IsPlayer() ) ? sk_antlionguard_dmg_shove.GetFloat() : 250;
 
+	if (!pTarget->IsPlayer() && FClassnameIs(pTarget, "npc_combine_ace"))
+	{
+		damage = damage * 0.1f;
+	}
+
 	// If the target's still inside the shove cone, ensure we hit him	
 	Vector vecForward, vecEnd;
 	AngleVectors( GetAbsAngles(), &vecForward );
@@ -1579,7 +1584,12 @@ public:
 			Vector	attackDir = pEntity->WorldSpaceCenter() - m_pAttacker->WorldSpaceCenter();
 			VectorNormalize( attackDir );
 
-			float	flDamage = ( pEntity->IsPlayer() ) ? sk_antlionguard_dmg_shove.GetFloat() : 250;;
+			float	flDamage = ( pEntity->IsPlayer() ) ? sk_antlionguard_dmg_shove.GetFloat() : 250;
+
+			if (!pEntity->IsPlayer() && FClassnameIs(pEntity, "npc_combine_ace"))
+			{
+				flDamage = flDamage * 0.1f;
+			}
 
 			CTakeDamageInfo info( m_pAttacker, m_pAttacker, flDamage, DMG_CRUSH );
 			CalculateMeleeDamageForce( &info, attackDir, info.GetAttacker()->WorldSpaceCenter(), 4.0f );
@@ -2179,11 +2189,11 @@ int CNPC_AntlionGuard::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	}
 	else if (g_pGameRules->IsSkillLevel(SKILL_VERYHARD) && !(info.GetDamageType() & DMG_CRUSH))
 	{
-		dInfo.SetDamage(dInfo.GetDamage() * 1.0);
+		dInfo.SetDamage(dInfo.GetDamage() * 0.50);
 	}
 	else if (g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE) && !(info.GetDamageType() & DMG_CRUSH))
 	{
-		dInfo.SetDamage(dInfo.GetDamage() * 1.5);
+		dInfo.SetDamage(dInfo.GetDamage() * 0.25);
 	}
 
 	// Cap damage taken by crushing (otherwise we can get crushed oddly)
@@ -4160,6 +4170,11 @@ void CNPC_AntlionGuard::ImpactShock( const Vector &origin, float radius, float m
 					adjustedDamage = 1;
 				}
 
+				if (!FClassnameIs(pEntity, "npc_combine_ace"))
+				{
+					adjustedDamage = adjustedDamage * 0.1f;
+				}
+
 				CTakeDamageInfo info( this, this, adjustedDamage, DMG_BLAST );
 				CalculateExplosiveDamageForce( &info, (vecSpot - GetAbsOrigin()), GetAbsOrigin() );
 
@@ -4197,8 +4212,13 @@ void CNPC_AntlionGuard::ChargeDamage( CBaseEntity *pTarget )
 		UTIL_ScreenFade( pPlayer, red, 1.0f, 0.1f, FFADE_IN );
 	}
 	
-	// Player takes less damage
+	// Player and Ace takes less damage
 	float flDamage = ( pPlayer == NULL ) ? 250 : sk_antlionguard_dmg_charge.GetFloat();
+
+	if (!pPlayer && FClassnameIs(pTarget, "npc_combine_ace"))
+	{
+		flDamage = flDamage * 0.1f;
+	}
 	
 	// If it's being held by the player, break that bond
 	Pickup_ForcePlayerToDropThisObject( pTarget );

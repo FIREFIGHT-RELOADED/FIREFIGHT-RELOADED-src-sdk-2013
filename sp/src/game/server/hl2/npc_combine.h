@@ -281,7 +281,6 @@ private:
 	EHANDLE			m_hForcedGrenadeTarget;
 	bool			m_bShouldPatrol;
 	bool			m_bFirstEncounter;// only put on the handsign show in the squad's first encounter.
-	bool			m_bfireGrenadeAsAce;
 
 	// Time Variables
 	float			m_flNextGrenadeCheck;	

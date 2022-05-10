@@ -3154,30 +3154,30 @@ void CNPC_MetroPolice::ReleaseManhack( void )
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::Event_Killed( const CTakeDamageInfo &info )
 {
-	if (CorpseGib(info))
-	{
-		return;
-	}
-
 	// Release the manhack if we're in the middle of deploying him
-	if ( m_hManhack && m_hManhack->IsAlive() )
+	if (m_hManhack && m_hManhack->IsAlive())
 	{
 		ReleaseManhack();
 		m_hManhack = NULL;
 	}
 
-	CBasePlayer *pPlayer = ToBasePlayer( info.GetAttacker() );
+	CBasePlayer* pPlayer = ToBasePlayer(info.GetAttacker());
 
-	if ( pPlayer != NULL )
+	if (pPlayer != NULL)
 	{
-		CHalfLife2 *pHL2GameRules = static_cast<CHalfLife2 *>(g_pGameRules);
+		CHalfLife2* pHL2GameRules = static_cast<CHalfLife2*>(g_pGameRules);
 
 		// Attempt to drop health
-		if ( pHL2GameRules->NPC_ShouldDropHealth( pPlayer ) )
+		if (pHL2GameRules->NPC_ShouldDropHealth(pPlayer))
 		{
-			DropItem( "item_healthvial", WorldSpaceCenter()+RandomVector(-4,4), RandomAngle(0,360) );
+			DropItem("item_healthvial", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
 			pHL2GameRules->NPC_DroppedHealth();
 		}
+	}
+
+	if (CorpseGib(info))
+	{
+		return;
 	}
 
 	BaseClass::Event_Killed( info );

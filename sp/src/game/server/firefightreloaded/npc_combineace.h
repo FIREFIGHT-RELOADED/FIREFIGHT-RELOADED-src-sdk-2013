@@ -44,6 +44,8 @@ public:
 	void		Spawn( void );
 	void		LoadInitAttributes(void);
 	void		Precache( void );
+	int			RangeAttack1Conditions(float flDot, float flDist);
+	Vector		CalcThrowVelocity(const Vector& startPos, const Vector& endPos, float fGravity, float fArcSize);
 	void		PainSound(const CTakeDamageInfo& info);
 	int			OnTakeDamage_Alive(const CTakeDamageInfo& info);
 	CTakeDamageInfo		BulletResistanceLogic(const CTakeDamageInfo& info, trace_t* ptr);

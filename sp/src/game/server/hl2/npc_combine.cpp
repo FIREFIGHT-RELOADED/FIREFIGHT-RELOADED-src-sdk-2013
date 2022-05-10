@@ -311,7 +311,6 @@ void CNPC_Combine::Spawn( void )
 	m_flNextPainSoundTime	= 0;
 	m_flNextAlertSoundTime	= 0;
 	m_bShouldPatrol			= true;
-	m_bfireGrenadeAsAce		= false;
 
 	//	CapabilitiesAdd( bits_CAP_TURN_HEAD | bits_CAP_MOVE_GROUND | bits_CAP_MOVE_JUMP | bits_CAP_MOVE_CLIMB);
 	// JAY: Disabled jump for now - hard to compare to HL1
@@ -1876,75 +1875,89 @@ int CNPC_Combine::SelectCombatSchedule()
 	// -----------
 	if ( HasCondition( COND_NEW_ENEMY ) )
 	{
-		CBaseEntity *pEnemy = GetEnemy();
-		bool bFirstContact = false;
-		float flTimeSinceFirstSeen = gpGlobals->curtime - GetEnemies()->FirstTimeSeen( pEnemy );
-
-		if( flTimeSinceFirstSeen < 3.0f )
-			bFirstContact = true;
-
-		if ( m_pSquad && pEnemy )
+		if (!IsAce())
 		{
-			if ( HasCondition( COND_SEE_ENEMY ) )
-			{
-				AnnounceEnemyType( pEnemy );
-			}
+			CBaseEntity* pEnemy = GetEnemy();
+			bool bFirstContact = false;
+			float flTimeSinceFirstSeen = gpGlobals->curtime - GetEnemies()->FirstTimeSeen(pEnemy);
 
-			if ( HasCondition( COND_CAN_RANGE_ATTACK1 ) && OccupyStrategySlot( SQUAD_SLOT_ATTACK1 ))
-			{
-				// Start suppressing if someone isn't firing already (SLOT_ATTACK1). This means
-				// I'm the guy who spotted the enemy, I should react immediately.
-				return SCHED_COMBINE_SUPPRESS;
-			}
+			if (flTimeSinceFirstSeen < 3.0f)
+				bFirstContact = true;
 
-			if ( m_pSquad->IsLeader( this ) || ( m_pSquad->GetLeader() && m_pSquad->GetLeader()->GetEnemy() != pEnemy ) )
+			if (m_pSquad && pEnemy)
 			{
-				// I'm the leader, but I didn't get the job suppressing the enemy. We know this because
-				// This code only runs if the code above didn't assign me SCHED_COMBINE_SUPPRESS.
-				if ( HasCondition( COND_CAN_RANGE_ATTACK1 ) && OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
+				if (HasCondition(COND_SEE_ENEMY))
 				{
-					return SCHED_RANGE_ATTACK1;
+					AnnounceEnemyType(pEnemy);
 				}
 
-				if( HasCondition(COND_WEAPON_HAS_LOS) && IsStrategySlotRangeOccupied( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
+				if (HasCondition(COND_CAN_RANGE_ATTACK1) && OccupyStrategySlot(SQUAD_SLOT_ATTACK1))
 				{
-					// If everyone else is attacking and I have line of fire, wait for a chance to cover someone.
-					if( OccupyStrategySlot( SQUAD_SLOT_OVERWATCH ) )
+					// Start suppressing if someone isn't firing already (SLOT_ATTACK1). This means
+					// I'm the guy who spotted the enemy, I should react immediately.
+					return SCHED_COMBINE_SUPPRESS;
+				}
+
+				if (m_pSquad->IsLeader(this) || (m_pSquad->GetLeader() && m_pSquad->GetLeader()->GetEnemy() != pEnemy))
+				{
+					// I'm the leader, but I didn't get the job suppressing the enemy. We know this because
+					// This code only runs if the code above didn't assign me SCHED_COMBINE_SUPPRESS.
+					if (HasCondition(COND_CAN_RANGE_ATTACK1) && OccupyStrategySlotRange(SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2))
 					{
-						return SCHED_COMBINE_ENTER_OVERWATCH;
+						return SCHED_RANGE_ATTACK1;
+					}
+
+					if (HasCondition(COND_WEAPON_HAS_LOS) && IsStrategySlotRangeOccupied(SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2))
+					{
+						// If everyone else is attacking and I have line of fire, wait for a chance to cover someone.
+						if (OccupyStrategySlot(SQUAD_SLOT_OVERWATCH))
+						{
+							return SCHED_COMBINE_ENTER_OVERWATCH;
+						}
 					}
 				}
+				else
+				{
+					if (m_pSquad->GetLeader() && FOkToMakeSound(SENTENCE_PRIORITY_MEDIUM))
+					{
+						JustMadeSound(SENTENCE_PRIORITY_MEDIUM);	// squelch anything that isn't high priority so the leader can speak
+					}
+
+					// First contact, and I'm solo, or not the squad leader.
+					if (HasCondition(COND_SEE_ENEMY) && CanGrenadeEnemy())
+					{
+						if (OccupyStrategySlot(SQUAD_SLOT_GRENADE1))
+						{
+							return SCHED_RANGE_ATTACK2;
+						}
+					}
+
+					if ((!bFirstContact && OccupyStrategySlotRange(SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2)))
+					{
+						if (random->RandomInt(0, 100) < 60)
+						{
+							return SCHED_ESTABLISH_LINE_OF_FIRE;
+						}
+						else
+						{
+							return SCHED_COMBINE_PRESS_ATTACK;
+						}
+					}
+
+					return SCHED_TAKE_COVER_FROM_ENEMY;
+				}
 			}
-			else
+		}
+		else
+		{
+			// I'm the leader, but I didn't get the job suppressing the enemy. We know this because
+					// This code only runs if the code above didn't assign me SCHED_COMBINE_SUPPRESS.
+			if (HasCondition(COND_CAN_RANGE_ATTACK1) && OccupyStrategySlotRange(SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2))
 			{
-				if ( m_pSquad->GetLeader() && FOkToMakeSound( SENTENCE_PRIORITY_MEDIUM ))
-				{
-					JustMadeSound( SENTENCE_PRIORITY_MEDIUM );	// squelch anything that isn't high priority so the leader can speak
-				}
-
-				// First contact, and I'm solo, or not the squad leader.
-				if( HasCondition( COND_SEE_ENEMY ) && CanGrenadeEnemy() )
-				{
-					if( OccupyStrategySlot( SQUAD_SLOT_GRENADE1 ) )
-					{
-						return SCHED_RANGE_ATTACK2;
-					}
-				}
-
-				if ((!bFirstContact && OccupyStrategySlotRange(SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2)))
-				{
-					if (random->RandomInt(0, 100) < 60)
-					{
-						return SCHED_ESTABLISH_LINE_OF_FIRE;
-					}
-					else
-					{
-						return SCHED_COMBINE_PRESS_ATTACK;
-					}
-				}
-
-				return SCHED_TAKE_COVER_FROM_ENEMY;
+				return SCHED_RANGE_ATTACK1;
 			}
+
+			return SCHED_TAKE_COVER_FROM_ENEMY;
 		}
 	}
 
@@ -1956,7 +1969,24 @@ int CNPC_Combine::SelectCombatSchedule()
 	// ---------------------
 	// no ammo
 	// ---------------------
-	if ( ( HasCondition ( COND_NO_PRIMARY_AMMO ) || HasCondition ( COND_LOW_PRIMARY_AMMO ) ) && !HasCondition( COND_CAN_MELEE_ATTACK1) )
+	int randReload = random->RandomInt(1, 50);
+
+	if (IsAce() && randReload < 50)
+	{
+		// We never actually run out of ammo, just need to refill the clip
+		if (GetActiveWeapon())
+		{
+			GetActiveWeapon()->WeaponSound(RELOAD_NPC);
+			GetActiveWeapon()->m_iClip1 = GetActiveWeapon()->GetMaxClip1();
+			GetActiveWeapon()->m_iClip2 = GetActiveWeapon()->GetMaxClip2();
+		}
+		ClearCondition(COND_LOW_PRIMARY_AMMO);
+		ClearCondition(COND_NO_PRIMARY_AMMO);
+		ClearCondition(COND_NO_SECONDARY_AMMO);
+		return SCHED_COMBINE_RANGE_ATTACK1;
+	}
+
+	if (( HasCondition ( COND_NO_PRIMARY_AMMO ) || HasCondition ( COND_LOW_PRIMARY_AMMO ) ) && !HasCondition( COND_CAN_MELEE_ATTACK1) )
 	{
 		return SCHED_HIDE_AND_RELOAD;
 	}
@@ -2093,23 +2123,26 @@ int CNPC_Combine::SelectSchedule( void )
 		{
 			Vector vecTarget = m_hForcedGrenadeTarget->WorldSpaceCenter();
 
-			if ( IsElite() || IsAce())
+			if (!IsAce())
 			{
-				if ( FVisible( m_hForcedGrenadeTarget ) )
+				if (IsElite())
 				{
-					m_vecAltFireTarget = vecTarget;
-					m_hForcedGrenadeTarget = NULL;
-					return SCHED_COMBINE_AR2_ALTFIRE;
+					if (FVisible(m_hForcedGrenadeTarget))
+					{
+						m_vecAltFireTarget = vecTarget;
+						m_hForcedGrenadeTarget = NULL;
+						return SCHED_COMBINE_AR2_ALTFIRE;
+					}
 				}
-			}
-			else
-			{
-				// If we can, throw a grenade at the target. 
-				// Ignore grenade count / distance / etc
-				if ( CheckCanThrowGrenade( vecTarget ) )
+				else
 				{
-					m_hForcedGrenadeTarget = NULL;
-					return SCHED_COMBINE_FORCED_GRENADE_THROW;
+					// If we can, throw a grenade at the target. 
+					// Ignore grenade count / distance / etc
+					if (CheckCanThrowGrenade(vecTarget))
+					{
+						m_hForcedGrenadeTarget = NULL;
+						return SCHED_COMBINE_FORCED_GRENADE_THROW;
+					}
 				}
 			}
 		}
@@ -2687,14 +2720,7 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 					Stand();
 				}
 
-				if (m_bfireGrenadeAsAce == true)
-				{
-					return SCHED_COMBINE_AR2_ALTFIRE;
-				}
-				else
-				{
-					return SCHED_COMBINE_RANGE_ATTACK1;
-				}
+				return SCHED_COMBINE_RANGE_ATTACK1;
 			}
 		}
 	case SCHED_RANGE_ATTACK2:
@@ -2798,7 +2824,7 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 		}
 		else if ( pEvent->event == COMBINE_AE_ALTFIRE )
 		{
-			if (IsElite() || IsAce())
+			if (IsElite() && !IsAce())
 			{
 				animevent_t fakeEvent;
 
@@ -2820,8 +2846,6 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 				// preserve the legacy behavior while making it possible for a designer to prevent
 				// elites from shooting combine balls by setting grenades to '0' in hammer. (sjb) EP2_OUTLAND_10
 				// m_iNumGrenades--;
-
-				m_bfireGrenadeAsAce = false;
 			}
 
 			handledEvent = true;
@@ -2853,7 +2877,6 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 			ClearCondition(COND_NO_PRIMARY_AMMO);
 			ClearCondition(COND_NO_SECONDARY_AMMO);
 			handledEvent = true;
-			m_bfireGrenadeAsAce = true;
 			break;
 
 		case COMBINE_AE_GREN_TOSS:
@@ -3356,7 +3379,10 @@ bool CNPC_Combine::CheckCanThrowGrenade( const Vector &vecTarget )
 //-----------------------------------------------------------------------------
 bool CNPC_Combine::CanAltFireEnemy( bool bUseFreeKnowledge )
 {
-	if (!IsElite() || !IsAce())
+	if (!IsElite())
+		return false;
+
+	if (IsAce())
 		return false;
 
 	if (!GetActiveWeapon()->HasSecondaryAmmo())
@@ -3434,7 +3460,7 @@ bool CNPC_Combine::CanAltFireEnemy( bool bUseFreeKnowledge )
 //-----------------------------------------------------------------------------
 bool CNPC_Combine::CanGrenadeEnemy( bool bUseFreeKnowledge )
 {
-	if( IsElite() )
+	if( IsElite() || IsAce())
 		return false;
 
 	CBaseEntity *pEnemy = GetEnemy();
@@ -3469,6 +3495,9 @@ bool CNPC_Combine::CanGrenadeEnemy( bool bUseFreeKnowledge )
 //-----------------------------------------------------------------------------
 int CNPC_Combine::MeleeAttack1Conditions ( float flDot, float flDist )
 {
+	if (IsAce())
+		return COND_NONE;
+
 	if (flDist > 64)
 	{
 		return COND_NONE; // COND_TOO_FAR_TO_ATTACK;
@@ -3529,7 +3558,7 @@ Vector CNPC_Combine::EyePosition( void )
 //-----------------------------------------------------------------------------
 Vector CNPC_Combine::GetAltFireTarget()
 {
-	Assert(IsElite() || IsAce());
+	Assert(IsElite() && !IsAce());
 
 	return m_vecAltFireTarget;
 }
@@ -3732,7 +3761,7 @@ bool CNPC_Combine::HandleInteraction(int interactionType, void *data, CBaseComba
 	if ( interactionType == g_interactionTurretStillStanding )
 	{
 		// A turret that I've kicked recently is still standing 5 seconds later. 
-		if ( sourceEnt == GetEnemy() )
+		if ( sourceEnt == GetEnemy() && !IsAce())
 		{
 			// It's still my enemy. Time to grenade it.
 			Vector forward, up;

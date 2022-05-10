@@ -532,30 +532,9 @@ void CNPC_CombineS::OnListened()
 //-----------------------------------------------------------------------------
 void CNPC_CombineS::Event_Killed( const CTakeDamageInfo &info )
 {
-	if (CorpseGib(info))
-	{
-		return;
-	}
+	CBasePlayer* pPlayer = ToBasePlayer(info.GetAttacker());
 
-	// Don't bother if we've been told not to, or the player has a megaphyscannon
-	if ( combine_spawn_health.GetBool() == false || PlayerHasMegaPhysCannon() )
-	{
-		BaseClass::Event_Killed( info );
-		return;
-	}
-
-	CBasePlayer *pPlayer = ToBasePlayer( info.GetAttacker() );
-
-	if ( !pPlayer )
-	{
-		CPropVehicleDriveable *pVehicle = dynamic_cast<CPropVehicleDriveable *>( info.GetAttacker() ) ;
-		if ( pVehicle && pVehicle->GetDriver() && pVehicle->GetDriver()->IsPlayer() )
-		{
-			pPlayer = assert_cast<CBasePlayer *>( pVehicle->GetDriver() );
-		}
-	}
-
-	if ( pPlayer != NULL )
+	if (pPlayer != NULL && combine_spawn_health.GetBool() && !PlayerHasMegaPhysCannon())
 	{
 		if (m_hActiveWeapon && IsElite())
 		{
@@ -605,23 +584,37 @@ void CNPC_CombineS::Event_Killed( const CTakeDamageInfo &info )
 			}
 		}
 
-		CHalfLife2 *pHL2GameRules = static_cast<CHalfLife2 *>(g_pGameRules);
+		CHalfLife2* pHL2GameRules = static_cast<CHalfLife2*>(g_pGameRules);
 
 		// Attempt to drop health
-		if ( pHL2GameRules->NPC_ShouldDropHealth( pPlayer ) )
+		if (pHL2GameRules->NPC_ShouldDropHealth(pPlayer))
 		{
-			DropItem( "item_healthvial", WorldSpaceCenter()+RandomVector(-4,4), RandomAngle(0,360) );
+			DropItem("item_healthvial", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
 			pHL2GameRules->NPC_DroppedHealth();
 		}
-		
-		if ( HasSpawnFlags( SF_COMBINE_NO_GRENADEDROP ) == false )
+
+		if (HasSpawnFlags(SF_COMBINE_NO_GRENADEDROP) == false)
 		{
 			// Attempt to drop a grenade
-			if ( pHL2GameRules->NPC_ShouldDropGrenade( pPlayer ) )
+			if (pHL2GameRules->NPC_ShouldDropGrenade(pPlayer))
 			{
-				DropItem( "weapon_frag", WorldSpaceCenter()+RandomVector(-4,4), RandomAngle(0,360) );
+				DropItem("weapon_frag", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
 				pHL2GameRules->NPC_DroppedGrenade();
 			}
+		}
+	}
+
+	if (CorpseGib(info))
+	{
+		return;
+	}
+
+	if ( !pPlayer )
+	{
+		CPropVehicleDriveable *pVehicle = dynamic_cast<CPropVehicleDriveable *>( info.GetAttacker() ) ;
+		if ( pVehicle && pVehicle->GetDriver() && pVehicle->GetDriver()->IsPlayer() )
+		{
+			pPlayer = assert_cast<CBasePlayer *>( pVehicle->GetDriver() );
 		}
 	}
 
