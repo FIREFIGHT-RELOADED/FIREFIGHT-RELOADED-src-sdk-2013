@@ -1437,7 +1437,7 @@ bool CBasePlayer::GiveRewardItem(KeyValues* pData)
 	}
 	else
 	{
-		Warning("%s is not working properly. Check the reward script file/s.\n", rewardName);
+		DevWarning("%s is not working properly. Check the reward script file/s.\n", rewardName);
 	}
 
 	return rewarded;
@@ -1462,7 +1462,7 @@ KeyValues* CBasePlayer::LoadItemData(KeyValues* pData, int count, int itemID)
 		return pNode;
 	}
 
-	Warning("Item node %i is not loading. Check the reward script file/s.\n", itemdrop);
+	DevWarning("Item node %i is not loading. Check the reward script file/s.\n", itemdrop);
 	return NULL;
 }
 
@@ -1528,7 +1528,7 @@ bool CBasePlayer::ProcessItemData(KeyValues* pData, int count, int itemID)
 		}
 	}
 
-	Warning("Failed to give item! Script file is invalid.\n");
+	DevWarning("Failed to give item! Script file is invalid.\n");
 	return false;
 }
 

@@ -73,23 +73,18 @@ CAttributesLoader* LoadPresetFile(const char* className, int preset)
 
 CAttributesLoader::CAttributesLoader(const char *className, int preset)
 {
-	Init(className, preset);
-}
-
-void CAttributesLoader::Init(const char *className, int preset)
-{
 	if (!className || className == NULL || strlen(className) == 0)
 	{
 		DevWarning("CAttributesLoader: Definition has no classname!\n");
 		return;
 	}
-	
+
 	char szFullName[512];
-	Q_snprintf( szFullName, sizeof( szFullName ), "scripts/entity_attributes/%s/preset%i.txt", className, preset );
+	Q_snprintf(szFullName, sizeof(szFullName), "scripts/entity_attributes/%s/preset%i.txt", className, preset);
 
 	char szFullKVName[512];
 	Q_snprintf(szFullKVName, sizeof(szFullKVName), "%s_preset%i", className, preset);
-	
+
 	KeyValues* pKV = new KeyValues(className);
 	if (pKV->LoadFromFile(filesystem, szFullName))
 	{
@@ -101,13 +96,13 @@ void CAttributesLoader::Init(const char *className, int preset)
 		DevWarning("CAttributesLoader: Failed to load attributes for %s on preset %i!! File may not exist.\n", className, preset);
 		loadedAttributes = false;
 	}
-	
+
 	pKV->deleteThis();
 }
 
 const char* CAttributesLoader::GetString(const char* szString, const char* defaultValue)
 {
-	return STRING(AllocPooledString(data->GetString(szString, defaultValue)));
+	return data->GetString(szString, defaultValue);
 }
 
 int CAttributesLoader::GetInt(const char* szString, int defaultValue)
@@ -137,7 +132,7 @@ Vector CAttributesLoader::GetVector(const char* szString, Vector defaultValue)
 
 void CAttributesLoader::SwitchEntityModel(CBaseEntity* ent, const char* szString, const char* defaultValue)
 {
-	const char* newModelName = GetString(szString, defaultValue);
+	const char* newModelName = STRING(AllocPooledString(GetString(szString, defaultValue)));
 
 	if (strlen(newModelName) > 0)
 	{

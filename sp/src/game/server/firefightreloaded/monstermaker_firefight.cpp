@@ -19,6 +19,8 @@
 #include "npc_strider.h"
 #include "npc_scanner.h"
 #include "globalstate.h"
+#include "filesystem.h"
+#include "KeyValues.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -47,7 +49,18 @@ const char *g_MetropoliceWeapons[] =
 	"weapon_stunstick"
 };
 
-const char *g_charNPCSCommon[] =
+//precache list
+const char* g_Weapons[] =
+{
+	"weapon_smg1",
+	"weapon_ar2",
+	"weapon_shotgun",
+	"weapon_pistol",
+	"weapon_stunstick",
+	"weapon_crowbar"
+};
+
+/*const char* g_charNPCSCommon[] =
 {
 	"npc_metropolice",
 	"npc_combine_s",
@@ -85,17 +98,6 @@ const char *g_charNPCSRare[] =
 	"npc_strider",
 	//temp until we actually set up the wave system.
 	"npc_playerbot"
-};
-
-//precache list
-const char* g_Weapons[] =
-{
-	"weapon_smg1",
-	"weapon_ar2",
-	"weapon_shotgun",
-	"weapon_pistol",
-	"weapon_stunstick",
-	"weapon_crowbar"
 };
 
 const char* g_NPCS[] =
@@ -218,7 +220,7 @@ const char* g_charNPCSXenInvasionRare[] =
 	"npc_headcrab",
 	//temp until we actually set up the wave system.
 	"npc_playerbot"
-};
+};*/
 
 static void DispatchActivate( CBaseEntity *pEntity )
 {
@@ -288,7 +290,7 @@ void CNPCMakerFirefight::Spawn(void)
 	m_nLiveChildren		= 0;
 	m_nLiveRareNPCs		= 0;
 	m_flLastLargeNPCSpawn = 0;
-	Precache();
+	m_hSpawnListController = new CRandNPCLoader(this);
 
 	//m_spawnflags |= SF_NPCMAKER_FADE;
 
@@ -316,27 +318,10 @@ void CNPCMakerFirefight::Precache(void)
 	for (int i = 0; i < nWeapons; ++i)
 	{
 		UTIL_PrecacheOther(g_Weapons[i]);
-		DevMsg("Precaching NPC %s.\n", g_Weapons[i]);
+		DevMsg("Precaching NPC Weapon %s.\n", g_Weapons[i]);
 	}
 
-	int nNPCs = ARRAYSIZE(g_NPCS);
-	for (int i = 0; i < nNPCs; ++i)
-	{
-		UTIL_PrecacheOther(g_NPCS[i]);
-		DevMsg("Precaching NPC %s.\n", g_NPCS[i]);
-	}
-
-	/*
-	const char *pszNPCName = STRING(m_iszNPCClassname);
-	if (!pszNPCName || !pszNPCName[0])
-	{
-		Warning("npc_maker_firefight %s has no specified NPC-to-spawn classname.\n", STRING(GetEntityName()));
-	}
-	else
-	{
-		UTIL_PrecacheOther(pszNPCName);
-	}
-	*/
+	// NPCs are handled on spawn.
 }
 
 //-----------------------------------------------------------------------------
@@ -347,25 +332,22 @@ void CNPCMakerFirefight::MakerThink(void)
 	SetNextThink(gpGlobals->curtime + m_flSpawnFrequency);
 
 	//rare npcs will be handled by the spawnlist
-	if (g_pGameRules->bSkipFuncCheck || g_fr_spawneroldfunctionality.GetBool())
+	if (sk_spawnrareenemies.GetBool())
 	{
-		if (sk_spawnrareenemies.GetBool())
-		{
-			int rarenpcrandom = random->RandomInt(0, m_nRareNPCRarity);
+		int rarenpcrandom = random->RandomInt(0, m_nRareNPCRarity);
 
-			if (rarenpcrandom == 0 && CanMakeRareNPC())
-			{
-				MakeNPC(true);
-			}
-			else
-			{
-				MakeNPC();
-			}
+		if (rarenpcrandom == 0 && CanMakeRareNPC())
+		{
+			MakeNPC(true);
 		}
 		else
 		{
 			MakeNPC();
 		}
+	}
+	else
+	{
+		MakeNPC();
 	}
 
 	if (debug_spawner_info.GetBool())
@@ -604,72 +586,50 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 	if (!CanMakeNPC())
 		return;
 
-	bool m_bRareNPC = rareNPC;
+	bool newNPC = m_hSpawnListController->LoadNPC();
 
-	const char* pRandomName = debug_spawner_spamplayers.GetBool() ? "npc_playerbot" : "";
+	if (!newNPC)
+		return;
 
-	if (g_pGameRules->bSkipFuncCheck || g_fr_spawneroldfunctionality.GetBool())
+	//if any player has the same level we should spawn at, we'll spawn.
+	bool atMinLevel = false;
+
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		if (m_bRareNPC)
+		CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+		if (pPlayer)
 		{
-			if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_COMBINEFIREFIGHT)
+			if (pPlayer->GetLevel() >= m_hSpawnListController->m_iMinPlayerLevel)
 			{
-				int randomChoice = rand() % ARRAYSIZE(g_charNPCSCombineFirefightRare);
-				pRandomName = g_charNPCSCombineFirefightRare[randomChoice];
-			}
-			else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_XENINVASION)
-			{
-				int randomChoice = rand() % ARRAYSIZE(g_charNPCSXenInvasionRare);
-				pRandomName = g_charNPCSXenInvasionRare[randomChoice];
-			}
-			else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_ANTLIONASSAULT)
-			{
-				int randomChoice = rand() % ARRAYSIZE(g_charNPCSAntlionAssaultRare);
-				pRandomName = g_charNPCSAntlionAssaultRare[randomChoice];
-			}
-			else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_ZOMBIESURVIVAL)
-			{
-				int randomChoice = rand() % ARRAYSIZE(g_charNPCSZombieSurvivalRare);
-				pRandomName = g_charNPCSZombieSurvivalRare[randomChoice];
-			}
-			else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE)
-			{
-				int randomChoice = rand() % ARRAYSIZE(g_charNPCSRare);
-				pRandomName = g_charNPCSRare[randomChoice];
+				atMinLevel = true;
+				break;
 			}
 		}
-		else
+	}
+
+	if (!atMinLevel)
+		return;
+
+	bool m_bRareNPC = rareNPC;
+
+	const char* pRandomName = m_hSpawnListController->m_szClassname;
+
+	//HACK.
+	if (m_bRareNPC)
+	{
+		//check if the NPC is rare.
+		if (!m_hSpawnListController->m_bIsRare)
 		{
-			if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_COMBINEFIREFIGHT)
-			{
-				int randomChoice = rand() % ARRAYSIZE(g_charNPCSCombineFirefightCommon);
-				pRandomName = g_charNPCSCombineFirefightCommon[randomChoice];
-			}
-			else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_XENINVASION)
-			{
-				int randomChoice = rand() % ARRAYSIZE(g_charNPCSXenInvasionCommon);
-				pRandomName = g_charNPCSXenInvasionCommon[randomChoice];
-			}
-			else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_ANTLIONASSAULT)
-			{
-				int randomChoice = rand() % ARRAYSIZE(g_charNPCSAntlionAssaultCommon);
-				pRandomName = g_charNPCSAntlionAssaultCommon[randomChoice];
-			}
-			else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_ZOMBIESURVIVAL)
-			{
-				int randomChoice = rand() % ARRAYSIZE(g_charNPCSZombieSurvivalCommon);
-				pRandomName = g_charNPCSZombieSurvivalCommon[randomChoice];
-			}
-			else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE)
-			{
-				int randomChoice = rand() % ARRAYSIZE(g_charNPCSCommon);
-				pRandomName = g_charNPCSCommon[randomChoice];
-			}
+			return;
 		}
 	}
 	else
 	{
-		//here, we will grab the current spawnlist. m_bRareNPC will be set if the spawnlist wants the npc to be rare.
+		//check if the NPC isn't rare.
+		if (m_hSpawnListController->m_bIsRare)
+		{
+			return;
+		}
 	}
 
 	CAI_BaseNPC* pent = (CAI_BaseNPC*)CreateEntityByName(pRandomName);
@@ -776,6 +736,11 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 		}
 	}
 
+	if (m_hSpawnListController->m_iNPCAttributePreset > 0 || m_hSpawnListController->m_iNPCAttributePreset < 0)
+	{
+		pent->m_bDisableInitAttributes = true;
+	}
+
 	pent->m_isRareEntity = m_bRareNPC;
 	pent->SetSquadName(m_SquadName);
 	pent->SetHintGroup(m_strHintGroup);
@@ -816,6 +781,12 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 	{
 		// if I have a netname (overloaded), give the child NPC that name as a targetname
 		pent->SetName(m_ChildTargetName);
+	}
+
+	if (m_hSpawnListController->m_iNPCAttributePreset > 0)
+	{
+		pent->m_pAttributes = LoadPresetFile(pent->GetClassname(), m_hSpawnListController->m_iNPCAttributePreset);
+		pent->LoadInitAttributes();
 	}
 
 	ChildPostSpawn(pent);
@@ -975,4 +946,145 @@ void CNPCMakerFirefight::InputSetSpawnFrequency(inputdata_t &inputdata)
 void CNPCMakerFirefight::InputSetRareNPCRarity(inputdata_t &inputdata)
 {
 	m_nRareNPCRarity = inputdata.value.Int();
+}
+
+CRandNPCLoader::CRandNPCLoader(CNPCMakerFirefight* pSpawner)
+{
+	if (!pSpawner)
+		return;
+
+	m_szClassname = "";
+	m_iNPCAttributePreset = -1; // 0 = no attributes, random. -1 and below: no attributes at all.
+	m_iMinPlayerLevel = 1;
+	m_bIsRare = false;
+
+	bool gamemodeMode = true;
+	const char* gamemodeName = g_pGameRules->GetGamemodeName();
+	const char* mapName = STRING(gpGlobals->mapname);
+
+	if ((!gamemodeName || gamemodeName == NULL || strlen(gamemodeName) == 0) || 
+		(!g_pGameRules->bSkipFuncCheck || !g_fr_spawneroldfunctionality.GetBool()))
+	{
+		gamemodeMode = false;
+	}
+
+	char szScriptPath[512];
+
+	if (gamemodeMode)
+	{
+		Q_snprintf(szScriptPath, sizeof(szScriptPath), "scripts/spawnlists/gamemodes/%s.txt", gamemodeName);
+	}
+	else
+	{
+		Q_snprintf(szScriptPath, sizeof(szScriptPath), "scripts/spawnlists/maps/%s.txt", mapName);
+	}
+
+	KeyValues* pKV = new KeyValues(gamemodeMode ? gamemodeName : mapName);
+	if (pKV->LoadFromFile(filesystem, szScriptPath))
+	{
+		data = pKV->MakeCopy();
+		//set the parent if we are SURE we have loaded it.
+		pParent = pSpawner;
+		DevMsg("CRandNPCLoader: Spawnlist for %s loaded for %s\n", (gamemodeMode ? gamemodeName : mapName), pSpawner->GetEntityName());
+		loadedNPCData = true;
+	}
+	else
+	{
+		DevWarning("CRandNPCLoader: Failed to load spawnlist! File may not exist. Spawner %s will not function properly.\n", pSpawner->GetEntityName());
+		loadedNPCData = false;
+	}
+
+	pKV->deleteThis();
+}
+
+bool CRandNPCLoader::LoadNPC(void)
+{
+	int count = 0;
+
+	//we get the number of keys in the file.
+	for (KeyValues* kv = data->GetFirstSubKey(); kv != NULL; kv = kv->GetNextKey())
+	{
+		count++;
+	}
+
+	DevMsg("CRandNPCLoader: Spawnlist has %i keys.\n", count);
+
+	if (count > 0)
+	{
+		KeyValues* pNode = LoadNPCData(count);
+
+		if (pNode != NULL)
+		{
+			const char* pClassname = pNode->GetString("classname");
+
+			if (strlen(pClassname) > 0)
+			{
+				m_szClassname = pClassname;
+				UTIL_PrecacheOther(m_szClassname);
+				bool pIsRare = pNode->GetBool("rare");
+
+				if (pIsRare)
+				{
+					m_bIsRare = pIsRare;
+				}
+				else
+				{
+					m_bIsRare = false;
+				}
+
+				int pPlayerLevel = pNode->GetInt("min_level", 1);
+
+				if (pPlayerLevel)
+				{
+					m_iMinPlayerLevel = pPlayerLevel;
+				}
+				else
+				{
+					m_iMinPlayerLevel = 1;
+				}
+
+				int pNPCPreset = pNode->GetInt("preset");
+
+				if (pNPCPreset)
+				{
+					m_iNPCAttributePreset = pNPCPreset;
+				}
+				else
+				{
+					m_iNPCAttributePreset = 0; // 0 = no attributes, random.
+				}
+
+				return true;
+			}
+			else
+			{
+				m_szClassname = "";
+				m_iNPCAttributePreset = -1; // 0 = no attributes, random. -1 and below: no attributes at all.
+				m_iMinPlayerLevel = 1;
+				m_bIsRare = false;
+				DevWarning("CRandNPCLoader: NPC definition is invalid.\n");
+			}
+		}
+	}
+
+	return false;
+}
+
+KeyValues* CRandNPCLoader::LoadNPCData(int count)
+{
+	int itemdrop = itemdrop = random->RandomInt(1, count);
+	//then, we randomize them.
+	DevMsg("CRandNPCLoader: Trying to load Node ID %i\n", itemdrop);
+	CFmtStr sectionName;
+	sectionName.sprintf("%i", itemdrop);
+	KeyValues* pNode = data->FindKey(sectionName.Access());
+	while (pNode)
+	{
+		//if we found a key, then give the player an item.
+		DevMsg("CRandNPCLoader: Node %i found\n", itemdrop);
+		return pNode;
+	}
+
+	DevWarning("CRandNPCLoader: NPC node %i is not loading. Check the spawnlist script file/s.\n", itemdrop);
+	return NULL;
 }
