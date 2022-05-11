@@ -9,11 +9,11 @@ ConVar entity_attributes_numpresets("entity_attributes_numpresets", "10", FCVAR_
 ConVar entity_attributes_chance("entity_attributes_chance", "3", FCVAR_ARCHIVE);
 ConVar entity_attributes("entity_attributes", "1", FCVAR_ARCHIVE);
 
-CAttributesLoader *LoadRandomPresetFile(const char* className, bool noNag)
+CAttributesLoader *LoadRandomPresetFile(const char* className)
 {
 	random->SetSeed(gpGlobals->curtime);
 	int randPreset = random->RandomInt(1, entity_attributes_numpresets.GetInt());
-	CAttributesLoader* loader = new CAttributesLoader(className, randPreset, noNag);
+	CAttributesLoader* loader = new CAttributesLoader(className, randPreset);
 
 	if (!loader->loadedAttributes)
 	{
@@ -22,23 +22,17 @@ CAttributesLoader *LoadRandomPresetFile(const char* className, bool noNag)
 		if (shouldLoadFirstPreset)
 		{
 			//load the first preset.
-			loader = new CAttributesLoader(className, 1, true);
+			loader = new CAttributesLoader(className, 1);
 
 			if (!loader->loadedAttributes)
 			{
-				if (!noNag)
-				{
-					Warning("CAttributesLoader: Cannot load random attribute preset %i for %s.\n", randPreset, className);
-				}
+				DevWarning("CAttributesLoader: Cannot load random attribute preset %i for %s.\n", randPreset, className);
 				return NULL;
 			}
 		}
 		else
 		{
-			if (!noNag)
-			{
-				Warning("CAttributesLoader: Cannot load random attribute preset %i for %s.\n", randPreset, className);
-			}
+			DevWarning("CAttributesLoader: Cannot load random attribute preset %i for %s.\n", randPreset, className);
 			return NULL;
 		}
 	}
@@ -59,10 +53,7 @@ CAttributesLoader *LoadRandomPresetFile(const char* className, bool noNag)
 	}
 	else
 	{
-		if (!noNag)
-		{
-			Warning("CAttributesLoader: Preset %i for %s can only be spawned-in manually. Disable \"spawner_only\" to allow this preset to spawn randomly.\n", randPreset, className);
-		}
+		DevWarning("CAttributesLoader: Preset %i for %s can only be spawned-in manually. Disable \"spawner_only\" to allow this preset to spawn randomly.\n", randPreset, className);
 		loader->Die();
 		return NULL;
 	}
@@ -80,19 +71,16 @@ CAttributesLoader* LoadPresetFile(const char* className, int preset)
 	return loader;
 }
 
-CAttributesLoader::CAttributesLoader(const char *className, int preset, bool noError)
+CAttributesLoader::CAttributesLoader(const char *className, int preset)
 {
-	Init(className, preset, noError);
+	Init(className, preset);
 }
 
-void CAttributesLoader::Init(const char *className, int preset, bool noError)
+void CAttributesLoader::Init(const char *className, int preset)
 {
 	if (!className || className == NULL || strlen(className) == 0)
 	{
-		if (!noError)
-		{
-			Warning("CAttributesLoader: Definition has no classname!\n");
-		}
+		DevWarning("CAttributesLoader: Definition has no classname!\n");
 		return;
 	}
 	
@@ -110,10 +98,7 @@ void CAttributesLoader::Init(const char *className, int preset, bool noError)
 	}
 	else
 	{
-		if (!noError)
-		{
-			Warning("CAttributesLoader: Failed to load attributes for %s on preset %i!! File may not exist.\n", className, preset);
-		}
+		DevWarning("CAttributesLoader: Failed to load attributes for %s on preset %i!! File may not exist.\n", className, preset);
 		loadedAttributes = false;
 	}
 	

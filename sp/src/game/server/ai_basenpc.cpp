@@ -7007,7 +7007,7 @@ void CAI_BaseNPC::NPCInit ( void )
 
 	if (!m_bDisableInitAttributes && g_fr_spawneroldfunctionality.GetBool() && entity_attributes.GetBool())
 	{
-		m_pAttributes = LoadRandomPresetFile(GetClassname(), m_bDisableAttributeNag);
+		m_pAttributes = LoadRandomPresetFile(GetClassname());
 		LoadInitAttributes();
 	}
 	else

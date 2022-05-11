@@ -1414,7 +1414,6 @@ private:
 
 public:
 	CAttributesLoader* m_pAttributes;
-	bool			m_bDisableAttributeNag;
 	bool			m_bDisableInitAttributes;
 	//-----------------------------------------------------
 	//

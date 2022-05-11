@@ -7,8 +7,8 @@
 class CAttributesLoader
 {
 public:
-	CAttributesLoader(const char* className, int preset, bool noError = false);
-	virtual void Init(const char* className, int preset, bool noError = false);
+	CAttributesLoader(const char* className, int preset);
+	virtual void Init(const char* className, int preset);
 	virtual const char* GetString(const char* szString, const char* defaultValue = "");
 	virtual int GetInt(const char* szString, int defaultValue = 0);
 	virtual float GetFloat(const char* szString, float defaultValue = 0.0f);
@@ -31,6 +31,6 @@ private:
 extern ConVar entity_attributes_numpresets;
 extern ConVar entity_attributes_chance;
 extern ConVar entity_attributes;
-CAttributesLoader *LoadRandomPresetFile(const char* className, bool noNag = false);
+CAttributesLoader *LoadRandomPresetFile(const char* className);
 CAttributesLoader *LoadPresetFile(const char* className, int preset);
 #endif
