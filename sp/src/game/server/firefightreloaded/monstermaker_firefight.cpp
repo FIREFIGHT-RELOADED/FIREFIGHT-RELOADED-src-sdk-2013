@@ -850,6 +850,9 @@ CRandNPCLoader::CRandNPCLoader(CNPCMakerFirefight* pSpawner)
 
 bool CRandNPCLoader::LoadNPC(void)
 {
+	if (!loadedNPCData)
+		return false;
+
 	int count = 0;
 
 	//we get the number of keys in the file.
