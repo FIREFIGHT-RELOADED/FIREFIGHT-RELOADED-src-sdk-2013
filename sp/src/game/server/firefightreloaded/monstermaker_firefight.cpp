@@ -60,168 +60,6 @@ const char* g_Weapons[] =
 	"weapon_crowbar"
 };
 
-/*const char* g_charNPCSCommon[] =
-{
-	"npc_metropolice",
-	"npc_combine_s",
-	"npc_combine_e",
-	"npc_combine_p",
-	"npc_combine_shot",
-	"npc_antlion",
-	"npc_zombie",
-	"npc_zombie_torso",
-	"npc_fastzombie",
-	"npc_fastzombie_torso",
-	"npc_agrunt",
-	"npc_houndeye",
-	"npc_bullsquid",
-	"npc_acontroller",
-	"npc_stalker"
-};
-
-const char *g_charNPCSRare[] =
-{
-	"npc_combine_ace",
-	"npc_hunter",
-	"npc_antlionworker",
-	"npc_antlionguard",
-	"npc_antlionguardian",
-	"npc_poisonzombie",
-	"npc_zombine",
-	"npc_headcrab_fast",
-	"npc_headcrab_poison",
-	"npc_vortigaunt",
-	"npc_assassin",
-	"npc_headcrab",
-	"npc_rollermine",
-	"npc_cscanner",
-	"npc_strider",
-	//temp until we actually set up the wave system.
-	"npc_playerbot"
-};
-
-const char* g_NPCS[] =
-{
-	"npc_metropolice",
-	"npc_combine_s",
-	"npc_combine_e",
-	"npc_combine_p",
-	"npc_combine_shot",
-	"npc_antlion",
-	"npc_zombie",
-	"npc_zombie_torso",
-	"npc_fastzombie",
-	"npc_fastzombie_torso",
-	"npc_agrunt",
-	"npc_houndeye",
-	"npc_bullsquid",
-	"npc_acontroller",
-	"npc_combine_ace",
-	"npc_hunter",
-	"npc_antlionworker",
-	"npc_antlionguard",
-	"npc_antlionguardian",
-	"npc_poisonzombie",
-	"npc_zombine",
-	"npc_headcrab_fast",
-	"npc_headcrab_poison",
-	"npc_vortigaunt",
-	"npc_assassin",
-	"npc_headcrab",
-	"npc_rollermine",
-	"npc_cscanner",
-	"npc_stalker",
-	"npc_strider",
-	//temp until we actually set up the wave system.
-	"npc_playerbot"
-};
-
-//#define BIGGUY_TESTING
-//#define SCANNER_TESTING
-
-const char* g_charNPCSCombineFirefightCommon[] =
-{
-#if  defined(BIGGUY_TESTING)
-	"npc_strider"
-#elif defined(SCANNER_TESTING)
-	"npc_cscanner"
-#else
-	"npc_metropolice",
-	"npc_combine_s",
-	"npc_combine_e",
-	"npc_combine_p",
-	"npc_combine_shot",
-	"npc_stalker"
-#endif //  STRIDER_TESTING
-};
-
-const char* g_charNPCSCombineFirefightRare[] =
-{
-#if  defined(BIGGUY_TESTING)
-	"npc_strider"
-#elif  defined(SCANNER_TESTING)
-	"npc_cscanner"
-#else
-	"npc_combine_ace",
-	"npc_hunter",
-	"npc_assassin",
-	"npc_rollermine",
-	"npc_cscanner",
-	"npc_strider",
-	//temp until we actually set up the wave system.
-	"npc_playerbot"
-#endif //  STRIDER_TESTING
-};
-
-//why.
-const char* g_charNPCSAntlionAssaultCommon[] =
-{
-	"npc_antlion"
-};
-
-const char* g_charNPCSAntlionAssaultRare[] =
-{
-	"npc_antlionworker",
-	"npc_antlionguard",
-	"npc_antlionguardian",
-	//temp until we actually set up the wave system.
-	"npc_playerbot"
-};
-
-const char* g_charNPCSZombieSurvivalCommon[] =
-{
-	"npc_zombie",
-	"npc_zombie_torso",
-	"npc_fastzombie",
-	"npc_fastzombie_torso"
-};
-
-const char* g_charNPCSZombieSurvivalRare[] =
-{
-	"npc_poisonzombie",
-	"npc_zombine",
-	//temp until we actually set up the wave system.
-	"npc_playerbot"
-};
-
-const char* g_charNPCSXenInvasionCommon[] =
-{
-	"npc_houndeye",
-	"npc_bullsquid",
-	"npc_agrunt",
-	"npc_acontroller"
-};
-
-const char* g_charNPCSXenInvasionRare[] =
-{
-	"npc_headcrab_fast",
-	"npc_headcrab_poison",
-	"npc_vortigaunt",
-	"npc_headcrab",
-	//temp until we actually set up the wave system.
-	"npc_playerbot"
-};*/
-
 static void DispatchActivate( CBaseEntity *pEntity )
 {
 	bool bAsyncAnims = mdlcache->SetAsyncLoad( MDLCACHE_ANIMBLOCK, false );
@@ -990,8 +828,21 @@ CRandNPCLoader::CRandNPCLoader(CNPCMakerFirefight* pSpawner)
 	}
 	else
 	{
-		DevWarning("CRandNPCLoader: Failed to load spawnlist! File may not exist. Spawner %s will not function properly.\n", pSpawner->GetEntityName());
-		loadedNPCData = false;
+		DevWarning("CRandNPCLoader: Failed to load spawnlist! File may not exist. Using default spawn list...\n", pSpawner->GetEntityName());
+		KeyValues* pKV = new KeyValues("default");
+		if (pKV->LoadFromFile(filesystem, "scripts/spawnlists/default.txt"))
+		{
+			data = pKV->MakeCopy();
+			//set the parent if we are SURE we have loaded it.
+			pParent = pSpawner;
+			DevMsg("CRandNPCLoader: Default Spawnlist loaded for %s\n", pSpawner->GetEntityName());
+			loadedNPCData = true;
+		}
+		else
+		{
+			DevWarning("CRandNPCLoader: Failed to load default spawnlist! File may not exist. Spawner %s will not function properly.\n", pSpawner->GetEntityName());
+			loadedNPCData = false;
+		}
 	}
 
 	pKV->deleteThis();
