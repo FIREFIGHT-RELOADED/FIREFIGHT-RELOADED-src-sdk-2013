@@ -756,6 +756,8 @@ void CNPC_PoisonZombie::HandleAnimEvent( animevent_t *pEvent )
 			pCrab->AddSpawnFlags( SF_NPC_FADE_CORPSE );
 		}
 
+		pCrab->m_bDisableInitAttributes = true;
+
 		// make me the crab's owner to avoid collision issues
 		pCrab->SetOwnerEntity( this );
 
@@ -865,6 +867,7 @@ void CNPC_PoisonZombie::EvacuateNest( bool bExplosion, float flDamage, CBaseEnti
 			vecAngles = QAngle( 0, random->RandomFloat( 0, 360 ), 0 );
 
 			CBlackHeadcrab *pCrab = (CBlackHeadcrab *)CreateNoSpawn( GetHeadcrabClassname(), vecPosition, vecAngles, this );
+			pCrab->m_bDisableInitAttributes = true;
 			pCrab->Spawn();
 
 			if( !HeadcrabFits(pCrab) )

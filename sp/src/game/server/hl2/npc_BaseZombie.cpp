@@ -2558,9 +2558,10 @@ void CNPC_BaseZombie::ReleaseHeadcrab(const Vector &vecOrigin, const Vector &vec
 		// add on the parent flags
 		pCrab->AddSpawnFlags( m_spawnflags & ZOMBIE_CRAB_INHERITED_SPAWNFLAGS );
 		
+		pCrab->m_bDisableInitAttributes = true;
+
 		// make me the crab's owner to avoid collision issues
 		pCrab->SetOwnerEntity( this );
-		pCrab->m_bDisableInitAttributes = true;
 		pCrab->SetAbsOrigin( vecSpot );
 		pCrab->SetAbsAngles( GetAbsAngles() );
 		DispatchSpawn( pCrab );
