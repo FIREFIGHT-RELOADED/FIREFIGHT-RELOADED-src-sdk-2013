@@ -148,6 +148,11 @@ float CBasePlayer::GetTimeBase( void ) const
 	return m_nTickBase * TICK_INTERVAL;
 }
 
+int CBasePlayer::GetXpToLevelUp(int level)
+{
+	return 300 * (level ^ 2) - (300 * level);
+}
+
 float CBasePlayer::GetPlayerMaxSpeed()
 {
 	// player max speed is the lower limit of m_flMaxSpeed and sv_maxspeed

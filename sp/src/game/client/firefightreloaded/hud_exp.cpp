@@ -98,7 +98,7 @@ void CHudEXP::Paint()
 {
 	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
 	
-	int maxXP = MAX_EXP * (pPlayer->GetLevel()) ^ 2;
+	int maxXP = pPlayer->GetXpToLevelUp(pPlayer->GetLevel());
 
 	// get bar chunks
 	int chunkCount = m_flBarWidth / (m_flBarChunkWidth + m_flBarChunkGap);

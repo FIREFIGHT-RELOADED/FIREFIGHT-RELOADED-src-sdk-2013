@@ -1043,11 +1043,6 @@ void CBasePlayer::SetBonusChallenge( int iBonusChallenge )
 	m_iBonusChallenge = iBonusChallenge;
 }
 
-int CBasePlayer::GetXpToLevelUp(int level)
-{
-	return MAX_EXP * (level);
-}
-
 extern ConVar sv_player_grapple;
 
 void CBasePlayer::CheckLevel()

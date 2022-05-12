@@ -841,7 +841,6 @@ enum FirefightPrimaryGamemodes
 
 //fr defs
 #define MAX_LEVEL 20
-#define MAX_EXP 60
 
 #define MAX_ACTORS_IN_SCENE 16
 

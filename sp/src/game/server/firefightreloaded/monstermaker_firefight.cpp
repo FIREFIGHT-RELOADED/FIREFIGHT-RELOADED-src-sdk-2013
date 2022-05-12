@@ -30,8 +30,6 @@ ConVar sk_spawnrareenemies("sk_spawnrareenemies", "1", FCVAR_ARCHIVE);
 ConVar sk_spawnerhidefromplayer("sk_spawnerhidefromplayer", "1", FCVAR_ARCHIVE);
 ConVar sk_spawner_npc_ragdoll_fade("sk_spawner_npc_ragdoll_fade", "1", FCVAR_ARCHIVE);
 ConVar sk_spawner_largenpc_spawndelay("sk_spawner_largenpc_spawntime", "300", FCVAR_CHEAT);
-ConVar debug_spawner_spamplayers("debug_spawner_spamplayers", "0", FCVAR_CHEAT);
-//ConVar sk_spawnerminclientstospawn("sk_spawnerminclientstospawn", "2", FCVAR_NOTIFY);
 ConVar debug_spawner_info("debug_spawner_info", "0", FCVAR_CHEAT);
 ConVar debug_spawner_disable("debug_spawner_disable", "0", FCVAR_CHEAT);
 
@@ -170,23 +168,7 @@ void CNPCMakerFirefight::MakerThink(void)
 	SetNextThink(gpGlobals->curtime + m_flSpawnFrequency);
 
 	//rare npcs will be handled by the spawnlist
-	if (sk_spawnrareenemies.GetBool())
-	{
-		int rarenpcrandom = random->RandomInt(0, m_nRareNPCRarity);
-
-		if (rarenpcrandom == 0 && CanMakeRareNPC())
-		{
-			MakeNPC(true);
-		}
-		else
-		{
-			MakeNPC();
-		}
-	}
-	else
-	{
-		MakeNPC();
-	}
+	MakeNPC();
 
 	if (debug_spawner_info.GetBool())
 	{
@@ -419,7 +401,7 @@ void AllyAlert()
 //-----------------------------------------------------------------------------
 // Purpose: Creates the NPC.
 //-----------------------------------------------------------------------------
-void CNPCMakerFirefight::MakeNPC(bool rareNPC)
+void CNPCMakerFirefight::MakeNPC()
 {
 	if (!CanMakeNPC())
 		return;
@@ -448,26 +430,17 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 	if (!atMinLevel)
 		return;
 
-	bool m_bRareNPC = rareNPC;
-
 	const char* pRandomName = m_hSpawnListController->m_szClassname;
 
-	//HACK.
-	if (m_bRareNPC)
+	if (sk_spawnrareenemies.GetBool() && m_hSpawnListController->m_bIsRare)
 	{
-		//check if the NPC is rare.
-		if (!m_hSpawnListController->m_bIsRare)
-		{
+		if (!CanMakeRareNPC())
 			return;
-		}
-	}
-	else
-	{
-		//check if the NPC isn't rare.
-		if (m_hSpawnListController->m_bIsRare)
-		{
+
+		int rarenpcrandom = random->RandomInt(0, m_nRareNPCRarity);
+
+		if (rarenpcrandom > 0)
 			return;
-		}
 	}
 
 	CAI_BaseNPC* pent = (CAI_BaseNPC*)CreateEntityByName(pRandomName);
@@ -579,7 +552,7 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 		pent->m_bDisableInitAttributes = true;
 	}
 
-	pent->m_isRareEntity = m_bRareNPC;
+	pent->m_isRareEntity = m_hSpawnListController->m_bIsRare;
 	pent->SetSquadName(m_SquadName);
 	pent->SetHintGroup(m_strHintGroup);
 
@@ -629,7 +602,7 @@ void CNPCMakerFirefight::MakeNPC(bool rareNPC)
 
 	ChildPostSpawn(pent);
 
-	if (m_bRareNPC)
+	if (m_hSpawnListController->m_bIsRare)
 	{
 		//rare entities have their own value we must consider.
 		m_nLiveRareNPCs++;
@@ -731,7 +704,7 @@ void CNPCMakerFirefight::InputSpawnNPC(inputdata_t &inputdata)
 //-----------------------------------------------------------------------------
 void CNPCMakerFirefight::InputSpawnRareNPC(inputdata_t &inputdata)
 {
-	MakeNPC(true);
+	MakeNPC();
 }
 
 //-----------------------------------------------------------------------------
@@ -801,7 +774,7 @@ CRandNPCLoader::CRandNPCLoader(CNPCMakerFirefight* pSpawner)
 	const char* mapName = STRING(gpGlobals->mapname);
 
 	if ((!gamemodeName || gamemodeName == NULL || strlen(gamemodeName) == 0) || 
-		(!g_pGameRules->bSkipFuncCheck || !g_fr_spawneroldfunctionality.GetBool()))
+		(!g_pGameRules->bSkipFuncCheck && !g_fr_spawneroldfunctionality.GetBool()))
 	{
 		gamemodeMode = false;
 	}
@@ -817,18 +790,19 @@ CRandNPCLoader::CRandNPCLoader(CNPCMakerFirefight* pSpawner)
 		Q_snprintf(szScriptPath, sizeof(szScriptPath), "scripts/spawnlists/maps/%s.txt", mapName);
 	}
 
-	KeyValues* pKV = new KeyValues(gamemodeMode ? gamemodeName : mapName);
+	const char* name = (gamemodeMode ? gamemodeName : mapName);
+	KeyValues* pKV = new KeyValues(name);
 	if (pKV->LoadFromFile(filesystem, szScriptPath))
 	{
 		data = pKV->MakeCopy();
 		//set the parent if we are SURE we have loaded it.
 		pParent = pSpawner;
-		DevMsg("CRandNPCLoader: Spawnlist for %s loaded for %s\n", (gamemodeMode ? gamemodeName : mapName), pSpawner->GetEntityName());
+		DevMsg("CRandNPCLoader: Spawnlist for %s loaded for %s\n", name, pSpawner->GetEntityName());
 		loadedNPCData = true;
 	}
 	else
 	{
-		DevWarning("CRandNPCLoader: Failed to load spawnlist! File may not exist. Using default spawn list...\n", pSpawner->GetEntityName());
+		DevWarning("CRandNPCLoader: Failed to load %s spawnlist! File may not exist. Using default spawn list...\n", name);
 		KeyValues* pKV = new KeyValues("default");
 		if (pKV->LoadFromFile(filesystem, "scripts/spawnlists/default.txt"))
 		{
@@ -875,6 +849,7 @@ bool CRandNPCLoader::LoadNPC(void)
 			{
 				m_szClassname = pClassname;
 				UTIL_PrecacheOther(m_szClassname);
+
 				bool pIsRare = pNode->GetBool("rare");
 
 				if (pIsRare)
