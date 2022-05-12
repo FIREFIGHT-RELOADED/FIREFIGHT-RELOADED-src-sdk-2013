@@ -403,6 +403,8 @@ public:
 	int GetMaxXP()				{ return m_iMaxExp; }
 	int GetLevel();
 	int GetXpToLevelUp(int level);
+	bool IsAtMaxLevel();
+	int GetMaxLevel();
 	int	FragCount() const		{ return m_iFrags; }
 	int GetMoney()			{ return m_iMoney; }
 	

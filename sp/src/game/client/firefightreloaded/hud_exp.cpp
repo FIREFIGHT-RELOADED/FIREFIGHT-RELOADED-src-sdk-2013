@@ -130,7 +130,7 @@ void CHudEXP::Paint()
 	}
 
 	// draw the suit power bar
-	if (pPlayer->GetLevel() != MAX_LEVEL)
+	if (pPlayer->GetLevel() != pPlayer->GetMaxLevel())
 	{
 		surface()->DrawSetColor(clrEXP);
 		int xpos = m_flBarInsetX, ypos = m_flBarInsetY;

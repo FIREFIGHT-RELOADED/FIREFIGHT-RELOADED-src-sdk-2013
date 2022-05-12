@@ -851,7 +851,7 @@ public:
 	void SetMaxXP(int add = 1) { m_iMaxExp = add; }
 	void AddXP(int add = 1) 
 	{ 
-		if (m_iLevel != MAX_LEVEL)
+		if (m_iLevel != GetMaxLevel())
 		{
 			m_iExp += add;
 			CheckLevel();
@@ -859,6 +859,8 @@ public:
 	}
 
 	int GetLevel();
+	bool IsAtMaxLevel();
+	int GetMaxLevel();
 	int GetXpToLevelUp(int level);
 	void CheckLevel();
 	virtual void LevelUp();

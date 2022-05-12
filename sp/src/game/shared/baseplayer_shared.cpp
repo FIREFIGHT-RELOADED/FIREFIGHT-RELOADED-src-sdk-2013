@@ -172,6 +172,40 @@ int CBasePlayer::GetLevel()
 	}
 }
 
+bool CBasePlayer::IsAtMaxLevel()
+{
+	if (!g_fr_classic.GetBool())
+	{
+		if (GetLevel() == GetMaxLevel())
+		{
+			return true;
+		}
+	}
+	else
+	{
+		if (FragCount() >= GetMaxLevel())
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+int CBasePlayer::GetMaxLevel()
+{
+	if (!g_fr_classic.GetBool())
+	{
+		return MAX_LEVEL;
+	}
+	else
+	{
+		return MAX_LEVEL * 15;
+	}
+
+	return 0;
+}
+
 float CBasePlayer::GetPlayerMaxSpeed()
 {
 	// player max speed is the lower limit of m_flMaxSpeed and sv_maxspeed

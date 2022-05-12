@@ -154,7 +154,7 @@ void respawn( CBaseEntity *pEdict, bool fCopyCorpse )
 	CHL2_Player *pPlayer = (CHL2_Player *)pEdict;
 	if (pPlayer)
 	{
-		if ((pPlayer->GetLevel() == MAX_LEVEL || g_fr_hardcore.GetBool()) && !g_pGameRules->IsMultiplayer())
+		if ((pPlayer->IsAtMaxLevel() || g_fr_hardcore.GetBool()) && !g_pGameRules->IsMultiplayer())
 		{
 			char szMapCommand[1024];
 			// create the command to execute

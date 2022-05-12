@@ -1786,7 +1786,7 @@ void CHL2_Player::Spawn(void)
 			EquipSuit();
 			SetPreventWeaponPickup(true);
 		}
-		else if (GetLevel() == MAX_LEVEL)
+		else if (IsAtMaxLevel())
 		{
 			EquipSuit();
 			if (sv_player_grapple.GetBool())

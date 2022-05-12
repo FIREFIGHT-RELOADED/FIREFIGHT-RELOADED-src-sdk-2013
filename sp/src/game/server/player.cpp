@@ -370,7 +370,7 @@ void CC_PlayerLevel(const CCommand &args)
 			return;
 		}
 		
-		if (LevelNum <= MAX_LEVEL)
+		if (LevelNum <= pPlayer->GetMaxLevel())
 		{
 			pPlayer->SetLevel(LevelNum);
 			pPlayer->CheckLevel();
@@ -1051,7 +1051,7 @@ void CBasePlayer::CheckLevel()
 	{
 		bool bShouldLevel = false;
 		SetMaxXP(GetXpToLevelUp(GetLevel()));
-		if (GetLevel() < MAX_LEVEL && GetXP() >= GetMaxXP())
+		if (GetLevel() < GetMaxLevel() && GetXP() >= GetMaxXP())
 		{
 			bShouldLevel = true;
 			m_iLevel++;
@@ -1062,38 +1062,38 @@ void CBasePlayer::CheckLevel()
 				HL2GameRules()->SetMegaPhyscannonInActive();
 			}
 		}
+	}
 
-		if (GetLevel() == MAX_LEVEL)
+	if (IsAtMaxLevel())
+	{
+		IGameEvent* event = gameeventmanager->CreateEvent("player_maxlevel");
+		if (event)
 		{
-			IGameEvent * event = gameeventmanager->CreateEvent("player_maxlevel");
-			if (event)
-			{
-				event->SetInt("userid", GetUserID());
-				gameeventmanager->FireEvent(event);
-			}
-
-			RemoveAllItems(false);
-
-			if (!GlobalEntity_IsInTable("super_phys_gun"))
-			{
-				GlobalEntity_Add(MAKE_STRING("super_phys_gun"), gpGlobals->mapname, GLOBAL_ON);
-			}
-			else
-			{
-				GlobalEntity_SetState(MAKE_STRING("super_phys_gun"), GLOBAL_ON);
-			}
-
-			if (sv_player_grapple.GetBool())
-			{
-				GiveNamedItem("weapon_grapple");
-			}
-
-			GiveNamedItem("weapon_physcannon");
-
-			CFmtStr hint;
-			hint.sprintf("#GameUI_MaximumLevel");
-			ShowLevelMessage(hint.Access());
+			event->SetInt("userid", GetUserID());
+			gameeventmanager->FireEvent(event);
 		}
+
+		RemoveAllItems(false);
+
+		if (!GlobalEntity_IsInTable("super_phys_gun"))
+		{
+			GlobalEntity_Add(MAKE_STRING("super_phys_gun"), gpGlobals->mapname, GLOBAL_ON);
+		}
+		else
+		{
+			GlobalEntity_SetState(MAKE_STRING("super_phys_gun"), GLOBAL_ON);
+		}
+
+		if (sv_player_grapple.GetBool())
+		{
+			GiveNamedItem("weapon_grapple");
+		}
+
+		GiveNamedItem("weapon_physcannon");
+
+		CFmtStr hint;
+		hint.sprintf("#GameUI_MaximumLevel");
+		ShowLevelMessage(hint.Access());
 	}
 }
 
@@ -1101,7 +1101,7 @@ void CBasePlayer::DeathCheckLevel()
 {
 	if (!g_fr_classic.GetBool())
 	{
-		if (GetLevel() != MAX_LEVEL)
+		if (GetLevel() != GetMaxLevel())
 		{
 			EXPLevelPenalty();
 		}
@@ -1120,7 +1120,7 @@ void CBasePlayer::EXPLevelPenalty()
 	}
 	else
 	{
-		if ((GetLevel() > 1) && (GetLevel() != MAX_LEVEL))
+		if ((GetLevel() > 1) && (GetLevel() != GetMaxLevel()))
 		{
 			m_iLevel--;
 		}
@@ -2690,7 +2690,7 @@ void CBasePlayer::Event_Killed( const CTakeDamageInfo &info )
 
 	ClearLastKnownArea();
 
-	if ((GetLevel() == MAX_LEVEL || g_fr_hardcore.GetBool()) && !g_pGameRules->IsMultiplayer())
+	if ((IsAtMaxLevel() || g_fr_hardcore.GetBool()) && !g_pGameRules->IsMultiplayer())
 	{
 		// Clear any screenfade
 		color32 nothing = { 0, 0, 0, 255 };
@@ -3128,13 +3128,13 @@ void CBasePlayer::PlayerDeathThink(void)
 		StartObserverMode( m_iObserverLastMode );
 	}
 
-	if ((GetLevel() == MAX_LEVEL || g_fr_hardcore.GetBool()) && !g_pGameRules->IsMultiplayer())
+	if ((IsAtMaxLevel() || g_fr_hardcore.GetBool()) && !g_pGameRules->IsMultiplayer())
 	{
 		if ((gpGlobals->curtime > (m_flDeathTime + DEATH_MESSAGE_TIME)))
 		{
 			if (!m_bDeathMessage)
 			{
-				if (g_fr_hardcore.GetBool() && GetLevel() != MAX_LEVEL)
+				if (g_fr_hardcore.GetBool() && GetLevel() != GetMaxLevel())
 				{
 					UTIL_ShowMessage("FR_HardcoreEnding", this);
 				}
@@ -3148,7 +3148,7 @@ void CBasePlayer::PlayerDeathThink(void)
 	}
 	
 // wait for any button down,  or mp_forcerespawn is set and the respawn time is up
-	if ((GetLevel() == MAX_LEVEL || g_fr_hardcore.GetBool()) && !g_pGameRules->IsMultiplayer())
+	if ((IsAtMaxLevel() || g_fr_hardcore.GetBool()) && !g_pGameRules->IsMultiplayer())
 	{
 		if (!(gpGlobals->curtime > (m_flDeathTime + DEATH_WAIT_TIME) && m_bDeathMessage))
 			return;
