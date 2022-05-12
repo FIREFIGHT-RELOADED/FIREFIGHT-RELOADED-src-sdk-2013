@@ -858,7 +858,7 @@ public:
 		}
 	}
 
-	int GetLevel() { return m_iLevel; }
+	int GetLevel();
 	int GetXpToLevelUp(int level);
 	void CheckLevel();
 	virtual void LevelUp();

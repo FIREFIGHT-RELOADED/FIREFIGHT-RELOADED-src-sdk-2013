@@ -153,6 +153,25 @@ int CBasePlayer::GetXpToLevelUp(int level)
 	return 300 * (level ^ 2) - (300 * level);
 }
 
+int CBasePlayer::GetLevel()
+{ 
+	if (!g_fr_classic.GetBool())
+	{
+		return m_iLevel;
+	}
+	else
+	{
+		if (FragCount() > 0)
+		{
+			return FragCount() * 10;
+		}
+		else
+		{
+			return FragCount();
+		}
+	}
+}
+
 float CBasePlayer::GetPlayerMaxSpeed()
 {
 	// player max speed is the lower limit of m_flMaxSpeed and sv_maxspeed

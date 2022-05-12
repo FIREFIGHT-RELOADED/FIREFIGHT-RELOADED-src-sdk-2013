@@ -401,7 +401,7 @@ public:
 
 	int GetXP()				{ return m_iExp; }
 	int GetMaxXP()				{ return m_iMaxExp; }
-	int GetLevel()			{ return m_iLevel; }
+	int GetLevel();
 	int GetXpToLevelUp(int level);
 	int	FragCount() const		{ return m_iFrags; }
 	int GetMoney()			{ return m_iMoney; }
