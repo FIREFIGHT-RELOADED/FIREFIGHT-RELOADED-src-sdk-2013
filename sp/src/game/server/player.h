@@ -1503,7 +1503,6 @@ inline const CBasePlayer *ToBasePlayer( const CBaseEntity *pEntity )
 #endif
 }
 
-
 //--------------------------------------------------------------------------------------------------------------
 /**
  * DEPRECATED: Use CollectPlayers() instead.

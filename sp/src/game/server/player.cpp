@@ -1465,7 +1465,7 @@ bool CBasePlayer::ProcessItemData(KeyValues* pData, int count, int itemID)
 
 	if (pNode != NULL)
 	{
-		int minLevel = pNode->GetInt("min_level", 0);
+		int minLevel = pNode->GetInt("min_level", 1);
 		//g_fr_lonewolf
 		//g_fr_hardcore
 		//g_fr_classic

@@ -710,4 +710,6 @@ inline const CUserCmd *CBasePlayer::GetCurrentUserCommand() const
 	return m_pCurrentCommand;
 }
 
+int GetKillsToLevelUp(int level);
+
 #endif // C_BASEPLAYER_H

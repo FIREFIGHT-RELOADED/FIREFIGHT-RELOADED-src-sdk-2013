@@ -162,14 +162,7 @@ int CBasePlayer::GetLevel()
 	}
 	else
 	{
-		if (FragCount() > 0)
-		{
-			return FragCount() * 10;
-		}
-		else
-		{
-			return FragCount();
-		}
+		return MAX_LEVEL;
 	}
 }
 

@@ -420,7 +420,9 @@ void CNPCMakerFirefight::MakeNPC()
 		CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
 		if (pPlayer)
 		{
-			if (pPlayer->GetLevel() >= m_hSpawnListController->m_iMinPlayerLevel)
+			int iPlayerLevel = m_hSpawnListController->m_iMinPlayerLevel;
+
+			if (pPlayer->GetLevel() >= iPlayerLevel)
 			{
 				atMinLevel = true;
 				break;
