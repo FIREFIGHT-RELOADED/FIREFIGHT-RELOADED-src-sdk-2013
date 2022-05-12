@@ -152,7 +152,7 @@ int CBasePlayer::GetXpToLevelUp(int level)
 {
 	int exp_base = 500;
 
-	if (GetLevel() < (GetMaxLevel() * 0.25) || GetLevel() > (GetMaxLevel() * 0.75))
+	if ((int)(GetLevel() < (GetMaxLevel() * 0.25)) || (int)(GetLevel() > (GetMaxLevel() * 0.75)))
 	{
 		exp_base = 250;
 	}
