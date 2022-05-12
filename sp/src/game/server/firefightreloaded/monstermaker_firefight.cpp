@@ -127,6 +127,7 @@ void CNPCMakerFirefight::Spawn(void)
 	m_nLiveRareNPCs		= 0;
 	m_flLastLargeNPCSpawn = 0;
 	m_hSpawnListController = new CRandNPCLoader(this);
+	Precache();
 
 	//m_spawnflags |= SF_NPCMAKER_FADE;
 
@@ -157,7 +158,7 @@ void CNPCMakerFirefight::Precache(void)
 		DevMsg("Precaching NPC Weapon %s.\n", g_Weapons[i]);
 	}
 
-	// NPCs are handled on spawn.
+	m_hSpawnListController->PrecacheSpawnlist();
 }
 
 //-----------------------------------------------------------------------------
@@ -829,8 +830,13 @@ bool CRandNPCLoader::LoadNPC(void)
 
 	int count = 0;
 
+	KeyValues* currentSpawnlist = CreateLevelBasedSpawnlist();
+
+	if (currentSpawnlist == NULL)
+		return false;
+
 	//we get the number of keys in the file.
-	for (KeyValues* kv = data->GetFirstSubKey(); kv != NULL; kv = kv->GetNextKey())
+	for (KeyValues* kv = currentSpawnlist->GetFirstSubKey(); kv != NULL; kv = kv->GetNextKey())
 	{
 		count++;
 	}
@@ -839,74 +845,30 @@ bool CRandNPCLoader::LoadNPC(void)
 
 	if (count > 0)
 	{
-		KeyValues* pNode = LoadNPCData(count);
+		KeyValues* pNode = LoadNPCData(currentSpawnlist, count);
 
 		if (pNode != NULL)
 		{
-			const char* pClassname = pNode->GetString("classname");
-
-			if (strlen(pClassname) > 0)
-			{
-				m_szClassname = pClassname;
-				UTIL_PrecacheOther(m_szClassname);
-
-				bool pIsRare = pNode->GetBool("rare");
-
-				if (pIsRare)
-				{
-					m_bIsRare = pIsRare;
-				}
-				else
-				{
-					m_bIsRare = false;
-				}
-
-				int pPlayerLevel = pNode->GetInt("min_level", 1);
-
-				if (pPlayerLevel)
-				{
-					m_iMinPlayerLevel = pPlayerLevel;
-				}
-				else
-				{
-					m_iMinPlayerLevel = 1;
-				}
-
-				int pNPCPreset = pNode->GetInt("preset");
-
-				if (pNPCPreset)
-				{
-					m_iNPCAttributePreset = pNPCPreset;
-				}
-				else
-				{
-					m_iNPCAttributePreset = 0; // 0 = no attributes, random.
-				}
-
-				return true;
-			}
-			else
-			{
-				m_szClassname = "";
-				m_iNPCAttributePreset = -1; // 0 = no attributes, random. -1 and below: no attributes at all.
-				m_iMinPlayerLevel = 1;
-				m_bIsRare = false;
-				DevWarning("CRandNPCLoader: NPC definition is invalid.\n");
-			}
+			//CreateLevelBasedSpawnlist already does file checking for us.
+			m_szClassname = pNode->GetString("classname");
+			m_bIsRare = pNode->GetBool("rare");
+			m_iMinPlayerLevel = pNode->GetInt("min_level", 1);
+			m_iNPCAttributePreset = pNode->GetInt("preset", -1);
+			return true;
 		}
 	}
 
 	return false;
 }
 
-KeyValues* CRandNPCLoader::LoadNPCData(int count)
+KeyValues* CRandNPCLoader::LoadNPCData(KeyValues* pData, int count)
 {
 	int itemdrop = itemdrop = random->RandomInt(1, count);
 	//then, we randomize them.
 	DevMsg("CRandNPCLoader: Trying to load Node ID %i\n", itemdrop);
 	CFmtStr sectionName;
 	sectionName.sprintf("%i", itemdrop);
-	KeyValues* pNode = data->FindKey(sectionName.Access());
+	KeyValues* pNode = pData->FindKey(sectionName.Access());
 	while (pNode)
 	{
 		//if we found a key, then give the player an item.
@@ -916,4 +878,94 @@ KeyValues* CRandNPCLoader::LoadNPCData(int count)
 
 	DevWarning("CRandNPCLoader: NPC node %i is not loading. Check the spawnlist script file/s.\n", itemdrop);
 	return NULL;
+}
+
+KeyValues* CRandNPCLoader::CreateLevelBasedSpawnlist(void)
+{
+	KeyValues* output = new KeyValues("spawnlist_generated");
+
+	//check all the keys to generate a level based spawnlist.
+	for (KeyValues* kv = data->GetFirstSubKey(); kv != NULL; kv = kv->GetNextKey())
+	{
+		int pPlayerLevel = kv->GetInt("min_level", 1);
+
+		if (!pPlayerLevel)
+			break;
+
+		int curMinLevel = 1;
+
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+			if (pPlayer)
+			{
+				if (pPlayer->GetLevel() > curMinLevel)
+				{
+					curMinLevel = pPlayer->GetLevel();
+				}
+
+				if (curMinLevel >= pPlayerLevel)
+				{
+					KeyValues* newKey = output->CreateNewKey();
+					const char* pClassname = kv->GetString("classname");
+
+					if (strlen(pClassname) > 0)
+					{
+						newKey->SetString("classname", pClassname);
+
+						bool pIsRare = kv->GetBool("rare");
+
+						if (pIsRare)
+						{
+							newKey->SetBool("rare", pIsRare);
+						}
+						else
+						{
+							newKey->SetBool("rare", false);
+						}
+
+						newKey->SetInt("min_level", pPlayerLevel);
+
+						int pNPCPreset = kv->GetInt("preset", -1);
+
+						if (pNPCPreset)
+						{
+							newKey->SetInt("preset", pNPCPreset);
+						}
+						else
+						{
+							newKey->SetInt("preset", -1);
+						}
+					}
+					else
+					{
+						return NULL;
+					}
+				}
+			}
+		}
+	}
+
+	if (!output->IsEmpty())
+	{
+		return output;
+	}
+	else
+	{
+		output->deleteThis();
+		return NULL;
+	}
+}
+
+void CRandNPCLoader::PrecacheSpawnlist(void)
+{
+	for (KeyValues* kv = data->GetFirstSubKey(); kv != NULL; kv = kv->GetNextKey())
+	{
+		const char* pClassname = kv->GetString("classname");
+
+		if (strlen(pClassname) > 0)
+		{
+			UTIL_PrecacheOther(pClassname);
+		}
+	}
 }

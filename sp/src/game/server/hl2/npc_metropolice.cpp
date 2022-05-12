@@ -2842,6 +2842,7 @@ void CNPC_MetroPolice::OnAnimEventStartDeployManhack( void )
 	int handAttachment = LookupAttachment( "LHand" );
 	GetAttachment( handAttachment, vecOrigin, vecAngles );
 
+	pManhack->m_bDisableInitAttributes = true;
 	pManhack->SetLocalOrigin( vecOrigin );
 	pManhack->SetLocalAngles( vecAngles );
 	pManhack->AddSpawnFlags( (SF_MANHACK_PACKED_UP|SF_MANHACK_CARRIED|SF_NPC_WAIT_FOR_SCRIPT) );

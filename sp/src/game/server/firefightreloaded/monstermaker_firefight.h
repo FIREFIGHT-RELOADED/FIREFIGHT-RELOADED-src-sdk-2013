@@ -98,9 +98,11 @@ class CRandNPCLoader
 public:
 	CRandNPCLoader(CNPCMakerFirefight* pSpawner);
 	bool LoadNPC(void);
+	void PrecacheSpawnlist(void);
 
 private:
-	KeyValues* LoadNPCData(int count);
+	KeyValues* LoadNPCData(KeyValues* pData, int count);
+	KeyValues* CreateLevelBasedSpawnlist(void);
 
 public:
 	const char* m_szClassname;
