@@ -1875,9 +1875,9 @@ int CNPC_Combine::SelectCombatSchedule()
 	// -----------
 	if ( HasCondition( COND_NEW_ENEMY ) )
 	{
+		CBaseEntity* pEnemy = GetEnemy();
 		if (!IsAce())
 		{
-			CBaseEntity* pEnemy = GetEnemy();
 			bool bFirstContact = false;
 			float flTimeSinceFirstSeen = gpGlobals->curtime - GetEnemies()->FirstTimeSeen(pEnemy);
 
@@ -1950,11 +1950,23 @@ int CNPC_Combine::SelectCombatSchedule()
 		}
 		else
 		{
-			// I'm the leader, but I didn't get the job suppressing the enemy. We know this because
-					// This code only runs if the code above didn't assign me SCHED_COMBINE_SUPPRESS.
+			if (HasCondition(COND_SEE_ENEMY))
+			{
+				AnnounceEnemyType(pEnemy);
+			}
+
 			if (HasCondition(COND_CAN_RANGE_ATTACK1) && OccupyStrategySlotRange(SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2))
 			{
-				return SCHED_RANGE_ATTACK1;
+				int randAttack = random->RandomInt(0, 8);
+
+				if (randAttack < 5)
+				{
+					return SCHED_TAKE_COVER_FROM_ENEMY;
+				}
+				else
+				{
+					return SCHED_RANGE_ATTACK1;
+				}
 			}
 
 			return SCHED_TAKE_COVER_FROM_ENEMY;
@@ -1964,6 +1976,12 @@ int CNPC_Combine::SelectCombatSchedule()
 	if (HasCondition(COND_TOO_CLOSE_TO_ATTACK))
 	{
 		return SCHED_BACK_AWAY_FROM_ENEMY;
+	}
+
+	if (IsAce() && HasCondition(COND_SEE_ENEMY) && GetEnemy()->GetHealth() <= (GetEnemy()->GetMaxHealth() * 0.5f) && !IsUnreachable(GetEnemy()))
+	{
+		// charge at the player if they are at half helath.
+		return SCHED_COMBINE_CHARGE_PLAYER;
 	}
 
 	// ---------------------
@@ -1994,7 +2012,7 @@ int CNPC_Combine::SelectCombatSchedule()
 	// ----------------------
 	// LIGHT DAMAGE
 	// ----------------------
-	if ( HasCondition( COND_LIGHT_DAMAGE ) )
+	if ( HasCondition( COND_LIGHT_DAMAGE ) || HasCondition(COND_HEAVY_DAMAGE))
 	{
 		if ( GetEnemy() != NULL )
 		{
@@ -2004,22 +2022,9 @@ int CNPC_Combine::SelectCombatSchedule()
 
 			// A standing guy will either crouch or run.
 			// A crouching guy tries to stay stuck in.
-			if( !IsCrouching() )
-			{
-				if( GetEnemy() && random->RandomFloat( 0, 100 ) < 50 && CouldShootIfCrouching( GetEnemy() ) )
-				{
-					if (GetActiveWeapon() && !HasPistol())
-					{
-						Crouch();
-					}
-				}
-				else
-				{
-					//!!!KELLY - this grunt was hit and is going to run to cover.
-					// m_Sentences.Speak( "COMBINE_COVER" );
-					return SCHED_TAKE_COVER_FROM_ENEMY;
-				}
-			}
+			//!!!KELLY - this grunt was hit and is going to run to cover.
+			// m_Sentences.Speak( "COMBINE_COVER" );
+			return SCHED_TAKE_COVER_FROM_ENEMY;
 		}
 		else
 		{
