@@ -322,7 +322,7 @@ void CNPC_Houndeye::HandleAnimEvent( animevent_t *pEvent )
 		case HOUND_AE_CLOSE_EYE:
 			if ( !m_fDontBlink )
 			{
-			//<<TEMP>>	pev->skin = HOUNDEYE_EYE_FRAMES - 1;
+				m_nSkin = HOUNDEYE_EYE_FRAMES - 1;
 			}
 			break;
 
@@ -614,6 +614,8 @@ int CNPC_Houndeye::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 //------------------------------------------------------------------------------
 void CNPC_Houndeye::Event_Killed( const CTakeDamageInfo &info )
 {
+	m_nSkin = random->RandomInt(1,2);
+
 	EmitSound( "NPC_Houndeye.Retreat" );
 	m_flSoundWaitTime = gpGlobals->curtime + 1.0;
 
@@ -810,7 +812,7 @@ void CNPC_Houndeye::StartTask( const Task_t *pTask )
 		}
 	case TASK_HOUND_CLOSE_EYE:
 		{
-//<<TEMP>>			pev->skin = 0;
+			m_nSkin = 0;
 			m_fDontBlink = true; // tell blink code to leave the eye alone.
 			break;
 		}
@@ -900,16 +902,16 @@ void CNPC_Houndeye::PrescheduleThink ( void )
 	// at random, initiate a blink if not already blinking or sleeping
 	if ( !m_fDontBlink )
 	{
-		/*//<<TEMP>>//<<TEMP>>
-		if ( ( pev->skin == 0 ) && random->RandomInt(0,0x7F) == 0 )
+		//<<TEMP>>//<<TEMP>>
+		if ( (m_nSkin == 0 ) && random->RandomInt(0,0x7F) == 0 )
 		{// start blinking!
-			pev->skin = HOUNDEYE_EYE_FRAMES - 1;
+			m_nSkin = HOUNDEYE_EYE_FRAMES - 1;
 		}
-		else if ( pev->skin != 0 )
+		else if (m_nSkin != 0 )
 		{// already blinking
-			pev->skin--;
+			m_nSkin--;
 		}
-		*/
+		
 	}
 }
 

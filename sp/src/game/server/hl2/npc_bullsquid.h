@@ -49,6 +49,7 @@ public:
 	void RemoveIgnoredConditions( void );
 	Disposition_t IRelationType( CBaseEntity *pTarget );
 	int OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo );
+	void Event_Killed(const CTakeDamageInfo& info);
 
 	virtual bool GetSpitVector(const Vector &vecStartPos, const Vector &vecTarget, Vector *vecOut);
 	virtual bool InnateWeaponLOSCondition(const Vector &ownerPos, const Vector &targetPos, bool bSetConditions);

@@ -871,6 +871,12 @@ int CNPC_Bullsquid::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 	return BaseClass::OnTakeDamage_Alive( inputInfo );
 }
 
+void CNPC_Bullsquid::Event_Killed(const CTakeDamageInfo& info)
+{
+	m_nSkin = 1;
+	BaseClass::Event_Killed(info);
+}
+
 //=========================================================
 // GetSoundInterests - returns a bit mask indicating which types
 // of sounds this monster regards. In the base class implementation,

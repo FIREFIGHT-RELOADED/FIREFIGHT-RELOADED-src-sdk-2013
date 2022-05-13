@@ -348,7 +348,7 @@ float CWeaponShotgun::GetMaxRestTime()
 {
 	CBaseCombatCharacter* pOwner = GetOwner();
 
-	if( hl2_episodic.GetBool() && pOwner && pOwner->IsNPC() && pOwner->Classify() == CLASS_COMBINE )
+	if(hl2_episodic.GetBool() && pOwner && pOwner->IsNPC() && pOwner->Classify() == CLASS_COMBINE && g_pGameRules->GetSkillLevel() < SKILL_VERYHARD)
 	{
 		return 1.5f;
 	}
@@ -364,14 +364,14 @@ float CWeaponShotgun::GetFireRate()
 {
 	CBaseCombatCharacter* pOwner = GetOwner();
 
-	if( hl2_episodic.GetBool() && pOwner && pOwner->IsNPC() && pOwner->Classify() == CLASS_COMBINE )
+	if(hl2_episodic.GetBool() && pOwner && pOwner->IsNPC() && pOwner->Classify() == CLASS_COMBINE && g_pGameRules->GetSkillLevel() < SKILL_VERYHARD)
 	{
 		return 0.8f;
 	}
 
 	if (m_iFireMode == 1 && pOwner->IsPlayer())
 	{
-		return 0.3f;
+		return 0.5f;
 	}
 
 	return 0.7f;
