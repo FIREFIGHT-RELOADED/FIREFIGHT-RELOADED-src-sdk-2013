@@ -891,9 +891,6 @@ KeyValues* CRandNPCLoader::CreateLevelBasedSpawnlist(void)
 	{
 		int pPlayerLevel = kv->GetInt("min_level", 1);
 
-		if (!pPlayerLevel)
-			break;
-
 		int curMinLevel = 1;
 
 		for (int i = 1; i <= gpGlobals->maxClients; i++)
@@ -914,30 +911,11 @@ KeyValues* CRandNPCLoader::CreateLevelBasedSpawnlist(void)
 					if (strlen(pClassname) > 0)
 					{
 						newKey->SetString("classname", pClassname);
-
 						bool pIsRare = kv->GetBool("rare");
-
-						if (pIsRare)
-						{
-							newKey->SetBool("rare", pIsRare);
-						}
-						else
-						{
-							newKey->SetBool("rare", false);
-						}
-
+						newKey->SetBool("rare", pIsRare);
 						newKey->SetInt("min_level", pPlayerLevel);
-
 						int pNPCPreset = kv->GetInt("preset", -1);
-
-						if (pNPCPreset)
-						{
-							newKey->SetInt("preset", pNPCPreset);
-						}
-						else
-						{
-							newKey->SetInt("preset", -1);
-						}
+						newKey->SetInt("preset", pNPCPreset);
 					}
 					else
 					{
