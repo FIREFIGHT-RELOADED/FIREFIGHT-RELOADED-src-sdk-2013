@@ -130,9 +130,7 @@ void CGrappleHook::Spawn( void )
  
 	SetThink( &CGrappleHook::FlyThink );
 	SetNextThink( gpGlobals->curtime + 0.1f );
- 
-	m_pSpring		= NULL;
-	m_fSpringLength = 0.0f;
+
 	m_bPlayerWasStanding = false;
 }
  
@@ -223,10 +221,6 @@ void CGrappleHook::HookTouch( CBaseEntity *pOther )
 		//	float damping = 3;
 		//	pPhysObject->SetDamping( &damping, &damping );
 
-		Vector origin = m_hPlayer->GetAbsOrigin();
-		Vector rootOrigin = GetAbsOrigin();
-		m_fSpringLength = (origin - rootOrigin).Length();
-
 		m_bPlayerWasStanding = ((m_hPlayer->GetFlags() & FL_DUCKING) == 0);
 
 		SetThink(&CGrappleHook::HookedThink);
@@ -279,12 +273,7 @@ void CGrappleHook::HookedThink( void )
 	}
 	else
 	{
-		float velocity = 950.0f;
-		if (m_hPlayer->m_nButtons & IN_DUCK)
-		{
-			velocity = 1350.0f;
-		}
-
+		float velocity = 1350.0f;
 		m_hPlayer->SetAbsVelocity(tempVec1 * temp_multiplier * velocity);//400
 	}
 }
@@ -471,7 +460,7 @@ void CWeaponGrapple::PrimaryAttack( void )
 		m_pLightGlow->SetScale( 0.65 );
 	}
 
-	FireHook();
+	FireHook(tr.endpos);
 }
  
 //-----------------------------------------------------------------------------
@@ -524,7 +513,7 @@ void CWeaponGrapple::ItemPostFrame( void )
 //-----------------------------------------------------------------------------
 // Purpose: Fires the hook
 //-----------------------------------------------------------------------------
-void CWeaponGrapple::FireHook( void )
+void CWeaponGrapple::FireHook(const Vector& endPos)
 {
 	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
  
@@ -537,7 +526,7 @@ void CWeaponGrapple::FireHook( void )
 	QAngle angAiming;
 	VectorAngles( vecAiming, angAiming );
  
-	CGrappleHook *pHook = CGrappleHook::HookCreate( vecSrc, angAiming, this );
+	CGrappleHook *pHook = CGrappleHook::HookCreate(endPos, angAiming, this );
  
 	if ( pOwner->GetWaterLevel() == 3 )
 	{

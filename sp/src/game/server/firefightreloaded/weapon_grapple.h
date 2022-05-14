@@ -63,8 +63,6 @@ private:
 	CHandle<CWeaponGrapple>		m_hOwner;
 	CHandle<CBasePlayer>		m_hPlayer;
 	CHandle<CDynamicProp>		m_hBolt;
-	IPhysicsSpring				*m_pSpring;
-	float						m_fSpringLength;
 	bool						m_bPlayerWasStanding;
 };
      
@@ -98,7 +96,7 @@ public:
 	bool                        m_bHook;
  
 private:
-	void	FireHook( void );
+	void	FireHook(const Vector& endPos);
  
 private: 
 	CHandle<CBeam>			pBeam;
