@@ -259,7 +259,7 @@ void CGrappleHook::HookedThink( void )
 	m_hPlayer->SetGravity(0.0f);
 	m_hPlayer->SetGroundEntity(NULL);
 
-	float flDistance = (m_hPlayer->GetAbsOrigin() - GetAbsOrigin()).Length();
+	float flDistance = tempVec1.Length();
 
 	if (flDistance < 32.0f)
 	{
