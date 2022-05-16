@@ -129,6 +129,8 @@ CBaseCombatWeapon::CBaseCombatWeapon()
 	m_bIsIronsighted = false;
 	m_flIronsightedTime = 0.0f;
 
+	m_bPlayDeployAnim = true;
+
 	// Defaults to zero
 	m_nViewModelIndex	= 0;
 
@@ -1752,7 +1754,14 @@ bool CBaseCombatWeapon::Deploy( )
 
 Activity CBaseCombatWeapon::GetDrawActivity( void )
 {
-	return ACT_VM_DRAW;
+	if (!m_bPlayDeployAnim)
+	{
+		return ACT_INVALID;
+	}
+	else
+	{
+		return ACT_VM_DRAW;
+	}
 }
 
 //-----------------------------------------------------------------------------

@@ -237,6 +237,7 @@ ConVar sv_fr_reward_attemptcount("sv_fr_reward_attemptcount", "3", FCVAR_ARCHIVE
 ConVar sv_player_explosionringing("sv_player_explosionringing", "0", FCVAR_ARCHIVE);
 
 ConVar sv_player_autoswitchonreward("sv_player_autoswitchonreward", "0", FCVAR_ARCHIVE);
+ConVar sv_player_autoswitch("sv_player_autoswitch", "1", FCVAR_ARCHIVE);
 
 ConVar sv_fr_perks_healthregeneration_perkmode("sv_fr_perks_healthregeneration_perkmode", "0", FCVAR_ARCHIVE);
 ConVar sv_fr_perks_healthregeneration_perkmode_inmutators("sv_fr_perks_healthregeneration_perkmode_inmutators", "1", FCVAR_ARCHIVE);
@@ -6807,7 +6808,8 @@ CBaseEntity	*CBasePlayer::GiveNamedItem( const char *pszName, int iSubType, bool
 
 	if ( pWeapon )
 	{
-		if (isReward && !sv_player_autoswitchonreward.GetBool())
+		pWeapon->m_bPlayDeployAnim = false;
+		if (isReward && !sv_player_autoswitchonreward.GetBool() && sv_player_autoswitch.GetBool())
 		{
 			pWeapon->AddSpawnFlags(SF_WEAPON_NO_INITIALWEAPONSWITCH);
 		}
@@ -6827,6 +6829,15 @@ CBaseEntity	*CBasePlayer::GiveNamedItem( const char *pszName, int iSubType, bool
 	if ( pent != NULL && !(pent->IsMarkedForDeletion()) ) 
 	{
 		pent->Touch( this );
+		if (!isReward && !sv_player_autoswitch.GetBool())
+		{
+			Weapon_Switch(pWeapon);
+		}
+	}
+
+	if (pWeapon)
+	{
+		pWeapon->m_bPlayDeployAnim = true;
 	}
 
 	return pent;
@@ -8014,6 +8025,12 @@ bool CBasePlayer::BumpWeapon( CBaseCombatWeapon *pWeapon )
 		pWeapon->AddSolidFlags( FSOLID_NOT_SOLID );
 		pWeapon->AddEffects( EF_NODRAW );
 
+		//allow given items to be autoswitched if sv_player_autoswitch is disabled. rewards are handled differently (sv_player_autoswitchonreward)
+		if (!sv_player_autoswitch.GetBool())
+		{
+			pWeapon->AddSpawnFlags(SF_WEAPON_NO_INITIALWEAPONSWITCH);
+		}
+	
 		Weapon_Equip( pWeapon );
 		if ( IsInAVehicle() )
 		{
@@ -8044,7 +8061,9 @@ bool CBasePlayer::BumpWeapon( CBaseCombatWeapon *pWeapon )
 			{
 				if (pActive)
 				{
+					pActive->m_bPlayDeployAnim = false;
 					Weapon_Switch(pActive);
+					pActive->m_bPlayDeployAnim = true;
 				}
 			}
 #endif

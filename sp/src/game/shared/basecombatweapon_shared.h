@@ -581,6 +581,7 @@ public:
 	bool					m_bFireOnEmpty;			// True when the gun is empty and the player is still holding down the attack key(s)
 	bool					m_bFiringWholeClip;		// Are we in the middle of firing the whole clip;
 	bool					m_bHolstering;			// Are we holstering;
+	bool					m_bPlayDeployAnim;			// Are we holstering;
 	// Weapon art
 	CNetworkVar( int, m_iViewModelIndex );
 	CNetworkVar( int, m_iWorldModelIndex );
