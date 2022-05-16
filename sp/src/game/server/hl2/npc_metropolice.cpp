@@ -750,17 +750,13 @@ void CNPC_MetroPolice::Spawn( void )
 	//Give him a random number of manhacks on spawn.
 	if (!manhackoverride && metropolice_spawnwithmanhacks.GetBool())
 	{
-		if (g_pGameRules->IsSkillLevel(SKILL_HARD))
+		if (g_pGameRules->GetSkillLevel() < SKILL_VERYHARD)
 		{
 			m_iManhacks = random->RandomInt(2, 3);
 		}
-		else if (g_pGameRules->IsSkillLevel(SKILL_VERYHARD))
+		else if (g_pGameRules->GetSkillLevel() >= SKILL_VERYHARD)
 		{
-			m_iManhacks = random->RandomInt(4, 6);
-		}
-		else if (g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE))
-		{
-			m_iManhacks = random->RandomInt(8, 12);
+			m_iManhacks = random->RandomInt(3, 5);
 		}
 		else
 		{
