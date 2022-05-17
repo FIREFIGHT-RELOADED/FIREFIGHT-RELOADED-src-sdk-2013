@@ -38,6 +38,9 @@ private:
 	void LoadMaps( const char *pszPathID );
 
 	vgui::ComboBox *m_pMapList;
+
+	// for loading/saving game config
+	KeyValues* m_pSavedData;
 };
 
 

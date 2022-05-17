@@ -44,6 +44,21 @@ CNewSingleplayerGameDialog::CNewSingleplayerGameDialog(vgui::Panel *parent) : Ba
 	SetSizeable(false);
 	SetDeleteSelfOnClose(true);
 	MoveToCenterOfScreen();
+
+	// create KeyValues object to load/save config options
+	m_pSavedData = new KeyValues("SingleplayerConfig");
+
+	// load the config data
+	if (m_pSavedData)
+	{
+		m_pSavedData->LoadFromFile(g_pFullFileSystem, "SingleplayerConfig.vdf", "GAME"); // this is game-specific data, so it should live in GAME, not CONFIG
+
+		const char* startMap = m_pSavedData->GetString("map", "");
+		if (startMap[0])
+		{
+			SetMap(startMap);
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -51,6 +66,11 @@ CNewSingleplayerGameDialog::CNewSingleplayerGameDialog(vgui::Panel *parent) : Ba
 //-----------------------------------------------------------------------------
 CNewSingleplayerGameDialog::~CNewSingleplayerGameDialog()
 {
+	if (m_pSavedData)
+	{
+		m_pSavedData->deleteThis();
+		m_pSavedData = NULL;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -72,6 +92,23 @@ void CNewSingleplayerGameDialog::OnCommand(const char *command)
 	{
 		char szMapName[64];
 		Q_strncpy(szMapName, GetMapName(), sizeof( szMapName ));
+
+		// save the config data
+		if (m_pSavedData)
+		{
+			if (IsRandomMapSelected())
+			{
+				// it's set to random map, just save an
+				m_pSavedData->SetString("map", "");
+			}
+			else
+			{
+				m_pSavedData->SetString("map", szMapName);
+			}
+
+			// save config to a file
+			m_pSavedData->SaveToFile(g_pFullFileSystem, "SingleplayerConfig.vdf", "GAME");
+		}
 
 		char szMapCommand[1024];
 
