@@ -32,6 +32,7 @@ ConVar sk_spawner_npc_ragdoll_fade("sk_spawner_npc_ragdoll_fade", "1", FCVAR_ARC
 ConVar sk_spawner_largenpc_spawndelay("sk_spawner_largenpc_spawntime", "300", FCVAR_CHEAT);
 ConVar debug_spawner_info("debug_spawner_info", "0", FCVAR_CHEAT);
 ConVar debug_spawner_disable("debug_spawner_disable", "0", FCVAR_CHEAT);
+ConVar sk_spawner_defaultspawnlist("sk_spawner_defaultspawnlist", "scripts/spawnlists/default.txt", FCVAR_ARCHIVE);
 
 //spawn lists (TODO: use KeyValues files)
 const char *g_CombineSoldierWeapons[] =
@@ -807,7 +808,7 @@ CRandNPCLoader::CRandNPCLoader(CNPCMakerFirefight* pSpawner)
 	{
 		DevWarning("CRandNPCLoader: Failed to load %s spawnlist! File may not exist. Using default spawn list...\n", name);
 		KeyValues* pKV = new KeyValues("default");
-		if (pKV->LoadFromFile(filesystem, "scripts/spawnlists/default.txt"))
+		if (pKV->LoadFromFile(filesystem, sk_spawner_defaultspawnlist.GetString()))
 		{
 			data = pKV->MakeCopy();
 			//set the parent if we are SURE we have loaded it.

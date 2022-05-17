@@ -4,6 +4,7 @@
 #include "gameui/SingleplayerAdvancedDialog.h"
 #include "gameui/NewSingleplayerGameDialog.h"
 #include "gameui/PlayerModelDialog.h"
+#include "gameui/SpawnlistDialog.h"
 #include "tier3/tier3.h"
 #include "vgui/ILocalize.h"
 #include "fmtstr.h"
@@ -203,6 +204,11 @@ void CFRMainMenuPanel::OnCommand(const char* command)
 	{
 		CPlayerModelDialog* pCPlayerModelDialog = new CPlayerModelDialog(this);
 		pCPlayerModelDialog->Activate();
+	}
+	else if (!Q_strcmp(command, "spawnlistdialog"))
+	{
+		CSpawnlistDialog* pCSpawnlistDialog = new CSpawnlistDialog(this);
+		pCSpawnlistDialog->Activate();
 	}
 	else
 	{

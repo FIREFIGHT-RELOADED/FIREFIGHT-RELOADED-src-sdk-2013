@@ -182,6 +182,8 @@ $Project "Client (FR)"
 				$File	"gameui\NewSingleplayerGameDialog.h"
 				$File	"gameui\PlayerModelDialog.cpp"
 				$File	"gameui\PlayerModelDialog.h"
+				$File	"gameui\SpawnlistDialog.cpp"
+				$File	"gameui\SpawnlistDialog.h"
 			}
 			
 			$Folder	"Main Menu"
