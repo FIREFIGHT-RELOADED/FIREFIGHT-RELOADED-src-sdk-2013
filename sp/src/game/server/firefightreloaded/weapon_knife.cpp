@@ -78,9 +78,19 @@ CWeaponKnife::CWeaponKnife( void )
 
 bool CWeaponKnife::Deploy(void)
 {
-	m_flNextSecondaryAttack = gpGlobals->curtime + KNIFE_REFIRE_THROW;
+	bool deployVal = BaseClass::Deploy();
 
-	return BaseClass::Deploy();
+	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
+
+	if (pOwner != NULL)
+	{
+		// Can't shoot again until we've finished deploying
+		pOwner->SetNextAttack(gpGlobals->curtime + SequenceDuration());
+		m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
+		m_flNextSecondaryAttack = gpGlobals->curtime + SequenceDuration();
+	}
+
+	return deployVal;
 }
 
 #define THROWNKNIFE_AIR_VELOCITY	2500
