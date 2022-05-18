@@ -76,6 +76,12 @@ CWeaponKnife::CWeaponKnife( void )
 	UTIL_PrecacheOther("crossbow_bolt");
 }*/
 
+bool CWeaponKnife::Deploy(void)
+{
+	m_flNextSecondaryAttack = gpGlobals->curtime + KNIFE_REFIRE_THROW;
+
+	return BaseClass::Deploy();
+}
 
 #define THROWNKNIFE_AIR_VELOCITY	2500
 #define THROWNKNIFE_WATER_VELOCITY	1500
