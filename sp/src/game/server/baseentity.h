@@ -1735,6 +1735,7 @@ public:
 	friend class CCollisionEvent;
 
 	bool m_isRareEntity;
+	bool m_isLargeEntity;
 
 	virtual float GetColorRed(void) { return m_iColorRed; }
 	virtual float GetColorGreen(void) { return m_iColorGreen; }

@@ -418,6 +418,7 @@ CBaseEntity::CBaseEntity( bool bServerOnly )
 #endif
 
 	m_isRareEntity = false;
+	m_isLargeEntity = false;
 }
 
 //-----------------------------------------------------------------------------

@@ -182,6 +182,16 @@ void CNPCMakerFirefight::MakerThink(void)
 		m_nLiveRareNPCs = 0;
 	}
 
+	if (m_nRareNPCRarity > SKILL_MEDIUM)
+	{
+		m_nRareNPCRarity = m_nRareNPCRarity - g_pGameRules->GetSkillLevel();
+	}
+
+	if (m_nRareNPCRarity <= 0)
+	{
+		m_nRareNPCRarity = 1;
+	}
+
 	if (debug_spawner_info.GetBool())
 	{
 		m_debugOverlays |= OVERLAY_TEXT_BIT;
@@ -399,6 +409,9 @@ void CNPCMakerFirefight::DeathNotice(CBaseEntity* pVictim)
 	if (pVictim->GetOwnerEntity() == NULL)
 		return;
 
+	if (pVictim->m_isLargeEntity)
+		return;
+
 	KilledNotice(pVictim);
 }
 
@@ -590,6 +603,8 @@ void CNPCMakerFirefight::MakeNPC()
 		FClassnameIs(pent, "npc_combinegunship") || 
 		FClassnameIs(pent, "npc_combinedropship"))
 	{
+		pent->m_isLargeEntity = true;
+
 		if (m_bLargeNPCsEnabled)
 		{
 			if (m_flLastLargeNPCSpawn < gpGlobals->curtime)
