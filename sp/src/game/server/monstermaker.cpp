@@ -466,7 +466,6 @@ void CNPCMaker::MakeNPC( void )
 	ChildPostSpawn( pent );
 
 	m_nLiveChildren++;// count this NPC
-	g_iNPCLimit++;
 
 	if (!(m_spawnflags & SF_NPCMAKER_INF_CHILD))
 	{
@@ -523,6 +522,11 @@ void CBaseNPCMaker::MakerThink ( void )
 	SetNextThink( gpGlobals->curtime + m_flSpawnFrequency );
 
 	MakeNPC();
+
+	if (m_nLiveChildren < 0)
+	{
+		m_nLiveChildren = 0;
+	}
 }
 
 
@@ -534,7 +538,6 @@ bool CBaseNPCMaker::KilledNotice( CBaseEntity *pVictim )
 {
 	// ok, we've gotten the deathnotice from our child, now clear out its owner if we don't want it to fade.
 	m_nLiveChildren--;
-	g_iNPCLimit--;
 
 	// If we're here, we're getting erroneous death messages from children we haven't created
 	AssertMsg( m_nLiveChildren >= 0, "npc_maker receiving child death notice but thinks has no children\n" );
@@ -554,6 +557,13 @@ bool CBaseNPCMaker::KilledNotice( CBaseEntity *pVictim )
 	return true;
 }
 
+void CBaseNPCMaker::DeathNotice(CBaseEntity* pVictim)
+{
+	if (pVictim->GetOwnerEntity() == NULL)
+		return;
+
+	KilledNotice(pVictim);
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Creates new NPCs from a template NPC. The template NPC must be marked

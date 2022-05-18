@@ -57,6 +57,7 @@ public:
 	bool CanMakeNPC( bool bIgnoreSolidEntities = false );
 
 	virtual bool KilledNotice( CBaseEntity *pChild );// NPC maker children use this to tell the NPC maker that they have died.
+	virtual void DeathNotice(CBaseEntity* pVictim);
 	virtual void MakeNPC( void ) = 0;
 
 	virtual	void ChildPreSpawn( CAI_BaseNPC *pChild ) {};

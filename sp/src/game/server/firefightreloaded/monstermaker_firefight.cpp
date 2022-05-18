@@ -172,6 +172,16 @@ void CNPCMakerFirefight::MakerThink(void)
 	//rare npcs will be handled by the spawnlist
 	MakeNPC();
 
+	if (m_nLiveChildren < 0)
+	{
+		m_nLiveChildren = 0;
+	}
+
+	if (m_nLiveRareNPCs < 0)
+	{
+		m_nLiveRareNPCs = 0;
+	}
+
 	if (debug_spawner_info.GetBool())
 	{
 		m_debugOverlays |= OVERLAY_TEXT_BIT;
@@ -368,7 +378,6 @@ bool CNPCMakerFirefight::KilledNotice(CBaseEntity *pVictim)
 {
 	// ok, we've gotten the deathnotice from our child, now clear out its owner if we don't want it to fade.
 	m_nLiveChildren--;
-	g_iNPCLimit--;
 
 	// If we're here, we're getting erroneous death messages from children we haven't created
 	AssertMsg(m_nLiveChildren >= 0, "npc_maker_firefight receiving child death notice but thinks has no children\n");
@@ -383,6 +392,14 @@ bool CNPCMakerFirefight::KilledNotice(CBaseEntity *pVictim)
 	}
 
 	return true;
+}
+
+void CNPCMakerFirefight::DeathNotice(CBaseEntity* pVictim)
+{
+	if (pVictim->GetOwnerEntity() == NULL)
+		return;
+
+	KilledNotice(pVictim);
 }
 
 void AllyAlert()
@@ -413,6 +430,20 @@ void CNPCMakerFirefight::MakeNPC()
 	if (!newNPC)
 		return;
 
+	if (m_hSpawnListController->m_bIsRare)
+	{
+		if (sk_spawnrareenemies.GetBool())
+		{
+			int rarenpcrandom = random->RandomInt(0, m_nRareNPCRarity);
+
+			if (!CanMakeRareNPC() || rarenpcrandom > 0)
+			{
+				MakeNPC();
+				return;
+			}
+		}
+	}
+
 	//if any player has the same level we should spawn at, we'll spawn.
 	bool atMinLevel = false;
 
@@ -435,18 +466,6 @@ void CNPCMakerFirefight::MakeNPC()
 		return;
 
 	const char* pRandomName = m_hSpawnListController->m_szClassname;
-
-	if (sk_spawnrareenemies.GetBool() && m_hSpawnListController->m_bIsRare)
-	{
-		if (!CanMakeRareNPC())
-			return;
-
-		int rarenpcrandom = random->RandomInt(0, m_nRareNPCRarity);
-
-		if (rarenpcrandom > 0)
-			return;
-	}
-
 	CAI_BaseNPC* pent = (CAI_BaseNPC*)CreateEntityByName(pRandomName);
 
 	if (!pent)
@@ -611,8 +630,8 @@ void CNPCMakerFirefight::MakeNPC()
 		//rare entities have their own value we must consider.
 		m_nLiveRareNPCs++;
 	}
+
 	m_nLiveChildren++;// count this NPC
-	g_iNPCLimit++;
 }
 
 //-----------------------------------------------------------------------------
@@ -854,7 +873,7 @@ bool CRandNPCLoader::LoadNPC(void)
 		{
 			//CreateLevelBasedSpawnlist already does file checking for us.
 			m_szClassname = pNode->GetString("classname");
-			m_bIsRare = pNode->GetBool("rare");
+			m_bIsRare = pNode->GetBool("rare", false);
 			m_iMinPlayerLevel = pNode->GetInt("min_level", 1);
 			m_iNPCAttributePreset = pNode->GetInt("preset", -1);
 			return true;
