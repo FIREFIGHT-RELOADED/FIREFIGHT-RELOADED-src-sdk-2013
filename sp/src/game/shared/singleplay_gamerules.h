@@ -91,6 +91,8 @@ public:
 	virtual void PlayerKilled( CBasePlayer *pVictim, const CTakeDamageInfo &info );
 	virtual void NPCKilled(CBaseEntity *pVictim, const CTakeDamageInfo &info);
 	virtual void DeathNotice(CBasePlayer *pVictim, const CTakeDamageInfo &info);
+	virtual void DeathNoticeNPC(CBaseEntity* pVictim, const CTakeDamageInfo& info);
+	const char* GetNPCName(CBaseEntity* pVictim);
 	CBasePlayer *GetDeathScorer(CBaseEntity *pKiller, CBaseEntity *pInflictor);									// old version of method - kept for backward compat
 	virtual CBasePlayer *GetDeathScorer(CBaseEntity *pKiller, CBaseEntity *pInflictor, CBaseEntity *pVictim);		// new version of method
 
