@@ -2832,6 +2832,9 @@ void CNPC_MetroPolice::OnAnimEventStartDeployManhack( void )
 	// Create the manhack to throw
 	CNPC_Manhack *pManhack = (CNPC_Manhack *)CreateEntityByName( "npc_manhack" );
 	
+	if (!pManhack)
+		return;
+
 	Vector	vecOrigin;
 	QAngle	vecAngles;
 

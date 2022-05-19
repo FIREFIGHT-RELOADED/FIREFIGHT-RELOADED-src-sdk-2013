@@ -11571,8 +11571,15 @@ CAI_BaseNPC::CAI_BaseNPC(void)
 	m_interuptSchedule			= NULL;
 	m_nDebugPauseIndex			= 0;
 
-	SetAIIndex(g_AI_Manager.AddAI(this));
-	lagcompensation->RemoveNpcData(GetAIIndex());
+	if (g_pGameRules->IsMultiplayer())
+	{
+		SetAIIndex(g_AI_Manager.AddAI(this));
+		lagcompensation->RemoveNpcData(GetAIIndex());
+	}
+	else
+	{
+		g_AI_Manager.AddAI(this);
+	}
 	
 	if ( g_AI_Manager.NumAIs() == 1 )
 	{
@@ -11614,7 +11621,10 @@ CAI_BaseNPC::~CAI_BaseNPC(void)
 	delete m_pSenses;
 	delete m_pTacticalServices;
 
-	lagcompensation->RemoveNpcData(GetAIIndex());
+	if (g_pGameRules->IsMultiplayer())
+	{
+		lagcompensation->RemoveNpcData(GetAIIndex());
+	}
 }
 
 //-----------------------------------------------------------------------------
