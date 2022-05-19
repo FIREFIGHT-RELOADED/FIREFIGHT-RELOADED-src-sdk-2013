@@ -22,6 +22,7 @@ public:
 	
 public:
 	bool loadedAttributes;
+	int presetNum;
 
 private:
 	KeyValues* data;

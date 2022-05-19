@@ -89,6 +89,7 @@ CAttributesLoader::CAttributesLoader(const char *className, int preset)
 	if (pKV->LoadFromFile(filesystem, szFullName))
 	{
 		data = pKV->MakeCopy();
+		presetNum = preset;
 		loadedAttributes = true;
 	}
 	else

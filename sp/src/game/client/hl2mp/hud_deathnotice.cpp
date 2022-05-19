@@ -21,8 +21,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-
-static ConVar hud_deathnotice_time("hud_deathnotice_time", "6", 0);
+static ConVar hud_deathnotice_time("hud_deathnotice_time", "10", 0);
 
 // Player entries in a death notice
 struct DeathNoticePlayer
@@ -395,13 +394,8 @@ void CHudDeathNotice::FireGameEvent(IGameEvent* event)
 		deathMsg.iSuicide = (!killer);
 
 		// Try and find the death identifier in the icon list
-		deathMsg.iconDeath = gHUD.GetIcon(fullkilledwith);
-
-		if (!deathMsg.iconDeath || deathMsg.iSuicide)
-		{
-			// Can't find it, so use the default skull & crossbones icon
-			deathMsg.iconDeath = m_iconD_skull;
-		}
+		// Can't find it, so use the default skull & crossbones icon
+		deathMsg.iconDeath = m_iconD_skull;
 
 		// Add it to our list of death notices
 		m_DeathNotices.AddToTail(deathMsg);
@@ -474,13 +468,8 @@ void CHudDeathNotice::FireGameEvent(IGameEvent* event)
 		deathMsg.iSuicide = (FStrEq(killer_name, victim_name));
 
 		// Try and find the death identifier in the icon list
-		deathMsg.iconDeath = gHUD.GetIcon(fullkilledwith);
-
-		if (!deathMsg.iconDeath || deathMsg.iSuicide)
-		{
-			// Can't find it, so use the default skull & crossbones icon
-			deathMsg.iconDeath = m_iconD_skull;
-		}
+		// Can't find it, so use the default skull & crossbones icon
+		deathMsg.iconDeath = m_iconD_skull;
 
 		// Add it to our list of death notices
 		m_DeathNotices.AddToTail(deathMsg);
