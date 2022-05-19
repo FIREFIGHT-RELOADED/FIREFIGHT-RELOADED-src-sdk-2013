@@ -11571,7 +11571,7 @@ CAI_BaseNPC::CAI_BaseNPC(void)
 	m_interuptSchedule			= NULL;
 	m_nDebugPauseIndex			= 0;
 
-	if (g_pGameRules->IsMultiplayer())
+	if (g_pGameRules && g_pGameRules->IsMultiplayer())
 	{
 		SetAIIndex(g_AI_Manager.AddAI(this));
 		lagcompensation->RemoveNpcData(GetAIIndex());
@@ -11621,7 +11621,7 @@ CAI_BaseNPC::~CAI_BaseNPC(void)
 	delete m_pSenses;
 	delete m_pTacticalServices;
 
-	if (g_pGameRules->IsMultiplayer())
+	if (g_pGameRules && g_pGameRules->IsMultiplayer())
 	{
 		lagcompensation->RemoveNpcData(GetAIIndex());
 	}
