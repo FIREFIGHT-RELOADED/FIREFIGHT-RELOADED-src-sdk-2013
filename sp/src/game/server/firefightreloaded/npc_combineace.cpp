@@ -528,7 +528,7 @@ CTakeDamageInfo CNPC_CombineAce::BulletResistanceLogic(const CTakeDamageInfo& in
 					fDifficultyBasedDamage = 0.2f;
 				}
 
-				if (ptr->hitgroup != HITGROUP_HEAD)
+				if (ptr != NULL && ptr->hitgroup != HITGROUP_HEAD)
 				{
 					outputInfo.SetDamage(outputInfo.GetDamage() * fDifficultyBasedDamage);
 				}
