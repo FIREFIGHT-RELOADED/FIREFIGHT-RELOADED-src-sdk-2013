@@ -346,6 +346,7 @@ protected:
 	bool	m_wakeUp;
 	bool	m_bEmbedOnGroundImpact;
 	CNetworkVar( bool,	m_bHackedByAlyx );
+	bool	m_bKilled;
 
 	// Constraint used to stick us to a vehicle
 	IPhysicsConstraint *m_pConstraint;
@@ -393,6 +394,7 @@ BEGIN_DATADESC( CNPC_RollerMine )
 	DEFINE_FIELD( m_wakeUp, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bEmbedOnGroundImpact, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bHackedByAlyx, FIELD_BOOLEAN ),
+	DEFINE_FIELD(m_bKilled, FIELD_BOOLEAN ),
 
 	DEFINE_FIELD( m_bPowerDown,	FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_flPowerDownTime,	FIELD_TIME ),
@@ -563,6 +565,7 @@ void CNPC_RollerMine::Spawn( void )
 	m_flForwardSpeed	= -1200;
 	m_bloodColor		= DONT_BLEED;
 	m_iHealth		= sk_rollermine_health.GetInt();
+	m_bKilled = false;
 
 	SetHullType(HULL_SMALL_CENTERED);
 
@@ -2497,7 +2500,7 @@ int CNPC_RollerMine::OnTakeDamage( const CTakeDamageInfo &info )
 
 	m_iHealth -= info.GetDamage();
 
-	if (m_iHealth <= 0)
+	if (m_iHealth <= 0 && !m_bKilled)
 	{
 		//remove us from the spawner early
 		// tell owner ( if any ) that we're dead.This is mostly for NPCMaker functionality.
@@ -2517,6 +2520,7 @@ int CNPC_RollerMine::OnTakeDamage( const CTakeDamageInfo &info )
 
 		SetThink(&CNPC_RollerMine::PreDetonate);
 		SetNextThink(gpGlobals->curtime + random->RandomFloat(0.1f, 0.5f));
+		m_bKilled = true;
 	}
 
 	return 0;
