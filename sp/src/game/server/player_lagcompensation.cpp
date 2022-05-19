@@ -251,8 +251,11 @@ private:
 	{
 		for ( int i=0; i<MAX_PLAYERS; i++ )
 			m_PlayerTrack[i].Purge();
-		for (int j = 0; j<MAX_AIS; j++)
-			m_EntityTrack[j].Purge();
+		if (g_pGameRules && g_pGameRules->IsMultiplayer())
+		{
+			for (int j = 0; j < MAX_AIS; j++)
+				m_EntityTrack[j].Purge();
+		}
 	}
 
 	void UpdateAIIndexes();
@@ -287,10 +290,13 @@ ILagCompensationManager *lagcompensation = &g_LagCompensationManager;
 //-----------------------------------------------------------------------------
 void CLagCompensationManager::FrameUpdatePostEntityThink()
 {
-	if (m_bNeedsAIUpdate)
-		UpdateAIIndexes(); // only bother if we haven't had one yet 
-	else // setting this true here ensures that the update happens at the start of the next frame 
-		m_bNeedsAIUpdate = true;
+	if (g_pGameRules && g_pGameRules->IsMultiplayer())
+	{
+		if (m_bNeedsAIUpdate)
+			UpdateAIIndexes(); // only bother if we haven't had one yet 
+		else // setting this true here ensures that the update happens at the start of the next frame 
+			m_bNeedsAIUpdate = true;
+	}
 
 	if ((gpGlobals->maxClients <= 1) || !sv_unlag.GetBool())
 	{
@@ -380,81 +386,84 @@ void CLagCompensationManager::FrameUpdatePostEntityThink()
 		record.m_masterCycle = pPlayer->GetCycle();
 	}
 
-	// Iterate all active NPCs
-	CAI_BaseNPC **ppAIs = g_AI_Manager.AccessAIs();
-	int nAIs = g_AI_Manager.NumAIs();
-
-	for (int i = 0; i < nAIs; i++)
+	if (g_pGameRules && g_pGameRules->IsMultiplayer())
 	{
-		CAI_BaseNPC *pNPC = ppAIs[i];
-		CUtlFixedLinkedList< LagRecord > *track = &m_EntityTrack[i - 1];
+		// Iterate all active NPCs
+		CAI_BaseNPC** ppAIs = g_AI_Manager.AccessAIs();
+		int nAIs = g_AI_Manager.NumAIs();
 
-		if (!pNPC)
+		for (int i = 0; i < nAIs; i++)
 		{
+			CAI_BaseNPC* pNPC = ppAIs[i];
+			CUtlFixedLinkedList< LagRecord >* track = &m_EntityTrack[i - 1];
+
+			if (!pNPC)
+			{
+				if (track->Count() > 0)
+				{
+					track->RemoveAll();
+				}
+
+				continue;
+			}
+
+			Assert(track->Count() < 1000); // insanity check
+
+			// remove tail records that are too old
+			int tailIndex = track->Tail();
+			while (track->IsValidIndex(tailIndex))
+			{
+				LagRecord& tail = track->Element(tailIndex);
+
+				// if tail is within limits, stop
+				if (tail.m_flSimulationTime >= flDeadtime)
+					break;
+
+				// remove tail, get new tail
+				track->Remove(tailIndex);
+				tailIndex = track->Tail();
+			}
+
+			// check if head has same simulation time
 			if (track->Count() > 0)
 			{
-				track->RemoveAll();
+				LagRecord& head = track->Element(track->Head());
+
+				// check if player changed simulation time since last time updated
+				if (head.m_flSimulationTime >= pNPC->GetSimulationTime())
+					continue; // don't add new entry for same or older time
 			}
 
-			continue;
-		}
+			// add new record to player track
+			LagRecord& record = track->Element(track->AddToHead());
 
-		Assert(track->Count() < 1000); // insanity check
-
-		// remove tail records that are too old
-		int tailIndex = track->Tail();
-		while (track->IsValidIndex(tailIndex))
-		{
-			LagRecord &tail = track->Element(tailIndex);
-
-			// if tail is within limits, stop
-			if (tail.m_flSimulationTime >= flDeadtime)
-				break;
-
-			// remove tail, get new tail
-			track->Remove(tailIndex);
-			tailIndex = track->Tail();
-		}
-
-		// check if head has same simulation time
-		if (track->Count() > 0)
-		{
-			LagRecord &head = track->Element(track->Head());
-
-			// check if player changed simulation time since last time updated
-			if (head.m_flSimulationTime >= pNPC->GetSimulationTime())
-				continue; // don't add new entry for same or older time
-		}
-
-		// add new record to player track
-		LagRecord &record = track->Element(track->AddToHead());
-
-		record.m_fFlags = 0;
-		if (pNPC->IsAlive())
-		{
-			record.m_fFlags |= LC_ALIVE;
-		}
-
-		record.m_flSimulationTime = pNPC->GetSimulationTime();
-		record.m_vecAngles = pNPC->GetLocalAngles();
-		record.m_vecOrigin = pNPC->GetLocalOrigin();
-		record.m_vecMaxs = pNPC->WorldAlignMaxs();
-		record.m_vecMins = pNPC->WorldAlignMins();
-
-		int layerCount = pNPC->GetNumAnimOverlays();
-		for (int layerIndex = 0; layerIndex < layerCount; ++layerIndex)
-		{
-			CAnimationLayer *currentLayer = pNPC->GetAnimOverlay(layerIndex);
-			if (currentLayer)
+			record.m_fFlags = 0;
+			if (pNPC->IsAlive())
 			{
-				record.m_layerRecords[layerIndex].m_cycle = currentLayer->m_flCycle;
-				record.m_layerRecords[layerIndex].m_order = currentLayer->m_nOrder;
-				record.m_layerRecords[layerIndex].m_sequence = currentLayer->m_nSequence;
-				record.m_layerRecords[layerIndex].m_weight = currentLayer->m_flWeight;
+				record.m_fFlags |= LC_ALIVE;
 			}
+
+			record.m_flSimulationTime = pNPC->GetSimulationTime();
+			record.m_vecAngles = pNPC->GetLocalAngles();
+			record.m_vecOrigin = pNPC->GetLocalOrigin();
+			record.m_vecMaxs = pNPC->WorldAlignMaxs();
+			record.m_vecMins = pNPC->WorldAlignMins();
+
+			int layerCount = pNPC->GetNumAnimOverlays();
+			for (int layerIndex = 0; layerIndex < layerCount; ++layerIndex)
+			{
+				CAnimationLayer* currentLayer = pNPC->GetAnimOverlay(layerIndex);
+				if (currentLayer)
+				{
+					record.m_layerRecords[layerIndex].m_cycle = currentLayer->m_flCycle;
+					record.m_layerRecords[layerIndex].m_order = currentLayer->m_nOrder;
+					record.m_layerRecords[layerIndex].m_sequence = currentLayer->m_nSequence;
+					record.m_layerRecords[layerIndex].m_weight = currentLayer->m_flWeight;
+				}
+			}
+			record.m_masterSequence = pNPC->GetSequence();
+			record.m_masterCycle = pNPC->GetCycle();
 		}
-		record.m_masterSequence = pNPC->GetSequence();
-		record.m_masterCycle = pNPC->GetCycle();
 	}
 
 	//Clear the current player.
@@ -463,40 +472,43 @@ void CLagCompensationManager::FrameUpdatePostEntityThink()
 
 void CLagCompensationManager::UpdateAIIndexes()
 {
-	CAI_BaseNPC **ppAIs = g_AI_Manager.AccessAIs();
-	int nAIs = g_AI_Manager.NumAIs();
-
-	for (int i = 0; i < nAIs; i++)
+	if (g_pGameRules && g_pGameRules->IsMultiplayer())
 	{
-		CAI_BaseNPC *pNPC = ppAIs[i];
-		if (pNPC && pNPC->GetAIIndex() != i) // index of NPC has changed
-		{// move their data to their new index, probably wanting to delete the old track record
-			int oldIndex = pNPC->GetAIIndex();
-			int newIndex = i;
+		CAI_BaseNPC** ppAIs = g_AI_Manager.AccessAIs();
+		int nAIs = g_AI_Manager.NumAIs();
 
-			//Msg("Lag compensation record adjusting, moving from index %i to %i\n",oldIndex,newIndex);
+		for (int i = 0; i < nAIs; i++)
+		{
+			CAI_BaseNPC* pNPC = ppAIs[i];
+			if (pNPC && pNPC->GetAIIndex() != i) // index of NPC has changed
+			{// move their data to their new index, probably wanting to delete the old track record
+				int oldIndex = pNPC->GetAIIndex();
+				int newIndex = i;
 
-			CUtlFixedLinkedList< LagRecord > *track = &m_EntityTrack[oldIndex];
-			CUtlFixedLinkedList< LagRecord > *oldTrack = &m_EntityTrack[newIndex];
+				//Msg("Lag compensation record adjusting, moving from index %i to %i\n",oldIndex,newIndex);
 
-			m_EntityTrack[oldIndex] = *oldTrack;
-			m_EntityTrack[newIndex] = *track;
-			if (oldTrack->Count() > 0) // there's data in the auld yin, probably from someone newly dead,
-			{// but if not we'll swap them round so that the old one can then fix their AI index
-				//Msg("Index %i already contains data!\n",newIndex);
-				for (int j = 0; j<nAIs; j++)
-				{
-					CAI_BaseNPC *pConflictingNPC = ppAIs[j];
-					if (pConflictingNPC && pConflictingNPC->GetAIIndex() == newIndex)
-					{// found the conflicting NPC, swap them into the old index
-						pConflictingNPC->SetAIIndex(oldIndex); // presumably they'll fix themselves further down the loop
-						Warning("Lag compensation adjusting entity index, swapping with an existing entity! (%i & %i)\n", oldIndex, newIndex);
-						break;
+				CUtlFixedLinkedList< LagRecord >* track = &m_EntityTrack[oldIndex];
+				CUtlFixedLinkedList< LagRecord >* oldTrack = &m_EntityTrack[newIndex];
+
+				m_EntityTrack[oldIndex] = *oldTrack;
+				m_EntityTrack[newIndex] = *track;
+				if (oldTrack->Count() > 0) // there's data in the auld yin, probably from someone newly dead,
+				{// but if not we'll swap them round so that the old one can then fix their AI index
+					//Msg("Index %i already contains data!\n",newIndex);
+					for (int j = 0; j < nAIs; j++)
+					{
+						CAI_BaseNPC* pConflictingNPC = ppAIs[j];
+						if (pConflictingNPC && pConflictingNPC->GetAIIndex() == newIndex)
+						{// found the conflicting NPC, swap them into the old index
+							pConflictingNPC->SetAIIndex(oldIndex); // presumably they'll fix themselves further down the loop
+							Warning("Lag compensation adjusting entity index, swapping with an existing entity! (%i & %i)\n", oldIndex, newIndex);
+							break;
+						}
 					}
 				}
-			}
 
-			pNPC->SetAIIndex(newIndex);
+				pNPC->SetAIIndex(newIndex);
+			}
 		}
 	}
 }
