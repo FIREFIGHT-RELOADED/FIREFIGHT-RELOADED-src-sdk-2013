@@ -67,8 +67,9 @@ LINK_ENTITY_TO_CLASS(combine_armor_piece, CArmorPiece);
 
 ConVar sk_combine_ace_health( "sk_combine_ace_health", "0");
 ConVar sk_combine_ace_kick( "sk_combine_ace_kick", "0");
-ConVar sk_combine_ace_shielddamage_normal("sk_combine_ace_shielddamage_normal", "4");
-ConVar sk_combine_ace_shielddamage_hard("sk_combine_ace_shielddamage_hard", "2");
+ConVar sk_combine_ace_shielddamage_normal("sk_combine_ace_shielddamage_normal", "2");
+ConVar sk_combine_ace_shielddamage_hard("sk_combine_ace_shielddamage_hard", "1");
+ConVar sk_combine_ace_shielddamage_explosive_multiplier("sk_combine_ace_shielddamage_explosive_multiplier", "0.55");
  
 // Whether or not the combine guard should spawn health on death
 ConVar combine_ace_spawn_health("combine_ace_spawn_health", "1");
@@ -249,16 +250,16 @@ void CNPC_CombineAce::LoadInitAttributes()
 			m_pAttributes->SwitchEntityColor(pArmor, "new_shield_color");
 		}
 
-		bool disableBulletResistance = m_pAttributes->GetBool("disable_bullet_resistance", m_bBulletResistanceBroken);
+		int disableBulletResistance = m_pAttributes->GetInt("disable_bullet_resistance", -1);
 
-		if (disableBulletResistance)
+		if (disableBulletResistance == 0)
 		{
 			if (m_bBulletResistanceBroken)
 			{
 				m_bBulletResistanceBroken = false;
 			}
 		}
-		else
+		else if (disableBulletResistance == 1)
 		{
 			if (!m_bBulletResistanceBroken)
 			{
@@ -525,14 +526,7 @@ CTakeDamageInfo CNPC_CombineAce::BulletResistanceLogic(const CTakeDamageInfo& in
 			{
 				if (outputInfo.GetDamageType() & DMG_BLAST)
 				{
-					if (g_pGameRules->GetSkillLevel() < SKILL_VERYHARD)
-					{
-						outputInfo.SetDamage(outputInfo.GetDamage() * 0.5f);
-					}
-					else if (g_pGameRules->GetSkillLevel() >= SKILL_VERYHARD)
-					{
-						outputInfo.SetDamage(outputInfo.GetDamage() * 0.3f);
-					}
+					outputInfo.SetDamage(outputInfo.GetDamage() * sk_combine_ace_shielddamage_explosive_multiplier.GetFloat());
 				}
 				else
 				{
@@ -557,6 +551,9 @@ CTakeDamageInfo CNPC_CombineAce::BulletResistanceLogic(const CTakeDamageInfo& in
 
 	if ((GetHealth() <= GetMaxHealth() * 0.5) && !m_bBulletResistanceBroken)
 	{
+		//this is so rpg rockets don't instantly kill us when our shield breaks.
+		outputInfo.SetDamage(0.0f);
+		outputInfo.SetDamageType(DMG_GENERIC);
 		CBroadcastRecipientFilter filter2;
 		te->BeamRingPoint(filter2, 0.0, GetAbsOrigin() + Vector(0, 0, 16), 16, 500, m_iSpriteTexture, 0, 0, 0, 0.2, 24, 16, 0, 254, 255, 189, 50, 0);
 		SetHealth(GetMaxHealth());
