@@ -67,6 +67,8 @@ LINK_ENTITY_TO_CLASS(combine_armor_piece, CArmorPiece);
 
 ConVar sk_combine_ace_health( "sk_combine_ace_health", "0");
 ConVar sk_combine_ace_kick( "sk_combine_ace_kick", "0");
+ConVar sk_combine_ace_shielddamage_normal("sk_combine_ace_shielddamage_normal", "4");
+ConVar sk_combine_ace_shielddamage_hard("sk_combine_ace_shielddamage_hard", "2");
  
 // Whether or not the combine guard should spawn health on death
 ConVar combine_ace_spawn_health("combine_ace_spawn_health", "1");
@@ -287,6 +289,8 @@ void CNPC_CombineAce::Precache()
 	PrecacheModel(GetGibModel(APPENDAGE_LEGL));
 	PrecacheModel(GetGibModel(APPENDAGE_LEGR));
 
+	PrecacheScriptSound("Weapon_StriderBuster.Detonate");
+
 	UTIL_PrecacheOther( "item_healthvial" );
 	UTIL_PrecacheOther( "weapon_frag" );
 	UTIL_PrecacheOther( "item_ammo_ar2_altfire" );
@@ -294,6 +298,7 @@ void CNPC_CombineAce::Precache()
 	UTIL_PrecacheOther( "item_shield" );
 
 	PrecacheModel("sprites/redglow1.vmt");
+	m_iSpriteTexture = PrecacheModel("sprites/shockwave.vmt");
 
 	BaseClass::Precache();
 }
@@ -508,47 +513,67 @@ CTakeDamageInfo CNPC_CombineAce::BulletResistanceLogic(const CTakeDamageInfo& in
 	{
 		if (!(outputInfo.GetDamageType() & (DMG_GENERIC)))
 		{
+			SetBloodColor(BLOOD_COLOR_MECH);
 			if (ptr != NULL)
 			{
 				CPVSFilter filter(ptr->endpos);
 				te->ArmorRicochet(filter, 0.0, &ptr->endpos, &ptr->plane.normal);
 			}
-			
-			float fDifficultyBasedDamage = 0.0f;
 
 			//squad doesn't cause any damage unless our shield is down.
 			if (!(IRelationType(outputInfo.GetAttacker()) == D_LI))
 			{
-				if (g_pGameRules->GetSkillLevel() < SKILL_VERYHARD)
+				if (outputInfo.GetDamageType() & DMG_BLAST)
 				{
-					fDifficultyBasedDamage = 0.3f;
-				}
-				else if (g_pGameRules->GetSkillLevel() >= SKILL_VERYHARD)
-				{
-					fDifficultyBasedDamage = 0.2f;
-				}
-
-				if (ptr != NULL && ptr->hitgroup != HITGROUP_HEAD)
-				{
-					outputInfo.SetDamage(outputInfo.GetDamage() * fDifficultyBasedDamage);
+					if (g_pGameRules->GetSkillLevel() < SKILL_VERYHARD)
+					{
+						outputInfo.SetDamage(outputInfo.GetDamage() * 0.5f);
+					}
+					else if (g_pGameRules->GetSkillLevel() >= SKILL_VERYHARD)
+					{
+						outputInfo.SetDamage(outputInfo.GetDamage() * 0.3f);
+					}
 				}
 				else
 				{
-					outputInfo.SetDamage(outputInfo.GetDamage() * 0.5f);
+					if (g_pGameRules->GetSkillLevel() < SKILL_VERYHARD)
+					{
+						outputInfo.SetDamage(sk_combine_ace_shielddamage_normal.GetFloat());
+					}
+					else if (g_pGameRules->GetSkillLevel() >= SKILL_VERYHARD)
+					{
+						outputInfo.SetDamage(sk_combine_ace_shielddamage_hard.GetFloat());
+					}
 				}
 
 				outputInfo.AddDamageType(DMG_NEVERGIB);
 			}
 			else
 			{
-				outputInfo.SetDamage(fDifficultyBasedDamage);
+				outputInfo.SetDamage(0.0f);
 			}
 		}
 	}
 
 	if ((GetHealth() <= GetMaxHealth() * 0.5) && !m_bBulletResistanceBroken)
 	{
+		CBroadcastRecipientFilter filter2;
+		te->BeamRingPoint(filter2, 0.0, GetAbsOrigin() + Vector(0, 0, 16), 16, 500, m_iSpriteTexture, 0, 0, 0, 0.2, 24, 16, 0, 254, 255, 189, 50, 0);
+		SetHealth(GetMaxHealth());
+		EmitSound("Weapon_StriderBuster.Detonate");
+		SetBloodColor(BLOOD_COLOR_RED);
 		m_bBulletResistanceBroken = true;
+	}
+
+	int randAttack = random->RandomInt(0, 8);
+
+	if (randAttack < 6)
+	{
+		SetSchedule(SCHED_TAKE_COVER_FROM_ENEMY);
+	}
+	else
+	{
+		SetSchedule(SCHED_RUN_FROM_ENEMY);
 	}
 
 	return outputInfo;
@@ -573,7 +598,7 @@ void CNPC_CombineAce::TraceAttack(const CTakeDamageInfo& inputInfo, const Vector
 int CNPC_CombineAce::OnTakeDamage_Alive(const CTakeDamageInfo& info)
 {
 	// special interaction with combine balls
-	if (UTIL_IsAR2CombineBall(info.GetInflictor()) && !m_bBulletResistanceBroken)
+	if (!m_bBulletResistanceBroken)
 	{
 		CTakeDamageInfo bulletResistanceInfo = BulletResistanceLogic(info, NULL);
 		return BaseClass::OnTakeDamage_Alive(bulletResistanceInfo);
@@ -582,6 +607,17 @@ int CNPC_CombineAce::OnTakeDamage_Alive(const CTakeDamageInfo& info)
 	{
 		return BaseClass::OnTakeDamage_Alive(info);
 	}
+}
+
+//-----------------------------------------------------------------------------
+bool CNPC_CombineAce::PassesDamageFilter(const CTakeDamageInfo& info)
+{
+	if (UTIL_IsAR2CombineBall(info.GetInflictor()) && !m_bBulletResistanceBroken)
+	{
+		return false;
+	}
+
+	return BaseClass::PassesDamageFilter(info);
 }
 
 //-----------------------------------------------------------------------------

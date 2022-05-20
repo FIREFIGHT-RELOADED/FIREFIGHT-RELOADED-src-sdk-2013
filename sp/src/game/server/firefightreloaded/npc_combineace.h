@@ -48,6 +48,7 @@ public:
 	Vector		CalcThrowVelocity(const Vector& startPos, const Vector& endPos, float fGravity, float fArcSize);
 	void		PainSound(const CTakeDamageInfo& info);
 	int			OnTakeDamage_Alive(const CTakeDamageInfo& info);
+	virtual bool		PassesDamageFilter(const CTakeDamageInfo& info);
 	CTakeDamageInfo		BulletResistanceLogic(const CTakeDamageInfo& info, trace_t* ptr);
 	void		DeathSound( const CTakeDamageInfo &info );
 	void		PrescheduleThink( void );
@@ -83,6 +84,7 @@ private:
 	CArmorPiece			*pArmor;
 	bool					m_bNoArmor;
 	bool					m_bisEyeForcedDead;
+	int					m_iSpriteTexture;
 
 #if HL2_EPISODIC
 public:

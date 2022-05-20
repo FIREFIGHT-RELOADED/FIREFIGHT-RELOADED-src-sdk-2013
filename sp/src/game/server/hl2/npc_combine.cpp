@@ -1955,21 +1955,16 @@ int CNPC_Combine::SelectCombatSchedule()
 				AnnounceEnemyType(pEnemy);
 			}
 
-			if (HasCondition(COND_CAN_RANGE_ATTACK1) && OccupyStrategySlotRange(SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2))
+			int randAttack = random->RandomInt(0, 8);
+
+			if (randAttack < 6)
 			{
-				int randAttack = random->RandomInt(0, 8);
-
-				if (randAttack < 5)
-				{
-					return SCHED_TAKE_COVER_FROM_ENEMY;
-				}
-				else
-				{
-					return SCHED_RANGE_ATTACK1;
-				}
+				return SCHED_TAKE_COVER_FROM_ENEMY;
 			}
-
-			return SCHED_TAKE_COVER_FROM_ENEMY;
+			else
+			{
+				return SCHED_RUN_FROM_ENEMY;
+			}
 		}
 	}
 
