@@ -219,28 +219,35 @@ void CAlienController::Event_Killed( const CTakeDamageInfo &info )
 
 void CAlienController::PainSound(const CTakeDamageInfo& info)
 {
-	if (random->RandomInt(0,5) < 2)
-		EmitSound( "Controller.Pain" );
+	if (random->RandomInt(0, 5) < 2)
+	{
+		CPASAttenuationFilter filter(this);
+		EmitSound(filter, entindex(), "Controller.Pain");
+	}
 }	
 
 void CAlienController::AlertSound( void )
 {
-	EmitSound( "Controller.Alert" );
+	CPASAttenuationFilter filter(this);
+	EmitSound(filter, entindex(), "Controller.Alert");
 }
 
 void CAlienController::IdleSound( void )
 {
-	EmitSound( "Controller.Idle" ); 
+	CPASAttenuationFilter filter(this);
+	EmitSound(filter, entindex(), "Controller.Idle");
 }
 
 void CAlienController::AttackSound( void )
 {
-	EmitSound( "Controller.Attack" );
+	CPASAttenuationFilter filter(this);
+	EmitSound(filter, entindex(), "Controller.Attack");
 }
 
 void CAlienController::DeathSound(const CTakeDamageInfo& info)
 {
-	EmitSound( "Controller.Die" );
+	CPASAttenuationFilter filter(this);
+	EmitSound(filter, entindex(), "Controller.Die");
 }
 
 //=========================================================

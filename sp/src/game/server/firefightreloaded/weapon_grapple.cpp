@@ -27,17 +27,18 @@
 
 #include "vphysics/constraints.h"
 #include "physics_saverestore.h"
+#include <hl2/hl2_player.h>
  
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
-#include <hl2/hl2_player.h>
 
 #define BEAM_SPRITE "sprites/orangelight1.vmt"
 #define GLOW_SPRITE "sprites/orangeflare1.vmt"
 
+ConVar sk_grapple_delay("sk_grapple_delay", "0.5");
+
 static const char* ppszIgnoredClasses[] =
 {
-	"prop_detail",
 	"prop_dynamic",
 	"prop_dynamic_override"
 };
@@ -134,7 +135,6 @@ void CGrappleHook::Spawn( void )
 	m_bPlayerWasStanding = false;
 }
  
- 
 void CGrappleHook::Precache( void )
 {
 	PrecacheModel( HOOK_MODEL );
@@ -146,7 +146,7 @@ void CGrappleHook::Precache( void )
 //-----------------------------------------------------------------------------
 void CGrappleHook::HookTouch( CBaseEntity *pOther )
 {
-	if ( !pOther || pOther->IsSolidFlagSet(FSOLID_NOT_SOLID | FSOLID_VOLUME_CONTENTS) || pOther->IsEffectActive(EF_NODRAW))
+	if (!pOther || pOther->IsSolidFlagSet(FSOLID_NOT_SOLID | FSOLID_VOLUME_CONTENTS) || pOther->IsEffectActive(EF_NODRAW))
 		return;
 
 	for (int i = 0; i < ARRAYSIZE(ppszIgnoredClasses); i++)
@@ -347,6 +347,19 @@ void CWeaponGrapple::Precache( void )
  
 	BaseClass::Precache();
 }
+
+bool CWeaponGrapple::CanDeploy(void)
+{
+	if (m_flNextPrimaryAttack < gpGlobals->curtime)
+	{
+		return true;
+	}
+	else
+	{
+		EmitSound("Weapon_SMG1.Empty");
+		return false;
+	}
+}
  
 //-----------------------------------------------------------------------------
 // Purpose:
@@ -364,21 +377,6 @@ void CWeaponGrapple::PrimaryAttack( void )
 		return;
 	}
 
-	if ( m_iClip1 <= 0 )
-	{
-		if ( !m_bFireOnEmpty )
-		{
-			Reload();
-		}
-		else
-		{
-			WeaponSound( EMPTY );
-			m_flNextPrimaryAttack = 0.15;
-		}
-
-		return;
-	}
-
 	m_iPrimaryAttacks++;
 	gamestats->Event_WeaponFired( pPlayer, true, GetClassname() );
 
@@ -386,9 +384,6 @@ void CWeaponGrapple::PrimaryAttack( void )
 
 	SendWeaponAnim( ACT_VM_PRIMARYATTACK );
 	pPlayer->SetAnimation( PLAYER_ATTACK1 );
-
-	m_flNextPrimaryAttack = gpGlobals->curtime + 0.75;
-	m_flNextSecondaryAttack = gpGlobals->curtime + 0.75;
 
 	Vector vecSrc		= pPlayer->Weapon_ShootPosition();
 	Vector vecAiming	= pPlayer->GetAutoaimVector( AUTOAIM_SCALE_DEFAULT );	
@@ -483,12 +478,6 @@ void CWeaponGrapple::ItemPostFrame( void )
 		}
 	}
 
-	//Allow a refire as fast as the player can click
-	if (((pOwner->m_nButtons & IN_ATTACK) == false) || ((pOwner->m_nButtons & IN_GRAPPLE) == false))
-	{
-		m_flNextPrimaryAttack = gpGlobals->curtime - 0.1f;
-	}
-
 	if ( m_hHook )
 	{
 		if (!(pOwner->m_nButtons & IN_ATTACK) && !(pOwner->m_nButtons & IN_GRAPPLE))
@@ -505,7 +494,7 @@ void CWeaponGrapple::ItemPostFrame( void )
 			SendWeaponAnim( ACT_VM_IDLE ); //ACT_VM_RELOAD
  
 			//Update our times
-			m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
+			m_flNextPrimaryAttack = gpGlobals->curtime + sk_grapple_delay.GetFloat();
 		}
 	}
 }
@@ -542,8 +531,6 @@ void CWeaponGrapple::FireHook(const Vector& endPos)
 	pOwner->ViewPunch( QAngle( -2, 0, 0 ) );
  
 	SendWeaponAnim( ACT_VM_PRIMARYATTACK );
- 
-	m_flNextPrimaryAttack = m_flNextSecondaryAttack	= gpGlobals->curtime + 0.75;
 }
  
 //-----------------------------------------------------------------------------

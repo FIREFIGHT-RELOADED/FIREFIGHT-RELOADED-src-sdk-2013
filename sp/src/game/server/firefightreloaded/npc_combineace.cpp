@@ -555,22 +555,26 @@ CTakeDamageInfo CNPC_CombineAce::BulletResistanceLogic(const CTakeDamageInfo& in
 		outputInfo.SetDamage(0.0f);
 		outputInfo.SetDamageType(DMG_GENERIC);
 		CBroadcastRecipientFilter filter2;
-		te->BeamRingPoint(filter2, 0.0, GetAbsOrigin() + Vector(0, 0, 16), 16, 500, m_iSpriteTexture, 0, 0, 0, 0.2, 24, 16, 0, 254, 255, 189, 50, 0);
+		te->BeamRingPoint(filter2, 0.0, GetAbsOrigin() + Vector(0, 0, 16), 16, 500, m_iSpriteTexture, 0, 0, 0, 0.2, 24, 16, 0, 254, 189, 255, 50, 0);
 		SetHealth(GetMaxHealth());
+		m_Sentences.Speak("COMBINE_ACE_DANGER", SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL);
 		EmitSound("Weapon_StriderBuster.Detonate");
 		SetBloodColor(BLOOD_COLOR_RED);
 		m_bBulletResistanceBroken = true;
 	}
 
-	int randAttack = random->RandomInt(0, 8);
+	if (m_bBulletResistanceBroken)
+	{
+		int randAttack = random->RandomInt(0, 8);
 
-	if (randAttack < 6)
-	{
-		SetSchedule(SCHED_TAKE_COVER_FROM_ENEMY);
-	}
-	else
-	{
-		SetSchedule(SCHED_RUN_FROM_ENEMY);
+		if (randAttack < 6)
+		{
+			SetSchedule(SCHED_TAKE_COVER_FROM_ENEMY);
+		}
+		else
+		{
+			SetSchedule(SCHED_RUN_FROM_ENEMY);
+		}
 	}
 
 	return outputInfo;

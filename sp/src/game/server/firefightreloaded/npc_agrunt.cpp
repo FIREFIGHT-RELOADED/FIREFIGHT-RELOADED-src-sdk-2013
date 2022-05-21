@@ -55,7 +55,7 @@ void TE_BeamFollow(IRecipientFilter& filter, float delay,
 	int iEntIndex, int modelIndex, int haloIndex, float life, float width, float endWidth,
 	float fadeLength, float r, float g, float b, float a);
 
-LINK_ENTITY_TO_CLASS( hornet, CHornet );
+LINK_ENTITY_TO_CLASS( npc_hornet, CHornet );
 
 //=========================================================
 // Save/Restore
@@ -64,6 +64,7 @@ BEGIN_DATADESC( CHornet )
 	DEFINE_FIELD( m_flStopAttack, FIELD_TIME ),
 	DEFINE_FIELD( m_iHornetType, FIELD_INTEGER ),
 	DEFINE_FIELD( m_flFlySpeed, FIELD_FLOAT ),
+	DEFINE_FIELD(m_vecEnemyLKP, FIELD_POSITION_VECTOR),
 	
 	DEFINE_ENTITYFUNC( DieTouch ),
 	DEFINE_THINKFUNC( StartDart ),
@@ -110,6 +111,8 @@ void CHornet::Spawn( void )
 	
 	SetNextThink( gpGlobals->curtime + 0.1f );
 	ResetSequenceInfo();
+
+	m_vecEnemyLKP = vec3_origin;
 }
 
 void CHornet::Precache()
@@ -159,7 +162,8 @@ void CHornet :: StartTrack ( void )
 
 void CHornet::Event_Killed(const CTakeDamageInfo &info)
 {
-	EmitSound("Hornet.Die");
+	CPASAttenuationFilter filter(this);
+	EmitSound(filter, entindex(), "Hornet.Die");
 
 	m_takedamage = DAMAGE_NO;
 
@@ -175,7 +179,7 @@ void CHornet :: StartDart ( void )
 
 	SetTouch( &CHornet::DartTouch );
 
-	SetThink( &CHornet::SUB_Remove );
+	SetThink( &CBaseEntity::SUB_Remove );
 	SetNextThink( gpGlobals->curtime + 4 );
 }
 
@@ -258,11 +262,9 @@ void CHornet::TrackTarget(void)
 	// UNDONE: The player pointer should come back after returning from another level
 	if (GetEnemy() == NULL)
 	{// enemy is dead.
-		GetSenses()->Look(512);
+		GetSenses()->Look(1024);
 		SetEnemy(BestEnemy());
 	}
-
-	Vector m_vecEnemyLKP = vec3_origin;
 
 	if (GetEnemy() != NULL && FVisible(GetEnemy()))
 	{
@@ -293,7 +295,8 @@ void CHornet::TrackTarget(void)
 
 	if (flDelta < 0.5)
 	{// hafta turn wide again. play sound
-		EmitSound("Hornet.Buzz");
+		CPASAttenuationFilter filter(this);
+		EmitSound(filter, entindex(), "Hornet.Buzz");
 	}
 
 	if (flDelta <= 0 && m_iHornetType == HORNET_TYPE_RED)
@@ -346,7 +349,8 @@ void CHornet::TrackTarget(void)
 				128				// brightness
 			);
 
-			EmitSound("Hornet.Buzz");
+			CPASAttenuationFilter filter2(this);
+			EmitSound(filter2, entindex(), "Hornet.Buzz");
 			SetAbsVelocity(GetAbsVelocity() * 2);
 			SetNextThink(gpGlobals->curtime + 1.0f);
 			// don't attack again
@@ -408,7 +412,7 @@ void CHornet::DieTouch( CBaseEntity *pOther )
 		pOther->TakeDamage( info );
 		Event_Killed(info);
 
-		SetThink(&CHornet::SUB_Remove);
+		SetThink(&CBaseEntity::SUB_Remove);
 		SetNextThink(gpGlobals->curtime);
 	}
 }
@@ -580,8 +584,8 @@ void CAGrunt::PrescheduleThink ( void )
 	{
 		if ( m_flNextWordTime < gpGlobals->curtime )
 		{
-			// play a new sound
-			EmitSound( "AlienGrunt.Idle" );
+			CPASAttenuationFilter filter(this);
+			EmitSound(filter, entindex(), "AlienGrunt.Idle");
 
 			// is this word our last?
 			if ( random->RandomInt( 1, 10 ) <= 1 )
@@ -604,7 +608,8 @@ void CAGrunt::DeathSound (const CTakeDamageInfo &info)
 {
 	StopTalking();
 
-	EmitSound( "AlienGrunt.Die" );
+	CPASAttenuationFilter filter(this);
+	EmitSound(filter, entindex(), "AlienGrunt.Die");
 }
 
 //=========================================================
@@ -614,7 +619,8 @@ void CAGrunt::AlertSound ( void )
 {
 	StopTalking();
 
-	EmitSound( "AlienGrunt.Alert" );
+	CPASAttenuationFilter filter(this);
+	EmitSound(filter, entindex(), "AlienGrunt.Alert");
 }
 
 //=========================================================
@@ -624,7 +630,8 @@ void CAGrunt::AttackSound ( void )
 {
 	StopTalking();
 
-	EmitSound( "AlienGrunt.Attack" );
+	CPASAttenuationFilter filter(this);
+	EmitSound(filter, entindex(), "AlienGrunt.Attack");
 }
 
 //=========================================================
@@ -641,7 +648,8 @@ void CAGrunt::PainSound (const CTakeDamageInfo &info)
 
 	StopTalking();
 
-	EmitSound( "AlienGrunt.Pain" );
+	CPASAttenuationFilter filter(this);
+	EmitSound(filter, entindex(), "AlienGrunt.Pain");
 }
 
 //=========================================================
@@ -711,7 +719,8 @@ void CAGrunt::PunchEnemy(bool right)
 			pHurt->SetAbsVelocity(pHurt->GetAbsVelocity() + vRight * (right ? -250 : 250));
 		}
 
-		EmitSound("AlienGrunt.AttackHit");
+		CPASAttenuationFilter filter(this);
+		EmitSound(filter, entindex(), "AlienGrunt.AttackHit");
 
 		Vector vecArmPos;
 		QAngle angArmAng;
@@ -721,7 +730,8 @@ void CAGrunt::PunchEnemy(bool right)
 	else
 	{
 		// Play a random attack miss sound
-		EmitSound("AlienGrunt.AttackMiss");
+		CPASAttenuationFilter filter(this);
+		EmitSound(filter, entindex(), "AlienGrunt.AttackMiss");
 	}
 }
 
@@ -777,14 +787,15 @@ void CAGrunt :: HandleAnimEvent( animevent_t *pEvent )
 			CPVSFilter filter(GetAbsOrigin());
 			te->Sprite(filter, 0.0, &vecArmPos, iAgruntMuzzleFlash, random->RandomFloat(0.4, 0.8), 128);
 
-			CBaseEntity* pHornet = CBaseEntity::Create("hornet", vecArmPos, QAngle(0, 0, 0), this);
+			CBaseEntity* pHornet = CBaseEntity::Create("npc_hornet", vecArmPos, QAngle(0, 0, 0), this);
 			Vector vForward;
 			AngleVectors(angDir, &vForward);
 
 			pHornet->SetAbsVelocity(vForward * 300);
 			pHornet->SetOwnerEntity(this);
 
-			EmitSound("Weapon_Hornetgun.Single");
+			CPASAttenuationFilter filter2(this);
+			EmitSound(filter2, entindex(), "Weapon_Hornetgun.Single");
 
 			CAI_BaseNPC* pHornetMonster = (CAI_BaseNPC*)pHornet->MyNPCPointer();
 
@@ -796,10 +807,16 @@ void CAGrunt :: HandleAnimEvent( animevent_t *pEvent )
 		break;
 
 	case AGRUNT_AE_LEFT_FOOT:
-		EmitSound("AlienGrunt.LeftFoot");
+		{
+			CPASAttenuationFilter filter(this);
+			EmitSound(filter, entindex(), "AlienGrunt.LeftFoot");
+		}
 		break;
 	case AGRUNT_AE_RIGHT_FOOT:
-		EmitSound("AlienGrunt.RightFoot");
+		{
+			CPASAttenuationFilter filter(this);
+			EmitSound(filter, entindex(), "AlienGrunt.RightFoot");
+		}
 		break;
 	case AGRUNT_AE_LEFT_PUNCH:
 		PunchEnemy(false);
@@ -865,7 +882,7 @@ void CAGrunt::Precache()
 
 	iAgruntMuzzleFlash = PrecacheModel( "sprites/muz4.vmt" );
 
-	UTIL_PrecacheOther( "hornet" );
+	UTIL_PrecacheOther( "npc_hornet" );
 }
 
 //=========================================================

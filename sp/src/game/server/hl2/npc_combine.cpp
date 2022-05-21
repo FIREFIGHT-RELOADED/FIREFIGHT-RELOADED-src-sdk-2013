@@ -30,6 +30,7 @@
 #include "SoundEmitterSystem/isoundemittersystembase.h"
 #include "npc_headcrab.h"
 #include <gib.h>
+#include "firefightreloaded/npc_combineace.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1996,7 +1997,41 @@ int CNPC_Combine::SelectCombatSchedule()
 		ClearCondition(COND_LOW_PRIMARY_AMMO);
 		ClearCondition(COND_NO_PRIMARY_AMMO);
 		ClearCondition(COND_NO_SECONDARY_AMMO);
-		return SCHED_COMBINE_RANGE_ATTACK1;
+
+		if (GetEnemy() && HasCondition(COND_SEE_ENEMY) && !IsUnreachable(GetEnemy()))
+		{
+			return SCHED_COMBINE_RANGE_ATTACK1;
+		}
+		else
+		{
+			CNPC_CombineAce* pAce = (CNPC_CombineAce*)this;
+			if (pAce)
+			{
+				if (!pAce->m_bBulletResistanceBroken)
+				{
+					AnnounceAssault();
+					return SCHED_COMBINE_ASSAULT;
+				}
+				else
+				{
+					int randAttack = random->RandomInt(0, 8);
+
+					if (randAttack < 6)
+					{
+						return SCHED_TAKE_COVER_FROM_ENEMY;
+					}
+					else
+					{
+						return SCHED_RUN_FROM_ENEMY;
+					}
+				}
+			}
+			else
+			{
+				AnnounceAssault();
+				return SCHED_COMBINE_ASSAULT;
+			}
+		}
 	}
 
 	if (( HasCondition ( COND_NO_PRIMARY_AMMO ) || HasCondition ( COND_LOW_PRIMARY_AMMO ) ) && !HasCondition( COND_CAN_MELEE_ATTACK1) )

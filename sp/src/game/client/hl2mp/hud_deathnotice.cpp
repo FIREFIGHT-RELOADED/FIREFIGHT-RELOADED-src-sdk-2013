@@ -175,8 +175,43 @@ void CHudDeathNotice::Paint()
 			iVictimTeam = g_PR->GetTeam(m_DeathNotices[i].Victim.iEntIndex);
 		}
 
-		g_pVGuiLocalize->ConvertANSIToUnicode(m_DeathNotices[i].Victim.szName, victim, sizeof(victim));
-		g_pVGuiLocalize->ConvertANSIToUnicode(m_DeathNotices[i].Killer.szName, killer, sizeof(killer));
+		wchar_t* tempString = g_pVGuiLocalize->Find(m_DeathNotices[i].Victim.szName);
+
+		// setup our localized string
+		if (tempString)
+		{
+#ifdef WIN32
+			_snwprintf(victim, sizeof(victim) / sizeof(wchar_t) - 1, L"%s", tempString);
+#else
+			_snwprintf(victim, sizeof(victim) / sizeof(wchar_t) - 1, L"%S", tempString);
+#endif
+			victim[sizeof(victim) / sizeof(wchar_t) - 1] = 0;
+		}
+		else
+		{
+			// string wasn't found by g_pVGuiLocalize->Find()
+			//just display the npc classname
+			g_pVGuiLocalize->ConvertANSIToUnicode(m_DeathNotices[i].Victim.szName, victim, sizeof(victim));
+		}
+
+		tempString = g_pVGuiLocalize->Find(m_DeathNotices[i].Killer.szName);
+
+		// setup our localized string
+		if (tempString)
+		{
+#ifdef WIN32
+			_snwprintf(killer, sizeof(killer) / sizeof(wchar_t) - 1, L"%s", tempString);
+#else
+			_snwprintf(killer, sizeof(killer) / sizeof(wchar_t) - 1, L"%S", tempString);
+#endif
+			killer[sizeof(killer) / sizeof(wchar_t) - 1] = 0;
+		}
+		else
+		{
+			// string wasn't found by g_pVGuiLocalize->Find()
+			//just display the npc classname
+			g_pVGuiLocalize->ConvertANSIToUnicode(m_DeathNotices[i].Killer.szName, killer, sizeof(killer));
+		}
 
 		// Get the local position for this notice
 		int len = UTIL_ComputeStringWidth(m_hTextFont, victim);

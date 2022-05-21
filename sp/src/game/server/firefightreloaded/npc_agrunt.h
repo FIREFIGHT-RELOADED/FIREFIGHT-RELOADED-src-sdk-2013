@@ -120,6 +120,7 @@ public:
 	int				m_iHornetType;
 	float			m_flFlySpeed;
 	int				m_flDamage;
+	Vector			m_vecEnemyLKP;
 };
 
 #endif //NPC_AGRUNT_H

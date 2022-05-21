@@ -2368,40 +2368,34 @@ int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 //-----------------------------------------------------------------------------
 void CBasePlayer::OnDamagedByExplosion( const CTakeDamageInfo &info )
 {
-	float lastDamage = info.GetDamage();
-
-	float distanceFromPlayer = 9999.0f;
-
-	CBaseEntity *inflictor = info.GetInflictor();
-	if ( inflictor )
-	{
-		Vector delta = GetAbsOrigin() - inflictor->GetAbsOrigin();
-		distanceFromPlayer = delta.Length();
-	}
-
-	bool ear_ringing = distanceFromPlayer < MIN_EAR_RINGING_DISTANCE ? true : false;
-	bool shock = lastDamage >= MIN_SHOCK_AND_CONFUSION_DAMAGE;
-
-	if ( !shock && !ear_ringing )
-		return;
-
-	int effect = 0;
-
 	if (sv_player_explosionringing.GetBool())
 	{
+		float lastDamage = info.GetDamage();
+
+		float distanceFromPlayer = 9999.0f;
+
+		CBaseEntity* inflictor = info.GetInflictor();
+		if (inflictor)
+		{
+			Vector delta = GetAbsOrigin() - inflictor->GetAbsOrigin();
+			distanceFromPlayer = delta.Length();
+		}
+
+		bool ear_ringing = distanceFromPlayer < MIN_EAR_RINGING_DISTANCE ? true : false;
+		bool shock = lastDamage >= MIN_SHOCK_AND_CONFUSION_DAMAGE;
+
+		if (!shock && !ear_ringing)
+			return;
+
+		int effect = 0;
+
 		effect = shock ?
 			random->RandomInt(35, 37) :
 			random->RandomInt(32, 34);
-	}
-	else
-	{
-		effect = shock ?
-			random->RandomInt(32, 34) :
-			random->RandomInt(32, 34);
-	}
 
-	CSingleUserRecipientFilter user( this );
-	enginesound->SetPlayerDSP( user, effect, false );
+		CSingleUserRecipientFilter user(this);
+		enginesound->SetPlayerDSP(user, effect, false);
+	}
 }
 
 //=========================================================

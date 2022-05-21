@@ -694,16 +694,33 @@ void CHL2_Player::HandleArmorReduction( void )
 
 void CHL2_Player::HandleGrapple(void)
 {
-	if (sv_player_grapple.GetBool() || g_fr_ironkick.GetBool())
+	if (!HasNamedPlayerItem("weapon_grapple"))
+	{
+		if (m_afButtonPressed & IN_GRAPPLE)
+		{
+			EmitSound("Weapon_SMG1.Empty");
+		}
+
+		m_bInGrapple = false;
+		return;
+	}
+
+	if (sv_player_grapple.GetBool())
 	{
 		if (m_afButtonPressed & IN_GRAPPLE)
 		{
 			engine->ClientCommand(edict(), "cancelselect");
 			SelectItem("weapon_grapple");
 			CBaseCombatWeapon* pGrapple = GetActiveWeapon();
+			const char* pWeaponClass = "weapon_grapple";
 			if (pGrapple)
 			{
-				pGrapple->PrimaryAttack();
+				const char* strWeaponName = pGrapple->GetName();
+
+				if (!Q_stricmp(strWeaponName, pWeaponClass))
+				{
+					pGrapple->PrimaryAttack();
+				}
 			}
 
 			m_bInGrapple = true;
@@ -1780,6 +1797,8 @@ void CHL2_Player::Spawn(void)
 			{
 				GiveNamedItem("weapon_grapple");
 			}
+
+			Weapon_Switch(Weapon_OwnsThisType("weapon_physcannon"));
 		}
 		else if (g_fr_ironkick.GetBool())
 		{
@@ -1789,11 +1808,13 @@ void CHL2_Player::Spawn(void)
 		else if (IsAtMaxLevel())
 		{
 			EquipSuit();
+			GiveNamedItem("weapon_physcannon");
 			if (sv_player_grapple.GetBool())
 			{
 				GiveNamedItem("weapon_grapple");
 			}
-			GiveNamedItem("weapon_physcannon");
+
+			Weapon_Switch(Weapon_OwnsThisType("weapon_physcannon"));
 		}
 		else
 		{
@@ -1812,6 +1833,8 @@ void CHL2_Player::Spawn(void)
 			{
 				GiveNamedItem("weapon_grapple");
 			}
+
+			Weapon_Switch(Weapon_OwnsThisType("weapon_physcannon"));
 		}
 	}
 }

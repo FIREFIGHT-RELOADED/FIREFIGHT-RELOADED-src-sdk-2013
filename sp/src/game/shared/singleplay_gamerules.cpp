@@ -1253,34 +1253,6 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 		}
 	}
 
-	wchar_t* GrabLocalizedName(const char* name, const char* ogName)
-	{
-		wchar_t text[256];
-		wchar_t* tempString = g_pVGuiLocalize->Find(name);
-
-		// setup our localized string
-		if (tempString)
-		{
-#ifdef WIN32
-			_snwprintf(text, sizeof(text) / sizeof(wchar_t) - 1, L"%s", tempString);
-#else
-			_snwprintf(text, sizeof(text) / sizeof(wchar_t) - 1, L"%S", tempString);
-#endif
-			text[sizeof(text) / sizeof(wchar_t) - 1] = 0;
-		}
-		else
-		{
-			// string wasn't found by g_pVGuiLocalize->Find()
-			//just display the npc classname
-			const char* nonLocalizedName = ogName;
-			nonLocalizedName += 4;
-			g_pVGuiLocalize->ConvertANSIToUnicode(nonLocalizedName, text, sizeof(text));
-		}
-
-		wchar_t* textString = text;
-		return textString;
-	}
-
 	const char* CSingleplayRules::GetNPCName(CBaseEntity* pVictim)
 	{
 		//todo: use properly localized names.
@@ -1314,9 +1286,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 			CFmtStr localizedName;
 			localizedName.sprintf("#fr_%s", fullEntityClassname);
 
-			char ansi[256];
-			g_pVGuiLocalize->ConvertUnicodeToANSI(GrabLocalizedName(localizedName.Access(), fullEntityClassname), ansi, sizeof(ansi));
-			FinalString = ansi;
+			FinalString = localizedName.Access();
 		}
 
 		return FinalString;

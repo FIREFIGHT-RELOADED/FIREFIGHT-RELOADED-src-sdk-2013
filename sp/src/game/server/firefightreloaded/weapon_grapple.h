@@ -78,6 +78,7 @@ public:
 
 	virtual void	Precache( void );
 	virtual void	PrimaryAttack( void );
+	virtual bool CanDeploy(void);
 	bool			CanHolster( void );
 	virtual bool	Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
 	void			Drop( const Vector &vecVelocity );

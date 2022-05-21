@@ -127,7 +127,6 @@ void CNPCMakerFirefight::Spawn(void)
 	m_nLiveChildren		= 0;
 	m_nLiveRareNPCs		= 0;
 	m_flLastLargeNPCSpawn = 0;
-	m_hSpawnListController = new CRandNPCLoader(this);
 	Precache();
 
 	//m_spawnflags |= SF_NPCMAKER_FADE;
@@ -151,6 +150,11 @@ void CNPCMakerFirefight::Spawn(void)
 void CNPCMakerFirefight::Precache(void)
 {
 	BaseClass::Precache();
+
+	if (!m_hSpawnListController)
+	{
+		m_hSpawnListController = new CRandNPCLoader(this);
+	}
 
 	int nWeapons = ARRAYSIZE(g_Weapons);
 	for (int i = 0; i < nWeapons; ++i)
