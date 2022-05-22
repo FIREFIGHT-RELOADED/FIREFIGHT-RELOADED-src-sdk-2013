@@ -1070,7 +1070,7 @@ void CBasePlayer::CheckLevel()
 			gameeventmanager->FireEvent(event);
 		}
 
-		if (sk_player_weapons.GetBool())
+		if (sk_player_weapons.GetBool() && !g_fr_ironkick.GetBool())
 		{
 			RemoveAllItems(false);
 
