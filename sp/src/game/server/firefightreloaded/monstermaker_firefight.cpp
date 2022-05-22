@@ -160,7 +160,11 @@ void CNPCMakerFirefight::Precache(void)
 	for (int i = 0; i < nWeapons; ++i)
 	{
 		UTIL_PrecacheOther(g_Weapons[i]);
-		DevMsg("Precaching NPC Weapon %s.\n", g_Weapons[i]);
+	}
+
+	if (m_spawnEquipment != NULL_STRING)
+	{
+		UTIL_PrecacheOther(STRING(m_spawnEquipment));
 	}
 
 	m_hSpawnListController->PrecacheSpawnlist();
@@ -482,6 +486,12 @@ void CNPCMakerFirefight::MakeNPC()
 	if (!atMinLevel)
 		return;
 
+	if (m_hSpawnListController->m_spawnEquipment != NULL_STRING)
+	{
+		m_spawnEquipment = m_hSpawnListController->m_spawnEquipment;
+		UTIL_PrecacheOther(STRING(m_spawnEquipment));
+	}
+
 	const char* pRandomName = m_hSpawnListController->m_szClassname;
 	CAI_BaseNPC* pent = (CAI_BaseNPC*)CreateEntityByName(pRandomName);
 
@@ -514,47 +524,55 @@ void CNPCMakerFirefight::MakeNPC()
 		pent->AddSpawnFlags(SF_NPC_FADE_CORPSE);
 	}
 
-	if (Q_stristr(pRandomName, "npc_metropolice"))
+	if (m_spawnEquipment == NULL_STRING)
 	{
-		int nWeaponsPolice = ARRAYSIZE(g_MetropoliceWeapons);
-		int randomChoicePolice = rand() % nWeaponsPolice;
-		const char* pRandomNamePolice = g_MetropoliceWeapons[randomChoicePolice];
-		pent->m_spawnEquipment = MAKE_STRING(pRandomNamePolice);
-		pent->AddSpawnFlags(SF_METROPOLICE_ALLOWED_TO_RESPOND);
+		if (Q_stristr(pRandomName, "npc_metropolice"))
+		{
+			int nWeaponsPolice = ARRAYSIZE(g_MetropoliceWeapons);
+			int randomChoicePolice = rand() % nWeaponsPolice;
+			const char* pRandomNamePolice = g_MetropoliceWeapons[randomChoicePolice];
+			pent->m_spawnEquipment = MAKE_STRING(pRandomNamePolice);
+			pent->AddSpawnFlags(SF_METROPOLICE_ALLOWED_TO_RESPOND);
+		}
+		else if (Q_stristr(pRandomName, "npc_combine_shot"))
+		{
+			pent->m_spawnEquipment = MAKE_STRING("weapon_shotgun");
+		}
+		else if (Q_stristr(pRandomName, "npc_combine_s"))
+		{
+			int nWeaponsSoldier = ARRAYSIZE(g_CombineSoldierWeapons);
+			int randomChoiceSoldier = rand() % nWeaponsSoldier;
+			const char* pRandomNameSoldier = g_CombineSoldierWeapons[randomChoiceSoldier];
+			pent->m_spawnEquipment = MAKE_STRING(pRandomNameSoldier);
+		}
+		else if (Q_stristr(pRandomName, "npc_combine_e"))
+		{
+			int nWeaponsSoldier = ARRAYSIZE(g_CombineSoldierWeapons);
+			int randomChoiceSoldier = rand() % nWeaponsSoldier;
+			const char* pRandomNameSoldier = g_CombineSoldierWeapons[randomChoiceSoldier];
+			pent->m_spawnEquipment = MAKE_STRING(pRandomNameSoldier);
+		}
+		else if (Q_stristr(pRandomName, "npc_combine_p"))
+		{
+			int nWeaponsSoldier = ARRAYSIZE(g_CombineSoldierWeapons);
+			int randomChoiceSoldier = rand() % nWeaponsSoldier;
+			const char* pRandomNameSoldier = g_CombineSoldierWeapons[randomChoiceSoldier];
+			pent->m_spawnEquipment = MAKE_STRING(pRandomNameSoldier);
+		}
+		else if (Q_stristr(pRandomName, "npc_combine_ace"))
+		{
+			int nWeaponsSoldier = ARRAYSIZE(g_CombineSoldierWeapons);
+			int randomChoiceSoldier = rand() % nWeaponsSoldier;
+			const char* pRandomNameSoldier = g_CombineSoldierWeapons[randomChoiceSoldier];
+			pent->m_spawnEquipment = MAKE_STRING(pRandomNameSoldier);
+		}
 	}
-	else if (Q_stristr(pRandomName, "npc_combine_shot"))
+	else
 	{
-		pent->m_spawnEquipment = MAKE_STRING("weapon_shotgun");
+		pent->m_spawnEquipment = m_spawnEquipment;
 	}
-	else if (Q_stristr(pRandomName, "npc_combine_s"))
-	{
-		int nWeaponsSoldier = ARRAYSIZE(g_CombineSoldierWeapons);
-		int randomChoiceSoldier = rand() % nWeaponsSoldier;
-		const char* pRandomNameSoldier = g_CombineSoldierWeapons[randomChoiceSoldier];
-		pent->m_spawnEquipment = MAKE_STRING(pRandomNameSoldier);
-	}
-	else if (Q_stristr(pRandomName, "npc_combine_e"))
-	{
-		int nWeaponsSoldier = ARRAYSIZE(g_CombineSoldierWeapons);
-		int randomChoiceSoldier = rand() % nWeaponsSoldier;
-		const char* pRandomNameSoldier = g_CombineSoldierWeapons[randomChoiceSoldier];
-		pent->m_spawnEquipment = MAKE_STRING(pRandomNameSoldier);
-	}
-	else if (Q_stristr(pRandomName, "npc_combine_p"))
-	{
-		int nWeaponsSoldier = ARRAYSIZE(g_CombineSoldierWeapons);
-		int randomChoiceSoldier = rand() % nWeaponsSoldier;
-		const char* pRandomNameSoldier = g_CombineSoldierWeapons[randomChoiceSoldier];
-		pent->m_spawnEquipment = MAKE_STRING(pRandomNameSoldier);
-	}
-	else if (Q_stristr(pRandomName, "npc_combine_ace"))
-	{
-		int nWeaponsSoldier = ARRAYSIZE(g_CombineSoldierWeapons);
-		int randomChoiceSoldier = rand() % nWeaponsSoldier;
-		const char* pRandomNameSoldier = g_CombineSoldierWeapons[randomChoiceSoldier];
-		pent->m_spawnEquipment = MAKE_STRING(pRandomNameSoldier);
-	}
-	else if (Q_stristr(pRandomName, "npc_playerbot"))
+
+	if (Q_stristr(pRandomName, "npc_playerbot"))
 	{
 		if (!g_fr_lonewolf.GetBool())
 		{
@@ -810,6 +828,7 @@ CRandNPCLoader::CRandNPCLoader(CNPCMakerFirefight* pSpawner)
 	m_iNPCAttributePreset = -1; // 0 = no attributes, random. -1 and below: no attributes at all.
 	m_iMinPlayerLevel = 1;
 	m_bIsRare = false;
+	m_spawnEquipment = NULL_STRING;
 
 	bool gamemodeMode = true;
 	const char* gamemodeName = g_pGameRules->GetGamemodeName();
@@ -895,6 +914,7 @@ bool CRandNPCLoader::LoadNPC(void)
 			m_bIsRare = pNode->GetBool("rare", false);
 			m_iMinPlayerLevel = pNode->GetInt("min_level", 1);
 			m_iNPCAttributePreset = pNode->GetInt("preset", -1);
+			m_spawnEquipment = MAKE_STRING(pNode->GetString("equipment"));
 			return true;
 		}
 	}
@@ -955,6 +975,12 @@ KeyValues* CRandNPCLoader::CreateLevelBasedSpawnlist(void)
 						newKey->SetInt("min_level", pPlayerLevel);
 						int pNPCPreset = kv->GetInt("preset", -1);
 						newKey->SetInt("preset", pNPCPreset);
+
+						const char* pEquipment = kv->GetString("equipment");
+						if (strlen(pEquipment) > 0)
+						{
+							newKey->SetString("equipment", pEquipment);
+						}
 					}
 					else
 					{
