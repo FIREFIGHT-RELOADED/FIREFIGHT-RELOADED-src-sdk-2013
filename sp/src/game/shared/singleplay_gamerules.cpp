@@ -52,6 +52,7 @@ ConVar sv_weapon_respawn("sv_weapon_respawn", "1", FCVAR_ARCHIVE);
 ConVar sv_weapon_respawn_time("sv_weapon_respawn_time", "180", FCVAR_CHEAT);
 
 ConVar sv_player_dropweaponsondeath("sv_player_dropweaponsondeath", "1", FCVAR_ARCHIVE);
+ConVar sv_player_autoaimcrosshair("sv_player_autoaimcrosshair", "0", FCVAR_ARCHIVE);
 
 extern ConVar sv_player_voice;
 extern ConVar sv_player_voice_kill_freq;
@@ -493,16 +494,25 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 	//=========================================================
 	void CSingleplayRules::PlayerSpawn( CBasePlayer *pPlayer )
 	{
-		// Player no longer gets all weapons to start.
-		// He has to pick them up now.  Use impulse 101
-		// to give him all weapons
+		bool		addDefault;
+		CBaseEntity* pWeaponEntity = NULL;
+
+		pPlayer->EquipSuit();
+
+		addDefault = true;
+
+		while ((pWeaponEntity = gEntList.FindEntityByClassname(pWeaponEntity, "game_player_equip")) != NULL)
+		{
+			pWeaponEntity->Touch(pPlayer);
+			addDefault = false;
+		}
 	}
 
 	//=========================================================
 	//=========================================================
 	bool CSingleplayRules::AllowAutoTargetCrosshair( void )
 	{
-		return ( IsSkillLevel(SKILL_EASY) );
+		return ( IsSkillLevel(SKILL_EASY) || sv_player_autoaimcrosshair.GetBool());
 	}
 
 	//=========================================================

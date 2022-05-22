@@ -1070,25 +1070,28 @@ void CBasePlayer::CheckLevel()
 			gameeventmanager->FireEvent(event);
 		}
 
-		RemoveAllItems(false);
-
-		/*if (!GlobalEntity_IsInTable("super_phys_gun"))
+		if (sk_player_weapons.GetBool())
 		{
-			GlobalEntity_Add(MAKE_STRING("super_phys_gun"), gpGlobals->mapname, GLOBAL_ON);
+			RemoveAllItems(false);
+
+			/*if (!GlobalEntity_IsInTable("super_phys_gun"))
+			{
+				GlobalEntity_Add(MAKE_STRING("super_phys_gun"), gpGlobals->mapname, GLOBAL_ON);
+			}
+			else
+			{
+				GlobalEntity_SetState(MAKE_STRING("super_phys_gun"), GLOBAL_ON);
+			}*/
+
+			HL2GameRules()->SetMegaPhyscannonActive();
+
+			if (sv_player_grapple.GetBool())
+			{
+				GiveNamedItem("weapon_grapple");
+			}
+
+			GiveNamedItem("weapon_physcannon");
 		}
-		else
-		{
-			GlobalEntity_SetState(MAKE_STRING("super_phys_gun"), GLOBAL_ON);
-		}*/
-
-		HL2GameRules()->SetMegaPhyscannonActive();
-
-		if (sv_player_grapple.GetBool())
-		{
-			GiveNamedItem("weapon_grapple");
-		}
-
-		GiveNamedItem("weapon_physcannon");
 
 		CFmtStr hint;
 		hint.sprintf("#GameUI_MaximumLevel");

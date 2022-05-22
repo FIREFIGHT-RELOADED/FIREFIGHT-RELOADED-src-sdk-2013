@@ -563,6 +563,7 @@ void CGamePlayerHurt::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 // Flag: USE Only
 
 #define SF_PLAYEREQUIP_USEONLY			0x0001
+#define SF_PLAYEREQUIP_STRIPALLFIRST	0x0002
 #define MAX_EQUIP		32
 
 class CGamePlayerEquip : public CRulePointEntity
@@ -642,6 +643,11 @@ void CGamePlayerEquip::EquipPlayer( CBaseEntity *pEntity )
 
 	if ( !pPlayer )
 		return;
+
+	if (HasSpawnFlags(SF_PLAYEREQUIP_STRIPALLFIRST))
+	{
+		pPlayer->RemoveAllWeapons();
+	}
 
 	for ( int i = 0; i < MAX_EQUIP; i++ )
 	{
