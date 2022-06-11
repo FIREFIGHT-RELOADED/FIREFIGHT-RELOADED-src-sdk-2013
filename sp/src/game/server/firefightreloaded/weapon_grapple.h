@@ -14,7 +14,7 @@
 #pragma once
 #endif
        
-#include "sprite.h"                            
+#include "Sprite.h"                            
  
 #ifdef CLIENT_DLL
 	#include "c_te_effect_dispatch.h"
