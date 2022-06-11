@@ -123,7 +123,8 @@ void C_BaseCombatCharacter::UpdateGlowEffect( void )
 	{
 		float r, g, b;
 		GetGlowEffectColor(&r, &g, &b);
-		UpdateGlowEffect(Vector(r, g, b), 1.0);
+		Vector color = Vector(r, g, b);
+		UpdateGlowEffect(color, 1.0);
 	}
 }
 

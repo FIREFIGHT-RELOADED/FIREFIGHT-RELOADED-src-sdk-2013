@@ -660,7 +660,8 @@ void CNPC_Citizen::Spawn()
 	if (HasSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI))
 	{
 		CapabilitiesAdd(bits_CAP_MOVE_JUMP);
-		GiveOutline(Vector(26, 77, 153));
+		Vector allyColor = Vector(26, 77, 153);
+		GiveOutline(allyColor);
 		GiveWeapons();
 	}
 
