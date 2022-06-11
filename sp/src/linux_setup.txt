@@ -3,12 +3,12 @@ cd /valve/steam-runtime
 ./shell.sh --arch=i386
 
 UPDATE BY USING
-sudo git pull origin main
+sudo git pull origin endgame
 
 USE cd ../../ TO BACK PUT OF DIR
 
 TO CREATE MAKEFILE
-cd <FR DIR>/FIREFIGHT-RELOADED-src-sdk-2013/sp/src
+cd /projects/FIREFIGHT-RELOADED-src-sdk-2013/sp/src
 sudo chmod -R +x devtools/*
 sudo chmod -R +x devtools/bin
 sudo chmod -R +x devtools/bin/linux
