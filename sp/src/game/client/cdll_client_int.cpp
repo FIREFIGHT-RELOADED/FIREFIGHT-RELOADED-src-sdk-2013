@@ -147,10 +147,13 @@
 #include "fbxsystem/fbxsystem.h"
 #endif
 
+//TODO: add linux support for discord RPC if it's available for x32!
+#if defined( WIN32 )
 //discord
 #include "discord-rpc.h"
 #include "discord_register.h"
 #include <time.h>
+#endif
 
 extern vgui::IInputInternal *g_InputInternal;
 
@@ -335,6 +338,7 @@ void DispatchHudText( const char *pszName );
 static ConVar s_CV_ShowParticleCounts("showparticlecounts", "0", 0, "Display number of particles drawn per frame");
 static ConVar s_cl_team("cl_team", "default", FCVAR_USERINFO|FCVAR_ARCHIVE, "Default team when joining a game");
 static ConVar s_cl_class("cl_class", "default", FCVAR_USERINFO|FCVAR_ARCHIVE, "Default class when joining a game");
+#if defined( WIN32 )
 static ConVar cl_discord_appid("cl_discord_appid", "382336881758568448", FCVAR_DEVELOPMENTONLY|FCVAR_CHEAT);
 static int64_t startTimestamp = time(0);
 //#define DEVBUILD
@@ -342,6 +346,7 @@ static int64_t startTimestamp = time(0);
 static ConVar cl_discord_devbuild("cl_discord_devbuild", "1", FCVAR_DEVELOPMENTONLY | FCVAR_CHEAT);
 #else
 static ConVar cl_discord_devbuild("cl_discord_devbuild", "0", FCVAR_DEVELOPMENTONLY | FCVAR_CHEAT);
+#endif
 #endif
 
 #ifdef HL1MP_CLIENT_DLL
@@ -844,6 +849,7 @@ bool IsEngineThreaded()
 	return false;
 }
 
+#if defined( WIN32 )
 static void handleDiscordReady()
 {
 	DevMsg("Discord: Ready\n");
@@ -870,6 +876,7 @@ static void handleDiscordSpectate(const char* secret)
 static void handleDiscordJoinRequest(const DiscordJoinRequest* request)
 {
 }
+#endif
 
 //-----------------------------------------------------------------------------
 // Constructor
@@ -1124,6 +1131,7 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 	HookHapticMessages(); // Always hook the messages
 #endif
 
+#if defined( WIN32 )
 	DiscordEventHandlers handlers;
 	memset(&handlers, 0, sizeof(handlers));
 	handlers.ready = handleDiscordReady;
@@ -1173,6 +1181,7 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 		}
 		Discord_UpdatePresence(&discordPresence);
 	}
+#endif
 
 	//InitCustomWeapon();
 
@@ -1301,7 +1310,9 @@ void CHLClient::Shutdown( void )
 	ShutdownFbx();
 #endif
 
+#if defined( WIN32 )
 	Discord_Shutdown();
+#endif
 	
 	// This call disconnects the VGui libraries which we rely on later in the shutdown path, so don't do it
 //	DisconnectTier3Libraries( );
@@ -1715,6 +1726,7 @@ void CHLClient::LevelInitPreEntity( char const* pMapName )
 	}
 #endif
 
+#if defined( WIN32 )
 	if (!g_bTextMode)
 	{
 		char buffer[256];
@@ -1753,6 +1765,7 @@ void CHLClient::LevelInitPreEntity( char const* pMapName )
 		}
 		Discord_UpdatePresence(&discordPresence);
 	}
+#endif
 
 	// Check low violence settings for this map
 	g_RagdollLVManager.SetLowViolence( pMapName );
@@ -1845,6 +1858,7 @@ void CHLClient::LevelShutdown( void )
 
 	gHUD.LevelShutdown();
 
+#if defined( WIN32 )
 	if (!g_bTextMode)
 	{
 		DiscordRichPresence discordPresence;
@@ -1881,6 +1895,7 @@ void CHLClient::LevelShutdown( void )
 		}
 		Discord_UpdatePresence(&discordPresence);
 	}
+#endif
 
 	internalCenterPrint->Clear();
 
