@@ -17,3 +17,9 @@ sudo bash createfirefightreloadedproject
 
 TO COMPILE MAKEFILE
 sudo make -f firefight.mak
+
+TO DEBUG
+cd "/home/bitl/.steam/debian-installation/steamapps/common/FIREFIGHT RELOADED"
+GAME_DEBUGGER=gdb "./fr.sh" -game firefightreloaded -steam
+CALL bt ON A CRASH
+cont to continue
