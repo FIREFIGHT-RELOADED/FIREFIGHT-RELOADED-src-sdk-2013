@@ -140,7 +140,7 @@ unsigned FASTCALL HashStringCaselessConventional( const char *pszKey )
 //-----------------------------------------------------------------------------
 // int hash
 //-----------------------------------------------------------------------------
-unsigned FASTCALL HashInt( const int n )
+unsigned FASTCALL HashInt( const unsigned int n )
 {
 	register unsigned		even, odd;
 	even  = g_nRandomValues[n & 0xff];

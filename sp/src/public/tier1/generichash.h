@@ -23,7 +23,7 @@ unsigned FASTCALL Hash12( const void *pKey );
 unsigned FASTCALL Hash16( const void *pKey );
 unsigned FASTCALL HashBlock( const void *pKey, unsigned size );
 
-unsigned FASTCALL HashInt( const int key );
+unsigned FASTCALL HashInt( const unsigned int key );
 
 // hash a uint32 into a uint32
 FORCEINLINE uint32 HashIntAlternate( uint32 n)
@@ -37,7 +37,7 @@ FORCEINLINE uint32 HashIntAlternate( uint32 n)
 	return n;
 }
 
-inline unsigned HashIntConventional( const int n ) // faster but less effective
+inline unsigned HashIntConventional( const unsigned int n ) // faster but less effective
 {
 	// first byte
 	unsigned hash = 0xAAAAAAAA + (n & 0xFF);
