@@ -40,57 +40,11 @@ using namespace vgui;
 void UpdateCursorState();
 // void DuckMessage(const char *str);
 
-wchar_t* GrabLocalizedString(const char* name)
-{
-	wchar_t text[128];
-	wchar_t* tempString = g_pVGuiLocalize->Find(name);
-
-	// setup our localized string
-	if (tempString)
-	{
-#ifdef WIN32
-		_snwprintf(text, sizeof(text) / sizeof(wchar_t) - 1, L"%s", tempString);
-#else
-		_snwprintf(text, sizeof(text) / sizeof(wchar_t) - 1, L"%S", tempString);
-#endif
-		text[sizeof(text) / sizeof(wchar_t) - 1] = 0;
-	}
-	else
-	{
-		// string wasn't found by g_pVGuiLocalize->Find()
-		g_pVGuiLocalize->ConvertANSIToUnicode(name, text, sizeof(text));
-	}
-
-	wchar_t* textString = text;
-	return textString;
-}
-
 wchar_t* GrabLocalizedNameString(const char* name)
 {
 	char szNameString[2048];
 	Q_snprintf(szNameString, sizeof(szNameString), "#GameUI_Store_Buy_%s", name);
-
-	wchar_t text[256];
-	wchar_t* tempString = g_pVGuiLocalize->Find(szNameString);
-
-	// setup our localized string
-	if (tempString)
-	{
-#ifdef WIN32
-		_snwprintf(text, sizeof(text) / sizeof(wchar_t) - 1, L"%s", tempString);
-#else
-		_snwprintf(text, sizeof(text) / sizeof(wchar_t) - 1, L"%S", tempString);
-#endif
-		text[sizeof(text) / sizeof(wchar_t) - 1] = 0;
-	}
-	else
-	{
-		// string wasn't found by g_pVGuiLocalize->Find()
-		g_pVGuiLocalize->ConvertANSIToUnicode(name, text, sizeof(text));
-	}
-
-	wchar_t* textString = text;
-	return textString;
+	return UTIL_GetLocalizedString(szNameString);
 }
 
 //-----------------------------------------------------------------------------
@@ -200,7 +154,8 @@ Panel* CFRStoreMenuEX::CreateItemPanel(const char* name, int price, const char* 
 	char szCommand[2048];
 	Q_snprintf(szCommand, sizeof(szCommand), "purchase %i \"%s\"", price, command);
 
-	Button* pButton = new Button(PanelTest, "BuyButton", GrabLocalizedString("#GameUI_Store_BuyItem"), this, szCommand);
+	wchar_t* buyText = UTIL_GetLocalizedString("#GameUI_Store_BuyItem");
+	Button* pButton = new Button(PanelTest, "BuyButton", buyText, this, szCommand);
 	pButton->SetPos(10, 75);
 	pButton->SetWide(120);
 

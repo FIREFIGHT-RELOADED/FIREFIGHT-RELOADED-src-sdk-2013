@@ -175,7 +175,7 @@ void CHudDeathNotice::Paint()
 			iVictimTeam = g_PR->GetTeam(m_DeathNotices[i].Victim.iEntIndex);
 		}
 
-		wchar_t* tempString = g_pVGuiLocalize->Find(m_DeathNotices[i].Victim.szName);
+		wchar_t* tempString = UTIL_GetLocalizedString(m_DeathNotices[i].Victim.szName);
 
 		// setup our localized string
 		if (tempString)
@@ -194,7 +194,7 @@ void CHudDeathNotice::Paint()
 			g_pVGuiLocalize->ConvertANSIToUnicode(m_DeathNotices[i].Victim.szName, victim, sizeof(victim));
 		}
 
-		tempString = g_pVGuiLocalize->Find(m_DeathNotices[i].Killer.szName);
+		tempString = UTIL_GetLocalizedString(m_DeathNotices[i].Killer.szName);
 
 		// setup our localized string
 		if (tempString)

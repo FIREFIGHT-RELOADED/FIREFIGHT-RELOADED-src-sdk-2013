@@ -143,31 +143,6 @@ void CHudPerkHintDisplay::OnThink()
 	SetPos( ox, m_iBaseY + m_iYOffset );
 }
 
-wchar_t* GrabLocalizedItemString(const char* name)
-{
-	wchar_t text[256];
-	wchar_t* tempString = g_pVGuiLocalize->Find(name);
-
-	// setup our localized string
-	if (tempString)
-	{
-#ifdef WIN32
-		_snwprintf(text, sizeof(text) / sizeof(wchar_t) - 1, L"%s", tempString);
-#else
-		_snwprintf(text, sizeof(text) / sizeof(wchar_t) - 1, L"%S", tempString);
-#endif
-		text[sizeof(text) / sizeof(wchar_t) - 1] = 0;
-	}
-	else
-	{
-		// string wasn't found by g_pVGuiLocalize->Find()
-		g_pVGuiLocalize->ConvertANSIToUnicode(name, text, sizeof(text));
-	}
-
-	wchar_t* textString = text;
-	return textString;
-}
-
 //-----------------------------------------------------------------------------
 // Purpose: Sets the hint text, replacing variables as necessary
 //-----------------------------------------------------------------------------
@@ -184,7 +159,7 @@ bool CHudPerkHintDisplay::SetHintText(const char *text)
 	m_Labels.RemoveAll();
 
 	wchar_t* ws;
-	wchar_t* convertedText = GrabLocalizedItemString(text);
+	wchar_t* convertedText = UTIL_GetLocalizedString(text);
 	wchar_t wszLocalized[256];
 	g_pVGuiLocalize->ConstructString(wszLocalized, sizeof(wszLocalized), g_pVGuiLocalize->Find("#Valve_Hud_Reward"), 1, convertedText);
 	ws = wszLocalized;
