@@ -180,11 +180,7 @@ void CHudDeathNotice::Paint()
 		// setup our localized string
 		if (tempString)
 		{
-#ifdef WIN32
 			_snwprintf(victim, sizeof(victim) / sizeof(wchar_t) - 1, L"%s", tempString);
-#else
-			_snwprintf(victim, sizeof(victim) / sizeof(wchar_t) - 1, L"%S", tempString);
-#endif
 			victim[sizeof(victim) / sizeof(wchar_t) - 1] = 0;
 		}
 		else
@@ -199,11 +195,7 @@ void CHudDeathNotice::Paint()
 		// setup our localized string
 		if (tempString)
 		{
-#ifdef WIN32
 			_snwprintf(killer, sizeof(killer) / sizeof(wchar_t) - 1, L"%s", tempString);
-#else
-			_snwprintf(killer, sizeof(killer) / sizeof(wchar_t) - 1, L"%S", tempString);
-#endif
 			killer[sizeof(killer) / sizeof(wchar_t) - 1] = 0;
 		}
 		else

@@ -1289,8 +1289,6 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 			}
 		}
 
-		Msg("%s\n", fullEntityClassname);
-
 		const char* FinalString = fullEntityClassname;
 
 		if (useLocalization)
@@ -1300,8 +1298,6 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 
 			FinalString = localizedName.Access();
 		}
-
-		Msg("%s\n", FinalString);
 
 		return FinalString;
 	}
