@@ -3,9 +3,10 @@ cd /valve/steam-runtime
 ./shell.sh --arch=i386
 
 UPDATE BY USING
+cd /projects/FIREFIGHT-RELOADED-src-sdk-2013
 sudo git pull origin endgame
 
-USE cd ../../ TO BACK PUT OF DIR
+USE cd ../../ TO BACK OUT OF DIR
 
 TO CREATE MAKEFILE
 cd /projects/FIREFIGHT-RELOADED-src-sdk-2013/sp/src
@@ -16,10 +17,5 @@ sudo chmod +x createfirefightreloadedproject
 sudo bash createfirefightreloadedproject
 
 TO COMPILE MAKEFILE
+cd /projects/FIREFIGHT-RELOADED-src-sdk-2013/sp/src
 sudo make -f firefight.mak
-
-TO DEBUG
-cd "/home/bitl/.steam/debian-installation/steamapps/common/FIREFIGHT RELOADED"
-GAME_DEBUGGER=gdb "./fr.sh" -game firefightreloaded -steam
-CALL bt ON A CRASH
-cont to continue
