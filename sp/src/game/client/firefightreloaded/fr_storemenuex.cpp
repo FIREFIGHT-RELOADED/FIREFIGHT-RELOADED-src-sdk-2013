@@ -40,13 +40,6 @@ using namespace vgui;
 void UpdateCursorState();
 // void DuckMessage(const char *str);
 
-wchar_t* GrabLocalizedNameString(const char* name)
-{
-	char szNameString[2048];
-	Q_snprintf(szNameString, sizeof(szNameString), "#GameUI_Store_Buy_%s", name);
-	return UTIL_GetLocalizedString(szNameString);
-}
-
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
@@ -140,8 +133,9 @@ Panel* CFRStoreMenuEX::CreateItemPanel(const char* name, int price, const char* 
 	Panel* PanelTest = new Panel(this, "ItemPanel");
 	PanelTest->SetSize(50, 120);
 
-	wchar_t* titleText = GrabLocalizedNameString(name);
-	Label* pLabel = new Label(PanelTest, "Title", titleText);
+	char szNameString[2048];
+	Q_snprintf(szNameString, sizeof(szNameString), "#GameUI_Store_Buy_%s", name);
+	Label* pLabel = new Label(PanelTest, "Title", szNameString);
 	pLabel->SetPos(10, 25);
 	pLabel->SetWide(384);
 
@@ -154,8 +148,7 @@ Panel* CFRStoreMenuEX::CreateItemPanel(const char* name, int price, const char* 
 	char szCommand[2048];
 	Q_snprintf(szCommand, sizeof(szCommand), "purchase %i \"%s\"", price, command);
 
-	wchar_t* buyText = UTIL_GetLocalizedString("#GameUI_Store_BuyItem");
-	Button* pButton = new Button(PanelTest, "BuyButton", buyText, this, szCommand);
+	Button* pButton = new Button(PanelTest, "BuyButton", "#GameUI_Store_BuyItem", this, szCommand);
 	pButton->SetPos(10, 75);
 	pButton->SetWide(120);
 

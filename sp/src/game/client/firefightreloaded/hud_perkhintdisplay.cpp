@@ -159,7 +159,7 @@ bool CHudPerkHintDisplay::SetHintText(const char *text)
 	m_Labels.RemoveAll();
 
 	wchar_t* ws;
-	wchar_t* convertedText = UTIL_GetLocalizedString(text);
+	wchar_t* convertedText = g_pVGuiLocalize->Find(text);
 	wchar_t wszLocalized[256];
 	g_pVGuiLocalize->ConstructString(wszLocalized, sizeof(wszLocalized), g_pVGuiLocalize->Find("#Valve_Hud_Reward"), 1, convertedText);
 	ws = wszLocalized;
