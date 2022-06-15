@@ -175,42 +175,64 @@ void CHudDeathNotice::Paint()
 			iVictimTeam = g_PR->GetTeam(m_DeathNotices[i].Victim.iEntIndex);
 		}
 
-		wchar_t* tempString = UTIL_GetLocalizedString(m_DeathNotices[i].Victim.szName);
-
-		// setup our localized string
-		if (tempString)
+		if (m_DeathNotices[i].Victim.szName[0] == '#')
 		{
-#ifdef WIN32
-			_snwprintf(victim, sizeof(victim) / sizeof(wchar_t) - 1, L"%s", tempString);
-#else
-			_snwprintf(victim, sizeof(victim) / sizeof(wchar_t) - 1, L"%S", tempString);
-#endif
-			victim[sizeof(victim) / sizeof(wchar_t) - 1] = 0;
+			wchar_t* tempString = g_pVGuiLocalize->Find(m_DeathNotices[i].Victim.szName);
+
+			if (tempString)
+			{
+				g_pVGuiLocalize->ConstructString(victim, sizeof(victim), tempString, 0);
+			}
+			else
+			{
+				const char* prunedName = m_DeathNotices[i].Victim.szName;
+				if (strncmp(prunedName, "#fr_npc_", 8) == 0)
+				{
+					prunedName += 8;
+				}
+
+				g_pVGuiLocalize->ConvertANSIToUnicode(m_DeathNotices[i].Victim.szName, victim, sizeof(victim));
+			}
 		}
 		else
 		{
-			// string wasn't found by g_pVGuiLocalize->Find()
-			//just display the npc classname
+			const char* prunedName = m_DeathNotices[i].Victim.szName;
+			if (strncmp(prunedName, "#fr_npc_", 8) == 0)
+			{
+				prunedName += 8;
+			}
+
 			g_pVGuiLocalize->ConvertANSIToUnicode(m_DeathNotices[i].Victim.szName, victim, sizeof(victim));
 		}
 
-		tempString = UTIL_GetLocalizedString(m_DeathNotices[i].Killer.szName);
-
-		// setup our localized string
-		if (tempString)
+		if (m_DeathNotices[i].Killer.szName[0] == '#')
 		{
-#ifdef WIN32
-			_snwprintf(killer, sizeof(killer) / sizeof(wchar_t) - 1, L"%s", tempString);
-#else
-			_snwprintf(killer, sizeof(killer) / sizeof(wchar_t) - 1, L"%S", tempString);
-#endif
-			killer[sizeof(killer) / sizeof(wchar_t) - 1] = 0;
+			wchar_t* tempString = g_pVGuiLocalize->Find(m_DeathNotices[i].Killer.szName);
+
+			if (tempString)
+			{
+				g_pVGuiLocalize->ConstructString(killer, sizeof(killer), tempString, 0);
+			}
+			else
+			{
+				const char* prunedName = m_DeathNotices[i].Killer.szName;
+				if (strncmp(prunedName, "#fr_npc_", 8) == 0)
+				{
+					prunedName += 8;
+				}
+
+				g_pVGuiLocalize->ConvertANSIToUnicode(prunedName, killer, sizeof(killer));
+			}
 		}
 		else
 		{
-			// string wasn't found by g_pVGuiLocalize->Find()
-			//just display the npc classname
-			g_pVGuiLocalize->ConvertANSIToUnicode(m_DeathNotices[i].Killer.szName, killer, sizeof(killer));
+			const char* prunedName = m_DeathNotices[i].Killer.szName;
+			if (strncmp(prunedName, "#fr_npc_", 8) == 0)
+			{
+				prunedName += 8;
+			}
+
+			g_pVGuiLocalize->ConvertANSIToUnicode(prunedName, killer, sizeof(killer));
 		}
 
 		// Get the local position for this notice
@@ -361,6 +383,18 @@ void CHudDeathNotice::FireGameEvent(IGameEvent* event)
 		// Add it to our list of death notices
 		m_DeathNotices.AddToTail(deathMsg);
 
+		const char* prunedVictName = deathMsg.Victim.szName;
+		if (strncmp(prunedVictName, "#fr_npc_", 8) == 0)
+		{
+			prunedVictName += 8;
+		}
+
+		const char* prunedKillName = deathMsg.Killer.szName;
+		if (strncmp(prunedKillName, "#fr_npc_", 8) == 0)
+		{
+			prunedKillName += 8;
+		}
+
 		char sDeathMsg[512];
 
 		// Record the death notice in the console
@@ -368,16 +402,16 @@ void CHudDeathNotice::FireGameEvent(IGameEvent* event)
 		{
 			if (!strcmp(fullkilledwith, "d_worldspawn"))
 			{
-				Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s died.\n", deathMsg.Victim.szName);
+				Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s died.\n", prunedVictName);
 			}
 			else	//d_world
 			{
-				Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s suicided.\n", deathMsg.Victim.szName);
+				Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s suicided.\n", prunedVictName);
 			}
 		}
 		else
 		{
-			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s killed %s", deathMsg.Killer.szName, deathMsg.Victim.szName);
+			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s killed %s", prunedKillName, prunedVictName);
 
 			if (fullkilledwith && *fullkilledwith && (*fullkilledwith > 13))
 			{
@@ -435,6 +469,18 @@ void CHudDeathNotice::FireGameEvent(IGameEvent* event)
 		// Add it to our list of death notices
 		m_DeathNotices.AddToTail(deathMsg);
 
+		const char* prunedVictName = deathMsg.Victim.szName;
+		if (strncmp(prunedVictName, "#fr_npc_", 8) == 0)
+		{
+			prunedVictName += 8;
+		}
+
+		const char* prunedKillName = deathMsg.Killer.szName;
+		if (strncmp(prunedKillName, "#fr_npc_", 8) == 0)
+		{
+			prunedKillName += 8;
+		}
+
 		char sDeathMsg[512];
 
 		// Record the death notice in the console
@@ -442,16 +488,16 @@ void CHudDeathNotice::FireGameEvent(IGameEvent* event)
 		{
 			if (!strcmp(fullkilledwith, "d_worldspawn"))
 			{
-				Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s died.\n", deathMsg.Victim.szName);
+				Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s died.\n", prunedVictName);
 			}
 			else	//d_world
 			{
-				Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s suicided.\n", deathMsg.Victim.szName);
+				Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s suicided.\n", prunedVictName);
 			}
 		}
 		else
 		{
-			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s killed %s", deathMsg.Killer.szName, deathMsg.Victim.szName);
+			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s killed %s", prunedKillName, prunedVictName);
 
 			if (fullkilledwith && *fullkilledwith && (*fullkilledwith > 13))
 			{
@@ -509,6 +555,18 @@ void CHudDeathNotice::FireGameEvent(IGameEvent* event)
 		// Add it to our list of death notices
 		m_DeathNotices.AddToTail(deathMsg);
 
+		const char* prunedVictName = deathMsg.Victim.szName;
+		if (strncmp(prunedVictName, "#fr_npc_", 8) == 0)
+		{
+			prunedVictName += 8;
+		}
+
+		const char* prunedKillName = deathMsg.Killer.szName;
+		if (strncmp(prunedKillName, "#fr_npc_", 8) == 0)
+		{
+			prunedKillName += 8;
+		}
+
 		char sDeathMsg[512];
 
 		// Record the death notice in the console
@@ -516,16 +574,16 @@ void CHudDeathNotice::FireGameEvent(IGameEvent* event)
 		{
 			if (!strcmp(fullkilledwith, "d_worldspawn"))
 			{
-				Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s died.\n", deathMsg.Victim.szName);
+				Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s died.\n", prunedVictName);
 			}
 			else	//d_world
 			{
-				Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s suicided.\n", deathMsg.Victim.szName);
+				Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s suicided.\n", prunedVictName);
 			}
 		}
 		else
 		{
-			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s killed %s", deathMsg.Killer.szName, deathMsg.Victim.szName);
+			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s killed %s", prunedKillName, prunedVictName);
 
 			if (fullkilledwith && *fullkilledwith && (*fullkilledwith > 13))
 			{

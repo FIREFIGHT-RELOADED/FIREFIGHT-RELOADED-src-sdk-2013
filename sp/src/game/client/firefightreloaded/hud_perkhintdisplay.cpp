@@ -161,7 +161,23 @@ bool CHudPerkHintDisplay::SetHintText(const char *text)
 	wchar_t* ws;
 	wchar_t* convertedText = g_pVGuiLocalize->Find(text);
 	wchar_t wszLocalized[256];
-	g_pVGuiLocalize->ConstructString(wszLocalized, sizeof(wszLocalized), g_pVGuiLocalize->Find("#Valve_Hud_Reward"), 1, convertedText);
+
+	if (convertedText)
+	{
+		g_pVGuiLocalize->ConstructString(wszLocalized, sizeof(wszLocalized), g_pVGuiLocalize->Find("#Valve_Hud_Reward"), 1, convertedText);
+	}
+	else
+	{
+		const char* prunedName = text;
+		if (strncmp(prunedName, "#GameUI_Store_Buy_", 18) == 0)
+		{
+			prunedName += 18;
+		}
+
+		wchar_t unicode[256];
+		g_pVGuiLocalize->ConvertANSIToUnicode(prunedName, unicode, sizeof(unicode));
+		g_pVGuiLocalize->ConstructString(wszLocalized, sizeof(wszLocalized), g_pVGuiLocalize->Find("#Valve_Hud_Reward"), 1, unicode);
+	}
 	ws = wszLocalized;
 
 	// parse out the text into a label set

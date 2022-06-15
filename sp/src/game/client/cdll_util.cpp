@@ -1336,22 +1336,3 @@ bool UTIL_HasLoadedAnyMap()
 
 	return g_pFullFileSystem->FileExists( szFilename, "MOD" );
 }
-
-wchar_t* UTIL_GetLocalizedString(const char* name)
-{
-	wchar_t unicode[2048];
-	wchar_t* tempString = g_pVGuiLocalize->Find(name);
-
-	if (tempString)
-	{
-		g_pVGuiLocalize->ConstructString(unicode, sizeof(unicode), tempString, 0);
-	}
-	else
-	{
-		g_pVGuiLocalize->ConvertANSIToUnicode(name, unicode, sizeof(unicode));
-	}
-
-	wchar_t* textString = unicode;
-	return textString;
-}
-

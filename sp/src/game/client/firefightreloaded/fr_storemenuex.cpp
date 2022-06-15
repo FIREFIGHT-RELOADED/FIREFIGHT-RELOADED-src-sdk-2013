@@ -135,6 +135,12 @@ Panel* CFRStoreMenuEX::CreateItemPanel(const char* name, int price, const char* 
 
 	char szNameString[2048];
 	Q_snprintf(szNameString, sizeof(szNameString), "#GameUI_Store_Buy_%s", name);
+	wchar_t* convertedText = g_pVGuiLocalize->Find(szNameString);
+	if (!convertedText)
+	{
+		Q_snprintf(szNameString, sizeof(szNameString), "%s", name);
+	}
+
 	Label* pLabel = new Label(PanelTest, "Title", szNameString);
 	pLabel->SetPos(10, 25);
 	pLabel->SetWide(384);
