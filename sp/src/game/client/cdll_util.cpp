@@ -1339,7 +1339,9 @@ bool UTIL_HasLoadedAnyMap()
 
 wchar_t* UTIL_GetLocalizedString(const char* name)
 {
-	wchar_t unicode[256];
+	Msg("NAME: %s", name);
+
+	wchar_t unicode[2048];
 	wchar_t* tempString = g_pVGuiLocalize->Find(name);
 
 	if (tempString)
@@ -1350,6 +1352,14 @@ wchar_t* UTIL_GetLocalizedString(const char* name)
 	{
 		g_pVGuiLocalize->ConvertANSIToUnicode(name, unicode, sizeof(unicode));
 	}
+
+	Msg("UNICODE OUTPUT: %s", unicode);
+	char ansi[2048];
+	if (tempString)
+	{
+		g_pVGuiLocalize->ConvertUnicodeToANSI(unicode, ansi, sizeof(ansi));
+	}
+	Msg("ANSI OUTPUT: %s", ansi);
 
 	wchar_t* textString = unicode;
 	return textString;
