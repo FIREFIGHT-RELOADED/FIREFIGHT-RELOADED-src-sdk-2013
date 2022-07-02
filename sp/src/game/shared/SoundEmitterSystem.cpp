@@ -319,7 +319,7 @@ public:
 		for (const char* pszFoundFile = g_pFullFileSystem->FindFirst("scripts/*.txt", &hFile); pszFoundFile && hFile != FILESYSTEM_INVALID_FIND_HANDLE; pszFoundFile = g_pFullFileSystem->FindNext(hFile))
 		{
 			char szScriptName[2048];
-			const char* suffix = "_override";
+			const char* suffix = "_sounds_override";
 
 			if (Q_strncmp(pszFoundFile, suffix, sizeof(suffix)) == 0)
 			{
@@ -328,7 +328,7 @@ public:
 			}
 			else
 			{
-				suffix = "_custom";
+				suffix = "_sounds_custom";
 
 				if (Q_strncmp(pszFoundFile, suffix, sizeof(suffix)) == 0)
 				{
