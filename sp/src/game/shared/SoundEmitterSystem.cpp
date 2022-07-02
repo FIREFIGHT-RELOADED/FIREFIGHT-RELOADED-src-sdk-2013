@@ -313,6 +313,33 @@ public:
 		}
 #endif
 
+		//load other files with the suffix _override or _custom
+		FileFindHandle_t hFile = FILESYSTEM_INVALID_FIND_HANDLE;
+
+		for (const char* pszFoundFile = g_pFullFileSystem->FindFirst("scripts/*.txt", &hFile); pszFoundFile && hFile != FILESYSTEM_INVALID_FIND_HANDLE; pszFoundFile = g_pFullFileSystem->FindNext(hFile))
+		{
+			char szScriptName[2048];
+			const char* suffix = "_override";
+
+			if (Q_strncmp(pszFoundFile, suffix, sizeof(suffix)) == 0)
+			{
+				Q_snprintf(szScriptName, sizeof(szScriptName), "scripts/%s", pszFoundFile);
+				soundemitterbase->AddSoundOverrides(szScriptName);
+			}
+			else
+			{
+				suffix = "_custom";
+
+				if (Q_strncmp(pszFoundFile, suffix, sizeof(suffix)) == 0)
+				{
+					Q_snprintf(szScriptName, sizeof(szScriptName), "scripts/%s", pszFoundFile);
+					soundemitterbase->AddSoundOverrides(szScriptName);
+				}
+			}
+		}
+
+		g_pFullFileSystem->FindClose(hFile);
+
 #if !defined( CLIENT_DLL )
 		for ( int i=soundemitterbase->First(); i != soundemitterbase->InvalidIndex(); i=soundemitterbase->Next( i ) )
 		{
