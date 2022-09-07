@@ -79,3 +79,6 @@ compile_commands.json
 # Don't ignore base makefiles
 !makefile_base_posix.mak
 !sourcesdk_def.mak
+sp/src/.vs/firefight/v17/fileList.bin
+*.vsidx
+sp/src/.vs/firefight/FileContentIndex/read.lock
