@@ -8,6 +8,9 @@
 #include "tier3/tier3.h"
 #include "vgui/ILocalize.h"
 #include "fmtstr.h"
+#if !defined(MOD_VER) && !defined( _X360 ) && !defined( NO_STEAM )
+#include "steam/steam_api.h"
+#endif
 
 using namespace vgui;
 // memdbgon must be the last include file in a .cpp file!!!
@@ -209,6 +212,17 @@ void CFRMainMenuPanel::OnCommand(const char* command)
 	{
 		CSpawnlistDialog* pCSpawnlistDialog = new CSpawnlistDialog(this);
 		pCSpawnlistDialog->Activate();
+	}
+	else if (!Q_strcmp(command, "showworkshop"))
+	{
+#if !defined(MOD_VER) && !defined( _X360 ) && !defined( NO_STEAM )
+		if (steamapicontext && steamapicontext->SteamFriends())
+		{
+			char szWorkshopURL[1024];
+			Q_snprintf(szWorkshopURL, sizeof(szWorkshopURL), "https://steamcommunity.com/app/%i/workshop/\n", engine->GetAppID());
+			steamapicontext->SteamFriends()->ActivateGameOverlayToWebPage(szWorkshopURL);
+		}
+#endif
 	}
 	else
 	{
