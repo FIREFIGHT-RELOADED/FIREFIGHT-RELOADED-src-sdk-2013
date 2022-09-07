@@ -849,7 +849,8 @@ void CWeaponCrossbow::CreateChargerEffects( void )
 
 	if ( m_hChargerSprite )
 	{
-		m_hChargerSprite->SetAttachment( pOwner->GetViewModel(), BOLT_TIP_ATTACHMENT );
+		if ( pOwner != NULL )
+		    m_hChargerSprite->SetAttachment( pOwner->GetViewModel(), BOLT_TIP_ATTACHMENT );
 		m_hChargerSprite->SetTransparency( kRenderTransAdd, 255, 128, 0, 255, kRenderFxNoDissipation );
 		m_hChargerSprite->SetBrightness( 0 );
 		m_hChargerSprite->SetScale( 0.1f );

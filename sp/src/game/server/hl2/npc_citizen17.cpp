@@ -920,6 +920,9 @@ void CNPC_Citizen::SelectModel()
 
 void CNPC_Citizen::GiveWeapons(void)
 {
+	if (m_spawnEquipment != NULL_STRING)
+		return;
+
 	int nWeaponsMid = ARRAYSIZE(g_charPlayerbotMidRangeWeapons);
 	int randomChoiceMid = rand() % nWeaponsMid;
 	const char* pRandomNameMid = g_charPlayerbotMidRangeWeapons[randomChoiceMid];
@@ -1014,6 +1017,7 @@ CBaseCombatWeapon* CNPC_Citizen::GetNextBestWeaponBot(CBaseCombatWeapon* pCurren
 
 	pBest = NULL;
 
+	CBaseEntity* enemy = GetEnemy();
 	for (int i = 0; i < WeaponCount(); ++i)
 	{
 		pCheck = GetWeapon(i);
@@ -1022,15 +1026,13 @@ CBaseCombatWeapon* CNPC_Citizen::GetNextBestWeaponBot(CBaseCombatWeapon* pCurren
 
 		if (pCheck->HasAnyAmmo())
 		{
-			if (GetEnemy())
+			if (enemy)
 			{
-				float flDist;
-				flDist = (GetLocalOrigin() - GetEnemy()->GetLocalOrigin()).Length();
+				float flDist = (GetLocalOrigin() - enemy->GetLocalOrigin()).Length();
 				float weaponRange = BotWeaponRangeDetermine(flDist);
 
 				if (weaponRange == SKILL_SHORT_RANGE)
 				{
-					DevMsg("PLAYER: SHORT RANGE DETECTED\n");
 					for (const char* i : g_charPlayerbotShortRangeWeapons)
 					{
 						if (FClassnameIs(pCheck, i))
@@ -1038,12 +1040,12 @@ CBaseCombatWeapon* CNPC_Citizen::GetNextBestWeaponBot(CBaseCombatWeapon* pCurren
 							DevMsg("PLAYER: SETTING %s AS BEST SHORT RANGE.\n", pCheck->GetClassname());
 							// if this weapon is useable, flag it as the best
 							pBest = pCheck;
+							break;
 						}
 					}
 				}
 				else if (weaponRange == SKILL_MID_RANGE)
 				{
-					DevMsg("PLAYER: MID RANGE DETECTED\n");
 					for (const char* i : g_charPlayerbotMidRangeWeapons)
 					{
 						if (FClassnameIs(pCheck, i))
@@ -1051,22 +1053,11 @@ CBaseCombatWeapon* CNPC_Citizen::GetNextBestWeaponBot(CBaseCombatWeapon* pCurren
 							DevMsg("PLAYER: SETTING %s AS BEST MID RANGE.\n", pCheck->GetClassname());
 							// if this weapon is useable, flag it as the best
 							pBest = pCheck;
+							break;
 						}
 					}
 				}
-				else
-				{
-					CBaseCombatWeapon* pActiveWeapon = GetActiveWeapon();
-					DevMsg("PLAYER: SETTING CURRENT WEAPON AS BEST.\n");
-					return pActiveWeapon;
-				}
 			}
-		}
-		else
-		{
-			CBaseCombatWeapon* pActiveWeapon = GetActiveWeapon();
-			DevMsg("PLAYER: SETTING CURRENT WEAPON AS BEST.\n");
-			return pActiveWeapon;
 		}
 	}
 
@@ -1082,7 +1073,7 @@ bool CNPC_Citizen::SwitchToNextBestWeaponBot(CBaseCombatWeapon* pCurrent)
 {
 	CBaseCombatWeapon* pNewWeapon = GetNextBestWeaponBot(pCurrent);
 
-	if ((pNewWeapon != NULL))
+	if (pNewWeapon != NULL)
 	{
 		return Weapon_Switch(pNewWeapon);
 	}
