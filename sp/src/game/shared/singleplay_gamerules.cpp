@@ -47,9 +47,9 @@ ConVar sv_healthcharger_recharge_time("sv_healthcharger_recharge_time", "180", F
 ConVar sv_suitcharger_recharge("sv_suitcharger_recharge", "1", FCVAR_ARCHIVE);
 ConVar sv_suitcharger_recharge_time("sv_suitcharger_recharge_time", "180", FCVAR_CHEAT);
 ConVar sv_item_respawn("sv_item_respawn", "1", FCVAR_ARCHIVE);
-ConVar sv_item_respawn_time("sv_item_respawn_time", "180", FCVAR_CHEAT);
+ConVar sv_item_respawn_time("sv_item_respawn_time", "180", FCVAR_ARCHIVE);
 ConVar sv_weapon_respawn("sv_weapon_respawn", "1", FCVAR_ARCHIVE);
-ConVar sv_weapon_respawn_time("sv_weapon_respawn_time", "180", FCVAR_CHEAT);
+ConVar sv_weapon_respawn_time("sv_weapon_respawn_time", "180", FCVAR_ARCHIVE);
 
 ConVar sv_player_dropweaponsondeath("sv_player_dropweaponsondeath", "1", FCVAR_ARCHIVE);
 ConVar sv_player_autoaimcrosshair("sv_player_autoaimcrosshair", "0", FCVAR_ARCHIVE);
