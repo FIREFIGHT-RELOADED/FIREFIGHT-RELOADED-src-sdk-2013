@@ -63,7 +63,7 @@ LINK_ENTITY_TO_CLASS(item_crate_firefight, CItem_ItemCrateFirefight);
 //-----------------------------------------------------------------------------
 BEGIN_DATADESC( CItem_ItemCrateFirefight )
 	
-	DEFINE_KEYFIELD( m_strItemClass1, FIELD_STRING, "ItemClass1" ),
+	DEFINE_KEYFIELD(m_strItemClass1, FIELD_STRING, "ItemClass1"),
 	DEFINE_KEYFIELD(m_strItemClass2, FIELD_STRING, "ItemClass2"),
 	DEFINE_KEYFIELD(m_strItemClass3, FIELD_STRING, "ItemClass3"),
 	DEFINE_KEYFIELD(m_strItemClass4, FIELD_STRING, "ItemClass4"),
@@ -174,72 +174,21 @@ void CItem_ItemCrateFirefight::Spawn( void )
 	DisableAutoFade();
 	SetModelName(AllocPooledString(STRING(m_CrateAppearance)));
 
-	if ( NULL_STRING == m_strItemClass1 )
+	if
+	(
+		NULL_STRING == m_strItemClass1
+		&& NULL_STRING == m_strItemClass2
+		&& NULL_STRING == m_strItemClass3
+		&& NULL_STRING == m_strItemClass4
+		&& NULL_STRING == m_strItemClass5
+		&& NULL_STRING == m_strItemClass6
+		&& NULL_STRING == m_strItemClass7
+		&& NULL_STRING == m_strItemClass8
+		&& NULL_STRING == m_strItemClass9
+		&& NULL_STRING == m_strItemClass10
+	)
 	{
-		Warning( "CItem_ItemCrateFirefight(%i):  CRATE_SPECIFIC_ITEM with NULL ItemClass1 string (deleted)!!!\n", entindex() );
-		UTIL_Remove( this );
-		return;
-	}
-
-	if (NULL_STRING == m_strItemClass2)
-	{
-		Warning("CItem_ItemCrateFirefight(%i):  CRATE_SPECIFIC_ITEM with NULL ItemClass2 string (deleted)!!!\n", entindex());
-		UTIL_Remove(this);
-		return;
-	}
-
-	if (NULL_STRING == m_strItemClass3)
-	{
-		Warning("CItem_ItemCrateFirefight(%i):  CRATE_SPECIFIC_ITEM with NULL ItemClass3 string (deleted)!!!\n", entindex());
-		UTIL_Remove(this);
-		return;
-	}
-
-	if (NULL_STRING == m_strItemClass4)
-	{
-		Warning("CItem_ItemCrateFirefight(%i):  CRATE_SPECIFIC_ITEM with NULL ItemClass4 string (deleted)!!!\n", entindex());
-		UTIL_Remove(this);
-		return;
-	}
-
-	if (NULL_STRING == m_strItemClass5)
-	{
-		Warning("CItem_ItemCrateFirefight(%i):  CRATE_SPECIFIC_ITEM with NULL ItemClass5 string (deleted)!!!\n", entindex());
-		UTIL_Remove(this);
-		return;
-	}
-
-	if (NULL_STRING == m_strItemClass6)
-	{
-		Warning("CItem_ItemCrateFirefight(%i):  CRATE_SPECIFIC_ITEM with NULL ItemClass6 string (deleted)!!!\n", entindex());
-		UTIL_Remove(this);
-		return;
-	}
-
-	if (NULL_STRING == m_strItemClass7)
-	{
-		Warning("CItem_ItemCrateFirefight(%i):  CRATE_SPECIFIC_ITEM with NULL ItemClass7 string (deleted)!!!\n", entindex());
-		UTIL_Remove(this);
-		return;
-	}
-
-	if (NULL_STRING == m_strItemClass8)
-	{
-		Warning("CItem_ItemCrateFirefight(%i):  CRATE_SPECIFIC_ITEM with NULL ItemClass8 string (deleted)!!!\n", entindex());
-		UTIL_Remove(this);
-		return;
-	}
-
-	if (NULL_STRING == m_strItemClass9)
-	{
-		Warning("CItem_ItemCrateFirefight(%i):  CRATE_SPECIFIC_ITEM with NULL ItemClass9 string (deleted)!!!\n", entindex());
-		UTIL_Remove(this);
-		return;
-	}
-
-	if (NULL_STRING == m_strItemClass10)
-	{
-		Warning("CItem_ItemCrateFirefight(%i):  CRATE_SPECIFIC_ITEM with NULL ItemClass10 string (deleted)!!!\n", entindex());
+		Warning("CItem_ItemCrateFirefight(%i):  CRATE_SPECIFIC_ITEM with all ItemClass string NULL (deleted)!!!\n", entindex());
 		UTIL_Remove(this);
 		return;
 	}
@@ -320,13 +269,23 @@ void CItem_ItemCrateFirefight::OnBreak( const Vector &vecVelocity, const Angular
 
 	m_OnCacheInteraction.FireOutput(pBreaker,this);
 
+	const char* items[ARRAYSIZE(g_charItemSpawnList)] = { NULL };
+	int itemCount = 0;
+	for (int i = 0; i < ARRAYSIZE(g_charItemSpawnList); ++i)
+	{
+		if (g_charItemSpawnList[i] != NULL_STRING)
+		{
+			items[itemCount++] = STRING(g_charItemSpawnList[i]);
+			//ConMsg("CItem_ItemCrateFirefight: added %s\n", g_charItemSpawnList[i]);
+		}
+	}
+
 	for ( int i = 0; i < m_nItemCount; ++i )
 	{
 		CBaseEntity *pSpawn = NULL;
-		int nItems = ARRAYSIZE(g_charItemSpawnList);
-		int randomChoice = rand() % nItems;
-		string_t pRandomName = g_charItemSpawnList[randomChoice];
-		pSpawn = CreateEntityByName(STRING(pRandomName));
+		int randomChoice = random->RandomInt(0, itemCount - 1);
+		//ConMsg("CItem_ItemCrateFirefight: chose %s\n", items[randomChoice]);
+		pSpawn = CreateEntityByName(items[randomChoice]);
 
 		if ( !pSpawn )
 			return;
