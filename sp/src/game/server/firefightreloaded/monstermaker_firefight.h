@@ -27,7 +27,7 @@ class CNPCMakerFirefight : public CBaseEntity
 public:
 	DECLARE_CLASS(CNPCMakerFirefight, CBaseEntity);
 
-	CNPCMakerFirefight(void);
+	CNPCMakerFirefight(void) {};
 
 	void Spawn( void );
 	void Precache(void);
@@ -89,7 +89,6 @@ public:
 	string_t m_iszNPCClassname;			// classname of the NPC(s) that will be created.
 	string_t m_SquadName;
 	string_t m_strHintGroup;
-	string_t m_spawnEquipment;
 	string_t m_RelationshipString;		// Used to load up relationship keyvalues
 	string_t m_ChildTargetName;
 };
@@ -102,7 +101,7 @@ public:
 	void PrecacheSpawnlist(void);
 
 private:
-	KeyValues* LoadNPCData(KeyValues* pData, int count);
+	KeyValues* LoadNPCData(KeyValues* pData);
 	KeyValues* CreateLevelBasedSpawnlist(void);
 
 public:
