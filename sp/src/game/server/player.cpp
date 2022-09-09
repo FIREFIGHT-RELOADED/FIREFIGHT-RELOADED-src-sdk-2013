@@ -8004,6 +8004,7 @@ bool CBasePlayer::BumpWeapon( CBaseCombatWeapon *pWeapon )
 			if ( pWeapon->HasPrimaryAmmo() )
 				return false;
 
+			pWeapon->CheckRespawn();
 			UTIL_Remove( pWeapon );
 			return true;
 		}
