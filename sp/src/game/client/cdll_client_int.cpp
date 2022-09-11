@@ -904,7 +904,6 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 	InitCRTMemDebug();
 	MathLib_Init( 2.2f, 2.2f, 0.0f, 2.0f );
 
-
 #ifdef SIXENSE
 	g_pSixenseInput = new SixenseInput;
 #endif
@@ -915,6 +914,11 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 	ConnectTier1Libraries( &appSystemFactory, 1 );
 	ConnectTier2Libraries( &appSystemFactory, 1 );
 	ConnectTier3Libraries( &appSystemFactory, 1 );
+
+	g_pCVar->FindVar("violence_ablood")->AddFlags(FCVAR_ARCHIVE);
+	g_pCVar->FindVar("violence_agibs")->AddFlags(FCVAR_ARCHIVE);
+	g_pCVar->FindVar("violence_hblood")->AddFlags(FCVAR_ARCHIVE);
+	g_pCVar->FindVar("violence_hgibs")->AddFlags(FCVAR_ARCHIVE);
 
 #ifndef NO_STEAM
 	ClientSteamContext().Activate();
