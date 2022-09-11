@@ -4045,6 +4045,7 @@ bool CNPC_MetroPolice::CorpseDecapitate(const CTakeDamageInfo& info)
 	return false;
 }
 
+static ConVarRef violence_hgibs("violence_hgibs");
 bool CNPC_MetroPolice::CorpseGib(const CTakeDamageInfo& info)
 {
 	bool gibs = true;
@@ -4053,7 +4054,9 @@ bool CNPC_MetroPolice::CorpseGib(const CTakeDamageInfo& info)
 		gibs = m_pAttributes->GetBool("gibs", true);
 	}
 
-	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && info.GetDamageType() & (DMG_BLAST) && !(info.GetDamageType() & (DMG_DISSOLVE)) && !PlayerHasMegaPhysCannon() && gibs)
+	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence())
+		&& (violence_hgibs.IsValid() && !violence_hgibs.GetBool())
+		&& info.GetDamageType() & (DMG_BLAST) && !(info.GetDamageType() & (DMG_DISSOLVE)) && !PlayerHasMegaPhysCannon() && gibs)
 	{
 		if (IsCurSchedule(SCHED_NPC_FREEZE))
 		{

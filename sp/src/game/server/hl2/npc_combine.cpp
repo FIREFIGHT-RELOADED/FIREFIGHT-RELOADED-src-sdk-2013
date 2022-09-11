@@ -481,6 +481,7 @@ bool CNPC_Combine::CorpseDecapitate(const CTakeDamageInfo& info)
 	return false;
 }
 
+static ConVarRef violence_hgibs("violence_hgibs");
 bool CNPC_Combine::CorpseGib(const CTakeDamageInfo& info)
 {
 	bool gibs = true;
@@ -492,7 +493,9 @@ bool CNPC_Combine::CorpseGib(const CTakeDamageInfo& info)
 	if (info.GetDamageType() & DMG_NEVERGIB)
 		return false;
 
-	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && info.GetDamageType() & (DMG_BLAST) && !(info.GetDamageType() & (DMG_DISSOLVE)) && !PlayerHasMegaPhysCannon() && gibs)
+	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence())
+		&& (violence_hgibs.IsValid() && !violence_hgibs.GetBool())
+		&& info.GetDamageType() & (DMG_BLAST) && !(info.GetDamageType() & (DMG_DISSOLVE)) && !PlayerHasMegaPhysCannon() && gibs)
 	{
 		if (IsCurSchedule(SCHED_NPC_FREEZE))
 		{
