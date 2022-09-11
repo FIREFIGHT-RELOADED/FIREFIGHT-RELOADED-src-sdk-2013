@@ -392,6 +392,7 @@ void CItem_ItemCrateFirefight::OnBreak( const Vector &vecVelocity, const Angular
 			return;
 		}
 		physObj->EnableMotion(false);
+
 		pNewCrate->SetSolid(SOLID_NONE);
 		pNewCrate->AddEffects(EF_NODRAW);
 
@@ -414,12 +415,20 @@ void CItem_ItemCrateFirefight::RespawnThink(void)
 			return;
 		}
 		physObj->EnableMotion(true);
+		physObj->Wake();
+
 		SetSolid(SOLID_VPHYSICS);
 
 		SetLocalAngles(m_originalAngles);
 		SetLocalOrigin(m_originalOrigin);
 
 		RemoveEffects(EF_NODRAW);
+
+#ifdef HL2MP
+		EmitSound("AlyxEmp.Charge");
+#else
+		EmitSound("Item.Materialize");
+#endif
 
 		SetThink(NULL);
 	}
