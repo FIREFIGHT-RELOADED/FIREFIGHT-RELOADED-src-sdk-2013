@@ -497,7 +497,6 @@ void CItem::Materialize( void )
 		EmitSound( "Item.Materialize" );
 #endif
 		RemoveEffects( EF_NODRAW );
-		SetMoveType(MOVETYPE_NONE);
 		SetSolid(SOLID_BBOX);
 		AddSolidFlags(FSOLID_TRIGGER);
 		DoMuzzleFlash();
