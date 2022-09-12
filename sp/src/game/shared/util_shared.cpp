@@ -810,11 +810,11 @@ void UTIL_BloodDrips( const Vector &origin, const Vector &direction, int color, 
 //-----------------------------------------------------------------------------
 // Purpose: Returns low violence settings
 //-----------------------------------------------------------------------------
-static ConVarRef	violence_hblood( "violence_hblood");
-static ConVarRef	violence_hgibs("violence_hgibs");
-static ConVarRef	violence_ablood("violence_ablood");
-static ConVarRef	violence_agibs("violence_agibs");
-static ConVar		violence_override("violence_override", "0", FCVAR_ARCHIVE, "Override violence detection and allow violence.");
+static ConVar	violence_hblood("violence_hblood", "1", FCVAR_ARCHIVE, "Draw human blood");
+static ConVar	violence_hgibs("violence_hgibs", "1", FCVAR_ARCHIVE, "Show human gib entities");
+static ConVar	violence_ablood("violence_ablood", "1", FCVAR_ARCHIVE, "Draw alien blood");
+static ConVar	violence_agibs("violence_agibs", "1", FCVAR_ARCHIVE, "Show alien gib entities");
+static ConVar	violence_override("violence_override", "0", FCVAR_ARCHIVE, "Override violence detection and allow violence.");
 
 bool UTIL_IsLowViolence( void )
 {
