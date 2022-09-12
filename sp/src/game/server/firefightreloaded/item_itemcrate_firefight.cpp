@@ -311,8 +311,11 @@ void CItem_ItemCrateFirefight::OnBreak( const Vector &vecVelocity, const Angular
 		int randomChoice = random->RandomInt(0, itemCount - 1);
 		pSpawn = CreateEntityByName(items[randomChoice]);
 
-		if ( !pSpawn )
+		if (!pSpawn)
+		{
+			Warning("CItem_ItemCrateFirefight: attempted to create invalid entity \"%s\"\n", items[randomChoice]);
 			return;
+		}
 
 		// Give a little randomness...
 		Vector vecOrigin;
