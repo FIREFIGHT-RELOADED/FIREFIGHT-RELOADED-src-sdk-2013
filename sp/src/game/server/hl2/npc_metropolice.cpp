@@ -122,6 +122,8 @@ ConVar  metropolice_charge("metropolice_charge", "1" );
 
 ConVar	metropolice_spawnwithmanhacks("metropolice_spawnwithmanhacks", "1", FCVAR_ARCHIVE);
 
+static ConVarRef violence_hgibs( "violence_hgibs" );
+
 // How many clips of pistol ammo a metropolice carries.
 #define METROPOLICE_NUM_CLIPS			10
 #define METROPOLICE_BURST_RELOAD_COUNT	20
@@ -3951,7 +3953,9 @@ bool CNPC_MetroPolice::CorpseDecapitate(const CTakeDamageInfo& info)
 		gibs = m_pAttributes->GetBool("gibs", true);
 	}
 
-	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool() && gibs)
+	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence())
+		&& (violence_hgibs.IsValid() && !violence_hgibs.GetBool()) 
+		&& g_fr_headshotgore.GetBool() && gibs )
 	{
 		if ((info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB))
 		{
@@ -4045,7 +4049,6 @@ bool CNPC_MetroPolice::CorpseDecapitate(const CTakeDamageInfo& info)
 	return false;
 }
 
-static ConVarRef violence_hgibs("violence_hgibs");
 bool CNPC_MetroPolice::CorpseGib(const CTakeDamageInfo& info)
 {
 	bool gibs = true;

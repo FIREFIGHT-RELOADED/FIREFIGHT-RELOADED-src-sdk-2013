@@ -114,6 +114,7 @@ enum PathfindingVariant_T
 };
 
 ConVar combine_spawnwithtacticalvariant("combine_spawnwithtacticalvariant", "1", FCVAR_ARCHIVE);
+static ConVarRef violence_hgibs( "violence_hgibs" );
 
 #define bits_MEMORY_PAIN_LIGHT_SOUND		bits_MEMORY_CUSTOM1
 #define bits_MEMORY_PAIN_HEAVY_SOUND		bits_MEMORY_CUSTOM2
@@ -387,7 +388,9 @@ bool CNPC_Combine::CorpseDecapitate(const CTakeDamageInfo& info)
 	if (info.GetDamageType() & DMG_NEVERGIB)
 		return false;
 
-	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool() && gibs)
+	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence())
+		&& (violence_hgibs.IsValid() && !violence_hgibs.GetBool())
+		&& g_fr_headshotgore.GetBool() && gibs)
 	{
 		if ((info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)))
 		{
@@ -481,7 +484,6 @@ bool CNPC_Combine::CorpseDecapitate(const CTakeDamageInfo& info)
 	return false;
 }
 
-static ConVarRef violence_hgibs("violence_hgibs");
 bool CNPC_Combine::CorpseGib(const CTakeDamageInfo& info)
 {
 	bool gibs = true;
