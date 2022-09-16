@@ -1076,6 +1076,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 	//=========================================================
 	// Deathnotice. 
 	//=========================================================
+	typedef char NpcName[256];
 	void CSingleplayRules::DeathNotice(CBasePlayer* pVictim, const CTakeDamageInfo& info)
 	{
 		// Work out what killed the player, and send a message to all clients about it
@@ -1160,7 +1161,8 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 		}
 		else if (pKiller->IsNPC())
 		{
-			const char* killer_name = GetNPCName(pKiller);
+			NpcName killer_name;
+			GetNPCName(killer_name, pKiller);
 
 			IGameEvent* event = gameeventmanager->CreateEvent("player_death_npc");
 			if (event)
@@ -1246,7 +1248,8 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 				}
 			}
 
-			const char* vic_name = GetNPCName(pVictim);
+			NpcName vic_name;
+			GetNPCName(vic_name, pVictim);
 
 			IGameEvent* event = gameeventmanager->CreateEvent("npc_death");
 			if (event)
@@ -1263,7 +1266,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 		}
 	}
 
-	const char* CSingleplayRules::GetNPCName(CBaseEntity* pVictim)
+	void CSingleplayRules::GetNPCName(NpcName npcName, CBaseEntity* pVictim)
 	{
 		//todo: use properly localized names.
 		const char* entityClassname = pVictim->GetClassname();
@@ -1296,10 +1299,10 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 			CFmtStr localizedName;
 			localizedName.sprintf("#fr_%s", fullEntityClassname);
 
-			FinalString = localizedName.Access();
+			Q_strncpy(npcName, localizedName.Access(), sizeof NpcName);
 		}
-
-		return FinalString;
+		else
+			Q_strncpy(npcName, FinalString, sizeof NpcName);
 	}
 
 	//=========================================================
