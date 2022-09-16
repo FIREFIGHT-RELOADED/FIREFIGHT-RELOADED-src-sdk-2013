@@ -710,8 +710,10 @@ int	CBaseCombatWeapon::ObjectCaps( void )
 //-----------------------------------------------------------------------------
 void CBaseCombatWeapon::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
+	if ( IsEffectActive( EF_NODRAW ) )
+		return;
+
 	CBasePlayer *pPlayer = ToBasePlayer( pActivator );
-	
 	if ( pPlayer )
 	{
 		m_OnPlayerUse.FireOutput( pActivator, pCaller );
