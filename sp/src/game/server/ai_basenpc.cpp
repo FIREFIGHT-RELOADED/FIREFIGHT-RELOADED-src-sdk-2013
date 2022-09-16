@@ -87,6 +87,7 @@
 #include "datacache/imdlcache.h"
 #include "vstdlib/jobthread.h"
 #include "ilagcompensationmanager.h" 
+#include "npc_citizen17.h"
 
 #ifdef HL2_EPISODIC
 #include "npc_alyx_episodic.h"
@@ -645,9 +646,29 @@ void CAI_BaseNPC::Event_Killed( const CTakeDamageInfo &info )
 		}
 	}
 
-	if (info.GetAttacker()->IsPlayer())
+	CBaseEntity* pAttacker = info.GetAttacker();
+	CNPC_Citizen* pCitizen;
+	if ( (pCitizen = dynamic_cast<CNPC_Citizen*>(pAttacker)) != NULL )
 	{
-		((CSingleplayRules*)GameRules())->NPCKilled(this, info);
+		if ( !pCitizen->IsInPlayerSquad() )
+			return;
+		CHL2_Player* pPlayer = NULL;
+		const char* squadName = pCitizen->m_pSquad->GetName();
+		for ( int i = 1; i <= gpGlobals->maxClients; ++i )
+		{
+			pPlayer = dynamic_cast<CHL2_Player*>(UTIL_PlayerByIndex( i ));
+			if ( pPlayer != NULL && Q_strcmp( pPlayer->GetSquadName(), squadName ) == 0 )
+				break;
+		}
+		if ( pPlayer != NULL )
+			pAttacker = pPlayer;
+	}
+	
+	if (pAttacker->IsPlayer())
+	{
+		CTakeDamageInfo new_info( info );
+		new_info.SetAttacker( pAttacker );
+		((CSingleplayRules*)GameRules())->NPCKilled(this, new_info);
 	}
 }
 
