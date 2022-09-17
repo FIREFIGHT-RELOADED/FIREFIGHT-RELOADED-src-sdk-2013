@@ -62,7 +62,6 @@ private:
 	QAngle				m_originalAngles;
 	bool				m_bDoNotRespawn;
 	bool				m_bDoNotRespawnContents;
-	float				m_respawnTime;
 
 	COutputEvent m_OnCacheInteraction;
 };
@@ -93,7 +92,6 @@ BEGIN_DATADESC(CItem_ItemCrateFirefight)
 	DEFINE_KEYFIELD(m_bDoNotRespawnContents, FIELD_BOOLEAN, "DoNotRespawnContents"),
 	DEFINE_FIELD(m_originalOrigin, FIELD_VECTOR),
 	DEFINE_FIELD(m_originalAngles, FIELD_VECTOR),
-	DEFINE_FIELD(m_respawnTime, FIELD_FLOAT),
 	DEFINE_INPUTFUNC(FIELD_VOID, "Kill", InputKill),
 	DEFINE_OUTPUT(m_OnCacheInteraction, "OnCacheInteraction"),
 	DEFINE_THINKFUNC(RespawnThink),
@@ -399,42 +397,36 @@ void CItem_ItemCrateFirefight::OnBreak( const Vector &vecVelocity, const Angular
 		pNewCrate->SetSolid(SOLID_NONE);
 		pNewCrate->AddEffects(EF_NODRAW);
 
-		pNewCrate->m_respawnTime = gpGlobals->curtime + sv_crate_respawn_time.GetFloat();
 		pNewCrate->SetThink(&CItem_ItemCrateFirefight::RespawnThink);
-		pNewCrate->SetNextThink(gpGlobals->curtime + 0.5f);
+		pNewCrate->SetNextThink(gpGlobals->curtime + sv_crate_respawn_time.GetFloat());
 	}
 }
 
 void CItem_ItemCrateFirefight::RespawnThink(void)
 {
-	if (gpGlobals->curtime <= m_respawnTime)
-		SetNextThink(gpGlobals->curtime + 0.5f);
-	else if (m_respawnTime > 0)
+	IPhysicsObject* physObj = VPhysicsGetObject();
+	if (physObj == NULL)
 	{
-		IPhysicsObject* physObj = VPhysicsGetObject();
-		if (physObj == NULL)
-		{
-			UTIL_Remove(this);
-			return;
-		}
-		physObj->EnableMotion(true);
-		physObj->Wake();
+		UTIL_Remove(this);
+		return;
+	}
+	physObj->EnableMotion(true);
+	physObj->Wake();
 
-		SetSolid(SOLID_VPHYSICS);
+	SetSolid(SOLID_VPHYSICS);
 
-		SetLocalAngles(m_originalAngles);
-		SetLocalOrigin(m_originalOrigin);
+	SetLocalAngles(m_originalAngles);
+	SetLocalOrigin(m_originalOrigin);
 
-		RemoveEffects(EF_NODRAW);
+	RemoveEffects(EF_NODRAW);
 
 #ifdef HL2MP
-		EmitSound("AlyxEmp.Charge");
+	EmitSound("AlyxEmp.Charge");
 #else
-		EmitSound("Item.Materialize");
+	EmitSound("Item.Materialize");
 #endif
 
-		SetThink(NULL);
-	}
+	SetThink(NULL);
 }
 
 void CItem_ItemCrateFirefight::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason )
