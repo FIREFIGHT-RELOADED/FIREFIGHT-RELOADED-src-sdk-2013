@@ -10613,6 +10613,13 @@ CBaseEntity *CAI_BaseNPC::DropItem ( const char *pszItemName, Vector vecPos, QAn
 			pItem->ApplyLocalAngularVelocityImpulse( AngularImpulse( 0, random->RandomFloat( 0, 100 ), 0 ) );
 		}
 
+		static ConVarRef sv_cleanup_time( "sv_cleanup_time" );
+		if ( sv_cleanup_time.GetFloat() >= 0 )
+		{
+			pItem->SetThink( &CBaseAnimating::CleanUp );
+			pItem->SetNextThink( gpGlobals->curtime + sv_cleanup_time.GetFloat() );
+		}
+
 		return pItem;
 	}
 	else

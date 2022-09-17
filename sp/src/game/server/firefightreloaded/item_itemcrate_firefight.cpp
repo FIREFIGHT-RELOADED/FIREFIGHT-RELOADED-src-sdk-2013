@@ -345,6 +345,8 @@ void CItem_ItemCrateFirefight::OnBreak( const Vector &vecVelocity, const Angular
 
 		pSpawn->Spawn();
 
+		static ConVarRef sv_cleanup_time( "sv_cleanup_time" );
+
 		// Avoid missing items drops by a dynamic resupply because they don't think immediately
 		if ( FClassnameIs( pSpawn, "item_dynamic_resupply" ) )
 		{
@@ -357,6 +359,11 @@ void CItem_ItemCrateFirefight::OnBreak( const Vector &vecVelocity, const Angular
 				pSpawn->AddSpawnFlags( SF_DYNAMICRESUPPLY_ALWAYS_SPAWN );
 			}
 			pSpawn->SetNextThink( gpGlobals->curtime );
+		}
+		else if ( sv_cleanup_time.GetFloat() >= 0 )
+		{
+			pSpawn->SetThink( &CBaseAnimating::CleanUp );
+			pSpawn->SetNextThink( gpGlobals->curtime + sv_cleanup_time.GetFloat() );
 		}
 
 		if (shouldRespawn || m_bDoNotRespawnContents)
