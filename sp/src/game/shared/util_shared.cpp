@@ -810,22 +810,14 @@ void UTIL_BloodDrips( const Vector &origin, const Vector &direction, int color, 
 //-----------------------------------------------------------------------------
 // Purpose: Returns low violence settings
 //-----------------------------------------------------------------------------
-static ConVar	violence_hblood("violence_hblood", "1", FCVAR_ARCHIVE, "Draw human blood");
-static ConVar	violence_hgibs("violence_hgibs", "1", FCVAR_ARCHIVE, "Show human gib entities");
-static ConVar	violence_ablood("violence_ablood", "1", FCVAR_ARCHIVE, "Draw alien blood");
-static ConVar	violence_agibs("violence_agibs", "1", FCVAR_ARCHIVE, "Show alien gib entities");
-static ConVar	violence_override("violence_override", "0", FCVAR_ARCHIVE, "Override violence detection and allow violence.");
+ConVar	violence_override("violence_override", "0", FCVAR_ARCHIVE, "Override violence detection and allow violence.");
 
 bool UTIL_IsLowViolence( void )
 {
-	if (violence_override.GetBool())
-		return false;
 
 	// These convars are no longer necessary -- the engine is the final arbiter of
 	// violence settings -- but they're here for legacy support and for testing low
 	// violence when the engine is in normal violence mode.
-	if ( !violence_hblood.GetBool() || !violence_ablood.GetBool() || !violence_hgibs.GetBool() || !violence_agibs.GetBool() )
-		return true;
 
 #ifdef TF_CLIENT_DLL
 	// Use low violence if the local player has an item that allows them to see it (Pyro Goggles)
@@ -835,11 +827,14 @@ bool UTIL_IsLowViolence( void )
 	}
 #endif
 
-	return engine->IsLowViolence();
+	return !violence_override.GetBool() && engine->IsLowViolence();
 }
 
 bool UTIL_ShouldShowBlood( int color )
 {
+	static ConVarRef violence_ablood( "violence_ablood" );
+	static ConVarRef violence_hblood( "violence_hblood" );
+
 	if ( color != DONT_BLEED || color != BLOOD_COLOR_MECH)
 	{
 		if ( color == BLOOD_COLOR_RED )

@@ -3953,7 +3953,7 @@ bool CNPC_MetroPolice::CorpseDecapitate(const CTakeDamageInfo& info)
 
 	static ConVarRef violence_hgibs( "violence_hgibs" );
 	bool shouldAnimateDecap = !(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence())
-		&& (violence_hgibs.IsValid() && !violence_hgibs.GetBool())
+		&& (violence_hgibs.IsValid() && violence_hgibs.GetBool())
 		&& g_fr_headshotgore.GetBool() && gibs;
 	if ((info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB))
 	{
@@ -4062,7 +4062,7 @@ bool CNPC_MetroPolice::CorpseGib(const CTakeDamageInfo& info)
 
 	static ConVarRef violence_hgibs( "violence_hgibs" );
 	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence())
-		&& (violence_hgibs.IsValid() && !violence_hgibs.GetBool())
+		&& (violence_hgibs.IsValid() && violence_hgibs.GetBool())
 		&& info.GetDamageType() & (DMG_BLAST) && !(info.GetDamageType() & (DMG_DISSOLVE)) && !PlayerHasMegaPhysCannon() && gibs)
 	{
 		if (IsCurSchedule(SCHED_NPC_FREEZE))
