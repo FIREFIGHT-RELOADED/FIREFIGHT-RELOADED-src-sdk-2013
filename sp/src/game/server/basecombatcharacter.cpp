@@ -2043,8 +2043,8 @@ void CBaseCombatCharacter::Weapon_Drop( CBaseCombatWeapon *pWeapon, const Vector
 	static ConVarRef sv_cleanup_time( "sv_cleanup_time" );
 	if ( sv_cleanup_time.GetFloat() >= 0 )
 	{
-		pWeapon->SetThink( &CBaseAnimating::CleanUp );
-		pWeapon->SetNextThink( gpGlobals->curtime + sv_cleanup_time.GetFloat() );
+		RegisterThinkContext( "CleanUp" );
+		pWeapon->SetContextThink( &CBaseAnimating::CleanUp, gpGlobals->curtime + sv_cleanup_time.GetFloat(), "CleanUp" );
 	}
 
 	if ( HasSpawnFlags( SF_NPC_NO_WEAPON_DROP ) )

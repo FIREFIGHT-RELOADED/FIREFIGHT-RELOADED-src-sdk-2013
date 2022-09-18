@@ -362,8 +362,8 @@ void CItem_ItemCrateFirefight::OnBreak( const Vector &vecVelocity, const Angular
 		}
 		else if ( sv_cleanup_time.GetFloat() >= 0 )
 		{
-			pSpawn->SetThink( &CBaseAnimating::CleanUp );
-			pSpawn->SetNextThink( gpGlobals->curtime + sv_cleanup_time.GetFloat() );
+			RegisterThinkContext( "CleanUp" );
+			pSpawn->SetContextThink( &CBaseAnimating::CleanUp, gpGlobals->curtime + sv_cleanup_time.GetFloat(), "CleanUp" );
 		}
 
 		if (shouldRespawn || m_bDoNotRespawnContents)
