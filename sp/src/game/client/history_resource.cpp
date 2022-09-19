@@ -12,6 +12,7 @@
 #include <vgui/ISurface.h>
 #include "iclientmode.h"
 #include "vgui_controls/AnimationController.h"
+#include "ammodef.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -289,7 +290,18 @@ bool CHudHistoryResource::ShouldDraw( void )
 
 //-----------------------------------------------------------------------------
 // Purpose: Draw the pickup history
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------\
+
+static void PopulateTexture( CHudTexture& t, const char c )
+{
+	t.cCharacterInFont = c;
+	auto scheme = vgui::scheme()->GetScheme( "ClientScheme" );
+	t.hFont = vgui::scheme()->GetIScheme( scheme )->GetFont( "WeaponIconsSmall", true );
+	t.bRenderUsingFont = true;
+	t.rc.right = vgui::surface()->GetCharacterWidth( t.hFont, c );
+	t.rc.bottom = t.EffectiveHeight( 1 );
+}
+
 void CHudHistoryResource::Paint( void )
 {
 	if ( m_bDoNotDraw )
@@ -330,14 +342,15 @@ void CHudHistoryResource::Paint( void )
 			const CHudTexture *itemIcon = NULL;
 			const CHudTexture *itemAmmoIcon = NULL;
 			int iAmount = 0;
-			bool bHalfHeight = true;
+			bool bHalfHeight = false;
 
+			CHudTexture ammoIcon;
 			switch ( m_PickupHistory[i].type )
 			{
 			case HISTSLOT_AMMO:
 				{
 					// Get the weapon we belong to
-#ifndef HL2MP
+#if 0//ifndef HL2MP
 					const FileWeaponInfo_t *pWpnInfo = gWR.GetWeaponFromAmmo( m_PickupHistory[i].iId );
 					if ( pWpnInfo && ( pWpnInfo->iMaxClip1 >= 0 || pWpnInfo->iMaxClip2 >= 0 ) )
 					{
@@ -348,8 +361,10 @@ void CHudHistoryResource::Paint( void )
 					else
 #endif // HL2MP
 					{
-						itemIcon = gWR.GetAmmoIconFromWeapon( m_PickupHistory[i].iId );
-						itemAmmoIcon = NULL;
+						//itemIcon = gWR.GetAmmoIconFromWeapon( m_PickupHistory[i].iId );
+						PopulateTexture( ammoIcon, GetAmmoDef()->GetAmmoOfIndex( m_PickupHistory[i].iId )->cAmmoIcon );
+						itemAmmoIcon = &ammoIcon;
+						//bHalfHeight = true;
 					}
 
 #ifdef CSTRIKE_DLL
@@ -367,11 +382,11 @@ void CHudHistoryResource::Paint( void )
 				break;
 			case HISTSLOT_AMMODENIED:
 				{
-					itemIcon = gWR.GetAmmoIconFromWeapon( m_PickupHistory[i].iId );
-					iAmount = 0;
+					PopulateTexture( ammoIcon, GetAmmoDef()->GetAmmoOfIndex( m_PickupHistory[i].iId )->cAmmoIcon );
+					itemAmmoIcon = &ammoIcon;
 					bUseAmmoFullMsg = true;
 					// display as red
-					clr = gHUD.m_clrCaution;	
+					clr = gHUD.m_clrCaution;
 					clr[3] = MIN( scale, 255 );
 				}
 				break;
@@ -408,50 +423,57 @@ void CHudHistoryResource::Paint( void )
 				break;
 			}
 
-			if ( !itemIcon )
-				continue;
-
-			if ( clr[3] )
+			const int height = m_flHistoryGap;
+			const int width = wide;
+			const int ypos = tall - (m_flHistoryGap * (i + 1));
+			int xpos = wide - (iAmount > 0 ? m_flTextInset : 0);
+			/*vgui::surface()->DrawSetColor( clr );
+			vgui::surface()->DrawOutlinedRect( 0, ypos, width, ypos + height );*/
+			if ( itemIcon != NULL )
 			{
-				// valid drawing will occur
-				m_bNeedsDraw = true;
-			}
+				if ( clr[3] )
+				{
+					// valid drawing will occur
+					m_bNeedsDraw = true;
+				}
 
-			int ypos = tall - (m_flHistoryGap * (i + 1));
-			int xpos = wide - itemIcon->Width() - m_flIconInset;
-
+#if 0
 #ifndef HL2MP
-			// Adjust for a half-height icon
-			if ( bHalfHeight )
-			{
-				ypos += itemIcon->Height() / 2;
-			}
+				// Adjust for a half-height icon
+				if (  bHalfHeight )
+				{
+					ypos += itemIcon->Height() / 2;
+				}
 #endif // HL2MP
-
-			itemIcon->DrawSelf( xpos, ypos, clr );
-
-			if ( itemAmmoIcon )
-			{
-				itemAmmoIcon->DrawSelf( xpos - ( itemAmmoIcon->Width() * 1.25f ), ypos, clr );
+#endif
+				xpos -= itemIcon->Width();
+				itemIcon->DrawSelf( xpos, ypos + (height - itemIcon->Height()) / 2, clr );
 			}
 
+			if ( itemAmmoIcon != NULL )
+			{
+				xpos -= itemAmmoIcon->Width() * 1.25f;
+				itemAmmoIcon->DrawSelf( xpos, ypos, clr );
+			}
+
+			const CHudTexture* icon = itemIcon != NULL ? itemIcon : itemAmmoIcon;
 			if ( iAmount )
 			{
 				wchar_t text[16];
 				_snwprintf( text, sizeof( text ) / sizeof(wchar_t), L"%i", m_PickupHistory[i].iCount );
 
 				// offset the number to sit properly next to the icon
-				ypos -= ( surface()->GetFontTall( m_hNumberFont ) - itemIcon->Height() ) / 2;
+				//ypos -= ( surface()->GetFontTall( m_hNumberFont ) - icon->Height() ) / 2;
 
 				vgui::surface()->DrawSetTextFont( m_hNumberFont );
 				vgui::surface()->DrawSetTextColor( clr );
-				vgui::surface()->DrawSetTextPos( wide - m_flTextInset, ypos );
+				vgui::surface()->DrawSetTextPos( wide - m_flTextInset, ypos + (height - surface()->GetFontTall( m_hNumberFont )) / 2 );
 				vgui::surface()->DrawUnicodeString( text );
 			}
 			else if ( bUseAmmoFullMsg )
 			{
 				// offset the number to sit properly next to the icon
-				ypos -= ( surface()->GetFontTall( m_hTextFont ) - itemIcon->Height() ) / 2;
+				//ypos -= ( surface()->GetFontTall( m_hTextFont ) - icon->Height() ) / 2;
 
 				vgui::surface()->DrawSetTextFont( m_hTextFont );
 				vgui::surface()->DrawSetTextColor( clr );
