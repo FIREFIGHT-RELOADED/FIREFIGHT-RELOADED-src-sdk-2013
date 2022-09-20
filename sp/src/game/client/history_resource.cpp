@@ -424,7 +424,6 @@ void CHudHistoryResource::Paint( void )
 			}
 
 			const int height = m_flHistoryGap;
-			const int width = wide;
 			const int ypos = tall - (m_flHistoryGap * (i + 1));
 			int xpos = wide - (iAmount > 0 ? m_flTextInset : 0);
 			/*vgui::surface()->DrawSetColor( clr );
@@ -456,14 +455,10 @@ void CHudHistoryResource::Paint( void )
 				itemAmmoIcon->DrawSelf( xpos, ypos, clr );
 			}
 
-			const CHudTexture* icon = itemIcon != NULL ? itemIcon : itemAmmoIcon;
 			if ( iAmount )
 			{
 				wchar_t text[16];
 				_snwprintf( text, sizeof( text ) / sizeof(wchar_t), L"%i", m_PickupHistory[i].iCount );
-
-				// offset the number to sit properly next to the icon
-				//ypos -= ( surface()->GetFontTall( m_hNumberFont ) - icon->Height() ) / 2;
 
 				vgui::surface()->DrawSetTextFont( m_hNumberFont );
 				vgui::surface()->DrawSetTextColor( clr );
@@ -472,9 +467,6 @@ void CHudHistoryResource::Paint( void )
 			}
 			else if ( bUseAmmoFullMsg )
 			{
-				// offset the number to sit properly next to the icon
-				//ypos -= ( surface()->GetFontTall( m_hTextFont ) - icon->Height() ) / 2;
-
 				vgui::surface()->DrawSetTextFont( m_hTextFont );
 				vgui::surface()->DrawSetTextColor( clr );
 				vgui::surface()->DrawSetTextPos( wide - m_flTextInset, ypos );
