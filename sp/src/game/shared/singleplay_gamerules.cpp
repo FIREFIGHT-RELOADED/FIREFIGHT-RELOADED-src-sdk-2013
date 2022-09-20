@@ -366,8 +366,12 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 	// Purpose: Determine whether the player should switch to the weapon passed in
 	// Output : Returns true on success, false on failure.
 	//-----------------------------------------------------------------------------
+	static ConVarRef sv_player_autoswitch( "sv_player_autoswitch" );
 	bool CSingleplayRules::FShouldSwitchWeapon( CBasePlayer *pPlayer, CBaseCombatWeapon *pWeapon )
 	{
+		if ( !sv_player_autoswitch.GetBool() )
+			return false;
+
 		//Must have ammo
 		if ( ( pWeapon->HasAnyAmmo() == false ) && ( pPlayer->GetAmmoCount( pWeapon->m_iPrimaryAmmoType ) <= 0 ) )
 			return false;
