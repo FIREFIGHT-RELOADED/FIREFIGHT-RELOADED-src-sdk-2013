@@ -107,7 +107,7 @@ void CHudSuitPower::OnThink( void )
 	if (activeDevices != m_iActiveSuitDevices)
 	{
 		m_iActiveSuitDevices = activeDevices;
-		g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("SuitAuxPowerNoItemsActive");
+		//g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("SuitAuxPowerNoItemsActive");
 
 		/*
 		switch ( m_iActiveSuitDevices )
