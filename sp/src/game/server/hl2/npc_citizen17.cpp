@@ -1095,9 +1095,11 @@ static inline bool searchArrayOfStrings( const char *needle, const char* (&hayst
 bool CNPC_Citizen::Weapon_CanUse( CBaseCombatWeapon *pWeapon )
 {
 	const char* className = pWeapon->GetClassname();
-	//for ( int i = 0; i < ARRAYSIZE( g_charPlayerbotMidRangeWeapons ); ++i )
-	return searchArrayOfStrings( className, g_charPlayerbotMidRangeWeapons )
-		|| searchArrayOfStrings( className, g_charPlayerbotShortRangeWeapons );
+	return BaseClass::Weapon_CanUse(pWeapon) &&
+		(
+			searchArrayOfStrings( className, g_charPlayerbotMidRangeWeapons )
+			|| searchArrayOfStrings( className, g_charPlayerbotShortRangeWeapons )
+		);
 }
 
 bool CNPC_Citizen::Weapon_Switch(CBaseCombatWeapon* pWeapon)
