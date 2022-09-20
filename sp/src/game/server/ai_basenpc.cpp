@@ -8525,6 +8525,7 @@ void CAI_BaseNPC::HandleAnimEvent( animevent_t *pEvent )
 				}
 				else
 				{
+					pWeapon->CheckRespawn();
 					PickupWeapon( pWeapon );
 					TaskComplete();
 					break;
