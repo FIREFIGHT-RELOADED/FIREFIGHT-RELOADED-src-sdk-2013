@@ -247,7 +247,8 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 		}
 #endif//HL2_EPISODIC
 
-		float curDamage = sk_plr_dmg_crossbow.GetFloat();
+		float curDamage = m_spawnflags & SF_BOLT_KNIFEMODE
+			? sk_plr_dmg_knife_thrown.GetFloat() : sk_plr_dmg_crossbow.GetFloat();
 
 		if (m_spawnflags & SF_BOLT_KNIFEMODE)
 		{
@@ -353,10 +354,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 		SetTouch( NULL );
 		SetThink( NULL );
 
-		if ( !g_pGameRules->IsMultiplayer() )
-		{
-			UTIL_Remove( this );
-		}
+		UTIL_Remove(this);
 	}
 	else
 	{
@@ -392,8 +390,9 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 			}
 			else
 			{
-				SetThink( &CCrossbowBolt::SUB_Remove );
-				SetNextThink( gpGlobals->curtime + 2.0f );
+				//Redundant setup for removal think?
+				//SetThink( &CCrossbowBolt::SUB_Remove );
+				//SetNextThink( gpGlobals->curtime + 2.0f );
 				
 				//FIXME: We actually want to stick (with hierarchy) to what we've hit
 				SetMoveType( MOVETYPE_NONE );
