@@ -71,9 +71,13 @@ private:
 
 	CPanelAnimationVar(vgui::HFont, m_hTextFont, "TextFont", "HudNumbersTimer");
 
-	// Texture for skull symbol
-	CHudTexture* m_iconD_skull;
-	CHudTexture* m_iconD_headshot;
+	CPanelAnimationVar(Color, m_cIconColor, "IconColor", "255 80 0 255");
+	CPanelAnimationVar(float, m_flIconSize, "IconSize", "2");
+
+	CPanelAnimationVar(float, m_flIconOffsetX, "IconOffsetX", "0");
+	CPanelAnimationVar(float, m_flIconOffsetY, "IconOffsetY", "0");
+
+	CHudTexture* m_icon;
 
 	CUtlVector<DeathNoticeItem> m_DeathNotices;
 };
@@ -91,8 +95,7 @@ CHudDeathNotice::CHudDeathNotice(const char* pElementName) :
 	vgui::Panel* pParent = g_pClientMode->GetViewport();
 	SetParent(pParent);
 
-	m_iconD_headshot = NULL;
-	m_iconD_skull = NULL;
+	m_icon = NULL;
 
 	SetHiddenBits(HIDEHUD_MISCSTATUS);
 }
@@ -121,7 +124,7 @@ void CHudDeathNotice::Init(void)
 //-----------------------------------------------------------------------------
 void CHudDeathNotice::VidInit(void)
 {
-	m_iconD_skull = gHUD.GetIcon("d_skull");
+	m_icon = gHUD.GetIcon("viewhair");
 	m_DeathNotices.Purge();
 }
 
@@ -146,7 +149,7 @@ void CHudDeathNotice::SetColorForNoticePlayer(int iTeamNumber)
 //-----------------------------------------------------------------------------
 void CHudDeathNotice::Paint()
 {
-	if (!m_iconD_skull)
+	if (!m_icon)
 		return;
 
 	CBaseViewport* pViewport = dynamic_cast<CBaseViewport*>(GetClientModeNormal()->GetViewport());
@@ -249,9 +252,9 @@ void CHudDeathNotice::Paint()
 		}
 		else
 		{
-			float scale = ((float)ScreenHeight() / 480.0f);	//scale based on 640x480
-			iconWide = (int)(scale * (float)icon->Width());
-			iconTall = (int)(scale * (float)icon->Height());
+			float scale = ((float)ScreenHeight() / 480.0f) / ((float)ScreenHeight() / 480.0f);	//scale based on 640x480
+			iconWide = (int)(scale * (float)icon->Width() * m_flIconSize);
+			iconTall = (int)(scale * (float)icon->Height() * m_flIconSize);
 		}
 
 		int x;
@@ -281,11 +284,9 @@ void CHudDeathNotice::Paint()
 			surface()->DrawGetTextPos(x, y);
 		}
 
-		Color iconColor(255, 80, 0, 255);
-
 		// Draw death weapon
 		//If we're using a font char, this will ignore iconTall and iconWide
-		icon->DrawSelf(x, y, iconWide, iconTall, iconColor);
+		icon->DrawSelf(x + m_flIconOffsetX, y + m_flIconOffsetY, iconWide, iconTall, m_cIconColor);
 		x += iconWide;
 
 		SetColorForNoticePlayer(iVictimTeam);
@@ -372,13 +373,7 @@ void CHudDeathNotice::FireGameEvent(IGameEvent* event)
 		deathMsg.iSuicide = (!killer || killer == victim);
 
 		// Try and find the death identifier in the icon list
-		deathMsg.iconDeath = gHUD.GetIcon(fullkilledwith);
-
-		if (!deathMsg.iconDeath || deathMsg.iSuicide)
-		{
-			// Can't find it, so use the default skull & crossbones icon
-			deathMsg.iconDeath = m_iconD_skull;
-		}
+		deathMsg.iconDeath = m_icon;
 
 		// Add it to our list of death notices
 		m_DeathNotices.AddToTail(deathMsg);
@@ -464,7 +459,7 @@ void CHudDeathNotice::FireGameEvent(IGameEvent* event)
 
 		// Try and find the death identifier in the icon list
 		// Can't find it, so use the default skull & crossbones icon
-		deathMsg.iconDeath = m_iconD_skull;
+		deathMsg.iconDeath = m_icon;
 
 		// Add it to our list of death notices
 		m_DeathNotices.AddToTail(deathMsg);
@@ -550,7 +545,7 @@ void CHudDeathNotice::FireGameEvent(IGameEvent* event)
 
 		// Try and find the death identifier in the icon list
 		// Can't find it, so use the default skull & crossbones icon
-		deathMsg.iconDeath = m_iconD_skull;
+		deathMsg.iconDeath = m_icon;
 
 		// Add it to our list of death notices
 		m_DeathNotices.AddToTail(deathMsg);
