@@ -363,7 +363,13 @@ void CHudDeathNotice::FireGameEvent(IGameEvent* event)
 		deathMsg.iSuicide = (!killer || killer == victim);
 
 		// Try and find the death identifier in the icon list
-		deathMsg.iconDeath = m_icon;
+		deathMsg.iconDeath = gHUD.GetIcon(killedwith);
+
+		if (!deathMsg.iconDeath || deathMsg.iSuicide)
+		{
+			// Can't find it, so use the default skull & crossbones icon
+			deathMsg.iconDeath = m_icon;
+		}
 
 		// Add it to our list of death notices
 		m_DeathNotices.AddToTail(deathMsg);
@@ -427,7 +433,14 @@ void CHudDeathNotice::FireGameEvent(IGameEvent* event)
 
 		// Try and find the death identifier in the icon list
 		// Can't find it, so use the default skull & crossbones icon
-		deathMsg.iconDeath = m_icon;
+
+		deathMsg.iconDeath = gHUD.GetIcon(killedwith);
+
+		if (!deathMsg.iconDeath || deathMsg.iSuicide)
+		{
+			// Can't find it, so use the default skull & crossbones icon
+			deathMsg.iconDeath = m_icon;
+		}
 
 		// Add it to our list of death notices
 		m_DeathNotices.AddToTail(deathMsg);
@@ -491,7 +504,13 @@ void CHudDeathNotice::FireGameEvent(IGameEvent* event)
 
 		// Try and find the death identifier in the icon list
 		// Can't find it, so use the default skull & crossbones icon
-		deathMsg.iconDeath = m_icon;
+		deathMsg.iconDeath = gHUD.GetIcon(killedwith);
+
+		if (!deathMsg.iconDeath || deathMsg.iSuicide)
+		{
+			// Can't find it, so use the default skull & crossbones icon
+			deathMsg.iconDeath = m_icon;
+		}
 
 		// Add it to our list of death notices
 		m_DeathNotices.AddToTail(deathMsg);
