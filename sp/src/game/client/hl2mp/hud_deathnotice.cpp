@@ -252,9 +252,9 @@ void CHudDeathNotice::Paint()
 		}
 		else
 		{
-			float scale = ((float)ScreenHeight() / 480.0f) / ((float)ScreenHeight() / 480.0f);	//scale based on 640x480
-			iconWide = (int)(scale * (float)icon->Width() * m_flIconSize);
-			iconTall = (int)(scale * (float)icon->Height() * m_flIconSize);
+			float scale = ((float)ScreenHeight() / 480.0f) / ((float)ScreenWidth() / 640.0f);	//scale based on 640x480
+			iconWide = (int)(scale * ((float)icon->Width() * m_flIconSize));
+			iconTall = (int)(scale * ((float)icon->Height() * m_flIconSize));
 		}
 
 		int x;
@@ -336,16 +336,6 @@ void CHudDeathNotice::FireGameEvent(IGameEvent* event)
 		int victim = engine->GetPlayerForUserID(event->GetInt("userid"));
 		const char* killedwith = event->GetString("weapon");
 
-		char fullkilledwith[128];
-		if (killedwith && *killedwith)
-		{
-			Q_snprintf(fullkilledwith, sizeof(fullkilledwith), "death_%s", killedwith);
-		}
-		else
-		{
-			fullkilledwith[0] = 0;
-		}
-
 		// Do we have too many death messages in the queue?
 		if (m_DeathNotices.Count() > 0 &&
 			m_DeathNotices.Count() >= (int)m_flMaxDeathNotices)
@@ -395,23 +385,11 @@ void CHudDeathNotice::FireGameEvent(IGameEvent* event)
 		// Record the death notice in the console
 		if (deathMsg.iSuicide)
 		{
-			if (!strcmp(fullkilledwith, "d_worldspawn"))
-			{
-				Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s died.\n", prunedVictName);
-			}
-			else	//d_world
-			{
-				Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s suicided.\n", prunedVictName);
-			}
+			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s suicided.\n", prunedVictName);
 		}
 		else
 		{
-			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s killed %s", prunedKillName, prunedVictName);
-
-			if (fullkilledwith && *fullkilledwith && (*fullkilledwith > 13))
-			{
-				Q_strncat(sDeathMsg, VarArgs(" with %s.\n", fullkilledwith + 6), sizeof(sDeathMsg), COPY_ALL_CHARACTERS);
-			}
+			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s killed %s with %s", prunedKillName, prunedVictName, killedwith);
 		}
 
 		Msg("%s\n", sDeathMsg);
@@ -421,16 +399,6 @@ void CHudDeathNotice::FireGameEvent(IGameEvent* event)
 		int killer = engine->GetPlayerForUserID(event->GetInt("attacker"));
 		const char* victim = event->GetString("victimname");
 		const char* killedwith = event->GetString("weapon");
-
-		char fullkilledwith[128];
-		if (killedwith && *killedwith)
-		{
-			Q_snprintf(fullkilledwith, sizeof(fullkilledwith), "death_%s", killedwith);
-		}
-		else
-		{
-			fullkilledwith[0] = 0;
-		}
 
 		// Do we have too many death messages in the queue?
 		if (m_DeathNotices.Count() > 0 &&
@@ -481,23 +449,11 @@ void CHudDeathNotice::FireGameEvent(IGameEvent* event)
 		// Record the death notice in the console
 		if (deathMsg.iSuicide)
 		{
-			if (!strcmp(fullkilledwith, "d_worldspawn"))
-			{
-				Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s died.\n", prunedVictName);
-			}
-			else	//d_world
-			{
-				Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s suicided.\n", prunedVictName);
-			}
+			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s suicided.\n", prunedVictName);
 		}
 		else
 		{
-			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s killed %s", prunedKillName, prunedVictName);
-
-			if (fullkilledwith && *fullkilledwith && (*fullkilledwith > 13))
-			{
-				Q_strncat(sDeathMsg, VarArgs(" with %s.\n", fullkilledwith + 6), sizeof(sDeathMsg), COPY_ALL_CHARACTERS);
-			}
+			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s killed %s with %s", prunedKillName, prunedVictName, killedwith);
 		}
 
 		Msg("%s\n", sDeathMsg);
@@ -507,16 +463,6 @@ void CHudDeathNotice::FireGameEvent(IGameEvent* event)
 		const char* killer = event->GetString("attacker");
 		int victim = engine->GetPlayerForUserID(event->GetInt("userid"));
 		const char* killedwith = event->GetString("weapon");
-
-		char fullkilledwith[128];
-		if (killedwith && *killedwith)
-		{
-			Q_snprintf(fullkilledwith, sizeof(fullkilledwith), "death_%s", killedwith);
-		}
-		else
-		{
-			fullkilledwith[0] = 0;
-		}
 
 		// Do we have too many death messages in the queue?
 		if (m_DeathNotices.Count() > 0 &&
@@ -567,23 +513,11 @@ void CHudDeathNotice::FireGameEvent(IGameEvent* event)
 		// Record the death notice in the console
 		if (deathMsg.iSuicide)
 		{
-			if (!strcmp(fullkilledwith, "d_worldspawn"))
-			{
-				Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s died.\n", prunedVictName);
-			}
-			else	//d_world
-			{
-				Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s suicided.\n", prunedVictName);
-			}
+			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s suicided.\n", prunedVictName);
 		}
 		else
 		{
-			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s killed %s", prunedKillName, prunedVictName);
-
-			if (fullkilledwith && *fullkilledwith && (*fullkilledwith > 13))
-			{
-				Q_strncat(sDeathMsg, VarArgs(" with %s.\n", fullkilledwith + 6), sizeof(sDeathMsg), COPY_ALL_CHARACTERS);
-			}
+			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s killed %s with %s", prunedKillName, prunedVictName, killedwith);
 		}
 
 		Msg("%s\n", sDeathMsg);
