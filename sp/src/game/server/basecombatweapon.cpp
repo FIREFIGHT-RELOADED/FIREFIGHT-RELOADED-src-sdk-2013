@@ -570,7 +570,7 @@ void CBaseCombatWeapon::Materialize( void )
 #ifdef HL2MP
 		EmitSound( "AlyxEmp.Charge" );
 #else
-		EmitSound( "BaseCombatWeapon.WeaponMaterialize" );
+		EmitSound("Item.Materialize");
 #endif
 		
 		RemoveEffects( EF_NODRAW );
