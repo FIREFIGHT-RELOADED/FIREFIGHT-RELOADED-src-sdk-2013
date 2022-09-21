@@ -61,7 +61,6 @@ public:
 	bool ForcePhysgunOpen( CBasePlayer *pPlayer ) { return true; }
 	bool HasPreferredCarryAnglesForPlayer( CBasePlayer *pPlayer ) { return true; }
 	virtual QAngle	PreferredCarryAngles( void ) { return vec3_angle; }
-	CBasePlayer *HasPhysicsAttacker( float dt );
 
 	bool IsPlayerPlaced() { return m_bPlacedByPlayer; }
 
@@ -113,7 +112,6 @@ private:
 	int     m_iModification;
 
 	CHandle<CBasePlayer>	m_hPhysicsAttacker;
-	float					m_flLastPhysicsInfluenceTime;
 
 	float					m_flTimeGrabbed;
 	IPhysicsConstraint		*m_pConstraint;

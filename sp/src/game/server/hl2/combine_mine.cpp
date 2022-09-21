@@ -99,7 +99,6 @@ BEGIN_DATADESC( CBounceBomb )
 
 	// Physics Influence
 	DEFINE_FIELD( m_hPhysicsAttacker, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_flLastPhysicsInfluenceTime, FIELD_TIME ),
 
 	DEFINE_PHYSPTR( m_pConstraint ),
 
@@ -1076,7 +1075,7 @@ void CBounceBomb::ExplodeThink()
 	}
 
 
-	CBaseEntity *pThrower = HasPhysicsAttacker( 0.5 );
+	CBaseEntity *pThrower = m_hPhysicsAttacker;
 
 	if (m_iModification == MINE_MODIFICATION_CAVERN)
 	{
@@ -1170,7 +1169,6 @@ void CBounceBomb::InputDisarm( inputdata_t &inputdata )
 void CBounceBomb::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reason )
 {
 	m_hPhysicsAttacker = pPhysGunUser;
-	m_flLastPhysicsInfluenceTime = gpGlobals->curtime;
 
 	m_flTimeGrabbed = FLT_MAX;
 
@@ -1198,21 +1196,9 @@ void CBounceBomb::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reason
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-CBasePlayer *CBounceBomb::HasPhysicsAttacker( float dt )
-{
-	if (gpGlobals->curtime - dt <= m_flLastPhysicsInfluenceTime)
-	{
-		return m_hPhysicsAttacker;
-	}
-	return NULL;
-}
-
-//---------------------------------------------------------
-//---------------------------------------------------------
 void CBounceBomb::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason )
 {
 	m_hPhysicsAttacker = pPhysGunUser;
-	m_flLastPhysicsInfluenceTime = gpGlobals->curtime;
 
 	m_iFlipAttempts = 0;
 

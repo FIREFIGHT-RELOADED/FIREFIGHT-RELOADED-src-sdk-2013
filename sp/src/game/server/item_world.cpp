@@ -466,8 +466,8 @@ CBaseEntity* CItem::Respawn( void )
 	VPhysicsDestroyObject();
 
 	SetMoveType( MOVETYPE_NONE );
-	SetSolid( SOLID_BBOX );
-	AddSolidFlags( FSOLID_TRIGGER );
+	SetSolid( SOLID_NONE );
+	RemoveSolidFlags( FSOLID_TRIGGER );
 
 	UTIL_SetOrigin( this, g_pGameRules->VecItemRespawnSpot( this ) );// blip to whereever you should respawn.
 	SetAbsAngles( g_pGameRules->VecItemRespawnAngles( this ) );// set the angles.
@@ -497,6 +497,8 @@ void CItem::Materialize( void )
 		EmitSound( "Item.Materialize" );
 #endif
 		RemoveEffects( EF_NODRAW );
+		SetSolid(SOLID_BBOX);
+		AddSolidFlags(FSOLID_TRIGGER);
 		DoMuzzleFlash();
 	}
 

@@ -3300,6 +3300,14 @@ int CBlackHeadcrab::SelectSchedule( void )
 //-----------------------------------------------------------------------------
 // Purpose: Black headcrab's touch attack damage. Evil!
 //-----------------------------------------------------------------------------
+ConVar sk_poison_damage_scale("sk_poison_damage_scale", "1", FCVAR_REPLICATED, "Damage scale. Always leaves one health.");
+
+static void DamagePlayer(CBaseEntity* player, CBlackHeadcrab* crab)
+{
+	const int damage = (int)floorf( Clamp( sk_poison_damage_scale.GetFloat(), 0.0f, 1.0f ) * player->m_iHealth );
+	player->TakeDamage( CTakeDamageInfo( crab, crab, Min( damage, player->m_iHealth - 1 ), DMG_POISON ) );
+}
+
 void CBlackHeadcrab::TouchDamage( CBaseEntity *pOther )
 {
 	if ( pOther->m_iHealth > 1 )
@@ -3310,7 +3318,7 @@ void CBlackHeadcrab::TouchDamage( CBaseEntity *pOther )
 
 		pOther->TakeDamage( info  );
 
-		if ( pOther->IsAlive() && pOther->m_iHealth > 1)
+		if ( pOther->IsAlive() && pOther->m_iHealth > 1 )
 		{
 			// Episodic change to avoid NPCs dying too quickly from poison bites
 			if ( hl2_episodic.GetBool() )
@@ -3318,7 +3326,7 @@ void CBlackHeadcrab::TouchDamage( CBaseEntity *pOther )
 				if ( pOther->IsPlayer() )
 				{
 					// That didn't finish them. Take them down to one point with poison damage. It'll heal.
-					pOther->TakeDamage( CTakeDamageInfo( this, this, pOther->m_iHealth - 1, DMG_POISON ) );
+					DamagePlayer( pOther, this );
 				}
 				else
 				{
@@ -3329,7 +3337,7 @@ void CBlackHeadcrab::TouchDamage( CBaseEntity *pOther )
 			else
 			{
 				// That didn't finish them. Take them down to one point with poison damage. It'll heal.
-				pOther->TakeDamage( CTakeDamageInfo( this, this, pOther->m_iHealth - 1, DMG_POISON ) );
+				DamagePlayer( pOther, this );
 			}
 		}
 	}

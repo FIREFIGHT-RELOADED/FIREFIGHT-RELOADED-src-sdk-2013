@@ -153,23 +153,23 @@ static CIKSaveRestoreOps s_IKSaveRestoreOp;
 
 BEGIN_DATADESC( CBaseAnimating )
 
-	DEFINE_FIELD( m_flGroundSpeed, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flLastEventCheck, FIELD_TIME ),
-	DEFINE_FIELD( m_bSequenceFinished, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bSequenceLoops, FIELD_BOOLEAN ),
+DEFINE_FIELD( m_flGroundSpeed, FIELD_FLOAT ),
+DEFINE_FIELD( m_flLastEventCheck, FIELD_TIME ),
+DEFINE_FIELD( m_bSequenceFinished, FIELD_BOOLEAN ),
+DEFINE_FIELD( m_bSequenceLoops, FIELD_BOOLEAN ),
 
 //	DEFINE_FIELD( m_nForceBone, FIELD_INTEGER ),
 //	DEFINE_FIELD( m_vecForce, FIELD_VECTOR ),
 
-	DEFINE_INPUT( m_nSkin, FIELD_INTEGER, "skin" ),
-	DEFINE_KEYFIELD( m_nBody, FIELD_INTEGER, "body" ),
-	DEFINE_INPUT( m_nBody, FIELD_INTEGER, "SetBodyGroup" ),
-	DEFINE_KEYFIELD( m_nHitboxSet, FIELD_INTEGER, "hitboxset" ),
-	DEFINE_KEYFIELD( m_nSequence, FIELD_INTEGER, "sequence" ),
-	DEFINE_ARRAY( m_flPoseParameter, FIELD_FLOAT, CBaseAnimating::NUM_POSEPAREMETERS ),
-	DEFINE_ARRAY( m_flEncodedController,	FIELD_FLOAT, CBaseAnimating::NUM_BONECTRLS ),
-	DEFINE_KEYFIELD( m_flPlaybackRate, FIELD_FLOAT, "playbackrate" ),
-	DEFINE_KEYFIELD( m_flCycle, FIELD_FLOAT, "cycle" ),
+DEFINE_INPUT( m_nSkin, FIELD_INTEGER, "skin" ),
+DEFINE_KEYFIELD( m_nBody, FIELD_INTEGER, "body" ),
+DEFINE_INPUT( m_nBody, FIELD_INTEGER, "SetBodyGroup" ),
+DEFINE_KEYFIELD( m_nHitboxSet, FIELD_INTEGER, "hitboxset" ),
+DEFINE_KEYFIELD( m_nSequence, FIELD_INTEGER, "sequence" ),
+DEFINE_ARRAY( m_flPoseParameter, FIELD_FLOAT, CBaseAnimating::NUM_POSEPAREMETERS ),
+DEFINE_ARRAY( m_flEncodedController, FIELD_FLOAT, CBaseAnimating::NUM_BONECTRLS ),
+DEFINE_KEYFIELD( m_flPlaybackRate, FIELD_FLOAT, "playbackrate" ),
+DEFINE_KEYFIELD( m_flCycle, FIELD_FLOAT, "cycle" ),
 //	DEFINE_FIELD( m_flIKGroundContactTime, FIELD_TIME ),
 //	DEFINE_FIELD( m_flIKGroundMinHeight, FIELD_FLOAT ),
 //	DEFINE_FIELD( m_flIKGroundMaxHeight, FIELD_FLOAT ),
@@ -178,42 +178,44 @@ BEGIN_DATADESC( CBaseAnimating )
 //	DEFINE_FIELD( m_pStudioHdr, CStudioHdr ),
 //	DEFINE_FIELD( m_StudioHdrInitLock, CThreadFastMutex ),
 //	DEFINE_FIELD( m_BoneSetupMutex, CThreadFastMutex ),
-	DEFINE_CUSTOM_FIELD( m_pIk, &s_IKSaveRestoreOp ),
-	DEFINE_FIELD( m_iIKCounter, FIELD_INTEGER ),
-	DEFINE_FIELD( m_bClientSideAnimation, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bClientSideFrameReset, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_nNewSequenceParity, FIELD_INTEGER ),
-	DEFINE_FIELD( m_nResetEventsParity, FIELD_INTEGER ),
-	DEFINE_FIELD( m_nMuzzleFlashParity, FIELD_CHARACTER ),
+DEFINE_CUSTOM_FIELD( m_pIk, &s_IKSaveRestoreOp ),
+DEFINE_FIELD( m_iIKCounter, FIELD_INTEGER ),
+DEFINE_FIELD( m_bClientSideAnimation, FIELD_BOOLEAN ),
+DEFINE_FIELD( m_bClientSideFrameReset, FIELD_BOOLEAN ),
+DEFINE_FIELD( m_nNewSequenceParity, FIELD_INTEGER ),
+DEFINE_FIELD( m_nResetEventsParity, FIELD_INTEGER ),
+DEFINE_FIELD( m_nMuzzleFlashParity, FIELD_CHARACTER ),
 
-	DEFINE_KEYFIELD( m_iszLightingOriginRelative, FIELD_STRING, "LightingOriginHack" ),
-	DEFINE_KEYFIELD( m_iszLightingOrigin, FIELD_STRING, "LightingOrigin" ),
+DEFINE_KEYFIELD( m_iszLightingOriginRelative, FIELD_STRING, "LightingOriginHack" ),
+DEFINE_KEYFIELD( m_iszLightingOrigin, FIELD_STRING, "LightingOrigin" ),
 
-	DEFINE_FIELD( m_hLightingOrigin, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hLightingOriginRelative, FIELD_EHANDLE ),
+DEFINE_FIELD( m_hLightingOrigin, FIELD_EHANDLE ),
+DEFINE_FIELD( m_hLightingOriginRelative, FIELD_EHANDLE ),
 
-	DEFINE_FIELD( m_flModelScale, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flDissolveStartTime, FIELD_TIME ),
+DEFINE_FIELD( m_flModelScale, FIELD_FLOAT ),
+DEFINE_FIELD( m_flDissolveStartTime, FIELD_TIME ),
 
- // DEFINE_FIELD( m_boneCacheHandle, memhandle_t ),
+// DEFINE_FIELD( m_boneCacheHandle, memhandle_t ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Ignite", InputIgnite ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "IgniteLifetime", InputIgniteLifetime ),
-	DEFINE_INPUTFUNC( FIELD_INTEGER, "IgniteNumHitboxFires", InputIgniteNumHitboxFires ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "IgniteHitboxFireScale", InputIgniteHitboxFireScale ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "BecomeRagdoll", InputBecomeRagdoll ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "SetLightingOriginHack", InputSetLightingOriginRelative ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "SetLightingOrigin", InputSetLightingOrigin ),
-	DEFINE_OUTPUT( m_OnIgnite, "OnIgnite" ),
+DEFINE_INPUTFUNC( FIELD_VOID, "Ignite", InputIgnite ),
+DEFINE_INPUTFUNC( FIELD_FLOAT, "IgniteLifetime", InputIgniteLifetime ),
+DEFINE_INPUTFUNC( FIELD_INTEGER, "IgniteNumHitboxFires", InputIgniteNumHitboxFires ),
+DEFINE_INPUTFUNC( FIELD_FLOAT, "IgniteHitboxFireScale", InputIgniteHitboxFireScale ),
+DEFINE_INPUTFUNC( FIELD_VOID, "BecomeRagdoll", InputBecomeRagdoll ),
+DEFINE_INPUTFUNC( FIELD_STRING, "SetLightingOriginHack", InputSetLightingOriginRelative ),
+DEFINE_INPUTFUNC( FIELD_STRING, "SetLightingOrigin", InputSetLightingOrigin ),
+DEFINE_OUTPUT( m_OnIgnite, "OnIgnite" ),
 
-	DEFINE_INPUT( m_fadeMinDist, FIELD_FLOAT, "fademindist" ),
-	DEFINE_INPUT( m_fadeMaxDist, FIELD_FLOAT, "fademaxdist" ),
-	DEFINE_KEYFIELD( m_flFadeScale, FIELD_FLOAT, "fadescale" ),
+DEFINE_INPUT( m_fadeMinDist, FIELD_FLOAT, "fademindist" ),
+DEFINE_INPUT( m_fadeMaxDist, FIELD_FLOAT, "fademaxdist" ),
+DEFINE_KEYFIELD( m_flFadeScale, FIELD_FLOAT, "fadescale" ),
 
-	DEFINE_KEYFIELD( m_flModelScale, FIELD_FLOAT, "modelscale" ),
-	DEFINE_INPUTFUNC( FIELD_VECTOR, "SetModelScale", InputSetModelScale ),
+DEFINE_KEYFIELD( m_flModelScale, FIELD_FLOAT, "modelscale" ),
+DEFINE_INPUTFUNC( FIELD_VECTOR, "SetModelScale", InputSetModelScale ),
 
-	DEFINE_FIELD( m_fBoneCacheFlags, FIELD_SHORT ),
+DEFINE_FIELD( m_fBoneCacheFlags, FIELD_SHORT ),
+
+DEFINE_THINKFUNC( CleanUp ),
 
 	END_DATADESC()
 
@@ -226,43 +228,44 @@ END_SEND_TABLE()
 void *SendProxy_ClientSideAnimation( const SendProp *pProp, const void *pStruct, const void *pVarData, CSendProxyRecipients *pRecipients, int objectID );
 
 // SendTable stuff.
-IMPLEMENT_SERVERCLASS_ST(CBaseAnimating, DT_BaseAnimating)
-	SendPropInt		( SENDINFO(m_nForceBone), 8, 0 ),
-	SendPropVector	( SENDINFO(m_vecForce), -1, SPROP_NOSCALE ),
+IMPLEMENT_SERVERCLASS_ST( CBaseAnimating, DT_BaseAnimating )
+SendPropInt( SENDINFO( m_nForceBone ), 8, 0 ),
+SendPropVector( SENDINFO( m_vecForce ), -1, SPROP_NOSCALE ),
 
-	SendPropInt		( SENDINFO(m_nSkin), ANIMATION_SKIN_BITS),
-	SendPropInt		( SENDINFO(m_nBody), ANIMATION_BODY_BITS),
+SendPropInt( SENDINFO( m_nSkin ), ANIMATION_SKIN_BITS ),
+SendPropInt( SENDINFO( m_nBody ), ANIMATION_BODY_BITS ),
 
-	SendPropInt		( SENDINFO(m_nHitboxSet),ANIMATION_HITBOXSET_BITS, SPROP_UNSIGNED ),
+SendPropInt( SENDINFO( m_nHitboxSet ), ANIMATION_HITBOXSET_BITS, SPROP_UNSIGNED ),
 
-	SendPropFloat	( SENDINFO(m_flModelScale) ),
+SendPropFloat( SENDINFO( m_flModelScale ) ),
 
-	SendPropArray3  ( SENDINFO_ARRAY3(m_flPoseParameter), SendPropFloat(SENDINFO_ARRAY(m_flPoseParameter), ANIMATION_POSEPARAMETER_BITS, 0, 0.0f, 1.0f ) ),
-	
-	SendPropInt		( SENDINFO(m_nSequence), ANIMATION_SEQUENCE_BITS, SPROP_UNSIGNED ),
-	SendPropFloat	( SENDINFO(m_flPlaybackRate), ANIMATION_PLAYBACKRATE_BITS, SPROP_ROUNDUP, -4.0, 12.0f ), // NOTE: if this isn't a power of 2 than "1.0" can't be encoded correctly
+SendPropArray3( SENDINFO_ARRAY3( m_flPoseParameter ), SendPropFloat( SENDINFO_ARRAY( m_flPoseParameter ), ANIMATION_POSEPARAMETER_BITS, 0, 0.0f, 1.0f ) ),
 
-	SendPropArray3 	(SENDINFO_ARRAY3(m_flEncodedController), SendPropFloat(SENDINFO_ARRAY(m_flEncodedController), 11, SPROP_ROUNDDOWN, 0.0f, 1.0f ) ),
+SendPropInt( SENDINFO( m_nSequence ), ANIMATION_SEQUENCE_BITS, SPROP_UNSIGNED ),
+SendPropFloat( SENDINFO( m_flPlaybackRate ), ANIMATION_PLAYBACKRATE_BITS, SPROP_ROUNDUP, -4.0, 12.0f ), // NOTE: if this isn't a power of 2 than "1.0" can't be encoded correctly
 
-	SendPropInt( SENDINFO( m_bClientSideAnimation ), 1, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO( m_bClientSideFrameReset ), 1, SPROP_UNSIGNED ),
+SendPropArray3( SENDINFO_ARRAY3( m_flEncodedController ), SendPropFloat( SENDINFO_ARRAY( m_flEncodedController ), 11, SPROP_ROUNDDOWN, 0.0f, 1.0f ) ),
 
-	SendPropInt( SENDINFO( m_nNewSequenceParity ), EF_PARITY_BITS, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO( m_nResetEventsParity ), EF_PARITY_BITS, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO( m_nMuzzleFlashParity ), EF_MUZZLEFLASH_BITS, SPROP_UNSIGNED ),
+SendPropInt( SENDINFO( m_bClientSideAnimation ), 1, SPROP_UNSIGNED ),
+SendPropInt( SENDINFO( m_bClientSideFrameReset ), 1, SPROP_UNSIGNED ),
 
-	SendPropEHandle( SENDINFO( m_hLightingOrigin ) ),
-	SendPropEHandle( SENDINFO( m_hLightingOriginRelative ) ),
+SendPropInt( SENDINFO( m_nNewSequenceParity ), EF_PARITY_BITS, SPROP_UNSIGNED ),
+SendPropInt( SENDINFO( m_nResetEventsParity ), EF_PARITY_BITS, SPROP_UNSIGNED ),
+SendPropInt( SENDINFO( m_nMuzzleFlashParity ), EF_MUZZLEFLASH_BITS, SPROP_UNSIGNED ),
 
-	SendPropDataTable( "serveranimdata", 0, &REFERENCE_SEND_TABLE( DT_ServerAnimationData ), SendProxy_ClientSideAnimation ),
+SendPropEHandle( SENDINFO( m_hLightingOrigin ) ),
+SendPropEHandle( SENDINFO( m_hLightingOriginRelative ) ),
 
-	// Fading
-	SendPropFloat( SENDINFO( m_fadeMinDist ), 0, SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO( m_fadeMaxDist ), 0, SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO( m_flFadeScale ), 0, SPROP_NOSCALE ),
+SendPropDataTable( "serveranimdata", 0, &REFERENCE_SEND_TABLE( DT_ServerAnimationData ), SendProxy_ClientSideAnimation ),
+
+// Fading
+SendPropFloat( SENDINFO( m_fadeMinDist ), 0, SPROP_NOSCALE ),
+SendPropFloat( SENDINFO( m_fadeMaxDist ), 0, SPROP_NOSCALE ),
+SendPropFloat( SENDINFO( m_flFadeScale ), 0, SPROP_NOSCALE ),
 
 END_SEND_TABLE()
 
+ConVar sv_cleanup_time( "sv_cleanup_time", "60", FCVAR_ARCHIVE, "Time to clean up a dropped weapon/item." );
 
 CBaseAnimating::CBaseAnimating()
 {

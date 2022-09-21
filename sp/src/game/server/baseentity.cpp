@@ -7368,6 +7368,7 @@ void CC_Ent_Create( const CCommand& args )
 		}
 
 		DispatchSpawn(entity);
+		entity->AddSpawnFlags( SF_NORESPAWN );
 
 		// Now attempt to drop into the world
 		trace_t tr;

@@ -3951,95 +3951,102 @@ bool CNPC_MetroPolice::CorpseDecapitate(const CTakeDamageInfo& info)
 		gibs = m_pAttributes->GetBool("gibs", true);
 	}
 
-	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool() && gibs)
+	static ConVarRef violence_hgibs( "violence_hgibs" );
+	bool shouldAnimateDecap = !(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence())
+		&& (violence_hgibs.IsValid() && violence_hgibs.GetBool())
+		&& g_fr_headshotgore.GetBool() && gibs;
+	if ((info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB))
 	{
-		if ((info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB))
+		if ( shouldAnimateDecap )
 		{
-			SetModel(GetGibModel(APPENDAGE_DECAP_BODY));
+			SetModel( GetGibModel( APPENDAGE_DECAP_BODY ) );
 
-			if (m_pAttributes != NULL)
+			if ( m_pAttributes != NULL )
 			{
-				m_pAttributes->SwitchEntityModel(this, "body_decap_model", STRING(this->GetModelName()));
-				m_pAttributes->SwitchEntityColor(this, "new_color");
+				m_pAttributes->SwitchEntityModel( this, "body_decap_model", STRING( this->GetModelName() ) );
+				m_pAttributes->SwitchEntityColor( this, "new_color" );
 			}
 
-			DispatchParticleEffect("smod_headshot_r", PATTACH_POINT_FOLLOW, this, "bloodspurt", true);
-			SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
-			CGib::SpawnSpecificStickyGibs(this, 6, 150, 450, "models/gibs/pgib_p3.mdl", 6);
-			CGib::SpawnSpecificStickyGibs(this, 6, 150, 450, "models/gibs/pgib_p4.mdl", 6);
-			EmitSound("Gore.Headshot");
+			DispatchParticleEffect( "smod_headshot_r", PATTACH_POINT_FOLLOW, this, "bloodspurt", true );
+			SpawnBlood( GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage() );
+			CGib::SpawnSpecificStickyGibs( this, 6, 150, 450, "models/gibs/pgib_p3.mdl", 6 );
+			CGib::SpawnSpecificStickyGibs( this, 6, 150, 450, "models/gibs/pgib_p4.mdl", 6 );
+			EmitSound( "Gore.Headshot" );
 			m_bNoDeathSound = true;
-			m_iHealth = 0;
-			Event_Killed(info);
-			g_pGameRules->iHeadshotCount += 1;
-			// Handle all clients
-			for (int i = 1; i <= gpGlobals->maxClients; i++)
-			{
-				CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
-
-				if (pPlayer != NULL)
-				{
-					if (g_fr_economy.GetBool())
-					{
-						pPlayer->AddMoney(7);
-					}
-					if (!g_fr_classic.GetBool())
-					{
-						pPlayer->AddXP(9);
-					}
-				}
-			}
-
-			return true;
 		}
-		else if ((info.GetDamageType() & (DMG_SLASH)) && !(info.GetDamageType() & DMG_NEVERGIB))
+		m_iHealth = 0;
+		Event_Killed(info);
+		g_pGameRules->iHeadshotCount += 1;
+		// Handle all clients
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
 		{
-			SetModel(GetGibModel(APPENDAGE_DECAP_BODY));
+			CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
 
-			if (m_pAttributes != NULL)
+			if (pPlayer != NULL)
 			{
-				m_pAttributes->SwitchEntityModel(this, "body_decap_model", STRING(this->GetModelName()));
-				m_pAttributes->SwitchEntityColor(this, "new_color");
-			}
-
-			DispatchParticleEffect("smod_blood_decap_r", PATTACH_POINT_FOLLOW, this, "bloodspurt", true);
-			SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
-			CBaseEntity* pHeadGib = CGib::SpawnSpecificSingleGib(this, 150, 450, GetGibModel(APPENDAGE_HEAD), 6);
-
-			if (pHeadGib)
-			{
-				if (m_pAttributes != NULL)
+				if (g_fr_economy.GetBool())
 				{
-					m_pAttributes->SwitchEntityModel(pHeadGib, "head_gib_model", STRING(pHeadGib->GetModelName()));
-					m_pAttributes->SwitchEntityColor(pHeadGib, "new_color");
+					pPlayer->AddMoney(7);
+				}
+				if (!g_fr_classic.GetBool())
+				{
+					pPlayer->AddXP(9);
 				}
 			}
-
-			CGib::SpawnSpecificStickyGibs(this, 3, 150, 450, "models/gibs/pgib_p4.mdl", 6);
-			EmitSound("Gore.Headshot");
-			m_bNoDeathSound = true;
-			m_iHealth = 0;
-			Event_Killed(info);
-			// Handle all clients
-			for (int i = 1; i <= gpGlobals->maxClients; i++)
-			{
-				CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
-
-				if (pPlayer != NULL)
-				{
-					if (g_fr_economy.GetBool())
-					{
-						pPlayer->AddMoney(7);
-					}
-					if (!g_fr_classic.GetBool())
-					{
-						pPlayer->AddXP(9);
-					}
-				}
-			}
-
-			return true;
 		}
+
+		return true;
+	}
+	else if ((info.GetDamageType() & (DMG_SLASH)) && !(info.GetDamageType() & DMG_NEVERGIB))
+	{
+		if ( shouldAnimateDecap )
+		{
+			SetModel( GetGibModel( APPENDAGE_DECAP_BODY ) );
+
+			if ( m_pAttributes != NULL )
+			{
+				m_pAttributes->SwitchEntityModel( this, "body_decap_model", STRING( this->GetModelName() ) );
+				m_pAttributes->SwitchEntityColor( this, "new_color" );
+			}
+
+			DispatchParticleEffect( "smod_blood_decap_r", PATTACH_POINT_FOLLOW, this, "bloodspurt", true );
+			SpawnBlood( GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage() );
+			CBaseEntity* pHeadGib = CGib::SpawnSpecificSingleGib( this, 150, 450, GetGibModel( APPENDAGE_HEAD ), 6 );
+
+			if ( pHeadGib )
+			{
+				if ( m_pAttributes != NULL )
+				{
+					m_pAttributes->SwitchEntityModel( pHeadGib, "head_gib_model", STRING( pHeadGib->GetModelName() ) );
+					m_pAttributes->SwitchEntityColor( pHeadGib, "new_color" );
+				}
+			}
+
+			CGib::SpawnSpecificStickyGibs( this, 3, 150, 450, "models/gibs/pgib_p4.mdl", 6 );
+			EmitSound( "Gore.Headshot" );
+			m_bNoDeathSound = true;
+		}
+		m_iHealth = 0;
+		Event_Killed(info);
+		// Handle all clients
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+
+			if (pPlayer != NULL)
+			{
+				if (g_fr_economy.GetBool())
+				{
+					pPlayer->AddMoney(7);
+				}
+				if (!g_fr_classic.GetBool())
+				{
+					pPlayer->AddXP(9);
+				}
+			}
+		}
+
+		return true;
 	}
 
 	return false;
@@ -4053,7 +4060,10 @@ bool CNPC_MetroPolice::CorpseGib(const CTakeDamageInfo& info)
 		gibs = m_pAttributes->GetBool("gibs", true);
 	}
 
-	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && info.GetDamageType() & (DMG_BLAST) && !(info.GetDamageType() & (DMG_DISSOLVE)) && !PlayerHasMegaPhysCannon() && gibs)
+	static ConVarRef violence_hgibs( "violence_hgibs" );
+	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence())
+		&& (violence_hgibs.IsValid() && violence_hgibs.GetBool())
+		&& info.GetDamageType() & (DMG_BLAST) && !(info.GetDamageType() & (DMG_DISSOLVE)) && !PlayerHasMegaPhysCannon() && gibs)
 	{
 		if (IsCurSchedule(SCHED_NPC_FREEZE))
 		{

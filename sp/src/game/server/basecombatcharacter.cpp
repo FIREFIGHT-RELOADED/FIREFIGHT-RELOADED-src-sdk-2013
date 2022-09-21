@@ -1323,7 +1323,7 @@ bool  CBaseCombatCharacter::Event_Gibbed( const CTakeDamageInfo &info )
 
 	if ( HasHumanGibs() )
 	{
-		ConVarRef violence_hgibs( "violence_hgibs" );
+		static ConVarRef violence_hgibs( "violence_hgibs" );
 		if ( violence_hgibs.IsValid() && violence_hgibs.GetInt() == 0 )
 		{
 			fade = true;
@@ -1331,7 +1331,7 @@ bool  CBaseCombatCharacter::Event_Gibbed( const CTakeDamageInfo &info )
 	}
 	else if ( HasAlienGibs() )
 	{
-		ConVarRef violence_agibs( "violence_agibs" );
+		static ConVarRef violence_agibs( "violence_agibs" );
 		if ( violence_agibs.IsValid() && violence_agibs.GetInt() == 0 )
 		{
 			fade = true;
@@ -1596,6 +1596,7 @@ void CBaseCombatCharacter::Event_Killed( const CTakeDamageInfo &info )
 	CBaseCombatWeapon *pDroppedWeapon = m_hActiveWeapon.Get();
 
 	// Drop any weapon that I own
+
 	if ( VPhysicsGetObject() )
 	{
 		Vector weaponForce = forceVector * VPhysicsGetObject()->GetInvMass();
@@ -2039,6 +2040,12 @@ void CBaseCombatCharacter::Weapon_Drop( CBaseCombatWeapon *pWeapon, const Vector
 
 	pWeapon->Drop( vecThrow );
 	Weapon_Detach( pWeapon );
+	static ConVarRef sv_cleanup_time( "sv_cleanup_time" );
+	if ( sv_cleanup_time.GetFloat() >= 0 )
+	{
+		RegisterThinkContext( "CleanUp" );
+		pWeapon->SetContextThink( &CBaseAnimating::CleanUp, gpGlobals->curtime + sv_cleanup_time.GetFloat(), "CleanUp" );
+	}
 
 	if ( HasSpawnFlags( SF_NPC_NO_WEAPON_DROP ) )
 	{
