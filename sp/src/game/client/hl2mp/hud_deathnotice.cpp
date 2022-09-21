@@ -124,7 +124,7 @@ void CHudDeathNotice::Init(void)
 //-----------------------------------------------------------------------------
 void CHudDeathNotice::VidInit(void)
 {
-	m_icon = gHUD.GetIcon("viewhair");
+	m_icon = gHUD.GetIcon("deathnotice");
 	m_DeathNotices.Purge();
 }
 
