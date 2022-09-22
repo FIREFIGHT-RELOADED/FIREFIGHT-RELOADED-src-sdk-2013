@@ -85,6 +85,7 @@ protected:
 	DECLARE_SERVERCLASS();
 };
 LINK_ENTITY_TO_CLASS( crossbow_bolt, CCrossbowBolt );
+LINK_ENTITY_TO_CLASS(knife_bolt, CCrossbowBolt);
 
 BEGIN_DATADESC( CCrossbowBolt )
 	// Function Pointers
@@ -592,6 +593,7 @@ CWeaponCrossbow::CWeaponCrossbow( void )
 void CWeaponCrossbow::Precache( void )
 {
 	UTIL_PrecacheOther( "crossbow_bolt" );
+	UTIL_PrecacheOther( "knife_bolt" );
 
 	PrecacheScriptSound( "Weapon_Crossbow.BoltHitBody" );
 	PrecacheScriptSound( "Weapon_Crossbow.BoltHitWorld" );

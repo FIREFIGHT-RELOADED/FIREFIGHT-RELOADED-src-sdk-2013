@@ -73,7 +73,7 @@ CWeaponKnife::CWeaponKnife( void )
 
 /*void CWeaponKnife::Precache(void)
 {
-	UTIL_PrecacheOther("crossbow_bolt");
+	UTIL_PrecacheOther("knife_bolt");
 }*/
 
 bool CWeaponKnife::Deploy(void)
@@ -110,7 +110,7 @@ void CWeaponKnife::ThrowKnife(void)
 	VectorAngles(vecAiming, angAiming);
 
 	// Create a new entity with CCrossbowBolt private data
-	CBaseEntity* pBolt = CreateEntityByName("crossbow_bolt");
+	CBaseEntity* pBolt = CreateEntityByName("knife_bolt");
 	UTIL_SetOrigin(pBolt, vecSrc);
 	pBolt->SetAbsAngles(angAiming);
 	pBolt->AddSpawnFlags(SF_BOLT_KNIFEMODE);

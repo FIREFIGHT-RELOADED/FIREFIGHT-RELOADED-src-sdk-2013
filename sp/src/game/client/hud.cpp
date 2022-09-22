@@ -97,6 +97,8 @@ void LoadHudTextures( CUtlDict< CHudTexture *, int >& list, const char *szFilena
 
 					// it's a font-based icon
 					tex->bRenderUsingFont = true;
+					tex->bIsNormalHL2WeaponIcon = pTemp->GetBool("weaponicon");
+					tex->bIsNormalHL2AmmoIcon = pTemp->GetBool("ammoicon");
 					tex->cCharacterInFont = *(pTemp->GetString("character", ""));
 					Q_strncpy( tex->szTextureFile, pTemp->GetString( "font" ), sizeof( tex->szTextureFile ) );
 
@@ -181,6 +183,8 @@ CHudTexture::CHudTexture()
 	Q_memset( &rc, 0, sizeof( rc ) );
 	textureId = -1;
 	bRenderUsingFont = false;
+	bIsNormalHL2WeaponIcon = false;
+	bIsNormalHL2AmmoIcon = false;
 	bPrecached = false;
 	cCharacterInFont = 0;
 	hFont = ( vgui::HFont )NULL;
@@ -209,6 +213,8 @@ CHudTexture& CHudTexture::operator =( const CHudTexture& src )
 
 	rc = src.rc;
 	bRenderUsingFont = src.bRenderUsingFont;
+	bIsNormalHL2WeaponIcon = src.bIsNormalHL2WeaponIcon;
+	bIsNormalHL2AmmoIcon = src.bIsNormalHL2AmmoIcon;
 	cCharacterInFont = src.cCharacterInFont;
 	hFont = src.hFont;
 
