@@ -3369,7 +3369,7 @@ CBaseEntity *BreakModelCreateSingle( CBaseEntity *pOwner, breakmodel_t *pModel, 
 	{
 		pEntity->m_nSkin = nSkin;
 		pEntity->m_iHealth = pModel->health;
-		if ( g_ActiveGibCount >= ACTIVE_GIB_FADE )
+		if ( g_ActiveGibCount >= ACTIVE_GIB_LIMIT )
 		{
 			pModel->fadeTime = MIN( 3, pModel->fadeTime );
 		}

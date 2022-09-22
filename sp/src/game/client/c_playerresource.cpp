@@ -70,7 +70,7 @@ C_PlayerResource::C_PlayerResource()
 	m_Colors[TEAM_REBELS] = COLOR_RED;
 	m_Colors[TEAM_UNASSIGNED] = COLOR_YELLOW;
 #else
-	m_Colors[TEAM_UNASSIGNED] = COLOR_BLUE;
+	m_Colors[TEAM_UNASSIGNED] = COLOR_FR;
 #endif
 
 	g_PR = this;
@@ -160,7 +160,7 @@ int C_PlayerResource::GetTeam(int iIndex )
 {
 	if ( iIndex < 1 || iIndex > MAX_PLAYERS )
 	{
-		Assert( false );
+		//Assert( false );
 		return 0;
 	}
 	else

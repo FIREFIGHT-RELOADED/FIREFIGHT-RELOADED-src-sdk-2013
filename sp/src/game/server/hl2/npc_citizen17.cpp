@@ -1081,6 +1081,27 @@ bool CNPC_Citizen::SwitchToNextBestWeaponBot(CBaseCombatWeapon* pCurrent)
 	return false;
 }
 
+template <int N>
+static inline bool searchArrayOfStrings( const char *needle, const char* (&haystack)[N] )
+{
+	for ( auto name : haystack )
+	{
+		if ( Q_strcmp( needle, name ) == 0 )
+			return true;
+	}
+	return false;
+}
+
+bool CNPC_Citizen::Weapon_CanUse( CBaseCombatWeapon *pWeapon )
+{
+	const char* className = pWeapon->GetClassname();
+	return BaseClass::Weapon_CanUse(pWeapon) &&
+		(
+			searchArrayOfStrings( className, g_charPlayerbotMidRangeWeapons )
+			|| searchArrayOfStrings( className, g_charPlayerbotShortRangeWeapons )
+		);
+}
+
 bool CNPC_Citizen::Weapon_Switch(CBaseCombatWeapon* pWeapon)
 {
 	if (!Weapon_OwnsThisType(pWeapon->GetClassname()))

@@ -12,6 +12,12 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+ConVar sv_crate_respawn_time("sv_crate_respawn_time", "180", FCVAR_ARCHIVE,
+	"time in seconds to respawn firefight crates; use negative numbers to disable respawning");
+
+static const Vector ZERO_VECTOR(0, 0, 0);
+static const QAngle ZERO_ANGLE(0, 0, 0);
+
 //-----------------------------------------------------------------------------
 // A breakable crate that drops items
 //-----------------------------------------------------------------------------
@@ -33,6 +39,8 @@ public:
 	virtual void VPhysicsCollision( int index, gamevcollisionevent_t *pEvent );
 	virtual void OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason );
 
+	void RespawnThink( void );
+
 protected:
 	virtual void OnBreak( const Vector &vecVelocity, const AngularImpulse &angVel, CBaseEntity *pBreaker );
 
@@ -50,6 +58,10 @@ private:
 	int					m_nItemCount;
 	string_t			m_strAlternateMaster;
 	string_t			m_CrateAppearance;
+	Vector				m_originalOrigin;
+	QAngle				m_originalAngles;
+	bool				m_bDoNotRespawn;
+	bool				m_bDoNotRespawnContents;
 
 	COutputEvent m_OnCacheInteraction;
 };
@@ -61,8 +73,8 @@ LINK_ENTITY_TO_CLASS(item_crate_firefight, CItem_ItemCrateFirefight);
 //-----------------------------------------------------------------------------
 // Save/load: 
 //-----------------------------------------------------------------------------
-BEGIN_DATADESC( CItem_ItemCrateFirefight )
-	
+BEGIN_DATADESC(CItem_ItemCrateFirefight)
+
 	DEFINE_KEYFIELD(m_strItemClass1, FIELD_STRING, "ItemClass1"),
 	DEFINE_KEYFIELD(m_strItemClass2, FIELD_STRING, "ItemClass2"),
 	DEFINE_KEYFIELD(m_strItemClass3, FIELD_STRING, "ItemClass3"),
@@ -73,11 +85,16 @@ BEGIN_DATADESC( CItem_ItemCrateFirefight )
 	DEFINE_KEYFIELD(m_strItemClass8, FIELD_STRING, "ItemClass8"),
 	DEFINE_KEYFIELD(m_strItemClass9, FIELD_STRING, "ItemClass9"),
 	DEFINE_KEYFIELD(m_strItemClass10, FIELD_STRING, "ItemClass10"),
-	DEFINE_KEYFIELD( m_nItemCount, FIELD_INTEGER, "ItemCount" ),	
-	DEFINE_KEYFIELD( m_strAlternateMaster, FIELD_STRING, "SpecificResupply" ),	
-	DEFINE_KEYFIELD( m_CrateAppearance, FIELD_STRING, "CrateAppearance" ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Kill", InputKill ),
-	DEFINE_OUTPUT( m_OnCacheInteraction, "OnCacheInteraction" ),
+	DEFINE_KEYFIELD(m_nItemCount, FIELD_INTEGER, "ItemCount"),
+	DEFINE_KEYFIELD(m_strAlternateMaster, FIELD_STRING, "SpecificResupply"),
+	DEFINE_KEYFIELD(m_CrateAppearance, FIELD_STRING, "CrateAppearance"),
+	DEFINE_KEYFIELD(m_bDoNotRespawn, FIELD_BOOLEAN, "DoNotRespawn"),
+	DEFINE_KEYFIELD(m_bDoNotRespawnContents, FIELD_BOOLEAN, "DoNotRespawnContents"),
+	DEFINE_FIELD(m_originalOrigin, FIELD_VECTOR),
+	DEFINE_FIELD(m_originalAngles, FIELD_VECTOR),
+	DEFINE_INPUTFUNC(FIELD_VOID, "Kill", InputKill),
+	DEFINE_OUTPUT(m_OnCacheInteraction, "OnCacheInteraction"),
+	DEFINE_THINKFUNC(RespawnThink),
 
 END_DATADESC()
 
@@ -157,7 +174,7 @@ void CItem_ItemCrateFirefight::Precache( void )
 // Purpose: 
 //-----------------------------------------------------------------------------
 void CItem_ItemCrateFirefight::Spawn( void )
-{ 
+{
 	if ( g_pGameRules->IsAllowedToSpawn( this ) == false )
 	{
 		UTIL_Remove( this );
@@ -192,6 +209,11 @@ void CItem_ItemCrateFirefight::Spawn( void )
 		UTIL_Remove(this);
 		return;
 	}
+
+	m_originalOrigin = GetLocalOrigin();
+	m_originalAngles = GetLocalAngles();
+	SetLocalAngularVelocity(ZERO_ANGLE);
+	SetLocalVelocity(ZERO_VECTOR);
 
 	Precache( );
 	SetModel(STRING(m_CrateAppearance));
@@ -249,6 +271,8 @@ void CItem_ItemCrateFirefight::VPhysicsCollision( int index, gamevcollisionevent
 //-----------------------------------------------------------------------------
 void CItem_ItemCrateFirefight::OnBreak( const Vector &vecVelocity, const AngularImpulse &angImpulse, CBaseEntity *pBreaker )
 {
+	bool shouldRespawn = !m_bDoNotRespawn && sv_crate_respawn_time.GetFloat() >= 0;
+
 	// FIXME: We could simply store the name of an entity to put into the crate 
 	// as a string entered in by worldcraft. Should we?	I'd do it for sure
 	// if it was easy to get a dropdown with all entity types in it.
@@ -276,7 +300,6 @@ void CItem_ItemCrateFirefight::OnBreak( const Vector &vecVelocity, const Angular
 		if (g_charItemSpawnList[i] != NULL_STRING)
 		{
 			items[itemCount++] = STRING(g_charItemSpawnList[i]);
-			//ConMsg("CItem_ItemCrateFirefight: added %s\n", g_charItemSpawnList[i]);
 		}
 	}
 
@@ -284,11 +307,13 @@ void CItem_ItemCrateFirefight::OnBreak( const Vector &vecVelocity, const Angular
 	{
 		CBaseEntity *pSpawn = NULL;
 		int randomChoice = random->RandomInt(0, itemCount - 1);
-		//ConMsg("CItem_ItemCrateFirefight: chose %s\n", items[randomChoice]);
 		pSpawn = CreateEntityByName(items[randomChoice]);
 
-		if ( !pSpawn )
+		if (!pSpawn)
+		{
+			Warning("CItem_ItemCrateFirefight: attempted to create invalid entity \"%s\"\n", items[randomChoice]);
 			return;
+		}
 
 		// Give a little randomness...
 		Vector vecOrigin;
@@ -320,6 +345,8 @@ void CItem_ItemCrateFirefight::OnBreak( const Vector &vecVelocity, const Angular
 
 		pSpawn->Spawn();
 
+		static ConVarRef sv_cleanup_time( "sv_cleanup_time" );
+
 		// Avoid missing items drops by a dynamic resupply because they don't think immediately
 		if ( FClassnameIs( pSpawn, "item_dynamic_resupply" ) )
 		{
@@ -333,7 +360,80 @@ void CItem_ItemCrateFirefight::OnBreak( const Vector &vecVelocity, const Angular
 			}
 			pSpawn->SetNextThink( gpGlobals->curtime );
 		}
+		else if ( sv_cleanup_time.GetFloat() >= 0 )
+		{
+			RegisterThinkContext( "CleanUp" );
+			pSpawn->SetContextThink( &CBaseAnimating::CleanUp, gpGlobals->curtime + sv_cleanup_time.GetFloat(), "CleanUp" );
+		}
+
+		if (shouldRespawn || m_bDoNotRespawnContents)
+			pSpawn->AddSpawnFlags(SF_NORESPAWN);
 	}
+
+	if (shouldRespawn)
+	{
+		CItem_ItemCrateFirefight* pNewCrate = (CItem_ItemCrateFirefight*)CBaseEntity::CreateNoSpawn(GetClassname(), m_originalOrigin, m_originalAngles, GetOwnerEntity());
+		if (pNewCrate == NULL)
+			return;
+		pNewCrate->m_strItemClass1 = m_strItemClass1;
+		pNewCrate->m_strItemClass2 = m_strItemClass2;
+		pNewCrate->m_strItemClass3 = m_strItemClass3;
+		pNewCrate->m_strItemClass4 = m_strItemClass4;
+		pNewCrate->m_strItemClass5 = m_strItemClass5;
+		pNewCrate->m_strItemClass6 = m_strItemClass6;
+		pNewCrate->m_strItemClass7 = m_strItemClass7;
+		pNewCrate->m_strItemClass8 = m_strItemClass8;
+		pNewCrate->m_strItemClass9 = m_strItemClass9;
+		pNewCrate->m_strItemClass10 = m_strItemClass10;
+		pNewCrate->m_nItemCount = m_nItemCount;
+		pNewCrate->m_strAlternateMaster = m_strAlternateMaster;
+		pNewCrate->m_CrateAppearance = m_CrateAppearance;
+		pNewCrate->m_bDoNotRespawn = m_bDoNotRespawn;
+		pNewCrate->m_bDoNotRespawnContents = m_bDoNotRespawnContents;
+
+		pNewCrate->Spawn();
+
+		IPhysicsObject* physObj = pNewCrate->VPhysicsGetObject();
+		if (physObj == NULL)
+		{
+			UTIL_Remove(pNewCrate);
+			return;
+		}
+		physObj->EnableMotion(false);
+
+		pNewCrate->SetSolid(SOLID_NONE);
+		pNewCrate->AddEffects(EF_NODRAW);
+
+		pNewCrate->SetThink(&CItem_ItemCrateFirefight::RespawnThink);
+		pNewCrate->SetNextThink(gpGlobals->curtime + sv_crate_respawn_time.GetFloat());
+	}
+}
+
+void CItem_ItemCrateFirefight::RespawnThink(void)
+{
+	IPhysicsObject* physObj = VPhysicsGetObject();
+	if (physObj == NULL)
+	{
+		UTIL_Remove(this);
+		return;
+	}
+	physObj->EnableMotion(true);
+	physObj->Wake();
+
+	SetSolid(SOLID_VPHYSICS);
+
+	SetLocalAngles(m_originalAngles);
+	SetLocalOrigin(m_originalOrigin);
+
+	RemoveEffects(EF_NODRAW);
+
+#ifdef HL2MP
+	EmitSound("AlyxEmp.Charge");
+#else
+	EmitSound("Item.Materialize");
+#endif
+
+	SetThink(NULL);
 }
 
 void CItem_ItemCrateFirefight::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason )

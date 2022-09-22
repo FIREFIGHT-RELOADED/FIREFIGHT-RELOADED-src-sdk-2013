@@ -6811,7 +6811,7 @@ CBaseEntity	*CBasePlayer::GiveNamedItem( const char *pszName, int iSubType, bool
 			pWeapon->AddSpawnFlags(SF_WEAPON_NO_INITIALWEAPONSWITCH);
 		}
 
-		if (!pWeapon->HasSpawnFlags(SF_WEAPON_NO_INITIALWEAPONSWITCH))
+		if ( sv_player_autoswitch.GetBool() && !pWeapon->HasSpawnFlags( SF_WEAPON_NO_INITIALWEAPONSWITCH ) )
 		{
 			if (pActiveWeapon)
 			{
@@ -8004,6 +8004,7 @@ bool CBasePlayer::BumpWeapon( CBaseCombatWeapon *pWeapon )
 			if ( pWeapon->HasPrimaryAmmo() )
 				return false;
 
+			pWeapon->CheckRespawn();
 			UTIL_Remove( pWeapon );
 			return true;
 		}
@@ -8021,12 +8022,6 @@ bool CBasePlayer::BumpWeapon( CBaseCombatWeapon *pWeapon )
 
 		pWeapon->AddSolidFlags( FSOLID_NOT_SOLID );
 		pWeapon->AddEffects( EF_NODRAW );
-
-		//allow given items to be autoswitched if sv_player_autoswitch is disabled. rewards are handled differently (sv_player_autoswitchonreward)
-		if (!sv_player_autoswitch.GetBool())
-		{
-			pWeapon->AddSpawnFlags(SF_WEAPON_NO_INITIALWEAPONSWITCH);
-		}
 	
 		Weapon_Equip( pWeapon );
 		if ( IsInAVehicle() )
@@ -8035,8 +8030,6 @@ bool CBasePlayer::BumpWeapon( CBaseCombatWeapon *pWeapon )
 		}
 		else
 		{
-#ifdef HL2_DLL
-
 			if ( IsX360() )
 			{
 				CFmtStr hint;
@@ -8050,20 +8043,13 @@ bool CBasePlayer::BumpWeapon( CBaseCombatWeapon *pWeapon )
 				pWeapon->m_iClip1 = pWeapon->GetMaxClip1();
 			}
 
-			if (!pWeapon->HasSpawnFlags(SF_WEAPON_NO_INITIALWEAPONSWITCH))
+			if ( sv_player_autoswitch.GetBool()
+				&& (pActive == NULL || !FClassnameIs( pActive, "weapon_physgun" ))
+				&& !(m_nButtons & (IN_ATTACK | IN_ATTACK2 | IN_ATTACK3)) )
 			{
-				Weapon_Switch(pWeapon);
+				Weapon_Switch( pWeapon );
 			}
-			else
-			{
-				if (pActive)
-				{
-					pActive->m_bPlayDeployAnim = false;
-					Weapon_Switch(pActive);
-					pActive->m_bPlayDeployAnim = true;
-				}
-			}
-#endif
+
 		}
 		return true;
 	}
@@ -8751,13 +8737,11 @@ void CBasePlayer::Weapon_Equip( CBaseCombatWeapon *pWeapon )
 
 	bool bShouldSwitch = g_pGameRules->FShouldSwitchWeapon( this, pWeapon );
 
-#ifdef HL2_DLL
-	if (bShouldSwitch == false && PhysCannonGetHeldEntity(GetActiveWeapon()) == pWeapon &&
+	if (bShouldSwitch && PhysCannonGetHeldEntity(GetActiveWeapon()) == pWeapon &&
 		Weapon_OwnsThisType(pWeapon->GetClassname(), pWeapon->GetSubType()))
 	{
 		bShouldSwitch = true;
 	}
-#endif//HL2_DLL
 
 	// should we switch to this item?
 	if (bShouldSwitch)

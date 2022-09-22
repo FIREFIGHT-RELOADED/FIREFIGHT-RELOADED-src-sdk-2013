@@ -1247,6 +1247,9 @@ void CHL2_Player::KickAttack(void)
 				vm->SendViewModelMatchingSequence(idealSequence);
 				m_flNextKickAttack = gpGlobals->curtime + vm->SequenceDuration(idealSequence) - 0.5f;
 			}
+
+			m_bIsKicking = true;
+
 			QAngle	recoil = QAngle(random->RandomFloat(2.0f, 4.0f), random->RandomFloat(-4.0f, 4.0f), 0);
 			this->ViewPunch(recoil);
 
@@ -1404,7 +1407,6 @@ void CHL2_Player::PostThink( void )
 		if (m_afButtonReleased & IN_KICK && m_flNextKickAttack < gpGlobals->curtime /* && m_flNextKickAttack < gpGlobals->curtime  && !m_bIsKicking*/)
 		{
 			KickAttack();
-			m_bIsKicking = true;
 		}
 	}
 

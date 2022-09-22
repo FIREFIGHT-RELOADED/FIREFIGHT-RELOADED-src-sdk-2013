@@ -68,6 +68,9 @@ public:
 	char		szTextureFile[ 64 ];
 
 	bool		bRenderUsingFont;
+	bool		bIsNormalHL2WeaponIcon;
+	bool		bIsNormalHL2AmmoIcon;
+	bool		bIsTexHL2WeaponIcon;
 	bool		bPrecached;
 	char		cCharacterInFont;
 	vgui::HFont hFont;

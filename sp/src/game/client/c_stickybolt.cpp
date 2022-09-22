@@ -145,14 +145,7 @@ void CreateCrossbowBolt( const Vector &vecOrigin, const Vector &vecDirection, bo
 
 	float posKnife = (knifeMode ? 12 : 8);
 	
-	if ( gpGlobals->maxClients > 1 )
-	{
-		tempents->SpawnTempModel( pModel, vecOrigin - vecDirection * posKnife, vAngles, Vector(0, 0, 0 ), 30.0f, FTENT_NONE );
-	}
-	else
-	{
-		tempents->SpawnTempModel( pModel, vecOrigin - vecDirection * posKnife, vAngles, Vector(0, 0, 0 ), 1, FTENT_NEVERDIE );
-	}
+	tempents->SpawnTempModel(pModel, vecOrigin - vecDirection * posKnife, vAngles, Vector(0, 0, 0), 30.0f, FTENT_NONE);
 }
 
 void StickRagdollNow( const Vector &vecOrigin, const Vector &vecDirection, bool knifeMode = false)

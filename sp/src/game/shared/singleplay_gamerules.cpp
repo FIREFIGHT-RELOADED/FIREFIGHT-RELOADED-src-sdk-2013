@@ -22,6 +22,7 @@
 	#include "ai_basenpc.h"
 	#include "tier3/tier3.h"
 	#include "vgui/ILocalize.h"
+	#include "hl2/hl2_player.h"
 
 #endif
 
@@ -366,8 +367,12 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 	// Purpose: Determine whether the player should switch to the weapon passed in
 	// Output : Returns true on success, false on failure.
 	//-----------------------------------------------------------------------------
+	static ConVarRef sv_player_autoswitch( "sv_player_autoswitch" );
 	bool CSingleplayRules::FShouldSwitchWeapon( CBasePlayer *pPlayer, CBaseCombatWeapon *pWeapon )
 	{
+		if ( !sv_player_autoswitch.GetBool() )
+			return false;
+
 		//Must have ammo
 		if ( ( pWeapon->HasAnyAmmo() == false ) && ( pPlayer->GetAmmoCount( pWeapon->m_iPrimaryAmmoType ) <= 0 ) )
 			return false;
@@ -1076,6 +1081,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 	//=========================================================
 	// Deathnotice. 
 	//=========================================================
+	typedef char NpcName[256];
 	void CSingleplayRules::DeathNotice(CBasePlayer* pVictim, const CTakeDamageInfo& info)
 	{
 		// Work out what killed the player, and send a message to all clients about it
@@ -1109,14 +1115,17 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 					{
 						if (pInflictor == pScorer)
 						{
+							CHL2_Player* pScorerHL2 = ToHL2Player(pScorer);
+
 							// If the inflictor is the killer,  then it must be their current weapon doing the damage
-							if (pScorer->GetActiveWeapon())
+							if (pScorerHL2->m_bIsKicking)
 							{
-#ifdef HL1MP_DLL
-								killer_weapon_name = pScorer->GetActiveWeapon()->GetClassname();
-#else
-								killer_weapon_name = pScorer->GetActiveWeapon()->GetDeathNoticeName();
-#endif
+								// fake it
+								killer_weapon_name = "kick";
+							}
+							else if (pScorerHL2->GetActiveWeapon())
+							{
+								killer_weapon_name = pScorerHL2->GetActiveWeapon()->GetClassname();
 							}
 						}
 						else
@@ -1129,20 +1138,6 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 				{
 					killer_weapon_name = STRING(pInflictor->m_iClassname);
 				}
-
-				// strip the NPC_* or weapon_* from the inflictor's classname
-				if (strncmp(killer_weapon_name, "weapon_", 7) == 0)
-				{
-					killer_weapon_name += 7;
-				}
-				else if (strncmp(killer_weapon_name, "npc_", 4) == 0)
-				{
-					killer_weapon_name += 4;
-				}
-				else if (strncmp(killer_weapon_name, "func_", 5) == 0)
-				{
-					killer_weapon_name += 5;
-				}
 			}
 
 			IGameEvent* event = gameeventmanager->CreateEvent("player_death");
@@ -1152,15 +1147,36 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 				event->SetInt("attacker", killer_ID);
 				event->SetInt("customkill", info.GetDamageCustom());
 				event->SetInt("priority", 7);	// HLTV event priority, not transmitted
-#ifdef HL1MP_DLL
 				event->SetString("weapon", killer_weapon_name);
-#endif			
 				gameeventmanager->FireEvent(event);
 			}
 		}
 		else if (pKiller->IsNPC())
 		{
-			const char* killer_name = GetNPCName(pKiller);
+			NpcName killer_name;
+			GetNPCName(killer_name, pKiller);
+
+			CAI_BaseNPC *pNPC = pKiller->MyNPCPointer();
+
+			if (pNPC)
+			{
+				if (pNPC->GetActiveWeapon())
+				{
+					killer_weapon_name = pNPC->GetActiveWeapon()->GetClassname();
+				}
+				else if (pInflictor)
+				{
+					killer_weapon_name = STRING(pInflictor->m_iClassname);  // it's just that easy
+				}
+				else
+				{
+					killer_weapon_name = STRING(pKiller->m_iClassname);
+				}
+			}
+			else
+			{
+				killer_weapon_name = STRING(pKiller->m_iClassname);
+			}
 
 			IGameEvent* event = gameeventmanager->CreateEvent("player_death_npc");
 			if (event)
@@ -1169,9 +1185,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 				event->SetString("attacker", killer_name);
 				event->SetInt("customkill", info.GetDamageCustom());
 				event->SetInt("priority", 7);	// HLTV event priority, not transmitted
-#ifdef HL1MP_DLL
 				event->SetString("weapon", killer_weapon_name);
-#endif			
 				gameeventmanager->FireEvent(event);
 			}
 		}
@@ -1210,14 +1224,17 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 					{
 						if (pInflictor == pScorer)
 						{
+							CHL2_Player* pScorerHL2 = ToHL2Player(pScorer);
+
 							// If the inflictor is the killer,  then it must be their current weapon doing the damage
-							if (pScorer->GetActiveWeapon())
+							if (pScorerHL2->m_bIsKicking)
 							{
-#ifdef HL1MP_DLL
-								killer_weapon_name = pScorer->GetActiveWeapon()->GetClassname();
-#else
-								killer_weapon_name = pScorer->GetActiveWeapon()->GetDeathNoticeName();
-#endif
+								// fake it
+								killer_weapon_name = "kick";
+							}
+							else if (pScorerHL2->GetActiveWeapon())
+							{
+								killer_weapon_name = pScorerHL2->GetActiveWeapon()->GetClassname();
 							}
 						}
 						else
@@ -1230,23 +1247,10 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 				{
 					killer_weapon_name = STRING(pInflictor->m_iClassname);
 				}
-
-				// strip the NPC_* or weapon_* from the inflictor's classname
-				if (strncmp(killer_weapon_name, "weapon_", 7) == 0)
-				{
-					killer_weapon_name += 7;
-				}
-				else if (strncmp(killer_weapon_name, "NPC_", 4) == 0)
-				{
-					killer_weapon_name += 4;
-				}
-				else if (strncmp(killer_weapon_name, "func_", 5) == 0)
-				{
-					killer_weapon_name += 5;
-				}
 			}
 
-			const char* vic_name = GetNPCName(pVictim);
+			NpcName vic_name;
+			GetNPCName(vic_name, pVictim);
 
 			IGameEvent* event = gameeventmanager->CreateEvent("npc_death");
 			if (event)
@@ -1255,15 +1259,13 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 				event->SetString("victimname", vic_name);
 				event->SetInt("customkill", info.GetDamageCustom());
 				event->SetInt("priority", 7);	// HLTV event priority, not transmitted
-#ifdef HL1MP_DLL
 				event->SetString("weapon", killer_weapon_name);
-#endif			
 				gameeventmanager->FireEvent(event);
 			}
 		}
 	}
 
-	const char* CSingleplayRules::GetNPCName(CBaseEntity* pVictim)
+	void CSingleplayRules::GetNPCName(NpcName npcName, CBaseEntity* pVictim)
 	{
 		//todo: use properly localized names.
 		const char* entityClassname = pVictim->GetClassname();
@@ -1296,10 +1298,10 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 			CFmtStr localizedName;
 			localizedName.sprintf("#fr_%s", fullEntityClassname);
 
-			FinalString = localizedName.Access();
+			Q_strncpy(npcName, localizedName.Access(), sizeof NpcName);
 		}
-
-		return FinalString;
+		else
+			Q_strncpy(npcName, FinalString, sizeof NpcName);
 	}
 
 	//=========================================================

@@ -1810,7 +1810,8 @@ int CNPC_FloorTurret::VPhysicsTakeDamage( const CTakeDamageInfo &info )
 	// Ignore bullets from the front
 	if ( !bShouldIgnoreFromFront )
 	{
-		bShouldIgnoreFromFront = FClassnameIs( info.GetInflictor(), "crossbow_bolt" );
+		bShouldIgnoreFromFront = (FClassnameIs( info.GetInflictor(), "crossbow_bolt" ) || 
+									FClassnameIs(info.GetInflictor(), "knife_bolt"));
 	}
 
 	// Did it hit us on the front?

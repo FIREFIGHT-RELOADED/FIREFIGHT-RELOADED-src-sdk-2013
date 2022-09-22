@@ -15,8 +15,8 @@
 #include "hl2_playerlocaldata.h"
 #include "simtimer.h"
 #include "soundenvelope.h"
+#include "ai_squad.h"
 
-class CAI_Squad;
 class CPropCombineBall;
 
 extern int TrainSpeed(int iSpeed, int iMax);
@@ -164,6 +164,7 @@ public:
 	CAI_BaseNPC *GetSquadCommandRepresentative();
 	int GetNumSquadCommandables();
 	int GetNumSquadCommandableMedics();
+	const char* GetSquadName() { return m_pPlayerAISquad->GetName(); }
 
 	// Locator
 	void UpdateLocatorPosition( const Vector &vecPosition );

@@ -95,6 +95,7 @@ public:
 	//player emulation
 	void		GiveWeapon(const char* iszWeaponName);
 	bool		Weapon_Switch(CBaseCombatWeapon* pWeapon);
+	bool		Weapon_CanUse(CBaseCombatWeapon *pWeapon);
 	void		GiveWeapons(void);
 	bool		ShouldRegenerateHealth(void);
 	float		GetSequenceGroundSpeed(CStudioHdr* pStudioHdr, int iSequence);
