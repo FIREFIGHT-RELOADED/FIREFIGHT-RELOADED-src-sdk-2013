@@ -88,21 +88,17 @@ void LoadHudTextures( CUtlDict< CHudTexture *, int >& list, const char *szFilena
 			pTemp = pTextureSection->GetFirstSubKey();
 			while ( pTemp )
 			{
+				CHudTexture* tex = new CHudTexture();
+
 				if ( pTemp->GetString( "font", NULL ) )
 				{
-					CHudTexture *tex = new CHudTexture();
-
 					// Key Name is the sprite name
 					Q_strncpy( tex->szShortName, pTemp->GetName(), sizeof( tex->szShortName ) );
 
 					// it's a font-based icon
 					tex->bRenderUsingFont = true;
-					tex->bIsNormalHL2WeaponIcon = pTemp->GetBool("weaponicon");
-					tex->bIsNormalHL2AmmoIcon = pTemp->GetBool("ammoicon");
 					tex->cCharacterInFont = *(pTemp->GetString("character", ""));
 					Q_strncpy( tex->szTextureFile, pTemp->GetString( "font" ), sizeof( tex->szTextureFile ) );
-
-					list.Insert( tex->szShortName, tex );
 				}
 				else
 				{
@@ -116,8 +112,6 @@ void LoadHudTextures( CUtlDict< CHudTexture *, int >& list, const char *szFilena
 						const char *cszFilename = pTemp->GetString( hudTextureFileRefs[i].m_fileKeySymbol, NULL );
 						if ( cszFilename )
 						{
-							CHudTexture *tex = new CHudTexture();
-
 							tex->bRenderUsingFont = false;
 							tex->rc.left	= iTexLeft;
 							tex->rc.top		= iTexTop;
@@ -127,11 +121,15 @@ void LoadHudTextures( CUtlDict< CHudTexture *, int >& list, const char *szFilena
 							Q_strncpy( tex->szShortName, hudTextureFileRefs[i].m_cszHudTexturePrefix, sizeof( tex->szShortName ) );
 							Q_strncpy( tex->szShortName + hudTextureFileRefs[i].m_uiPrefixLength, pTemp->GetName(), sizeof( tex->szShortName ) - hudTextureFileRefs[i].m_uiPrefixLength );
 							Q_strncpy( tex->szTextureFile, cszFilename, sizeof( tex->szTextureFile ) );
-
-							list.Insert( tex->szShortName, tex );
 						}
 					}
 				}
+
+				tex->bIsNormalHL2WeaponIcon = pTemp->GetBool("weaponicon");
+				tex->bIsNormalHL2AmmoIcon = pTemp->GetBool("ammoicon");
+				tex->bIsTexHL2WeaponIcon = pTemp->GetBool("weapontexicon");
+
+				list.Insert(tex->szShortName, tex);
 
 				pTemp = pTemp->GetNextKey();
 			}
@@ -185,6 +183,7 @@ CHudTexture::CHudTexture()
 	bRenderUsingFont = false;
 	bIsNormalHL2WeaponIcon = false;
 	bIsNormalHL2AmmoIcon = false;
+	bIsTexHL2WeaponIcon = false;
 	bPrecached = false;
 	cCharacterInFont = 0;
 	hFont = ( vgui::HFont )NULL;
@@ -215,6 +214,7 @@ CHudTexture& CHudTexture::operator =( const CHudTexture& src )
 	bRenderUsingFont = src.bRenderUsingFont;
 	bIsNormalHL2WeaponIcon = src.bIsNormalHL2WeaponIcon;
 	bIsNormalHL2AmmoIcon = src.bIsNormalHL2AmmoIcon;
+	bIsTexHL2WeaponIcon = src.bIsTexHL2WeaponIcon;
 	cCharacterInFont = src.cCharacterInFont;
 	hFont = src.hFont;
 

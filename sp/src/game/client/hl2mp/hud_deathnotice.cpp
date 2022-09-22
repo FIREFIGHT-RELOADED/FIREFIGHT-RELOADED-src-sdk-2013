@@ -79,8 +79,12 @@ private:
 
 	CPanelAnimationVar(float, m_flIconOffsetWepX, "IconOffsetWepX", "0");
 	CPanelAnimationVar(float, m_flIconOffsetWepY, "IconOffsetWepY", "0");
+
 	CPanelAnimationVar(float, m_flIconOffsetAmmoX, "IconOffsetAmmoX", "0");
 	CPanelAnimationVar(float, m_flIconOffsetAmmoY, "IconOffsetAmmoY", "0");
+
+	CPanelAnimationVar(float, m_flIconOffsetTexWepX, "IconOffsetTexWepX", "0");
+	CPanelAnimationVar(float, m_flIconOffsetTexWepY, "IconOffsetTexWepY", "0");
 
 	CHudTexture* m_icon;
 
@@ -292,9 +296,11 @@ void CHudDeathNotice::Paint()
 		// Draw death weapon
 		//If we're using a font char, this will ignore iconTall and iconWide
 		int iconOffsetX = (m_DeathNotices[i].iconDeath->bIsNormalHL2WeaponIcon ? m_flIconOffsetWepX 
-							: (m_DeathNotices[i].iconDeath->bIsNormalHL2AmmoIcon ? m_flIconOffsetAmmoX : m_flIconOffsetX));
+							: (m_DeathNotices[i].iconDeath->bIsNormalHL2AmmoIcon ? m_flIconOffsetAmmoX 
+							: (m_DeathNotices[i].iconDeath->bIsTexHL2WeaponIcon ? m_flIconOffsetTexWepX : m_flIconOffsetX)));
 		int iconOffsetY = (m_DeathNotices[i].iconDeath->bIsNormalHL2WeaponIcon ? m_flIconOffsetWepY 
-							: (m_DeathNotices[i].iconDeath->bIsNormalHL2AmmoIcon ? m_flIconOffsetAmmoY : m_flIconOffsetY));
+							: (m_DeathNotices[i].iconDeath->bIsNormalHL2AmmoIcon ? m_flIconOffsetAmmoY 
+							: (m_DeathNotices[i].iconDeath->bIsTexHL2WeaponIcon ? m_flIconOffsetTexWepY : m_flIconOffsetY)));
 		icon->DrawSelf(x + iconOffsetX, y + iconOffsetY, iconWide, iconTall, m_cIconColor);
 		x += iconWide;
 
