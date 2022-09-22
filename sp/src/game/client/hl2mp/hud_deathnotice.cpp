@@ -22,6 +22,7 @@
 #include "tier0/memdbgon.h"
 
 static ConVar hud_deathnotice_time("hud_deathnotice_time", "10", 0);
+static ConVar hud_deathnotice("hud_deathnotice", "1", FCVAR_ARCHIVE);
 
 // Player entries in a death notice
 struct DeathNoticePlayer
@@ -55,6 +56,7 @@ public:
 	virtual bool ShouldDraw(void);
 	virtual void Paint(void);
 	virtual void ApplySchemeSettings(vgui::IScheme* scheme);
+	void OnThink(void);
 
 	void SetColorForNoticePlayer(int iTeamNumber);
 	void RetireExpiredDeathNotices(void);
@@ -555,6 +557,18 @@ void CHudDeathNotice::FireGameEvent(IGameEvent* event)
 		}
 
 		Msg("%s\n", sDeathMsg);
+	}
+}
+
+void CHudDeathNotice::OnThink(void)
+{
+	if (!hud_deathnotice.GetBool())
+	{
+		SetAlpha(0);
+	}
+	else
+	{
+		SetAlpha(255);
 	}
 }
 
