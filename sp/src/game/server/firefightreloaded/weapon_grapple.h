@@ -42,8 +42,7 @@ class CWeaponGrapple;
 class CGrappleHook : public CBaseCombatCharacter
 {
 	DECLARE_CLASS( CGrappleHook, CBaseCombatCharacter );
-	DECLARE_DATADESC();
- 
+
 public:
 	CGrappleHook() { };
 	~CGrappleHook();
@@ -57,7 +56,10 @@ public:
 	bool CreateVPhysics( void );
 	unsigned int PhysicsSolidMaskForEntity() const;
 	static CGrappleHook *HookCreate( const Vector &vecOrigin, const QAngle &angAngles, CBaseEntity *pentOwner = NULL );
- 
+
+protected:
+	DECLARE_DATADESC();
+
 private:
 
 	CHandle<CWeaponGrapple>		m_hOwner;
@@ -69,6 +71,8 @@ private:
 class CWeaponGrapple : public CBaseHLCombatWeapon            
 {                                                            
 	DECLARE_CLASS( CWeaponGrapple, CBaseHLCombatWeapon );
+
+protected:
 	DECLARE_SERVERCLASS();
 	DECLARE_ACTTABLE();
 	DECLARE_DATADESC();

@@ -46,15 +46,15 @@ static const char* ppszIgnoredClasses[] =
 LINK_ENTITY_TO_CLASS( grapple_hook, CGrappleHook );
  
 BEGIN_DATADESC( CGrappleHook )
-	// Function Pointers
-	DEFINE_ENTITYFUNC(HookTouch),
-	DEFINE_THINKFUNC(FlyThink),
-	DEFINE_THINKFUNC(HookedThink),
-
 	DEFINE_FIELD( m_hPlayer, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hOwner, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hBolt, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_bPlayerWasStanding, FIELD_BOOLEAN ),
+
+	DEFINE_ENTITYFUNC( HookTouch ),
+
+	DEFINE_THINKFUNC( FlyThink ),
+	DEFINE_THINKFUNC( HookedThink ),
 END_DATADESC()
  
 CGrappleHook *CGrappleHook::HookCreate( const Vector &vecOrigin, const QAngle &angAngles, CBaseEntity *pentOwner )
@@ -633,11 +633,6 @@ void CWeaponGrapple::DrawBeam( const Vector &startPos, const Vector &endPos, flo
 	//pBeam->LiveForTime( 0.1f );
 
 	UpdateWaterState();
- 
-	SetTouch( &CGrappleHook::HookTouch );
- 
-	SetThink( &CGrappleHook::FlyThink );
-	SetNextThink( gpGlobals->curtime + 0.1f );
 }
 //-----------------------------------------------------------------------------
 // Purpose: 
