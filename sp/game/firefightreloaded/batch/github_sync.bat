@@ -8,7 +8,7 @@ SET basedir=%CD%\github
 SET gamescriptdir=%basedir%\scripts
 SET gamecfgdir=%basedir%\cfg
 SET gamesresourcedir=%basedir%\resource
-SET gamesresourcedir=%basedir%\mapadd
+SET gamemapadddir=%basedir%\mapadd
 if not exist "%gamescriptdir%" mkdir "%gamescriptdir%"
 if not exist "%gamecfgdir%" mkdir "%gamecfgdir%"
 if not exist "%gamesresourcedir%" mkdir "%gamesresourcedir%"
@@ -16,14 +16,13 @@ if not exist "%gamemapadddir%" mkdir "%gamemapadddir%"
 
 echo.
 echo Copying game data...
-XCOPY /E "%CD%\resource" "%gamescriptdir%" /sy
+XCOPY /E "%CD%\resource" "%gamesresourcedir%" /sy
 XCOPY /E "%CD%\scripts" "%gamescriptdir%" /sy
 XCOPY /E "%CD%\cfg" "%gamecfgdir%" /sy
 XCOPY /E "%CD%\mapadd" "%gamemapadddir%" /sy
-XCOPY /E "%CD%\gameinfo.txt" "%basedir%" /sy
-XCOPY /E "%CD%\steam.inf" "%basedir%" /sy
-XCOPY /E "%CD%\version.txt" "%basedir%" /sy
-
+XCOPY "%CD%\gameinfo.txt" "%basedir%" /y
+XCOPY "%CD%\steam.inf" "%basedir%" /y
+XCOPY "%CD%\version.txt" "%basedir%" /y
 
 echo.
 echo Moving game data to GitHub folder...

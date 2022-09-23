@@ -1,0 +1,27 @@
+"MapAdd"
+{
+        "Init"
+        {
+			"entity_classname"
+            {
+				//Positions
+                "x" "0"
+                "y" "0"
+                "z" "0"
+				//Rotations
+                "roll"  "0"  
+                "yaw"   "0"
+                "pitch" "0"
+                "KeyValues"
+                {
+					//insert your key values here
+					//"targetname" "Example"
+                }
+				"Flags"
+				{
+					//insert your flags here
+					//"16"
+				}
+            }
+        }
+}
