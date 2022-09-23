@@ -237,6 +237,9 @@ void CItem_ItemCrateFirefight::InputKill( inputdata_t &data )
 //-----------------------------------------------------------------------------
 int CItem_ItemCrateFirefight::OnTakeDamage( const CTakeDamageInfo &info )
 {
+	if ( GetEffects() & EF_NODRAW )
+		return 0;
+
 	if ( info.GetDamageType() & DMG_AIRBOAT )
 	{
 		CTakeDamageInfo dmgInfo = info;
@@ -399,10 +402,12 @@ void CItem_ItemCrateFirefight::OnBreak( const Vector &vecVelocity, const Angular
 			UTIL_Remove(pNewCrate);
 			return;
 		}
-		physObj->EnableMotion(false);
 
-		pNewCrate->SetSolid(SOLID_NONE);
 		pNewCrate->AddEffects(EF_NODRAW);
+
+		physObj->EnableCollisions(false);
+		physObj->EnableMotion(false);
+		pNewCrate->SetSolid(SOLID_NONE);
 
 		pNewCrate->SetThink(&CItem_ItemCrateFirefight::RespawnThink);
 		pNewCrate->SetNextThink(gpGlobals->curtime + sv_crate_respawn_time.GetFloat());
@@ -417,13 +422,13 @@ void CItem_ItemCrateFirefight::RespawnThink(void)
 		UTIL_Remove(this);
 		return;
 	}
+	physObj->EnableCollisions(true);
 	physObj->EnableMotion(true);
 	physObj->Wake();
 
-	SetSolid(SOLID_VPHYSICS);
-
 	SetLocalAngles(m_originalAngles);
 	SetLocalOrigin(m_originalOrigin);
+	SetSolid( SOLID_VPHYSICS );
 
 	RemoveEffects(EF_NODRAW);
 

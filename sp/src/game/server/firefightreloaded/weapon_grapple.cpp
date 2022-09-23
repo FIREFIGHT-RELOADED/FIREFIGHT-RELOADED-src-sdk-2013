@@ -27,7 +27,7 @@
 
 #include "vphysics/constraints.h"
 #include "physics_saverestore.h"
-#include <hl2/hl2_player.h>
+#include "hl2_player.h"
  
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -46,15 +46,15 @@ static const char* ppszIgnoredClasses[] =
 LINK_ENTITY_TO_CLASS( grapple_hook, CGrappleHook );
  
 BEGIN_DATADESC( CGrappleHook )
-	// Function Pointers
-	DEFINE_ENTITYFUNC(HookTouch),
-	DEFINE_THINKFUNC(FlyThink),
-	DEFINE_THINKFUNC(HookedThink),
-
 	DEFINE_FIELD( m_hPlayer, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hOwner, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hBolt, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_bPlayerWasStanding, FIELD_BOOLEAN ),
+
+	DEFINE_ENTITYFUNC( HookTouch ),
+
+	DEFINE_THINKFUNC( FlyThink ),
+	DEFINE_THINKFUNC( HookedThink ),
 END_DATADESC()
  
 CGrappleHook *CGrappleHook::HookCreate( const Vector &vecOrigin, const QAngle &angAngles, CBaseEntity *pentOwner )
@@ -157,89 +157,70 @@ void CGrappleHook::HookTouch( CBaseEntity *pOther )
 		}
 	}
  
+	EmitSound("Weapon_AR2.Reload_Push");
+
+	// if what we hit is static architecture, can stay around for a while.
+	Vector vecDir = GetAbsVelocity();
+
+	//FIXME: We actually want to stick (with hierarchy) to what we've hit
+	SetMoveType(MOVETYPE_NONE);
+
+	Vector vForward;
+
+	AngleVectors(GetAbsAngles(), &vForward);
+	VectorNormalize(vForward);
+
+	CEffectData	data;
+
 	trace_t	tr;
 	tr = BaseClass::GetTouchTrace();
+	data.m_vOrigin = tr.endpos;
+	data.m_vNormal = vForward;
+	data.m_nEntIndex = 0;
 
-	// See if we struck the world
-	if (!(tr.surface.flags & SURF_SKY))
+	//	DispatchEffect( "Impact", data );
+
+	//	AddEffects( EF_NODRAW );
+	SetTouch(NULL);
+
+	VPhysicsDestroyObject();
+	VPhysicsInitNormal(SOLID_VPHYSICS, FSOLID_NOT_STANDABLE, false);
+	AddSolidFlags(FSOLID_NOT_SOLID);
+	//	SetMoveType( MOVETYPE_NONE );
+
+	if (!m_hPlayer)
 	{
-		EmitSound("Weapon_AR2.Reload_Push");
-
-		// if what we hit is static architecture, can stay around for a while.
-		Vector vecDir = GetAbsVelocity();
-
-		//FIXME: We actually want to stick (with hierarchy) to what we've hit
-		SetMoveType(MOVETYPE_NONE);
-
-		Vector vForward;
-
-		AngleVectors(GetAbsAngles(), &vForward);
-		VectorNormalize(vForward);
-
-		CEffectData	data;
-
-		data.m_vOrigin = tr.endpos;
-		data.m_vNormal = vForward;
-		data.m_nEntIndex = 0;
-
-		//	DispatchEffect( "Impact", data );
-
-		//	AddEffects( EF_NODRAW );
-		SetTouch(NULL);
-
-		VPhysicsDestroyObject();
-		VPhysicsInitNormal(SOLID_VPHYSICS, FSOLID_NOT_STANDABLE, false);
-		AddSolidFlags(FSOLID_NOT_SOLID);
-		//	SetMoveType( MOVETYPE_NONE );
-
-		if (!m_hPlayer)
-		{
-			Assert(0);
-			return;
-		}
-
-		// Set Jay's gai flag
-		m_hPlayer->SetPhysicsFlag(PFLAG_VPHYSICS_MOTIONCONTROLLER, true);
-		m_hPlayer->SetAnimation(PLAYER_JUMP);
-
-		//IPhysicsObject *pPhysObject = m_hPlayer->VPhysicsGetObject();
-		IPhysicsObject *pRootPhysObject = VPhysicsGetObject();
-		Assert(pRootPhysObject);
-		//Assert(pPhysObject);
-
-		if (!pRootPhysObject)
-		{
-			Assert(0);
-			return;
-		}
-
-		pRootPhysObject->EnableMotion(false);
-
-		// Root has huge mass, tip has little
-		pRootPhysObject->SetMass(VPHYSICS_MAX_MASS);
-		//	pPhysObject->SetMass( 100 );
-		//	float damping = 3;
-		//	pPhysObject->SetDamping( &damping, &damping );
-
-		m_bPlayerWasStanding = ((m_hPlayer->GetFlags() & FL_DUCKING) == 0);
-
-		SetThink(&CGrappleHook::HookedThink);
-		SetNextThink(gpGlobals->curtime);
+		Assert(0);
+		return;
 	}
-	else
+
+	// Set Jay's gai flag
+	m_hPlayer->SetPhysicsFlag(PFLAG_VPHYSICS_MOTIONCONTROLLER, true);
+	m_hPlayer->SetAnimation(PLAYER_JUMP);
+
+	//IPhysicsObject *pPhysObject = m_hPlayer->VPhysicsGetObject();
+	IPhysicsObject *pRootPhysObject = VPhysicsGetObject();
+	Assert(pRootPhysObject);
+	//Assert(pPhysObject);
+
+	if (!pRootPhysObject)
 	{
-		// Put a mark unless we've hit the sky
-		if ((tr.surface.flags & SURF_SKY) == false)
-		{
-			UTIL_ImpactTrace(&tr, DMG_BULLET);
-		}
-
-		SetTouch(NULL);
-		SetThink(NULL);
-
-		m_hOwner->NotifyHookDied();
-		UTIL_Remove(this);
+		Assert(0);
+		return;
 	}
+
+	pRootPhysObject->EnableMotion(false);
+
+	// Root has huge mass, tip has little
+	pRootPhysObject->SetMass(VPHYSICS_MAX_MASS);
+	//	pPhysObject->SetMass( 100 );
+	//	float damping = 3;
+	//	pPhysObject->SetDamping( &damping, &damping );
+
+	m_bPlayerWasStanding = ((m_hPlayer->GetFlags() & FL_DUCKING) == 0);
+
+	SetThink(&CGrappleHook::HookedThink);
+	SetNextThink(gpGlobals->curtime);
 }
  
 //-----------------------------------------------------------------------------
@@ -431,29 +412,25 @@ void CWeaponGrapple::PrimaryAttack( void )
 	//Draws the beam
 	DrawBeam( vecShootOrigin, tr.endpos, 5 );
 
-	//Creates an energy impact effect if we don't hit the sky or other places
-	if ( (tr.surface.flags & SURF_SKY) == false )
-	{
-		CPVSFilter filter( tr.endpos );
-		te->GaussExplosion( filter, 0.0f, tr.endpos, tr.plane.normal, 0 );
-		m_nBulletType = GetAmmoDef()->Index("GaussEnergy");
-		UTIL_ImpactTrace( &tr, m_nBulletType );
+	CPVSFilter filter( tr.endpos );
+	te->GaussExplosion( filter, 0.0f, tr.endpos, tr.plane.normal, 0 );
+	m_nBulletType = GetAmmoDef()->Index("GaussEnergy");
+	UTIL_ImpactTrace( &tr, m_nBulletType );
 
-		//Makes a sprite at the end of the beam
-		m_pLightGlow = CSprite::SpriteCreate(GLOW_SPRITE, GetAbsOrigin(), TRUE);
+	//Makes a sprite at the end of the beam
+	m_pLightGlow = CSprite::SpriteCreate(GLOW_SPRITE, GetAbsOrigin(), TRUE);
 
-		//Sets FX render and color
-		m_pLightGlow->SetTransparency( 9, 255, 255, 255, 200, kRenderFxNoDissipation );
+	//Sets FX render and color
+	m_pLightGlow->SetTransparency( 9, 255, 255, 255, 200, kRenderFxNoDissipation );
 		
-		//Sets the position
-		m_pLightGlow->SetAbsOrigin(tr.endpos);
+	//Sets the position
+	m_pLightGlow->SetAbsOrigin(tr.endpos);
 		
-		//Bright
-		m_pLightGlow->SetBrightness( 255 );
+	//Bright
+	m_pLightGlow->SetBrightness( 255 );
 		
-		//Scale
-		m_pLightGlow->SetScale( 0.65 );
-	}
+	//Scale
+	m_pLightGlow->SetScale( 0.65 );
 
 	FireHook(tr.endpos);
 }
@@ -656,11 +633,6 @@ void CWeaponGrapple::DrawBeam( const Vector &startPos, const Vector &endPos, flo
 	//pBeam->LiveForTime( 0.1f );
 
 	UpdateWaterState();
- 
-	SetTouch( &CGrappleHook::HookTouch );
- 
-	SetThink( &CGrappleHook::FlyThink );
-	SetNextThink( gpGlobals->curtime + 0.1f );
 }
 //-----------------------------------------------------------------------------
 // Purpose: 
