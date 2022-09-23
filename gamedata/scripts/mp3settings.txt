@@ -1,0 +1,8 @@
+// mp3 settings, automatically generated
+settings
+{
+  directories
+  {
+    dirname ""
+  }
+}

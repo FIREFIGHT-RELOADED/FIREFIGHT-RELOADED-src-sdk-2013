@@ -1,0 +1,183 @@
+"ShopCatalog"
+{
+	"1"
+	{
+		"name"		"HealthKit"
+		"price"		"10"
+		"command"	"healthkit"
+	}
+	"2"
+	{
+		"name"		"SuitBattery"
+		"price"		"20"
+		"command"	"battery"
+	}
+	"3"
+	{
+		"name"		"MaxHealth"
+		"price"		"150"
+		"command"	"upgrade 0"
+	}
+	"4"
+	{
+		"name"		"PistolAmmo"
+		"price"		"10"
+		"command"	"ammo Pistol 20"
+	}
+	"5"
+	{
+		"name"		"SMGAmmo"
+		"price"		"15"
+		"command"	"ammo SMG1 45"
+	}
+	"6"
+	{
+		"name"		"SMGGrenade"
+		"price"		"85"
+		"command"	"ammo SMG1_Grenade 1"
+	}
+	"7"
+	{
+		"name"		"MP5Ammo"
+		"price"		"10"
+		"command"	"ammo MP5Ammo 30"
+	}
+	"8"
+	{
+		"name"		"FragGrenade"
+		"price"		"150"
+		"command"	"item item_ammo_grenade 1"
+	}
+	"9"
+	{
+		"name"		"SLAM"
+		"price"		"175"
+		"command"	"item item_slam_ammo 1"
+	}
+	"10"
+	{
+		"name"		"357Magnum"
+		"price"		"200"
+		"command"	"item weapon_357 0"
+	}
+	"11"
+	{
+		"name"		"357Ammo"
+		"price"		"40"
+		"command"	"ammo 357 20"
+	}
+	"12"
+	{
+		"name"		"AR2"
+		"price"		"245"
+		"command"	"item weapon_ar2 0"
+	}
+	"13"
+	{
+		"name"		"AR2Ammo"
+		"price"		"15"
+		"command"	"ammo AR2 20"
+	}
+	"14"
+	{
+		"name"		"AR2DarkEnergyBall"
+		"price"		"150"
+		"command"	"ammo AR2AltFire 1"
+	}
+	"15"
+	{
+		"name"		"Crossbow"
+		"price"		"255"
+		"command"	"item weapon_crossbow 0"
+	}
+	"16"
+	{
+		"name"		"CrossbowAmmo"
+		"price"		"55"
+		"command"	"ammo XBowBolt 20"
+	}
+	"17"
+	{
+		"name"		"Shotgun"
+		"price"		"250"
+		"command"	"item weapon_shotgun 0"
+	}
+	"18"
+	{
+		"name"		"ShotgunAmmo"
+		"price"		"25"
+		"command"	"ammo Buckshot 20" 
+	}
+	"19"
+	{
+		"name"		"RPG"
+		"price"		"350"
+		"command"	"item weapon_rpg 0" 
+	}
+	"20"
+	{
+		"name"		"RPGAmmo"
+		"price"		"150"
+		"command"	"ammo RPG_Round 1" 
+	}
+	"21"
+	{
+		"name"		"SniperRifle"
+		"price"		"260"
+		"command"	"item weapon_sniper_rifle 0" 
+	}
+	"22"
+	{
+		"name"		"SniperRifleAmmo"
+		"price"		"65"
+		"command"	"ammo Sniper 15" 
+	}
+	"23"
+	{
+		"name"		"M249Para"
+		"price"		"330"
+		"command"	"item weapon_m249para 0" 
+	}
+	"24"
+	{
+		"name"		"M249ParaAmmo"
+		"price"		"65"
+		"command"	"ammo M249 120" 
+	}
+	"25"
+	{
+		"name"		"OCIW"
+		"price"		"265"
+		"command"	"item weapon_oicw 0" 
+	}
+	"26"
+	{
+		"name"		"OCIWAmmo"
+		"price"		"65"
+		"command"	"ammo OICW 30" 
+	}
+	"27"
+	{
+		"name"		"OCIWGrenade"
+		"price"		"85"
+		"command"	"ammo OICW_Grenade 1" 
+	}
+	"28"
+	{
+		"name"		"Gauss"
+		"price"		"1500"
+		"command"	"item weapon_gauss 0" 
+	}
+	"29"
+	{
+		"name"		"GaussAmmo"
+		"price"		"200"
+		"command"	"ammo GaussEnergy 30" 
+	}
+	"30"
+	{
+		"name"		"Katana"
+		"price"		"3000"
+		"command"	"item weapon_katana 0" 
+	}
+}

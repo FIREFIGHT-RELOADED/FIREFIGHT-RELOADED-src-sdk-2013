@@ -1,0 +1,172 @@
+"NPC_Houndeye.Idle"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"houndeye/he_idle1.wav"
+		"wave"		"houndeye/he_idle2.wav"
+		"wave"		"houndeye/he_idle3.wav"
+
+	}
+}
+
+"NPC_Houndeye.Hunt"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_80db"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"houndeye/he_hunt1.wav"
+		"wave"		"houndeye/he_hunt2.wav"
+		"wave"		"houndeye/he_hunt3.wav"
+
+	}
+}
+
+
+"NPC_Houndeye.Alert"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_85db"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"houndeye/he_alert1.wav"
+		"wave"		"houndeye/he_alert2.wav"
+		"wave"		"houndeye/he_alert3.wav"
+
+	}
+}
+
+"NPC_Houndeye.Warn"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_85db"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"houndeye/he_alert1.wav"
+		"wave"		"houndeye/he_alert2.wav"
+		"wave"		"houndeye/he_alert3.wav"
+
+	}
+}
+
+"NPC_Houndeye.Die"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_85db"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"houndeye/he_die1.wav"
+		"wave"		"houndeye/he_die2.wav"
+		"wave"		"houndeye/he_die3.wav"
+
+	}
+}
+
+"NPC_Houndeye.Pain"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_80db"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"houndeye/he_pain3.wav"
+		"wave"		"houndeye/he_pain4.wav"
+		"wave"		"houndeye/he_pain5.wav"
+
+	}
+}
+
+"NPC_Houndeye.Anger1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_90db"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"houndeye/he_pain3.wav"
+	}
+}
+
+"NPC_Houndeye.Anger2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_90db"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"houndeye/he_pain1.wav"
+
+	}
+}
+
+"NPC_Houndeye.SonicAttack"
+{
+	"channel"	"CHAN_WEAPON"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_140db"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"houndeye/he_blast1.wav"
+		"wave"		"houndeye/he_blast2.wav"
+		"wave"		"houndeye/he_blast3.wav"
+
+	}
+}
+
+"NPC_Houndeye.WarmUp"
+{
+	"channel"	"CHAN_WEAPON"
+	"volume"	"0.7"
+	"soundlevel"	"SNDLVL_80db"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"houndeye/he_attack1.wav"
+		"wave"		"houndeye/he_attack3.wav"
+
+	}
+}
+
+"NPC_Houndeye.GroupAttack"
+{
+	"channel"	"CHAN_WEAPON"
+	"volume"	"0.7"
+	"soundlevel"	"SNDLVL_80db"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"houndeye/he_attack2.wav"
+	}
+}
+
+"NPC_HoundEye.Retreat"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_80db"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"houndeye/he_pain3.wav"
+		"wave"		"houndeye/he_pain4.wav"
+		"wave"		"houndeye/he_pain5.wav"
+
+	}
+}
+

@@ -1,0 +1,87 @@
+// Sniper
+
+WeaponData
+{
+	// Weapon data is loaded by both the Game and Client DLLs.
+	"printname"			"#HL2_SniperRifle"
+	"viewmodel"			"models/weapons/v_sniperAC.mdl"
+	"playermodel"		"models/weapons/w_sniper_new.mdl"
+	"anim_prefix"		"ar2"
+	"weapon_type"		"sniper"
+	"bucket"			"3"
+	"bucket_position"	"2"
+	"bucket_360"			"0"
+	"bucket_position_360"	"2"
+
+	"clip_size"			"2"
+	"default_clip"		"12"
+	"primary_ammo"		"Sniper"
+	"secondary_ammo"	"None"
+
+	"weight"		"7"
+	"rumble"		"4"
+	"item_flags"		"0"
+	
+	"BuiltRightHanded" 		"1" 
+	"AllowFlipping" 		"1"
+	
+	"UseMuzzleSmoke"		"1"
+	"useironsights"			"0"
+	"LowerWeapon"			"0"
+	"useironsightcrosshair" "0"
+
+	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	SoundData
+	{
+		"empty"		"Weapon_Pistol.Empty"
+		"single_shot"	"Weapon_Sniper_Rifle.Single"
+		"special1"	"Weapon_Sniper_Rifle.Special1"
+	}
+
+	// Weapon Sprite data is loaded by the Client DLL.
+	TextureData
+	{
+		"weapon"
+		{
+				"file"		"sprites/weapons/hud_weapon_sniperrifle"
+				"x"			"0" //128
+				"y"			"198" //0
+				"width"		"128"
+				"height"	"32"
+		}
+		"weapon_s"
+		{
+				"file"		"sprites/weapons/hud_weapon_sniperrifle"
+				"x"			"0"
+				"y"			"198"
+				"width"		"128"
+				"height"	"32"
+		}
+		"weapon_small"
+		{
+				"file"		"sprites/weapons/hud_weapon_sniperrifle"
+				"x"			"0"
+				"y"			"198"
+				"width"		"128"
+				"height"	"32"
+		}
+		"ammo"
+		{
+				"font"		"WeaponIconsSmall"
+				"character"	"r"
+		}
+		"crosshair"
+		{
+				"font"		"Crosshairs"
+				"character"	"Q"
+		}
+		"autoaim"
+		{
+				"file"		"sprites/crosshairs"
+				"x"			"0"
+				"y"			"48"
+				"width"		"24"
+				"height"	"24"
+		}
+	}
+}

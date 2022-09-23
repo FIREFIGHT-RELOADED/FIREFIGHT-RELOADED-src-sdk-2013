@@ -1,0 +1,231 @@
+"default"
+{
+	//LEVEL 1
+	"1"
+	{
+		"classname"		"npc_metropolice"
+	}
+	"2"
+	{
+		"classname"		"npc_headcrab"
+	}
+	//LEVEL 2
+	"3"
+	{
+		"classname"		"npc_zombie"
+		"min_level"		"2"
+	}
+	"4"
+	{
+		"classname"		"npc_zombie_torso"
+		"min_level"		"2"
+	}
+	"5"
+	{
+		"classname"		"npc_headcrab_fast"
+		"min_level"		"2"
+	}
+	//LEVEL 3
+	"6"
+	{
+		//elite metrocops
+		"classname"		"npc_metropolice"
+		"preset"		"1"
+		"min_level"		"3"
+	}
+	//LEVEL 4
+	"7"
+	{
+		"classname"		"npc_combine_s"
+		"min_level"		"4"
+	}
+	"8"
+	{
+		"classname"		"npc_houndeye"
+		"min_level"		"4"
+	}
+	//LEVEL 5
+	"9"
+	{
+		"classname"		"npc_combine_p"
+		"min_level"		"5"
+	}
+	"10"
+	{
+		"classname"		"npc_headcrab_poison"
+		"min_level"		"5"
+	}
+	//LEVEL 6
+	"11"
+	{
+		"classname"		"npc_bullsquid"
+		"min_level"		"6"
+	}
+	"12"
+	{
+		"classname"		"npc_fastzombie"
+		"min_level"		"6"
+	}
+	"13"
+	{
+		"classname"		"npc_fastzombie_torso"
+		"min_level"		"6"
+	}
+	"14"
+	{
+		"classname"		"npc_combine_shot"
+		"min_level"		"6"
+	}
+	//LEVEL 7
+	"15"
+	{
+		"classname"		"npc_strider"
+		"min_level"		"7"
+	}
+	"16"
+	{
+		"classname"		"npc_antlion"
+		"min_level"		"7"
+	}
+	"17"
+	{
+		"classname"		"npc_playerbot"
+		"min_level"		"7"
+		"rare"			"1"
+	}
+	//LEVEL 8
+	"18"
+	{
+		"classname"		"npc_combine_e"
+		"min_level"		"8"
+	}
+	"19"
+	{
+		"classname"		"npc_poisonzombie"
+		"min_level"		"8"
+	}
+	"20"
+	{
+		"classname"		"npc_agrunt"
+		"min_level"		"8"
+	}
+	//LEVEL 9
+	"21"
+	{
+		"classname"		"npc_acontroller"
+		"min_level"		"9"
+	}
+	"22"
+	{
+		"classname"		"npc_hunter"
+		"min_level"		"9"
+	}
+	"23"
+	{
+		"classname"		"npc_zombine"
+		"min_level"		"9"
+	}
+	//LEVEL 10
+	"24"
+	{
+		"classname"		"npc_antlionworker"
+		"min_level"		"10"
+	}
+	"25"
+	{
+		"classname"		"npc_antlionguard"
+		"min_level"		"10"
+	}
+	//LEVEL 11
+	"26"
+	{
+		"classname"		"npc_vortigaunt"
+		"min_level"		"11"
+	}
+	"27"
+	{
+		"classname"		"npc_assassin"
+		"min_level"		"11"
+	}
+	"28"
+	{
+		//ministrider
+		"classname"		"npc_hunter"
+		"preset"		"4"
+		"min_level"		"11"
+	}
+	//LEVEL 12
+	"29"
+	{
+		"classname"		"npc_antlionguardian"
+		"min_level"		"12"
+	}
+	"30"
+	{
+		"classname"		"npc_stalker"
+		"min_level"		"12"
+	}
+	"31"
+	{
+		//boomsquids
+		"classname"		"npc_bullsquid"
+		"preset"		"1"
+		"min_level"		"12"
+	}
+	//LEVEL 13
+	"32"
+	{
+		"classname"		"npc_combine_ace"
+		"min_level"		"13"
+	}
+	"33"
+	{
+		"classname"		"npc_rollermine"
+		"min_level"		"13"
+	}
+	"34"
+	{
+		"classname"		"npc_cscanner"
+		"min_level"		"13"
+	}
+	//LEVEl 14
+	"35"
+	{
+		//Elite Hunter
+		"classname"		"npc_hunter"
+		"preset"		"3"
+		"min_level"		"14"
+	}
+	//LEVEL 15
+	"36"
+	{
+		//kamikaze headcrab
+		"classname"		"npc_headcrab_fast"
+		"preset"		"1"
+		"min_level"		"15"
+	}
+	//LEVEL 16
+	"37"
+	{
+		//Demolitions Hunter
+		"classname"		"npc_hunter"
+		"preset"		"2"
+		"min_level"		"16"
+	}
+	//LEVEL 17
+	"38"
+	{
+		//Anti-Aircraft Hunter
+		"classname"		"npc_hunter"
+		"preset"		"1"
+		"min_level"		"17"
+	}
+	//LEVEL 18
+	"39"
+	{
+		//super ace
+		"classname"		"npc_combine_ace"
+		"preset"		"1"
+		"min_level"		"18"
+	}
+}

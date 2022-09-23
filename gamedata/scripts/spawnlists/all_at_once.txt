@@ -1,0 +1,176 @@
+"default"
+{
+	"1"
+	{
+		"classname"		"npc_metropolice"
+	}
+	"2"
+	{
+		"classname"		"npc_headcrab"
+	}
+	"3"
+	{
+		"classname"		"npc_zombie"
+	}
+	"4"
+	{
+		"classname"		"npc_zombie_torso"
+	}
+	"5"
+	{
+		"classname"		"npc_headcrab_fast"
+	}
+	"6"
+	{
+		//elite metrocops
+		"classname"		"npc_metropolice"
+		"preset"		"1"
+	}
+	"7"
+	{
+		"classname"		"npc_combine_s"
+	}
+	"8"
+	{
+		"classname"		"npc_houndeye"
+	}
+	"9"
+	{
+		"classname"		"npc_combine_p"
+	}
+	"10"
+	{
+		"classname"		"npc_headcrab_poison"
+	}
+	"11"
+	{
+		"classname"		"npc_bullsquid"
+	}
+	"12"
+	{
+		"classname"		"npc_fastzombie"
+	}
+	"13"
+	{
+		"classname"		"npc_fastzombie_torso"
+	}
+	"14"
+	{
+		"classname"		"npc_combine_shot"
+	}
+	"15"
+	{
+		"classname"		"npc_strider"
+	}
+	"16"
+	{
+		"classname"		"npc_antlion"
+	}
+	"17"
+	{
+		"classname"		"npc_playerbot"
+		"rare"			"1"
+	}
+	"18"
+	{
+		"classname"		"npc_combine_e"
+	}
+	"19"
+	{
+		"classname"		"npc_poisonzombie"
+	}
+	"20"
+	{
+		"classname"		"npc_agrunt"
+	}
+	"21"
+	{
+		"classname"		"npc_acontroller"
+	}
+	"22"
+	{
+		"classname"		"npc_hunter"
+	}
+	"23"
+	{
+		"classname"		"npc_zombine"
+	}
+	"24"
+	{
+		"classname"		"npc_antlionworker"
+	}
+	"25"
+	{
+		"classname"		"npc_antlionguard"
+	}
+	"26"
+	{
+		"classname"		"npc_vortigaunt"
+	}
+	"27"
+	{
+		"classname"		"npc_assassin"
+	}
+	"28"
+	{
+		//ministrider
+		"classname"		"npc_hunter"
+		"preset"		"4"
+	}
+	"29"
+	{
+		"classname"		"npc_antlionguardian"
+	}
+	"30"
+	{
+		"classname"		"npc_stalker"
+	}
+	"31"
+	{
+		//boomsquids
+		"classname"		"npc_bullsquid"
+		"preset"		"1"
+	}
+	"32"
+	{
+		"classname"		"npc_combine_ace"
+	}
+	"33"
+	{
+		"classname"		"npc_rollermine"
+	}
+	"34"
+	{
+		"classname"		"npc_cscanner"
+	}
+	"35"
+	{
+		//Elite Hunter
+		"classname"		"npc_hunter"
+		"preset"		"3"
+	}
+	"36"
+	{
+		//kamikaze headcrab
+		"classname"		"npc_headcrab_fast"
+		"preset"		"1"
+	}
+	"37"
+	{
+		//Demolitions Hunter
+		"classname"		"npc_hunter"
+		"preset"		"2"
+	}
+	"38"
+	{
+		//Anti-Aircraft Hunter
+		"classname"		"npc_hunter"
+		"preset"		"1"
+	}
+	"39"
+	{
+		//super ace
+		"classname"		"npc_combine_ace"
+		"preset"		"1"
+	}
+}

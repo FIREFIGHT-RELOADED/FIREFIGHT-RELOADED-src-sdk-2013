@@ -1,0 +1,76 @@
+"Controller.Pain"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_85db"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"controller/con_pain1.wav"
+		"wave"		"controller/con_pain2.wav"
+		"wave"		"controller/con_pain3.wav"
+	}
+}
+
+"Controller.Alert"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_85db"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"controller/con_alert1.wav"
+		"wave"		"controller/con_alert2.wav"
+		"wave"		"controller/con_alert3.wav"
+	}
+}
+
+"Controller.Idle"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"controller/con_idle1.wav"
+		"wave"		"controller/con_idle2.wav"
+		"wave"		"controller/con_idle3.wav"
+		"wave"		"controller/con_idle4.wav"
+		"wave"		"controller/con_idle5.wav"
+	}
+}
+
+
+"Controller.Attack"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_80db"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"controller/con_attack1.wav"
+		"wave"		"controller/con_attack2.wav"
+		"wave"		"controller/con_attack3.wav"
+	}
+}
+
+"Controller.Die"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_85db"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"controller/con_die1.wav"
+		"wave"		"controller/con_die2.wav"
+	}
+}
+
+"Controller.ElectroSound"
+{
+	"wave"		"weapons/electro4.wav"
+}

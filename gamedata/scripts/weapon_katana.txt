@@ -1,0 +1,97 @@
+// Crowbar
+
+WeaponData
+{
+	// Weapon data is loaded by both the Game and Client DLLs.
+	"printname"	"#HL2_Katana"
+	"viewmodel"				"models/weapons/v_katana.mdl"
+	"playermodel"			"models/weapons/w_katana.mdl"
+	"anim_prefix"			"stunstick"
+	"weapon_type"			"melee"
+	"bucket"				"0"
+	"bucket_position"		"3"
+	
+	"clip_size"				"1"
+	"default_clip"			"1"
+	"primary_ammo"			"Katana"
+	"secondary_ammo"		"None"
+
+	"weight"				"0"
+	"item_flags"			"0"
+	
+	"BuiltRightHanded" 		"1" 
+	"AllowFlipping" 		"1"
+	"MeleeWeapon"			"1"
+	"UseMuzzleSmoke"		"0"
+	"useironsights"			"0"
+	"LowerWeapon"			"0"
+	"useironsightcrosshair" "0"
+	"MeleeWeapon"			"1"
+
+	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	SoundData
+	{
+		"single_shot"		"Katana.Swing"
+		"double_shot"		"Katana.Swing"
+		"melee_hit"			"Katana.Hit"
+		"melee_hit_world"	"Katana.HitWorld"
+	}
+
+	// Weapon Sprite data is loaded by the Client DLL.
+	TextureData
+	{
+		"weapon"
+		{
+			"file"		"sprites/weapons/hud_weapons_katana"
+			"x"		"0"
+			"y"		"0"
+			"width"		"128"
+			"height"	"32"
+		}
+		"weapon_s"
+		{
+			"file"		"sprites/weapons/hud_weapons_katana"
+			"x"		"0"
+			"y"		"0"
+			"width"		"128"
+			"height"	"32"
+		}
+		"weapon_small"
+		{
+			"file"		"sprites/weapons/hud_weapons_katana"
+			"x"		"0"
+			"y"		"0"
+			"width"		"128"
+			"height"	"32"
+		}
+		"ammo"
+		{
+			"file"		"sprites/weapons/hud_weapons_katana"
+			"x"		"0"
+			"y"		"0"
+			"width"		"128"
+			"height"	"32"
+		}
+		"ammo2"
+		{
+			"file"		"sprites/640hud7"
+			"x"			"48"
+			"y"			"72"
+			"width"		"24"
+			"height"	"24"
+		}
+		"crosshair"
+		{
+				"font"		"Crosshairs"
+				"character"	"Q"
+		}
+		"autoaim"
+		{
+			"file"		"sprites/crosshairs"
+			"x"			"0"
+			"y"			"48"
+			"width"		"24"
+			"height"	"24"
+		}
+	}
+}
