@@ -1,0 +1,67 @@
+"Player.VoiceKill"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.0"
+	"soundlevel"  "SNDLVL_75dB"
+
+	"rndwave"
+	{
+		"wave"	"player/voice/pl_kill1.wav"
+		"wave"	"player/voice/pl_kill2.wav"
+		"wave"	"player/voice/pl_kill3.wav"
+		"wave"	"player/voice/pl_kill4.wav"
+		"wave"	"player/voice/pl_kill5.wav"
+		"wave"	"player/voice/pl_kill6.wav"
+	}
+}
+
+"Player.VoiceHit"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.0"
+	"soundlevel"  "SNDLVL_75dB"
+
+	"rndwave"
+	{
+		"wave"	"player/voice/pl_hit1.wav"
+		"wave"	"player/voice/pl_hit2.wav"
+		"wave"	"player/voice/pl_hit3.wav"
+		"wave"	"player/voice/pl_hit4.wav"
+		"wave"	"player/voice/pl_hit5.wav"
+		"wave"	"player/voice/pl_hit6.wav"
+	}
+}
+
+"Player.VoiceDeath"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.0"
+	"soundlevel"  "SNDLVL_75dB"
+
+	"rndwave"
+	{
+		"wave"	"player/voice/pl_death1.wav"
+		"wave"	"player/voice/pl_death2.wav"
+		"wave"	"player/voice/pl_death3.wav"
+		"wave"	"player/voice/pl_death4.wav"
+		"wave"	"player/voice/pl_death5.wav"
+		"wave"	"player/voice/pl_death6.wav"
+	}
+}
+
+"Player.VoicePerk"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.0"
+	"soundlevel"  "SNDLVL_75dB"
+
+	"rndwave"
+	{
+		"wave"	"player/voice/pl_perk1.wav"
+		"wave"	"player/voice/pl_perk2.wav"
+		"wave"	"player/voice/pl_perk3.wav"
+		"wave"	"player/voice/pl_perk4.wav"
+		"wave"	"player/voice/pl_perk5.wav"
+		"wave"	"player/voice/pl_perk6.wav"
+	}
+}

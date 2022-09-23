@@ -1,0 +1,221 @@
+"NPC_Bullsquid.FootstepLeft"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"0.300"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_90dB"
+
+	"rndwave"
+	{
+		"wave"	"npc/antlion/foot1.wav"
+		"wave"	"npc/antlion/foot3.wav"
+	}
+}
+
+"NPC_Bullsquid.FootstepRight"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"0.300"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_90dB"
+
+	"rndwave"
+	{
+		"wave"	"npc/antlion/foot2.wav"
+		"wave"	"npc/antlion/foot4.wav"
+	}
+}
+
+"NPC_Bullsquid.TailWhip"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/bullsquid/tail_whip1.wav"
+}
+
+"NPC_Bullsquid.TailHit"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"
+	{
+		"wave"	"npc/bullsquid/tail_hit1.wav"
+		"wave"	"npc/bullsquid/tail_hit2.wav"
+		"wave"	"npc/bullsquid/tail_hit3.wav"
+	}
+}
+
+"NPC_Bullsquid.Idle"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_90dB"
+
+	"rndwave"
+	{
+		"wave"	"npc/bullsquid/idle1.wav"
+		"wave"	"npc/bullsquid/idle2.wav"
+		"wave"	"npc/bullsquid/idle3.wav"
+		"wave"	"npc/bullsquid/idle4.wav"
+		"wave"	"npc/bullsquid/idle5.wav"
+	}
+}
+
+"NPC_Bullsquid.Alert"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_90dB"
+
+	"rndwave"
+	{
+		"wave"	"npc/bullsquid/idle1.wav"
+		"wave"	"npc/bullsquid/idle2.wav"
+	}
+}
+
+"NPC_Bullsquid.Pain"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_90dB"
+
+	"rndwave"
+	{
+		"wave"	"npc/bullsquid/pain1.wav"
+		"wave"	"npc/bullsquid/pain2.wav"
+		"wave"	"npc/bullsquid/pain3.wav"
+		"wave"	"npc/bullsquid/pain4.wav"
+	}
+}
+
+"NPC_Bullsquid.Death"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_90dB"
+
+	"rndwave"
+	{
+		"wave"	"npc/bullsquid/die1.wav"
+		"wave"	"npc/bullsquid/die2.wav"
+		"wave"	"npc/bullsquid/die3.wav"
+	}
+}
+
+"NPC_Bullsquid.Growl"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_90dB"
+
+	"rndwave"
+	{
+		"wave"	"npc/bullsquid/attackgrowl1.wav"
+		"wave"	"npc/bullsquid/attackgrowl2.wav"
+		"wave"	"npc/bullsquid/attackgrowl3.wav"
+	}
+}
+
+"NPC_Bullsquid.Attack1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_90dB"
+
+	"rndwave"
+	{
+		"wave"	"npc/bullsquid/attack2.wav"
+		"wave"	"npc/bullsquid/attack3.wav"
+	}
+}
+
+"NPC_Bullsquid.Eat"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_90dB"
+
+	"rndwave"
+	{
+		"wave"	"npc/bullsquid/chew1.wav"
+		"wave"	"npc/bullsquid/chew2.wav"
+		"wave"	"npc/bullsquid/chew3.wav"
+		"wave"	"npc/bullsquid/chew4.wav"
+	}
+}
+
+"NPC_Bullsquid.Snort"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_90dB"
+
+	"rndwave"
+	{
+		"wave"	"npc/bullsquid/snort1.wav"
+		"wave"	"npc/bullsquid/snort2.wav"
+		"wave"	"npc/bullsquid/snort3.wav"
+	}
+}
+
+"NPC_Bullsquid.Excited"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_90dB"
+
+	"wave"			"npc/bullsquid/excited1.wav"
+}
+
+"GrenadeSpit.Acid"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1"
+	"soundlevel"  "SNDLVL_75dB"
+	"pitch"	"90,110"
+
+	"wave"	"npc/bullsquid/acid1.wav"
+}
+
+"GrenadeSpit.Hit"
+{
+	"channel"	"CHAN_WEAPON"
+	"volume"	"1"
+	"soundlevel"  "SNDLVL_75dB"
+	"pitch"	"90,110"
+
+	"rndwave"
+	{
+		"wave"	"npc/bullsquid/spithit1.wav"
+		"wave"	"npc/bullsquid/spithit2.wav"
+	}
+}

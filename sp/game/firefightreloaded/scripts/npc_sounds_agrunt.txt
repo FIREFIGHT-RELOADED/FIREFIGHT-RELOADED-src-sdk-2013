@@ -1,0 +1,152 @@
+"AlienGrunt.LeftFoot"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"70"
+	"rndwave"
+	{
+		"wave"		"player/pl_ladder2.wav"
+		"wave"		"player/pl_ladder4.wav"
+	}
+}
+
+
+"AlienGrunt.RightFoot"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"70"
+	"rndwave"
+	{
+		"wave"		"player/pl_ladder1.wav"
+		"wave"		"player/pl_ladder3.wav"
+	}
+}
+
+"AlienGrunt.AttackMiss"
+{
+	"channel"	"CHAN_WEAPON"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"95,105"
+	"rndwave"
+	{
+		"wave"		"zombie/claw_miss1.wav"
+		"wave"		"zombie/claw_miss2.wav"
+	}
+}
+
+"AlienGrunt.AttackHit"
+{
+	"channel"	"CHAN_WEAPON"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"95,105"
+	"rndwave"
+	{
+		"wave"		"zombie/claw_strike1.wav"
+		"wave"		"zombie/claw_strike2.wav"
+		"wave"		"zombie/claw_strike3.wav"
+	}
+}
+
+"AlienGrunt.Attack"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_80db"
+	"rndwave"
+	{
+		"wave"		"agrunt/ag_attack1.wav"
+		"wave"		"agrunt/ag_attack2.wav"
+		"wave"		"agrunt/ag_attack3.wav"
+	}
+}
+
+"AlienGrunt.Die"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_90db"
+	"rndwave"
+	{
+		"wave"		"agrunt/ag_die1.wav"
+		"wave"		"agrunt/ag_die4.wav"
+		"wave"		"agrunt/ag_die5.wav"
+	}
+}
+
+"AlienGrunt.Pain"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_85db"
+	"rndwave"
+	{
+		"wave"		"agrunt/ag_pain1.wav"
+		"wave"		"agrunt/ag_pain2.wav"
+		"wave"		"agrunt/ag_pain3.wav"
+		"wave"		"agrunt/ag_pain4.wav"
+		"wave"		"agrunt/ag_pain5.wav"
+	}
+}
+
+"AlienGrunt.Idle"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+	"rndwave"
+	{
+		"wave"		"agrunt/ag_idle1.wav"
+		"wave"		"agrunt/ag_idle2.wav"
+		"wave"		"agrunt/ag_idle3.wav"
+		"wave"		"agrunt/ag_idle4.wav"
+	}
+}
+
+"AlienGrunt.Alert"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_80db"
+	"rndwave"
+	{
+		"wave"		"agrunt/ag_alert1.wav"
+		"wave"		"agrunt/ag_alert2.wav"
+		"wave"		"agrunt/ag_alert3.wav"
+		"wave"		"agrunt/ag_alert4.wav"
+	}
+}
+
+"Hornet.Die"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"hornet/ag_hornethit1.wav"
+		"wave"		"hornet/ag_hornethit2.wav"
+		"wave"		"hornet/ag_hornethit3.wav"
+
+	}
+}
+
+"Hornet.Buzz"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"0.8"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"hornet/ag_buzz1.wav"
+		"wave"		"hornet/ag_buzz2.wav"
+		"wave"		"hornet/ag_buzz3.wav"
+
+	}
+}

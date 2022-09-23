@@ -1,0 +1,11 @@
+"Gore.Headshot"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"1.0"
+	"soundlevel"  "SNDLVL_75dB"
+
+	"rndwave"
+	{
+		"wave"	"gore/headshot.wav"
+	}
+}

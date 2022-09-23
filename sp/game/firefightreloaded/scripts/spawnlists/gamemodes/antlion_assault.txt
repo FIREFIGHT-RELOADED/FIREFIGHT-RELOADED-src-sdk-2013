@@ -1,0 +1,34 @@
+"antlion_assault"
+{
+	//COMMON
+	"1"
+	{
+		"classname"		"npc_antlion"
+		"preset"		"0"
+	}
+	//RARE
+	"2"
+	{
+		"classname"		"npc_antlionworker"
+		"preset"		"0"
+		"rare"			"1"
+	}
+	"3"
+	{
+		"classname"		"npc_antlionguard"
+		"preset"		"0"
+		"rare"			"1"
+	}
+	"4"
+	{
+		"classname"		"npc_antlionguardian"
+		"preset"		"0"
+		"rare"			"1"
+	}
+	"5"
+	{
+		"classname"		"npc_playerbot"
+		"preset"		"0"
+		"rare"			"1"
+	}
+}

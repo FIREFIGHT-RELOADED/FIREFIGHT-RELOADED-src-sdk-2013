@@ -1,0 +1,12 @@
+//Kamikaze Headcrab
+"npc_headcrab_fast_preset1"
+{
+	"new_color"		"0 0 255 255"
+	"health_multiplier"	"2"
+	"speed_multiplier"	"2"
+	"is_rare"		"1"
+	"has_outlines"		"1"
+	"kamikaze"		"1"
+	"outline_color"		"60 60 255"
+	"persist"		"0"
+}

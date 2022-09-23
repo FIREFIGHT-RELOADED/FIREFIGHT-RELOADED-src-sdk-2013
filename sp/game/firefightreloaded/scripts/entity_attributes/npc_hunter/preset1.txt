@@ -1,0 +1,14 @@
+//Anti-Aircraft Hunter
+"npc_hunter_preset1"
+{
+	"new_model"		"models/hunter_colorable.mdl"
+	"new_material_color"	"49 99 49"
+	"additional_health"	"50"
+	"is_rare"		"1"
+	"has_outlines"		"1"
+	"new_projectile"	"1"
+	"volley_normal_delay"	"0.3"
+	"volley_size"		"4"
+	"outline_color"		"128 255 128"
+	"persist"		"0"
+}

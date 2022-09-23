@@ -1,0 +1,14 @@
+//Demolitions Hunter - Frag
+"npc_hunter_preset2"
+{
+	"new_model"		"models/hunter_colorable.mdl"
+	"new_material_color"	"156 80 20"
+	"additional_health"	"20"
+	"is_rare"		"1"
+	"has_outlines"		"1"
+	"new_projectile"	"2"
+	"volley_normal_delay"	"0.33"
+	"volley_size"		"4"
+	"outline_color"		"255 134 36"
+	"persist"		"0"
+}

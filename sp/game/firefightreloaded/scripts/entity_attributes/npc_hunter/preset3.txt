@@ -1,0 +1,15 @@
+//Elite Hunter
+"npc_hunter_preset3"
+{
+	"new_model"		"models/hunter_colorable.mdl"
+	"new_material_color"	"160 160 160"
+	"additional_health"	"20"
+	"is_rare"		"1"
+	"has_outlines"		"1"
+	"new_projectile"	"4"
+	"volley_normal_delay"	"0.45"
+	"volley_size"		"1"
+	"combine_ball_vaporize_on_hit"	"1"
+	"outline_color"		"255 128 128"
+	"persist"		"0"
+}

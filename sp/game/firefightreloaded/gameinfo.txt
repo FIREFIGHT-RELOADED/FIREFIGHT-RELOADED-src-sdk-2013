@@ -4,10 +4,10 @@
 	title 		""
 	title2		""
 	type		singleplayer_only
-	supportsvr	1
-	gamelogo 0
-	developer	"Bitl Development Studios & Cobalt-57"
-	developer_url	"http://steamcommunity.com/id/bitl/"
+	supportsvr	0
+	gamelogo 	0
+	developer	"Bitl Development Studios"
+	developer_url	"https://bitl.carrd.co"
 	manual		""
 	GameData	"firefightreloaded.fgd"
 	icon		"resource/game"
