@@ -647,8 +647,14 @@ void CAI_BaseNPC::Event_Killed( const CTakeDamageInfo &info )
 	}
 
 	CBaseEntity* pAttacker = info.GetAttacker();
-	CNPC_Citizen* pCitizen;
-	if ( (pCitizen = dynamic_cast<CNPC_Citizen*>(pAttacker)) != NULL )
+	if ( pAttacker == NULL )
+	{
+		Warning( "CAI_BaseNPC::Event_Killed: entity(%d) \"%s\" attacked by nothing.\n", entindex(), GetClassname() );
+		return;
+	}
+
+	CNPC_Citizen* pCitizen = dynamic_cast<CNPC_Citizen*>(pAttacker);
+	if ( pCitizen != NULL )
 	{
 		if ( !pCitizen->IsInPlayerSquad() )
 			return;
