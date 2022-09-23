@@ -20,10 +20,14 @@ XCOPY /E "%CD%\resource" "%gamescriptdir%" /sy
 XCOPY /E "%CD%\scripts" "%gamescriptdir%" /sy
 XCOPY /E "%CD%\cfg" "%gamecfgdir%" /sy
 XCOPY /E "%CD%\mapadd" "%gamemapadddir%" /sy
+XCOPY /E "%CD%\gameinfo.txt" "%basedir%" /sy
+XCOPY /E "%CD%\steam.inf" "%basedir%" /sy
+XCOPY /E "%CD%\version.txt" "%basedir%" /sy
+
 
 echo.
 echo Moving game data to GitHub folder...
-SET scriptsdir="%dest%\gamedata"
+SET scriptsdir="%dest%\sp\game\firefightreloaded"
 if not exist "%scriptsdir%" mkdir "%scriptsdir%"
 XCOPY /E "%basedir%" "%scriptsdir%" /sy
 rmdir "%basedir%" /s /q
