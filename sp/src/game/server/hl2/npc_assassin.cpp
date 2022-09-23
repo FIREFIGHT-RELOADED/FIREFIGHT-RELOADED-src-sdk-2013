@@ -1098,6 +1098,8 @@ void CNPC_Assassin::BuildScheduleTestBits( void )
 //-----------------------------------------------------------------------------
 void CNPC_Assassin::Event_Killed( const CTakeDamageInfo &info )
 {
+	// Let assassin handle dropping so only two weapons are dropped.
+	m_hActiveWeapon = NULL;
 	BaseClass::Event_Killed( info );
 
 	// Turn off the eye
@@ -1128,7 +1130,8 @@ void CNPC_Assassin::Event_Killed( const CTakeDamageInfo &info )
 	if ( !HasSpawnFlags( SF_NPC_NO_WEAPON_DROP ) )
 	{	
 			DropItem( "weapon_pistol", vecGunPos, vecGunAngles );
-			DropItem( "weapon_pistol", vecGunPos2, vecGunAngles2 );
+			const char* wpnClass = m_spawnEquipment == NULL_STRING ? "weapon_pistol" : STRING( m_spawnEquipment );
+			DropItem( wpnClass, vecGunPos2, vecGunAngles2 );
 	}
 }
 
