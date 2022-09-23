@@ -1,10 +1,11 @@
 @ECHO OFF
-
-SET dest=G:\Projects\GitHub\FIREFIGHT-RELOADED-src-sdk-2013
+call reset.bat
+cls
+SET dest=G:\Projects\FIREFIGHT\steambuild\FIREFIGHTRELOADED\release\firefightreloaded
 echo Destination set to %dest%
 
 SET debug=0
-SET basedir=%CD%\github
+SET basedir=%CD%\move
 SET gamescriptdir=%basedir%\scripts
 SET gamecfgdir=%basedir%\cfg
 SET gamesresourcedir=%basedir%\resource
@@ -25,16 +26,13 @@ XCOPY "%CD%\steam.inf" "%basedir%" /y
 XCOPY "%CD%\version.txt" "%basedir%" /y
 
 echo.
-echo Moving game data to GitHub folder...
-SET scriptsdir="%dest%\sp\game\firefightreloaded"
-if not exist "%scriptsdir%" mkdir "%scriptsdir%"
-XCOPY /E "%basedir%" "%scriptsdir%" /sy
+echo Moving game data to release folder...
+XCOPY /E "%basedir%" "%dest%" /sy
 rmdir "%basedir%" /s /q
 
 echo.
-echo Coying additional files to GitHub folder...
-if not exist "%scriptsdir%\batch" mkdir "%scriptsdir%\batch"
-XCOPY "%cd%\github_sync.bat" "%scriptsdir%\batch" /y
-XCOPY "%cd%\steam_copy.bat" "%scriptsdir%\batch" /y
-XCOPY "%cd%\reset.bat" "%scriptsdir%\batch" /y
+echo Coying additional files to release folder...
+XCOPY "%cd%\github_sync.bat" "%dest%" /y
+XCOPY "%cd%\steam_copy.bat" "%dest%" /y
+XCOPY "%cd%\reset.bat" "%dest%" /y
 if %debug%==1 pause

@@ -82,3 +82,5 @@ compile_commands.json
 sp/src/.vs/firefight/v17/fileList.bin
 *.vsidx
 sp/src/.vs/firefight/FileContentIndex/read.lock
+sp/game/firefightreloaded/cfg/user_sp.scr
+sp/game/firefightreloaded/cfg/steam_autocloud.vdf
