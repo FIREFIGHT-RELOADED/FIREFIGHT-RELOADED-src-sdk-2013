@@ -32,3 +32,4 @@ rmdir /S /Q download\sound\
 rmdir /S /Q download\materials\
 rmdir /S /Q download\models\
 rmdir /S /Q downloadlists\
+rmdir /S /Q save\
