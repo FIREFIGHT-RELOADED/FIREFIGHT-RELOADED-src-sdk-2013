@@ -63,6 +63,11 @@ WeaponData
 				"font"		"WeaponIconsSelected"
 				"character"	"m"
 		}
+		"weapon_small"
+		{	
+				"font"		"WeaponIconsSmall"
+				"character"	"m"
+		}
 		"crosshair"
 		{
 				"font"		"Crosshairs"

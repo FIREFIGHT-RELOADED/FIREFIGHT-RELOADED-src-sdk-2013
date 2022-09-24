@@ -46,27 +46,18 @@ WeaponData
 	{
 		"weapon"
 		{
-			"file"		"sprites/weapons/hud_weapons_mp5"
-			"x"			"0"
-			"y"			"0"
-			"width"		"64"
-			"height"	"32"
+				"font"		"WeaponIconsCS"
+				"character"	"x"
 		}
 		"weapon_s"
-		{
-			"file"		"sprites/weapons/hud_weapons_mp5"
-			"x"			"0"
-			"y"			"0"
-			"width"		"64"
-			"height"	"32"
+		{	
+				"font"		"WeaponIconsSelectedCS"
+				"character"	"x"
 		}
 		"weapon_small"
 		{
-			"file"		"sprites/weapons/hud_weapons_mp5"
-			"x"			"0"
-			"y"			"0"
-			"width"		"64"
-			"height"	"32"
+				"font"		"WeaponIconsSmallCS"
+				"character"	"x"
 		}
 		"ammo"
 		{

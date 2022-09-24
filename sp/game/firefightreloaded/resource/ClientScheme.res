@@ -490,6 +490,18 @@ Scheme
 				"custom"	"1"
 			}
 		}
+		WeaponIconsKillFeed3
+		{
+			"1"
+			{
+				"name"		"csd"
+				"tall"		"40"
+				"weight"	"0"
+				"antialias" "1"
+				"additive"	"1"
+				"custom"	"1"
+			}
+		}
 		AmmoIconsKillFeed
 		{
 			"1"
@@ -557,6 +569,46 @@ Scheme
 			"1"
 			{
 				"name"		"HalfLife2"
+				"tall"		"32"
+				"weight"	"0"
+				"scanlines" "0"
+				"antialias" "1"
+				"custom"	"1"
+			}
+		}
+		WeaponIconsCS
+		{
+			"1"
+			{
+				"name"		"cs"
+				"tall"		"64"
+				"tall_hidef"	"58"
+				"weight"	"0"
+				"scanlines" "0"
+				"antialias" "1"
+				"additive"	"1"
+				"custom"	"1"
+			}
+		}
+		WeaponIconsSelectedCS
+		{
+			"1"
+			{
+				"name"		"cs"
+				"tall"		"64"
+				"tall_hidef"	"58"
+				"weight"	"0"
+				"antialias" "1"
+				"blur"		"4"
+				"scanlines"	"2"
+				"custom"	"1"
+			}
+		}
+		WeaponIconsSmallCS
+		{
+			"1"
+			{
+				"name"		"cs"
 				"tall"		"32"
 				"weight"	"0"
 				"scanlines" "0"
@@ -1186,6 +1238,8 @@ Scheme
 		"3"		"resource/HL2EP2.ttf"
 		"4"		"resource/smodgui.ttf"
 		"5"		"resource/hl2mp.ttf"
+		"6"		"resource/cs.ttf"
+		"7"		"resource/csd.ttf"
 	}
 
 }

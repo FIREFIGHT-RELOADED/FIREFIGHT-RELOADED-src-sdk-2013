@@ -41,6 +41,11 @@ WeaponData
 				"font"		"WeaponIconsSelected"
 				"character"	"o"
 		}
+		"weapon_small"
+		{	
+				"font"		"WeaponIconsSmall"
+				"character"	"o"
+		}
 		"ammo"
 		{
 				"font"		"WeaponIconsSmall"

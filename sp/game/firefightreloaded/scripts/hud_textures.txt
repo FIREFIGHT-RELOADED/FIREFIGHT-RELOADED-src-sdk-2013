@@ -122,8 +122,8 @@
 		//weapons
 		"deathnotice"
 		{
-				"font"		"WeaponIconsKillFeed"
-				"character"	"-"
+				"font"		"WeaponIconsKillFeed3"
+				"character"	"C"
 		}
 		"weapon_357"
 		{
@@ -243,11 +243,8 @@
 		}
 		"weapon_m249para"
 		{
-				"file"		"sprites/weapons/hud_weapons_m249"
-				"x"			"0"
-				"y"			"0"
-				"width"		"128"
-				"height"	"32"
+				"font"		"WeaponIconsKillFeed3"
+				"character"	"z"
 		}
 		"weapon_knife"
 		{
@@ -278,11 +275,8 @@
 		}
 		"weapon_mp5"
 		{
-				"file"		"sprites/weapons/hud_weapons_mp5"
-				"x"			"0"
-				"y"			"0"
-				"width"		"64"
-				"height"	"32"
+				"font"		"WeaponIconsKillFeed3"
+				"character"	"x"
 		}
 	}	
 }
