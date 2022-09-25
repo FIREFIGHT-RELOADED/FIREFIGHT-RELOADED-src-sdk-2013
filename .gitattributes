@@ -9,7 +9,7 @@ vpc_osx binary
 
 *.sh text
 *.bat text
-*.txt text
+*.txt text eol=lf
 *.c text
 *.h text
 *.H text
@@ -50,4 +50,3 @@ protoc binary
 ccache binary
 
 gtest_output_test_golden_lin.txt binary
-*_english.txt text eol=lf
