@@ -207,7 +207,7 @@ BEGIN_DATADESC( CNPC_BaseZombie )
 
 	DEFINE_SOUNDPATCH( m_pMoanSound ),
 	DEFINE_FIELD( m_fIsTorso, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_fIsHeadless, FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_hDecapitator, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_flNextFlinch, FIELD_TIME ),
 	DEFINE_FIELD( m_bHeadShot, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_flBurnDamage, FIELD_FLOAT ),
@@ -661,31 +661,14 @@ float CNPC_BaseZombie::GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDa
 		{
 			if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool())
 			{
-				if (!m_fIsHeadless && (info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB) && !FClassnameIs(this, "npc_poisonzombie"))
+				if (!IsHeadless() && (info.GetDamageType() & (DMG_SNIPER | DMG_BUCKSHOT)) && !(info.GetDamageType() & DMG_NEVERGIB) && !FClassnameIs(this, "npc_poisonzombie"))
 				{
 					DispatchParticleEffect("smod_headshot_y", PATTACH_POINT_FOLLOW, this, "headcrab", true);
 					CGib::SpawnSpecificStickyGibs(this, 3, 750, 1500, "models/gibs/agib_p3.mdl", 6);
 					CGib::SpawnSpecificStickyGibs(this, 3, 750, 1500, "models/gibs/agib_p4.mdl", 6);
 					EmitSound("Gore.Headshot");
 					g_pGameRules->iHeadshotCount += 1;
-					RemoveHead();
-					// Handle all clients
-					for (int i = 1; i <= gpGlobals->maxClients; i++)
-					{
-						CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
-
-						if (pPlayer != NULL)
-						{
-							if (g_fr_economy.GetBool())
-							{
-								pPlayer->AddMoney(7);
-							}
-							if (!g_fr_classic.GetBool())
-							{
-								pPlayer->AddXP(9);
-							}
-						}
-					}
+					RemoveHead( info.GetAttacker() );
 				}
 				else
 				{
@@ -806,7 +789,7 @@ HeadcrabRelease_t CNPC_BaseZombie::ShouldReleaseHeadcrab( const CTakeDamageInfo 
 {
 	if ( m_iHealth <= 0 )
 	{
-		if (m_fIsHeadless)
+		if (IsHeadless())
 			return RELEASE_NO;
 
 		if (info.GetDamageType() & DMG_REMOVENORAGDOLL)
@@ -936,7 +919,7 @@ int CNPC_BaseZombie::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 			break;
 
 		case RELEASE_VAPORIZE:
-			RemoveHead();
+			RemoveHead( info.GetAttacker() );
 			break;
 
 		case RELEASE_SCHEDULED:
@@ -1138,7 +1121,7 @@ void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info)
 
 	forceVector += CalcDamageForceVector( info );
 
-	if( !m_fIsHeadless && !bSquashed )
+	if( !IsHeadless() && !bSquashed )
 	{
 		int randInt = random->RandomInt(0, 1);
 		bool SpawnCrabRagdoll = (randInt == 0 ? true : false);
@@ -1206,7 +1189,7 @@ void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info)
 		CBaseAnimating *pAnimating = dynamic_cast<CBaseAnimating*>(pTorsoGib);
 		if( pAnimating )
 		{
-			pAnimating->SetBodygroup( ZOMBIE_BODYGROUP_HEADCRAB, !m_fIsHeadless );
+			pAnimating->SetBodygroup( ZOMBIE_BODYGROUP_HEADCRAB, !IsHeadless() );
 		}
 
 		pTorsoGib->SetOwnerEntity( this );
@@ -2157,10 +2140,10 @@ void CNPC_BaseZombie::PrescheduleThink( void )
 	}
 
 	// if our crab is shot off, we will lose health based on difficulty
-	if (m_fIsHeadless && zombie_headcrabless_damage.GetBool())
+	if (IsHeadless() && zombie_headcrabless_damage.GetBool())
 	{
 		int HeadshotDMGRandom = random->RandomInt(1, 5);
-		CTakeDamageInfo info(this, this, HeadshotDMGRandom, DMG_CLUB);
+		CTakeDamageInfo info(this, m_hDecapitator, HeadshotDMGRandom, DMG_CLUB);
 		BaseClass::TakeDamage(info);
 		UTIL_BloodImpact(WorldSpaceCenter(), vec3_origin, BloodColor(), 5);
 	}
@@ -2309,7 +2292,7 @@ void CNPC_BaseZombie::BecomeTorso( const Vector &vecTorsoForce, const Vector &ve
 		Ignite( 30 );
 	}
 
-	if ( !m_fIsHeadless )
+	if ( !IsHeadless() )
 	{
 		m_iMaxHealth = ZOMBIE_TORSO_HEALTH_FACTOR * m_iMaxHealth;
 		m_iHealth = m_iMaxHealth;
@@ -2416,9 +2399,9 @@ void CNPC_BaseZombie::StopLoopingSounds()
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CNPC_BaseZombie::RemoveHead( void )
+void CNPC_BaseZombie::RemoveHead(EHANDLE decapitator)
 {
-	m_fIsHeadless = true;
+	m_hDecapitator = decapitator.IsValid() ? decapitator : this;
 	SetZombieModel();
 }
 

@@ -180,7 +180,8 @@ public:
 	virtual HeadcrabRelease_t ShouldReleaseHeadcrab( const CTakeDamageInfo &info, float flDamageThreshold );
 
 	// Headcrab releasing/breaking apart
-	void RemoveHead( void );
+	void RemoveHead( EHANDLE decapitator = EHANDLE() );
+	bool IsHeadless( void ) const { return m_hDecapitator.IsValid(); }
 	virtual void SetZombieModel( void ) { };
 	virtual void BecomeTorso( const Vector &vecTorsoForce, const Vector &vecLegsForce );
 	virtual bool CanBecomeLiveTorso() { return false; }
@@ -244,7 +245,7 @@ protected:
 	CSoundPatch	*m_pMoanSound;
 
 	bool	m_fIsTorso;			// is this is a half-zombie?
-	bool	m_fIsHeadless;		// is this zombie headless
+	EHANDLE	m_hDecapitator;		// is this zombie headless
 
 	float	m_flNextFlinch;
 
