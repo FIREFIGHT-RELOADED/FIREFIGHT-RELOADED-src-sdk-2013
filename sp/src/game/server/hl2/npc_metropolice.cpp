@@ -469,6 +469,7 @@ void CNPC_MetroPolice::NotifyDeadFriend( CBaseEntity* pFriend )
 //-----------------------------------------------------------------------------
 CNPC_MetroPolice::CNPC_MetroPolice()
 {
+	m_iManhacks = -1;
 }
 
 
@@ -735,9 +736,9 @@ void CNPC_MetroPolice::Spawn( void )
 
 	SetUse( &CNPC_MetroPolice::PrecriminalUse );
 
-	bool manhackoverride = false;
+	bool manhackoverride = m_iManhacks >= 0;
 	//change manhack number
-	if (m_pAttributes != NULL)
+	if (!manhackoverride && m_pAttributes != NULL)
 	{
 		manhackoverride = m_pAttributes->GetBool("manhack_override");
 		if (manhackoverride && metropolice_spawnwithmanhacks.GetBool())

@@ -109,6 +109,7 @@ public:
 	bool m_bIsRare;
 	int m_iMinPlayerLevel;
 	int m_iNPCAttributePreset;
+	int m_iGrenades;
 	string_t m_spawnEquipment;
 	bool loadedNPCData;
 

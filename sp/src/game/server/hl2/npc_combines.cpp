@@ -75,9 +75,9 @@ void CNPC_CombineS::Spawn( void )
 
 	SetModel(STRING(GetModelName()));
 
-	bool grenadeoverride = false;
+	bool grenadeoverride = m_iNumGrenades >= 0;
 	//change manhack number
-	if (m_pAttributes != NULL)
+	if (!grenadeoverride && m_pAttributes != NULL)
 	{
 		grenadeoverride = m_pAttributes->GetBool("grenade_override");
 		if (grenadeoverride && combine_soldier_spawnwithgrenades.GetBool())

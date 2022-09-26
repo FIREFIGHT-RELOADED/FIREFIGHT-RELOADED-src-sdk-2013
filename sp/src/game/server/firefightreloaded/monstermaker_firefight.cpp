@@ -16,6 +16,7 @@
 #include "IEffects.h"
 #include "props.h"
 #include "npc_metropolice.h"
+#include "npc_combine.h"
 #include "npc_strider.h"
 #include "npc_scanner.h"
 #include "globalstate.h"
@@ -546,7 +547,6 @@ void CNPCMakerFirefight::MakeNPC()
 	}
 	else
 		equip = STRING(m_hSpawnListController->m_spawnEquipment);
-
 	pent->m_spawnEquipment = MAKE_STRING(equip);
 
 	if (Q_stristr(pRandomName, "npc_playerbot"))
@@ -582,7 +582,7 @@ void CNPCMakerFirefight::MakeNPC()
 		}
 	}
 
-	if (m_hSpawnListController->m_iNPCAttributePreset > 0 || m_hSpawnListController->m_iNPCAttributePreset < 0)
+	if (m_hSpawnListController->m_iNPCAttributePreset != 0 )
 	{
 		pent->m_bDisableInitAttributes = true;
 	}
@@ -590,6 +590,21 @@ void CNPCMakerFirefight::MakeNPC()
 	pent->m_isRareEntity = m_hSpawnListController->m_bIsRare;
 	pent->SetSquadName(m_SquadName);
 	pent->SetHintGroup(m_strHintGroup);
+
+	int grenades = m_hSpawnListController->m_iGrenades;
+	if ( grenades >= 0 )
+	{
+		if ( Q_stristr( pRandomName, "npc_metropolice" ) )
+		{
+			auto pPolice = (CNPC_MetroPolice*)pent;
+			pPolice->m_iManhacks = grenades;
+		}
+		else if ( Q_stristr( pRandomName, "npc_combine" ) )
+		{
+			auto pCombine = (CNPC_Combine*)pent;
+			pCombine->m_iNumGrenades = grenades;
+		}
+	}
 
 	ChildPreSpawn(pent);
 
@@ -866,6 +881,19 @@ struct equip_entry
 	int weight;
 };
 
+static bool ParseRange( int &min, int &max, const char* s )
+{
+	if ( strchr( s, '-' ) != NULL )
+	{
+		if ( sscanf( s, "%d-%d", &min, &max ) != 2 )
+			return false;
+	}
+	else
+		min = max = atoi( s );
+
+    return 0 <= min && min <= max;
+}
+
 bool CRandNPCLoader::LoadNPC(void)
 {
 	if (!loadedNPCData)
@@ -888,15 +916,24 @@ bool CRandNPCLoader::LoadNPC(void)
 		m_iMinPlayerLevel = pNode->GetInt("min_level", 1);
 		m_iNPCAttributePreset = pNode->GetInt("preset", -1);
 		m_spawnEquipment = NULL_STRING;
+		m_iGrenades = -1;
+
+		auto grenades = MAKE_STRING( pNode->GetString( "grenades" ) );
+		if ( grenades != NULL_STRING )
+		{
+			int max, min;
+			if ( ParseRange( min, max, STRING( grenades ) ) )
+				m_iGrenades = random->RandomInt( min, max );
+		}
 
 		// The equipment key can just have a string value, or a list of subkeys with weapon/weight pairs.
-		KeyValues* equip_kv = pNode->FindKey("equipment");
-		if (equip_kv == NULL)
+		KeyValues* equipKv = pNode->FindKey("equipment");
+		if (equipKv == NULL)
 			return true; // No equipment specified.
-		else if (equip_kv->GetFirstSubKey() == NULL)
+		else if (equipKv->GetFirstSubKey() == NULL)
 		{
 			// Accept strings for backwards compatibility.
-			m_spawnEquipment = MAKE_STRING(equip_kv->GetString());
+			m_spawnEquipment = MAKE_STRING(equipKv->GetString());
 			return true;
 		}
 
@@ -905,7 +942,7 @@ bool CRandNPCLoader::LoadNPC(void)
 		equip_entry equips[MAX_WEAPONS] = { 0 };
 		int equips_count = 0;
 		int total_weight = 0;
-		for (KeyValues* iter = equip_kv->GetFirstSubKey(); iter != NULL && equips_count < MAX_WEAPONS; iter = iter->GetNextKey())
+		for (KeyValues* iter = equipKv->GetFirstSubKey(); iter != NULL && equips_count < MAX_WEAPONS; iter = iter->GetNextKey())
 		{
 			equip_entry& ee = equips[equips_count++];
 			ee.name = iter->GetName();
@@ -983,11 +1020,10 @@ KeyValues* CRandNPCLoader::CreateLevelBasedSpawnlist(void)
 			if (strlen(pClassname) > 0)
 			{
 				newKey->SetString("classname", pClassname);
-				bool pIsRare = kv->GetBool("rare");
-				newKey->SetBool("rare", pIsRare);
-				newKey->SetInt("min_level", minLevel);
-				int pNPCPreset = kv->GetInt("preset", -1);
-				newKey->SetInt("preset", pNPCPreset);
+				newKey->SetBool( "rare", kv->GetBool( "rare" ) );
+				newKey->SetInt( "min_level", minLevel );
+				newKey->SetInt( "preset", kv->GetInt( "preset", -1 ) );
+				newKey->SetString( "grenades", kv->GetString( "grenades" ) );
 
 				// Copy either a string or a KeyValue list.
 				KeyValues* pEquipment = kv->FindKey("equipment");
