@@ -98,7 +98,7 @@ public:
 	void SetZombieModel( void );
 	void MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize );
 	bool ShouldBecomeTorso( const CTakeDamageInfo &info, float flDamageThreshold );
-	bool CanBecomeLiveTorso() { return !m_fIsHeadless; }
+	bool CanBecomeLiveTorso() { return !IsHeadless(); }
 
 	void GatherConditions( void );
 
@@ -284,8 +284,6 @@ void CZombie::Spawn( void )
 		// This was placed as an npc_zombie_torso
 		m_fIsTorso = true;
 	}
-
-	m_fIsHeadless = false;
 
 #ifdef HL2_EPISODIC
 	SetBloodColor( BLOOD_COLOR_ZOMBIE );
@@ -516,7 +514,7 @@ void CZombie::SetZombieModel( void )
 		SetHullType( HULL_HUMAN );
 	}
 
-	SetBodygroup( ZOMBIE_BODYGROUP_HEADCRAB, !m_fIsHeadless );
+	SetBodygroup( ZOMBIE_BODYGROUP_HEADCRAB, !IsHeadless() );
 
 	SetHullSizeNormal( true );
 	SetDefaultEyeOffset();

@@ -332,7 +332,7 @@
 		"ypos"	"100"
 		"wide"	 "248"
 		//"tall"	 "370"
-		"tall"	 "320"
+		"tall"	 "270"
 
 		"history_gap"	"35"
 		"icon_inset"	"28"

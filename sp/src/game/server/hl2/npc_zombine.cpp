@@ -203,7 +203,6 @@ void CNPC_Zombine::Spawn( void )
 	Precache();
 
 	m_fIsTorso = false;
-	m_fIsHeadless = false;
 	
 #ifdef HL2_EPISODIC
 	SetBloodColor( BLOOD_COLOR_ZOMBIE );
@@ -259,7 +258,7 @@ void CNPC_Zombine::SetZombieModel( void )
 	SetModel( "models/zombie/zombie_soldier.mdl" );
 	SetHullType( HULL_HUMAN );
 
-	SetBodygroup( ZOMBIE_BODYGROUP_HEADCRAB, !m_fIsHeadless );
+	SetBodygroup( ZOMBIE_BODYGROUP_HEADCRAB, !IsHeadless() );
 
 	SetHullSizeNormal( true );
 	SetDefaultEyeOffset();

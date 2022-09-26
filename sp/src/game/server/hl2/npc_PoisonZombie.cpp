@@ -291,7 +291,7 @@ void CNPC_PoisonZombie::Spawn( void )
 {
 	Precache();
 
-	m_fIsTorso = m_fIsHeadless = false;
+	m_fIsTorso = false;
 
 #ifdef HL2_EPISODIC
 	SetBloodColor( BLOOD_COLOR_ZOMBIE );
@@ -485,31 +485,14 @@ float CNPC_PoisonZombie::GetHitgroupDamageMultiplier(int iHitGroup, const CTakeD
 		int HeadshotRandom = random->RandomInt(0, 6);
 		if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && g_fr_headshotgore.GetBool())
 		{
-			if (!m_fIsHeadless && HeadshotRandom == 0 && !(info.GetDamageType() & DMG_NEVERGIB) || !m_fIsHeadless && info.GetDamageType() & DMG_SNIPER && !(info.GetDamageType() & DMG_NEVERGIB))
+			if (!IsHeadless() && HeadshotRandom == 0 && !(info.GetDamageType() & DMG_NEVERGIB) || !IsHeadless() && info.GetDamageType() & DMG_SNIPER && !(info.GetDamageType() & DMG_NEVERGIB))
 			{
 				DispatchParticleEffect("smod_headshot_g", PATTACH_POINT_FOLLOW, this, "headcrab1", true);
 				CGib::SpawnSpecificStickyGibs(this, 3, 750, 1500, "models/gibs/agib_p3.mdl", 6);
 				CGib::SpawnSpecificStickyGibs(this, 3, 750, 1500, "models/gibs/agib_p4.mdl", 6);
 				EmitSound("Gore.Headshot");
 				g_pGameRules->iHeadshotCount += 1;
-				RemoveHead();
-				// Handle all clients
-				for (int i = 1; i <= gpGlobals->maxClients; i++)
-				{
-					CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
-
-					if (pPlayer != NULL)
-					{
-						if (g_fr_economy.GetBool())
-						{
-							pPlayer->AddMoney(7);
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pPlayer->AddXP(9);
-						}
-					}
-				}
+				RemoveHead( info.GetAttacker() );
 			}
 			else
 			{
@@ -582,7 +565,7 @@ void CNPC_PoisonZombie::SetZombieModel( void )
 		SetHullType(HULL_HUMAN);
 	}
 
-	SetBodygroup( ZOMBIE_BODYGROUP_HEADCRAB, !m_fIsHeadless );
+	SetBodygroup( ZOMBIE_BODYGROUP_HEADCRAB, !IsHeadless() );
 
 	SetHullSizeNormal( true );
 	SetDefaultEyeOffset();

@@ -658,7 +658,7 @@ void CFastZombie::Spawn( void )
 
 	m_fJustJumped = false;
 
-	m_fIsTorso = m_fIsHeadless = false;
+	m_fIsTorso = false;
 
 	if( FClassnameIs( this, "npc_fastzombie" ) )
 	{
@@ -769,7 +769,7 @@ void CFastZombie::SetZombieModel( void )
 		SetHullType(HULL_HUMAN);
 	}
 
-	SetBodygroup( ZOMBIE_BODYGROUP_HEADCRAB, !m_fIsHeadless );
+	SetBodygroup( ZOMBIE_BODYGROUP_HEADCRAB, !IsHeadless() );
 
 	SetHullSizeNormal( true );
 	SetDefaultEyeOffset();

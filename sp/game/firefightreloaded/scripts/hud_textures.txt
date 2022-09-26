@@ -278,5 +278,15 @@
 				"font"		"WeaponIconsKillFeed3"
 				"character"	"x"
 		}
+                "npc_playerbot"
+		{
+				"font"		"WeaponIconsKillFeed3"
+				"character"	"H"
+		}
+                "weapon_physgun"
+		{
+				"font"		"WeaponIconsKillFeed2"
+				"character"	"!"
+		}
 	}	
 }
