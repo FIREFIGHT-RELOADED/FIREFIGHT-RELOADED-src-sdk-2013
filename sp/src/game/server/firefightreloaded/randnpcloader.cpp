@@ -136,7 +136,6 @@ bool CRandNPCLoader::ParseEntry( SpawnEntry_t& entry, KeyValues *kv)
 	entry.grenadesMin = entry.grenadesMax = -1;
 
 	auto grenades = MAKE_STRING( kv->GetString( "grenades" ) );
-	auto manhacks = MAKE_STRING(kv->GetString("manhacks"));
 	if ( grenades != NULL_STRING )
 	{
 		if (!SetRandomGrenades(entry, grenades))
@@ -144,11 +143,16 @@ bool CRandNPCLoader::ParseEntry( SpawnEntry_t& entry, KeyValues *kv)
 			return false;
 		}
 	}
-	else if (manhacks != NULL_STRING)
+	else 
 	{
-		if (!SetRandomGrenades(entry, manhacks))
+		auto manhacks = MAKE_STRING(kv->GetString("manhacks"));
+
+		if (manhacks != NULL_STRING)
 		{
-			return false;
+			if (!SetRandomGrenades(entry, manhacks))
+			{
+				return false;
+			}
 		}
 	}
 
