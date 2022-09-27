@@ -147,6 +147,8 @@ void CWeaponKnife::SecondaryAttack(void)
 	{
 		m_iSecondaryAttacks++;
 		gamestats->Event_WeaponFired(pPlayer, true, GetClassname());
+		//pPlayer->SwitchToNextBestWeapon(this);
+		engine->ClientCommand(pPlayer->edict(), "lastinv");
 	}
 }
 
