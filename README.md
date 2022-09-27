@@ -10,31 +10,33 @@ FIREFIGHT RELOADED is an open-source Source SDK 2013 modification with the goal 
 
 **NOTE: PLEASE NOTE THAT THIS REPOSITORY WILL HAVE UNFINISHED OR BUGGY CODE FROM A NEWER RELEASE OF FIREFIGHT RELOADED. KEEP THIS IN MIND BEFORE COMPILING OR FORKING.**
 
-As this is a Half-Life 2/Source Engine mod, a file named LICENCE-VALVE.md is included which includes Valve's Source 1 SDK licence. All code written by Valve and Bitl are covered by this licence. Code used in FIREFIGHT RELOADED may be used for your Source Engine game/mod, however you must give credit to Bitl if you do use code from this mod into your Source SDK project.
+As this is a Half-Life 2/Source Engine mod, a file named LICENCE-VALVE.md is included which includes Valve's Source 1 SDK licence.\
+All code written by Valve and Bitl are covered by this licence.\
+Code used in FIREFIGHT RELOADED may be used for your Source Engine game/mod, however you must give credit to Bitl if you do use code from this mod into your Source SDK project.
 
 ## Compiling
 
 ### WINDOWS:
-You must have Visual Studio 2013 Build Tools installed alongside a compatible IDE (Visual Studio 2013 and above).
-Read this for more details: https://developer.valvesoftware.com/wiki/Source_SDK_2013#Source_SDK_2013_on_Windows
+You must have Visual Studio 2013 Build Tools installed alongside a compatible IDE (Visual Studio 2013 and above).\
+Read this for more details: https://developer.valvesoftware.com/wiki/Source_SDK_2013#Source_SDK_2013_on_Windows \
 Note that the Microsoft Speech API is only required for certain SDK tools.
 
 Creating a solution is as simple as running sp/src/createfirefightreloadedproject.bat, then opening up the solution in Visual Studio.
 
 ### LINUX:
-Read this first to install the steam runtime and other necessary components.
-https://developer.valvesoftware.com/wiki/Source_SDK_2013#Source_SDK_2013_on_Linux
+Read this first to install the steam runtime and other necessary components.\
+https://developer.valvesoftware.com/wiki/Source_SDK_2013#Source_SDK_2013_on_Linux \
 After installing it and other dependencies, do the 3 steps below.
 
-1. CD to your FIREFIGHT RELOADED git directory, I.E.
+1. CD to your FIREFIGHT RELOADED git directory, I.E.\
 ```cd ~/projects/FIREFIGHT-RELOADED-src-sdk-2013```
 
-1. Run the steam-runtime. NOTE: Make sure you have the steam runtime installed in ~/valve.
+1. Run the steam-runtime. NOTE: Make sure you have the steam runtime installed in ~/valve.\
 ```bash ./sandbox_setup.sh```
 
-3. Go back to this directory and run:
-```bash ./build_fr_linux.sh```
-This will update the repo automatically. If you would like to update the repo without building it, run:
+3. Go back to this directory and run:\
+```bash ./build_fr_linux.sh```\
+This will update the repo automatically. If you would like to update the repo without building it, run:\
 ```bash ./update_fr_linux.sh```
 
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/made-with-c-plus-plus.svg)](https://forthebadge.com)
