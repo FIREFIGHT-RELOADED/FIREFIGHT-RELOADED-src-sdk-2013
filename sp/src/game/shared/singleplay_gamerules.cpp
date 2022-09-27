@@ -1298,10 +1298,12 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 			CFmtStr localizedName;
 			localizedName.sprintf("#fr_%s", fullEntityClassname);
 
-			Q_strncpy(npcName, localizedName.Access(), sizeof NpcName);
+			Q_strncpy(npcName, localizedName.Access(), sizeof(NpcName));
 		}
 		else
-			Q_strncpy(npcName, FinalString, sizeof NpcName);
+		{
+			Q_strncpy(npcName, FinalString, sizeof(NpcName));
+		}
 	}
 
 	//=========================================================
