@@ -330,7 +330,8 @@ int CNPC_CScanner::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	return (BaseClass::OnTakeDamage_Alive( info ));
 }
-	
+
+extern ConVar sv_cleanup_time;
 //------------------------------------------------------------------------------
 // Purpose:
 //------------------------------------------------------------------------------
@@ -350,14 +351,12 @@ void CNPC_CScanner::Gib( void )
 	// Add a random chance of spawning a battery...
 	if ( !HasSpawnFlags(SF_NPC_NO_WEAPON_DROP) && random->RandomFloat( 0.0f, 1.0f) < 0.3f )
 	{
-		CItem *pBattery = (CItem*)CreateEntityByName("item_battery");
+		CItem *pBattery = (CItem*)DropItem( "item_battery", GetAbsOrigin(), GetAbsAngles() );
 		if ( pBattery )
 		{
-			pBattery->SetAbsOrigin( GetAbsOrigin() );
 			pBattery->SetAbsVelocity( GetAbsVelocity() );
 			pBattery->SetLocalAngularVelocity( GetLocalAngularVelocity() );
 			pBattery->ActivateWhenAtRest();
-			pBattery->Spawn();
 		}
 	}
 

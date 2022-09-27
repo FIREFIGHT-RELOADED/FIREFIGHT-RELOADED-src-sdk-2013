@@ -382,9 +382,7 @@ CBaseEntity::CBaseEntity( bool bServerOnly )
 	m_nSimulationTick = -1;
 	SetIdentityMatrix( m_rgflCoordinateFrame );
 	m_pBlocker = NULL;
-#if _DEBUG
 	m_iCurrentThinkContext = NO_THINK_CONTEXT;
-#endif
 	m_nWaterTouch = m_nSlimeTouch = 0;
 
 	SetSolid( SOLID_NONE );
@@ -7127,10 +7125,9 @@ void CBaseEntity::RemoveDeferred( void )
 //
 // DON'T USE ME FOR GIBS AND STUFF IN MULTIPLAYER!
 // SET A FUTURE THINK AND A RENDERMODE!!
-void CBaseEntity::SUB_StartFadeOut( float delay, bool notSolid )
+void CBaseEntity::SUB_StartFadeOut( float delay, bool notSolid, const char* context )
 {
-	SetThink( &CBaseEntity::SUB_FadeOut );
-	SetNextThink( gpGlobals->curtime + delay );
+	ThinkSet( &CBaseEntity::SUB_FadeOut, gpGlobals->curtime + delay, context );
 	SetRenderColorA( 255 );
 	m_nRenderMode = kRenderNormal;
 
@@ -7210,14 +7207,6 @@ bool CBaseEntity::SUB_AllowedToFade( void )
 			return false;
 	}
 
-	// on Xbox, allow these to fade out
-#ifndef _XBOX
-	CBasePlayer *pPlayer = UTIL_GetNearestVisiblePlayer(this);
-
-	if ( pPlayer && pPlayer->FInViewCone( this ) )
-		return false;
-#endif
-
 	return true;
 }
 
@@ -7228,7 +7217,7 @@ void CBaseEntity::SUB_FadeOut( void  )
 {
 	if ( SUB_AllowedToFade() == false )
 	{
-		SetNextThink( gpGlobals->curtime + 1 );
+		SetNextThink( m_iCurrentThinkContext, gpGlobals->curtime + 1 );
 		SetRenderColorA( 255 );
 		return;
 	}
@@ -7241,7 +7230,7 @@ void CBaseEntity::SUB_FadeOut( void  )
 	}
 	else
 	{
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( m_iCurrentThinkContext, gpGlobals->curtime );
 	}
 }
 

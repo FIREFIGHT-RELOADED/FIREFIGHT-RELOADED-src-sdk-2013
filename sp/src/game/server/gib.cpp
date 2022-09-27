@@ -293,7 +293,7 @@ void CGib::SpawnSpecificGibs(CBaseEntity*	pVictim,
 	for (int i = 0; i<nNumGibs; i++)
 	{
 		CGib *pGib = CREATE_ENTITY(CGib, "gib");
-		pGib->Spawn(cModelName);
+		pGib->Spawn(cModelName, flLifetime);
 		pGib->m_nBody = i;
 		pGib->InitGib(pVictim, vMinVelocity, vMaxVelocity);
 		pGib->m_lifeTime = flLifetime;
@@ -506,13 +506,6 @@ bool CGib::SUB_AllowedToFade(void)
 	{
 		if (VPhysicsGetObject()->GetGameFlags() & FVPHYSICS_PLAYER_HELD || GetEFlags() & EFL_IS_BEING_LIFTED_BY_BARNACLE)
 			return false;
-	}
-
-	CBasePlayer *pPlayer = (AI_IsSinglePlayer()) ? UTIL_GetLocalPlayer() : NULL;
-
-	if (pPlayer && pPlayer->FInViewCone(this) && m_bForceRemove == false)
-	{
-		return false;
 	}
 
 	return true;

@@ -23,6 +23,7 @@
 #ifdef CLIENT_DLL
 	#include "c_te_effect_dispatch.h"
 #else
+	#include "util.h"
 	#include "te_effect_dispatch.h"
 	#include "soundent.h"
 	#include "iservervehicle.h"
@@ -1163,7 +1164,7 @@ void CBaseEntity::VPhysicsUpdate( IPhysicsObject *pPhysics )
 			{
 				if ( CheckEmitReasonablePhysicsSpew() )
 				{
-					Warning( "Ignoring unreasonable position (%f,%f,%f) from vphysics! (entity %s)\n", origin.x, origin.y, origin.z, GetDebugName() );
+					Warning( "Removing entity with unreasonable position (%f,%f,%f) from vphysics! (entity %s)\n", origin.x, origin.y, origin.z, GetDebugName() );
 				}
 			}
 

@@ -215,8 +215,6 @@ DEFINE_INPUTFUNC( FIELD_VECTOR, "SetModelScale", InputSetModelScale ),
 
 DEFINE_FIELD( m_fBoneCacheFlags, FIELD_SHORT ),
 
-DEFINE_THINKFUNC( CleanUp ),
-
 	END_DATADESC()
 
 // Sendtable for fields we don't want to send to clientside animating entities

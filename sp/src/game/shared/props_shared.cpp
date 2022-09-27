@@ -726,17 +726,20 @@ const char *GetMassEquivalent(float flMass)
 extern const char *GetMassEquivalent(float flMass);
 #endif
 
+ConVar g_max_gib_pieces( "g_max_gib_pieces", "32", FCVAR_NONE, "Maximum number of gibs to manage." );
 #ifdef GAME_DLL
 //=========================================================
 //=========================================================
 class CGameGibManager : public CBaseEntity
 {
+	friend CGameGibManager *GetGibManager( void );
+
 	DECLARE_CLASS( CGameGibManager, CBaseEntity );
 	DECLARE_DATADESC();
 
 public:
 
-	CGameGibManager() : m_iCurrentMaxPieces(-1), m_iMaxPieces(-1), m_iMaxPiecesDX8(-1) {}
+	CGameGibManager() : m_iMaxPieces(-1), m_iMaxPiecesDX8(-1) {}
 
 	void Activate( void );
 	void AddGibToLRU( CBaseAnimating *pEntity );
@@ -756,10 +759,8 @@ private:
 	bool		m_bAllowNewGibs;
 
 	int			m_iDXLevel;
-	int			m_iCurrentMaxPieces;
 	int			m_iMaxPieces;
 	int			m_iMaxPiecesDX8;
-	int			m_iLastFrame;
 };
 
 BEGIN_DATADESC( CGameGibManager )
@@ -793,39 +794,12 @@ void CGameGibManager::Activate( void )
 
 void CGameGibManager::UpdateMaxPieces()
 {
-	// If we're running DX8, use the DX8 gib limit if set.
-	if ( ( m_iDXLevel < 90 ) && ( m_iMaxPiecesDX8 >= 0 ) )
-	{
-		m_iCurrentMaxPieces = m_iMaxPiecesDX8;
-	}
-	else
-	{
-		m_iCurrentMaxPieces = m_iMaxPieces;
-	}
 }
 
 
 bool CGameGibManager::AllowedToSpawnGib( void )
 {
-	if ( m_bAllowNewGibs )
-		return true;
-
-	// We're not tracking gibs at the moment
-	if ( m_iCurrentMaxPieces < 0 )
-		return true;
-
-	if ( m_iCurrentMaxPieces == 0 )
-		return false;
-
-	if ( m_iLastFrame == gpGlobals->framecount )
-	{
-		if ( m_LRU.Count() >= m_iCurrentMaxPieces )
-		{
-			return false;
-		}
-	}
-
-	return true;
+	return m_bAllowNewGibs && g_max_gib_pieces.GetInt() > 0;
 }
 
 void CGameGibManager::InputSetMaxPieces( inputdata_t &inputdata )
@@ -844,7 +818,7 @@ void CGameGibManager::AddGibToLRU( CBaseAnimating *pEntity )
 {
 	int i, next;
 
-	if ( pEntity == NULL )
+	if ( pEntity == NULL || g_max_gib_pieces.GetInt() < 1 )
 		return;
 
 	//Find stale gibs.
@@ -858,21 +832,16 @@ void CGameGibManager::AddGibToLRU( CBaseAnimating *pEntity )
 		}
 	}
 
-	// We're not tracking gibs at the moment
-	if ( m_iCurrentMaxPieces <= 0 )
-		return;
-
-	while ( m_LRU.Count() >= m_iCurrentMaxPieces )
+	while ( m_LRU.Count() >= g_max_gib_pieces.GetInt() )
 	{
 		i = m_LRU.Head();
 
 		//TODO: Make this fade out instead of pop.
-		UTIL_Remove( m_LRU[i] );
+		m_LRU[i]->SUB_StartFadeOut(0, true, "CleanUp");
 		m_LRU.Remove(i);
 	}
 	
 	m_LRU.AddToTail( pEntity );
-	m_iLastFrame = gpGlobals->framecount;
 }
 
 EHANDLE g_hGameGibManager;
@@ -886,6 +855,14 @@ CGameGibManager *GetGibManager( void )
 	if ( g_hGameGibManager == NULL )
 	{
 		g_hGameGibManager = (CGameGibManager *)gEntList.FindEntityByClassname( NULL, "game_gib_manager" );
+		if ( g_hGameGibManager == NULL )
+		{
+			auto newGM = (CGameGibManager *)CBaseEntity::Create( "game_gib_manager", Vector(), QAngle() );
+			newGM->m_iMaxPieces = newGM->m_iMaxPiecesDX8 = 32;
+			newGM->UpdateMaxPieces();
+			newGM->m_bAllowNewGibs = true;
+			g_hGameGibManager = newGM;
+		}
 	}
 
 	return (CGameGibManager *)g_hGameGibManager.Get();

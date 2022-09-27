@@ -10638,10 +10638,7 @@ CBaseEntity *CAI_BaseNPC::DropItem ( const char *pszItemName, Vector vecPos, QAn
 
 		static ConVarRef sv_cleanup_time( "sv_cleanup_time" );
 		if ( sv_cleanup_time.GetFloat() >= 0 )
-		{
-			RegisterThinkContext( "CleanUp" );
-			pItem->SetContextThink( &CBaseAnimating::CleanUp, gpGlobals->curtime + sv_cleanup_time.GetFloat(), "CleanUp" );
-		}
+			pItem->SUB_StartFadeOut( sv_cleanup_time.GetFloat(), false, "CleanUp" );
 
 		return pItem;
 	}
