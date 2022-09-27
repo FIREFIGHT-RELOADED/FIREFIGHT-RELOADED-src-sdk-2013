@@ -12,8 +12,6 @@
 
 #include "cbase.h"
 
-class CRandNPCLoader;
-
 //-----------------------------------------------------------------------------
 // Spawnflags
 //-----------------------------------------------------------------------------
@@ -81,8 +79,6 @@ public:
 	bool	m_bDisabled;
 	bool	m_bLargeNPCsEnabled;
 
-	CRandNPCLoader* m_hSpawnListController;
-
 	EHANDLE m_hIgnoreEntity;
 	string_t m_iszIngoreEnt;
 
@@ -91,31 +87,6 @@ public:
 	string_t m_strHintGroup;
 	string_t m_RelationshipString;		// Used to load up relationship keyvalues
 	string_t m_ChildTargetName;
-};
-
-class CRandNPCLoader
-{
-public:
-	CRandNPCLoader(CNPCMakerFirefight* pSpawner);
-	bool LoadNPC(void);
-	void PrecacheSpawnlist(void);
-
-private:
-	KeyValues* LoadNPCData(KeyValues* pData);
-	KeyValues* CreateLevelBasedSpawnlist(void);
-
-public:
-	const char* m_szClassname;
-	bool m_bIsRare;
-	int m_iMinPlayerLevel;
-	int m_iNPCAttributePreset;
-	int m_iGrenades;
-	string_t m_spawnEquipment;
-	bool loadedNPCData;
-
-private:
-	KeyValues* data;
-	CNPCMakerFirefight* pParent;
 };
 
 #endif // MONSTERMAKER_H

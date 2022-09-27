@@ -22,6 +22,7 @@
 #include "globalstate.h"
 #include "filesystem.h"
 #include "KeyValues.h"
+#include "randnpcloader.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -59,6 +60,8 @@ const char* g_Weapons[] =
 	"weapon_stunstick",
 	"weapon_crowbar"
 };
+
+CRandNPCLoader* g_npcLoader;
 
 static void DispatchActivate( CBaseEntity *pEntity )
 {
@@ -143,18 +146,15 @@ void CNPCMakerFirefight::Precache(void)
 {
 	BaseClass::Precache();
 
-	if (!m_hSpawnListController)
+	if ( g_npcLoader == NULL )
 	{
-		m_hSpawnListController = new CRandNPCLoader(this);
+		g_npcLoader = new CRandNPCLoader;
+		g_npcLoader->Load();
 	}
 
 	int nWeapons = ARRAYSIZE(g_Weapons);
 	for (int i = 0; i < nWeapons; ++i)
-	{
 		UTIL_PrecacheOther(g_Weapons[i]);
-	}
-
-	m_hSpawnListController->PrecacheSpawnlist();
 }
 
 //-----------------------------------------------------------------------------
@@ -433,12 +433,11 @@ void CNPCMakerFirefight::MakeNPC()
 	if (!CanMakeNPC())
 		return;
 
-	bool newNPC = m_hSpawnListController->LoadNPC();
-
-	if (!newNPC)
+	auto entry = g_npcLoader->GetRandomEntry();
+	if ( entry == NULL )
 		return;
 
-	if (m_hSpawnListController->m_bIsRare)
+	if (entry->isRare)
 	{
 		if (sk_spawnrareenemies.GetBool())
 		{
@@ -452,28 +451,7 @@ void CNPCMakerFirefight::MakeNPC()
 		}
 	}
 
-	//if any player has the same level we should spawn at, we'll spawn.
-	bool atMinLevel = false;
-
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
-	{
-		CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
-		if (pPlayer)
-		{
-			int iPlayerLevel = m_hSpawnListController->m_iMinPlayerLevel;
-
-			if (pPlayer->GetLevel() >= iPlayerLevel)
-			{
-				atMinLevel = true;
-				break;
-			}
-		}
-	}
-
-	if (!atMinLevel)
-		return;
-
-	const char* pRandomName = m_hSpawnListController->m_szClassname;
+	const char* pRandomName = entry->classname;
 	CAI_BaseNPC* pent = (CAI_BaseNPC*)CreateEntityByName(pRandomName);
 
 	if (!pent)
@@ -501,13 +479,11 @@ void CNPCMakerFirefight::MakeNPC()
 	pent->AddSpawnFlags(SF_NPC_LONG_RANGE);
 
 	if (sk_spawner_npc_ragdoll_fade.GetBool() /* || m_spawnflags & SF_NPCMAKER_FADE*/)
-	{
 		pent->AddSpawnFlags(SF_NPC_FADE_CORPSE);
-	}
 
 	pent->m_spawnEquipment = NULL_STRING;
-	const char* equip = NULL;
-	if (m_hSpawnListController->m_spawnEquipment == NULL_STRING)
+	const char* equip = entry->GetRandomEquip();
+	if (equip == NULL)
 	{
 		if (Q_stristr(pRandomName, "npc_metropolice"))
 		{
@@ -545,8 +521,7 @@ void CNPCMakerFirefight::MakeNPC()
 			equip = g_CombineSoldierWeapons[randomChoiceSoldier];
 		}
 	}
-	else
-		equip = STRING(m_hSpawnListController->m_spawnEquipment);
+
 	pent->m_spawnEquipment = MAKE_STRING(equip);
 
 	if (Q_stristr(pRandomName, "npc_playerbot"))
@@ -569,9 +544,7 @@ void CNPCMakerFirefight::MakeNPC()
 	else if (Q_stristr(pRandomName, "npc_cscanner"))
 	{
 		if (g_pGameRules->GetSkillLevel() > SKILL_HARD)
-		{
 			pent->AddSpawnFlags(SF_CSCANNER_STRIDER_SCOUT);
-		}
 	}
 	else if (Q_stristr(pRandomName, "npc_antlion"))
 	{
@@ -582,16 +555,14 @@ void CNPCMakerFirefight::MakeNPC()
 		}
 	}
 
-	if (m_hSpawnListController->m_iNPCAttributePreset != 0 )
-	{
+	if (entry->npcAttributePreset != 0 )
 		pent->m_bDisableInitAttributes = true;
-	}
 
-	pent->m_isRareEntity = m_hSpawnListController->m_bIsRare;
+	pent->m_isRareEntity = entry->isRare;
 	pent->SetSquadName(m_SquadName);
 	pent->SetHintGroup(m_strHintGroup);
 
-	int grenades = m_hSpawnListController->m_iGrenades;
+	int grenades = entry->GetRandomGrenades();
 	if ( grenades >= 0 )
 	{
 		if ( Q_stristr( pRandomName, "npc_metropolice" ) )
@@ -646,15 +617,15 @@ void CNPCMakerFirefight::MakeNPC()
 		pent->SetName(m_ChildTargetName);
 	}
 
-	if (m_hSpawnListController->m_iNPCAttributePreset > 0)
+	if (entry->npcAttributePreset > 0)
 	{
-		pent->m_pAttributes = LoadPresetFile(pent->GetClassname(), m_hSpawnListController->m_iNPCAttributePreset);
+		pent->m_pAttributes = LoadPresetFile(pent->GetClassname(), entry->npcAttributePreset);
 		pent->LoadInitAttributes();
 	}
 
 	ChildPostSpawn(pent);
 
-	if (m_hSpawnListController->m_bIsRare)
+	if (entry->isRare)
 	{
 		//rare entities have their own value we must consider.
 		m_nLiveRareNPCs++;
@@ -809,268 +780,4 @@ void CNPCMakerFirefight::InputSetSpawnFrequency(inputdata_t &inputdata)
 void CNPCMakerFirefight::InputSetRareNPCRarity(inputdata_t &inputdata)
 {
 	m_nRareNPCRarity = inputdata.value.Int();
-}
-
-CRandNPCLoader::CRandNPCLoader(CNPCMakerFirefight* pSpawner)
-{
-	if (!pSpawner)
-		return;
-
-	m_szClassname = "";
-	m_iNPCAttributePreset = -1; // 0 = no attributes, random. -1 and below: no attributes at all.
-	m_iMinPlayerLevel = 1;
-	m_bIsRare = false;
-	m_spawnEquipment = NULL_STRING;
-
-	bool gamemodeMode = true;
-	const char* gamemodeName = g_pGameRules->GetGamemodeName();
-	const char* mapName = STRING(gpGlobals->mapname);
-
-	if ((!gamemodeName || gamemodeName == NULL || strlen(gamemodeName) == 0) || 
-		(!g_pGameRules->bSkipFuncCheck && !g_fr_spawneroldfunctionality.GetBool()))
-	{
-		gamemodeMode = false;
-	}
-
-	char szScriptPath[512];
-
-	if (gamemodeMode)
-	{
-		Q_snprintf(szScriptPath, sizeof(szScriptPath), "scripts/spawnlists/gamemodes/%s.txt", gamemodeName);
-	}
-	else
-	{
-		Q_snprintf(szScriptPath, sizeof(szScriptPath), "scripts/spawnlists/maps/%s.txt", mapName);
-	}
-
-	const char* name = (gamemodeMode ? gamemodeName : mapName);
-	KeyValues* pKV = new KeyValues(name);
-	if (pKV->LoadFromFile(filesystem, szScriptPath))
-	{
-		data = pKV->MakeCopy();
-		//set the parent if we are SURE we have loaded it.
-		pParent = pSpawner;
-		DevMsg("CRandNPCLoader: Spawnlist for %s loaded for %s\n", name, pSpawner->GetEntityName());
-		loadedNPCData = true;
-	}
-	else
-	{
-		DevWarning("CRandNPCLoader: Failed to load %s spawnlist! File may not exist. Using default spawn list...\n", name);
-		KeyValues* pKV = new KeyValues("default");
-		if (pKV->LoadFromFile(filesystem, sk_spawner_defaultspawnlist.GetString()))
-		{
-			data = pKV->MakeCopy();
-			//set the parent if we are SURE we have loaded it.
-			pParent = pSpawner;
-			DevMsg("CRandNPCLoader: Default Spawnlist loaded for %s\n", pSpawner->GetEntityName());
-			loadedNPCData = true;
-		}
-		else
-		{
-			DevWarning("CRandNPCLoader: Failed to load default spawnlist! File may not exist. Spawner %s will not function properly.\n", pSpawner->GetEntityName());
-			loadedNPCData = false;
-		}
-	}
-
-	pKV->deleteThis();
-}
-
-struct equip_entry
-{
-	const char *name;
-	int weight;
-};
-
-static bool ParseRange( int &min, int &max, const char* s )
-{
-	if ( strchr( s, '-' ) != NULL )
-	{
-		if ( sscanf( s, "%d-%d", &min, &max ) != 2 )
-			return false;
-	}
-	else
-		min = max = atoi( s );
-
-    return 0 <= min && min <= max;
-}
-
-bool CRandNPCLoader::LoadNPC(void)
-{
-	if (!loadedNPCData)
-		return false;
-
-	KeyValues* currentSpawnlist = CreateLevelBasedSpawnlist();
-
-	if (currentSpawnlist == NULL)
-		return false;
-
-	KeyValues* pNode = LoadNPCData(currentSpawnlist);
-
-	if (pNode != NULL)
-	{
-		//CreateLevelBasedSpawnlist already does file checking for us.
-		m_szClassname = pNode->GetString("classname", NULL);
-		if (m_szClassname == NULL)
-			return false;
-		m_bIsRare = pNode->GetBool("rare", false);
-		m_iMinPlayerLevel = pNode->GetInt("min_level", 1);
-		m_iNPCAttributePreset = pNode->GetInt("preset", -1);
-		m_spawnEquipment = NULL_STRING;
-		m_iGrenades = -1;
-
-		auto grenades = MAKE_STRING( pNode->GetString( "grenades" ) );
-		if ( grenades != NULL_STRING )
-		{
-			int max, min;
-			if ( ParseRange( min, max, STRING( grenades ) ) )
-				m_iGrenades = random->RandomInt( min, max );
-		}
-
-		// The equipment key can just have a string value, or a list of subkeys with weapon/weight pairs.
-		KeyValues* equipKv = pNode->FindKey("equipment");
-		if (equipKv == NULL)
-			return true; // No equipment specified.
-		else if (equipKv->GetFirstSubKey() == NULL)
-		{
-			// Accept strings for backwards compatibility.
-			m_spawnEquipment = MAKE_STRING(equipKv->GetString());
-			return true;
-		}
-
-		// Choose a weapon with a weighted distribution.
-		// The equipment subkey hasa list of pairs with the weapon name as the key and weight as the value.
-		equip_entry equips[MAX_WEAPONS] = { 0 };
-		int equips_count = 0;
-		int total_weight = 0;
-		for (KeyValues* iter = equipKv->GetFirstSubKey(); iter != NULL && equips_count < MAX_WEAPONS; iter = iter->GetNextKey())
-		{
-			equip_entry& ee = equips[equips_count++];
-			ee.name = iter->GetName();
-			total_weight += ee.weight = iter->GetInt();
-		}
-
-		if (equips_count > 0)
-		{
-			int roll = random->RandomInt(1, total_weight);
-			int choice = -1;
-			while (roll > 0)
-				roll -= equips[++choice].weight;
-			m_spawnEquipment = MAKE_STRING(equips[choice].name);
-		}
-		return true;
-	}
-
-	return false;
-}
-
-KeyValues* CRandNPCLoader::LoadNPCData(KeyValues* pData)
-{
-	// Make sure we have keys to choose from.
-	int count = 0;
-	for (KeyValues* iter = pData->GetFirstSubKey(); iter != NULL; iter = iter->GetNextKey())
-		++count;
-	DevMsg("CRandNPCLoader: Spawnlist has %i keys.\n", count);
-	if (count < 1)
-		return NULL;
-
-	int itemdrop = random->RandomInt(1, count);
-	//then, we randomize them.
-	DevMsg("CRandNPCLoader: Trying to load Node ID %i\n", itemdrop);
-	CFmtStr sectionName;
-	sectionName.sprintf("%i", itemdrop);
-	KeyValues* pNode = pData->FindKey(sectionName.Access());
-	if (pNode != NULL)
-	{
-		//if we found a key, then give the player an item.
-		DevMsg("CRandNPCLoader: Node %i found\n", itemdrop);
-		return pNode;
-	}
-
-	DevWarning("CRandNPCLoader: NPC node %i is not loading. Check the spawnlist script file/s.\n", itemdrop);
-	return NULL;
-}
-
-KeyValues* CRandNPCLoader::CreateLevelBasedSpawnlist(void)
-{
-	KeyValues* output = new KeyValues("spawnlist_generated");
-
-	int largestPlayerLevel = 1;
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
-	{
-		CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
-		if (pPlayer)
-		{
-			if (pPlayer->GetLevel() > largestPlayerLevel)
-			{
-				largestPlayerLevel = pPlayer->GetLevel();
-			}
-		}
-	}
-
-	//check all the keys to generate a level based spawnlist.
-	for (KeyValues* kv = data->GetFirstSubKey(); kv != NULL; kv = kv->GetNextKey())
-	{
-		int minLevel = kv->GetInt("min_level", 1);
-
-		if (largestPlayerLevel >= minLevel)
-		{
-			KeyValues* newKey = output->CreateNewKey();
-			const char* pClassname = kv->GetString("classname");
-
-			if (strlen(pClassname) > 0)
-			{
-				newKey->SetString("classname", pClassname);
-				newKey->SetBool( "rare", kv->GetBool( "rare" ) );
-				newKey->SetInt( "min_level", minLevel );
-				newKey->SetInt( "preset", kv->GetInt( "preset", -1 ) );
-				newKey->SetString( "grenades", kv->GetString( "grenades" ) );
-
-				// Copy either a string or a KeyValue list.
-				KeyValues* pEquipment = kv->FindKey("equipment");
-				if (pEquipment != NULL)
-				{
-					if (pEquipment->GetFirstSubKey() == NULL)
-					{
-						// This is just a string with a weapon name.
-						const char* e = pEquipment->GetString();
-						newKey->SetString("equipment", e);
-				    }
-					else
-					{
-						// A list of weapons/weight pairs.
-						KeyValues* newKey2 = newKey->CreateNewKey();
-						newKey2->SetName("equipment");
-						pEquipment->CopySubkeys(newKey2);
-					}
-				}
-			}
-			else
-			{
-				return NULL;
-			}
-		}
-	}
-
-	if (!output->IsEmpty())
-	{
-		return output;
-	}
-	else
-	{
-		output->deleteThis();
-		return NULL;
-	}
-}
-
-void CRandNPCLoader::PrecacheSpawnlist(void)
-{
-	for (KeyValues* kv = data->GetFirstSubKey(); kv != NULL; kv = kv->GetNextKey())
-	{
-		const char* pClassname = kv->GetString("classname");
-
-		if (strlen(pClassname) > 0)
-		{
-			UTIL_PrecacheOther(pClassname);
-		}
-	}
 }
