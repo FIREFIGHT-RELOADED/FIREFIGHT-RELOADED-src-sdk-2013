@@ -26,15 +26,15 @@ Read this first to install the steam runtime and other necessary components.
 https://developer.valvesoftware.com/wiki/Source_SDK_2013#Source_SDK_2013_on_Linux
 After installing it and other dependencies, do the 3 steps below.
 
-1. CD to your FIREFIGHT RELOADED git directory, I.E.
+1. CD to your FIREFIGHT RELOADED git directory, I.E.\
 ```cd ~/projects/FIREFIGHT-RELOADED-src-sdk-2013```
 
-1. Run the steam-runtime. NOTE: Make sure you have the steam runtime installed in ~/valve.
+1. Run the steam-runtime. NOTE: Make sure you have the steam runtime installed in ~/valve.\
 ```bash ./sandbox_setup.sh```
 
-3. Go back to this directory and run:
+3. Go back to this directory and run:\
 ```bash ./build_fr_linux.sh```
-This will update the repo automatically. If you would like to update the repo without building it, run:
+This will update the repo automatically. If you would like to update the repo without building it, run:\
 ```bash ./update_fr_linux.sh```
 
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/made-with-c-plus-plus.svg)](https://forthebadge.com)
