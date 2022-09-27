@@ -23,10 +23,10 @@
 #include "filesystem.h"
 #include "KeyValues.h"
 #include "randnpcloader.h"
+#include "firefightreloaded/npc_combineace.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
-#include <firefightreloaded/npc_combineace.h>
 
 ConVar sk_initialspawnertime("sk_initialspawnertime", "5", FCVAR_CHEAT);
 ConVar sk_spawnrareenemies("sk_spawnrareenemies", "1", FCVAR_ARCHIVE);
