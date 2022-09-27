@@ -12,7 +12,7 @@ FIREFIGHT RELOADED is an open-source Source SDK 2013 modification with the goal 
 
 As this is a Half-Life 2/Source Engine mod, a file named LICENCE-VALVE.md is included which includes Valve's Source 1 SDK licence.\
 All code written by Valve and Bitl are covered by this licence.\
-Code used in FIREFIGHT RELOADED may be used for your Source Engine game/mod, however you must give credit to Bitl if you do use code from this mod into your Source SDK project.\
+Code used in FIREFIGHT RELOADED may be used for your Source Engine game/mod, however you must give credit to Bitl if you do use code from this mod into your Source SDK project.
 
 ## Compiling
 
