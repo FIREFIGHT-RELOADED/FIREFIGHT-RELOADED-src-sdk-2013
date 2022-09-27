@@ -84,3 +84,8 @@ sp/src/.vs/firefight/v17/fileList.bin
 sp/src/.vs/firefight/FileContentIndex/read.lock
 sp/game/firefightreloaded/cfg/user_sp.scr
 sp/game/firefightreloaded/cfg/steam_autocloud.vdf
+sp/src/lib/public/fgdlib.lib
+sp/src/lib/public/mathlib.lib
+sp/src/lib/public/raytrace.lib
+sp/src/lib/public/tier1.lib
+sp/src/lib/public/vgui_controls.lib

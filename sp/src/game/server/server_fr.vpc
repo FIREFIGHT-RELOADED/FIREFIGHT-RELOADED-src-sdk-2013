@@ -331,8 +331,6 @@ $Project "Server (FR)"
 			$File	"$SRCDIR\game\shared\firefightreloaded\achievements_firefightreloaded.cpp"
 			$File	"firefightreloaded\item_armortypes.cpp"
 			$File	"firefightreloaded\item_itemcrate_firefight.cpp"
-			$File	"firefightreloaded\monstermaker_firefight.cpp"
-			$File	"firefightreloaded\monstermaker_firefight.h"
 			$File	"$SRCDIR\game\shared\firefightreloaded\fr_ragdoll.cpp"
 			$File	"$SRCDIR\game\shared\firefightreloaded\fr_ragdoll.h"
 			$File	"$SRCDIR\game\shared\firefightreloaded\singleplayer_animstate.cpp"
@@ -348,6 +346,17 @@ $Project "Server (FR)"
 				}
 				$File	"firefightreloaded\npc_combineace.cpp"
 				$File	"firefightreloaded\npc_combineace.h"
+			}
+
+			$Folder	"Spawning"
+			{
+				$Folder	"NPC Spawnlist Loading"
+				{
+					$File	"firefightreloaded\randnpcloader.cpp"
+					$File	"firefightreloaded\randnpcloader.h"
+				}
+				$File	"firefightreloaded\monstermaker_firefight.cpp"
+				$File	"firefightreloaded\monstermaker_firefight.h"
 			}
 			
 			$Folder	"Weapons"
