@@ -18,14 +18,14 @@ Code used in FIREFIGHT RELOADED may be used for your Source Engine game/mod, how
 
 ### WINDOWS:
 You must have Visual Studio 2013 Build Tools installed alongside a compatible IDE (Visual Studio 2013 and above).\
-Read this for more details: https://developer.valvesoftware.com/wiki/Source_SDK_2013#Source_SDK_2013_on_Windows\
+Read this for more details: https://developer.valvesoftware.com/wiki/Source_SDK_2013#Source_SDK_2013_on_Windows \
 Note that the Microsoft Speech API is only required for certain SDK tools.
 
 Creating a solution is as simple as running sp/src/createfirefightreloadedproject.bat, then opening up the solution in Visual Studio.
 
 ### LINUX:
 Read this first to install the steam runtime and other necessary components.\
-https://developer.valvesoftware.com/wiki/Source_SDK_2013#Source_SDK_2013_on_Linux\
+https://developer.valvesoftware.com/wiki/Source_SDK_2013#Source_SDK_2013_on_Linux \
 After installing it and other dependencies, do the 3 steps below.
 
 1. CD to your FIREFIGHT RELOADED git directory, I.E.\
