@@ -851,10 +851,26 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	Vector vecDir = vec3_origin;
 
-	if (info.GetDamageType() & DMG_KNOCKBACK)
+	if (info.GetDamageType() & DMG_BLAST)
 	{
-		Vector force = vecDir * -DamageForce(WorldAlignSize(), info.GetBaseDamage());
-		ApplyAbsVelocityImpulse(force * 10.0f);
+		if (!FClassnameIs(this, "npc_strider"))
+		{
+			Vector hitDirection, up;
+
+			CBasePlayer* pPlayer = ToBasePlayer(info.GetAttacker());
+			if (pPlayer)
+			{
+				pPlayer->EyeVectors(&hitDirection, NULL, &up);
+			}
+			else
+			{
+				hitDirection = GetAbsOrigin();
+				up = GetAbsVelocity();
+			}
+
+			VectorNormalize(hitDirection);
+			ApplyAbsVelocityImpulse(hitDirection * 800 + up * 300);
+		}
 	}
 
 	if ( m_iHealth <= ( m_iMaxHealth / 2 ) )

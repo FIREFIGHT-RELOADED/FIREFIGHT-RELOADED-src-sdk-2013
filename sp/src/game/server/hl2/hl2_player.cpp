@@ -1136,7 +1136,7 @@ CBaseEntity* CHL2_Player::CheckKickPropAction(CBaseViewModel* vm, const Vector& 
 		NDebugOverlay::BoxDirection(vStart, mins, maxs, direction, 255, 0, 0, 20, 1.0);
 	}
 
-	CTakeDamageInfo	dmgInfo(this, this, iDamage, (/*DMG_PHYSGUN |*/ DMG_CLUB | DMG_KICK));
+	CTakeDamageInfo	dmgInfo(this, this, iDamage, (/*DMG_PHYSGUN |*/ DMG_CLUB));
 
 	// COLLISION_GROUP_PROJECTILE does some handy filtering that's very appropriate for this type of attack, as well. (sjb) 7/25/2007
 	CTraceFilterMelee traceFilter(this, COLLISION_GROUP_NONE, &dmgInfo, flForceScale, false);
@@ -1318,18 +1318,12 @@ void CHL2_Player::KickAttack(void)
 					return;
 				}
 
-				CBaseEntity* Victim = CheckTraceHullAttack(Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), KickDamageFlightBoost, (DMG_CLUB | DMG_KICK), KickThrowForceMult, true);
+				CBaseEntity* Victim = CheckTraceHullAttack(Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), KickDamageFlightBoost, (DMG_CLUB | DMG_BLAST), KickThrowForceMult, true);
 				if (Victim && Victim->IsNPC())
 				{
 					//don't kick striders, only deliver damage.
-					if (!FClassnameIs(Victim, "npc_strider"))
-					{
-						Vector hitDirection, up;
-						EyeVectors(&hitDirection, NULL, &up);
-						VectorNormalize(hitDirection);
-						Victim->ApplyAbsVelocityImpulse(hitDirection * 800 + up * 300);
-					}
-					else
+					// Note that DMG_BLAST delivers knockback now, so the prior knockback damage is unneeded.
+					if (FClassnameIs(Victim, "npc_strider"))
 					{
 						CAmmoDef *ammodef = GetAmmoDef();
 						Vector vecAiming = BaseClass::GetAutoaimVector(AUTOAIM_SCALE_DEFAULT);

@@ -1757,10 +1757,10 @@ CAmmoDef *GetAmmoDef()
 		def.AddAmmoType("CustomBullet23_BuckshotSniperDissolve", DMG_BULLET | DMG_BUCKSHOT | DMG_SNIPER | DMG_DISSOLVE, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_custom_buckshotsniper", "sk_npc_dmg_custom_buckshotsniper", "sk_max_custom_buckshotsniper", BULLET_IMPULSE(800, 5000), 0);
 		def.AddAmmoType("CustomBullet24_BuckshotSniperDissolveGib", DMG_BULLET | DMG_BUCKSHOT | DMG_SNIPER | DMG_DISSOLVE | DMG_ALWAYSGIB, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_custom_buckshotsniper", "sk_npc_dmg_custom_buckshotsniper", "sk_max_custom_buckshotsniper", BULLET_IMPULSE(800, 5000), 0);
 
-		def.AddAmmoType("CustomBullet25_NormalKnockback", DMG_BULLET | DMG_KNOCKBACK, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_custom_normal", "sk_npc_dmg_custom_normal", "sk_max_custom_normal", BULLET_IMPULSE(800, 5000), 0);
-		def.AddAmmoType("CustomBullet26_BuckshotKnockback", DMG_BULLET | DMG_BUCKSHOT | DMG_KNOCKBACK, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_custom_buckshot", "sk_npc_dmg_custom_buckshot", "sk_max_custom_buckshot", BULLET_IMPULSE(800, 5000), 0);
-		def.AddAmmoType("CustomBullet27_SniperKnockback", DMG_BULLET | DMG_SNIPER | DMG_KNOCKBACK, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_custom_sniper", "sk_npc_dmg_custom_sniper", "sk_max_custom_sniper", BULLET_IMPULSE(800, 5000), 0);
-		def.AddAmmoType("CustomBullet28_BuckshotSniperKnockback", DMG_BULLET | DMG_BUCKSHOT | DMG_SNIPER | DMG_KNOCKBACK, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_custom_buckshotsniper", "sk_npc_dmg_custom_buckshotsniper", "sk_max_custom_buckshotsniper", BULLET_IMPULSE(800, 5000), 0);
+		def.AddAmmoType("CustomBullet25_NormalKnockback", DMG_BULLET | DMG_BLAST, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_custom_normal", "sk_npc_dmg_custom_normal", "sk_max_custom_normal", BULLET_IMPULSE(800, 5000), 0);
+		def.AddAmmoType("CustomBullet26_BuckshotKnockback", DMG_BULLET | DMG_BUCKSHOT | DMG_BLAST, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_custom_buckshot", "sk_npc_dmg_custom_buckshot", "sk_max_custom_buckshot", BULLET_IMPULSE(800, 5000), 0);
+		def.AddAmmoType("CustomBullet27_SniperKnockback", DMG_BULLET | DMG_SNIPER | DMG_BLAST, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_custom_sniper", "sk_npc_dmg_custom_sniper", "sk_max_custom_sniper", BULLET_IMPULSE(800, 5000), 0);
+		def.AddAmmoType("CustomBullet28_BuckshotSniperKnockback", DMG_BULLET | DMG_BUCKSHOT | DMG_SNIPER | DMG_BLAST, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_custom_buckshotsniper", "sk_npc_dmg_custom_buckshotsniper", "sk_max_custom_buckshotsniper", BULLET_IMPULSE(800, 5000), 0);
 		//STOP HERE.
 #ifdef HL2_EPISODIC
 		def.AddAmmoType("Hopwire",			DMG_BLAST,					TRACER_NONE,			"sk_plr_dmg_grenade",		"sk_npc_dmg_grenade",		"sk_max_hopwire",		0, 0);

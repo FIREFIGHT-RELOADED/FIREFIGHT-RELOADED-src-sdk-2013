@@ -43,7 +43,5 @@ enum
 //--------------
 #define DMG_SNIPER			(DMG_LASTGENERICFLAG<<1)	// This is sniper damage
 #define DMG_MISSILEDEFENSE	(DMG_LASTGENERICFLAG<<2)	// The only kind of damage missiles take. (special missile defense)
-#define DMG_KNOCKBACK		(DMG_LASTGENERICFLAG<<3)	// Knockback Damage
-#define DMG_KICK		(DMG_LASTGENERICFLAG<<4)	// Kick Damage
 
 #endif // HL2_SHAREDDEFS_H
