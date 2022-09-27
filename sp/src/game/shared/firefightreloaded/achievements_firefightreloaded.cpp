@@ -34,7 +34,14 @@ protected:
 
 	virtual void Event_EntityKilled( CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event ) 
 	{
-		if (FClassnameIs(pVictim, "npc_combine_s") || FClassnameIs(pVictim, "npc_combine_e") || FClassnameIs(pVictim, "npc_combine_p") || FClassnameIs(pVictim, "npc_combine_shot") || FClassnameIs(pVictim, "npc_combine_ace") || FClassnameIs(pVictim, "npc_metropolice") || FClassnameIs(pVictim, "npc_assassin") || FClassnameIs(pVictim, "npc_manhack"))
+		if (FClassnameIs(pVictim, "npc_combine_s") || 
+			FClassnameIs(pVictim, "npc_combine_e") || 
+			FClassnameIs(pVictim, "npc_combine_p") || 
+			FClassnameIs(pVictim, "npc_combine_shot") || 
+			FClassnameIs(pVictim, "npc_combine_ace") || 
+			FClassnameIs(pVictim, "npc_metropolice") || 
+			FClassnameIs(pVictim, "npc_assassin") || 
+			FClassnameIs(pVictim, "npc_manhack"))
 		{
 			IncrementCount();
 		}
@@ -62,7 +69,14 @@ protected:
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_combine_s") || FClassnameIs(pVictim, "npc_combine_e") || FClassnameIs(pVictim, "npc_combine_p") || FClassnameIs(pVictim, "npc_combine_shot") || FClassnameIs(pVictim, "npc_combine_ace") || FClassnameIs(pVictim, "npc_metropolice") || FClassnameIs(pVictim, "npc_assassin") || FClassnameIs(pVictim, "npc_manhack"))
+		if (FClassnameIs(pVictim, "npc_combine_s") || 
+			FClassnameIs(pVictim, "npc_combine_e") || 
+			FClassnameIs(pVictim, "npc_combine_p") || 
+			FClassnameIs(pVictim, "npc_combine_shot") || 
+			FClassnameIs(pVictim, "npc_combine_ace") || 
+			FClassnameIs(pVictim, "npc_metropolice") || 
+			FClassnameIs(pVictim, "npc_assassin") || 
+			FClassnameIs(pVictim, "npc_manhack"))
 		{
 			IncrementCount();
 		}
@@ -90,7 +104,14 @@ protected:
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_combine_s") || FClassnameIs(pVictim, "npc_combine_e") || FClassnameIs(pVictim, "npc_combine_p") || FClassnameIs(pVictim, "npc_combine_shot") || FClassnameIs(pVictim, "npc_combine_ace") || FClassnameIs(pVictim, "npc_metropolice") || FClassnameIs(pVictim, "npc_assassin") || FClassnameIs(pVictim, "npc_manhack"))
+		if (FClassnameIs(pVictim, "npc_combine_s") || 
+			FClassnameIs(pVictim, "npc_combine_e") || 
+			FClassnameIs(pVictim, "npc_combine_p") || 
+			FClassnameIs(pVictim, "npc_combine_shot") || 
+			FClassnameIs(pVictim, "npc_combine_ace") || 
+			FClassnameIs(pVictim, "npc_metropolice") || 
+			FClassnameIs(pVictim, "npc_assassin") || 
+			FClassnameIs(pVictim, "npc_manhack"))
 		{
 			IncrementCount();
 		}
@@ -273,7 +294,12 @@ protected:
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_combine_s") || FClassnameIs(pVictim, "npc_combine_e") || FClassnameIs(pVictim, "npc_combine_p") || FClassnameIs(pVictim, "npc_combine_shot") || FClassnameIs(pVictim, "npc_combine_ace") || FClassnameIs(pVictim, "npc_metropolice"))
+		if (FClassnameIs(pVictim, "npc_combine_s") || 
+			FClassnameIs(pVictim, "npc_combine_e") || 
+			FClassnameIs(pVictim, "npc_combine_p") || 
+			FClassnameIs(pVictim, "npc_combine_shot") || 
+			FClassnameIs(pVictim, "npc_combine_ace") || 
+			FClassnameIs(pVictim, "npc_metropolice"))
 		{
 			IncrementCount();
 		}
@@ -338,7 +364,10 @@ protected:
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_antlion") || FClassnameIs(pVictim, "npc_antlionworker"))
+		if (FClassnameIs(pVictim, "npc_antlion") || 
+			FClassnameIs(pVictim, "npc_antlionworker") || 
+			FClassnameIs(pVictim, "npc_antlionguard") ||
+			FClassnameIs(pVictim, "npc_antlionguardian"))
 		{
 			IncrementCount();
 		}
@@ -366,7 +395,10 @@ protected:
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_antlion") || FClassnameIs(pVictim, "npc_antlionworker"))
+		if (FClassnameIs(pVictim, "npc_antlion") || 
+			FClassnameIs(pVictim, "npc_antlionworker") || 
+			FClassnameIs(pVictim, "npc_antlionguard") ||
+			FClassnameIs(pVictim, "npc_antlionguardian"))
 		{
 			IncrementCount();
 		}
@@ -394,7 +426,10 @@ protected:
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_antlion") || FClassnameIs(pVictim, "npc_antlionworker"))
+		if (FClassnameIs(pVictim, "npc_antlion") || 
+			FClassnameIs(pVictim, "npc_antlionworker") || 
+			FClassnameIs(pVictim, "npc_antlionguard") ||
+			FClassnameIs(pVictim, "npc_antlionguardian"))
 		{
 			IncrementCount();
 		}
@@ -422,7 +457,8 @@ protected:
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_antlionguard") || FClassnameIs(pVictim, "npc_antlionguardian"))
+		if (FClassnameIs(pVictim, "npc_antlionguard") || 
+			FClassnameIs(pVictim, "npc_antlionguardian"))
 		{
 			IncrementCount();
 		}
@@ -450,7 +486,8 @@ protected:
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_antlionguard") || FClassnameIs(pVictim, "npc_antlionguardian"))
+		if (FClassnameIs(pVictim, "npc_antlionguard") || 
+			FClassnameIs(pVictim, "npc_antlionguardian"))
 		{
 			IncrementCount();
 		}
@@ -478,7 +515,8 @@ protected:
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_antlionguard") || FClassnameIs(pVictim, "npc_antlionguardian"))
+		if (FClassnameIs(pVictim, "npc_antlionguard") || 
+			FClassnameIs(pVictim, "npc_antlionguardian"))
 		{
 			IncrementCount();
 		}
@@ -506,7 +544,12 @@ protected:
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_zombie") || FClassnameIs(pVictim, "npc_zombie_torso") || FClassnameIs(pVictim, "npc_fastzombie") || FClassnameIs(pVictim, "npc_fastzombie_torso") || FClassnameIs(pVictim, "npc_poisonzombie") || FClassnameIs(pVictim, "npc_zombine"))
+		if (FClassnameIs(pVictim, "npc_zombie") || 
+			FClassnameIs(pVictim, "npc_zombie_torso") || 
+			FClassnameIs(pVictim, "npc_fastzombie") || 
+			FClassnameIs(pVictim, "npc_fastzombie_torso") || 
+			FClassnameIs(pVictim, "npc_poisonzombie") || 
+			FClassnameIs(pVictim, "npc_zombine"))
 		{
 			IncrementCount();
 		}
@@ -534,7 +577,12 @@ protected:
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_zombie") || FClassnameIs(pVictim, "npc_zombie_torso") || FClassnameIs(pVictim, "npc_fastzombie") || FClassnameIs(pVictim, "npc_fastzombie_torso") || FClassnameIs(pVictim, "npc_poisonzombie") || FClassnameIs(pVictim, "npc_zombine"))
+		if (FClassnameIs(pVictim, "npc_zombie") || 
+			FClassnameIs(pVictim, "npc_zombie_torso") || 
+			FClassnameIs(pVictim, "npc_fastzombie") || 
+			FClassnameIs(pVictim, "npc_fastzombie_torso") || 
+			FClassnameIs(pVictim, "npc_poisonzombie") || 
+			FClassnameIs(pVictim, "npc_zombine"))
 		{
 			IncrementCount();
 		}
@@ -562,7 +610,12 @@ protected:
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_zombie") || FClassnameIs(pVictim, "npc_zombie_torso") || FClassnameIs(pVictim, "npc_fastzombie") || FClassnameIs(pVictim, "npc_fastzombie_torso") || FClassnameIs(pVictim, "npc_poisonzombie") || FClassnameIs(pVictim, "npc_zombine"))
+		if (FClassnameIs(pVictim, "npc_zombie") || 
+			FClassnameIs(pVictim, "npc_zombie_torso") || 
+			FClassnameIs(pVictim, "npc_fastzombie") || 
+			FClassnameIs(pVictim, "npc_fastzombie_torso") || 
+			FClassnameIs(pVictim, "npc_poisonzombie") || 
+			FClassnameIs(pVictim, "npc_zombine"))
 		{
 			IncrementCount();
 		}
@@ -590,7 +643,9 @@ protected:
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_headcrab") || FClassnameIs(pVictim, "npc_headcrab_fast") || FClassnameIs(pVictim, "npc_headcrab_poison"))
+		if (FClassnameIs(pVictim, "npc_headcrab") || 
+			FClassnameIs(pVictim, "npc_headcrab_fast") || 
+			FClassnameIs(pVictim, "npc_headcrab_poison"))
 		{
 			IncrementCount();
 		}
@@ -618,7 +673,9 @@ protected:
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_headcrab") || FClassnameIs(pVictim, "npc_headcrab_fast") || FClassnameIs(pVictim, "npc_headcrab_poison"))
+		if (FClassnameIs(pVictim, "npc_headcrab") || 
+			FClassnameIs(pVictim, "npc_headcrab_fast") || 
+			FClassnameIs(pVictim, "npc_headcrab_poison"))
 		{
 			IncrementCount();
 		}
@@ -646,7 +703,9 @@ protected:
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_headcrab") || FClassnameIs(pVictim, "npc_headcrab_fast") || FClassnameIs(pVictim, "npc_headcrab_poison"))
+		if (FClassnameIs(pVictim, "npc_headcrab") || 
+			FClassnameIs(pVictim, "npc_headcrab_fast") || 
+			FClassnameIs(pVictim, "npc_headcrab_poison"))
 		{
 			IncrementCount();
 		}
@@ -674,7 +733,11 @@ protected:
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_houndeye") || FClassnameIs(pVictim, "npc_bullsquid") || FClassnameIs(pVictim, "npc_vortigaunt") || FClassnameIs(pVictim, "npc_agrunt") || FClassnameIs(pVictim, "npc_acontroller"))
+		if (FClassnameIs(pVictim, "npc_houndeye") || 
+			FClassnameIs(pVictim, "npc_bullsquid") || 
+			FClassnameIs(pVictim, "npc_vortigaunt") || 
+			FClassnameIs(pVictim, "npc_agrunt") || 
+			FClassnameIs(pVictim, "npc_acontroller"))
 		{
 			IncrementCount();
 		}
@@ -702,7 +765,11 @@ protected:
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_houndeye") || FClassnameIs(pVictim, "npc_bullsquid") || FClassnameIs(pVictim, "npc_vortigaunt") || FClassnameIs(pVictim, "npc_agrunt") || FClassnameIs(pVictim, "npc_acontroller"))
+		if (FClassnameIs(pVictim, "npc_houndeye") || 
+			FClassnameIs(pVictim, "npc_bullsquid") || 
+			FClassnameIs(pVictim, "npc_vortigaunt") || 
+			FClassnameIs(pVictim, "npc_agrunt") || 
+			FClassnameIs(pVictim, "npc_acontroller"))
 		{
 			IncrementCount();
 		}
@@ -730,7 +797,11 @@ protected:
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		if (FClassnameIs(pVictim, "npc_houndeye") || FClassnameIs(pVictim, "npc_bullsquid") || FClassnameIs(pVictim, "npc_vortigaunt") || FClassnameIs(pVictim, "npc_agrunt") || FClassnameIs(pVictim, "npc_acontroller"))
+		if (FClassnameIs(pVictim, "npc_houndeye") || 
+			FClassnameIs(pVictim, "npc_bullsquid") || 
+			FClassnameIs(pVictim, "npc_vortigaunt") || 
+			FClassnameIs(pVictim, "npc_agrunt") || 
+			FClassnameIs(pVictim, "npc_acontroller"))
 		{
 			IncrementCount();
 		}

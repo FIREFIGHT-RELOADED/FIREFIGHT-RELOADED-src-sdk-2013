@@ -26,6 +26,7 @@
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+#include <firefightreloaded/npc_combineace.h>
 
 ConVar sk_initialspawnertime("sk_initialspawnertime", "5", FCVAR_CHEAT);
 ConVar sk_spawnrareenemies("sk_spawnrareenemies", "1", FCVAR_ARCHIVE);
@@ -496,25 +497,10 @@ void CNPCMakerFirefight::MakeNPC()
 		{
 			equip = "weapon_shotgun";
 		}
-		else if (Q_stristr(pRandomName, "npc_combine_s"))
-		{
-			int nWeaponsSoldier = ARRAYSIZE(g_CombineSoldierWeapons);
-			int randomChoiceSoldier = random->RandomInt(0, nWeaponsSoldier - 1);
-			equip = g_CombineSoldierWeapons[randomChoiceSoldier];
-		}
-		else if (Q_stristr(pRandomName, "npc_combine_e"))
-		{
-			int nWeaponsSoldier = ARRAYSIZE(g_CombineSoldierWeapons);
-			int randomChoiceSoldier = random->RandomInt(0, nWeaponsSoldier - 1);
-			equip = g_CombineSoldierWeapons[randomChoiceSoldier];
-		}
-		else if (Q_stristr(pRandomName, "npc_combine_p"))
-		{
-			int nWeaponsSoldier = ARRAYSIZE(g_CombineSoldierWeapons);
-			int randomChoiceSoldier = random->RandomInt(0, nWeaponsSoldier - 1);
-			equip = g_CombineSoldierWeapons[randomChoiceSoldier];
-		}
-		else if (Q_stristr(pRandomName, "npc_combine_ace"))
+		else if (Q_stristr(pRandomName, "npc_combine_s") || 
+				Q_stristr(pRandomName, "npc_combine_e") || 
+				Q_stristr(pRandomName, "npc_combine_p") || 
+				Q_stristr(pRandomName, "npc_combine_ace"))
 		{
 			int nWeaponsSoldier = ARRAYSIZE(g_CombineSoldierWeapons);
 			int randomChoiceSoldier = random->RandomInt(0, nWeaponsSoldier - 1);
@@ -570,7 +556,11 @@ void CNPCMakerFirefight::MakeNPC()
 			auto pPolice = (CNPC_MetroPolice*)pent;
 			pPolice->m_iManhacks = grenades;
 		}
-		else if ( Q_stristr( pRandomName, "npc_combine" ) )
+		else if (Q_stristr(pRandomName, "npc_combine_s") ||
+				Q_stristr(pRandomName, "npc_combine_e") ||
+				Q_stristr(pRandomName, "npc_combine_p") ||
+				Q_stristr(pRandomName, "npc_combine_shot") || 
+				Q_stristr(pRandomName, "npc_combine_ace"))
 		{
 			auto pCombine = (CNPC_Combine*)pent;
 			pCombine->m_iNumGrenades = grenades;
