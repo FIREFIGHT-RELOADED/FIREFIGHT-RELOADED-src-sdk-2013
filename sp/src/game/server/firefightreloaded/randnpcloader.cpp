@@ -13,7 +13,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-extern ConVar sk_spawner_defaultspawnlist;
+ConVar sk_spawner_defaultspawnlist("sk_spawner_defaultspawnlist", "scripts/spawnlists/default.txt", FCVAR_ARCHIVE);
 
 CRandNPCLoader::CRandNPCLoader()
 {
@@ -136,13 +136,20 @@ bool CRandNPCLoader::ParseEntry( SpawnEntry_t& entry, KeyValues *kv)
 	entry.grenadesMin = entry.grenadesMax = -1;
 
 	auto grenades = MAKE_STRING( kv->GetString( "grenades" ) );
+	auto manhacks = MAKE_STRING(kv->GetString("manhacks"));
 	if ( grenades != NULL_STRING )
 	{
-		int max, min;
-		if ( !ParseRange( min, max, STRING( grenades ) ) )
+		if (!SetRandomGrenades(entry, grenades))
+		{
 			return false;
-		entry.grenadesMin = min;
-		entry.grenadesMax = max;
+		}
+	}
+	else if (manhacks != NULL_STRING)
+	{
+		if (!SetRandomGrenades(entry, manhacks))
+		{
+			return false;
+		}
 	}
 
 	// The equipment key can just have a string value, or a list of subkeys with weapon/weight pairs.
@@ -169,6 +176,18 @@ bool CRandNPCLoader::ParseEntry( SpawnEntry_t& entry, KeyValues *kv)
 		}
 	}
 
+	return true;
+}
+
+bool CRandNPCLoader::SetRandomGrenades(SpawnEntry_t& entry, string_t grenadeString)
+{
+	int max, min;
+	if (!ParseRange(min, max, STRING(grenadeString)))
+	{
+		return false;
+	}
+	entry.grenadesMin = min;
+	entry.grenadesMax = max;
 	return true;
 }
 

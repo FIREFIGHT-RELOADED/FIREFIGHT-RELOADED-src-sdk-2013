@@ -55,6 +55,7 @@ public:
 
 private:
 	static int GetLargestLevel();
+	static bool SetRandomGrenades(SpawnEntry_t& entry, string_t grenadeString);
 	static bool ParseEntry( SpawnEntry_t& entry, KeyValues *kv );
 	static bool ParseRange( int& min, int& man, const char* s );
 
