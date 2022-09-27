@@ -1,6 +1,6 @@
 "Resource/HudLayout.res"
 {
-	HudHealth [$WIN32]
+	HudHealth
 	{
 		"fieldName"		"HudHealth"
 		"xpos"	"16"
@@ -18,7 +18,7 @@
 		"digit_ypos" "16"
 	}
 	
-	HudSuit [$WIN32]
+	HudSuit
 	{
 		"fieldName"		"HudSuit"
 		"xpos"	"68"
@@ -36,7 +36,7 @@
 		"digit_ypos" "16"
 	}
 
-	HudAmmo	[$WIN32]
+	HudAmmo
 	{
 		"fieldName" "HudAmmo"
 		"xpos"	"r90"
@@ -58,7 +58,7 @@
 		"primaryammoicon_ypos" "-7"
 	}
 
-	HudAmmoSecondary	[$WIN32]
+	HudAmmoSecondary
 	{
 		"fieldName" "HudAmmoSecondary"
 		"xpos"	"r78"
@@ -78,7 +78,7 @@
 		"secondaryammoicon_ypos" "-7"
 	}
 
-	HudPosture	[$WIN32]
+	HudPosture
 	{
 		"fieldName" 		"HudPosture"
 		"visible" 		"1"
@@ -92,7 +92,7 @@
 		"icon_ypos" 	"0"
 	}
 
-	HudSuitPower	[$WIN32]
+	HudSuitPower
 	{
 		"fieldName" "HudSuitPower"
 		"visible" "1"

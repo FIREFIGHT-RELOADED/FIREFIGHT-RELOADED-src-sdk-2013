@@ -79,9 +79,8 @@ compile_commands.json
 # Don't ignore base makefiles
 !makefile_base_posix.mak
 !sourcesdk_def.mak
-sp/src/.vs/firefight/v17/fileList.bin
 *.vsidx
-sp/src/.vs/firefight/FileContentIndex/read.lock
+sp/src/.vs/*
 sp/game/firefightreloaded/cfg/user_sp.scr
 sp/game/firefightreloaded/cfg/steam_autocloud.vdf
 sp/src/lib/public/fgdlib.lib
@@ -89,4 +88,3 @@ sp/src/lib/public/mathlib.lib
 sp/src/lib/public/raytrace.lib
 sp/src/lib/public/tier1.lib
 sp/src/lib/public/vgui_controls.lib
-sp/src/.vs/firefight/FileContentIndex/write.lock
