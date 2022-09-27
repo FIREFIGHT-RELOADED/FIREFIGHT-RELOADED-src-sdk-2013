@@ -180,6 +180,7 @@ CNPC_Combine::CNPC_Combine()
 {
 	m_vecTossVelocity = vec3_origin;
 	m_bNoDeathSound = false;
+	m_iNumGrenades = -1;
 }
 
 

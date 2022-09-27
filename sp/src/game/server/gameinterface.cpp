@@ -90,6 +90,7 @@
 #include "serverbenchmark_base.h"
 #include "querycache.h"
 #include "SMMOD/mapadd.h"
+#include "firefightreloaded/randnpcloader.h"
 
 
 #ifdef TF_DLL
@@ -1365,7 +1366,7 @@ void CServerGameDLL::OnQueryCvarValueFinished( QueryCvarCookie_t iCookie, edict_
 {
 }
 
-
+extern CRandNPCLoader* g_npcLoader;
 // Called when a level is shutdown (including changing levels)
 void CServerGameDLL::LevelShutdown( void )
 {
@@ -1385,6 +1386,12 @@ void CServerGameDLL::LevelShutdown( void )
 	CSoundEnt::ShutdownSoundEnt();
 
 	gEntList.Clear();
+
+	if ( g_npcLoader != NULL )
+	{
+		delete g_npcLoader;
+		g_npcLoader = NULL;
+	}
 
 	InvalidateQueryCache();
 

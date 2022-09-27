@@ -398,7 +398,6 @@ private:
 private:
 
 	int				m_iPistolClips;		// How many clips the cop has in reserve
-	int				m_iManhacks;		// How many manhacks the cop has
 	bool			m_fWeaponDrawn;		// Is my weapon drawn? (ready to use)
 	bool			m_bSimpleCops;		// The easy version of the cops
 	int				m_LastShootSlot;
@@ -472,6 +471,7 @@ private:
 	static float	gm_flTimeLastSpokePeek;
 
 public:
+	int				m_iManhacks;		// How many manhacks the cop has
 	DEFINE_CUSTOM_AI;
 };
 
