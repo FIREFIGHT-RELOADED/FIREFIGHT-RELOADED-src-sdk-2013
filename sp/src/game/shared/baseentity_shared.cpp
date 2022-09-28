@@ -1162,9 +1162,10 @@ void CBaseEntity::VPhysicsUpdate( IPhysicsObject *pPhysics )
 			}
 			else
 			{
-				if ( CheckEmitReasonablePhysicsSpew() )
+				if ( CheckEmitReasonablePhysicsSpew() && !IsPlayer() )
 				{
 					Warning( "Removing entity with unreasonable position (%f,%f,%f) from vphysics! (entity %s)\n", origin.x, origin.y, origin.z, GetDebugName() );
+					this->Remove();
 				}
 			}
 
