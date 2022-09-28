@@ -218,16 +218,16 @@
 		"visible" "1"
 		"enabled" "1"
 		"xpos"	 "r640"
-		"ypos"	 "12"
+		"ypos"	 "5"
 		"wide"	 "628"
 		"tall"	 "468"
 
-		"MaxDeathNotices" "5"
-		"LineHeight"	  "26"
+		"MaxDeathNotices" "4"
+		"LineHeight"	  "28"
 		"RightJustify"	  "1"	// If 1, draw notices from the right
-		"IconOffsetWepY"  "-18"
-		"IconOffsetAmmoY"  "-18"
-		"IconOffsetTexWepY"	"-3"
+		"IconOffsetWepY"  "-13"
+		"IconOffsetAmmoY"  "-13"
+		"IconOffsetTexWepY"	"-2"
 
 		"TextFont"				"DefaultKillFeed"
 		

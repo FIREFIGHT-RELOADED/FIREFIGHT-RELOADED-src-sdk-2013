@@ -471,8 +471,7 @@ Scheme
 			"1"
 			{
 				"name"		"HL2MP"
-				"tall"		"40" [$WIN32]
-				"tall"		"25" [$POSIX]
+				"tall"		"30"
 				"weight"	"0"
 				"antialias" "1"
 				"additive"	"1"
@@ -484,8 +483,7 @@ Scheme
 			"1"
 			{
 				"name"		"HalfLife2"
-				"tall"		"40" [$WIN32]
-				"tall"		"25" [$POSIX]
+				"tall"		"30"
 				"weight"	"2000"
 				"antialias" "1"
 				"additive"	"1"
@@ -497,8 +495,7 @@ Scheme
 			"1"
 			{
 				"name"		"csd"
-				"tall"		"40" [$WIN32]
-				"tall"		"25" [$POSIX]
+				"tall"		"30"
 				"weight"	"0"
 				"antialias" "1"
 				"additive"	"1"
@@ -510,8 +507,7 @@ Scheme
 			"1"
 			{
 				"name"		"HalfLife2"
-				"tall"		"40" [$WIN32]
-				"tall"		"25" [$POSIX]
+				"tall"		"30"
 				"weight"	"0"
 				"antialias" "1"
 				"additive"	"1"
