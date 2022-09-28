@@ -140,15 +140,15 @@ void CWeaponKnife::ThrowKnife(void)
 
 void CWeaponKnife::SecondaryAttack(void)
 {
-	ThrowKnife();
-
 	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
 	if (pPlayer)
 	{
 		m_iSecondaryAttacks++;
 		gamestats->Event_WeaponFired(pPlayer, true, GetClassname());
-		//pPlayer->SwitchToNextBestWeapon(this);
-		engine->ClientCommand(pPlayer->edict(), "lastinv");
+		ThrowKnife();
+		pPlayer->Weapon_Detach( this );
+		Remove();
+		engine->ClientCommand( pPlayer->edict(), "lastinv" );
 	}
 }
 
