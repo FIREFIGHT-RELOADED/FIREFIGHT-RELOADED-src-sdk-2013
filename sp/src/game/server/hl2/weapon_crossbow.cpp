@@ -298,7 +298,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 				data.m_vNormal = vForward;
 				data.m_nEntIndex = tr2.fraction != 1.0f;
 
-				if ( IsKnife() )
+				if ( !IsKnife() )
 					DispatchEffect( "BoltImpact", data );
 			}
 		}
@@ -399,9 +399,10 @@ void CCrossbowBolt::DoneMoving(bool stuck)
 		if ( stuck && phys != NULL )
 		{
 			phys->EnableMotion( false );
-			pWeap->SetCollisionGroup( COLLISION_GROUP_DEBRIS );
+			//pWeap->SetCollisionGroup( COLLISION_GROUP_DEBRIS );
 		}
 		pWeap->SetAbsVelocity( Vector(0, 0, 0) );
+		pWeap->AddEffects( EF_ITEM_BLINK );
 	}
 
 	Remove();

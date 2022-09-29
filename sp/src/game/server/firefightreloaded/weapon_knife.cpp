@@ -379,3 +379,20 @@ void CWeaponKnife::ImpactEffect(trace_t &traceHit)
 	UTIL_ImpactTrace(&traceHit, DMG_SLASH);
 	//UTIL_DecalTrace(&traceHit, "ManhackCut");
 }
+
+int CWeaponKnife::OnTakeDamage( const CTakeDamageInfo& info )
+{
+	auto phys = VPhysicsGetObject();
+	if ( IsEffectActive( EF_ITEM_BLINK ) && phys != NULL && !phys->IsMotionEnabled() )
+	{
+		Vector forward;
+		AngleVectors( GetAbsAngles(), &forward );
+		phys->EnableMotion( true );
+		phys->Wake();
+		forward *= Clamp( info.GetDamage() + 100, 100.0f, 250.0f );
+		phys->SetVelocity( &forward, NULL );
+		return 0;
+	}
+	else
+		return BaseClass::OnTakeDamage( info );
+}

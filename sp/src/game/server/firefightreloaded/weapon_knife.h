@@ -47,6 +47,8 @@ public:
 	bool		Deploy(void);
 	void		ItemPostFrame(void);
 
+	int			OnTakeDamage( const CTakeDamageInfo& info );
+
 	// Animation event
 	virtual void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
 	void			Hit(trace_t &traceHit, Activity nHitActivity, bool bIsSecondary);
