@@ -831,15 +831,15 @@ void CRagdollLRURetirement::Update( float frametime ) // EPISODIC VERSION
 			IPhysicsObject* pObject = pRagdoll->VPhysicsGetObject();
 			if ( pRagdoll->GetEffectEntity() || (pObject && !pObject->IsAsleep()) )
 				continue;
-		}
 
 #ifdef CLIENT_DLL
-		m_LRU[i]->SUB_Remove();
+			m_LRU[i]->SUB_Remove();
 #else
-		m_LRU[i]->SUB_StartFadeOut( 0, true, "CleanUp" );
+			m_LRU[i]->SUB_StartFadeOut( 0, true, "CleanUp" );
 #endif
-		--m_iRagdollCount;
-		m_LRU.Remove( i );
+			--m_iRagdollCount;
+			m_LRU.Remove( i );
+		}
 	}
 }
 
