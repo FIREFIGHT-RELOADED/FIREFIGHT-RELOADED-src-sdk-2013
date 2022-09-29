@@ -18,6 +18,12 @@
 		"price"		"150"
 		"command"	"upgrade 0"
 	}
+        "32"
+        {
+		"name"		"Knife"
+		"price"		"300"
+		"command"	"item weapon_knife 0"
+        }
 	"4"
 	{
 		"name"		"PistolAmmo"

@@ -11,8 +11,7 @@ WeaponData
 	"bucket"				"0"
 	"bucket_position"		"2"
 	
-	"clip_size"			"-1"
-
+	"clip_size"				"-1"
 	"primary_ammo"			"None"
 	"secondary_ammo"		"None"
 
@@ -24,7 +23,7 @@ WeaponData
 	"UseMuzzleSmoke"		"0"
 	"useironsights"			"0"
 	"LowerWeapon"			"0"
-	"useironsightcrosshair" 	"0"
+	"useironsightcrosshair" "0"
 	"MeleeWeapon"			"1"
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
