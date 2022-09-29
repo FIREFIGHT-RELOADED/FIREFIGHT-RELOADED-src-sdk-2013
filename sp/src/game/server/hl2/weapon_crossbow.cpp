@@ -358,7 +358,8 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 
 				UTIL_ImpactTrace( &tr, DMG_BULLET );
 
-				DoneMoving( true );
+				// The shallower the angle, the less of chance of sticking.
+				DoneMoving( random->RandomFloat(0.5) <= hitDot );
 
 				if ( m_pGlowSprite != NULL )
 				{
@@ -388,11 +389,19 @@ void CCrossbowBolt::DoneMoving(bool stuck)
 	if ( IsKnife() )
 	{
 		auto angle = GetAbsAngles();
+		// The weapon model is reversed for some reason.
 		angle[0] += 180;
-		auto pWeap = (CBaseCombatWeapon*)CBaseEntity::Create( "weapon_knife", GetAbsOrigin(), angle );
-		pWeap->SetAbsVelocity( Vector() );
-		if ( stuck )
-			pWeap->SetMoveType( MOVETYPE_NONE );
+		auto pWeap = (CBaseCombatWeapon*)CBaseEntity::CreateNoSpawn( "weapon_knife", GetAbsOrigin(), angle );
+		pWeap->AddSpawnFlags( SF_NORESPAWN );
+		DispatchSpawn( pWeap );
+
+		auto phys = pWeap->VPhysicsGetObject();
+		if ( stuck && phys != NULL )
+		{
+			phys->EnableMotion( false );
+			pWeap->SetCollisionGroup( COLLISION_GROUP_DEBRIS );
+		}
+		pWeap->SetAbsVelocity( Vector(0, 0, 0) );
 	}
 
 	Remove();

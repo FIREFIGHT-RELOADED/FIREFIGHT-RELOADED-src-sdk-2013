@@ -44,7 +44,6 @@ public:
 	void 		ThrowKnife(void);
 	virtual int WeaponMeleeAttack1Condition( float flDot, float flDist );
 	void		SecondaryAttack(void);
-	//void 		Precache(void);
 	bool		Deploy(void);
 	void		ItemPostFrame(void);
 

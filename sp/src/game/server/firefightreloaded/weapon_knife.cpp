@@ -71,11 +71,6 @@ CWeaponKnife::CWeaponKnife( void )
 {
 }
 
-/*void CWeaponKnife::Precache(void)
-{
-	UTIL_PrecacheOther("knife_bolt");
-}*/
-
 bool CWeaponKnife::Deploy(void)
 {
 	bool deployVal = BaseClass::Deploy();
@@ -147,8 +142,9 @@ void CWeaponKnife::SecondaryAttack(void)
 		gamestats->Event_WeaponFired(pPlayer, true, GetClassname());
 		ThrowKnife();
 		pPlayer->Weapon_Detach( this );
-		Remove();
 		engine->ClientCommand( pPlayer->edict(), "lastinv" );
+		engine->ClientCommand( pPlayer->edict(), "-attack2" );
+		UTIL_Remove( this );
 	}
 }
 
