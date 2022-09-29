@@ -77,7 +77,7 @@ public:
 protected:
 
 	bool	CreateSprites( void );
-	bool	IsKnife() { return m_spawnflags & SF_BOLT_KNIFEMODE; }
+	bool	IsKnife() const { return m_spawnflags & SF_BOLT_KNIFEMODE; }
 	void	DoneMoving( bool stuck );
 
 	CHandle<CSprite>		m_pGlowSprite;
@@ -142,7 +142,10 @@ bool CCrossbowBolt::CreateVPhysics( void )
 //-----------------------------------------------------------------------------
 unsigned int CCrossbowBolt::PhysicsSolidMaskForEntity() const
 {
-	return ( BaseClass::PhysicsSolidMaskForEntity() | CONTENTS_HITBOX ) & ~CONTENTS_GRATE;
+	if ( IsKnife() )
+		return MASK_PLAYERSOLID;
+	else
+		return ( BaseClass::PhysicsSolidMaskForEntity() | CONTENTS_HITBOX ) & ~CONTENTS_GRATE;
 }
 
 //-----------------------------------------------------------------------------
@@ -229,6 +232,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 			dmgInfo.AdjustPlayerDamageInflictedForSkillLevel();
 			CalculateMeleeDamageForce( &dmgInfo, vecNormalizedVel, tr.endpos, 0.7f );
 			dmgInfo.SetDamagePosition( tr.endpos );
+			DoneMoving( false );
 			pOther->DispatchTraceAttack( dmgInfo, vecNormalizedVel, &tr );
 
 			CBasePlayer *pPlayer = ToBasePlayer( GetOwnerEntity() );
@@ -240,6 +244,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 			CTakeDamageInfo	dmgInfo( this, GetOwnerEntity(), curDamage, DMG_BULLET | DMG_NEVERGIB );
 			CalculateMeleeDamageForce( &dmgInfo, vecNormalizedVel, tr.endpos, 0.7f );
 			dmgInfo.SetDamagePosition( tr.endpos );
+			DoneMoving( false );
 			pOther->DispatchTraceAttack( dmgInfo, vecNormalizedVel, &tr );
 		}
 
@@ -302,8 +307,6 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 					DispatchEffect( "BoltImpact", data );
 			}
 		}
-
-		DoneMoving( false );
 	}
 	else
 	{
@@ -311,7 +314,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 		tr = BaseClass::GetTouchTrace();
 
 		// See if we struck the world
-		if ( pOther->GetMoveType() == MOVETYPE_NONE && !(tr.surface.flags & SURF_SKY) )
+		if ( pOther->GetMoveType() == MOVETYPE_NONE && !(tr.surface.flags & SURF_SKY) && !(tr.contents & CONTENTS_PLAYERCLIP) )
 		{
 			EmitSound( "Weapon_Crossbow.BoltHitWorld" );
 
@@ -374,7 +377,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 				g_pEffects->Sparks( GetAbsOrigin() );
 			}
 		}
-		else if ( tr.surface.flags & SURF_SKY )
+		else if ( tr.surface.flags & SURF_SKY || tr.contents & CONTENTS_PLAYERCLIP )
 			DoneMoving( false );
 		else
 		{
