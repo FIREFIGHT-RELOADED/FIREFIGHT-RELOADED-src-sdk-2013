@@ -1166,6 +1166,7 @@ void CBaseEntity::VPhysicsUpdate( IPhysicsObject *pPhysics )
 				{
 					Warning( "Removing entity with unreasonable position (%f,%f,%f) from vphysics! (entity %s)\n", origin.x, origin.y, origin.z, GetDebugName() );
 					this->Remove();
+					return;
 				}
 			}
 
