@@ -40,7 +40,6 @@
 
 #define BOLT_AIR_VELOCITY	2500
 #define BOLT_WATER_VELOCITY	1500
-#define	SF_BOLT_KNIFEMODE			0x00000001
 
 extern ConVar sk_plr_dmg_crossbow;
 extern ConVar sk_npc_dmg_crossbow;
@@ -77,8 +76,6 @@ public:
 protected:
 
 	bool	CreateSprites( void );
-	bool	IsKnife() const { return m_spawnflags & SF_BOLT_KNIFEMODE; }
-	void	DoneMoving( bool stuck );
 
 	CHandle<CSprite>		m_pGlowSprite;
 	//CHandle<CSpriteTrail>	m_pGlowTrail;
@@ -87,12 +84,11 @@ protected:
 	DECLARE_SERVERCLASS();
 };
 LINK_ENTITY_TO_CLASS( crossbow_bolt, CCrossbowBolt );
-LINK_ENTITY_TO_CLASS(knife_bolt, CCrossbowBolt);
 
 BEGIN_DATADESC( CCrossbowBolt )
 	// Function Pointers
-	DEFINE_THINKFUNC( BubbleThink ),
-	DEFINE_ENTITYFUNC( BoltTouch ),
+	DEFINE_FUNCTION( BubbleThink ),
+	DEFINE_FUNCTION( BoltTouch ),
 
 	// These are recreated on reload, they don't need storage
 	DEFINE_FIELD( m_pGlowSprite, FIELD_EHANDLE ),
@@ -142,10 +138,7 @@ bool CCrossbowBolt::CreateVPhysics( void )
 //-----------------------------------------------------------------------------
 unsigned int CCrossbowBolt::PhysicsSolidMaskForEntity() const
 {
-	if ( IsKnife() )
-		return MASK_PLAYERSOLID;
-	else
-		return ( BaseClass::PhysicsSolidMaskForEntity() | CONTENTS_HITBOX ) & ~CONTENTS_GRATE;
+	return ( BaseClass::PhysicsSolidMaskForEntity() | CONTENTS_HITBOX ) & ~CONTENTS_GRATE;
 }
 
 //-----------------------------------------------------------------------------
@@ -175,7 +168,7 @@ void CCrossbowBolt::Spawn( void )
 {
 	Precache( );
 
-	SetModel( IsKnife() ? "models/knife_proj.mdl" : "models/crossbow_bolt.mdl" );
+	SetModel("models/crossbow_bolt.mdl");
 
 	SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_CUSTOM );
 	UTIL_SetSize( this, -Vector(0.3f,0.3f,0.3f), Vector(0.3f,0.3f,0.3f) );
@@ -199,7 +192,7 @@ void CCrossbowBolt::Spawn( void )
 
 void CCrossbowBolt::Precache( void )
 {
-	PrecacheModel( IsKnife() ? "models/knife_proj.mdl" : "models/crossbow_bolt.mdl" );
+	PrecacheModel("models/crossbow_bolt.mdl");
 	PrecacheModel( "sprites/light_glow02_noz.vmt" );
 }
 
@@ -218,13 +211,12 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 	{
 		trace_t	tr, tr2;
 		tr = BaseClass::GetTouchTrace();
-		Vector vecNormalizedVel = GetAbsVelocity();
+		Vector	vecNormalizedVel = GetAbsVelocity();
 
 		ClearMultiDamage();
 		VectorNormalize( vecNormalizedVel );
 
-		float curDamage = IsKnife()
-			? sk_plr_dmg_knife_thrown.GetFloat() : sk_plr_dmg_crossbow.GetFloat();
+		float curDamage = sk_plr_dmg_crossbow.GetFloat();
 
 		if( GetOwnerEntity() && GetOwnerEntity()->IsPlayer() && pOther->IsNPC() )
 		{
@@ -232,19 +224,17 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 			dmgInfo.AdjustPlayerDamageInflictedForSkillLevel();
 			CalculateMeleeDamageForce( &dmgInfo, vecNormalizedVel, tr.endpos, 0.7f );
 			dmgInfo.SetDamagePosition( tr.endpos );
-			DoneMoving( false );
 			pOther->DispatchTraceAttack( dmgInfo, vecNormalizedVel, &tr );
 
 			CBasePlayer *pPlayer = ToBasePlayer( GetOwnerEntity() );
 			if ( pPlayer )
-				gamestats->Event_WeaponHit( pPlayer, true, IsKnife() ? "weapon_knife" : "weapon_crossbow", dmgInfo );
+				gamestats->Event_WeaponHit(pPlayer, true, "weapon_crossbow", dmgInfo);
 		}
 		else
 		{
 			CTakeDamageInfo	dmgInfo( this, GetOwnerEntity(), curDamage, DMG_BULLET | DMG_NEVERGIB );
 			CalculateMeleeDamageForce( &dmgInfo, vecNormalizedVel, tr.endpos, 0.7f );
 			dmgInfo.SetDamagePosition( tr.endpos );
-			DoneMoving( false );
 			pOther->DispatchTraceAttack( dmgInfo, vecNormalizedVel, &tr );
 		}
 
@@ -302,11 +292,15 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 				data.m_vOrigin = tr2.endpos;
 				data.m_vNormal = vForward;
 				data.m_nEntIndex = tr2.fraction != 1.0f;
-
-				if ( !IsKnife() )
-					DispatchEffect( "BoltImpact", data );
+			
+				DispatchEffect("BoltImpact", data);
 			}
 		}
+		
+		SetTouch( NULL );
+		SetThink( NULL );
+
+		UTIL_Remove(this);
 	}
 	else
 	{
@@ -314,7 +308,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 		tr = BaseClass::GetTouchTrace();
 
 		// See if we struck the world
-		if ( pOther->GetMoveType() == MOVETYPE_NONE && !(tr.surface.flags & SURF_SKY) && !(tr.contents & CONTENTS_PLAYERCLIP) )
+		if ( pOther->GetMoveType() == MOVETYPE_NONE && !( tr.surface.flags & SURF_SKY ) )
 		{
 			EmitSound( "Weapon_Crossbow.BoltHitWorld" );
 
@@ -324,11 +318,11 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 
 			// See if we should reflect off this surface
 			float hitDot = DotProduct( tr.plane.normal, -vecDir );
-
-			if ( (hitDot < 0.5f) && (speed > 100) )
+			
+			if ( ( hitDot < 0.5f ) && ( speed > 100 ) )
 			{
 				Vector vReflection = 2.0f * tr.plane.normal * hitDot + vecDir;
-
+				
 				QAngle reflectAngles;
 
 				VectorAngles( vReflection, reflectAngles );
@@ -344,25 +338,26 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 			{
 				//FIXME: We actually want to stick (with hierarchy) to what we've hit
 				SetMoveType( MOVETYPE_NONE );
-
+			
 				Vector vForward;
 
 				AngleVectors( GetAbsAngles(), &vForward );
-				VectorNormalize( vForward );
+				VectorNormalize ( vForward );
 
 				CEffectData	data;
 
 				data.m_vOrigin = tr.endpos;
 				data.m_vNormal = vForward;
 				data.m_nEntIndex = 0;
-
-				if ( !IsKnife() )
-					DispatchEffect( "BoltImpact", data );
-
+			
+				DispatchEffect("BoltImpact", data);
+				
 				UTIL_ImpactTrace( &tr, DMG_BULLET );
 
-				// The shallower the angle, the less of chance of sticking.
-				DoneMoving( random->RandomFloat(0.5) <= hitDot );
+				AddEffects( EF_NODRAW );
+				SetTouch( NULL );
+				SetThink( &CCrossbowBolt::SUB_Remove );
+				SetNextThink( gpGlobals->curtime + 2.0f );
 
 				if ( m_pGlowSprite != NULL )
 				{
@@ -370,45 +365,24 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 					m_pGlowSprite->FadeAndDie( 3.0f );
 				}
 			}
-
+			
 			// Shoot some sparks
-			if ( UTIL_PointContents( GetAbsOrigin() ) != CONTENTS_WATER )
+			if ( UTIL_PointContents( GetAbsOrigin() ) != CONTENTS_WATER)
 			{
 				g_pEffects->Sparks( GetAbsOrigin() );
 			}
 		}
-		else if ( tr.surface.flags & SURF_SKY || tr.contents & CONTENTS_PLAYERCLIP )
-			DoneMoving( false );
 		else
 		{
-			UTIL_ImpactTrace( &tr, DMG_BULLET );
-			DoneMoving( false );
+			// Put a mark unless we've hit the sky
+			if ( ( tr.surface.flags & SURF_SKY ) == false )
+			{
+				UTIL_ImpactTrace( &tr, DMG_BULLET );
+			}
+
+			UTIL_Remove( this );
 		}
 	}
-}
-
-void CCrossbowBolt::DoneMoving(bool stuck)
-{
-	if ( IsKnife() )
-	{
-		auto angle = GetAbsAngles();
-		// The weapon model is reversed for some reason.
-		angle[0] += 180;
-		auto pWeap = (CBaseCombatWeapon*)CBaseEntity::CreateNoSpawn( "weapon_knife", GetAbsOrigin(), angle );
-		pWeap->AddSpawnFlags( SF_NORESPAWN );
-		DispatchSpawn( pWeap );
-
-		auto phys = pWeap->VPhysicsGetObject();
-		if ( stuck && phys != NULL )
-		{
-			phys->EnableMotion( false );
-			//pWeap->SetCollisionGroup( COLLISION_GROUP_DEBRIS );
-		}
-		pWeap->SetAbsVelocity( Vector(0, 0, 0) );
-		pWeap->AddEffects( EF_ITEM_BLINK );
-	}
-
-	Remove();
 }
 
 //-----------------------------------------------------------------------------
@@ -547,7 +521,6 @@ CWeaponCrossbow::CWeaponCrossbow( void )
 void CWeaponCrossbow::Precache( void )
 {
 	UTIL_PrecacheOther( "crossbow_bolt" );
-	UTIL_PrecacheOther( "knife_bolt" );
 
 	PrecacheScriptSound( "Weapon_Crossbow.BoltHitBody" );
 	PrecacheScriptSound( "Weapon_Crossbow.BoltHitWorld" );
@@ -564,7 +537,15 @@ void CWeaponCrossbow::Precache( void )
 //-----------------------------------------------------------------------------
 void CWeaponCrossbow::PrimaryAttack( void )
 {
-	FireBolt();
+	if ( m_bInZoom && g_pGameRules->IsMultiplayer() )
+	{
+//		FireSniperBolt();
+		FireBolt();
+	}
+	else
+	{
+		FireBolt();
+	}
 
 	// Signal a reload
 	m_bMustReload = true;
@@ -675,6 +656,23 @@ void CWeaponCrossbow::FireBolt( void )
 
 	QAngle angAiming;
 	VectorAngles( vecAiming, angAiming );
+
+#if defined(HL2_EPISODIC)
+	// !!!HACK - the other piece of the Alyx crossbow bolt hack for Outland_10 (see ::BoltTouch() for more detail)
+	if( FStrEq(STRING(gpGlobals->mapname), "ep2_outland_10") )
+	{
+		trace_t tr;
+		UTIL_TraceLine( vecSrc, vecSrc + vecAiming * 24.0f, MASK_SOLID, pOwner, COLLISION_GROUP_NONE, &tr );
+
+		if( tr.m_pEnt != NULL && tr.m_pEnt->Classify() == CLASS_PLAYER_ALLY_VITAL )
+		{
+			// If Alyx is right in front of the player, make sure the bolt starts outside of the player's BBOX, or the bolt
+			// will instantly collide with the player after the owner of the bolt is switched to Alyx in ::BoltTouch(). We 
+			// avoid this altogether by making it impossible for the bolt to collide with the player.
+			vecSrc += vecAiming * 24.0f;
+		}
+	}
+#endif
 
 	CCrossbowBolt *pBolt = CCrossbowBolt::BoltCreate( vecSrc, angAiming, pOwner );
 
