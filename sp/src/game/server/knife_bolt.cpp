@@ -203,6 +203,7 @@ void CKnifeBolt::BoltTouch( CBaseEntity *pOther )
 		VectorNormalize( vecNormalizedVel );
 
 		float curDamage = sk_plr_dmg_knife_thrown.GetFloat();
+		const surfacedata_t *pdata = physprops->GetSurfaceData( tr.surface.surfaceProps );
 
 		if ( GetOwnerEntity() && GetOwnerEntity()->IsPlayer() && pOther->IsNPC() )
 		{
@@ -217,44 +218,53 @@ void CKnifeBolt::BoltTouch( CBaseEntity *pOther )
 			if ( pPlayer )
 				gamestats->Event_WeaponHit( pPlayer, true, "weapon_knife", dmgInfo );
 		}
+		else if ( FClassnameIs( pOther, "func_breakable" ) || FClassnameIs( pOther, "func_breakable_surf" ) )
+		{
+			CTakeDamageInfo	dmgInfo( this, GetOwnerEntity(), curDamage, DMG_BULLET | DMG_NEVERGIB );
+			CalculateMeleeDamageForce( &dmgInfo, vecNormalizedVel, tr.endpos, 0.7f );
+			dmgInfo.SetDamagePosition( tr.endpos );
+			pOther->DispatchTraceAttack( dmgInfo, vecNormalizedVel, &tr );
+
+			CBreakable* pOtherEntity = static_cast<CBreakable*>(pOther);
+			if ( pOtherEntity && (pOtherEntity->GetMaterialType() == matGlass || pOtherEntity->GetMaterialType() == matWeb) )
+				return;
+		}
 		else
 		{
 			CTakeDamageInfo	dmgInfo( this, GetOwnerEntity(), curDamage, DMG_BULLET | DMG_NEVERGIB );
 			CalculateMeleeDamageForce( &dmgInfo, vecNormalizedVel, tr.endpos, 0.7f );
 			dmgInfo.SetDamagePosition( tr.endpos );
-			DoneMoving( false );
+
+			if ( pOther->GetCollisionGroup() == COLLISION_GROUP_BREAKABLE_GLASS )
+			{
+				pOther->DispatchTraceAttack( dmgInfo, vecNormalizedVel, &tr );
+				return;
+			}
+			else if ( FClassnameIs( pOther, "func_breakable" ) )
+			{
+				pOther->DispatchTraceAttack( dmgInfo, vecNormalizedVel, &tr );
+
+				CBreakable* pOtherEntity = static_cast<CBreakable*>(pOther);
+				if ( pOtherEntity && (pOtherEntity->GetMaterialType() == matGlass || pOtherEntity->GetMaterialType() == matWeb) )
+					return;
+			}
+			else if ( FClassnameIs( pOther, "func_breakable_surf" ) )
+			{
+				pOther->DispatchTraceAttack( dmgInfo, vecNormalizedVel, &tr );
+
+				CBreakableSurface* pOtherEntity = static_cast<CBreakableSurface*>(pOther);
+				if ( pOtherEntity && (pOtherEntity->GetMaterialType() == matGlass || pOtherEntity->GetMaterialType() == matWeb) )
+					return;
+			}
+			else if ( pdata->game.material != CHAR_TEX_GLASS )
+				DoneMoving( false );
 			pOther->DispatchTraceAttack( dmgInfo, vecNormalizedVel, &tr );
 		}
 
 		ApplyMultiDamage();
 
-		//Adrian: keep going through the glass.
-		if ( pOther->GetCollisionGroup() == COLLISION_GROUP_BREAKABLE_GLASS )
+		if ( !pOther->IsAlive() && pdata->game.material == CHAR_TEX_GLASS )
 			return;
-
-		if ( FClassnameIs( pOther, "func_breakable" ) )
-		{
-			CBreakable* pOtherEntity = static_cast<CBreakable*>(pOther);
-			if ( pOtherEntity && (pOtherEntity->GetMaterialType() == matGlass || pOtherEntity->GetMaterialType() == matWeb) )
-				return;
-		}
-
-		if ( FClassnameIs( pOther, "func_breakable_surf" ) )
-		{
-			CBreakableSurface* pOtherEntity = static_cast<CBreakableSurface*>(pOther);
-			if ( pOtherEntity && (pOtherEntity->GetMaterialType() == matGlass || pOtherEntity->GetMaterialType() == matWeb) )
-				return;
-		}
-
-		if ( !pOther->IsAlive() )
-		{
-			// We killed it! 
-			const surfacedata_t *pdata = physprops->GetSurfaceData( tr.surface.surfaceProps );
-			if ( pdata->game.material == CHAR_TEX_GLASS )
-			{
-				return;
-			}
-		}
 
 		SetAbsVelocity( Vector( 0, 0, 0 ) );
 

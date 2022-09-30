@@ -43,8 +43,6 @@
 
 extern ConVar sk_plr_dmg_crossbow;
 extern ConVar sk_npc_dmg_crossbow;
-extern ConVar sk_plr_dmg_knife_thrown;
-extern ConVar sk_npc_dmg_knife_thrown;
 
 void TE_StickyBolt( IRecipientFilter& filter, float delay,	Vector vecDirection, const Vector *origin );
 
