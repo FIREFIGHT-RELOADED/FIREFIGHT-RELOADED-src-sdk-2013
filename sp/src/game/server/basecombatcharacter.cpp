@@ -2884,6 +2884,9 @@ CBaseEntity *CBaseCombatCharacter::Weapon_FindUsable( const Vector &range )
 		Assert(pWeapon);
 		pWeapon->GetVelocity( &velocity, NULL );
 
+		if ( pWeapon->IsEffectActive( EF_NODRAW ) )
+			continue;
+
 		if ( pWeapon->CanBePickedUpByNPCs() == false )
 			continue;
 
