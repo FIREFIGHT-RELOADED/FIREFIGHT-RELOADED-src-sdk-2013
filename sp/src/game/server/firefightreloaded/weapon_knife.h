@@ -49,6 +49,8 @@ public:
 
 	int			OnTakeDamage( const CTakeDamageInfo& info );
 
+	virtual void Equip( CBaseCombatCharacter *pOwner );
+
 	// Animation event
 	virtual void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
 	void			Hit(trace_t &traceHit, Activity nHitActivity, bool bIsSecondary);

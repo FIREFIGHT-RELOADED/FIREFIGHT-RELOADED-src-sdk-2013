@@ -16,6 +16,8 @@
 
 #ifdef CLIENT_DLL
 #include "gamestringpool.h"
+#else
+#include "firefightreloaded/cleanup_manager.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -726,149 +728,7 @@ const char *GetMassEquivalent(float flMass)
 extern const char *GetMassEquivalent(float flMass);
 #endif
 
-ConVar g_max_gib_pieces( "g_max_gib_pieces", "32", FCVAR_NONE, "Maximum number of gibs to manage." );
-#ifdef GAME_DLL
-//=========================================================
-//=========================================================
-class CGameGibManager : public CBaseEntity
-{
-	friend CGameGibManager *GetGibManager( void );
 
-	DECLARE_CLASS( CGameGibManager, CBaseEntity );
-	DECLARE_DATADESC();
-
-public:
-
-	CGameGibManager() : m_iMaxPieces(-1), m_iMaxPiecesDX8(-1) {}
-
-	void Activate( void );
-	void AddGibToLRU( CBaseAnimating *pEntity );
-
-	inline bool AllowedToSpawnGib( void );
-
-private:
-
-	void UpdateMaxPieces();
-
-	void InputSetMaxPieces( inputdata_t &inputdata );
-	void InputSetMaxPiecesDX8( inputdata_t &inputdata );
-
-	typedef CHandle<CBaseAnimating> CGibHandle;
-	CUtlLinkedList< CGibHandle > m_LRU; 
-
-	bool		m_bAllowNewGibs;
-
-	int			m_iDXLevel;
-	int			m_iMaxPieces;
-	int			m_iMaxPiecesDX8;
-};
-
-BEGIN_DATADESC( CGameGibManager )
-	// Silence perfidous classcheck!
-	//DEFINE_FIELD( m_iCurrentMaxPieces, FIELD_INTEGER ),
-	//DEFINE_FIELD( m_iLastFrame, FIELD_INTEGER ),
-	//DEFINE_FIELD( m_iDXLevel, FIELD_INTEGER ),
-	DEFINE_KEYFIELD( m_iMaxPieces, FIELD_INTEGER, "maxpieces" ),
-	DEFINE_KEYFIELD( m_iMaxPiecesDX8, FIELD_INTEGER, "maxpiecesdx8" ),
-	DEFINE_KEYFIELD( m_bAllowNewGibs, FIELD_BOOLEAN, "allownewgibs" ),
-
-	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetMaxPieces", InputSetMaxPieces ),
-	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetMaxPiecesDX8", InputSetMaxPiecesDX8 ),
-END_DATADESC()
-
-LINK_ENTITY_TO_CLASS( game_gib_manager, CGameGibManager );
-
-
-void CGameGibManager::Activate( void )
-{
-	m_LRU.Purge();
-
-	// Cache off the DX level for use later.
-	ConVarRef mat_dxlevel( "mat_dxlevel" );
-	m_iDXLevel = mat_dxlevel.GetInt();
-
-	UpdateMaxPieces();
-
-	BaseClass::Activate();
-}
-
-void CGameGibManager::UpdateMaxPieces()
-{
-}
-
-
-bool CGameGibManager::AllowedToSpawnGib( void )
-{
-	return m_bAllowNewGibs && g_max_gib_pieces.GetInt() > 0;
-}
-
-void CGameGibManager::InputSetMaxPieces( inputdata_t &inputdata )
-{
-	m_iMaxPieces = inputdata.value.Int();
-	UpdateMaxPieces();
-}
-
-void CGameGibManager::InputSetMaxPiecesDX8( inputdata_t &inputdata )
-{
-	m_iMaxPiecesDX8 = inputdata.value.Int();
-	UpdateMaxPieces();
-}
-
-void CGameGibManager::AddGibToLRU( CBaseAnimating *pEntity )
-{
-	int i, next;
-
-	if ( pEntity == NULL || g_max_gib_pieces.GetInt() < 1 )
-		return;
-
-	//Find stale gibs.
-	for ( i = m_LRU.Head(); i < m_LRU.InvalidIndex(); i = next )
-	{
-		next = m_LRU.Next(i);
-
-		if ( m_LRU[i].Get() == NULL )
-		{
-			m_LRU.Remove(i);
-		}
-	}
-
-	while ( m_LRU.Count() >= g_max_gib_pieces.GetInt() )
-	{
-		i = m_LRU.Head();
-
-		//TODO: Make this fade out instead of pop.
-		m_LRU[i]->SUB_StartFadeOut(0, true, "CleanUp");
-		m_LRU.Remove(i);
-	}
-	
-	m_LRU.AddToTail( pEntity );
-}
-
-EHANDLE g_hGameGibManager;
-
-CGameGibManager *GetGibManager( void )
-{
-#ifndef HL2_EPISODIC
-	return NULL;
-#endif
-
-	if ( g_hGameGibManager == NULL )
-	{
-		g_hGameGibManager = (CGameGibManager *)gEntList.FindEntityByClassname( NULL, "game_gib_manager" );
-		if ( g_hGameGibManager == NULL )
-		{
-			auto newGM = (CGameGibManager *)CBaseEntity::Create( "game_gib_manager", Vector(), QAngle() );
-			newGM->m_iMaxPieces = newGM->m_iMaxPiecesDX8 = 32;
-			newGM->UpdateMaxPieces();
-			newGM->m_bAllowNewGibs = true;
-			g_hGameGibManager = newGM;
-		}
-	}
-
-	return (CGameGibManager *)g_hGameGibManager.Get();
-}
-
-#endif
 
 void PropBreakableCreateAll( int modelindex, IPhysicsObject *pPhysics, const breakablepropparams_t &params, CBaseEntity *pEntity, int iPrecomputedBreakableCount, bool bIgnoreGibLimit, bool defaultLocation )
 {
@@ -1046,22 +906,12 @@ void PropBreakableCreateAll( int modelindex, IPhysicsObject *pPhysics, const bre
 			if ( nActualSkin > studioHdr.numskinfamilies() )
 				nActualSkin = 0;
 
-			CBaseEntity *pBreakable = NULL;
-			
-#ifdef GAME_DLL
-			if ( GetGibManager() == NULL || GetGibManager()->AllowedToSpawnGib() )
-#endif
-			{
-				pBreakable = BreakModelCreateSingle( pOwnerEntity, &list[i], position, angles, objectVelocity, params.angularVelocity, nActualSkin, params );
-			}
+			auto pBreakable = BreakModelCreateSingle( pOwnerEntity, &list[i], position, angles, objectVelocity, params.angularVelocity, nActualSkin, params );
 
 			if ( pBreakable )
 			{
 #ifdef GAME_DLL
-				if ( GetGibManager() )
-				{
-					GetGibManager()->AddGibToLRU( pBreakable->GetBaseAnimating() );
-				}
+				CCleanupManager::AddGib( pBreakable->GetBaseAnimating() );
 #endif
 				if ( pOwnerEntity && pOwnerEntity->IsEffectActive( EF_NOSHADOW ) )
 				{
@@ -1141,26 +991,16 @@ void PropBreakableCreateAll( int modelindex, IPhysicsObject *pPhysics, const bre
 				QAngle vecAngles = pEntity->GetAbsAngles();
 				int iSkin = pBreakableInterface->GetBreakableSkin();
 
-				CBaseEntity *pBreakable = NULL;
-
-#ifdef GAME_DLL
-				if ( GetGibManager() == NULL || GetGibManager()->AllowedToSpawnGib() )
-#endif
+				auto pBreakable = BreakModelCreateSingle( pOwnerEntity, &breakModel, breakModel.offset, vecAngles, vecVelocity, vec3_origin/*params.angularVelocity*/, iSkin, params );
+				if ( !pBreakable )
 				{
-					pBreakable = BreakModelCreateSingle( pOwnerEntity, &breakModel, breakModel.offset, vecAngles, vecVelocity, vec3_origin/*params.angularVelocity*/, iSkin, params );
-					if ( !pBreakable )
-					{
-						DevWarning( "PropBreakableCreateAll: Could not create model %s\n", breakModel.modelName );
-					}
+					DevWarning( "PropBreakableCreateAll: Could not create model %s\n", breakModel.modelName );
 				}
 
 				if ( pBreakable )
 				{
 #ifdef GAME_DLL
-					if ( GetGibManager() )
-					{
-						GetGibManager()->AddGibToLRU( pBreakable->GetBaseAnimating() );
-					}
+					CCleanupManager::AddGib( pBreakable->GetBaseAnimating() );
 #endif
 					Vector vecBreakableObbSize = pBreakable->CollisionProp()->OBBSize();
 
@@ -1443,20 +1283,12 @@ CBaseEntity *CreateGibsFromList( CUtlVector<breakmodel_t> &list, int modelindex,
 
 			CBaseEntity *pBreakable = NULL;
 			
-#ifdef GAME_DLL
-			if ( GetGibManager() == NULL || GetGibManager()->AllowedToSpawnGib() )
-#endif
-			{
-				pBreakable = BreakModelCreateSingle( pOwnerEntity, &list[i], position, angles, objectVelocity, params.angularVelocity, nActualSkin, params );
-			}
+			pBreakable = BreakModelCreateSingle( pOwnerEntity, &list[i], position, angles, objectVelocity, params.angularVelocity, nActualSkin, params );
 
 			if ( pBreakable )
 			{
 #ifdef GAME_DLL
-				if ( GetGibManager() )
-				{
-					GetGibManager()->AddGibToLRU( pBreakable->GetBaseAnimating() );
-				}
+				CCleanupManager::AddGib( pBreakable->GetBaseAnimating() );
 #endif
 
 #ifndef GAME_DLL
@@ -1553,22 +1385,12 @@ CBaseEntity *CreateGibsFromList( CUtlVector<breakmodel_t> &list, int modelindex,
 				QAngle vecAngles = pEntity->GetAbsAngles();
 				int iSkin = pBreakableInterface->GetBreakableSkin();
 
-				CBaseEntity *pBreakable = NULL;
-
-#ifdef GAME_DLL
-				if ( GetGibManager() == NULL || GetGibManager()->AllowedToSpawnGib() )
-#endif
-				{
-					pBreakable = BreakModelCreateSingle( pOwnerEntity, &breakModel, breakModel.offset, vecAngles, vecVelocity, vec3_origin/*params.angularVelocity*/, iSkin, params );
-				}
+				auto pBreakable = BreakModelCreateSingle( pOwnerEntity, &breakModel, breakModel.offset, vecAngles, vecVelocity, vec3_origin/*params.angularVelocity*/, iSkin, params );
 
 				if( pBreakable )
 				{
 #ifdef GAME_DLL
-					if ( GetGibManager() )
-					{
-						GetGibManager()->AddGibToLRU( pBreakable->GetBaseAnimating() );
-					}
+					CCleanupManager::AddGib( pBreakable->GetBaseAnimating() );
 #endif
 					Vector vecBreakableObbSize = pBreakable->CollisionProp()->OBBSize();
 

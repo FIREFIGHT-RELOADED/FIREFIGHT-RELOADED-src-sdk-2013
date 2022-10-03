@@ -20,6 +20,7 @@
 #include "weapon_knife.h"
 #include "rumble_shared.h"
 #include "gamestats.h"
+#include "cleanup_manager.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -133,6 +134,7 @@ void CWeaponKnife::ThrowKnife(void)
 	m_flNextSecondaryAttack = gpGlobals->curtime + KNIFE_REFIRE_THROW;
 }
 
+ConVar sv_infinite_knives( "sv_infinite_knives", "0", FCVAR_CHEAT );
 void CWeaponKnife::SecondaryAttack(void)
 {
 	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
@@ -141,10 +143,13 @@ void CWeaponKnife::SecondaryAttack(void)
 		m_iSecondaryAttacks++;
 		gamestats->Event_WeaponFired(pPlayer, true, GetClassname());
 		ThrowKnife();
-		pPlayer->Weapon_Detach( this );
-		engine->ClientCommand( pPlayer->edict(), "lastinv" );
-		engine->ClientCommand( pPlayer->edict(), "-attack2" );
-		UTIL_Remove( this );
+		if ( !sv_infinite_knives.GetBool() )
+		{
+			pPlayer->Weapon_Detach( this );
+			engine->ClientCommand( pPlayer->edict(), "lastinv" );
+			engine->ClientCommand( pPlayer->edict(), "-attack2" );
+			UTIL_Remove( this );
+		}
 	}
 }
 
@@ -395,4 +400,10 @@ int CWeaponKnife::OnTakeDamage( const CTakeDamageInfo& info )
 	}
 	else
 		return BaseClass::OnTakeDamage( info );
+}
+
+void CWeaponKnife::Equip( CBaseCombatCharacter *pOwner )
+{
+	CCleanupManager::RemoveThrownKnife( this );
+	BaseClass::Equip( pOwner );
 }

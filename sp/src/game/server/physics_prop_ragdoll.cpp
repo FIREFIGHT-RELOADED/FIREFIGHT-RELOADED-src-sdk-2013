@@ -22,6 +22,7 @@
 #include "hierarchy.h"
 #include "firefightreloaded/fr_ragdoll.h"
 #include "hl2/hl2_gamerules.h"
+#include "firefightreloaded/cleanup_manager.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -386,7 +387,7 @@ void CRagdollProp::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t r
 
 	if ( HasSpawnFlags( SF_RAGDOLLPROP_USE_LRU_RETIREMENT ) )
 	{
-		s_RagdollLRU.MoveToTopOfLRU( this );
+		CCleanupManager::AddRagdoll(this);
 	}
 
 	if ( !HasSpawnFlags( SF_PHYSPROP_ENABLE_ON_PHYSCANNON ) )
@@ -424,9 +425,7 @@ void CRagdollProp::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reaso
 	}
 
 	if ( HasSpawnFlags( SF_RAGDOLLPROP_USE_LRU_RETIREMENT ) )
-	{
-		s_RagdollLRU.MoveToTopOfLRU( this );
-	}
+		CCleanupManager::AddRagdoll( this );
 
 	// Make sure it's interactive debris for at most 5 seconds
 	if ( GetCollisionGroup() == COLLISION_GROUP_INTERACTIVE_DEBRIS )
@@ -1467,7 +1466,7 @@ CBaseEntity *CreateServerRagdoll( CBaseAnimating *pAnimating, int forceBone, con
 	else if ( bUseLRURetirement )
 	{
 		pRagdoll->AddSpawnFlags( SF_RAGDOLLPROP_USE_LRU_RETIREMENT );
-		s_RagdollLRU.MoveToTopOfLRU( pRagdoll );
+		CCleanupManager::AddRagdoll( pRagdoll );
 	}
 
 	// Tracker 22598:  If we don't set the OBB mins/maxs to something valid here, then the client will have a zero sized hull

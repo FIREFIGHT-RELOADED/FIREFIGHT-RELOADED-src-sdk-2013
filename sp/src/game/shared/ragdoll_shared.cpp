@@ -31,44 +31,6 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-CRagdollLowViolenceManager g_RagdollLVManager;
-
-void CRagdollLowViolenceManager::SetLowViolence( const char *pMapName )
-{
-	// set the value using the engine's low violence settings
-	m_bLowViolence = UTIL_IsLowViolence();
-
-#if !defined( CLIENT_DLL )
-	// the server doesn't worry about low violence during multiplayer games
-	if ( g_pGameRules->IsMultiplayer() )
-	{
-		m_bLowViolence = false;
-	}
-#endif
-
-	// Turn the low violence ragdoll stuff off if we're in the HL2 Citadel maps because
-	// the player has the super gravity gun and fading ragdolls will break things.
-	if( hl2_episodic.GetBool() )
-	{
-		if ( Q_stricmp( pMapName, "ep1_citadel_02" ) == 0 ||
-			Q_stricmp( pMapName, "ep1_citadel_02b" ) == 0 ||
-			Q_stricmp( pMapName, "ep1_citadel_03" ) == 0 )
-		{
-			m_bLowViolence = false;
-		}
-	}
-	else
-	{
-		if ( Q_stricmp( pMapName, "d3_citadel_03" ) == 0 ||
-			Q_stricmp( pMapName, "d3_citadel_04" ) == 0 ||
-			Q_stricmp( pMapName, "d3_citadel_05" ) == 0 ||
-			Q_stricmp( pMapName, "d3_breen_01" ) == 0 )
-		{
-			m_bLowViolence = false;
-		}
-	}
-}
-
 class CRagdollCollisionRules : public IVPhysicsKeyHandler
 {
 public:
@@ -707,25 +669,10 @@ void RagdollSolveSeparation( ragdoll_t &ragdoll, CBaseEntity *pEntity )
 //-----------------------------------------------------------------------------
 // LRU
 //-----------------------------------------------------------------------------
-ConVar g_ragdoll_maxcount("g_ragdoll_maxcount", "32", FCVAR_REPLICATED );
 ConVar g_debug_ragdoll_removal("g_debug_ragdoll_removal", "0", FCVAR_REPLICATED |FCVAR_CHEAT );
-
-CRagdollLRURetirement s_RagdollLRU( "CRagdollLRURetirement" );
-
-void CRagdollLRURetirement::LevelInitPreEntity( void )
-{
-	m_iMaxRagdolls = -1;
-	m_LRUImportantRagdolls.RemoveAll();
-	m_LRU.RemoveAll();
-}
 
 bool ShouldRemoveThisRagdoll( CBaseAnimating *pRagdoll )
 {
-	if ( g_RagdollLVManager.IsLowViolence() )
-	{
-		return true;
-	}
-
 #ifdef CLIENT_DLL
 
 	/* we no longer ignore enemies just because they are on fire -- a ragdoll in front of me
@@ -779,118 +726,6 @@ bool ShouldRemoveThisRagdoll( CBaseAnimating *pRagdoll )
 
 	return false;
 }
-
-void CRagdollLRURetirement::Update( float frametime ) // EPISODIC VERSION
-{
-	VPROF( "CRagdollLRURetirement::Update" );
-	// Compress out dead items
-	int i, next;
-
-	int iMaxRagdollCount = m_iMaxRagdolls;
-
-	if ( iMaxRagdollCount == -1 )
-	{
-		iMaxRagdollCount = g_ragdoll_maxcount.GetInt();
-	}
-
-	// fade them all for the low violence version
-	if ( g_RagdollLVManager.IsLowViolence() )
-	{
-		iMaxRagdollCount = 0;
-	}
-	m_iRagdollCount = 0;
-	m_iSimulatedRagdollCount = 0;
-
-	for ( i = m_LRU.Head(); i < m_LRU.InvalidIndex(); i = next )
-	{
-		next = m_LRU.Next( i );
-		CBaseAnimating *pRagdoll = m_LRU[i].Get();
-		if ( pRagdoll )
-		{
-			m_iRagdollCount++;
-			IPhysicsObject *pObject = pRagdoll->VPhysicsGetObject();
-			if ( pObject && !pObject->IsAsleep() )
-			{
-				m_iSimulatedRagdollCount++;
-			}
-		}
-	}
-
-	for ( i = m_LRU.Head(); i < m_LRU.InvalidIndex(); i = next )
-	{
-		if ( m_iRagdollCount <= iMaxRagdollCount )
-			break;
-
-		next = m_LRU.Next( i );
-
-		CBaseAnimating *pRagdoll = m_LRU[i].Get();
-
-		if ( pRagdoll )
-		{
-			//Just ignore it until we're done burning/dissolving.
-			IPhysicsObject* pObject = pRagdoll->VPhysicsGetObject();
-			if ( pRagdoll->GetEffectEntity() || (pObject && !pObject->IsAsleep()) )
-				continue;
-
-#ifdef CLIENT_DLL
-			m_LRU[i]->SUB_Remove();
-#else
-			m_LRU[i]->SUB_StartFadeOut( 0, true, "CleanUp" );
-#endif
-			--m_iRagdollCount;
-			m_LRU.Remove( i );
-		}
-	}
-}
-
-//This is pretty hacky, it's only called on the server so it just calls the update method.
-void CRagdollLRURetirement::FrameUpdatePostEntityThink( void )
-{
-	Update( 0 );
-}
-
-ConVar g_ragdoll_important_maxcount( "g_ragdoll_important_maxcount", "2", FCVAR_REPLICATED );
-
-//-----------------------------------------------------------------------------
-// Move it to the top of the LRU
-//-----------------------------------------------------------------------------
-void CRagdollLRURetirement::MoveToTopOfLRU( CBaseAnimating *pRagdoll, bool bImportant )
-{
-	if ( bImportant )
-	{
-		m_LRUImportantRagdolls.AddToTail( pRagdoll );
-
-		if ( m_LRUImportantRagdolls.Count() > g_ragdoll_important_maxcount.GetInt() )
-		{
-			int iIndex = m_LRUImportantRagdolls.Head();
-
-			CBaseAnimating *pRagdoll = m_LRUImportantRagdolls[iIndex].Get();
-
-			if ( pRagdoll )
-			{
-#ifdef CLIENT_DLL
-				pRagdoll->SUB_Remove();
-#else
-				pRagdoll->SUB_StartFadeOut( 0 );
-#endif
-				m_LRUImportantRagdolls.Remove(iIndex);
-			}
-
-		}
-		return;
-	}
-	for ( int i = m_LRU.Head(); i < m_LRU.InvalidIndex(); i = m_LRU.Next(i) )
-	{
-		if ( m_LRU[i].Get() == pRagdoll )
-		{
-			m_LRU.Remove(i);
-			break;
-		}
-	}
-
-	m_LRU.AddToTail( pRagdoll );
-}
-
 
 //EFFECT/ENTITY TRANSFERS
 

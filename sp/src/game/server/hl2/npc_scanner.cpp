@@ -24,6 +24,7 @@
 #include "hl2_player.h"
 #include "npc_scanner.h"
 #include "materialsystem/imaterialsystemhardwareconfig.h"
+#include "firefightreloaded/cleanup_manager.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -980,6 +981,7 @@ void CNPC_CScanner::DeployMine()
 			child->SetParent( NULL );
 			child->SetAbsVelocity( GetAbsVelocity() );
 			child->SetOwnerEntity( this );
+			CCleanupManager::AddCombineMine( this );
 
 			ScannerEmitSound( "DeployMine" );
 

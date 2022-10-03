@@ -372,11 +372,6 @@ void C_ClientRagdoll::OnRestore( void )
 
 	SetNextClientThink( CLIENT_THINK_ALWAYS );
 	
-	if ( m_bFadeOut == true )
-	{
-		s_RagdollLRU.MoveToTopOfLRU( this, m_bImportant );
-	}
-
 	NoteRagdollCreationTick( this );
 	
 	BaseClass::OnRestore();
@@ -541,7 +536,7 @@ void C_ClientRagdoll::FadeOut( void )
 	}
 
 	int iAlpha = GetRenderColor().a;
-	int iFadeSpeed = ( g_RagdollLVManager.IsLowViolence() ) ? g_ragdoll_lvfadespeed.GetInt() : g_ragdoll_fadespeed.GetInt();
+	int iFadeSpeed = g_ragdoll_fadespeed.GetInt();
 
 	iAlpha = MAX( iAlpha - ( iFadeSpeed * gpGlobals->frametime ), 0 );
 
@@ -4661,13 +4656,6 @@ C_BaseAnimating *C_BaseAnimating::CreateRagdollCopy()
 	pRagdoll->IgniteRagdoll( this );
 	pRagdoll->TransferDissolveFrom( this );
 	pRagdoll->InitModelEffects();
-
-	if ( AddRagdollToFadeQueue() == true )
-	{
-		pRagdoll->m_bImportant = NPC_IsImportantNPC( this );
-		s_RagdollLRU.MoveToTopOfLRU( pRagdoll, pRagdoll->m_bImportant );
-		pRagdoll->m_bFadeOut = true;
-	}
 
 	m_builtRagdoll = true;
 	//AddEffects( EF_NODRAW );

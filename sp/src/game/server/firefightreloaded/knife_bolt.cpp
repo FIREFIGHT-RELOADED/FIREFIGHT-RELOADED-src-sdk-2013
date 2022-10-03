@@ -21,6 +21,7 @@
 #include "hl2_player.h"
 #include "func_break.h"
 #include "func_breakablesurf.h"
+#include "cleanup_manager.h"
 
 #ifdef PORTAL
 #include "portal_util_shared.h"
@@ -268,7 +269,7 @@ void CKnifeBolt::BoltTouch( CBaseEntity *pOther )
 
 		SetAbsVelocity( Vector( 0, 0, 0 ) );
 
-		// play body "thwack" sound
+		// play body "thwack" sound 
 		EmitSound( "Weapon_Crossbow.BoltHitBody" );
 
 		Vector vForward;
@@ -386,6 +387,8 @@ void CKnifeBolt::DoneMoving( bool stuck )
 	}
 	pWeap->SetAbsVelocity( Vector( 0, 0, 0 ) );
 	pWeap->AddEffects( EF_ITEM_BLINK );
+
+	CCleanupManager::AddThrownKnife( pWeap );
 
 	Remove();
 }

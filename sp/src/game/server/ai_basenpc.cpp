@@ -120,8 +120,6 @@ extern ConVar sk_healthkit;
 
 //#define DEBUG_LOOK
 
-bool RagdollManager_SaveImportant( CAI_BaseNPC *pNPC );
-
 #define	MIN_PHYSICS_FLINCH_DAMAGE	5.0f
 
 #define	NPC_GRENADE_FEAR_DIST		200
@@ -606,11 +604,6 @@ void CAI_BaseNPC::Event_Killed( const CTakeDamageInfo &info )
 	}
 
 	BaseClass::Event_Killed( info );
-
-	if ( m_bFadeCorpse )
-	{
-		m_bImportanRagdoll = RagdollManager_SaveImportant( this );
-	}
 
 	/*if (m_pAttributes != NULL)
 	{
@@ -10652,15 +10645,8 @@ CBaseEntity *CAI_BaseNPC::DropItem ( const char *pszItemName, Vector vecPos, QAn
 
 bool CAI_BaseNPC::ShouldFadeOnDeath( void )
 {
-	if ( g_RagdollLVManager.IsLowViolence() )
-	{
-		return true;
-	}
-	else
-	{
-		// if flagged to fade out
-		return HasSpawnFlags(SF_NPC_FADE_CORPSE);
-	}
+	// if flagged to fade out
+	return HasSpawnFlags(SF_NPC_FADE_CORPSE);
 }
 
 //-----------------------------------------------------------------------------
