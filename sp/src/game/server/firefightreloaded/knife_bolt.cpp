@@ -187,10 +187,10 @@ void CKnifeBolt::Precache( void )
 //-----------------------------------------------------------------------------
 void CKnifeBolt::BoltTouch( CBaseEntity *pOther )
 {
-	if ( pOther->IsSolidFlagSet( FSOLID_VOLUME_CONTENTS | FSOLID_TRIGGER ) )
+	if ( pOther->IsSolidFlagSet( FSOLID_VOLUME_CONTENTS | FSOLID_TRIGGER ) && !pOther->IsSolidFlagSet(FSOLID_USE_TRIGGER_BOUNDS) )
 	{
 		// Some NPCs are triggers that can take damage (like antlion grubs). We should hit them.
-		if ( (pOther->m_takedamage == DAMAGE_NO) || (pOther->m_takedamage == DAMAGE_EVENTS_ONLY) )
+		if ( (pOther->m_takedamage == DAMAGE_NO || pOther->m_takedamage == DAMAGE_EVENTS_ONLY) )
 			return;
 	}
 

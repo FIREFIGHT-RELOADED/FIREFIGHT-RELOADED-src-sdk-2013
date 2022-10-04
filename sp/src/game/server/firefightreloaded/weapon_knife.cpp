@@ -91,7 +91,6 @@ bool CWeaponKnife::Deploy(void)
 
 #define THROWNKNIFE_AIR_VELOCITY	2500
 #define THROWNKNIFE_WATER_VELOCITY	1500
-#define	SF_BOLT_KNIFEMODE			0x00000001
 void CWeaponKnife::ThrowKnife(void)
 {
 	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
@@ -109,7 +108,6 @@ void CWeaponKnife::ThrowKnife(void)
 	CBaseEntity* pBolt = CreateEntityByName("knife_bolt");
 	UTIL_SetOrigin(pBolt, vecSrc);
 	pBolt->SetAbsAngles(angAiming);
-	pBolt->AddSpawnFlags(SF_BOLT_KNIFEMODE);
 	pBolt->Spawn();
 	pBolt->SetOwnerEntity(pOwner);
 
