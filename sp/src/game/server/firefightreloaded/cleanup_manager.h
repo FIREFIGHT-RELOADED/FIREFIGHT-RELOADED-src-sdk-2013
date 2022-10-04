@@ -28,8 +28,6 @@ class CCleanupManager : public CBaseEntity
 	static void Add( Handles& handles, EHANDLE handle, const ConVar& var, bool bNotSolid );
 
 public:
-	CCleanupManager() {}
-
 	static void AddCombineMine( EHANDLE mine );
 	static void AddGib( EHANDLE gib );
 	static void AddRagdoll( EHANDLE ragdoll );

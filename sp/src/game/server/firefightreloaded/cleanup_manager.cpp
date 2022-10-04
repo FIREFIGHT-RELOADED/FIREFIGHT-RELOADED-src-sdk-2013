@@ -31,17 +31,25 @@ CCleanupManager* CCleanupManager::GetManager()
 
 void CCleanupManager::Add( Handles& handles, EHANDLE handle, const ConVar& var, bool bNotSolid )
 {
-	if ( !handle.IsValid() )
+	if ( var.GetInt() < 0 || handle == NULL )
 		return;
+
+	for ( int i = 0; i < handles.Count(); ++i )
+	{
+		if ( handles[i] == NULL )
+		{
+			handles[i] = handle;
+			return;
+		}
+	}
 
 	while ( handles.Count() >= var.GetInt() )
 	{
 		auto handle = handles.Head();
 		handles.Remove( 0 );
-		if ( handle.IsValid() )
+		if ( handle != NULL )
 			handle->SUB_StartFadeOut( 0, bNotSolid, "cleanup" );
 	}
-
 	handles.AddToTail( handle );
 }
 
