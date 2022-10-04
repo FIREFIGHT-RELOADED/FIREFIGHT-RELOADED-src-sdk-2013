@@ -6,6 +6,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+extern ConVar g_max_combine_mines;
 extern ConVar g_max_gib_pieces;
 extern ConVar g_max_thrown_knives;
 extern ConVar g_ragdoll_maxcount;
