@@ -25,8 +25,6 @@ public:
 		Precache( );
 		SetModel( "models/items/hevsuit_lightarmor.mdl" );
 		BaseClass::Spawn( );
-		SetSolid( SOLID_NONE );
-		AddSolidFlags( FSOLID_NOT_SOLID );
 	}
 	void Precache( void )
 	{
@@ -55,8 +53,6 @@ public:
 		Precache();
 		SetModel("models/items/hevsuit_heavyarmor.mdl");
 		BaseClass::Spawn();
-		SetSolid( SOLID_NONE );
-		AddSolidFlags( FSOLID_NOT_SOLID );
 	}
 	void Precache(void)
 	{
