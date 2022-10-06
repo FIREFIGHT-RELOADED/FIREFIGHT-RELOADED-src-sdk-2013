@@ -34,15 +34,6 @@ void CCleanupManager::Add( Handles& handles, EHANDLE handle, const ConVar& var, 
 	if ( var.GetInt() < 0 || handle == NULL )
 		return;
 
-	for ( int i = 0; i < handles.Count(); ++i )
-	{
-		if ( handles[i] == NULL )
-		{
-			handles[i] = handle;
-			return;
-		}
-	}
-
 	while ( handles.Count() >= var.GetInt() )
 	{
 		auto handle = handles.Head();
