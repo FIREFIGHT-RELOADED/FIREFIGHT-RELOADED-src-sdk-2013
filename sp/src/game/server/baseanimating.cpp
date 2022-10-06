@@ -263,7 +263,7 @@ SendPropFloat( SENDINFO( m_flFadeScale ), 0, SPROP_NOSCALE ),
 
 END_SEND_TABLE()
 
-ConVar sv_cleanup_time( "sv_cleanup_time", "60", FCVAR_ARCHIVE, "Time to clean up a dropped weapon/item." );
+ConVar sv_drops_cleanup_time( "sv_drops_cleanup_time", "60", FCVAR_ARCHIVE, "Time to clean up a dropped weapon/item." );
 
 CBaseAnimating::CBaseAnimating()
 {

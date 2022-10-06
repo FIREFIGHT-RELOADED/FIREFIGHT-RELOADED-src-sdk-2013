@@ -10629,9 +10629,9 @@ CBaseEntity *CAI_BaseNPC::DropItem ( const char *pszItemName, Vector vecPos, QAn
 			pItem->ApplyLocalAngularVelocityImpulse( AngularImpulse( 0, random->RandomFloat( 0, 100 ), 0 ) );
 		}
 
-		static ConVarRef sv_cleanup_time( "sv_cleanup_time" );
-		if ( sv_cleanup_time.GetFloat() >= 0 )
-			pItem->SUB_StartFadeOut( sv_cleanup_time.GetFloat(), false, "CleanUp" );
+		static ConVarRef sv_drops_cleanup_time( "sv_drops_cleanup_time" );
+		if ( sv_drops_cleanup_time.GetFloat() >= 0 )
+			pItem->SUB_StartFadeOut( sv_drops_cleanup_time.GetFloat(), false, "CleanUp" );
 
 		return pItem;
 	}

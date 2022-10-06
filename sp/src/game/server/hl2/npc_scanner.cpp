@@ -332,7 +332,7 @@ int CNPC_CScanner::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	return (BaseClass::OnTakeDamage_Alive( info ));
 }
 
-extern ConVar sv_cleanup_time;
+extern ConVar sv_drops_cleanup_time;
 //------------------------------------------------------------------------------
 // Purpose:
 //------------------------------------------------------------------------------
