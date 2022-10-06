@@ -56,7 +56,7 @@ void CCleanupManager::AddGib( EHANDLE gib )
 
 void CCleanupManager::AddRagdoll( EHANDLE ragdoll )
 {
-	Add( GetManager()->m_Ragdolls, ragdoll, g_max_thrown_knives, true );
+	Add( GetManager()->m_Ragdolls, ragdoll, g_ragdoll_maxcount, true );
 }
 
 void CCleanupManager::AddThrownKnife( EHANDLE knife )
