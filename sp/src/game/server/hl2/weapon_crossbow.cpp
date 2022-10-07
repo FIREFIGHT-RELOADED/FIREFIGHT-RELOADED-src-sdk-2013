@@ -40,12 +40,9 @@
 
 #define BOLT_AIR_VELOCITY	2500
 #define BOLT_WATER_VELOCITY	1500
-#define	SF_BOLT_KNIFEMODE			0x00000001
 
 extern ConVar sk_plr_dmg_crossbow;
 extern ConVar sk_npc_dmg_crossbow;
-extern ConVar sk_plr_dmg_knife_thrown;
-extern ConVar sk_npc_dmg_knife_thrown;
 
 void TE_StickyBolt( IRecipientFilter& filter, float delay,	Vector vecDirection, const Vector *origin );
 
@@ -85,7 +82,6 @@ protected:
 	DECLARE_SERVERCLASS();
 };
 LINK_ENTITY_TO_CLASS( crossbow_bolt, CCrossbowBolt );
-LINK_ENTITY_TO_CLASS(knife_bolt, CCrossbowBolt);
 
 BEGIN_DATADESC( CCrossbowBolt )
 	// Function Pointers
@@ -170,14 +166,7 @@ void CCrossbowBolt::Spawn( void )
 {
 	Precache( );
 
-	if (m_spawnflags & SF_BOLT_KNIFEMODE)
-	{
-		SetModel("models/knife_proj.mdl");
-	}
-	else
-	{
-		SetModel("models/crossbow_bolt.mdl");
-	}
+	SetModel("models/crossbow_bolt.mdl");
 
 	SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_CUSTOM );
 	UTIL_SetSize( this, -Vector(0.3f,0.3f,0.3f), Vector(0.3f,0.3f,0.3f) );
@@ -201,18 +190,7 @@ void CCrossbowBolt::Spawn( void )
 
 void CCrossbowBolt::Precache( void )
 {
-	//PrecacheModel( BOLT_MODEL );
-
-	if (m_spawnflags & SF_BOLT_KNIFEMODE)
-	{
-		PrecacheModel("models/knife_proj.mdl");
-	}
-	else
-	{
-		// This is used by C_TEStickyBolt, despte being different from above!!!
-		PrecacheModel("models/crossbow_bolt.mdl");
-	}
-
+	PrecacheModel("models/crossbow_bolt.mdl");
 	PrecacheModel( "sprites/light_glow02_noz.vmt" );
 }
 
@@ -236,25 +214,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 		ClearMultiDamage();
 		VectorNormalize( vecNormalizedVel );
 
-#if defined(HL2_EPISODIC)
-		//!!!HACKHACK - specific hack for ep2_outland_10 to allow crossbow bolts to pass through her bounding box when she's crouched in front of the player
-		// (the player thinks they have clear line of sight because Alyx is crouching, but her BBOx is still full-height and blocks crossbow bolts.
-		if( GetOwnerEntity() && GetOwnerEntity()->IsPlayer() && pOther->Classify() == CLASS_PLAYER_ALLY_VITAL && FStrEq(STRING(gpGlobals->mapname), "ep2_outland_10") )
-		{
-			// Change the owner to stop further collisions with Alyx. We do this by making her the owner.
-			// The player won't get credit for this kill but at least the bolt won't magically disappear!
-			SetOwnerEntity( pOther );
-			return;
-		}
-#endif//HL2_EPISODIC
-
-		float curDamage = m_spawnflags & SF_BOLT_KNIFEMODE
-			? sk_plr_dmg_knife_thrown.GetFloat() : sk_plr_dmg_crossbow.GetFloat();
-
-		if (m_spawnflags & SF_BOLT_KNIFEMODE)
-		{
-			curDamage = sk_plr_dmg_knife_thrown.GetFloat();
-		}
+		float curDamage = sk_plr_dmg_crossbow.GetFloat();
 
 		if( GetOwnerEntity() && GetOwnerEntity()->IsPlayer() && pOther->IsNPC() )
 		{
@@ -266,17 +226,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 
 			CBasePlayer *pPlayer = ToBasePlayer( GetOwnerEntity() );
 			if ( pPlayer )
-			{
-				if (m_spawnflags & SF_BOLT_KNIFEMODE)
-				{
-					gamestats->Event_WeaponHit(pPlayer, true, "weapon_knife", dmgInfo);
-				}
-				else
-				{
-					gamestats->Event_WeaponHit(pPlayer, true, "weapon_crossbow", dmgInfo);
-				}
-			}
-
+				gamestats->Event_WeaponHit(pPlayer, true, "weapon_crossbow", dmgInfo);
 		}
 		else
 		{
@@ -341,14 +291,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 				data.m_vNormal = vForward;
 				data.m_nEntIndex = tr2.fraction != 1.0f;
 			
-				if (m_spawnflags & SF_BOLT_KNIFEMODE)
-				{
-					DispatchEffect("KnifeImpact", data);
-				}
-				else
-				{
-					DispatchEffect("BoltImpact", data);
-				}
+				DispatchEffect("BoltImpact", data);
 			}
 		}
 		
@@ -391,10 +334,6 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 			}
 			else
 			{
-				//Redundant setup for removal think?
-				//SetThink( &CCrossbowBolt::SUB_Remove );
-				//SetNextThink( gpGlobals->curtime + 2.0f );
-				
 				//FIXME: We actually want to stick (with hierarchy) to what we've hit
 				SetMoveType( MOVETYPE_NONE );
 			
@@ -409,14 +348,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 				data.m_vNormal = vForward;
 				data.m_nEntIndex = 0;
 			
-				if (m_spawnflags & SF_BOLT_KNIFEMODE)
-				{
-					DispatchEffect("KnifeImpact", data);
-				}
-				else
-				{
-					DispatchEffect("BoltImpact", data);
-				}
+				DispatchEffect("BoltImpact", data);
 				
 				UTIL_ImpactTrace( &tr, DMG_BULLET );
 
@@ -448,12 +380,6 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 
 			UTIL_Remove( this );
 		}
-	}
-
-	if ( g_pGameRules->IsMultiplayer() )
-	{
-//		SetThink( &CCrossbowBolt::ExplodeThink );
-//		SetNextThink( gpGlobals->curtime + 0.1f );
 	}
 }
 
@@ -593,7 +519,6 @@ CWeaponCrossbow::CWeaponCrossbow( void )
 void CWeaponCrossbow::Precache( void )
 {
 	UTIL_PrecacheOther( "crossbow_bolt" );
-	UTIL_PrecacheOther( "knife_bolt" );
 
 	PrecacheScriptSound( "Weapon_Crossbow.BoltHitBody" );
 	PrecacheScriptSound( "Weapon_Crossbow.BoltHitWorld" );

@@ -274,6 +274,7 @@ void CItem_ItemCrateFirefight::VPhysicsCollision( int index, gamevcollisionevent
 //-----------------------------------------------------------------------------
 void CItem_ItemCrateFirefight::OnBreak( const Vector &vecVelocity, const AngularImpulse &angImpulse, CBaseEntity *pBreaker )
 {
+	// Should this crate respawn?
 	bool shouldRespawn = !m_bDoNotRespawn && sv_crate_respawn_time.GetFloat() >= 0;
 
 	// FIXME: We could simply store the name of an entity to put into the crate 
@@ -348,7 +349,7 @@ void CItem_ItemCrateFirefight::OnBreak( const Vector &vecVelocity, const Angular
 
 		pSpawn->Spawn();
 
-		static ConVarRef sv_cleanup_time( "sv_cleanup_time" );
+		static ConVarRef sv_drops_cleanup_time( "sv_drops_cleanup_time" );
 
 		// Avoid missing items drops by a dynamic resupply because they don't think immediately
 		if ( FClassnameIs( pSpawn, "item_dynamic_resupply" ) )
@@ -363,11 +364,8 @@ void CItem_ItemCrateFirefight::OnBreak( const Vector &vecVelocity, const Angular
 			}
 			pSpawn->SetNextThink( gpGlobals->curtime );
 		}
-		else if ( sv_cleanup_time.GetFloat() >= 0 )
-		{
-			RegisterThinkContext( "CleanUp" );
-			pSpawn->SetContextThink( &CBaseAnimating::CleanUp, gpGlobals->curtime + sv_cleanup_time.GetFloat(), "CleanUp" );
-		}
+		else if ( shouldRespawn && sv_drops_cleanup_time.GetFloat() >= 0 )
+			pSpawn->SUB_StartFadeOut( sv_drops_cleanup_time.GetFloat(), false, "CleanUp" );
 
 		if (shouldRespawn || m_bDoNotRespawnContents)
 			pSpawn->AddSpawnFlags(SF_NORESPAWN);

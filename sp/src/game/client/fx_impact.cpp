@@ -15,6 +15,7 @@
 #endif
 #include "engine/IStaticPropMgr.h"
 #include "c_impact_effects.h"
+
 #include "tier0/vprof.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -72,9 +73,6 @@ IterationRetval_t CRagdollEnumerator::EnumElement( IHandleEntity *pHandleEntity 
 //-----------------------------------------------------------------------------
 bool FX_AffectRagdolls( Vector vecOrigin, Vector vecStart, int iDamageType )
 {
-	// don't do this when lots of ragdolls are simulating
-	if ( s_RagdollLRU.CountRagdolls(true) > 1 )
-		return false;
 	Ray_t shotRay;
 	shotRay.Init( vecStart, vecOrigin );
 

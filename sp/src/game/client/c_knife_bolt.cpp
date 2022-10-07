@@ -11,7 +11,7 @@
 #include "c_te_effect_dispatch.h"
 #include "beamdraw.h"
 
-CLIENTEFFECT_REGISTER_BEGIN( PrecacheEffectCrossbow )
+CLIENTEFFECT_REGISTER_BEGIN( PrecacheEffectKnife )
 CLIENTEFFECT_MATERIAL( "effects/muzzleflash1" )
 CLIENTEFFECT_REGISTER_END()
 
@@ -19,13 +19,13 @@ CLIENTEFFECT_REGISTER_END()
 // Crossbow bolt
 //
 
-class C_CrossbowBolt : public C_BaseCombatCharacter
+class C_KnifeBolt : public C_BaseCombatCharacter
 {
-	DECLARE_CLASS( C_CrossbowBolt, C_BaseCombatCharacter );
+	DECLARE_CLASS( C_KnifeBolt, C_BaseCombatCharacter );
 	DECLARE_CLIENTCLASS();
 public:
-	
-	C_CrossbowBolt( void );
+
+	C_KnifeBolt( void );
 
 	virtual RenderGroup_t GetRenderGroup( void )
 	{
@@ -40,19 +40,19 @@ public:
 
 private:
 
-	C_CrossbowBolt( const C_CrossbowBolt & ); // not defined, not accessible
+	C_KnifeBolt( const C_KnifeBolt & ); // not defined, not accessible
 
 	Vector	m_vecLastOrigin;
 	bool	m_bUpdated;
 };
 
-IMPLEMENT_CLIENTCLASS_DT( C_CrossbowBolt, DT_CrossbowBolt, CCrossbowBolt )
+IMPLEMENT_CLIENTCLASS_DT( C_KnifeBolt, DT_KnifeBolt, CKnifeBolt )
 END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-C_CrossbowBolt::C_CrossbowBolt( void )
+C_KnifeBolt::C_KnifeBolt( void )
 {
 }
 
@@ -60,7 +60,7 @@ C_CrossbowBolt::C_CrossbowBolt( void )
 // Purpose: 
 // Input  : updateType - 
 //-----------------------------------------------------------------------------
-void C_CrossbowBolt::OnDataChanged( DataUpdateType_t updateType )
+void C_KnifeBolt::OnDataChanged( DataUpdateType_t updateType )
 {
 	BaseClass::OnDataChanged( updateType );
 
@@ -77,7 +77,7 @@ void C_CrossbowBolt::OnDataChanged( DataUpdateType_t updateType )
 // Input  : flags - 
 // Output : int
 //-----------------------------------------------------------------------------
-int C_CrossbowBolt::DrawModel( int flags )
+int C_KnifeBolt::DrawModel( int flags )
 {
 	// See if we're drawing the motion blur
 	if ( flags & STUDIO_TRANSPARENCY )
@@ -87,14 +87,14 @@ int C_CrossbowBolt::DrawModel( int flags )
 
 		Vector	vecDir = GetAbsOrigin() - m_vecLastOrigin;
 		float	speed = VectorNormalize( vecDir );
-		
+
 		speed = clamp( speed, 0, 32 );
-		
+
 		if ( speed > 0 )
 		{
-			float	stepSize = MIN( ( speed * 0.5f ), 4.0f );
+			float	stepSize = MIN( (speed * 0.5f), 4.0f );
 
-			Vector	spawnPos = GetAbsOrigin() + ( vecDir * 24.0f );
+			Vector	spawnPos = GetAbsOrigin() + (vecDir * 24.0f);
 			Vector	spawnStep = -vecDir * stepSize;
 
 			CMatRenderContextPtr pRenderContext( materials );
@@ -115,7 +115,7 @@ int C_CrossbowBolt::DrawModel( int flags )
 			}
 		}
 
-		if ( gpGlobals->frametime > 0.0f && !m_bUpdated)
+		if ( gpGlobals->frametime > 0.0f && !m_bUpdated )
 		{
 			m_bUpdated = true;
 			m_vecLastOrigin = GetAbsOrigin();
@@ -131,7 +131,7 @@ int C_CrossbowBolt::DrawModel( int flags )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void C_CrossbowBolt::ClientThink( void )
+void C_KnifeBolt::ClientThink( void )
 {
 	m_bUpdated = false;
 }
@@ -140,12 +140,12 @@ void C_CrossbowBolt::ClientThink( void )
 // Purpose: 
 // Input  : &data - 
 //-----------------------------------------------------------------------------
-void CrossbowCrosshairLoadCallback( const CEffectData &data )
+void KnifeCrosshairLoadCallback( const CEffectData &data )
 {
-	IClientRenderable *pRenderable = data.GetRenderable( );
+	IClientRenderable *pRenderable = data.GetRenderable();
 	if ( !pRenderable )
 		return;
-	
+
 	Vector	position;
 	QAngle	angles;
 
@@ -156,4 +156,4 @@ void CrossbowCrosshairLoadCallback( const CEffectData &data )
 	}
 }
 
-DECLARE_CLIENT_EFFECT( "CrossbowLoad", CrossbowCrosshairLoadCallback );
+DECLARE_CLIENT_EFFECT( "KnifeLoad", KnifeCrosshairLoadCallback );

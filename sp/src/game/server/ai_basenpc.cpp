@@ -120,8 +120,6 @@ extern ConVar sk_healthkit;
 
 //#define DEBUG_LOOK
 
-bool RagdollManager_SaveImportant( CAI_BaseNPC *pNPC );
-
 #define	MIN_PHYSICS_FLINCH_DAMAGE	5.0f
 
 #define	NPC_GRENADE_FEAR_DIST		200
@@ -606,11 +604,6 @@ void CAI_BaseNPC::Event_Killed( const CTakeDamageInfo &info )
 	}
 
 	BaseClass::Event_Killed( info );
-
-	if ( m_bFadeCorpse )
-	{
-		m_bImportanRagdoll = RagdollManager_SaveImportant( this );
-	}
 
 	/*if (m_pAttributes != NULL)
 	{
@@ -10636,12 +10629,9 @@ CBaseEntity *CAI_BaseNPC::DropItem ( const char *pszItemName, Vector vecPos, QAn
 			pItem->ApplyLocalAngularVelocityImpulse( AngularImpulse( 0, random->RandomFloat( 0, 100 ), 0 ) );
 		}
 
-		static ConVarRef sv_cleanup_time( "sv_cleanup_time" );
-		if ( sv_cleanup_time.GetFloat() >= 0 )
-		{
-			RegisterThinkContext( "CleanUp" );
-			pItem->SetContextThink( &CBaseAnimating::CleanUp, gpGlobals->curtime + sv_cleanup_time.GetFloat(), "CleanUp" );
-		}
+		static ConVarRef sv_drops_cleanup_time( "sv_drops_cleanup_time" );
+		if ( sv_drops_cleanup_time.GetFloat() >= 0 )
+			pItem->SUB_StartFadeOut( sv_drops_cleanup_time.GetFloat(), false, "CleanUp" );
 
 		return pItem;
 	}
@@ -10655,15 +10645,8 @@ CBaseEntity *CAI_BaseNPC::DropItem ( const char *pszItemName, Vector vecPos, QAn
 
 bool CAI_BaseNPC::ShouldFadeOnDeath( void )
 {
-	if ( g_RagdollLVManager.IsLowViolence() )
-	{
-		return true;
-	}
-	else
-	{
-		// if flagged to fade out
-		return HasSpawnFlags(SF_NPC_FADE_CORPSE);
-	}
+	// if flagged to fade out
+	return HasSpawnFlags(SF_NPC_FADE_CORPSE);
 }
 
 //-----------------------------------------------------------------------------

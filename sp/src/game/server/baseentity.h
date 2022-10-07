@@ -839,9 +839,7 @@ protected:
 	int		GetIndexForThinkContext( const char *pszContext );
 	CUtlVector< thinkfunc_t >	m_aThinkFunctions;
 
-#ifdef _DEBUG
 	int							m_iCurrentThinkContext;
-#endif
 
 	void RemoveExpiredConcepts( void );
 	int	GetContextCount() const;						// Call RemoveExpiredConcepts to clean out expired concepts
@@ -1046,7 +1044,7 @@ public:
 	// common member functions
 	void					SUB_Remove( void );
 	void					SUB_DoNothing( void );
-	void					SUB_StartFadeOut( float delay = 10.0f, bool bNotSolid = true );
+	void					SUB_StartFadeOut( float delay = 10.0f, bool bNotSolid = true, const char* context = NULL );
 	void					SUB_StartFadeOutInstant();
 	void					SUB_FadeOut ( void );
 	void					SUB_Vanish( void );

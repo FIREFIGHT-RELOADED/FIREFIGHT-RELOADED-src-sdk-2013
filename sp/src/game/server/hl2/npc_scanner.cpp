@@ -24,6 +24,7 @@
 #include "hl2_player.h"
 #include "npc_scanner.h"
 #include "materialsystem/imaterialsystemhardwareconfig.h"
+#include "firefightreloaded/cleanup_manager.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -330,7 +331,8 @@ int CNPC_CScanner::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	return (BaseClass::OnTakeDamage_Alive( info ));
 }
-	
+
+extern ConVar sv_drops_cleanup_time;
 //------------------------------------------------------------------------------
 // Purpose:
 //------------------------------------------------------------------------------
@@ -350,14 +352,12 @@ void CNPC_CScanner::Gib( void )
 	// Add a random chance of spawning a battery...
 	if ( !HasSpawnFlags(SF_NPC_NO_WEAPON_DROP) && random->RandomFloat( 0.0f, 1.0f) < 0.3f )
 	{
-		CItem *pBattery = (CItem*)CreateEntityByName("item_battery");
+		CItem *pBattery = (CItem*)DropItem( "item_battery", GetAbsOrigin(), GetAbsAngles() );
 		if ( pBattery )
 		{
-			pBattery->SetAbsOrigin( GetAbsOrigin() );
 			pBattery->SetAbsVelocity( GetAbsVelocity() );
 			pBattery->SetLocalAngularVelocity( GetLocalAngularVelocity() );
 			pBattery->ActivateWhenAtRest();
-			pBattery->Spawn();
 		}
 	}
 
@@ -981,6 +981,7 @@ void CNPC_CScanner::DeployMine()
 			child->SetParent( NULL );
 			child->SetAbsVelocity( GetAbsVelocity() );
 			child->SetOwnerEntity( this );
+			CCleanupManager::AddCombineMine( this );
 
 			ScannerEmitSound( "DeployMine" );
 

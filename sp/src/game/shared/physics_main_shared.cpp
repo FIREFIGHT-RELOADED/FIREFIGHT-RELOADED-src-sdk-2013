@@ -1923,17 +1923,13 @@ bool CBaseEntity::PhysicsRunThink( thinkmethods_t thinkMethod )
 	// Fire the rest of 'em
 	for ( int i = 0; i < m_aThinkFunctions.Count(); i++ )
 	{
-#ifdef _DEBUG
 		// Set the context
 		m_iCurrentThinkContext = i;
-#endif
 
 		bAlive = PhysicsRunSpecificThink( i, m_aThinkFunctions[i].m_pfnThink );
 
-#ifdef _DEBUG
 		// Clear our context
 		m_iCurrentThinkContext = NO_THINK_CONTEXT;
-#endif
 
 		if ( !bAlive )
 			return false;

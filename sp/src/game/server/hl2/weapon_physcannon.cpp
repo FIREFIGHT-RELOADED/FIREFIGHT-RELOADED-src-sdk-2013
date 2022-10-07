@@ -2324,6 +2324,7 @@ void CWeaponPhysCannon::SecondaryAttack( void )
 	}
 	else
 	{
+		IPhysicsObject* phys = NULL;
 		// Otherwise pick it up
 		FindObjectResult_t result = FindObject();
 		switch ( result )
@@ -2335,6 +2336,11 @@ void CWeaponPhysCannon::SecondaryAttack( void )
 
 			// We found an object. Debounce the button
 			m_nAttack2Debounce |= pOwner->m_nButtons;
+
+			phys = m_grabController.m_attachedEntity->VPhysicsGetObject();
+			if ( phys != NULL && !phys->IsMotionEnabled() )
+				phys->EnableMotion(true);
+
 			break;
 
 		case OBJECT_NOT_FOUND:
@@ -3488,6 +3494,9 @@ bool CWeaponPhysCannon::CanPickupObject( CBaseEntity *pTarget )
 	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
 	if ( pOwner && pOwner->GetGroundEntity() == pTarget )
 		return false;
+
+	if ( FClassnameIs( pTarget, "weapon_knife" ) )
+		return true;
 
 	if ( !IsMegaPhysCannon() )
 	{

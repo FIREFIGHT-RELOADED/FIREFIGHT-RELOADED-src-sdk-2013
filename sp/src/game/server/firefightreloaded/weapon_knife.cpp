@@ -20,6 +20,7 @@
 #include "weapon_knife.h"
 #include "rumble_shared.h"
 #include "gamestats.h"
+#include "cleanup_manager.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -71,11 +72,6 @@ CWeaponKnife::CWeaponKnife( void )
 {
 }
 
-/*void CWeaponKnife::Precache(void)
-{
-	UTIL_PrecacheOther("knife_bolt");
-}*/
-
 bool CWeaponKnife::Deploy(void)
 {
 	bool deployVal = BaseClass::Deploy();
@@ -95,7 +91,6 @@ bool CWeaponKnife::Deploy(void)
 
 #define THROWNKNIFE_AIR_VELOCITY	2500
 #define THROWNKNIFE_WATER_VELOCITY	1500
-#define	SF_BOLT_KNIFEMODE			0x00000001
 void CWeaponKnife::ThrowKnife(void)
 {
 	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
@@ -113,7 +108,6 @@ void CWeaponKnife::ThrowKnife(void)
 	CBaseEntity* pBolt = CreateEntityByName("knife_bolt");
 	UTIL_SetOrigin(pBolt, vecSrc);
 	pBolt->SetAbsAngles(angAiming);
-	pBolt->AddSpawnFlags(SF_BOLT_KNIFEMODE);
 	pBolt->Spawn();
 	pBolt->SetOwnerEntity(pOwner);
 
@@ -138,17 +132,22 @@ void CWeaponKnife::ThrowKnife(void)
 	m_flNextSecondaryAttack = gpGlobals->curtime + KNIFE_REFIRE_THROW;
 }
 
+ConVar sv_infinite_knives( "sv_infinite_knives", "0", FCVAR_CHEAT );
 void CWeaponKnife::SecondaryAttack(void)
 {
-	ThrowKnife();
-
 	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
 	if (pPlayer)
 	{
 		m_iSecondaryAttacks++;
 		gamestats->Event_WeaponFired(pPlayer, true, GetClassname());
-		//pPlayer->SwitchToNextBestWeapon(this);
-		engine->ClientCommand(pPlayer->edict(), "lastinv");
+		ThrowKnife();
+		if ( !sv_infinite_knives.GetBool() )
+		{
+			pPlayer->Weapon_Detach( this );
+			engine->ClientCommand( pPlayer->edict(), "lastinv" );
+			engine->ClientCommand( pPlayer->edict(), "-attack2" );
+			UTIL_Remove( this );
+		}
 	}
 }
 
@@ -382,4 +381,27 @@ void CWeaponKnife::ImpactEffect(trace_t &traceHit)
 	//FIXME: need new decals
 	UTIL_ImpactTrace(&traceHit, DMG_SLASH);
 	//UTIL_DecalTrace(&traceHit, "ManhackCut");
+}
+
+int CWeaponKnife::OnTakeDamage( const CTakeDamageInfo& info )
+{
+	auto phys = VPhysicsGetObject();
+	if ( IsEffectActive( EF_ITEM_BLINK ) && phys != NULL && !phys->IsMotionEnabled() )
+	{
+		Vector forward;
+		AngleVectors( GetAbsAngles(), &forward );
+		phys->EnableMotion( true );
+		phys->Wake();
+		forward *= Clamp( info.GetDamage() + 100, 100.0f, 250.0f );
+		phys->SetVelocity( &forward, NULL );
+		return 0;
+	}
+	else
+		return BaseClass::OnTakeDamage( info );
+}
+
+void CWeaponKnife::Equip( CBaseCombatCharacter *pOwner )
+{
+	CCleanupManager::RemoveThrownKnife( this );
+	BaseClass::Equip( pOwner );
 }

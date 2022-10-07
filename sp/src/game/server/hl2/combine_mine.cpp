@@ -17,6 +17,7 @@
 #include "movevars_shared.h"
 #include "vphysics/constraints.h"
 #include "ai_hint.h"
+#include "firefightreloaded/cleanup_manager.h"
 
 enum
 {
@@ -1168,6 +1169,7 @@ void CBounceBomb::InputDisarm( inputdata_t &inputdata )
 //---------------------------------------------------------
 void CBounceBomb::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reason )
 {
+	CCleanupManager::RemoveCombineMine( this );
 	m_hPhysicsAttacker = pPhysGunUser;
 
 	m_flTimeGrabbed = FLT_MAX;
@@ -1198,6 +1200,7 @@ void CBounceBomb::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reason
 //---------------------------------------------------------
 void CBounceBomb::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason )
 {
+	CCleanupManager::RemoveCombineMine( this );
 	m_hPhysicsAttacker = pPhysGunUser;
 
 	m_iFlipAttempts = 0;

@@ -44,9 +44,12 @@ public:
 	void 		ThrowKnife(void);
 	virtual int WeaponMeleeAttack1Condition( float flDot, float flDist );
 	void		SecondaryAttack(void);
-	//void 		Precache(void);
 	bool		Deploy(void);
 	void		ItemPostFrame(void);
+
+	int			OnTakeDamage( const CTakeDamageInfo& info );
+
+	virtual void Equip( CBaseCombatCharacter *pOwner );
 
 	// Animation event
 	virtual void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );

@@ -3794,7 +3794,12 @@ bool CBasePlayer::CanPickupObject( CBaseEntity *pObject, float massLimit, float 
 
 	//Must move with physics
 	if ( pObject->GetMoveType() != MOVETYPE_VPHYSICS )
+	{
+		auto weapon = dynamic_cast<CBaseCombatWeapon*>(pObject);
+		if ( weapon != NULL )
+			return true;
 		return false;
+	}
 
 	IPhysicsObject *pList[VPHYSICS_MAX_OBJECT_LIST_COUNT];
 	int count = pObject->VPhysicsGetObjectList( pList, ARRAYSIZE(pList) );

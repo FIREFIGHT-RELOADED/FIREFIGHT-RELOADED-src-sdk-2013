@@ -2040,12 +2040,9 @@ void CBaseCombatCharacter::Weapon_Drop( CBaseCombatWeapon *pWeapon, const Vector
 
 	pWeapon->Drop( vecThrow );
 	Weapon_Detach( pWeapon );
-	static ConVarRef sv_cleanup_time( "sv_cleanup_time" );
-	if ( sv_cleanup_time.GetFloat() >= 0 )
-	{
-		RegisterThinkContext( "CleanUp" );
-		pWeapon->SetContextThink( &CBaseAnimating::CleanUp, gpGlobals->curtime + sv_cleanup_time.GetFloat(), "CleanUp" );
-	}
+	static ConVarRef sv_drops_cleanup_time( "sv_drops_cleanup_time" );
+	if ( sv_drops_cleanup_time.GetFloat() >= 0 )
+		pWeapon->SUB_StartFadeOut( sv_drops_cleanup_time.GetFloat(), false, "CleanUp" );
 
 	if ( HasSpawnFlags( SF_NPC_NO_WEAPON_DROP ) )
 	{
@@ -2075,6 +2072,9 @@ void CBaseCombatCharacter::SetLightingOriginRelative( CBaseEntity *pLightingOrig
 //-----------------------------------------------------------------------------
 void CBaseCombatCharacter::Weapon_Equip( CBaseCombatWeapon *pWeapon )
 {
+	// Don't clean up this weapon anymore.
+	pWeapon->ThinkSet( NULL, 0, "CleanUp" );
+
 	// Add the weapon to my weapon inventory
 	for (int i=0;i<MAX_WEAPONS;i++) 
 	{
@@ -2886,6 +2886,9 @@ CBaseEntity *CBaseCombatCharacter::Weapon_FindUsable( const Vector &range )
 		CBaseCombatWeapon *pWeapon = weaponList[i];
 		Assert(pWeapon);
 		pWeapon->GetVelocity( &velocity, NULL );
+
+		if ( pWeapon->IsEffectActive( EF_NODRAW ) )
+			continue;
 
 		if ( pWeapon->CanBePickedUpByNPCs() == false )
 			continue;

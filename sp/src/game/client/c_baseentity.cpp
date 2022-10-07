@@ -933,10 +933,8 @@ C_BaseEntity::C_BaseEntity() :
 	m_vecAbsVelocity.Init();
 	m_vecViewOffset.Init();
 	m_vecBaseVelocity.Init();
-
-	m_iCurrentThinkContext = NO_THINK_CONTEXT;
-
 #endif
+	m_iCurrentThinkContext = NO_THINK_CONTEXT;
 
 	m_nSimulationTick = -1;
 

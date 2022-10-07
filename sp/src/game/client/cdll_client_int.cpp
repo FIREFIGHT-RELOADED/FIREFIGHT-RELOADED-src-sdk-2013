@@ -1771,9 +1771,6 @@ void CHLClient::LevelInitPreEntity( char const* pMapName )
 	}
 #endif
 
-	// Check low violence settings for this map
-	g_RagdollLVManager.SetLowViolence( pMapName );
-
 	gHUD.LevelInit();
 
 #if defined( REPLAY_ENABLED )
