@@ -1,0 +1,12 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models\player\american\american_body"	
+	"$bumpmap" "models\player\american\american_body_normal"	
+	"$phong" "1"
+
+//	"$phongexponent" "3"
+	"$phongboost" "1"	
+	"$phongfresnelranges"	"[1 3 8]"
+//	"$halflambert" "1"
+	"$phongexponenttexture" "models\player\american\american_body_exp"
+	"$phongalbedotint" "1"								}

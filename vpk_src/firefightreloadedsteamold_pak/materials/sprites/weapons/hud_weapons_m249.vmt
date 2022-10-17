@@ -1,0 +1,9 @@
+"UnlitGeneric"
+{
+	"$baseTexture" "sprites\weapons\hud_weapons_m249"
+	"$additive" "1"
+	"$vertexcolor" "1"
+	"$vertexalpha" "1"
+	"$alpha"	"0.7"
+	"$ignorez"     "1"
+}

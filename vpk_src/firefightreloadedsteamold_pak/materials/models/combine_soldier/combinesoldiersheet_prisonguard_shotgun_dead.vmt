@@ -1,0 +1,13 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" 		"Models/Combine_soldier/combinesoldier_prisonguard_shotgun_dead"
+	"$bumpmap" "models/combine_soldier/combinesoldiersheet_prisonguard_normal"
+	"$surfaceprop" "flesh"
+	"$model" 1
+	"$phong" 1
+	"$phongboost" "4"
+	"$halflambert" "1"
+	"$phongexponenttexture" "models/combine_soldier/combinesoldiersheet_prisonguard_grey"
+	"$phongalbedotint" "1"										
+	"$phongfresnelranges"	"[.1 .5 1.0]"
+}

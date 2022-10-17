@@ -1,0 +1,6 @@
+"vertexlitgeneric"
+{
+	"$baseTexture" "models/player/ct_urban/ct_urban"
+    "$bumpmap" "models/player/ct_urban/ct_urban_normal"
+}
+

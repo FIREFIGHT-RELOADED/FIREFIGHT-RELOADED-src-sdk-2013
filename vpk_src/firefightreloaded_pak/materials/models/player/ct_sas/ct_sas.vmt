@@ -1,0 +1,5 @@
+"vertexlitgeneric"
+{
+	"$baseTexture" "models\player\ct_sas\ct_sas"
+    "$bumpmap" "models/player/ct_sas/ct_sas_normal"
+}

@@ -1,0 +1,8 @@
+VertexLitGeneric
+{
+	"$basetexture"	"models\player\t_guerilla\t_guerilla"
+	"$bumpmap" "models\player\t_guerilla\t_guerilla_normal"
+	"$normalmapalphaenvmapmask" "1"
+	"$surfaceprop" "flesh"
+
+}

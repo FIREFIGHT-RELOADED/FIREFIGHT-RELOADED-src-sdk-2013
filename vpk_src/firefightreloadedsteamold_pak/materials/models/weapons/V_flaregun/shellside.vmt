@@ -1,0 +1,12 @@
+"VertexLitGeneric"
+{
+	// Original shader: VertexLitTexture
+	"$basetexture" "models/Weapons/V_flaregun/shellside"
+	"$bumpmap"       "models/Weapons/V_flaregun/shellside_n"
+  "$halflambert" 	"1"
+  "$phong" 		"1"
+  "$phongexponent" 	"100"
+  "$phongboost" "2"
+  "$phongfresnelranges" "[0.1 0.65 1]"
+  "$phongalbedotint" "1"
+}

@@ -1,0 +1,24 @@
+"VertexLitGeneric"
+{
+	// Original shader: VertexLitTexture
+	"$baseTexture" "models\weapons\pistol_new\handgun_00"	
+	"$bumpmap" "models\weapons\pistol_new\handgun_normal"
+	"$envmap" "env_cubemap"	
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmaptint" "[.4 .4 .4]"
+
+	"$selfillum" 1
+
+	"$surfaceprop" "metal"
+
+	"$model" 1
+
+	$phong 1
+	$phongboost "3"
+	$phongexponent 120
+	$phongtint "[.85 .85 1]"
+	$phongfresnelranges "[.5 .85 30]"
+	$ambientocclusion 1
+	"$halflambert" "0"
+}

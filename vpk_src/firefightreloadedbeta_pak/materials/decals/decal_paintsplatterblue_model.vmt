@@ -1,0 +1,15 @@
+"VertexLitGeneric"
+{
+	"$decal" 1
+	"$basetexture" "Decals/decal_paintsplatterblue001"
+	"$decalscale" 0.25
+	"$translucent" 1
+	"$model" 1
+	
+	"$envmap" "env_cubemap"
+	"$bumpmap" "Decals/decal_paintsplatternormal"
+	"$envmapcontrast" ".5"
+	"$envmapsaturation" "1"
+}
+
+

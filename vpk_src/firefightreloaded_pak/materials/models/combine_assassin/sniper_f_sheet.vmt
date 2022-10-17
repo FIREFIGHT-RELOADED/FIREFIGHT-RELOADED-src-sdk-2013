@@ -1,0 +1,28 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\combine_assassin\sniper_f_sheet"
+	"$bumpmap" "models\combine_assassin\sniper_f_sheet_normal"
+	"$model" 1
+	"$halflambert" 1
+	"$selfillum" "1"
+
+	"$phong" "1"
+	"$phongboost" "0.5"
+	"$phongexponent" "5"
+	"$phongalbedotint" "1"										
+	"$phongfresnelranges"	"[.1 .5  1]"
+
+	//rimlight parameters
+	"$rimlight" "1"
+	"$rimlightexponent" "40"
+	"$rimlightboost" "0.4"
+
+	"Proxies"
+	{
+		"IsNPC"
+		{
+			"scale" "4.0"
+			"resultvar" "$selfillumtint"
+		}
+	}
+}

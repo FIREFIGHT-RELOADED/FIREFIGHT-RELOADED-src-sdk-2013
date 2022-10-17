@@ -1,0 +1,19 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\combine_assassin\jumpers"
+	"$bumpmap" "models\combine_assassin\jumpers_normal"
+	"$model" 1
+	"$selfillum" 1
+	"$halflambert" 1
+
+	"$phong" "1"
+	"$phongboost" "0.5"
+	"$phongexponent" "5"
+	"$phongalbedotint" "1"										
+	"$phongfresnelranges"	"[.1 .5  1]"
+
+	//rimlight parameters
+	"$rimlight" "1"
+	"$rimlightexponent" "40"
+	"$rimlightboost" "0.4"
+}

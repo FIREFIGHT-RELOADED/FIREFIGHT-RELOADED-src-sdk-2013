@@ -1,0 +1,5 @@
+"vertexlitgeneric"
+{
+	"$baseTexture" "models\player\ct_gsg9\ct_gsg9"
+    "$bumpmap" "models/player/ct_gsg9/ct_gsg9_normal"
+}

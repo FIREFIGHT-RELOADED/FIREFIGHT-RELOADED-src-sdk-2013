@@ -1,0 +1,6 @@
+"vertexlitgeneric"
+{
+	"$baseTexture" "models/player/ct_gign/ct_gign"
+    "$bumpmap" "models/player/ct_gign/ct_gign_normal"
+}
+

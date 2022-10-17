@@ -1,0 +1,11 @@
+"VertexLitGeneric"
+{
+	// Original shader: VertexLitTexture
+	"$baseTexture" "models\weapons\v_sniperAC\v_sniper_scope_b"
+	"$bumpmap" "models/weapons/v_sniperAC/v_sniper_scope_normal"
+	"$normalmapalphaenvmapmask" 1
+	"$envmap" "env_cubemap"
+	"$envmapsaturation" .5
+	"$envmapcontrast" 1
+	"$selfillum" 1
+}

@@ -1,0 +1,12 @@
+"VertexLitGeneric"
+{
+	// Original shader: VertexLitTexture
+	"$basetexture" "models/Weapons/V_sniperAC/v_sniper_scope"
+	"$bumpmap" "models/weapons/v_sniperAC/v_sniper_scope_normal"
+	"$selfillum" 1
+	
+	"$phong" "1"
+	"$phongexponent" "10"
+	"$phongboost"	"5"
+	"$phongfresnelranges"	"[.2 0.4 1]"
+}

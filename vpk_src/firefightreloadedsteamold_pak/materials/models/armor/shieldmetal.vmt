@@ -1,0 +1,12 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "Models/armor/shieldmetal"
+	"$bumpmap" "Models/armor/shieldmetal_bump"
+	"$nocull" 1	
+	"$surfaceprop" "metal"
+	"$phong" "1"
+	"$phongboost" "2"
+	"$phongfresnelranges"	"[.1 .5  1]"
+	"$model" 1
+	"$halflambert" 1
+}

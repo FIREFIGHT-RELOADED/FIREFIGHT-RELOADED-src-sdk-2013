@@ -1,0 +1,5 @@
+"Vertexlitgeneric"
+{
+	"$baseTexture" "models\agrunt/ag_head"
+	"$bumpmap" "models\agrunt/ag_head_normal"
+}

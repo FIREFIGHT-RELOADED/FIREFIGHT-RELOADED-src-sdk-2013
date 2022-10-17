@@ -1,0 +1,10 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\weapons\bullets\bullet_9mm"
+	"$envmap" "env_cubemap"
+	"$envmapcontrast" 1
+	"$basealphaenvmapmask" 1
+	"$bumpmap" "models\weapons\bullets\bullet_9mmn"
+	"$normalmapalphaenvmapmask" 1
+	"$envmaptint" "[ .7 .7 .6 ]"
+}

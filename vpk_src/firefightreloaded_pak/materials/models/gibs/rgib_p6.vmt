@@ -1,0 +1,9 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\gibs/rgib_p6"
+	"$bumpmap" "models\gibs\rgib_p6_norm"
+	"$phong" "1"
+	"$phongexponent" "25"
+	"$phongboost"	"2"
+	"$phongfresnelranges"	"[.2 0.4 1]
+}

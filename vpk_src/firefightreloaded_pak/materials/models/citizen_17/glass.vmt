@@ -1,0 +1,11 @@
+"unlitgeneric"
+{
+	// Original shader: TranslucentSpecularSphericalEnvMap
+	"$basetexture" "models/citizen_17/glass"
+	"$additive" 1
+	"$envmap" "models/citizen_17/glass"
+	"$envmapsphere" 1
+	"$model" 1
+	"$translucent" 1
+}
+

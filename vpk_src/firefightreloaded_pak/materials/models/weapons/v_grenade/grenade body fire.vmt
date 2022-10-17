@@ -1,0 +1,12 @@
+"vertexlitgeneric"
+{
+	"$baseTexture" "Models/Weapons/V_grenade/grenade body fire"
+	"$halflambert" "1"
+
+// -- From here down is new stuff which will only be applied if $phong is set to 1 --
+	"$phong" "1"
+	"$phongexponent" "15"
+	"$phongboost"	"1"
+	"$phongfresnelranges"	"[.2 0.4 2]"
+
+}

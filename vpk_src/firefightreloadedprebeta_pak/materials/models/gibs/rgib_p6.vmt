@@ -1,0 +1,11 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\gibs/rgib_p6"
+	"$model" "1"
+	"$envmap" "env_cubemap"
+	"$envmapsaturation" "0"
+	"$envmapcontrast" "1"
+	"$envmaptint" "[.7 .5 .5]"
+	"$normalmapalphaenvmapmask" "1"
+	"$bumpmap" "models\gibs\rgib_p6_norm"
+}

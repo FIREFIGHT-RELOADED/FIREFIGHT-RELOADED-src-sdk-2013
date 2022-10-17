@@ -1,0 +1,7 @@
+VertexLitGeneric
+{
+	"$basetexture"	"models\weapons\mach_m249para\mach_m249para"
+	"$envmap" "env_cubemap"
+	"$envmapmask" "models\weapons\mach_m249para\mach_m249para_ref"
+
+}
