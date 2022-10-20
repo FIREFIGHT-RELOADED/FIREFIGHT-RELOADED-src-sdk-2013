@@ -15,6 +15,7 @@
 #include "vstdlib/random.h"
 #include "ai_utils.h"
 #include "EntityFlame.h"
+#include "firefightreloaded/cleanup_manager.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -757,6 +758,11 @@ void CGib::Spawn(const char *szGibModel, float flLifetime)
 	SetNextThink(gpGlobals->curtime + m_lifeTime);
 }
 
+void CGib::UpdateOnRemove()
+{
+	CCleanupManager::RemoveGib( this );
+	BaseClass::UpdateOnRemove();
+}
 
 LINK_ENTITY_TO_CLASS(gib, CGib);
 

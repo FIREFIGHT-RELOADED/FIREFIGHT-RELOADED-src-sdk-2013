@@ -251,6 +251,8 @@ void CRagdollProp::CalcRagdollSize( void )
 
 void CRagdollProp::UpdateOnRemove( void )
 {
+	CCleanupManager::RemoveRagdoll( this );
+
 	for ( int i = 0; i < m_ragdoll.listCount; i++ )
 	{
 		if ( m_ragdoll.list[i].pObject )

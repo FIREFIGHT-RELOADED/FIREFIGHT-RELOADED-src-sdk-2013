@@ -63,6 +63,8 @@ public:
 	virtual void OnPhysGunDrop(CBasePlayer *pPhysGunUser, PhysGunDrop_t reason);
 	virtual	CBasePlayer *HasPhysicsAttacker(float dt);
 
+	virtual void UpdateOnRemove();
+
 	void SetSprite(CBaseEntity *pSprite)
 	{
 		m_hSprite = pSprite;

@@ -1255,6 +1255,12 @@ void CBounceBomb::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t re
 	}
 }
 
+void CBounceBomb::UpdateOnRemove()
+{
+	CCleanupManager::RemoveCombineMine( this );
+	BaseClass::UpdateOnRemove();
+}
+
 
 LINK_ENTITY_TO_CLASS( bounce_bomb, CBounceBomb );
 LINK_ENTITY_TO_CLASS( combine_bouncemine, CBounceBomb );

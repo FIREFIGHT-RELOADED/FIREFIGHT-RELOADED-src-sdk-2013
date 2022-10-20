@@ -53,6 +53,7 @@ public:
 	int OnTakeDamage( const CTakeDamageInfo &info );
 	bool IsFriend( CBaseEntity *pEntity );
 
+	void UpdateOnRemove();
 	void UpdateLight( bool bTurnOn, unsigned int r, unsigned int g, unsigned int b, unsigned int a );
 	bool IsLightOn() { return m_hSprite.Get() != NULL; }
 
