@@ -51,7 +51,7 @@ public:
 
 	bool Load();
 	bool AddEntries( KeyValues *kv );
-	const SpawnEntry_t* GetRandomEntry(bool rarity) const;
+	const SpawnEntry_t* GetRandomEntry(bool isRare) const;
 
 private:
 	static int GetLargestLevel();
