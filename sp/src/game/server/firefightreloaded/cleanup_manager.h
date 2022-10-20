@@ -26,6 +26,7 @@ class CCleanupManager : public CBaseEntity
 	static CCleanupManager* GetManager();
 
 	static void Add( Handles& handles, EHANDLE handle, const ConVar& var, bool bNotSolid );
+	static bool Remove( Handles& handles, EHANDLE handle );
 
 public:
 	static void AddCombineMine( EHANDLE mine );

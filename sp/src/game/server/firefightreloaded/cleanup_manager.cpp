@@ -44,6 +44,15 @@ void CCleanupManager::Add( Handles& handles, EHANDLE handle, const ConVar& var, 
 	handles.AddToTail( handle );
 }
 
+bool CCleanupManager::Remove( Handles& handles, EHANDLE handle )
+{
+	int idx = handles.Find( handle );
+	if ( idx < 0 )
+		return false;
+	handles[idx].Term();
+	return true;
+}
+
 void CCleanupManager::AddCombineMine( EHANDLE mine )
 {
 	Add( GetManager()->m_CombineMines, mine, g_max_combine_mines, true );
@@ -66,12 +75,12 @@ void CCleanupManager::AddThrownKnife( EHANDLE knife )
 
 bool CCleanupManager::RemoveCombineMine( EHANDLE mine )
 {
-	return GetManager()->m_CombineMines.FindAndRemove( mine );
+	return Remove( GetManager()->m_CombineMines, mine );
 }
 
 bool CCleanupManager::RemoveThrownKnife( EHANDLE knife )
 {
-	return GetManager()->m_ThrownKnives.FindAndRemove( knife );
+	return Remove( GetManager()->m_ThrownKnives, knife );
 }
 
 void CCleanupManager::Shutdown()
