@@ -54,7 +54,8 @@ void CCleanupManager::Add( Handles& handles, EHANDLE handle, const ConVar& var, 
 	if ( var.GetInt() < 0 || handle == NULL )
 		return;
 
-	while ( handles.Count() >= var.GetInt() )
+	handles.AddToTail( handle );
+	while ( handles.Count() > var.GetInt() )
 	{
 		auto head = handles.Head();
 		handles.Remove( 0 );
@@ -63,7 +64,6 @@ void CCleanupManager::Add( Handles& handles, EHANDLE handle, const ConVar& var, 
 		else
 			DevMsg( "Manager using cvar %s had a null entry.", var.GetName() );
 	}
-	handles.AddToTail( handle );
 }
 
 bool CCleanupManager::Remove( Handles& handles, EHANDLE handle )
