@@ -981,7 +981,7 @@ void CNPC_CScanner::DeployMine()
 			child->SetParent( NULL );
 			child->SetAbsVelocity( GetAbsVelocity() );
 			child->SetOwnerEntity( this );
-			CCleanupManager::AddCombineMine( this );
+			CCleanupManager::AddCombineMine( child );
 
 			ScannerEmitSound( "DeployMine" );
 

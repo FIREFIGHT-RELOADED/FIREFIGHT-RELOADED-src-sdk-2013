@@ -16,6 +16,8 @@ class CCleanupManager : public CBaseEntity
 	DECLARE_CLASS(CCleanupManager, CBaseEntity)
 	DECLARE_DATADESC()
 
+	typedef void cleanupFunc(EHANDLE);
+
 	typedef CUtlVector<EHANDLE> Handles;
 	Handles m_CombineMines;
 	Handles m_Gibs;
@@ -25,7 +27,7 @@ class CCleanupManager : public CBaseEntity
 	static CCleanupManager* pManager;
 	static CCleanupManager* GetManager();
 
-	static void Add( Handles& handles, EHANDLE handle, const ConVar& var, bool bNotSolid );
+	static void Add( Handles& handles, EHANDLE handle, const ConVar& var, cleanupFunc* func );
 	static bool Remove( Handles& handles, EHANDLE handle );
 
 public:

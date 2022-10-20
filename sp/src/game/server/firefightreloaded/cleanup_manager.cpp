@@ -1,6 +1,7 @@
 #include "cbase.h"
 #include "saverestore_utlvector.h"
 #include "cleanup_manager.h"
+#include "combine_mine.h"
 
 ConVar g_max_combine_mines( "g_max_combine_mines", "32", FCVAR_REPLICATED, "Maximum number of hoppers dropped by scanners." );
 ConVar g_max_gib_pieces( "g_max_gib_pieces", "32", FCVAR_REPLICATED, "Maximum number of gibs." );
@@ -18,6 +19,25 @@ LINK_ENTITY_TO_CLASS( ffr_cleanup_manager, CCleanupManager )
 
 CCleanupManager* CCleanupManager::pManager;
 
+static void cleanupMine( EHANDLE handle )
+{
+	auto bomb = static_cast<CBounceBomb*>(handle.Get());
+	if ( bomb->GetMineState() == MINE_STATE_ARMED )
+		bomb->SetMineState( MINE_STATE_TRIGGERED );
+	else
+		bomb->ExplodeThink();
+}
+
+static void cleanupNotSolid( EHANDLE handle )
+{
+	handle->SUB_StartFadeOut( 0, true, "cleanup" );
+}
+
+static void cleanupSolid( EHANDLE handle )
+{
+	handle->SUB_StartFadeOut( 0, false, "cleanup" );
+}
+
 CCleanupManager* CCleanupManager::GetManager()
 {
 	if ( pManager == NULL )
@@ -29,17 +49,17 @@ CCleanupManager* CCleanupManager::GetManager()
 	return pManager;
 }
 
-void CCleanupManager::Add( Handles& handles, EHANDLE handle, const ConVar& var, bool bNotSolid )
+void CCleanupManager::Add( Handles& handles, EHANDLE handle, const ConVar& var, cleanupFunc* func )
 {
 	if ( var.GetInt() < 0 || handle == NULL )
 		return;
 
 	while ( handles.Count() >= var.GetInt() )
 	{
-		auto handle = handles.Head();
+		auto head = handles.Head();
 		handles.Remove( 0 );
-		if ( handle != NULL )
-			handle->SUB_StartFadeOut( 0, bNotSolid, "cleanup" );
+		if ( head != NULL )
+			func( head );
 	}
 	handles.AddToTail( handle );
 }
@@ -55,22 +75,22 @@ bool CCleanupManager::Remove( Handles& handles, EHANDLE handle )
 
 void CCleanupManager::AddCombineMine( EHANDLE mine )
 {
-	Add( GetManager()->m_CombineMines, mine, g_max_combine_mines, true );
+	Add( GetManager()->m_CombineMines, mine, g_max_combine_mines, cleanupMine );
 }
 
 void CCleanupManager::AddGib( EHANDLE gib )
 {
-	Add( GetManager()->m_Gibs, gib, g_max_gib_pieces, true );
+	Add( GetManager()->m_Gibs, gib, g_max_gib_pieces, cleanupNotSolid );
 }
 
 void CCleanupManager::AddRagdoll( EHANDLE ragdoll )
 {
-	Add( GetManager()->m_Ragdolls, ragdoll, g_ragdoll_maxcount, true );
+	Add( GetManager()->m_Ragdolls, ragdoll, g_ragdoll_maxcount, cleanupNotSolid );
 }
 
 void CCleanupManager::AddThrownKnife( EHANDLE knife )
 {
-	Add( GetManager()->m_ThrownKnives, knife, g_max_thrown_knives, false );
+	Add( GetManager()->m_ThrownKnives, knife, g_max_thrown_knives, cleanupSolid );
 }
 
 bool CCleanupManager::RemoveCombineMine( EHANDLE mine )
