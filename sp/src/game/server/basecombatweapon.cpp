@@ -578,7 +578,6 @@ void CBaseCombatWeapon::Materialize( void )
 		DoMuzzleFlash();
 	}
 
-	VPhysicsInitNormal( SOLID_BBOX, GetSolidFlags() | FSOLID_TRIGGER, false );
 	RemoveEFlags( EFL_NO_PHYSCANNON_INTERACTION );
 	SetMoveType( MOVETYPE_VPHYSICS );
 

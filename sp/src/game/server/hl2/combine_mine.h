@@ -121,6 +121,14 @@ private:
 	void InputDisarm( inputdata_t &inputdata );
 };
 
-
+enum
+{
+	MINE_STATE_DORMANT = 0,
+	MINE_STATE_DEPLOY,		// Try to lock down and arm
+	MINE_STATE_CAPTIVE,		// Held in the physgun
+	MINE_STATE_ARMED,		// Locked down and looking for targets
+	MINE_STATE_TRIGGERED,	// No turning back. I'm going to explode when I touch something.
+	MINE_STATE_LAUNCHED,	// Similar. Thrown from physgun.
+};
 
 #endif // COMBINE_MINE_H
