@@ -433,23 +433,10 @@ void CNPCMakerFirefight::MakeNPC()
 	if (!CanMakeNPC())
 		return;
 
-	auto entry = g_npcLoader->GetRandomEntry();
+	bool rarity = sk_spawnrareenemies.GetBool() && CanMakeRareNPC() && random->RandomInt( 1, m_nRareNPCRarity ) == 1;
+	auto entry = g_npcLoader->GetRandomEntry( rarity );
 	if ( entry == NULL )
 		return;
-
-	if (entry->isRare)
-	{
-		if (sk_spawnrareenemies.GetBool())
-		{
-			int rarenpcrandom = random->RandomInt(0, m_nRareNPCRarity);
-
-			if (!CanMakeRareNPC() || rarenpcrandom > 0)
-			{
-				MakeNPC();
-				return;
-			}
-		}
-	}
 
 	const char* pRandomName = entry->classname;
 	CAI_BaseNPC* pent = (CAI_BaseNPC*)CreateEntityByName(pRandomName);
