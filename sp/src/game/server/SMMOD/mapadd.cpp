@@ -239,7 +239,7 @@ bool CMapAdd::HandleRemoveEnitity( KeyValues *mapaddValue)
 				while ( (pent = gEntList.FindEntityByClassname( pent, STRING(str) )) != 0 )
 					UTIL_Remove( pent );
 			}
-			if ( AllocPooledString( pEntKeyValuesRemove->GetName() ) == AllocPooledString( "targetname" ) )
+			else if ( AllocPooledString( pEntKeyValuesRemove->GetName() ) == AllocPooledString( "targetname" ) )
 			{
 				CBaseEntity* pent = NULL;
 				while ( (pent = gEntList.FindEntityByName( pent, STRING(str) )) != 0 )
