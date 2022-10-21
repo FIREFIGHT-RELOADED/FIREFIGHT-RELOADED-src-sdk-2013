@@ -182,7 +182,12 @@ bool CMapAdd::HandleSpecialEnitity( KeyValues *specialEntity)
 
 bool CMapAdd::HandleRemoveEnitity( KeyValues *mapaddValue)
 {
-	if (AllocPooledString(mapaddValue->GetName()) == AllocPooledString("remove:sphere"))
+	static const auto CLASSNAME = AllocPooledString( "classname" );
+	static const auto TARGETNAME = AllocPooledString( "targetname" );
+	static const auto REMOVEALL = AllocPooledString( "remove:all" );
+	static const auto REMOVESPHERE = AllocPooledString( "remove:sphere" );
+
+	if (AllocPooledString(mapaddValue->GetName()) == REMOVESPHERE)
 	{
 		auto pEntKeyValues = mapaddValue->FindKey( "entities" );
 		if ( pEntKeyValues == NULL )
@@ -205,14 +210,12 @@ bool CMapAdd::HandleRemoveEnitity( KeyValues *mapaddValue)
 			{
 				if ( ppEnts[i] == NULL )
 					continue;
-				if (name == AllocPooledString("classname")
-					&& str == AllocPooledString(ppEnts[i]->GetClassname()))
+				if (name == CLASSNAME && str == AllocPooledString(ppEnts[i]->GetClassname()))
 				{
 					UTIL_Remove(ppEnts[i]);
 					continue;
 				}
-				else if (name == AllocPooledString("targetname")
-					&& str == ppEnts[i]->GetEntityName())
+				else if (name == TARGETNAME	&& str == ppEnts[i]->GetEntityName())
 				{
 					UTIL_Remove(ppEnts[i]);
 					continue;
@@ -222,7 +225,7 @@ bool CMapAdd::HandleRemoveEnitity( KeyValues *mapaddValue)
 		}
 		return true;
 	}
-	else if ( AllocPooledString( mapaddValue->GetName() ) == AllocPooledString( "remove:all" ) )
+	else if ( AllocPooledString( mapaddValue->GetName() ) == REMOVEALL )
 	{
 		auto pEntKeyValues = mapaddValue->FindKey( "entities" );
 		if ( pEntKeyValues == NULL )
@@ -233,13 +236,13 @@ bool CMapAdd::HandleRemoveEnitity( KeyValues *mapaddValue)
 		{
 			const auto name = AllocPooledString( pEntKeyValuesRemove->GetName() );
 			const auto str = AllocPooledString( pEntKeyValuesRemove->GetString() );
-			if ( name == AllocPooledString( "classname" ) )
+			if ( name == CLASSNAME )
 			{
 				CBaseEntity* pent = NULL;
 				while ( (pent = gEntList.FindEntityByClassname( pent, STRING(str) )) != 0 )
 					UTIL_Remove( pent );
 			}
-			else if ( AllocPooledString( pEntKeyValuesRemove->GetName() ) == AllocPooledString( "targetname" ) )
+			else if ( name == TARGETNAME )
 			{
 				CBaseEntity* pent = NULL;
 				while ( (pent = gEntList.FindEntityByName( pent, STRING(str) )) != 0 )
