@@ -179,54 +179,78 @@ bool CMapAdd::HandleSpecialEnitity( KeyValues *specialEntity)
 	}
 	return false;
 }
+
 bool CMapAdd::HandleRemoveEnitity( KeyValues *mapaddValue)
 {
-	if(AllocPooledString(mapaddValue->GetName()) == AllocPooledString("remove:sphere"))
+	if (AllocPooledString(mapaddValue->GetName()) == AllocPooledString("remove:sphere"))
 	{
+		auto pEntKeyValues = mapaddValue->FindKey( "entities" );
+		if ( pEntKeyValues == NULL )
+			return true;
+
 		Vector RemoveVector = Vector(0,0,0);
 		CBaseEntity *ppEnts[256];
-//		CBaseEntity *ppCandidates[256];
 		RemoveVector.x = mapaddValue->GetFloat("x", RemoveVector.x);
 		RemoveVector.y = mapaddValue->GetFloat("y", RemoveVector.y);
 		RemoveVector.z = mapaddValue->GetFloat("z", RemoveVector.z);
 		int nEntCount = UTIL_EntitiesInSphere( ppEnts, 256, RemoveVector, mapaddValue->GetFloat("radius", 0), 0 );
 
-				//Look through the entities it found
-			KeyValues *pEntKeyValues = mapaddValue->FindKey("entities");
-			if(pEntKeyValues)
+		//Look through the entities it found
+		auto pEntKeyValuesRemove = pEntKeyValues->GetFirstValue();
+		while (pEntKeyValuesRemove != NULL)
+		{
+			const auto name = AllocPooledString(pEntKeyValuesRemove->GetName());
+			const auto str = AllocPooledString(pEntKeyValuesRemove->GetString());
+			for ( int i = 0; i < nEntCount; ++i )
 			{
-				KeyValues *pEntKeyValuesRemove = pEntKeyValues->GetFirstValue();
-				while(pEntKeyValuesRemove)
+				if ( ppEnts[i] == NULL )
+					continue;
+				if (name == AllocPooledString("classname")
+					&& str == AllocPooledString(ppEnts[i]->GetClassname()))
 				{
-					int i;
-					for ( i = 0; i < nEntCount; i++ )
-					{
-			
-						if ( ppEnts[i] == NULL )
-							continue;
-						if(AllocPooledString(pEntKeyValuesRemove->GetName()) == AllocPooledString("classname")) // || ( AllocPooledString(pEntKeyValuesRemove->GetName()) == ppEnts[i]->GetEntityName())
-						{
-							if(AllocPooledString(pEntKeyValuesRemove->GetString()) == AllocPooledString(ppEnts[i]->GetClassname()))
-							{
-								UTIL_Remove(ppEnts[i]);
-								continue;
-							}
-						}
-						if(AllocPooledString(pEntKeyValuesRemove->GetName()) == AllocPooledString("targetname")) // || ( AllocPooledString(pEntKeyValuesRemove->GetName()) == ppEnts[i]->GetEntityName())
-						{
-							if(AllocPooledString(pEntKeyValuesRemove->GetString()) == ppEnts[i]->GetEntityName())
-							{
-								UTIL_Remove(ppEnts[i]);
-								continue;
-							}
-						}
-					}
-					pEntKeyValuesRemove = pEntKeyValuesRemove->GetNextValue();
+					UTIL_Remove(ppEnts[i]);
+					continue;
+				}
+				else if (name == AllocPooledString("targetname")
+					&& str == ppEnts[i]->GetEntityName())
+				{
+					UTIL_Remove(ppEnts[i]);
+					continue;
 				}
 			}
-			return true;
+			pEntKeyValuesRemove = pEntKeyValuesRemove->GetNextValue();
+		}
+		return true;
 	}
-	return false;
+	else if ( AllocPooledString( mapaddValue->GetName() ) == AllocPooledString( "remove:all" ) )
+	{
+		auto pEntKeyValues = mapaddValue->FindKey( "entities" );
+		if ( pEntKeyValues == NULL )
+			return true;
+
+		auto pEntKeyValuesRemove = pEntKeyValues->GetFirstValue();
+		while ( pEntKeyValuesRemove != NULL )
+		{
+			const auto name = AllocPooledString( pEntKeyValuesRemove->GetName() );
+			const auto str = AllocPooledString( pEntKeyValuesRemove->GetString() );
+			if ( name == AllocPooledString( "classname" ) )
+			{
+				CBaseEntity* pent = NULL;
+				while ( (pent = gEntList.FindEntityByClassname( pent, STRING(str) )) != 0 )
+					UTIL_Remove( pent );
+			}
+			if ( AllocPooledString( pEntKeyValuesRemove->GetName() ) == AllocPooledString( "targetname" ) )
+			{
+				CBaseEntity* pent = NULL;
+				while ( (pent = gEntList.FindEntityByName( pent, STRING(str) )) != 0 )
+					UTIL_Remove( pent );
+			}
+			pEntKeyValuesRemove = pEntKeyValuesRemove->GetNextValue();
+		}
+		return true;
+	}
+	else
+		return false;
 }
 void CMapAdd::InputRunLabel( inputdata_t &inputData ) //Input this directly!
 {
