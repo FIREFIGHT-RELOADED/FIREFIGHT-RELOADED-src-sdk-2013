@@ -35,9 +35,6 @@ extern ConVar sk_npc_dmg_knife_thrown;
 
 void TE_StickyBolt( IRecipientFilter& filter, float delay, Vector vecDirection, const Vector *origin );
 
-#define	BOLT_SKIN_NORMAL	0
-#define BOLT_SKIN_GLOW		1
-
 //-----------------------------------------------------------------------------
 // Crossbow Bolt
 //-----------------------------------------------------------------------------
@@ -61,15 +58,9 @@ public:
 	static CKnifeBolt *BoltCreate( const Vector &vecOrigin, const QAngle &angAngles, CBasePlayer *pentOwner = NULL );
 
 protected:
-
-	bool	CreateSprites( void );
 	void	DoneMoving( bool stuck );
 
-	CHandle<CSprite>		m_pGlowSprite;
-	//CHandle<CSpriteTrail>	m_pGlowTrail;
-
 	DECLARE_DATADESC();
-	DECLARE_SERVERCLASS();
 };
 LINK_ENTITY_TO_CLASS( knife_bolt, CKnifeBolt );
 
@@ -77,15 +68,7 @@ BEGIN_DATADESC( CKnifeBolt )
 // Function Pointers
 DEFINE_THINKFUNC( BubbleThink ),
 DEFINE_ENTITYFUNC( BoltTouch ),
-
-// These are recreated on reload, they don't need storage
-DEFINE_FIELD( m_pGlowSprite, FIELD_EHANDLE ),
-//DEFINE_FIELD( m_pGlowTrail, FIELD_EHANDLE ),
-
 END_DATADESC()
-
-IMPLEMENT_SERVERCLASS_ST( CKnifeBolt, DT_KnifeBolt )
-END_SEND_TABLE()
 
 CKnifeBolt *CKnifeBolt::BoltCreate( const Vector &vecOrigin, const QAngle &angAngles, CBasePlayer *pentOwner )
 {
@@ -104,8 +87,6 @@ CKnifeBolt *CKnifeBolt::BoltCreate( const Vector &vecOrigin, const QAngle &angAn
 //-----------------------------------------------------------------------------
 CKnifeBolt::~CKnifeBolt( void )
 {
-	if ( m_pGlowSprite )
-		UTIL_Remove( m_pGlowSprite );
 }
 
 //-----------------------------------------------------------------------------
@@ -130,26 +111,6 @@ unsigned int CKnifeBolt::PhysicsSolidMaskForEntity() const
 
 //-----------------------------------------------------------------------------
 // Purpose: 
-// Output : Returns true on success, false on failure.
-//-----------------------------------------------------------------------------
-bool CKnifeBolt::CreateSprites( void )
-{
-	// Start up the eye glow
-	m_pGlowSprite = CSprite::SpriteCreate( "sprites/light_glow02_noz.vmt", GetLocalOrigin(), false );
-
-	if ( m_pGlowSprite != NULL )
-	{
-		m_pGlowSprite->FollowEntity( this );
-		m_pGlowSprite->SetTransparency( kRenderGlow, 255, 255, 255, 128, kRenderFxNoDissipation );
-		m_pGlowSprite->SetScale( 0.2f );
-		m_pGlowSprite->TurnOff();
-	}
-
-	return true;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
 //-----------------------------------------------------------------------------
 void CKnifeBolt::Spawn( void )
 {
@@ -169,11 +130,6 @@ void CKnifeBolt::Spawn( void )
 
 	SetThink( &CKnifeBolt::BubbleThink );
 	SetNextThink( gpGlobals->curtime + 0.1f );
-
-	CreateSprites();
-
-	// Make us glow until we've hit the wall
-	m_nSkin = BOLT_SKIN_GLOW;
 }
 
 
@@ -344,14 +300,7 @@ void CKnifeBolt::BoltTouch( CBaseEntity *pOther )
 
 				UTIL_ImpactTrace( &tr, DMG_BULLET );
 
-				// The shallower the angle, the less of chance of sticking.
-				DoneMoving( random->RandomFloat( 0.5 ) <= hitDot );
-
-				if ( m_pGlowSprite != NULL )
-				{
-					m_pGlowSprite->TurnOn();
-					m_pGlowSprite->FadeAndDie( 3.0f );
-				}
+				DoneMoving(true);
 			}
 
 			// Shoot some sparks
@@ -360,12 +309,14 @@ void CKnifeBolt::BoltTouch( CBaseEntity *pOther )
 				g_pEffects->Sparks( GetAbsOrigin() );
 			}
 		}
-		else if ( tr.surface.flags & SURF_SKY || tr.contents & CONTENTS_PLAYERCLIP )
-			DoneMoving( false );
+		else if (tr.surface.flags & SURF_SKY || tr.contents & CONTENTS_PLAYERCLIP)
+		{
+			DoneMoving(false);
+		}
 		else
 		{
 			UTIL_ImpactTrace( &tr, DMG_BULLET );
-			DoneMoving( false );
+			DoneMoving( true );
 		}
 	}
 }
@@ -383,6 +334,8 @@ void CKnifeBolt::DoneMoving( bool stuck )
 	if ( stuck && phys != NULL )
 	{
 		phys->EnableMotion( false );
+		phys->EnableGravity(false);
+		phys->Sleep();
 		//pWeap->SetCollisionGroup( COLLISION_GROUP_DEBRIS );
 	}
 	pWeap->SetAbsVelocity( Vector( 0, 0, 0 ) );
