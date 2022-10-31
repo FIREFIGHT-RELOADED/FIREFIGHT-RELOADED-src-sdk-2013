@@ -316,7 +316,7 @@ void CKnifeBolt::BoltTouch( CBaseEntity *pOther )
 		else
 		{
 			UTIL_ImpactTrace( &tr, DMG_BULLET );
-			DoneMoving( true );
+			DoneMoving( false );
 		}
 	}
 }
