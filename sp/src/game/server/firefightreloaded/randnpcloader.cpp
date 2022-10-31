@@ -66,7 +66,7 @@ bool CRandNPCLoader::Load()
 	return true;
 }
 
-const CRandNPCLoader::SpawnEntry_t* CRandNPCLoader::GetRandomEntry(bool rarity) const
+const CRandNPCLoader::SpawnEntry_t* CRandNPCLoader::GetRandomEntry(bool isRare) const
 {
 	int count = 0;
 	int largestPlayerLevel = GetLargestLevel();
@@ -75,14 +75,14 @@ const CRandNPCLoader::SpawnEntry_t* CRandNPCLoader::GetRandomEntry(bool rarity) 
 	const auto end = m_Entries.end();
 	for ( auto iter = m_Entries.begin(); iter != end; ++iter )
 	{
-		if ( largestPlayerLevel >= iter->minPlayerLevel && iter->isRare == rarity)
+		if ( largestPlayerLevel >= iter->minPlayerLevel && iter->isRare == isRare)
 			++count;
 	}
 
 	int choice = random->RandomInt( 1, count );
 	for ( auto iter = m_Entries.begin(); iter != end; ++iter )
 	{
-		if ( largestPlayerLevel >= iter->minPlayerLevel && iter->isRare == rarity)
+		if ( largestPlayerLevel >= iter->minPlayerLevel && iter->isRare == isRare)
 		{
 			if ( choice == 1 )
 				return iter;

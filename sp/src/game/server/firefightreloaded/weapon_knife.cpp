@@ -405,3 +405,9 @@ void CWeaponKnife::Equip( CBaseCombatCharacter *pOwner )
 	CCleanupManager::RemoveThrownKnife( this );
 	BaseClass::Equip( pOwner );
 }
+
+void CWeaponKnife::UpdateOnRemove()
+{
+	CCleanupManager::RemoveThrownKnife( this );
+	BaseClass::UpdateOnRemove();
+}

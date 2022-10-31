@@ -49,6 +49,8 @@ public:
 
 	int			OnTakeDamage( const CTakeDamageInfo& info );
 
+	void UpdateOnRemove();
+
 	virtual void Equip( CBaseCombatCharacter *pOwner );
 
 	// Animation event

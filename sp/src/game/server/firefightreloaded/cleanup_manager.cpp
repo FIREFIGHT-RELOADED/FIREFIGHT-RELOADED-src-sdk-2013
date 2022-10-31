@@ -54,23 +54,21 @@ void CCleanupManager::Add( Handles& handles, EHANDLE handle, const ConVar& var, 
 	if ( var.GetInt() < 0 || handle == NULL )
 		return;
 
-	while ( handles.Count() >= var.GetInt() )
+	handles.AddToTail( handle );
+	while ( handles.Count() > var.GetInt() )
 	{
 		auto head = handles.Head();
 		handles.Remove( 0 );
 		if ( head != NULL )
 			func( head );
+		else
+			DevMsg( "Manager using cvar %s had a null entry.", var.GetName() );
 	}
-	handles.AddToTail( handle );
 }
 
 bool CCleanupManager::Remove( Handles& handles, EHANDLE handle )
 {
-	int idx = handles.Find( handle );
-	if ( idx < 0 )
-		return false;
-	handles[idx].Term();
-	return true;
+	return handles.FindAndRemove( handle );
 }
 
 void CCleanupManager::AddCombineMine( EHANDLE mine )
@@ -96,6 +94,16 @@ void CCleanupManager::AddThrownKnife( EHANDLE knife )
 bool CCleanupManager::RemoveCombineMine( EHANDLE mine )
 {
 	return Remove( GetManager()->m_CombineMines, mine );
+}
+
+bool CCleanupManager::RemoveGib( EHANDLE knife )
+{
+	return Remove( GetManager()->m_Gibs, knife );
+}
+
+bool CCleanupManager::RemoveRagdoll( EHANDLE mine )
+{
+	return Remove( GetManager()->m_Ragdolls, mine );
 }
 
 bool CCleanupManager::RemoveThrownKnife( EHANDLE knife )

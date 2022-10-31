@@ -37,6 +37,8 @@ public:
 	static void AddThrownKnife( EHANDLE knife );
 
 	static bool RemoveCombineMine( EHANDLE mine );
+	static bool RemoveGib( EHANDLE gib );
+	static bool RemoveRagdoll( EHANDLE ragdoll );
 	static bool RemoveThrownKnife( EHANDLE knife );
 
 	static void Shutdown();
