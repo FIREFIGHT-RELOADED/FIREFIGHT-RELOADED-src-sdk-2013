@@ -15,7 +15,7 @@ DEFINE_UTLVECTOR( m_Ragdolls, FIELD_EHANDLE ),
 DEFINE_UTLVECTOR( m_ThrownKnives, FIELD_EHANDLE ),
 END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( ffr_cleanup_manager, CCleanupManager )
+LINK_ENTITY_TO_CLASS( cleanup_manager, CCleanupManager )
 
 CCleanupManager* CCleanupManager::pManager;
 
@@ -42,9 +42,9 @@ CCleanupManager* CCleanupManager::GetManager()
 {
 	if ( pManager == NULL )
 	{
-		pManager = (CCleanupManager*)gEntList.FindEntityByClassname( NULL, "ffr_cleanup_manager" );
+		pManager = (CCleanupManager*)gEntList.FindEntityByClassname( NULL, "cleanup_manager" );
 		if ( pManager == NULL )
-			pManager = (CCleanupManager*)CBaseEntity::Create( "ffr_cleanup_manager", vec3_origin, vec3_angle );
+			pManager = (CCleanupManager*)CBaseEntity::Create( "cleanup_manager", vec3_origin, vec3_angle );
 	}
 	return pManager;
 }

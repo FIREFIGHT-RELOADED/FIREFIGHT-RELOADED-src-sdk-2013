@@ -46,6 +46,4 @@ C_RagdollManager::C_RagdollManager()
 void C_RagdollManager::OnDataChanged( DataUpdateType_t updateType )
 {
 	BaseClass::OnDataChanged( updateType );
-
-	s_RagdollLRU.SetMaxRagdollCount( m_iCurrentMaxRagdollCount );
 }
