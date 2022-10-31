@@ -106,18 +106,21 @@ void CWeaponKnife::ThrowKnife(void)
 
 	// Create a new entity with CCrossbowBolt private data
 	CBaseEntity* pBolt = CreateEntityByName("knife_bolt");
-	UTIL_SetOrigin(pBolt, vecSrc);
-	pBolt->SetAbsAngles(angAiming);
-	pBolt->Spawn();
-	pBolt->SetOwnerEntity(pOwner);
+	if (pBolt)
+	{
+		UTIL_SetOrigin(pBolt, vecSrc);
+		pBolt->SetAbsAngles(angAiming);
+		pBolt->Spawn();
+		pBolt->SetOwnerEntity(pOwner);
 
-	if (pOwner->GetWaterLevel() == 3)
-	{
-		pBolt->SetAbsVelocity(vecAiming * THROWNKNIFE_WATER_VELOCITY);
-	}
-	else
-	{
-		pBolt->SetAbsVelocity(vecAiming * THROWNKNIFE_AIR_VELOCITY);
+		if (pOwner->GetWaterLevel() == 3)
+		{
+			pBolt->SetAbsVelocity(vecAiming * THROWNKNIFE_WATER_VELOCITY);
+		}
+		else
+		{
+			pBolt->SetAbsVelocity(vecAiming * THROWNKNIFE_AIR_VELOCITY);
+		}
 	}
 
 	WeaponSound(WPN_DOUBLE);

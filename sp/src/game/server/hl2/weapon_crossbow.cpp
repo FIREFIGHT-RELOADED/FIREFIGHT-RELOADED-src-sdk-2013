@@ -101,10 +101,13 @@ CCrossbowBolt *CCrossbowBolt::BoltCreate( const Vector &vecOrigin, const QAngle 
 {
 	// Create a new entity with CCrossbowBolt private data
 	CCrossbowBolt *pBolt = (CCrossbowBolt *)CreateEntityByName( "crossbow_bolt" );
-	UTIL_SetOrigin( pBolt, vecOrigin );
-	pBolt->SetAbsAngles( angAngles );
-	pBolt->Spawn();
-	pBolt->SetOwnerEntity( pentOwner );
+	if (pBolt)
+	{
+		UTIL_SetOrigin(pBolt, vecOrigin);
+		pBolt->SetAbsAngles(angAngles);
+		pBolt->Spawn();
+		pBolt->SetOwnerEntity(pentOwner);
+	}
 
 	return pBolt;
 }
@@ -674,13 +677,16 @@ void CWeaponCrossbow::FireBolt( void )
 
 	CCrossbowBolt *pBolt = CCrossbowBolt::BoltCreate( vecSrc, angAiming, pOwner );
 
-	if ( pOwner->GetWaterLevel() == 3 )
+	if (pBolt)
 	{
-		pBolt->SetAbsVelocity( vecAiming * BOLT_WATER_VELOCITY );
-	}
-	else
-	{
-		pBolt->SetAbsVelocity( vecAiming * BOLT_AIR_VELOCITY );
+		if (pOwner->GetWaterLevel() == 3)
+		{
+			pBolt->SetAbsVelocity(vecAiming * BOLT_WATER_VELOCITY);
+		}
+		else
+		{
+			pBolt->SetAbsVelocity(vecAiming * BOLT_AIR_VELOCITY);
+		}
 	}
 
 	m_iClip1--;
