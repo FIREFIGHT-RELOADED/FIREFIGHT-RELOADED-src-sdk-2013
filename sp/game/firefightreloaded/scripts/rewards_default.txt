@@ -299,4 +299,12 @@
 		"unlocks_in_lone_wolf"	"0"
 		"weapon_classname" "weapon_bugbait"
 	}
+	"37"
+	{
+		"name"		"#GameUI_Store_Buy_Knife"
+		"item_type"	"5"
+		"min_level"	"5"
+		"weapon_classname" "weapon_knife"
+		"unlocks_in_iron_kick" "1"
+	}
 }
