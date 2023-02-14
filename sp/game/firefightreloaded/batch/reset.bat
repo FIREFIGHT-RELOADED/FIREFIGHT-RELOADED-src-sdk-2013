@@ -17,11 +17,14 @@ del cfg\config.cfg
 del cfg\settings.scr
 del cfg\user.scr
 del bin\client.pdb
+del bin\gamepadui.pdb
 del bin\server.pdb
 del bin\client.so.dbg
 del bin\client_srv.so.dbg
 del bin\server.so.dbg
 del bin\server_srv.so.dbg
+del bin\gamepadui.so.dbg
+del bin\gamepadui_srv.so.dbg
 del sound\sound.cache
 rmdir /S /Q maps\graphs\
 rmdir /S /Q materials\vgui\logos\ui\

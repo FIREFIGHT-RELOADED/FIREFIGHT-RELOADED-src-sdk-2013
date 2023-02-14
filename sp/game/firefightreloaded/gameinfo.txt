@@ -1,11 +1,12 @@
 "GameInfo"
 {
 	game 		"FIREFIGHT RELOADED"
+	logo 		"FIREFIGHT RELOADED"
+	logo2		""
 	title 		""
 	title2		""
 	type		singleplayer_only
 	supportsvr	0
-	gamelogo 	0
 	developer	"Bitl Development Studios"
 	developer_url	"https://bitl.carrd.co"
 	manual		""

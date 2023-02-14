@@ -14,7 +14,7 @@ $Configuration
 	$Compiler
 	{
 		$AdditionalIncludeDirectories	".\hl2;.\hl2\elements;$SRCDIR\game\shared\hl2;$SRCDIR\game\shared\episodic;..\..\public;$BASE"
-		$PreprocessorDefinitions		"$BASE;HL2_CLIENT_DLL;HL2_EPISODIC;SOURCE_2013;FR_CLIENT;FR_DLL;GLOWS_ENABLE"
+		$PreprocessorDefinitions		"$BASE;HL2_CLIENT_DLL;HL2_EPISODIC;SOURCE_2013;FR_CLIENT;FR_DLL;GLOWS_ENABLE;GAMEPADUI"
 	}
 }
 
@@ -188,22 +188,6 @@ $Project "Client (FR)"
 				$File	"gameui\PlayerModelDialog.h"
 				$File	"gameui\SpawnlistDialog.cpp"
 				$File	"gameui\SpawnlistDialog.h"
-			}
-			
-			$Folder	"Main Menu"
-			{
-				$File 	"firefightreloaded\vgui\fr_mainmenu.cpp"
-				$File 	"firefightreloaded\vgui\fr_mainmenu.h"
-				$File 	"firefightreloaded\vgui\fr_mainmenu_interface.cpp"
-				$File 	"firefightreloaded\vgui\fr_mainmenu_interface.h"
-				$File 	"firefightreloaded\vgui\fr_mainmenubutton.cpp"
-				$File 	"firefightreloaded\vgui\fr_mainmenubutton.h"
-				$File 	"firefightreloaded\vgui\fr_mainmenubuttonbase.cpp"
-				$File 	"firefightreloaded\vgui\fr_mainmenubuttonbase.h"
-				$File 	"firefightreloaded\vgui\fr_mainmenupanel.cpp"
-				$File 	"firefightreloaded\vgui\fr_mainmenupanel.h"
-				$File 	"firefightreloaded\vgui\fr_mainmenupanelbase.cpp"
-				$File 	"firefightreloaded\vgui\fr_mainmenupanelbase.h"
 			}
 
 			$Folder	"HUD Elements"

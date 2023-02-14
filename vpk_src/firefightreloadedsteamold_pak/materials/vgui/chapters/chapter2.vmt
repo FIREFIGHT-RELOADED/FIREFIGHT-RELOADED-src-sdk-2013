@@ -1,6 +1,0 @@
-//"LightmappedGeneric"
-"UnlitGeneric"
-{
-	"$baseTexture" "vgui/chapters/chapter_overwatch"
-	"$vertexalpha" 1
-}

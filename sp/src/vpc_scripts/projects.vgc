@@ -18,6 +18,11 @@ $Project "client"
 	"game\client\client_fr.vpc"	[($WIN32||$X360||$POSIX) && $FR]
 }
 
+$Project "gamepadui"
+{
+	"game\gamepadui\gamepadui_fr.vpc"	[($WIN32||$X360||$POSIX) && $FR]
+}
+
 $Project "fgdlib"
 {
 	"fgdlib\fgdlib.vpc" [$WIN32]
