@@ -2,9 +2,9 @@
 {
 	"BaseSettings"
 	{
-		"Button.Width.Out"						"217"
-		"Button.Width.Over"						"217"
-		"Button.Width.Pressed"					"217"
+		"Button.Width.Out"						"130"
+		"Button.Width.Over"						"130"
+		"Button.Width.Pressed"					"130"
 
 		"Button.Height.Out"						"224"
 		"Button.Height.Over"					"224"
@@ -41,8 +41,8 @@
 		"FooterButtons.OffsetX"					"64"
 		"FooterButtons.OffsetY"					"48"
 
-		"Button.Image.Width"					"158"
-		"Button.Image.Height"					"200"
+		"Button.Image.Width"					"119"
+		"Button.Image.Height"					"150"
 	}
 
 	"Colors"
@@ -78,7 +78,7 @@
 		"Button.Description.Over"					"0 0 0 0"
 		"Button.Description.Pressed"				"255 255 255 255"
 
-		"Button.Image.Out"						"0 0 0 220"
+		"Button.Image.Out"						"50 50 50 220"
 		"Button.Image.Over"						"110 110 110 200"
 		"Button.Image.Pressed"					"255 255 255 255"
 	}

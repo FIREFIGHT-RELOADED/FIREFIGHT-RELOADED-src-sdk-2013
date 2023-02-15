@@ -13,7 +13,7 @@
 				"description"	"#GameUI_EasyDescription"
 				"type"			"skillyskill"
 				"image"			"gamepadui/easy"
-				"skill"			"1"
+				"skill"			"0"
 			}
 
 			"Medium"
@@ -22,7 +22,7 @@
 				"description"	"#GameUI_NormalDescription"
 				"type"			"skillyskill"
 				"image"			"gamepadui/medium"
-				"skill"			"2"
+				"skill"			"1"
 			}
 
 			"Hard"
@@ -31,7 +31,216 @@
 				"description"	"#GameUI_HardDescription"
 				"type"			"skillyskill"
 				"image"			"gamepadui/hard"
+				"skill"			"2"
+			}
+
+			"VeryHard"
+			{
+				"text"			"#GameUI_VeryHard"
+				"description"	"#GameUI_VeryHardDescription"
+				"type"			"skillyskill"
+				"image"			"gamepadui/hard"
 				"skill"			"3"
+			}
+
+			"Nightmare"
+			{
+				"text"			"#GameUI_Nightmare"
+				"description"	"#GameUI_NightmareDescription"
+				"type"			"skillyskill"
+				"image"			"gamepadui/hard"
+				"skill"			"4"
+			}
+		}
+	}
+	"Gameplay"
+	{
+		"title"			"#GameUI_Game"
+		"alternating"   "1"
+		"items"
+		{
+			"AutoTarget"
+			{
+				"text"			"#GameUI_AutoaimController"
+				"type"			"wheelywheel"
+				"convar"		"sv_player_autoaimcrosshair"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+
+			"Grapple"
+			{
+				"text"			"#GameUI_GrappleToggle"
+				"type"			"wheelywheel"
+				"convar"		"sv_player_grapple"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+
+			"OldSpawner"
+			{
+				"text"			"#FR_OldSpawner"
+				"type"			"wheelywheel"
+				"convar"		"g_fr_spawneroldfunctionality"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+
+			"Gamemodes"
+			{
+				"text"			"#GameUI_GamemodeSelect"
+				"type"			"wheelywheel"
+				"convar"		"g_gamemode"
+
+				"options"
+				{
+					"0"	"#GameUI_GamemodeRandom"
+					"1"	"#GameUI_GamemodeCF"
+					"2"	"#GameUI_GamemodeXI"
+					"3"	"#GameUI_GamemodeAA"
+					"4"	"#GameUI_GamemodeZS"
+					"5"	"#GameUI_GamemodeFR"
+				}
+			}
+
+			"ClassicModifier"
+			{
+				"text"			"#GameUI_ClassicMode"
+				"type"			"wheelywheel"
+				"convar"		"g_fr_classic"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+
+			"HardcoreModifier"
+			{
+				"text"			"#GameUI_HardcoreMode"
+				"type"			"wheelywheel"
+				"convar"		"g_fr_hardcore"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+
+			"LoneWolfModifier"
+			{
+				"text"			"#GameUI_LoneWolfMode"
+				"type"			"wheelywheel"
+				"convar"		"g_fr_lonewolf"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+
+			"IronKickModifier"
+			{
+				"text"			"#GameUI_IronKickMode"
+				"type"			"wheelywheel"
+				"convar"		"g_fr_ironkick"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+
+			"Attributes"
+			{
+				"text"			"#GameUI_ToggleAttributes"
+				"type"			"wheelywheel"
+				"convar"		"entity_attributes"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+
+			"AdvancedHeader"
+			{
+				"text"			"#GameUI_AdvancedNoEllipsis"
+				"type"			"headeryheader"
+				"advanced"		"1"
+			}
+
+			"HealthRegenPerk"
+			{
+				"text"			"#GameUI_MakeHealthRegenPerk"
+				"type"			"wheelywheel"
+				"convar"		"sv_fr_perks_healthregeneration_perkmode"
+				"advanced"		"1"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+
+			"PerkModeInMutators"
+			{
+				"text"			"#GameUI_MakeHealthRegenPerkInMutators"
+				"type"			"wheelywheel"
+				"convar"		"sv_fr_perks_healthregeneration_perkmode_inmutators"
+				"advanced"		"1"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+
+			"AttributesChance"
+			{
+				"text"			"#GameUI_AttributesChance"
+				"type"			"slideyslide"
+				"convar"		"entity_attributes_chance"
+				"advanced"		"1"
+
+				"min"			"1"
+				"max"			"15"
+				"step"			"1"
+
+				"textprecision" "0"
+			}
+
+			"AttributesNumPresets"
+			{
+				"text"			"#GameUI_AttributesPresetCount"
+				"type"			"slideyslide"
+				"convar"		"entity_attributes_numpresets"
+				"advanced"		"1"
+
+				"min"			"1"
+				"max"			"30"
+				"step"			"1"
+
+				"textprecision" "0"
 			}
 		}
 	}
@@ -262,27 +471,52 @@
 				"options_from"	"displaymode"
 			}
 
-			"HUDAspectRatio"
-			{
-				"text"			"#GameUI_HUDAspectRatio"
-				"type"			"wheelywheel"
-
-				"convar"		"_gamepadui_hudaspect"
-				"instantapply"	"1"
-				"options"
-				{
-					"0"			"#GameUI_Achievement_Unlocked"
-					"1"			"#GameUI_AspectNormal"
-					"2"			"#GameUI_AspectWide16x9"
-					"3"			"#GameUI_AspectWide16x10"
-				}
-			}
-
 			"AdvancedHeader"
 			{
 				"text"			"#GameUI_AdvancedNoEllipsis"
 				"type"			"headeryheader"
 				"advanced"		"1"
+			}
+
+			"DrawHUD"
+			{
+				"text"			"#GameUI_ToggleHUD"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"cl_drawhud"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+
+			"DrawViewModel"
+			{
+				"text"			"#GameUI_ToggleViewmodel"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"r_drawviewmodel"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+
+			"Crosshair"
+			{
+				"text"			"#GameUI_Crosshair"
+				"type"			"wheelywheel"
+				"convar"		"crosshair"
+
+				"options"
+				{
+					"0"		"#GameUI_CrosshairOff"
+					"1"		"#GameUI_CrosshairOn"
+				}
 			}
 
 			"ModelDetail"
@@ -360,6 +594,22 @@
 				}
 			}
 
+			"MuzzleFlashDLight"
+			{
+				"text"			"#GameUI_MuzzleFlashDLight"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"cl_muzzleflash_dlight"
+
+				"options"
+				{
+					"0"		"#GameUI_MuzzleDefault"
+					"1"		"#GameUI_MuzzleYellowLight"
+					"2"		"#GameUI_MuzzleWashedOut"
+					"3"		"#GameUI_MuzzleValveStyled"
+				}
+			}
+
 			"ColorCorrection"
 			{
 				"text"			"#GameUI_Color_Correction"
@@ -430,7 +680,6 @@
 				}
 			}
 
-
 			"FOV"
 			{
 				"text"			"#GameUI_FOV"
@@ -438,11 +687,39 @@
 				"convar"		"fov_desired"
 				"advanced"		"1"
 
-				"min"			"75"
-				"max"			"120"
-				"step"			"5"
+				"min"			"54"
+				"max"			"150"
+				"step"			"1"
 
 				"textprecision" "0"
+			}
+
+			"ViewmodelFOV"
+			{
+				"text"			"#GameUI_FOVViewmodel"
+				"type"			"slideyslide"
+				"convar"		"viewmodel_fov"
+				"advanced"		"1"
+
+				"min"			"54"
+				"max"			"75"
+				"step"			"1"
+
+				"textprecision" "0"
+			}
+
+			"FlipViewModels"
+			{
+				"text"			"#GameUI_FlipViewModels"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"cl_righthand"
+
+				"options"
+				{
+					"0"		"#GameUI_FlipLeft"
+					"1"		"#GameUI_FlipRight"
+				}
 			}
 
 			"MulticoreRendering"
@@ -471,6 +748,20 @@
 					"0"		"#GameUI_hdr_level0"
 					"1"		"#GameUI_hdr_level1"
 					"2"		"#GameUI_hdr_level2"
+				}
+			}
+
+			"HDRForceBloom"
+			{
+				"text"			"#GameUI_ForceBloom"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"mat_force_bloom"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
 				}
 			}
 		}
