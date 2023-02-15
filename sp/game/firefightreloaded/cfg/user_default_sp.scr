@@ -203,8 +203,6 @@ DESCRIPTION INFO_SINGLEPLAYEROPTIONS
 		}
 		{ "1" }
     }
-
-	// above is done
 	
 	"sv_rollspeed"
 	{
@@ -275,6 +273,8 @@ DESCRIPTION INFO_SINGLEPLAYEROPTIONS
 		{ BOOL }
 		{ "1" }
 	}
+
+	// above is done
 	
 	"sk_spawner_npc_ragdoll_fade"
 	{

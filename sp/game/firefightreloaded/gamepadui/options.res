@@ -72,6 +72,34 @@
 				}
 			}
 
+			"FastSwitch"
+			{
+				"text"			"#GameUI_FastSwitchCheck"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"hud_fastswitch"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+
+			"FasterSwitch"
+			{
+				"text"			"#GameUI_FasterWeaponSwitch"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"weapon_quickswitch"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+
 			"Grapple"
 			{
 				"text"			"#GameUI_GrappleToggle"
@@ -85,33 +113,17 @@
 				}
 			}
 
-			"OldSpawner"
+			"RocketJumping"
 			{
-				"text"			"#FR_OldSpawner"
+				"text"			"#GameUI_RocketJumping"
 				"type"			"wheelywheel"
-				"convar"		"g_fr_spawneroldfunctionality"
+				"advanced"		"1"
+				"convar"		"sv_player_rocketjumping"
 
 				"options"
 				{
 					"0"		"#gameui_disabled"
 					"1"		"#gameui_enabled"
-				}
-			}
-
-			"Gamemodes"
-			{
-				"text"			"#GameUI_GamemodeSelect"
-				"type"			"wheelywheel"
-				"convar"		"g_gamemode"
-
-				"options"
-				{
-					"0"	"#GameUI_GamemodeRandom"
-					"1"	"#GameUI_GamemodeCF"
-					"2"	"#GameUI_GamemodeXI"
-					"3"	"#GameUI_GamemodeAA"
-					"4"	"#GameUI_GamemodeZS"
-					"5"	"#GameUI_GamemodeFR"
 				}
 			}
 
@@ -185,6 +197,38 @@
 				"text"			"#GameUI_AdvancedNoEllipsis"
 				"type"			"headeryheader"
 				"advanced"		"1"
+			}
+
+			"OldSpawner"
+			{
+				"text"			"#FR_OldSpawner"
+				"type"			"wheelywheel"
+				"convar"		"g_fr_spawneroldfunctionality"
+				"advanced"		"1"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+
+			"Gamemodes"
+			{
+				"text"			"#GameUI_GamemodeSelect"
+				"type"			"wheelywheel"
+				"convar"		"g_gamemode"
+				"advanced"		"1"
+
+				"options"
+				{
+					"0"	"#GameUI_GamemodeRandom"
+					"1"	"#GameUI_GamemodeCF"
+					"2"	"#GameUI_GamemodeXI"
+					"3"	"#GameUI_GamemodeAA"
+					"4"	"#GameUI_GamemodeZS"
+					"5"	"#GameUI_GamemodeFR"
+				}
 			}
 
 			"HealthRegenPerk"
@@ -784,6 +828,27 @@
 				"type"			"wheelywheel"
 				"advanced"		"1"
 				"convar"		"mat_force_bloom"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+		}
+	}
+	"Advanced"
+	{
+		"title"			"#GameUI_AdvancedNoEllipsis"
+		"alternating"   "1"
+		"items"
+		{
+			"Console"
+			{
+				"text"			"#GameUI_DeveloperConsoleCheck"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"con_enable"
 
 				"options"
 				{
