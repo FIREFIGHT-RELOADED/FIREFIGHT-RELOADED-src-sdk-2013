@@ -519,6 +519,34 @@
 				}
 			}
 
+			"RollAngle"
+			{
+				"text"			"#GameUI_CameraViewRollAngle"
+				"type"			"slideyslide"
+				"convar"		"sv_rollangle"
+				"advanced"		"1"
+
+				"min"			"0.0"
+				"max"			"14.0"
+				"step"			"0.1"
+
+				"textprecision" "0"
+			}
+
+			"RollSpeed"
+			{
+				"text"			"#GameUI_CameraViewRollSpeed"
+				"type"			"slideyslide"
+				"convar"		"sv_rollspeed"
+				"advanced"		"1"
+
+				"min"			"0"
+				"max"			"200"
+				"step"			"1"
+
+				"textprecision" "0"
+			}
+
 			"ModelDetail"
 			{
 				"text"			"#GameUI_Model_Detail"
@@ -546,7 +574,6 @@
 					"2"		"#gameui_low"
 					"1"		"#gameui_medium"
 					"0"		"#gameui_high"
-					"-1"	"#gameui_ultra"
 				}
 			}
 
