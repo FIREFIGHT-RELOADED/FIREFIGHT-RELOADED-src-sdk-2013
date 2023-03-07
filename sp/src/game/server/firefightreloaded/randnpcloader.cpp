@@ -60,7 +60,7 @@ bool CRandNPCLoader::Load()
 	const char* gamemodeName = g_pGameRules->GetGamemodeName();
 	const char* mapName = STRING(gpGlobals->mapname);
 
-	if ((!gamemodeName || gamemodeName == NULL || strlen(gamemodeName) == 0) || 
+	if (gamemodeName == NULL || strlen(gamemodeName) == 0 ||
 		(!g_pGameRules->bSkipFuncCheck && !g_fr_spawneroldfunctionality.GetBool()))
 	{
 		gamemodeMode = false;
@@ -125,7 +125,7 @@ const CRandNPCLoader::SpawnEntry_t* CRandNPCLoader::GetRandomEntry(bool isRare) 
 bool CRandNPCLoader::AddEntries( KeyValues* pKV )
 {
 	bool ret = true;
-	for ( KeyValues* iter = pKV->GetFirstSubKey(); iter != NULL; iter = iter->GetNextKey() )
+	for ( auto iter = pKV->GetFirstSubKey(); iter != NULL; iter = iter->GetNextKey() )
 	{
 		auto newKV = iter->MakeCopy();
 		m_KVs->AddSubKey( iter->MakeCopy() );
@@ -169,21 +169,7 @@ bool CRandNPCLoader::ParseEntry( SpawnEntry_t& entry, KeyValues *kv)
 	if ( grenades != NULL_STRING )
 	{
 		if (!SetRandomGrenades(entry, grenades))
-		{
-			return false;
-		}
-	}
-	else 
-	{
-		auto manhacks = MAKE_STRING(kv->GetString("manhacks"));
-
-		if (manhacks != NULL_STRING)
-		{
-			if (!SetRandomGrenades(entry, manhacks))
-			{
-				return false;
-			}
-		}
+      		return false;
 	}
 
 	// The equipment key can just have a string value, or a list of subkeys with weapon/weight pairs.
