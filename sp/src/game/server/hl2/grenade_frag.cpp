@@ -160,27 +160,45 @@ void CGrenadeFrag::OnRestore( void )
 //-----------------------------------------------------------------------------
 void CGrenadeFrag::CreateEffects( void )
 {
-	// Start up the eye glow
-	m_pMainGlow = CSprite::SpriteCreate( "sprites/redglow1.vmt", GetLocalOrigin(), false );
-
 	int	nAttachment = LookupAttachment( "fuse" );
 
+	Vector offset;
+	if ( nAttachment < 1 )
+	{
+		// Estimate an offset if there is no fuse attachment.
+		Vector mins, maxs;
+		ComputeEntitySpaceHitboxSurroundingBox( &mins, &maxs );
+		offset.x = offset.y = 0;
+		offset.z = maxs.z - mins.z;
+	}
+
+	// Start up the eye glow
+	m_pMainGlow = CSprite::SpriteCreate( "sprites/redglow1.vmt", GetLocalOrigin(), false );
 	if ( m_pMainGlow != NULL )
 	{
-		m_pMainGlow->FollowEntity( this );
-		m_pMainGlow->SetAttachment( this, nAttachment );
+		if ( nAttachment > 0 )
+		    m_pMainGlow->SetAttachment( this, nAttachment );
+		else
+		{
+			m_pMainGlow->SetParent( this );
+			m_pMainGlow->SetLocalOrigin( offset );
+		}
 		m_pMainGlow->SetTransparency( kRenderGlow, 255, 255, 255, 200, kRenderFxNoDissipation );
 		m_pMainGlow->SetScale( 0.2f );
 		m_pMainGlow->SetGlowProxySize( 4.0f );
 	}
 
 	// Start up the eye trail
-	m_pGlowTrail	= CSpriteTrail::SpriteTrailCreate( "sprites/bluelaser1.vmt", GetLocalOrigin(), false );
-
+	m_pGlowTrail = CSpriteTrail::SpriteTrailCreate( "sprites/bluelaser1.vmt", GetLocalOrigin(), false );
 	if ( m_pGlowTrail != NULL )
 	{
-		m_pGlowTrail->FollowEntity( this );
-		m_pGlowTrail->SetAttachment( this, nAttachment );
+		if ( nAttachment > 0 )
+			m_pGlowTrail->SetAttachment( this, nAttachment );
+		else
+		{
+			m_pGlowTrail->SetParent( this );
+			m_pGlowTrail->SetLocalOrigin( offset );
+		}
 		m_pGlowTrail->SetTransparency( kRenderTransAdd, 255, 0, 0, 255, kRenderFxNone );
 		m_pGlowTrail->SetStartWidth( 8.0f );
 		m_pGlowTrail->SetEndWidth( 1.0f );
