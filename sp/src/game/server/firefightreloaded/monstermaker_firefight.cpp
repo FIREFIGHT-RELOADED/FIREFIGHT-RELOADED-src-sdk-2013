@@ -19,6 +19,7 @@
 #include "npc_combine.h"
 #include "npc_strider.h"
 #include "npc_scanner.h"
+#include "npc_PoisonZombie.h"
 #include "globalstate.h"
 #include "filesystem.h"
 #include "KeyValues.h"
@@ -37,13 +38,13 @@ ConVar debug_spawner_info("debug_spawner_info", "0", FCVAR_CHEAT);
 ConVar debug_spawner_disable("debug_spawner_disable", "0", FCVAR_CHEAT);
 
 //spawn lists (TODO: use KeyValues files)
-const char *g_CombineSoldierWeapons[] =
+static const char *g_CombineSoldierWeapons[] =
 {
 	"weapon_smg1",
 	"weapon_ar2"
 };
 
-const char *g_MetropoliceWeapons[] =
+static const char *g_MetropoliceWeapons[] =
 {
 	"weapon_smg1",
 	"weapon_pistol",
@@ -51,7 +52,7 @@ const char *g_MetropoliceWeapons[] =
 };
 
 //precache list
-const char* g_Weapons[] =
+static const char* g_Weapons[] =
 {
 	"weapon_smg1",
 	"weapon_ar2",
@@ -556,6 +557,12 @@ void CNPCMakerFirefight::MakeNPC()
 		{
 			auto pCombine = (CNPC_Combine*)pent;
 			pCombine->m_iNumGrenades = grenades;
+		}
+		else if ( Q_stristr( pRandomName, "npc_poisonzombie") )
+		{
+			auto pPoison = (CNPC_PoisonZombie*)pent;
+			pPoison->m_bCrabCountOverride = true;
+			pPoison->m_nCrabCount = grenades;
 		}
 	}
 

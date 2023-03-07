@@ -1099,7 +1099,7 @@ void CNPC_Assassin::BuildScheduleTestBits( void )
 void CNPC_Assassin::Event_Killed( const CTakeDamageInfo &info )
 {
 	// Let assassin handle dropping so only two weapons are dropped.
-	m_hActiveWeapon = NULL;
+	ClearActiveWeapon();
 	BaseClass::Event_Killed( info );
 
 	// Turn off the eye
