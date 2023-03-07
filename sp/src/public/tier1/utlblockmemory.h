@@ -77,8 +77,9 @@ public:
 	const T& Element( I i ) const;
 
 	// Can we use this index?
+	static const I INVALID_INDEX = (I)-1; // For use with COMPILE_TIME_ASSERT
 	bool IsIdxValid( I i ) const;
-	static I InvalidIndex() { return ( I )-1; }
+	static I InvalidIndex() { return INVALID_INDEX; }
 
 	void Swap( CUtlBlockMemory< T, I > &mem );
 

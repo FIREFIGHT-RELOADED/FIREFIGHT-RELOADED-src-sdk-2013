@@ -9,7 +9,9 @@
 //
 //=============================================================================//
 
+
 #include "cbase.h"
+#include "npc_PoisonZombie.h"
 #include "ai_basenpc.h"
 #include "ai_default.h"
 #include "ai_schedule.h"
@@ -22,47 +24,11 @@
 #include "ai_task.h"
 #include "activitylist.h"
 #include "engine/IEngineSound.h"
-#include "npc_BaseZombie.h"
 #include "hl2_shareddefs.h"
 #include "gib.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
-
-#define BREATH_VOL_MAX  0.6
-
-//
-// Controls how soon he throws the first headcrab after seeing his enemy (also when the first headcrab leaps off)
-//
-#define ZOMBIE_THROW_FIRST_MIN_DELAY	1	// min seconds before first crab throw
-#define ZOMBIE_THROW_FIRST_MAX_DELAY	2	// max seconds before first crab throw
-
-//
-// Controls how often he throws headcrabs (also how often headcrabs leap off)
-//
-#define ZOMBIE_THROW_MIN_DELAY	4			// min seconds between crab throws
-#define ZOMBIE_THROW_MAX_DELAY	10			// max seconds between crab throws
-
-//
-// Ranges for throwing headcrabs.
-//
-#define ZOMBIE_THROW_RANGE_MIN	250
-#define ZOMBIE_THROW_RANGE_MAX	800
-#define ZOMBIE_THROW_CONE		0.6
-
-//
-// Ranges for headcrabs leaping off.
-//
-#define ZOMBIE_HC_LEAP_RANGE_MIN	12
-#define ZOMBIE_HC_LEAP_RANGE_MAX	256
-#define ZOMBIE_HC_LEAP_CONE		0.6
-
-
-#define ZOMBIE_BODYGROUP_NEST_BASE		2	// First nest crab, +2 more
-#define ZOMBIE_BODYGROUP_THROW			5	// The crab in our hand for throwing
-
-#define ZOMBIE_ENEMY_BREATHE_DIST		300	// How close we must be to our enemy before we start breathing hard.
-
 
 envelopePoint_t envPoisonZombieMoanVolumeFast[] =
 {
@@ -73,7 +39,6 @@ envelopePoint_t envPoisonZombieMoanVolumeFast[] =
 		0.2f, 0.3f,
 	},
 };
-
 
 //
 // Turns the breathing off for a second, then back on.
@@ -90,23 +55,6 @@ envelopePoint_t envPoisonZombieBreatheVolumeOffShort[] =
 		1.0f, 1.0f,
 	},
 };
-
-
-//
-// Custom schedules.
-//
-enum
-{
-	SCHED_ZOMBIE_POISON_RANGE_ATTACK2 = LAST_BASE_ZOMBIE_SCHEDULE,
-	SCHED_ZOMBIE_POISON_RANGE_ATTACK1,
-};
-
-
-//-----------------------------------------------------------------------------
-// The maximum number of headcrabs we can have riding on our back.
-// NOTE: If you change this value you must also change the lookup table in Spawn!
-//-----------------------------------------------------------------------------
-#define MAX_CRABS	3	
 
 int AE_ZOMBIE_POISON_THROW_WARN_SOUND;
 int AE_ZOMBIE_POISON_PICKUP_CRAB;
@@ -136,102 +84,6 @@ static const char *pMoanSounds[] =
 //-----------------------------------------------------------------------------
 ConVar sk_zombie_poison_health( "sk_zombie_poison_health", "0");
 ConVar sk_zombie_poison_dmg_spit( "sk_zombie_poison_dmg_spit","0");
-
-class CNPC_PoisonZombie : public CAI_BlendingHost<CNPC_BaseZombie>
-{
-	DECLARE_CLASS( CNPC_PoisonZombie, CAI_BlendingHost<CNPC_BaseZombie> );
-
-public:
-
-	//
-	// CBaseZombie implemenation.
-	//
-	virtual Vector HeadTarget( const Vector &posSrc );
-	bool ShouldBecomeTorso( const CTakeDamageInfo &info, float flDamageThreshold );
-	virtual bool IsChopped( const CTakeDamageInfo &info )	{ return false; }
-
-	//
-	// CAI_BaseNPC implementation.
-	//
-	virtual float MaxYawSpeed( void );
-
-	virtual int RangeAttack1Conditions( float flDot, float flDist );
-	virtual int RangeAttack2Conditions( float flDot, float flDist );
-
-	virtual float GetClawAttackRange() const { return 70; }
-
-	virtual void PrescheduleThink( void );
-	virtual void BuildScheduleTestBits( void );
-	virtual int SelectSchedule( void );
-	virtual int SelectFailSchedule( int nFailedSchedule, int nFailedTask, AI_TaskFailureCode_t eTaskFailCode );
-	virtual int TranslateSchedule( int scheduleType );
-
-	virtual bool ShouldPlayIdleSound( void );
-
-	//
-	// CBaseAnimating implementation.
-	//
-	virtual void HandleAnimEvent( animevent_t *pEvent );
-
-	//
-	// CBaseEntity implementation.
-	//
-	virtual void Spawn( void );
-	virtual void Precache( void );
-	virtual void SetZombieModel( void );
-
-	virtual Class_T Classify( void );
-	virtual void Event_Killed( const CTakeDamageInfo &info );
-	virtual int OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo );
-	virtual float GetHitgroupDamageMultiplier(int iHitGroup, const CTakeDamageInfo &info);
-
-	DECLARE_DATADESC();
-	DEFINE_CUSTOM_AI;
-
-	void PainSound( const CTakeDamageInfo &info );
-	void AlertSound( void );
-	void IdleSound( void );
-	void AttackSound( void );
-	void AttackHitSound( void );
-	void AttackMissSound( void );
-	void FootstepSound( bool fRightFoot );
-	void FootscuffSound( bool fRightFoot ) {};
-
-	virtual void StopLoopingSounds( void );
-
-protected:
-
-	virtual void MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize );
-	virtual bool MustCloseToAttack( void );
-
-	virtual const char *GetMoanSound( int nSoundIndex );
-	virtual const char *GetLegsModel( void );
-	virtual const char *GetTorsoModel( void );
-	virtual const char *GetHeadcrabClassname( void );
-	virtual const char *GetHeadcrabModel( void );
-
-private:
-
-	void BreatheOffShort( void );
-
-	void EnableCrab( int nCrab, bool bEnable );
-	int RandomThrowCrab( void );
-	void EvacuateNest( bool bExplosion, float flDamage, CBaseEntity *pAttacker );
-
-	CSoundPatch *m_pFastBreathSound;
-	CSoundPatch *m_pSlowBreathSound;
-
-	int m_nCrabCount;				// How many headcrabs we have on our back.
-	bool m_bCrabs[MAX_CRABS];		// Which crabs in particular are on our back.
-	float m_flNextCrabThrowTime;	// The next time we are allowed to throw a headcrab.
-
-	float m_flNextPainSoundTime;
-
-	bool m_bNearEnemy;
-
-	// NOT serialized:
-	int m_nThrowCrab;				// The crab we are about to throw.
-};
 
 LINK_ENTITY_TO_CLASS( npc_poisonzombie, CNPC_PoisonZombie );
 
@@ -315,10 +167,14 @@ void CNPC_PoisonZombie::Spawn( void )
 	m_pSlowBreathSound = ENVELOPE_CONTROLLER.SoundCreate( filter2, entindex(), CHAN_ITEM, "NPC_PoisonZombie.Moan1", ATTN_NORM );
 	ENVELOPE_CONTROLLER.Play( m_pSlowBreathSound, BREATH_VOL_MAX, 100 );
 
-	int nCrabs = m_nCrabCount;
-	if ( !nCrabs )
+	int nCrabs;
+	if ( m_bCrabCountOverride )
+		nCrabs = Clamp( m_nCrabCount, 0, MAX_CRABS );
+	else
 	{
-		nCrabs = MAX_CRABS;
+		nCrabs = m_nCrabCount < 1 ? MAX_CRABS
+			: m_nCrabCount > MAX_CRABS ? MAX_CRABS
+			: m_nCrabCount;
 	}
 	m_nCrabCount = 0;
 
@@ -339,15 +195,15 @@ void CNPC_PoisonZombie::Spawn( void )
 		0x06,
 	};
 
-	int nBitMask = 7;
-	if (nCrabs == 1)
-	{
+	int nBitMask;
+	if ( nCrabs == 0 )
+		nBitMask = 0;
+	else if ( nCrabs == 1 )
 		nBitMask = nBits[random->RandomInt( 0, 2 )];
-	}
-	else if (nCrabs == 2)
-	{
+	else if ( nCrabs == 2 )
 		nBitMask = nBits[random->RandomInt( 3, 5 )];
-	}
+	else
+		nBitMask = 7;
 
 	for ( int i = 0; i < MAX_CRABS; i++ )
 	{
