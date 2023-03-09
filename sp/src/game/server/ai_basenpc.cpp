@@ -147,9 +147,10 @@ ConVar	ai_efficiency_override( "ai_efficiency_override", "0" );
 ConVar	ai_debug_efficiency( "ai_debug_efficiency", "0" );
 ConVar	ai_debug_dyninteractions( "ai_debug_dyninteractions", "0", FCVAR_NONE, "Debug the NPC dynamic interaction system." );
 ConVar	ai_frametime_limit( "ai_frametime_limit", "50", FCVAR_NONE, "frametime limit for min efficiency AIE_NORMAL (in sec's)." );
-ConVar	ai_disappear("ai_disappear", "1", FCVAR_ARCHIVE, "Makes AI disappear after a specified amount of time.");
-ConVar	ai_disappear_time("ai_disappear_time", "120", FCVAR_ARCHIVE);
-ConVar	ai_disappear_time_rare("ai_disappear_time_rare", "60", FCVAR_ARCHIVE);
+ConVar	ai_disappear("ai_disappear", "1", FCVAR_ARCHIVE, "Makes idling AI disappear after a specified amount of time.");
+ConVar	ai_disappear_time("ai_disappear_time", "120", FCVAR_ARCHIVE, "Time to make an NPC disappear.");
+ConVar	ai_disappear_time_rare("ai_disappear_time_rare", "60", FCVAR_ARCHIVE, "Additional time to make rare NPC disappears.");
+ConVar	ai_disappear_type( "ai_disappear_type", "0", FCVAR_ARCHIVE, "0 = remove, 1 = kill" );
 
 ConVar	ai_use_think_optimizations( "ai_use_think_optimizations", "0" );
 
@@ -4121,13 +4122,25 @@ void CAI_BaseNPC::NPCThink( void )
 		m_flNextDecisionTime = 0;
 	}
 
-	CBaseEntity *pEnemy = GetEnemy();
-
 	if (ai_disappear.GetBool() && gpGlobals->curtime >= m_fIdleTime)
 	{
-		if (pEnemy && pEnemy->MyCombatCharacterPointer() && !pEnemy->MyCombatCharacterPointer()->FInViewCone(this) && !pEnemy->MyCombatCharacterPointer()->FVisible(this))
+		auto* pEnemy = GetEnemy();
+		auto* pComChar = pEnemy != nullptr ? pEnemy->MyCombatCharacterPointer() : nullptr;
+
+		if (pEnemy == nullptr || pComChar != nullptr && !pComChar->FInViewCone(this) && !pComChar->FVisible(this))
 		{
-			SUB_Remove();
+			// If I don't have an enemy, or if I do and they should be visible and I can't see them,
+			// then I've idled long enough. Get rid of me.
+			switch ( ai_disappear_type.GetInt() )
+			{
+			case 1:
+				// Really give it to em.
+				TakeDamage( CTakeDamageInfo( this, this, GetHealth() * 1000.0f, DMG_GENERIC ) );
+				break;
+			default:
+				// TODO: Consider more enemy disposal methods.
+				SUB_Remove();
+			}
 		}
 		else
 		{
