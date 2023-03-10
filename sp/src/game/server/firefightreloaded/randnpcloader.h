@@ -26,7 +26,7 @@ public:
 	struct EquipEntry_t
 	{
 		const char *name;
-		int weight;
+		float weight;
 	};
 
 	struct SpawnEntry_t
@@ -38,12 +38,13 @@ public:
 
 		const char* classname;
 		bool isRare;
+		float weight;
 		int minPlayerLevel;
 		int npcAttributePreset;
 		int grenadesMin;
 		int grenadesMax;
 		CCopyableUtlVector<EquipEntry_t> spawnEquipment;
-		int totalEquipWeight;
+		float totalEquipWeight;
 	};
 
 	CRandNPCLoader();
@@ -61,6 +62,8 @@ private:
 
 	CUtlVector<SpawnEntry_t> m_Entries;
 	KeyValues* m_KVs;
+
+	friend void dumpspawnlist_cb();
 };
 
 #endif // MONSTERMAKER_H

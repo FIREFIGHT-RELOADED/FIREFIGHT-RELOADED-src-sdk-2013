@@ -14,6 +14,35 @@
 #include "tier0/memdbgon.h"
 
 ConVar sk_spawner_defaultspawnlist("sk_spawner_defaultspawnlist", "scripts/spawnlists/default.txt", FCVAR_ARCHIVE);
+static ConCommand dumpspawnlist( "dumpspawnlist", dumpspawnlist_cb, "Dumps the spawn list." );
+
+void dumpspawnlist_cb()
+{
+	extern CRandNPCLoader* g_npcLoader;
+
+	for ( auto& iter : g_npcLoader->m_Entries )
+	{
+		ConMsg( "[%p] name=\"%s\", %s minPlayerLevel=%d npcAttributePreset=%d grenades=[%d, %d] weight=%f, totalEquipWeight=%f\n",
+			&iter,
+			iter.classname,
+			iter.isRare ? "rare" : "notRare",
+			iter.minPlayerLevel,
+			iter.npcAttributePreset,
+			iter.grenadesMin,
+			iter.grenadesMax,
+			iter.weight,
+			iter.totalEquipWeight
+		);
+		for ( auto& iter2 : iter.spawnEquipment )
+		{
+			ConMsg( "[%p]  name=\"%s\", weight=%f\n",
+				&iter,
+				iter2.name,
+				iter2.weight
+			);
+		}
+	}
+}
 
 CRandNPCLoader::CRandNPCLoader()
 {
@@ -31,7 +60,7 @@ bool CRandNPCLoader::Load()
 	const char* gamemodeName = g_pGameRules->GetGamemodeName();
 	const char* mapName = STRING(gpGlobals->mapname);
 
-	if ((!gamemodeName || gamemodeName == NULL || strlen(gamemodeName) == 0) || 
+	if (gamemodeName == NULL || strlen(gamemodeName) == 0 ||
 		(!g_pGameRules->bSkipFuncCheck && !g_fr_spawneroldfunctionality.GetBool()))
 	{
 		gamemodeMode = false;
@@ -68,35 +97,35 @@ bool CRandNPCLoader::Load()
 
 const CRandNPCLoader::SpawnEntry_t* CRandNPCLoader::GetRandomEntry(bool isRare) const
 {
-	int count = 0;
 	int largestPlayerLevel = GetLargestLevel();
 
-	//check all the keys to generate a level based spawnlist.
-	const auto end = m_Entries.end();
-	for ( auto iter = m_Entries.begin(); iter != end; ++iter )
+	// Create list of candidates by checking all the keys to generate a level based spawnlist.
+	CUtlBlockLinkedList<const SpawnEntry_t*> candidates;
+	float totalWeight = 0;
+	for ( auto& iter : m_Entries )
 	{
-		if ( largestPlayerLevel >= iter->minPlayerLevel && iter->isRare == isRare)
-			++count;
-	}
-
-	int choice = random->RandomInt( 1, count );
-	for ( auto iter = m_Entries.begin(); iter != end; ++iter )
-	{
-		if ( largestPlayerLevel >= iter->minPlayerLevel && iter->isRare == isRare)
+		if ( largestPlayerLevel >= iter.minPlayerLevel && iter.isRare == isRare )
 		{
-			if ( choice == 1 )
-				return iter;
-			else
-				--choice;
+			candidates.AddToTail( &iter );
+			totalWeight += iter.weight;
 		}
 	}
+
+	float choice = random->RandomFloat( 0, totalWeight );
+	for ( auto iter : candidates )
+	{
+		choice -= iter->weight;
+		if ( choice <= 0 )
+			return iter;
+	}
+
 	return NULL;
 }
 
 bool CRandNPCLoader::AddEntries( KeyValues* pKV )
 {
 	bool ret = true;
-	for ( KeyValues* iter = pKV->GetFirstSubKey(); iter != NULL; iter = iter->GetNextKey() )
+	for ( auto iter = pKV->GetFirstSubKey(); iter != NULL; iter = iter->GetNextKey() )
 	{
 		auto newKV = iter->MakeCopy();
 		m_KVs->AddSubKey( iter->MakeCopy() );
@@ -129,6 +158,7 @@ bool CRandNPCLoader::ParseEntry( SpawnEntry_t& entry, KeyValues *kv)
 		return false;
 	UTIL_PrecacheOther( entry.classname );
 	entry.isRare = kv->GetBool( "rare", false );
+	entry.weight = kv->GetFloat( "weight", 1 );
 	entry.minPlayerLevel = kv->GetInt( "min_level", 1 );
 	entry.npcAttributePreset = kv->GetInt( "preset", -1 );
 	entry.spawnEquipment.RemoveAll();
@@ -139,21 +169,7 @@ bool CRandNPCLoader::ParseEntry( SpawnEntry_t& entry, KeyValues *kv)
 	if ( grenades != NULL_STRING )
 	{
 		if (!SetRandomGrenades(entry, grenades))
-		{
-			return false;
-		}
-	}
-	else 
-	{
-		auto manhacks = MAKE_STRING(kv->GetString("manhacks"));
-
-		if (manhacks != NULL_STRING)
-		{
-			if (!SetRandomGrenades(entry, manhacks))
-			{
-				return false;
-			}
-		}
+      		return false;
 	}
 
 	// The equipment key can just have a string value, or a list of subkeys with weapon/weight pairs.
@@ -173,7 +189,7 @@ bool CRandNPCLoader::ParseEntry( SpawnEntry_t& entry, KeyValues *kv)
 		// The equipment subkey has a list of pairs with the weapon name as the key and weight as the value.
 		for ( KeyValues* iter = equipKv->GetFirstSubKey(); iter != NULL; iter = iter->GetNextKey() )
 		{
-			EquipEntry_t equipEntry{ iter->GetName(), iter->GetInt() };
+			EquipEntry_t equipEntry{ iter->GetName(), iter->GetFloat() };
 			entry.totalEquipWeight += equipEntry.weight;
 			UTIL_PrecacheOther( equipEntry.name );
 			entry.spawnEquipment.AddToTail( equipEntry );
@@ -219,18 +235,18 @@ CRandNPCLoader::SpawnEntry_t::SpawnEntry_t()
 	npcAttributePreset = -1; // 0 = no attributes, random. -1 and below: no attributes at all.
 	minPlayerLevel = 1;
 	isRare = false;
+	weight = 1;
 	grenadesMin = grenadesMax = -1;
 }
 
 const char* CRandNPCLoader::SpawnEntry_t::GetRandomEquip() const
 {
-	int choice = random->RandomInt( 1, totalEquipWeight );
-	const auto end = spawnEquipment.end();
-	for ( auto iter = spawnEquipment.begin(); iter != end; ++iter )
+	float choice = random->RandomFloat( 0, totalEquipWeight );
+	for ( auto& iter : spawnEquipment )
 	{
-		choice -= iter->weight;
-		if ( choice < 1 )
-			return iter->name;
+		choice -= iter.weight;
+		if ( choice <= 0 )
+			return iter.name;
 	}
 
 	return NULL;
