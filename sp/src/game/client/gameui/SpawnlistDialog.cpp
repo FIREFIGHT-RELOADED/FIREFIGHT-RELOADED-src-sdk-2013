@@ -185,3 +185,8 @@ void CSpawnlistDialog::SetSpawnScript(const char *name)
 	}
 }
 
+CON_COMMAND(spawnlistdialog, "")
+{
+	CSpawnlistDialog* pCSpawnlistDialog = new CSpawnlistDialog(NULL);
+	pCSpawnlistDialog->Activate();
+}

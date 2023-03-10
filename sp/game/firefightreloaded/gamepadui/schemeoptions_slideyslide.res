@@ -22,7 +22,7 @@
 	"Colors"
 	{
 		"Button.Background.Out"						"0 0 0 0"
-		"Button.Background.Over"					"255 255 255 255"
+		"Button.Background.Over"					"255 255 255 180"
 		"Button.Background.Pressed"					"255 255 255 255"
 
 		"Button.Text.Out"							"255 255 255 150"
@@ -34,7 +34,7 @@
 		"Slider.Backing.Pressed"					"0 0 0 140"
 
 		"Slider.Fill.Out"						"255 255 255 255"
-		"Slider.Fill.Over"						"0 0 0 255"
+		"Slider.Fill.Over"						"255 255 255 255"
 		"Slider.Fill.Pressed"					"0 0 0 255"
 	}
 

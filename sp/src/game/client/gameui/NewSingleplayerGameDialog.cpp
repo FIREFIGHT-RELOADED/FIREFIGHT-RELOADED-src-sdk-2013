@@ -266,3 +266,9 @@ void CNewSingleplayerGameDialog::SetMap(const char *mapName)
 		}
 	}
 }
+
+CON_COMMAND(createnewgame, "")
+{
+	CNewSingleplayerGameDialog* pCNewSingleplayerGameDialog = new CNewSingleplayerGameDialog(NULL);
+	pCNewSingleplayerGameDialog->Activate();
+}

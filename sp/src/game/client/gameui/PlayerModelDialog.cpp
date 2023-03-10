@@ -185,3 +185,8 @@ void CPlayerModelDialog::SetModel(const char *name)
 	}
 }
 
+CON_COMMAND(playermodeldialog, "")
+{
+	CPlayerModelDialog* pCPlayerModelDialog = new CPlayerModelDialog(NULL);
+	pCPlayerModelDialog->Activate();
+}

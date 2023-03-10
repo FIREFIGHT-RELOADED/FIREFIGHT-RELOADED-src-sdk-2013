@@ -44,8 +44,8 @@
 		"Button.Background.Out"						"0 0 0 0"
 		"Button.Background.Over"					"255 255 255 255"
 		"Button.Background.Pressed"					"255 255 255 255"
-		"Button.Background.Progress"				"255 152 46 255"
-		"Button.Background.Unprogress"				"152 152 152 255"
+		"Button.Background.Progress"				"19 119 230 255"
+		"Button.Background.Unprogress"				"255 255 255 255"
 
 		"Button.Text.Out"							"255 255 255 255"
 		"Button.Text.Over"							"0 0 0 255"
@@ -94,7 +94,8 @@
 
 	"CustomFontFiles"
 	{
-		"file"		"gamepadui/fonts/NotoSans-Regular.ttf"
+		"file"		"resource/smodgui.ttf"
 		"file"		"gamepadui/fonts/din1451alt.ttf"
+		"file"		"gamepadui/fonts/NotoSans-Regular.ttf"
 	}
 }

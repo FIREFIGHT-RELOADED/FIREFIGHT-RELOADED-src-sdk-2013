@@ -41,7 +41,9 @@ ConVar _gamepadui_displaymode( "_gamepadui_displaymode", "0", FCVAR_NONE, "", On
 ConVar _gamepadui_resolution( "_gamepadui_resolution", "0" );
 ConVar _gamepadui_sound_quality( "_gamepadui_sound_quality", "0" );
 ConVar _gamepadui_closecaptions( "_gamepadui_closecaptions", "0" );
+#ifdef HL2_RETAIL
 ConVar _gamepadui_hudaspect( "_gamepadui_hudaspect", "0" );
+#endif
 ConVar _gamepadui_skill( "_gamepadui_skill", "0" );
 
 struct GamepadUITab
@@ -76,6 +78,7 @@ public:
     void OnMouseWheeled( int delta ) OVERRIDE;
 
     void UpdateResolutions();
+    void ClearBindings();
     void FillInBindings();
     void ApplyKeyBindings();
 
@@ -160,6 +163,7 @@ struct GamepadUIOption
 {
     GamepadUIString strOptionText;
     int nValue = 0;
+    const char* sValue = "";
 
     union
     {
@@ -353,9 +357,10 @@ class GamepadUIWheelyWheel : public GamepadUIConvarButton
 public:
     DECLARE_CLASS_SIMPLE( GamepadUIWheelyWheel, GamepadUIConvarButton );
 
-    GamepadUIWheelyWheel( const char *pszCvar, const char *pszCvarDepends, bool bInstantApply, bool bSignOnly, vgui::Panel* pParent, vgui::Panel* pActionSignalTarget, const char *pSchemeFile, const char* pCommand, const char *pText, const char *pDescription )
+    GamepadUIWheelyWheel( const char *pszCvar, const char *pszCvarDepends, bool bInstantApply, bool bSignOnly, bool bUsesString, vgui::Panel* pParent, vgui::Panel* pActionSignalTarget, const char *pSchemeFile, const char* pCommand, const char *pText, const char *pDescription )
         : BaseClass( pszCvar, pszCvarDepends, bInstantApply, pParent, pActionSignalTarget, pSchemeFile, pCommand, pText, pDescription )
         , m_bSignOnly( bSignOnly )
+        , m_bUsesString( bUsesString )
     {
     }
 
@@ -408,8 +413,10 @@ public:
     {
         if ( IsDirty() )
         {
-            if ( m_bSignOnly )
+            if (m_bSignOnly)
                 m_cvar.SetValue( abs( m_cvar.GetFloat() ) * m_Options[m_nSelectedItem].nValue );
+            else if (m_bUsesString)
+                m_cvar.SetValue(m_Options[m_nSelectedItem].sValue);
             else
                 m_cvar.SetValue( m_Options[ m_nSelectedItem ].nValue );
         }
@@ -418,7 +425,18 @@ public:
 
     bool IsDirty() OVERRIDE
     {
-        return m_cvar.IsValid() && GetCvarValue() != m_Options[m_nSelectedItem].nValue;
+        bool dirty = false;
+
+        if (m_bUsesString)
+        {
+            dirty = V_strcmp(m_Options[m_nSelectedItem].sValue, m_cvar.GetString());
+        }
+        else
+        {
+            dirty = GetCvarValue() != m_Options[m_nSelectedItem].nValue;
+        }
+
+        return m_cvar.IsValid() && dirty;
     }
 
     virtual void Paint()
@@ -480,11 +498,23 @@ public:
     {
         if ( m_cvar.IsValid() )
         {
-            const int nCurrentValue = GetCvarValue();
-            for ( int i = 0; i < m_Options.Count(); i++)
+            if (m_bUsesString)
             {
-                if ( m_Options[ i ].nValue == nCurrentValue )
-                    m_nSelectedItem = i;
+                const char *sCurrentValue = m_cvar.GetString();
+                for (int i = 0; i < m_Options.Count(); i++)
+                {
+                    if (!V_strcmp(m_Options[i].sValue,sCurrentValue))
+                        m_nSelectedItem = i;
+                }
+            }
+            else
+            {
+                const int nCurrentValue = GetCvarValue();
+                for (int i = 0; i < m_Options.Count(); i++)
+                {
+                    if (m_Options[i].nValue == nCurrentValue)
+                        m_nSelectedItem = i;
+                }
             }
         }
     }
@@ -504,6 +534,7 @@ public:
 private:
 
     bool m_bSignOnly = false;
+    bool m_bUsesString = false;
     int m_nSelectedItem = 0;
     CUtlVector< GamepadUIOption > m_Options;
 
@@ -954,6 +985,7 @@ int GetCurrentCloseCaptions()
     return 0;
 }
 
+#ifdef HL2_RETAIL
 int GetCurrentHudAspectRatio()
 {
     ConVarRef hud_aspect( "hud_aspect" );
@@ -970,6 +1002,7 @@ int GetCurrentHudAspectRatio()
 	else
 		return 0;
 }
+#endif
 
 int GetCurrentSkill()
 {
@@ -1128,6 +1161,7 @@ void FlushPendingCloseCaptions()
 	GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted( szCmd );
 }
 
+#ifdef HL2_RETAIL
 void FlushPendingHudAspectRatio()
 {
     ConVarRef hud_aspect( "hud_aspect" );
@@ -1150,6 +1184,7 @@ void FlushPendingHudAspectRatio()
         break;
     }
 }
+#endif
 
 void FlushPendingSkill()
 {
@@ -1166,7 +1201,9 @@ void UpdateHelperConvars()
     _gamepadui_displaymode.SetValue( GetCurrentDisplayMode() );
     _gamepadui_sound_quality.SetValue( GetCurrentSoundQuality() );
     _gamepadui_closecaptions.SetValue( GetCurrentCloseCaptions() );
+#ifdef HL2_RETAIL
     _gamepadui_hudaspect.SetValue( GetCurrentHudAspectRatio() );
+#endif
     _gamepadui_skill.SetValue( GetCurrentSkill() );
 }
 
@@ -1178,7 +1215,9 @@ void FlushHelperConVars()
     FlushPendingResolution();
     FlushPendingSoundQuality();
     FlushPendingCloseCaptions();
+#ifdef HL2_RETAIL
     FlushPendingHudAspectRatio();
+#endif
     FlushPendingSkill();
 }
 
@@ -1374,6 +1413,12 @@ void GamepadUIOptionsPanel::OnMouseWheeled( int delta )
     m_Tabs[ GetActiveTab() ].ScrollState.OnMouseWheeled( delta * 100.0f, GamepadUI::GetInstance().GetTime() );
 }
 
+CON_COMMAND( _gamepadui_resetkeys, "" )
+{
+    GamepadUIOptionsPanel::GetInstance()->ClearBindings();
+    GamepadUIOptionsPanel::GetInstance()->FillInBindings();
+}
+
 void GamepadUIOptionsPanel::OnCommand( char const* pCommand )
 {
     if ( !V_strcmp( pCommand, "action_back" ) )
@@ -1392,6 +1437,13 @@ void GamepadUIOptionsPanel::OnCommand( char const* pCommand )
         FlushHelperConVars();
         ApplyKeyBindings();
         GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted( "exec userconfig.cfg\nhost_writeconfig\nmat_savechanges\n" );
+    }
+    else if ( !V_strcmp( pCommand, "action_usedefaults" ) )
+    {
+        new GamepadUIGenericConfirmationPanel( GamepadUIOptionsPanel::GetInstance(), "UseDefaultsConfirm", GamepadUIString( "#GameUI_KeyboardSettings" ).String(), GamepadUIString("#GameUI_KeyboardSettingsText").String(),
+		[](){
+                GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted( "exec config_default.cfg\n_gamepadui_resetkeys\n" );
+            }, false, true);
     }
     else if ( StringHasPrefixCaseSensitive( pCommand, "tab " ) )
     {
@@ -1538,6 +1590,19 @@ void GamepadUIOptionsPanel::UpdateResolutions()
 
     _gamepadui_resolution.SetValue( nSelectedDefaultMode );
     m_pResolutionButton->SetToDefault();
+}
+
+void GamepadUIOptionsPanel::ClearBindings()
+{
+    for ( int i = 0; i < m_nTabCount; i++ )
+    {
+        for ( GamepadUIButton* pButton : m_Tabs[i].pButtons )
+        {
+            GamepadUIKeyButton* pKeyButton = dynamic_cast<GamepadUIKeyButton*>(pButton);
+            if ( pKeyButton )
+                pKeyButton->ClearKey();
+        }
+    }
 }
 
 // Mainly from GameUI
@@ -1744,6 +1809,15 @@ void GamepadUIOptionsPanel::SetActiveTab( int nTab )
     for ( int i = 0; i < m_nTabCount; i++ )
         m_Tabs[ i ].pTabButton->ForceDepressed( i == nActiveTab );
 
+    FooterButtonMask buttons = FooterButtons::Apply | FooterButtons::Back;
+
+    if (V_strncmp(m_Tabs[nActiveTab].pTabButton->GetName(), "Keyboard", 8) == 0)
+    {
+        buttons |= FooterButtons::UseDefaults;
+    }
+
+    SetFooterButtons( buttons );
+
     for ( GamepadUIButton *pButton : m_Tabs[ nActiveTab ].pButtons )
     {
         if ( pButton->GetCurrentButtonState() == ButtonState::Pressed )
@@ -1786,6 +1860,7 @@ void GamepadUIOptionsPanel::LoadOptionTabs( const char *pszOptionsFile )
                 m_Tabs[ m_nTabCount ].pTabButton = button;
             }
 
+            m_Tabs[m_nTabCount].pTabButton->SetName(pTabData->GetName());
             m_Tabs[ m_nTabCount ].bAlternating = pTabData->GetBool( "alternating" );
             m_Tabs[ m_nTabCount ].bHorizontal = pTabData->GetBool( "horizontal" );
 
@@ -1851,8 +1926,9 @@ void GamepadUIOptionsPanel::LoadOptionTabs( const char *pszOptionsFile )
                         const char *pszCvarDepends = pItemData->GetString( "depends_on" );
                         bool bInstantApply = pItemData->GetBool( "instantapply" );
                         bool bSignOnly = pItemData->GetBool( "signonly" );
+                        bool bUsesString = pItemData->GetBool("usesstring");
                         auto button = new GamepadUIWheelyWheel(
-                            pszCvar, pszCvarDepends, bInstantApply, bSignOnly,
+                            pszCvar, pszCvarDepends, bInstantApply, bSignOnly, bUsesString,
                             this, this,
                             GAMEPADUI_RESOURCE_FOLDER "schemeoptions_wheelywheel.res",
                             "button_pressed",
@@ -1862,12 +1938,23 @@ void GamepadUIOptionsPanel::LoadOptionTabs( const char *pszOptionsFile )
                         KeyValues *pOptions = pItemData->FindKey( "options" );
                         if ( pOptions )
                         {
+                            int i = 0;
                             for ( KeyValues* pOptionData = pOptions->GetFirstSubKey(); pOptionData != NULL; pOptionData = pOptionData->GetNextKey() )
                             {
                                 GamepadUIOption option;
-                                option.nValue = V_atoi( pOptionData->GetName() );
+                                if (bUsesString)
+                                {
+                                    option.sValue = pOptionData->GetName();
+                                    option.nValue = i;
+                                }
+                                else
+                                {
+                                    option.nValue = V_atoi(pOptionData->GetName());
+                                }
+
                                 option.strOptionText = GamepadUIString( pOptionData->GetString() );
                                 button->AddOptionItem( option );
+                                ++i;
                             }
                         }
                         else if ( pszOptionsFrom && *pszOptionsFrom )

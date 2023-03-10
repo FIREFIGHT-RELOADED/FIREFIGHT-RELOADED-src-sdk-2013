@@ -55,31 +55,31 @@
 		//"Button.Title.Background.Over"					"255 134 44 255"
 		//"Button.Title.Background.Pressed"					"255 134 44 255"
 		"Button.Title.Background.Over"						"0 0 0 0"
-		"Button.Title.Background.Pressed"					"25 13 5 120"
+		"Button.Title.Background.Pressed"					"15 25 40 110"
 
 		"Button.Description.Background.Out"			"0 0 0 0"
 		"Button.Description.Background.Over"		"0 0 0 0"
-		"Button.Description.Background.Pressed"		"25 13 5 120"
+		"Button.Description.Background.Pressed"		"15 25 40 110"
 
 		"Button.Background.BottomBorder.Out"			"0 0 0 0"
 		//"Button.Background.BottomBorder.Over"			"255 134 44 255"
 		//"Button.Background.BottomBorder.Pressed"		"255 134 44 255"
 
 		"Button.Background.BottomBorder.Over"			"0 0 0 0"
-		"Button.Background.BottomBorder.Pressed"		"255 152 46 255"
+		"Button.Background.BottomBorder.Pressed"		"19 119 230 255"
 
 		"Button.Text.Out"							"255 255 255 150"
 		//"Button.Text.Over"							"255 255 255 255"
 		//"Button.Text.Pressed"						"255 255 255 255"
 		"Button.Text.Over"							"255 255 255 255"
-		"Button.Text.Pressed"						"255 134 44 255"
+		"Button.Text.Pressed"						"19 119 230 255"
 
 		"Button.Description.Out"					"0 0 0 0"
 		"Button.Description.Over"					"0 0 0 0"
 		"Button.Description.Pressed"				"255 255 255 255"
 
-		"Button.Image.Out"						"50 50 50 220"
-		"Button.Image.Over"						"110 110 110 200"
+		"Button.Image.Out"						"100 100 100 220"
+		"Button.Image.Over"						"150 150 150 220"
 		"Button.Image.Pressed"					"255 255 255 255"
 	}
 
@@ -101,7 +101,7 @@
 			"settings"
 			{
 				"name"			"Noto Sans"
-				"tall"			"17"
+				"tall"			"15"
 				"weight"		"400"
 				"antialias"		"1"
 			}
@@ -110,7 +110,8 @@
 
 	"CustomFontFiles"
 	{
-		"file"		"gamepadui/fonts/NotoSans-Regular.ttf"
+		"file"		"resource/smodgui.ttf"
 		"file"		"gamepadui/fonts/din1451alt.ttf"
+		"file"		"gamepadui/fonts/NotoSans-Regular.ttf"
 	}
 }

@@ -3,11 +3,11 @@
 	"BaseSettings"
 	{
 		"Logo.OffsetX"							"85"
-		"Logo.OffsetY.MainMenu"					"290"
+		"Logo.OffsetY.MainMenu"					"340"
 		"Logo.OffsetY.InGame"					"340"
 	
 		"Buttons.OffsetX"						"85"
-		"Buttons.OffsetY.MainMenu"				"95"
+		"Buttons.OffsetY.MainMenu"				"120"
 		"Buttons.OffsetY.InGame"				"70"
 		"Buttons.Space"							"6"
 	
@@ -15,9 +15,9 @@
 		"Button.Width.Over"					"260"
 		"Button.Width.Pressed"					"260"
 
-		"Button.Height.Out"					"30"
-		"Button.Height.Over"				"36"
-		"Button.Height.Pressed"				"36"
+		"Button.Height.Out"					"20"
+		"Button.Height.Over"				"26"
+		"Button.Height.Pressed"				"26"
 
 		"FooterButtons.OffsetX"					"64"
 		"FooterButtons.OffsetY"					"48"
@@ -41,28 +41,28 @@
 		"Button.Description.Hide.Over"			"1"
 		"Button.Description.Hide.Pressed"		"1"
 
-		"Button.Text.OffsetX.Animation.Duration"		"0.15"
-		"Button.Width.Animation.Duration"				"0.15"
-		"Button.Height.Animation.Duration"				"0.25"
-		"Button.Background.Animation.Duration"			"0.2"
-		"Button.Text.Animation.Duration"				"0.2"
-		"Button.Description.Animation.Duration"			"0.5"
+		"Button.Text.OffsetX.Animation.Duration"		"0.1"
+		"Button.Width.Animation.Duration"				"0.1"
+		"Button.Height.Animation.Duration"				"0.1"
+		"Button.Background.Animation.Duration"			"0.1"
+		"Button.Text.Animation.Duration"				"0.1"
+		"Button.Description.Animation.Duration"			"0.1"
 	}
 
 	"Colors"
 	{
-		"Logo"									"255 255 255 255"
+		"Logo"									"19 119 230 255"
 		
 		"Button.Background.Out"					"0 0 0 0"
-		"Button.Background.Over"				"25 13 5 120"
+		"Button.Background.Over"				"15 25 40 110"
 		"Button.Background.Pressed"				"255 255 255 255"
 
 		"Button.Background.LeftBorder.Out"			"0 0 0 255"
-		"Button.Background.LeftBorder.Over"			"255 134 44 255"
+		"Button.Background.LeftBorder.Over"			"19 119 230 255"
 		"Button.Background.LeftBorder.Pressed"		"255 255 255 255"
 
 		"Button.Text.Out"						"227 224 224 255"
-		"Button.Text.Over"						"255 134 44 255"
+		"Button.Text.Over"						"19 119 230 255"
 		"Button.Text.Pressed"					"0 0 0 255"
 
 		"Button.Description.Out"				"0 0 0 0"
@@ -76,9 +76,9 @@
 		{
 			"settings"
 			{
-				"name"			"HalfLife2"
-				"tall"			"34"
-				"weight"		"400"
+				"name"			"SMODGUI"
+				"tall"			"50"
+				"weight"		"200"
 				"antialias"		"1"
 			}
 		}
@@ -88,7 +88,7 @@
 			"settings"
 			{
 				"name"			"Alte DIN 1451 Mittelschrift"
-				"tall"			"25"
+				"tall"			"20"
 				"weight"		"400"
 				"antialias"		"1"
 			}
@@ -99,7 +99,7 @@
 			"settings"
 			{
 				"name"			"Alte DIN 1451 Mittelschrift"
-				"tall"			"25"
+				"tall"			"20"
 				"weight"		"600"
 				"antialias"		"1"
 			}
@@ -108,7 +108,7 @@
 
 	"CustomFontFiles"
 	{
-		"file"		"resource/HALFLIFE2.ttf"
+		"file"		"resource/smodgui.ttf"
 		"file"		"gamepadui/fonts/din1451alt.ttf"
 	}
 }

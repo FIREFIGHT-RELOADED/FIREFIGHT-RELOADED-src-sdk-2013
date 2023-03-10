@@ -39,7 +39,7 @@
 				"text"			"#GameUI_VeryHard"
 				"description"	"#GameUI_VeryHardDescription"
 				"type"			"skillyskill"
-				"image"			"gamepadui/hard"
+				"image"			"gamepadui/veryhard"
 				"skill"			"3"
 			}
 
@@ -48,7 +48,7 @@
 				"text"			"#GameUI_Nightmare"
 				"description"	"#GameUI_NightmareDescription"
 				"type"			"skillyskill"
-				"image"			"gamepadui/hard"
+				"image"			"gamepadui/nightmare"
 				"skill"			"4"
 			}
 		}
@@ -197,6 +197,20 @@
 				"text"			"#GameUI_AdvancedNoEllipsis"
 				"type"			"headeryheader"
 				"advanced"		"1"
+			}
+
+			"Console"
+			{
+				"text"			"#GameUI_DeveloperConsoleCheck"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"con_enable"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
 			}
 
 			"OldSpawner"
@@ -828,27 +842,6 @@
 				"type"			"wheelywheel"
 				"advanced"		"1"
 				"convar"		"mat_force_bloom"
-
-				"options"
-				{
-					"0"		"#gameui_disabled"
-					"1"		"#gameui_enabled"
-				}
-			}
-		}
-	}
-	"Advanced"
-	{
-		"title"			"#GameUI_AdvancedNoEllipsis"
-		"alternating"   "1"
-		"items"
-		{
-			"Console"
-			{
-				"text"			"#GameUI_DeveloperConsoleCheck"
-				"type"			"wheelywheel"
-				"advanced"		"1"
-				"convar"		"con_enable"
 
 				"options"
 				{

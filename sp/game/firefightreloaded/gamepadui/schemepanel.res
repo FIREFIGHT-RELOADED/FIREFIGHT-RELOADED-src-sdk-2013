@@ -73,11 +73,11 @@
 		"GenericConfirmation"					"255 255 255 255"
 		
 		"Button.Background.Out"						"0 0 0 0"
-		"Button.Background.Over"					"255 255 255 3"
+		"Button.Background.Over"					"255 255 255 180"
 		"Button.Background.Pressed"					"255 255 255 255"
 
 		"Button.Text.Out"							"255 255 255 150"
-		"Button.Text.Over"							"255 255 255 255"
+		"Button.Text.Over"							"0 0 0 255"
 		"Button.Text.Pressed"						"0 0 0 255"
 
 		"Button.Description.Out"					"0 0 0 0"
@@ -156,6 +156,7 @@
 
 	"CustomFontFiles"
 	{
+		"file"		"resource/smodgui.ttf"
 		"file"		"gamepadui/fonts/NotoSans-Regular.ttf"
 		"file"		"gamepadui/fonts/din1451alt.ttf"
 	}

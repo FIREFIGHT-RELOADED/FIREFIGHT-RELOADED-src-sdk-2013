@@ -59,7 +59,7 @@
 		{
 			"settings"
 			{
-				"name"			"Alte DIN 1451 Mittelschrift"
+				"name"			"SMODGUI"
 				"tall"			"26"
 				"weight"		"400"
 				"antialias"		"1"
@@ -80,6 +80,7 @@
 
 	"CustomFontFiles"
 	{
+		"file"		"resource/smodgui.ttf"
 		"file"		"gamepadui/fonts/NotoSans-Regular.ttf"
 		"file"		"gamepadui/fonts/din1451alt.ttf"
 	}

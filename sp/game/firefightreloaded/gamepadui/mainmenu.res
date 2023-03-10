@@ -4,15 +4,15 @@
 	{
 		"text"			"#GameUI_GameMenu_ResumeGame"
 		"command"		"cmd gamemenucommand resumegame"
-		"priority"		"7"
+		"priority"		"10"
 		"family"		"ingame"
 	}
 	
 	"NewGame"
 	{
 		"text"			"#GameUI_GameMenu_NewGame"
-		"command"		"cmd gamepadui_opennewgamedialog"
-		"priority"		"6"
+		"command"		"cmd createnewgame"
+		"priority"		"9"
 		"family"		"all"
 	}
 	
@@ -20,7 +20,7 @@
 	{
 		"text"			"#GameUI_GameMenu_SaveGame"
 		"command"		"cmd gamepadui_opensavegamedialog"
-		"priority"		"5"
+		"priority"		"8"
 		"family"		"ingame"
 	}
 
@@ -28,7 +28,7 @@
 	{
 		"text"			"#GameUI_GameMenu_LoadGame"
 		"command"		"cmd gamepadui_openloadgamedialog"
-		"priority"		"4"
+		"priority"		"7"
 		"family"		"all"
 	}
 
@@ -36,6 +36,30 @@
 	{
 		"text"			"#GameUI_GameMenu_Options"
 		"command"		"cmd gamepadui_openoptionsdialog"
+		"priority"		"6"
+		"family"		"all"
+	}
+
+	"ModelOptions"
+	{
+		"text"			"#FRMP_PlayerModel_Title"
+		"command"		"cmd playermodeldialog"
+		"priority"		"5"
+		"family"		"all"
+	}
+
+	"SpawnlistOptions"
+	{
+		"text"			"#FR_Spawnlist_Title"
+		"command"		"cmd spawnlistdialog"
+		"priority"		"4"
+		"family"		"all"
+	}
+
+	"OpenWorkshop"
+	{
+		"text"			"#FIREFIGHTRELOADED_ModMenu_Title"
+		"command"		"cmd showworkshop"
 		"priority"		"3"
 		"family"		"all"
 	}

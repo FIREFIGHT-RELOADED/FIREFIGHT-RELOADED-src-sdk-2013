@@ -1,24 +1,19 @@
 #include "cbase.h"
-//#include <vgui_controls/MessageBox.h>
 #include "game/client/iviewport.h"
+#include "tier3/tier3.h"
+#include "vgui/ILocalize.h"
+#include "fmtstr.h"
+#if !defined(MOD_VER) && !defined( _X360 ) && !defined( NO_STEAM )
+#include "steam/steam_api.h"
+#endif
 
-/*
-void OpenMessageBox(const CCommand &args)
-{
-	MessageBox *pMessageBox = new MessageBox(args[1], args[2]);
-	pMessageBox->DoModal();
-}
-
-ConCommand messagebox("messagebox", OpenMessageBox);
-*/
-
-void CC_ToggleIronSights(void)
+CON_COMMAND(toggle_ironsight, "")
 {
 	CBasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();
 	if (pPlayer == NULL)
 		return;
 
-	CBaseCombatWeapon *pWeapon = pPlayer->GetActiveWeapon();
+	CBaseCombatWeapon* pWeapon = pPlayer->GetActiveWeapon();
 	if (pWeapon == NULL)
 		return;
 
@@ -27,4 +22,14 @@ void CC_ToggleIronSights(void)
 	engine->ServerCmd("toggle_ironsight"); //forward to server
 }
 
-static ConCommand toggle_ironsight("toggle_ironsight", CC_ToggleIronSights);
+CON_COMMAND(showworkshop, "")
+{
+#if !defined(MOD_VER) && !defined( _X360 ) && !defined( NO_STEAM )
+	if (steamapicontext && steamapicontext->SteamFriends())
+	{
+		char szWorkshopURL[1024];
+		Q_snprintf(szWorkshopURL, sizeof(szWorkshopURL), "https://steamcommunity.com/app/%i/workshop/\n", engine->GetAppID());
+		steamapicontext->SteamFriends()->ActivateGameOverlayToWebPage(szWorkshopURL);
+	}
+#endif
+}

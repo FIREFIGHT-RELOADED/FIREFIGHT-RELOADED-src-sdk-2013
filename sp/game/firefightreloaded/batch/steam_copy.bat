@@ -27,6 +27,8 @@ XCOPY /E "%CD%\gamepadui" "%gamepaduidir%" /sy
 XCOPY "%CD%\gameinfo.txt" "%basedir%" /y
 XCOPY "%CD%\steam.inf" "%basedir%" /y
 XCOPY "%CD%\version.txt" "%basedir%" /y
+XCOPY "%CD%\firefightreloaded_pak_000.vpk" "%basedir%" /y
+XCOPY "%CD%\firefightreloaded_pak_dir.vpk" "%basedir%" /y
 
 echo.
 echo Moving game data to release folder...
