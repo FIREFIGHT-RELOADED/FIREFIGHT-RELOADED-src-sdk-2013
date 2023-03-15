@@ -1,6 +1,6 @@
 "Resource/HudLayout.res"
 {
-	HudHealth
+	HudHealth [$WIN32]
 	{
 		"fieldName"		"HudHealth"
 		"xpos"	"16"
@@ -18,7 +18,7 @@
 		"digit_ypos" "16"
 	}
 	
-	HudSuit
+	HudSuit [$WIN32]
 	{
 		"fieldName"		"HudSuit"
 		"xpos"	"68"
@@ -36,7 +36,7 @@
 		"digit_ypos" "16"
 	}
 
-	HudAmmo
+	HudAmmo	[$WIN32]
 	{
 		"fieldName" "HudAmmo"
 		"xpos"	"r90"
@@ -58,7 +58,7 @@
 		"primaryammoicon_ypos" "-7"
 	}
 
-	HudAmmoSecondary
+	HudAmmoSecondary	[$WIN32]
 	{
 		"fieldName" "HudAmmoSecondary"
 		"xpos"	"r78"
@@ -78,7 +78,7 @@
 		"secondaryammoicon_ypos" "-7"
 	}
 
-	HudPosture
+	HudPosture	[$WIN32]
 	{
 		"fieldName" 		"HudPosture"
 		"visible" 		"1"
@@ -92,13 +92,13 @@
 		"icon_ypos" 	"0"
 	}
 
-	HudSuitPower
+	HudSuitPower	[$WIN32]
 	{
 		"fieldName" "HudSuitPower"
 		"visible" "1"
 		"enabled" "1"
 		"xpos"	"16"
-		"ypos"	"395"
+		"ypos"	"394"
 		"wide"	"102"
 		"tall"	"26"
 		
@@ -129,7 +129,7 @@
 		"visible" "1"
 		"PaintBackgroundType"	"2"
 		"xpos"	"135"
-		"ypos"	"397"		
+		"ypos"	"396"		
 		"tall"  "24"
 		"wide"	"40"
 		"font"	"WeaponIconsSmall"
@@ -218,18 +218,15 @@
 		"visible" "1"
 		"enabled" "1"
 		"xpos"	 "r640"
-		"ypos"	 "5"
+		"ypos"	 "12"
 		"wide"	 "628"
 		"tall"	 "468"
 
 		"MaxDeathNotices" "4"
-		"LineHeight"	  "28"
+		"LineHeight"	  "22"
 		"RightJustify"	  "1"	// If 1, draw notices from the right
-		"IconOffsetWepY"  "-13"
-		"IconOffsetAmmoY"  "-13"
-		"IconOffsetTexWepY"	"-2"
 
-		"TextFont"				"DefaultKillFeed"
+		"TextFont"				"Default"
 		
 		"PaintBackgroundType"	"2"
 	}
@@ -328,11 +325,9 @@
 		"visible" "1"
 		"enabled" "1"
 		"xpos"	"r252"
-		//"ypos"	"50"
-		"ypos"	"100"
+		"ypos"	"50"
 		"wide"	 "248"
-		//"tall"	 "370"
-		"tall"	 "270"
+		"tall"	 "370"
 
 		"history_gap"	"35"
 		"icon_inset"	"28"

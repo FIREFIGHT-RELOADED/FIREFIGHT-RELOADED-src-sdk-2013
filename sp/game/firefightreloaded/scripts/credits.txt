@@ -1,19 +1,16 @@
 //Adrian: This file contains the credits info for both the Intro and outro.
-"credits.txt"
-{
+"credits.txt"{
 
 //========================================================
 //These are the names used in the intro (trainride)
 //========================================================
-"IntroCreditsNames"
-{
+"IntroCreditsNames"{
 	"V"	"WeaponIcons"
 	" "	"CreditsText"
 	" "	"CreditsText"
 }
 
-"CreditsParams"
-{
+"CreditsParams"{
 	"logo" "FIREFIGHT RELOADED"
 	
 	"fadeintime"	"2.5"
@@ -29,17 +26,16 @@
 
 //Outro Parameters
 	"scrolltime" "158"
-	"separation"  "10"
+	"separation"	"10"
 }
 
 //========================================================
 //These are the names used in the outro (breen_01)
 //========================================================
-"OutroCreditsNames"
-{
+"OutroCreditsNames"{
 	"FIREFIGHT RELOADED" "ClientTitleFont"
 	"E N D G A M E" "ClientTitleFontSmall"
-	"PROJECT TWILIGHT"   "CreditsOutroText"
+	"PROJECT TWILIGHT"	"CreditsOutroText"
 	" "	"CreditsOutroText"
 	"Asset Credits:"	"CreditsOutroText"
 	" "	"CreditsOutroText"
@@ -61,8 +57,8 @@
 	"Pulse Knife models (Viewmodel and Worldmodel)"	"CreditsOutroText"
 	"Katana models (Viewmodel and Worldmodel)"	"CreditsOutroText"
 	"Energy Pistol models (Worldmodel, used for the Grappling Beam)"	"CreditsOutroText"
-	"Fire Grenade textures"		"CreditsOutroText"
-	"Combine Female Sniper model and textures (Used for the Combine Assassin enhancements done by Maestra Fénix)"		"CreditsOutroText"
+	"Fire Grenade textures"	"CreditsOutroText"
+	"Combine Female Sniper model and textures (Used for the Combine Assassin enhancements done by Maestra Fénix)"	"CreditsOutroText"
 	" "	"CreditsOutroText"
 	"[NOR] Marcuzzz for Headspack V1.1, used for gore effects."	"CreditsOutroText"
 	" "	"CreditsOutroText"
@@ -105,12 +101,6 @@
 	" "	"CreditsOutroText"
 	"The Open Fortress Team for the color proxy code."	"CreditsOutroText"
 	" "	"CreditsOutroText"
-	"Thank you to the following for your GitHub contributions:"	"CreditsOutroText"
-	"DeciusMagnus"	"CreditsOutroText"
-	"xDShot"	"CreditsOutroText"
-	"z33ky"	"CreditsOutroText"
-	"ratchet3789"	"CreditsOutroText"
-	" "	"CreditsOutroText"
 	" "	"CreditsOutroText"
 	"Suggestions:"	"CreditsOutroText"
 	" "	"CreditsOutroText"
@@ -134,8 +124,7 @@
 	"Thank you to the following people who have playtested the mod to make sure it works properly:"	"CreditsOutroText"
 	"Tyler 'BFBC2143' Schield"	"CreditsOutroText"
 	"Pierce 'herbj54' Johnson"	"CreditsOutroText"
-	"Greenie"	"CreditsOutroText"
-	"Kasey/Tytygigas"	"CreditsOutroText"
+	"Tytygigas"	"CreditsOutroText"
 	"DeviantXS"	"CreditsOutroText"
 	" "	"CreditsOutroText"
 	"Special thanks to:"	"CreditsOutroText"
@@ -157,8 +146,6 @@
 	" "	"CreditsOutroText"
 	" "	"CreditsOutroText"
 	" "	"CreditsOutroText"
-	"Dedicated to Missie."	"CreditsOutroText"
-	" "	"CreditsOutroText"
 	" "	"CreditsOutroText"
 	" "	"CreditsOutroText"
 	" "	"CreditsOutroText"
@@ -177,7 +164,4 @@
 	" "	"CreditsOutroText"
 	"@"	"CreditsOutroLogos"
 }
-
-
-
 }

@@ -3,90 +3,93 @@
 WeaponData
 {
 	// Weapon data is loaded by both the Game and Client DLLs.
-	"printname"				"#HL2_M249Para"
-	"viewmodel"				"models/weapons/v_mach_m249para.mdl"
-	"playermodel"			"models/weapons/w_mach_m249para.mdl"	//FIXME: 
-	"anim_prefix"			"shotgun"
-	"weapon_type"			"lmg"
-	"bucket"				"2"
-	"bucket_position"		"2"
-	"bucket_360"			"1"
+	"printname"	"#HL2_M249Para"
+	"viewmodel"	"models/weapons/v_mach_m249para.mdl"
+	"playermodel"	"models/weapons/w_mach_m249para.mdl"	//FIXME: 
+	"anim_prefix"	"shotgun"
+	"weapon_type"	"lmg"
+	"bucket"	"2"
+	"bucket_position"	"2"
+	"bucket_360"	"1"
 	"bucket_position_360"	"2"
 
-	"clip_size"				"100"
-	"clip2_size"			"-1"
+	"clip_size"	"100"
+	"clip2_size"	"-1"
 
-	"default_clip"			"300"
-	"default_clip2"			"-1"
+	"default_clip"	"300"
+	"default_clip2"	"-1"
 
-	"primary_ammo"			"M249"
-	"secondary_ammo"		"None"
+	"primary_ammo"	"M249"
+	"secondary_ammo"	"None"
 
-	"weight"				"7"
-	"rumble"			"5"
-	"item_flags"			"0"
+	"weight"	"7"
+	"rumble"	"5"
+	"item_flags"	"0"
 	
 	"BuiltRightHanded" 		"1" 
 	"AllowFlipping" 		"1"
-	"MagazineStyledReloads"		"1"
-	"UseMuzzleSmoke"		"1"
-	"useironsights"			"1"
-	"LowerWeapon"			"0"
+	"MagazineStyledReloads"	"1"
+	"UseMuzzleSmoke"	"1"
+	"useironsights"	"1"
+	"LowerWeapon"	"0"
 	"useironsightcrosshair" "0"
 	
 	IronSight
 	{
-		"right"		"-4.5"
-		"up"		"2.0"
+		"right"	"-4.5"
+		"up"	"2.0"
 		"forward"	"-2.3"
-		//"fov"		"-30"
+		//"fov"	"-30"
 	}
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
 	{
-//		"reload"		"Weapon_Pistol.Reload"
-		"reload_npc"		"Weapon_Pistol.NPC_Reload"
-		"empty"			"Weapon_Pistol.Empty"
-		"single_shot"		"Weapon_M249.Single"
+//		"reload"	"Weapon_Pistol.Reload"
+		"reload_npc"	"Weapon_Pistol.NPC_Reload"
+		"empty"	"Weapon_Pistol.Empty"
+		"single_shot"	"Weapon_M249.Single"
 		"single_shot_npc"	"Weapon_M249.NPC_Single"
 	}
 
 	// Weapon Sprite data is loaded by the Client DLL.
 	TextureData
 	{
-		"weapon"
-		{
-				"font"		"WeaponIconsCS"
-				"character"	"z"
+		"weapon"{
+			"file"	"sprites/weapons/hud_weapons_m249"
+			"x"	"0"
+			"y"	"0"
+			"width"	"128"
+			"height"	"32"
 		}
-		"weapon_s"
-		{	
-				"font"		"WeaponIconsSelectedCS"
-				"character"	"z"
+		"weapon_s"{
+			"file"	"sprites/weapons/hud_weapons_m249"
+			"x"	"0"
+			"y"	"0"
+			"width"	"128"
+			"height"	"32"
 		}
-		"weapon_small"
-		{
-				"font"		"WeaponIconsSmallCS"
-				"character"	"z"
+		"weapon_small"{
+			"file"	"sprites/weapons/hud_weapons_m249"
+			"x"	"0"
+			"y"	"0"
+			"width"	"128"
+			"height"	"32"
 		}
-		"ammo"
-		{
-				"font"		"WeaponIconsSmall"
-				"character"	"r"
+		"ammo"{
+			"font"	"WeaponIconsSmall"
+			"character"	"r"
 		}
-		"crosshair"
-		{
-				"font"		"Crosshairs"
-				"character"	"Q"
+		"crosshair"{
+			"font"	"Crosshairs"
+			"character"	"Q"
 		}
-		"autoaim"
-		{
-				"file"		"sprites/crosshairs"
-				"x"			"0"
-				"y"			"48"
-				"width"		"24"
-				"height"	"24"
+		"autoaim"{
+			"file"	"sprites/crosshairs"
+			"x"	"0"
+			"y"	"48"
+			"width"	"24"
+			"height"	"24"
 		}
 	}
 }

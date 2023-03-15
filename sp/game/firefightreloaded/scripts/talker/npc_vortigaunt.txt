@@ -1,6 +1,6 @@
-//============================================================================================================
+//=======================
 // Vortigaunt criteria
-//============================================================================================================
+//=======================
 criterion "IsVortigaunt" "classname" "npc_vortigaunt" required
 criterion "VortigauntCure"  concept" "VORT_CURE" required
 criterion "VortigauntCureStop" "concept" "VORT_CURESTOP" required
@@ -18,9 +18,9 @@ criterion "VortigauntExtractBugbaitFinish" "concept" "VORT_EXTRACT_FINISH" requi
 criterion "VortNagKeepMovingOutland_11" "concept" "TLK_VortNag_KeepMoving" required
 criterion "NotUsedVortResponse01" "UsedVortResponse01" "!=1" "required" weight 0
 
-//============================================================================================================
+//=======================
 // Vortigaunt Level Plus Use
-//============================================================================================================
+//=======================
 response VortUseEverywhere
 {
 	scene "scenes/npc/vortigaunt/vort_affirmed.vcd"  
@@ -72,13 +72,10 @@ response "VortLabUsedisable11"
 
 rule IsVortLabUseDisable11
 {
-	criteria		ConceptTalkUse IsVortLabUseDisable NPCIdle NotUsedVortResponse IsMap_ep2_outland_11
-        applycontext		"UsedVortResponse:1:20"	
-	response		VortLabUsedisable11
+	criteria	ConceptTalkUse IsVortLabUseDisable NPCIdle NotUsedVortResponse IsMap_ep2_outland_11
+        applycontext	"UsedVortResponse:1:20"	
+	response	VortLabUsedisable11
 }
-
-
-
 
 
 //------------------------------------------------------------------------------------------------------------
@@ -93,9 +90,9 @@ response "VortNoticeHurt"
 
 rule VortNoticeHurt
 {
-	criteria		IsVortigaunt  ConceptTalkPlayerHurt NoRecentCombatShort IsMap_ep3_outland_03 IsNotVortNoticedHurt PlayerWounded
-	applycontext		"VortNoticedHurt:1:300"
-	response		VortNoticeHurt
+	criteria	IsVortigaunt  ConceptTalkPlayerHurt NoRecentCombatShort IsMap_ep3_outland_03 IsNotVortNoticedHurt PlayerWounded
+	applycontext	"VortNoticedHurt:1:300"
+	response	VortNoticeHurt
 }
 
 
@@ -111,8 +108,8 @@ response "VortAntlionCombatStart"
 
 rule VortAntlionCombatStart
 {
-	criteria		IsVortigaunt  ConceptStartCombat EnemyIsAntLion 
-	response		VortAntlionCombatStart
+	criteria	IsVortigaunt  ConceptStartCombat EnemyIsAntLion 
+	response	VortAntlionCombatStart
 }
 
 response "VortAntlionCombatStart2"
@@ -289,9 +286,9 @@ rule NagPlayerKeepMovingOutland_11Vort
 
 
 
-//============================================================================================================
+//=======================
 // Vortigaunt Hello speech
-//============================================================================================================
+//=======================
 response "VortigauntHello" 
 {
 //	scene "scenes/npc/vortigaunt/wellmet.vcd" delay "3,3.5" speakonce 
@@ -325,9 +322,9 @@ rule VortigauntPlayerHello
 	response		NullResponse
 }
 
-//============================================================================================================
+//=======================
 // Vortigaunt Questions & Responses speech
-//============================================================================================================
+//=======================
 response "VortigauntQuestion" 
 {
 //	scene "scenes/npc/vortigaunt/vques01.vcd" delay 1
@@ -390,9 +387,9 @@ rule VortigauntTalkUse
 	response		VortigauntTalkUse
 }
 
-//============================================================================================================
+//=======================
 // Vortigaunt Combat speech
-//============================================================================================================
+//=======================
 response "VortigauntCure" 
 {
   	scene "scenes/npc/vortigaunt/allowrecharge.vcd" defaultdelay
@@ -580,9 +577,9 @@ rule VortigauntPOk
 }
 
 
-//============================================================================================================
+//=======================
 // Vortigaunt Misc speech
-//============================================================================================================
+//=======================
 response "VortigauntIdle" 
 
 {
@@ -807,9 +804,9 @@ rule VortigauntTlkMortal
 	response		VortigauntMortal
 }
 
-//============================================================================================================
+//=======================
 // Vortigaunt Leader speech (a vortigaunt that's leading the player somewhere)
-//============================================================================================================
+//=======================
 
 response "VortigauntLeadStart"
 {
@@ -838,9 +835,9 @@ rule VortigauntLeadCatchup
 
 
 
-//============================================================================================================
+//=======================
 // Vortigaunt coast specific speech
-//============================================================================================================
+//=======================
 response "VortigauntExtractBugbait"
 {
 	scene "scenes/coast/bugbait/vort_extract01.vcd" defaultdelay
@@ -875,4 +872,3 @@ rule VortigauntTlkLeadGetBugbait
 	criteria		IsVortigaunt ConceptLeadMissingWeapon
 	response		VortigauntGetBugbait
 }
-

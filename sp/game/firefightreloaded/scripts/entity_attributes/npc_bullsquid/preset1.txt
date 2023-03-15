@@ -1,12 +1,11 @@
 //Boom Squid
-"npc_bullsquid_preset1"
-{
-	"new_color"		"128 180 128 255"
+"npc_bullsquid_preset1"{
+	"new_color"	"128 180 128 255"
 	"additional_health"	"200"
-	"is_rare"		"1"
-	"has_outlines"		"1"
+	"is_rare"	"1"
+	"has_outlines"	"1"
 	"new_projectile"	"2"
-	"spit_size"		"4"
-	"outline_color"		"128 255 128"
-	"persist"		"0"
+	"spit_size"	"4"
+	"outline_color"	"128 255 128"
+	"persist"	"0"
 }

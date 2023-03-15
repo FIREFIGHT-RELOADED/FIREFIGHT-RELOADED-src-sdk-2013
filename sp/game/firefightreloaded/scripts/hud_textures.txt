@@ -1,292 +1,108 @@
-"sprites/640_hud"
-{
+"sprites/640_hud"{
 	TextureData
 	{
-		"arrow"				[$WIN32]
-		{
-				"file"		"sprites/arrow"
-				"x"			"0"
-				"y"			"0"
-				"width"		"32"
-				"height"	"32"
+		"arrow"{
+			"file"	"sprites/arrow"
+			"x"	"0"
+			"y"	"0"
+			"width"	"32"
+			"height"	"32"
 		}
 		"autoaim_c"			[$WIN32]
 		{
-				"file"		"sprites/crosshairs"
-				"x"			"96"
-				"y"			"0"
-				"width"		"24"
-				"height"	"24"
+			"file"	"sprites/crosshairs"
+			"x"	"96"
+			"y"	"0"
+			"width"	"24"
+			"height"	"24"
 		}
 		"item_battery"		[$WIN32]
 		{
-				"font"		"WeaponIcons"
-				"character"	"*"
+			"font"	"WeaponIcons"
+			"character"	"*"
 		}
 		"item_healthkit"	[$WIN32]
 		{
-				"font"		"WeaponIcons"
-				"character"	"+"
+			"font"	"WeaponIcons"
+			"character"	"+"
 		}
-		"crosshair"
-		{
-				"file"		"sprites/qi_center"
-				"x"			"0"
-				"y"			"0"
-				"width"		"40"
-				"height"	"40"
+		"crosshair"{
+			"file"	"sprites/qi_center"
+			"x"	"0"
+			"y"	"0"
+			"width"	"40"
+			"height"	"40"
 		}
-		"crosshair_left"
-		{
-				"font"		"QuickInfo"
-				"character"	"("
+		"crosshair_left"{
+			"font"	"QuickInfo"
+			"character"	"("
 		}
-		"crosshair_right"
-		{
-				"font"		"QuickInfo"
-				"character"	")"
+		"crosshair_right"{
+			"font"	"QuickInfo"
+			"character"	")"
 		}
-		"crosshair_left_full"
-		{
-				"font"		"QuickInfo"
-				"character"	"["
+		"crosshair_left_full"{
+			"font"	"QuickInfo"
+			"character"	"["
 		}
-		"crosshair_right_full"
-		{
-				"font"		"QuickInfo"
-				"character"	"]"
+		"crosshair_right_full"{
+			"font"	"QuickInfo"
+			"character"	"]"
 		}
-		"crosshair_left_empty"
-		{
-				"font"		"QuickInfo"
-				"character"	"{"
+		"crosshair_left_empty"{
+			"font"	"QuickInfo"
+			"character"	"{"
 		}
-		"crosshair_right_empty"
-		{
-				"font"		"QuickInfo"
-				"character"	"}"
+		"crosshair_right_empty"{
+			"font"	"QuickInfo"
+			"character"	"}"
 		}
-		"crosshair_default"
-		{
-				"file"		"sprites/crosshairs"
-				"x"			"0"
-				"y"			"48"
-				"width"		"24"
-				"height"	"24"
+		"crosshair_default"{
+			"file"	"sprites/crosshairs"
+			"x"	"0"
+			"y"	"48"
+			"width"	"24"
+			"height"	"24"
 		}
-		"crosshair_xbox"
-		{
-				"file"		"vgui/hud/xbox_reticle"
-				"x"		"0"
-				"y"		"0"
-				"width"		"64"
-				"height"	"64"
+		"crosshair_xbox"{
+			"file"	"vgui/hud/xbox_reticle"
+			"x"	"0"
+			"y"	"0"
+			"width"	"64"
+			"height"	"64"
 		}
-		"viewhair"
-		{
-				"file"		"sprites/hud/v_crosshair2"
-				"x"			"0"
-				"y"			"0"
-				"width"		"32"
-				"height"	"32"
+		"viewhair"{
+			"file"	"sprites/hud/v_crosshair2"
+			"x"	"0"
+			"y"	"0"
+			"width"	"32"
+			"height"	"32"
 		}
-		"gunhair"
-		{
-				"file"		"sprites/hud/v_crosshair1"
-				"x"			"0"
-				"y"			"0"
-				"width"		"32"
-				"height"	"32"
+		"gunhair"{
+			"file"	"sprites/hud/v_crosshair1"
+			"x"	"0"
+			"y"	"0"
+			"width"	"32"
+			"height"	"32"
 		}
-		"plushair"
-		{
-				"font"		"Crosshairs"
-				"character"	"Q"
+		"plushair"{
+			"font"	"Crosshairs"
+			"character"	"Q"
 		}
-		"ico_friend_indicator"
-		{
-			"file"		"vgui/ico_friend_indicator_alone"
-			"x"		"0"
-			"y"		"0"
+		
+		"ico_friend_indicator"{
+			"file"	"vgui/ico_friend_indicator_alone"
+			"x"	"0"
+			"y"	"0"
 			"width"	"32"
 			"height" "32"
 		}				
-		"ico_friend_indicator_avatar"
-		{
-			"file"		"vgui/ico_friend_indicator_scoreboard"
-			"x"		"-1"
-			"y"		"-1"
+		"ico_friend_indicator_avatar"{
+			"file"	"vgui/ico_friend_indicator_scoreboard"
+			"x"	"-1"
+			"y"	"-1"
 			"width"	"57"
 			"height" "36"
-		}
-		//weapons
-		"deathnotice"
-		{
-				"font"		"WeaponIconsKillFeed3"
-				"character"	"C"
-		}
-		"weapon_357"
-		{
-				"font"		"WeaponIconsKillFeed"
-				"character"	"."
-		}
-		"weapon_ar2"
-		{
-				"font"		"WeaponIconsKillFeed"
-				"character"	"2"
-		}
-		"crossbow_bolt"
-		{
-				"font"		"WeaponIconsKillFeed"
-				"character"	"1"
-		}
-		"weapon_smg1"
-		{
-				"font"		"WeaponIconsKillFeed"
-				"character"	"/"
-		}
-		"weapon_shotgun"
-		{
-				"font"		"WeaponIconsKillFeed"
-				"character"	"0"
-		}
-		"rpg_missile"
-		{
-				"font"		"AmmoIconsKillFeed"
-				"character"	"x"
-				"ammoicon"	"1"
-		}
-		"npc_grenade_frag"
-		{
-				"font"		"WeaponIconsKillFeed"
-				"character"	"4"
-		}
-		"weapon_pistol"
-		{
-				"font"		"WeaponIconsKillFeed"
-				"character"	"-"
-		}
-		"prop_physics"
-		{
-				"font"		"WeaponIconsKillFeed"
-				"character"	"9"
-		}
-		"prop_physics_multiplayer"
-		{
-				"font"		"WeaponIconsKillFeed"
-				"character"	"9"
-		}
-		"kick"
-		{
-				"font"		"WeaponIconsKillFeed"
-				"character"	"9"
-		}
-		"prop_combine_ball"
-		{
-				"font"		"WeaponIconsKillFeed"
-				"character"	"8"
-		}
-		"grenade_ar2"
-		{
-				"font"		"WeaponIconsKillFeed"
-				"character"	"7"
-		}
-		"grenade_ociw"
-		{
-				"font"		"WeaponIconsKillFeed"
-				"character"	"7"
-		}
-		"weapon_stunstick"
-		{
-				"font"		"WeaponIconsKillFeed"
-				"character"	"!"
-		}
-		"weapon_slam"
-		{
-				"font"		"WeaponIconsKillFeed"
-				"character"	"*"
-		}
-		"npc_tripmine"
-		{
-				"font"		"WeaponIconsKillFeed"
-				"character"	"*"
-		}
-		"npc_satchel"
-		{
-				"font"		"WeaponIconsKillFeed"
-				"character"	"*"
-		}
-		"weapon_crowbar"
-		{
-				"font"		"WeaponIconsKillFeed"
-				"character"	"6"
-		}
-		"weapon_oicw"
-		{
-				"font"		"WeaponIconsKillFeed2"
-				"character"	"f"
-				"weaponicon"	"1"
-		}
-		"weapon_gauss"
-		{
-				"font"		"WeaponIconsKillFeed2"
-				"character"	"h"
-				"weaponicon"	"1"
-		}
-		"weapon_sniper_rifle"
-		{
-				"file"		"sprites/weapons/hud_weapon_sniperrifle"
-				"x"			"0" //128
-				"y"			"198" //0
-				"width"		"128"
-				"height"	"32"
-		}
-		"weapon_m249para"
-		{
-				"font"		"WeaponIconsKillFeed3"
-				"character"	"z"
-		}
-		"weapon_knife"
-		{
-				"file"		"sprites/weapons/knife_icon"
-				"x"		"0"
-				"y"		"0"
-				"width"		"64"
-				"height"	"32"
-				"weaponicon"	"1"
-		}
-		"knife_bolt"
-		{
-				"file"		"sprites/weapons/knife_icon"
-				"x"		"0"
-				"y"		"0"
-				"width"		"64"
-				"height"	"32"
-				"weaponicon"	"1"
-		}
-		"weapon_katana"
-		{
-				"file"		"sprites/weapons/hud_weapons_katana"
-				"x"		"0"
-				"y"		"0"
-				"width"		"128"
-				"height"	"32"
-				"weaponicon"	"1"
-		}
-		"weapon_mp5"
-		{
-				"font"		"WeaponIconsKillFeed3"
-				"character"	"x"
-		}
-                "npc_playerbot"
-		{
-				"font"		"WeaponIconsKillFeed3"
-				"character"	"H"
-		}
-                "weapon_physgun"
-		{
-				"font"		"WeaponIconsKillFeed2"
-				"character"	"!"
 		}
 	}	
 }

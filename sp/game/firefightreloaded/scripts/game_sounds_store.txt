@@ -1,17 +1,13 @@
-"Store.Buy"
-{
+"Store.Buy"{
 	"channel"	"CHAN_VOICE"
 	"volume"	"1.0"
 	"soundlevel"  "SNDLVL_75dB"
-
 	"wave"	"ui/store/store_buy.wav"
 }
 
-"Store.InsufficientFunds"
-{
+"Store.InsufficientFunds"{
 	"channel"	"CHAN_VOICE"
 	"volume"	"1.0"
 	"soundlevel"  "SNDLVL_75dB"
-
 	"wave"	"ui/store/store_insufficentfunds.wav"
 }

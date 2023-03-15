@@ -1,10 +1,9 @@
-"NPC_Ministrider.Shoot"
-{
-	"channel"		"CHAN_WEAPON"
-	"volume"		"VOL_NORM"
-	"pitch"			"PITCH_NORM"
+"NPC_Ministrider.Shoot"{
+	"channel"	"CHAN_WEAPON"
+	"volume"	"VOL_NORM"
+	"pitch"	"PITCH_NORM"
 
 	"soundlevel"	"SNDLVL_NORM"
 
-	"wave"			"npc/ministrider/fire.wav"
+	"wave"	"npc/ministrider/fire.wav"
 }

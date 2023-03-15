@@ -49,15 +49,13 @@
 //	SNDLVL_150dB	= 150,	// 0.2
 
 
-"AI_BaseNPC.BodyDrop_Heavy"
-{
+"AI_BaseNPC.BodyDrop_Heavy"{
 	"channel"	"CHAN_BODY"
 	"volume"	"1"
 	"soundlevel"	"SNDLVL_75dB"
 	"pitch"	"90"
 
-	"rndwave"
-	{
+	"rndwave"{
 		"wave"	"physics/flesh/flesh_impact_hard1.wav"
 		"wave"	"physics/flesh/flesh_impact_hard2.wav"
 		"wave"	"physics/flesh/flesh_impact_hard3.wav"
@@ -67,15 +65,13 @@
 	}
 }
 
-"AI_BaseNPC.BodyDrop_Light"
-{
+"AI_BaseNPC.BodyDrop_Light"{
 	"channel"	"CHAN_BODY"
 	"volume"	"0.9"
 	"soundlevel"  "SNDLVL_75dB"
 	"pitch"	"105"
 
-	"rndwave"
-	{
+	"rndwave"{
 		"wave"	"physics/flesh/flesh_impact_hard1.wav"
 		"wave"	"physics/flesh/flesh_impact_hard2.wav"
 		"wave"	"physics/flesh/flesh_impact_hard3.wav"
@@ -85,8 +81,7 @@
 	}
 }
 
-"AI_BaseNPC.SwishSound"
-{
+"AI_BaseNPC.SwishSound"{
 	"channel"	"CHAN_BODY"
 	"volume"	"1"
 	"soundlevel"  "SNDLVL_75dB"
@@ -94,8 +89,7 @@
 	"wave"	"npc/zombie/claw_miss2.wav"
 }
 
-"AI_BaseNPC.SentenceStop"
-{
+"AI_BaseNPC.SentenceStop"{
 	"channel"	"CHAN_VOICE"
 	"volume"	"1.0"
 	"soundlevel"  "SNDLVL_60dB"
@@ -103,31 +97,26 @@
 	"wave"	"common/null.wav"
 }
 
-"BaseCombatCharacter.CorpseGib"
-{
+"BaseCombatCharacter.CorpseGib"{
 	"channel"	"CHAN_WEAPON"
 	"volume"	"1"
 	"soundlevel"  "SNDLVL_75dB"
-	"rndwave"
-	{
+	"rndwave"{
 		"wave"	"physics/flesh/flesh_squishy_impact_hard2.wav"
 	}
 }
 
 // Added with Mapbase for dynamic interactions
-"BaseCombatCharacter.FleshBreak"
-{
+"BaseCombatCharacter.FleshBreak"{
 	"channel" "CHAN_WEAPON"
 	"soundlevel" "SNDLVL_NORM"
 	"volume"	"0.7"
-	"rndwave"
-	{
+	"rndwave"{
 		"wave"	"physics/flesh/flesh_bloody_break.wav"
 	}
 }
 
-"BaseCombatCharacter.StopWeaponSounds"
-{
+"BaseCombatCharacter.StopWeaponSounds"{
 	"channel"	"CHAN_WEAPON"
 	"volume"	"1"
 	"soundlevel"  "SNDLVL_75dB"
@@ -135,8 +124,7 @@
 	"wave"	"common/null.wav"
 }
 
-"BaseCombatCharacter.AmmoPickup"
-{
+"BaseCombatCharacter.AmmoPickup"{
 	"channel"	"CHAN_ITEM"
 	"volume"	"1"
 	"soundlevel"  "SNDLVL_75dB"
@@ -144,22 +132,19 @@
 	"wave"	"items/ammo_pickup.wav"
 }
 
-"BaseCombatWeapon.WeaponDrop"
-{
-	"channel"		"CHAN_VOICE"
-	"volume"		"0.8"
+"BaseCombatWeapon.WeaponDrop"{
+	"channel"	"CHAN_VOICE"
+	"volume"	"0.8"
 	"soundlevel"  "SNDLVL_75dB"
 	"pitch"	  "95,110"
-	"rndwave"
-	{
+	"rndwave"{
 		"wave"	"physics/metal/weapon_impact_hard1.wav"
 		"wave"	"physics/metal/weapon_impact_hard2.wav"
 		"wave"	"physics/metal/weapon_impact_hard3.wav"
 	}
 }
 
-"BaseCombatWeapon.WeaponMaterialize"
-{
+"BaseCombatWeapon.WeaponMaterialize"{
 	"channel"	"CHAN_WEAPON"
 	"volume"	"1"
 	"soundlevel"  "SNDLVL_75dB"
@@ -169,33 +154,30 @@
 }
 
 
-"General.BurningFlesh"
-{
-	"channel"		"CHAN_WEAPON"
-	"volume"		"0.45"
-	"pitch"		"PITCH_NORM"
+"General.BurningFlesh"{
+	"channel"	"CHAN_WEAPON"
+	"volume"	"0.45"
+	"pitch"	"PITCH_NORM"
 
 	"soundlevel"	"SNDLVL_NORM"
 
 	"wave"		 "npc/headcrab/headcrab_burning_loop2.wav" 
 }
 
-"General.BurningObject"
-{
-	"channel"		"CHAN_WEAPON"
-	"volume"		"VOL_NORM"
-	"pitch"		"PITCH_NORM"
+"General.BurningObject"{
+	"channel"	"CHAN_WEAPON"
+	"volume"	"VOL_NORM"
+	"pitch"	"PITCH_NORM"
 
 	"soundlevel"	"SNDLVL_NORM"
 
 	"wave"		 "ambient/fire/fire_small_loop2.wav" 
 }
 
-"General.StopBurning"
-{
-	"channel"		"CHAN_WEAPON"
-	"volume"		"VOL_NORM"
-	"pitch"		"PITCH_NORM"
+"General.StopBurning"{
+	"channel"	"CHAN_WEAPON"
+	"volume"	"VOL_NORM"
+	"pitch"	"PITCH_NORM"
 
 	"soundlevel"	"SNDLVL_NORM"
 
@@ -203,29 +185,22 @@
 }
 
 // Ported from Alien Swarm for the game instructor in Mapbase
-"Instructor.LessonStart"
-{
-	"channel"		"CHAN_STATIC"
-	"volume"		"0.75"
-	"pitch"			"PITCH_NORM"
+"Instructor.LessonStart"{
+	"channel"	"CHAN_STATIC"
+	"volume"	"0.75"
+	"pitch"	"PITCH_NORM"
 
 	"soundlevel" 		"SNDLVL_NORM"
 
-	"wave"			"#ui/beepclear.wav"
+	"wave"	"#ui/beepclear.wav"
 }
 
-"Instructor.ImportantLessonStart"
-{
-	"channel"		"CHAN_STATIC"
-	"volume"		"0.75"
-	"pitch"			"PITCH_NORM"
+"Instructor.ImportantLessonStart"{
+	"channel"	"CHAN_STATIC"
+	"volume"	"0.75"
+	"pitch"	"PITCH_NORM"
 
 	"soundlevel" 		"SNDLVL_NORM"
 
-	"wave"			"#ui/beep22.wav"
+	"wave"	"#ui/beep22.wav"
 }
-
-
-
-
-

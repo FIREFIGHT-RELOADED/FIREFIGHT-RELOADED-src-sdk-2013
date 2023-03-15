@@ -1,5 +1,4 @@
-"chapters"
-{
+"chapters"{
 	1	"background01"
 	2	"background02"
 	3	"background03"

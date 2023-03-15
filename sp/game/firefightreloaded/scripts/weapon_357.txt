@@ -3,86 +3,80 @@
 WeaponData
 {
 	// Weapon data is loaded by both the Game and Client DLLs.
-	"printname"			"#HL2_357Handgun"
-	"viewmodel"			"models/weapons/v_357.mdl"
-	"playermodel"		"models/weapons/w_357.mdl"
-	"anim_prefix"		"pistol"
-	"weapon_type"		"revolver"
-	"bucket"			"1"
+	"printname"	"#HL2_357Handgun"
+	"viewmodel"	"models/weapons/v_357.mdl"
+	"playermodel"	"models/weapons/w_357.mdl"
+	"anim_prefix"	"pistol"
+	"weapon_type"	"revolver"
+	"bucket"	"1"
 	"bucket_position"	"1"
-	"bucket_360"			"0"
+	"bucket_360"	"0"
 	"bucket_position_360"	"1"
 
-	"clip_size"			"6"
-	"default_clip"		"6"
-	"primary_ammo"		"357"
+	"clip_size"	"6"
+	"default_clip"	"6"
+	"primary_ammo"	"357"
 	"secondary_ammo"	"None"
 
-	"weight"		"7"
-	"rumble"		"2"
-	"item_flags"		"0"
+	"weight"	"7"
+	"rumble"	"2"
+	"item_flags"	"0"
 	
 	"BuiltRightHanded" 		"1" 
 	"AllowFlipping" 		"1"
 	
-	"UseMuzzleSmoke"		"1"
-	"useironsights"			"1"
-	"LowerWeapon"			"1"
+	"UseMuzzleSmoke"	"1"
+	"useironsights"	"1"
+	"LowerWeapon"	"1"
 	"useironsightcrosshair" "0"
 	
 	IronSight
 	{
-		"right"		"-5.65"
-		"up"		"2.7"
+		"right"	"-5.65"
+		"up"	"2.7"
 		"forward"	"-14"
-		//"fov"		"-4"
+		//"fov"	"-4"
 	}
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
 	{
-		"empty"		"Weapon_Pistol.Empty"
+		"empty"	"Weapon_Pistol.Empty"
 		"single_shot"	"Weapon_357.Single"
 		
 		"single_shot_npc"	"Weapon_357.Single"
-		"reload_npc"		"Weapon_SMG1.NPC_Reload"
+		"reload_npc"	"Weapon_SMG1.NPC_Reload"
 	}
 
 	// Weapon Sprite data is loaded by the Client DLL.
 	TextureData
 	{
-		"weapon"
-		{
-				"font"		"WeaponIcons"
-				"character"	"e"
+		"weapon"{
+			"font"	"WeaponIcons"
+			"character"	"e"
 		}
-		"weapon_s"
-		{	
-				"font"		"WeaponIconsSelected"
-				"character"	"e"
+		"weapon_s"{	
+			"font"	"WeaponIconsSelected"
+			"character"	"e"
 		}
-		"weapon_small"
-		{
-				"font"		"WeaponIconsSmall"
-				"character"	"e"
+		"weapon_small"{
+			"font"	"WeaponIconsSmall"
+			"character"	"e"
 		}
-		"ammo"
-		{
-				"font"		"WeaponIconsSmall"
-				"character"	"q"
+		"ammo"{
+			"font"	"WeaponIconsSmall"
+			"character"	"q"
 		}
-		"crosshair"
-		{
-				"font"		"Crosshairs"
-				"character"	"Q"
+		"crosshair"{
+			"font"	"Crosshairs"
+			"character"	"Q"
 		}
-		"autoaim"
-		{
-				"file"		"sprites/crosshairs"
-				"x"			"0"
-				"y"			"48"
-				"width"		"24"
-				"height"	"24"
+		"autoaim"{
+			"file"	"sprites/crosshairs"
+			"x"	"0"
+			"y"	"48"
+			"width"	"24"
+			"height"	"24"
 		}
 	}
 }

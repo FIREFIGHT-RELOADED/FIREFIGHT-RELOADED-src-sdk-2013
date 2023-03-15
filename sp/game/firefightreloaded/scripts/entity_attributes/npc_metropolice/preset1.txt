@@ -1,7 +1,6 @@
 //Metrocop version of the elitepolice.
-"npc_metropolice_preset1"
-{
-	"new_model"		"models/elitepolice.mdl"
+"npc_metropolice_preset1"{
+	"new_model"	"models/elitepolice.mdl"
 	"body_decap_model"	"models/gibs/elitepolice_beheaded.mdl"
 	"head_gib_model"	"models/gibs/elitepolice_head.mdl"
 	"left_arm_gib_model"	"models/gibs/elitepolice_left_arm.mdl"
@@ -14,6 +13,6 @@
 	"manhack_override"	"1"
 	"manhack_count_min"	"3"
 	"manhack_count_max"	"5"
-	"is_rare"		"1"
-	"persist"		"0"
+	"is_rare"	"1"
+	"persist"	"0"
 }

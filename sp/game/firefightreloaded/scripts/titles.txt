@@ -43,18 +43,15 @@ $fadein 1.5
 $fadeout 0.5
 $holdtime 1.2
 
-CR1
-{
+CR1{
 Testing 1
 }
 
-CR2
-{
+CR2{
 Testing 2
 }
 
-CR3
-{
+CR3{
 Testing 3
 }
 
@@ -77,43 +74,35 @@ $holdtime 3.5
 $fadeout 1.5
 
 
-GAMEOVER_ALLY
-{
+GAMEOVER_ALLY{
 #HL2_GameOver_Ally
 }
 
-GAMEOVER_OBJECT
-{
+GAMEOVER_OBJECT{
 #HL2_GameOver_Object
 }
 
-GAMEOVER_TIMER
-{
+GAMEOVER_TIMER{
 #HL2_GameOver_Timer
 }
 
-GAMEOVER_STUCK
-{
+GAMEOVER_STUCK{
 #HL2_GameOver_Stuck
 }
 
-GAMEOVER_ALYXDEAD
-{
+GAMEOVER_ALYXDEAD{
 #Episodic_GameOver_AlyxDead
 }
 
-GAMEOVER_ALYXLEFT
-{
+GAMEOVER_ALYXLEFT{
 #EP2_GameOver_AlyxLeft
 }
 
-FR_ENDING
-{
+FR_ENDING{
 #FR_Ending
 }
 
-FR_HARDCOREENDING
-{
+FR_HARDCOREENDING{
 #FR_HardcoreEnding
 }
 
@@ -127,48 +116,39 @@ $fadein 0.01
 $holdtime 3.5
 $position -1 0.58
 
-EP2_CHAPTER1_TITLE
-{
+EP2_CHAPTER1_TITLE{
 #ep2_Chapter1_Title
 }
 
-EP2_CHAPTER2_TITLE
-{
+EP2_CHAPTER2_TITLE{
 #ep2_Chapter2_Title
 }
 
-EP2_CHAPTER3_TITLE
-{
+EP2_CHAPTER3_TITLE{
 #ep2_Chapter3_Title
 }
 
-EP2_CHAPTER4_TITLE
-{
+EP2_CHAPTER4_TITLE{
 #ep2_Chapter4_Title
 }
 
-EP2_CHAPTER5_TITLE
-{
+EP2_CHAPTER5_TITLE{
 #ep2_Chapter5_Title
 }
 
-EP2_CHAPTER6_TITLE
-{
+EP2_CHAPTER6_TITLE{
 #ep2_Chapter6_Title
 }
 
-EP2_CHAPTER7_TITLE
-{
+EP2_CHAPTER7_TITLE{
 #ep2_Chapter7_Title
 }
 
-EP2_CHAPTER8_TITLE
-{
+EP2_CHAPTER8_TITLE{
 #ep2_Chapter8_Title
 }
 
-EP2_CHAPTER9_TITLE
-{
+EP2_CHAPTER9_TITLE{
 #ep2_Chapter9_Title
 }
 
@@ -192,15 +172,13 @@ $fadeout 0.01
 $boxsize 0.4
 $boxcolor 31 31 31 127
 
-GAMESAVING_360
-{
+GAMESAVING_360{
 #HL2_Saving
 }
 
 $position -1 0.65
 
-GAMESAVING
-{
+GAMESAVING{
 #HL2_Saving
 }
 
@@ -226,15 +204,13 @@ $boxcolor 31 31 31 127
 // The following message will clear any existing message of the given name
 $clearmessage GAMESAVING
 
-GAMESAVED_360
-{
+GAMESAVED_360{
 #HL2_Saved
 }
 
 $position -1 0.65
 
-GAMESAVED
-{
+GAMESAVED{
 #HL2_Saved
 }
 
@@ -258,8 +234,7 @@ $fadeout 1.5
 
 $boxsize 0.0
 
-GAMETITLE
-{
+GAMETITLE{
 Half-Life
 }
 
@@ -284,4 +259,3 @@ $holdtime 3.5
 $fadeout 1.5
 $position -1 0.65
 $position -1 0.3
-

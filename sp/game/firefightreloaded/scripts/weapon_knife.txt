@@ -4,34 +4,34 @@ WeaponData
 {
 	// Weapon data is loaded by both the Game and Client DLLs.
 	"printname"	"#HL2_Knife"
-	"viewmodel"				"models/weapons/v_knife.mdl"
-	"playermodel"			"models/weapons/w_knife.mdl"
-	"anim_prefix"			"stunstick"
-	"weapon_type"			"melee"
-	"bucket"				"0"
-	"bucket_position"		"2"
+	"viewmodel"	"models/weapons/v_knife.mdl"
+	"playermodel"	"models/weapons/w_knife.mdl"
+	"anim_prefix"	"stunstick"
+	"weapon_type"	"melee"
+	"bucket"	"0"
+	"bucket_position"	"2"
 	
-	"clip_size"				"-1"
-	"primary_ammo"			"None"
-	"secondary_ammo"		"None"
+	"clip_size"	"-1"
+	"primary_ammo"	"None"
+	"secondary_ammo"	"None"
 
-	"weight"				"0"
-	"item_flags"			"0"
+	"weight"	"0"
+	"item_flags"	"0"
 	
 	"BuiltRightHanded" 		"1" 
 	"AllowFlipping" 		"1"
-	"UseMuzzleSmoke"		"0"
-	"useironsights"			"0"
-	"LowerWeapon"			"0"
+	"UseMuzzleSmoke"	"0"
+	"useironsights"	"0"
+	"LowerWeapon"	"0"
 	"useironsightcrosshair" "0"
-	"MeleeWeapon"			"1"
+	"MeleeWeapon"	"1"
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
 	{
-		"single_shot"		"Weapon_Crowbar.Single"
-		"double_shot"		"Weapon_Crowbar.Single"
-		"melee_hit"			"Weapon_Crowbar.Melee_Hit"
+		"single_shot"	"Weapon_Crowbar.Single"
+		"double_shot"	"Weapon_Crowbar.Single"
+		"melee_hit"	"Weapon_Crowbar.Melee_Hit"
 		"melee_hit_world"	"Weapon_Crowbar.Melee_HitWorld"
 	}
 
@@ -40,55 +40,55 @@ WeaponData
 	{
 		"weapon"
 		{
-			"file"		"sprites/weapons/knife_icon"
-			"x"		"0"
-			"y"		"0"
-			"width"		"64"
+			"file"	"sprites/weapons/knife_icon"
+			"x"	"0"
+			"y"	"0"
+			"width"	"64"
 			"height"	"32"
 		}
 		"weapon_s"
 		{
-			"file"		"sprites/weapons/knife_icon"
-			"x"		"0"
-			"y"		"0"
-			"width"		"64"
+			"file"	"sprites/weapons/knife_icon"
+			"x"	"0"
+			"y"	"0"
+			"width"	"64"
 			"height"	"32"
 		}
 		"weapon_small"
 		{
-			"file"		"sprites/weapons/knife_icon"
-			"x"		"0"
-			"y"		"0"
-			"width"		"64"
+			"file"	"sprites/weapons/knife_icon"
+			"x"	"0"
+			"y"	"0"
+			"width"	"64"
 			"height"	"32"
 		}
 		"ammo"
 		{
-			"file"		"sprites/weapons/knife_icon"
-			"x"		"0"
-			"y"		"0"
-			"width"		"64"
+			"file"	"sprites/weapons/knife_icon"
+			"x"	"0"
+			"y"	"0"
+			"width"	"64"
 			"height"	"32"
 		}
 		"ammo2"
 		{
-			"file"		"sprites/640hud7"
-			"x"			"48"
-			"y"			"72"
-			"width"		"24"
+			"file"	"sprites/640hud7"
+			"x"	"48"
+			"y"	"72"
+			"width"	"24"
 			"height"	"24"
 		}
 		"crosshair"
 		{
-				"font"		"Crosshairs"
-				"character"	"Q"
+			"font"	"Crosshairs"
+			"character"	"Q"
 		}
 		"autoaim"
 		{
-			"file"		"sprites/crosshairs"
-			"x"			"0"
-			"y"			"48"
-			"width"		"24"
+			"file"	"sprites/crosshairs"
+			"x"	"0"
+			"y"	"48"
+			"width"	"24"
 			"height"	"24"
 		}
 	}

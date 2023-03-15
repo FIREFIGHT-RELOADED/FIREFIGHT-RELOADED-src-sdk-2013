@@ -26,17 +26,14 @@
 // scraperough: Looping physics friction sound (when scraping rough surfaces)
 // bulletimpact: bullet impact sound
 // gamematerial: game material index (can be a single letter or a number)
-// 
 
 // NOTE: The properties of "default" will get copied into EVERY material who does not
 // 	 override them!!!
 //
 // "base" means to use the parameters from that material as a base.
 // "base" must appear as the first key in a material
-//
 
-"cavern_rock"
-{
+"cavern_rock"{
 	"base"  "rock"
 	
 	"density" "700"
@@ -51,8 +48,7 @@
 	"gamematerial" "O"
 }
 
-"advisor_shield"
-{
+"advisor_shield"{
  "base"  "rock"
  
  "density" "700"
@@ -67,8 +63,7 @@
  "gamematerial" "Z"  // <--- Whatever you make the character index in decals.h
 }
 
-"antlion_eggshell"
-{
+"antlion_eggshell"{
  "base"  "flesh"
 "bulletimpact"	"Flesh.ImpactHard"
 "impacthard"	"Flesh.ImpactHard"
@@ -78,32 +73,27 @@
 }
 
 
-"hunter"
-{
+"hunter"{
 	"base" "flesh"
 	"gamematerial" "F"
 }
 
-"jalopytire"
-{
-	"base"			"jeeptire"
-	"elasticity"		"0.1"
+"jalopytire"{
+	"base"	"jeeptire"
+	"elasticity"	"0.1"
 }
 
-"slidingrubbertire_jalopyfront"
-{
-	"base"			"jalopytire"
-	"friction"		"0.15"
+"slidingrubbertire_jalopyfront"{
+	"base"	"jalopytire"
+	"friction"	"0.15"
 }
 
-"slidingrubbertire_jalopyrear"
-{
-	"base"			"jalopytire"
-	"friction"		"0.15"
+"slidingrubbertire_jalopyrear"{
+	"base"	"jalopytire"
+	"friction"	"0.15"
 }
 
-"water"
-{
+"water"{
 	"density"	"1000"
 	"elasticity"	"0.1"
 	"friction"	"0.8"
@@ -122,10 +112,8 @@
 	"gamematerial"	"S"
 }
 
-"jalopy"
-{
-	"base"			"metal"
+"jalopy"{
+	"base"	"metal"
 	"impacthard"	"ATV_impact_medium"
 	"impactsoft"	"ATV_impact_medium"
 }
-

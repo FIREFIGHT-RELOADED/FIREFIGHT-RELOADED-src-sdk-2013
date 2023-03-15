@@ -1,5 +1,4 @@
-"HL2Player.SprintNoPower"
-{
+"HL2Player.SprintNoPower"{
 	"channel"	"CHAN_VOICE"
 	"volume"	"0.8"
 	"soundlevel"  "SNDLVL_60dB"
@@ -7,8 +6,7 @@
 	"wave"	"player/suit_denydevice.wav"
 }
 
-"HL2Player.SprintStart"
-{
+"HL2Player.SprintStart"{
 	"channel"	"CHAN_VOICE"
 	"volume"	"0.9"
 	"soundlevel"  "SNDLVL_60dB"
@@ -16,8 +14,7 @@
 	"wave"	"player/suit_sprint.wav"
 }
 
-"HL2Player.FlashLightOn"
-{
+"HL2Player.FlashLightOn"{
 	"channel"	"CHAN_WEAPON"
 	"volume"	"0.8"
 	"soundlevel"    "SNDLVL_75dB"
@@ -26,8 +23,7 @@
 	"wave" "items/flashlight1.wav"
 }
 
-"HL2Player.FlashLightOff"
-{
+"HL2Player.FlashLightOff"{
 	"channel"	"CHAN_WEAPON"
 	"volume"	"0.8"
 	"soundlevel"  "SNDLVL_75dB"
@@ -36,8 +32,7 @@
 	"wave" "items/flashlight1.wav"
 }
 
-"HL2Player.PickupWeapon"
-{
+"HL2Player.PickupWeapon"{
 	"channel"	"CHAN_ITEM"
 	"volume"	"0.8"
 	"soundlevel"  "SNDLVL_75dB"
@@ -45,8 +40,7 @@
 	"wave"	"items/ammo_pickup.wav"
 }
 
-"HL2Player.TrainUse"
-{
+"HL2Player.TrainUse"{
 	"channel"	"CHAN_ITEM"
 	"volume"	"0.8"
 	"soundlevel"  "SNDLVL_75dB"
@@ -54,8 +48,7 @@
 	"wave"	"plats/train_use1.wav"
 }
 
-"HL2Player.Use"
-{
+"HL2Player.Use"{
 	"channel"	"CHAN_ITEM"
 	"volume"	"0.4"
 	"soundlevel"  "SNDLVL_75dB"
@@ -63,8 +56,7 @@
 	"wave"	"common/wpn_select.wav"
 }
 
-"HL2Player.UseNPC"
-{
+"HL2Player.UseNPC"{
 	"channel"	"CHAN_ITEM"
 	"volume"	"0.4"
 	"soundlevel"  "SNDLVL_75dB"
@@ -72,8 +64,7 @@
 	"wave"	"common/wpn_select.wav"
 }
 
-"HL2Player.UseDeny"
-{
+"HL2Player.UseDeny"{
 	"channel"	"CHAN_ITEM"
 	"volume"	"0.4"
 	"soundlevel"  "SNDLVL_75dB"
@@ -81,22 +72,19 @@
 	"wave"	"common/wpn_denyselect.wav"
 }
 
-"HL2Player.BurnPain"
-{
+"HL2Player.BurnPain"{
 	"channel"	"CHAN_VOICE"
 	"volume"	"0.5"
 	"soundlevel"  "SNDLVL_75dB"
 
-	"rndwave"
-	{
+	"rndwave"{
 			"wave"	"player/pl_burnpain1.wav"
 			"wave"	"player/pl_burnpain2.wav"
 			"wave"	"player/pl_burnpain3.wav"
 	}
 }
 
-"HL2Player.bullettimeon"
-{
+"HL2Player.bullettimeon"{
 	"channel"	"CHAN_ITEM"
 	"volume"	"1.0"
 	"soundlevel"  "SNDLVL_75dB"
@@ -104,8 +92,7 @@
 	"wave"	"player\bullettimeon.wav"
 }
 
-"HL2Player.bullettimeoff"
-{
+"HL2Player.bullettimeoff"{
 	"channel"	"CHAN_ITEM"
 	"volume"	"1.0"
 	"soundlevel"  "SNDLVL_75dB"
@@ -113,65 +100,58 @@
 	"wave"	"player\bullettimeoff.wav"
 }
 
-"HL2Player.kick_fire"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"1.0"
+"HL2Player.kick_fire"{
+	"channel"	"CHAN_ITEM"
+	"volume"	"1.0"
 	"soundlevel"	"SNDLVL_105dB"
-	"pitch"			"98,102"
+	"pitch"	"98,102"
 
-	"wave"		"player/foot_fire.wav"
+	"wave"	"player/foot_fire.wav"
 
 }
 
-"HL2Player.kick_body"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"1.0"
+"HL2Player.kick_body"{
+	"channel"	"CHAN_ITEM"
+	"volume"	"1.0"
 	"soundlevel"	"SNDLVL_105dB"
-	"pitch"			"98,102"
+	"pitch"	"98,102"
 
-	"wave"		"player/foot_kickbody.wav"
+	"wave"	"player/foot_kickbody.wav"
 
 }
 
-"HL2Player.kick_wall"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"1.0"
+"HL2Player.kick_wall"{
+	"channel"	"CHAN_ITEM"
+	"volume"	"1.0"
 	"soundlevel"	"SNDLVL_105dB"
-	"pitch"			"98,102"
+	"pitch"	"98,102"
 
-	"wave"		"player/foot_kickwall.wav"
+	"wave"	"player/foot_kickwall.wav"
 }
 
-"HL2Player.heartbeat"
-{
+"HL2Player.heartbeat"{
 	"channel"	"CHAN_STATIC"
 	"volume"	"1.0"
 	"soundlevel"  "SNDLVL_75dB"
 
-	"wave"		"player/heartbeatloop.wav"
+	"wave"	"player/heartbeatloop.wav"
 }
 
 // SHARED player sounds
 
-"Player.Death"
-{
+"Player.Death"{
 	"channel"	"CHAN_VOICE"
 	"volume"	"0.8"
 	"soundlevel"  "SNDLVL_75dB"
 
-	"rndwave"
-	{
+	"rndwave"{
 		"wave"	"player/pl_pain5.wav"
 		"wave"	"player/pl_pain6.wav"
 		"wave"	"player/pl_pain7.wav"
 	}
 }
 
-"Player.PlasmaDamage"
-{
+"Player.PlasmaDamage"{
 	"channel"	"CHAN_BODY"
 	"volume"	"0.5"
 	"soundlevel"  "SNDLVL_75dB"
@@ -179,28 +159,24 @@
 	"wave"	"player/general/flesh_burn.wav"
 }
 
-"Player.SonicDamage"
-{
+"Player.SonicDamage"{
 	"channel"	"CHAN_BODY"
 	"volume"	"0.7"
 	"soundlevel"  "SNDLVL_75dB"
 
-	"rndwave"
-	{
+	"rndwave"{
 		"wave"	"player/pl_pain5.wav"
 		"wave"	"player/pl_pain6.wav"
 		"wave"	"player/pl_pain7.wav"
 	}
 }
 
-"Player.BulletDamage"
-{
+"Player.BulletDamage"{
 	"channel"	"CHAN_BODY"
-	"soundlevel"		"SNDLVL_75dB"
-	"volume"		"0.7"
-	"pitch"			"PITCH_NORM"
-	"rndwave"
-	{
+	"soundlevel"	"SNDLVL_75dB"
+	"volume"	"0.7"
+	"pitch"	"PITCH_NORM"
+	"rndwave"{
 		"wave"	"physics/flesh/phys_bullet_impact_flesh_01.wav"
 		"wave"	"physics/flesh/phys_bullet_impact_flesh_02.wav"
 		"wave"	"physics/flesh/phys_bullet_impact_flesh_03.wav"
@@ -212,82 +188,22 @@
 	}
 }
 
-"Player.DrownStart"
-{
+"Player.DrownStart"{
 	"channel"	"CHAN_VOICE"
 	"volume"	"1.0"
 	"soundlevel"  "SNDLVL_75dB"
-	"pitch"		"90,110"
+	"pitch"	"90,110"
 
 	"wave"	"player/pl_drown1.wav"
 }
 
-"Player.Swim"
-{
+"Player.Swim"{
 	"channel"	"CHAN_STATIC"
 	"volume"	"0.5"
-	"pitch"		"PITCH_NORM"
+	"pitch"	"PITCH_NORM"
 	"soundlevel"	"SNDLVL_NORM"
 
-	"rndwave"
-	{
-		"wave"		"player/footsteps/wade5.wav"
-		"wave"		"player/footsteps/wade6.wav"
-		"wave"		"player/footsteps/wade7.wav"
-		"wave"		"player/footsteps/wade8.wav"
-	}
-}
-
-"Player.FallDamage"
-{
-	"channel"	"CHAN_AUTO"
-	"volume"	"0.75"
-	"pitch"		"90,110"
-	"soundlevel"	"SNDLVL_NORM"
-
-	"rndwave"
-	{
-		"wave"		"player/pl_fallpain1.wav"
-		"wave"		"player/pl_fallpain3.wav"
-	}
-}
-
-"Player.FallGib"
-{
-	"channel"	"CHAN_ITEM"
-	"volume"	"0.75"
-	"pitch"		"90,110"
-	"soundlevel"	"SNDLVL_NORM"
-
-	"rndwave"
-	{
-		"wave"		"physics/body/body_medium_break2.wav"
-	}
-}
-
-"Player.DrownContinue"
-{
-	"channel"	"CHAN_VOICE"
-	"volume"	"1.0"
-	"soundlevel"  "SNDLVL_75dB"
-	"pitch"		"90,110"
-
-	"rndwave"
-	{
-		"wave"	"player/pl_drown1.wav"
-		"wave"	"player/pl_drown2.wav"
-		"wave"	"player/pl_drown3.wav"
-	}
-}
-
-"Player.Wade"
-{
-	"channel"	"CHAN_BODY"
-	"volume"	"0.25"
-	"soundlevel"  "SNDLVL_75dB"
-
-	"rndwave"
-	{
+	"rndwave"{
 		"wave"	"player/footsteps/wade5.wav"
 		"wave"	"player/footsteps/wade6.wav"
 		"wave"	"player/footsteps/wade7.wav"
@@ -295,8 +211,56 @@
 	}
 }
 
-"Player.AmbientUnderWater"
-{
+"Player.FallDamage"{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.75"
+	"pitch"	"90,110"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"{
+		"wave"	"player/pl_fallpain1.wav"
+		"wave"	"player/pl_fallpain3.wav"
+	}
+}
+
+"Player.FallGib"{
+	"channel"	"CHAN_ITEM"
+	"volume"	"0.75"
+	"pitch"	"90,110"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"{
+		"wave"	"physics/body/body_medium_break2.wav"
+	}
+}
+
+"Player.DrownContinue"{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.0"
+	"soundlevel"  "SNDLVL_75dB"
+	"pitch"	"90,110"
+
+	"rndwave"{
+		"wave"	"player/pl_drown1.wav"
+		"wave"	"player/pl_drown2.wav"
+		"wave"	"player/pl_drown3.wav"
+	}
+}
+
+"Player.Wade"{
+	"channel"	"CHAN_BODY"
+	"volume"	"0.25"
+	"soundlevel"  "SNDLVL_75dB"
+
+	"rndwave"{
+		"wave"	"player/footsteps/wade5.wav"
+		"wave"	"player/footsteps/wade6.wav"
+		"wave"	"player/footsteps/wade7.wav"
+		"wave"	"player/footsteps/wade8.wav"
+	}
+}
+
+"Player.AmbientUnderWater"{
 	"channel"	"CHAN_STATIC"
 	"volume"	"0.22"
 	"soundlevel"  "SNDLVL_75dB"
@@ -304,8 +268,7 @@
 	"wave"	"ambient/water/underwater.wav"
 }
 
-"Player.UseTrain"
-{
+"Player.UseTrain"{
 	"channel"	"CHAN_ITEM"
 	"volume"	"0.8"
 	"soundlevel"  "SNDLVL_75dB"
@@ -313,8 +276,7 @@
 	"wave"	"plats/train_use1.wav"
 }
 
-"Player.UseDeny"
-{
+"Player.UseDeny"{
 	"channel"	"CHAN_ITEM"
 	"volume"	"0.4"
 	"soundlevel"  "SNDLVL_75dB"
@@ -322,8 +284,7 @@
 	"wave"	"common/wpn_select.wav"
 }
 
-"Player.PickupWeapon"
-{
+"Player.PickupWeapon"{
 	"channel"	"CHAN_ITEM"
 	"volume"	"0.8"
 	"soundlevel"  "SNDLVL_75dB"
@@ -331,8 +292,7 @@
 	"wave"	"items/ammo_pickup.wav"
 }
 
-"Player.IronSightIn"
-{
+"Player.IronSightIn"{
 	"channel"	"CHAN_ITEM"
 	"volume"	"0.8"
 	"soundlevel"  "SNDLVL_75dB"
@@ -340,8 +300,7 @@
 	"wave"	"player/ironsight_on.wav"
 }
 
-"Player.IronSightOut"
-{
+"Player.IronSightOut"{
 	"channel"	"CHAN_ITEM"
 	"volume"	"0.8"
 	"soundlevel"  "SNDLVL_75dB"
@@ -349,38 +308,33 @@
 	"wave"	"player/ironsight_off.wav"
 }
 
-"Geiger.BeepLow"
-{
+"Geiger.BeepLow"{
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NONE"
-	"pitch"			"PITCH_NORM"
+	"pitch"	"PITCH_NORM"
 
-	"rndwave"
-	{
+	"rndwave"{
 		"wave"	"player/geiger1.wav"
 		"wave"	"player/geiger2.wav"
 	}
 }
 
-"Geiger.BeepHigh"
-{
+"Geiger.BeepHigh"{
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NONE"
-	"pitch"			"PITCH_NORM"
+	"pitch"	"PITCH_NORM"
 
-	"rndwave"
-	{
+	"rndwave"{
 		"wave"	"player/geiger2.wav"
 		"wave"	"player/geiger3.wav"
 	}
 }
 
-"HL2Player.Jetpack"
-{
+"HL2Player.Jetpack"{
 	"channel"	"CHAN_ITEM"
 	"volume"	"0.8"
 	"soundlevel"  "SNDLVL_75dB"
 	"pitch"	"95,105"
 
-	"wave"			"ambient/gas/cannister_loop.wav"
+	"wave"	"ambient/gas/cannister_loop.wav"
 }

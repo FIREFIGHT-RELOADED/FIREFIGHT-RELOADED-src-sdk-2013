@@ -1,16 +1,14 @@
-//============================================================================================================
+//=======================
 // Citizen criteria
-//============================================================================================================
+//=======================
 criterion "IsRPGUser" "attacking_with_weapon" "weapon_rpg" required
 criterion "EnemyIsSniper" "enemy" "npc_sniper" required
 criterion "HurtByFire" "hurt_by_fire" "1" required
 criterion "AlyxCitizenHelloOkay" "AlyxCitizenHelloOkay" "1" required
 
-
-
-//============================================================================================================
+//=======================
 // Citizen Hello speech
-//============================================================================================================
+//=======================
 response "CitizenHello"
 {
 	scene "scenes/npc/$gender01/abouttime01.vcd"
@@ -34,9 +32,9 @@ rule CitizenHello
 	response		CitizenHello
 }
 
-//============================================================================================================
+//=======================
 // Citizen Idle speech
-//============================================================================================================
+//=======================
 response "CitizenTalkStare"
 {
  scene "scenes/npc/$gender01/doingsomething.vcd"
@@ -46,7 +44,7 @@ response "CitizenTalkStare"
  
 rule CitizenTalkStare
 {
- criteria      IsCitizen ConceptTalkStare IsGordonCriminal NPCIdle NotInPanic
+ criteria		IsCitizen ConceptTalkStare IsGordonCriminal NPCIdle NotInPanic
  response  	CitizenTalkStare
 }
  
@@ -54,21 +52,21 @@ rule CitizenTalkStare
 //------------------------------------------------------------------------------------------------------------
 response "CitizenTalkPlayerPushed"
 {
-   scene "scenes/npc/$gender01/sorryfm01.vcd"
-   scene "scenes/npc/$gender01/sorryfm02.vcd"
-   scene "scenes/npc/$gender01/sorrydoc01.vcd"
-   scene "scenes/npc/$gender01/sorrydoc02.vcd"
-   scene "scenes/npc/$gender01/sorrydoc04.vcd"
-   scene "scenes/npc/$gender01/excuseme01.vcd"
-   scene "scenes/npc/$gender01/excuseme02.vcd"
-   scene "scenes/npc/$gender01/pardonme01.vcd"
-   scene "scenes/npc/$gender01/pardonme02.vcd"
-   scene "scenes/npc/$gender01/sorry01.vcd"
-   scene "scenes/npc/$gender01/sorry02.vcd"
-   scene "scenes/npc/$gender01/sorry03.vcd"
-   scene "scenes/npc/$gender01/outofyourway01.vcd"
-   scene "scenes/npc/$gender01/outofyourway02.vcd"
-   scene "scenes/npc/$gender01/whoops01.vcd"
+	scene "scenes/npc/$gender01/sorryfm01.vcd"
+	scene "scenes/npc/$gender01/sorryfm02.vcd"
+	scene "scenes/npc/$gender01/sorrydoc01.vcd"
+	scene "scenes/npc/$gender01/sorrydoc02.vcd"
+	scene "scenes/npc/$gender01/sorrydoc04.vcd"
+	scene "scenes/npc/$gender01/excuseme01.vcd"
+	scene "scenes/npc/$gender01/excuseme02.vcd"
+	scene "scenes/npc/$gender01/pardonme01.vcd"
+	scene "scenes/npc/$gender01/pardonme02.vcd"
+	scene "scenes/npc/$gender01/sorry01.vcd"
+	scene "scenes/npc/$gender01/sorry02.vcd"
+	scene "scenes/npc/$gender01/sorry03.vcd"
+	scene "scenes/npc/$gender01/outofyourway01.vcd"
+	scene "scenes/npc/$gender01/outofyourway02.vcd"
+	scene "scenes/npc/$gender01/whoops01.vcd"
 }
 
 rule CitizenTalkPlayerPushed
@@ -77,9 +75,9 @@ rule CitizenTalkPlayerPushed
 	response		CitizenTalkPlayerPushed
 }
 
-//============================================================================================================
+//=======================
 // Citizen Questions & Responses speech
-//============================================================================================================
+//=======================
 
 //Q&A has been commented out for episodic content, since it pertains to world before Citadel destruction.  Added a couple heydocs so that citizens will still acknowledge player if triggered.
 //commented out for ep2 fornow.
@@ -174,9 +172,9 @@ rule CitizenAnswer
 	response		CitizenAnswer
 }
 
-//============================================================================================================
+//=======================
 // Citizen Questions & Responses with Vortigaunts
-//============================================================================================================
+//=======================
 response "CitizenQuestionVort"
 {
 	scene "scenes/npc/$gender01/vquestion01.vcd" delay 1
@@ -219,9 +217,9 @@ rule CitizenAnswerVort
 	response		CitizenAnswerVort
 }
 
-////============================================================================================================
+////=======================
 //// Citizen Questions & Responses with Alyx
-////============================================================================================================
+////=======================
 //response "CitizenQuestionAlyx"
 //{
 //	scene "scenes/episode_1/npc/$gender01/cit_remarks01.vcd" delay 1
@@ -289,9 +287,9 @@ rule CitizenAnswerVort
 //	response		CitizenAnswerAlyx
 //}
 //
-////============================================================================================================
+////=======================
 //// Citizen Hello Responses with Alyx
-////============================================================================================================
+////=======================
 //
 //response "CitizenQuestionHelloAlyx1"
 //{
@@ -370,9 +368,9 @@ rule CitizenAnswerVort
 //
 //response "CitizenQuestionHelloAlyx7"
 //{
-//	scene "scenes/episode_1/npc/$gender01/cit_greet_alyx08.vcd" delay 1  //Alyx, oh my god, where's Freeman!?! Oh, there he is...
-//	scene "scenes/episode_1/npc/$gender01/cit_greet_alyx09.vcd" delay 1  //Oh, hey Freeman. And this is the Mrs., I presume? 
-//	scene "scenes/episode_1/npc/$gender01/cit_greet_alyx10.vcd" delay 1  //Oh, hey Freeman.  And this must be the little lady.(Male) -  Dr. and Mrs. Freeman, I presume? (Female)
+//	scene "scenes/episode_1/npc/$gender01/cit_greet_alyx08.vcd" delay 1	//Alyx, oh my god, where's Freeman!?! Oh, there he is...
+//	scene "scenes/episode_1/npc/$gender01/cit_greet_alyx09.vcd" delay 1	//Oh, hey Freeman. And this is the Mrs., I presume? 
+//	scene "scenes/episode_1/npc/$gender01/cit_greet_alyx10.vcd" delay 1	//Oh, hey Freeman.  And this must be the little lady.(Male) -  Dr. and Mrs. Freeman, I presume? (Female)
 //}
 //
 //rule CitizenQuestionHelloAlyx7
@@ -383,7 +381,7 @@ rule CitizenAnswerVort
 //
 //response "CitizenQuestionHelloAlyx8"
 //{
-//	scene "scenes/episode_1/npc/$gender01/cit_greet_alyx11.vcd" delay 1   //honestly, do you think we have any chance?
+//	scene "scenes/episode_1/npc/$gender01/cit_greet_alyx11.vcd" delay 1 	//honestly, do you think we have any chance?
 //
 //}
 //
@@ -395,7 +393,7 @@ rule CitizenAnswerVort
 //
 //response "CitizenQuestionHelloAlyx9"
 //{
-//	scene "scenes/episode_1/npc/$gender01/cit_greet_alyx12.vcd" delay 1  // Yap, yap, yap, why don't you let Freeman get a word in for once?`
+//	scene "scenes/episode_1/npc/$gender01/cit_greet_alyx12.vcd" delay 1	// Yap, yap, yap, why don't you let Freeman get a word in for once?`
 //
 //}
 //
@@ -456,9 +454,9 @@ rule CitizenAnswerHelloAlyx
 
 
 
-//============================================================================================================
+//=======================
 // Citizen Mourning the player's death
-//============================================================================================================
+//=======================
 
 response "CitizenMournQ"
 {
@@ -523,8 +521,8 @@ rule CitizenMournA
 
 response "CitizenMournAll"
 {
-   response CitizenMournQ
-   response CitizenMournA
+	response CitizenMournQ
+	response CitizenMournA
 }
 
 rule CitizenMourn
@@ -565,9 +563,9 @@ rule CitizenGiveAmmo
 	response		CitizenGiveAmmo
 }
 
-//============================================================================================================
+//=======================
 // Citizen Combat speech
-//============================================================================================================
+//=======================
 response "CitizenDanger" 
 {
 	permitrepeats
@@ -650,15 +648,15 @@ rule CitizenSniperDanger
 	response		CitizenSniperDanger
 }
 
-//============================================================================================================
+//=======================
 // Citizen Reloads Weapon
-//============================================================================================================
+//=======================
 response "CitizenHideAndReload" 
 {
 	scene "scenes/npc/$gender01/coverwhilereload01.vcd"
 	scene "scenes/npc/$gender01/coverwhilereload02.vcd"	
 	scene "scenes/npc/$gender01/gottareload01.vcd"
-//   print "Gotta reload!"
+//	print "Gotta reload!"
 }
 
 rule CitizenHideAndReload
@@ -667,17 +665,17 @@ rule CitizenHideAndReload
 	response		CitizenHideAndReload
 }
 
-//============================================================================================================
+//=======================
 // Citizen Reminds Player to Reload
 // Removed because it began to be too much, can just be deleted unless someone really misses it.
-//============================================================================================================
+//=======================
 //response "CitizenPlayerReload" 
 //{
 //	scene "scenes/npc/$gender01/dontforgetreload01.vcd"
 //	scene "scenes/npc/$gender01/reloadfm01.vcd"
 //	scene "scenes/npc/$gender01/reloadfm02.vcd"
 //	scene "scenes/npc/$gender01/youdbetterreload01.vcd"
-////   print "You better reload, Doc."
+////	print "You better reload, Doc."
 //}
 //
 //rule CitizenPlayerReload
@@ -710,10 +708,10 @@ rule CitizenNewWeapon
 //------------------------------------------------------------------------------------------------------------
 response CitizenOuch
 {
-   permitrepeats
+	permitrepeats
 	scene "scenes/npc/$gender01/ow01.vcd"
 	scene "scenes/npc/$gender01/ow02.vcd"
-//	speak npc_citizen.die weight 9   // there are nine waves in there
+//	speak npc_citizen.die weight 9 	// there are nine waves in there
 }
 
 //------------------------------------------------------------------------------------------------------------
@@ -735,7 +733,7 @@ rule CitizenMortalWound
 rule CitizenWound
 {
 	criteria		IsCitizen  ConceptTalkWound
-   response CitizenOuch
+	response CitizenOuch
 }
 
 //------------------------------------------------------------------------------------------------------------
@@ -750,14 +748,14 @@ response CitizenWoundFire
 rule CitizenWoundFire
 {
 	criteria	IsCitizen  ConceptTalkWound HurtByFire
-   response CitizenWoundFire
+	response CitizenWoundFire
 }
 
 
 //------------------------------------------------------------------------------------------------------------
 response "CitizenShotArm"
 {
-   permitrepeats
+	permitrepeats
 	scene "scenes/npc/$gender01/myarm01.vcd"
 	scene "scenes/npc/$gender01/myarm02.vcd" 
 	response CitizenOuch weight 8
@@ -765,13 +763,13 @@ response "CitizenShotArm"
 
 rule CitizenShotArm
 {
-   criteria    IsCitizen ConceptShot ShotInArm
-   response    CitizenShotArm
+	criteria	 IsCitizen ConceptShot ShotInArm
+	response	 CitizenShotArm
 }
 
 response "CitizenShotLeg"
 {
-   permitrepeats
+	permitrepeats
 	scene "scenes/npc/$gender01/myleg01.vcd"
 	scene "scenes/npc/$gender01/myleg02.vcd"
 	response  CitizenOuch weight 8
@@ -780,13 +778,13 @@ response "CitizenShotLeg"
 
 rule CitizenShotLeg
 {
-   criteria    IsCitizen ConceptShot ShotInLeg
-   response    CitizenShotLeg
+	criteria	 IsCitizen ConceptShot ShotInLeg
+	response	 CitizenShotLeg
 }
 
 response "CitizenShotGut"
 {
-   permitrepeats
+	permitrepeats
 	scene "scenes/npc/$gender01/mygut01.vcd"
 	scene "scenes/npc/$gender01/mygut02.vcd"
 	scene "scenes/npc/$gender01/hitingut01.vcd"
@@ -796,8 +794,8 @@ response "CitizenShotGut"
 
 rule CitizenShotGut
 {
-   criteria    IsCitizen ConceptShot ShotInGut
-   response    CitizenShotGut
+	criteria	 IsCitizen ConceptShot ShotInGut
+	response	 CitizenShotGut
 }
 
 //------------------------------------------------------------------------------------------------------------
@@ -919,21 +917,21 @@ rule CitizenBetrayed
 response "CitizenAllyKilled"
 {
 
-	scene "scenes/episode_1/npc/$gender01/cit_buddykilled01.vcd"   
-	scene "scenes/episode_1/npc/$gender01/cit_buddykilled02.vcd"   
-	scene "scenes/episode_1/npc/$gender01/cit_buddykilled03.vcd"   
-	scene "scenes/episode_1/npc/$gender01/cit_buddykilled04.vcd"   
-	scene "scenes/episode_1/npc/$gender01/cit_buddykilled05.vcd"   
-	scene "scenes/episode_1/npc/$gender01/cit_buddykilled06.vcd"   
-	scene "scenes/episode_1/npc/$gender01/cit_buddykilled07.vcd"   
-	scene "scenes/episode_1/npc/$gender01/cit_buddykilled08.vcd"   
-	scene "scenes/episode_1/npc/$gender01/cit_buddykilled09.vcd"   
-	scene "scenes/episode_1/npc/$gender01/cit_buddykilled10.vcd"   
-	scene "scenes/episode_1/npc/$gender01/cit_buddykilled11.vcd"   
-	scene "scenes/episode_1/npc/$gender01/cit_buddykilled12.vcd"   
-	scene "scenes/episode_1/npc/$gender01/cit_buddykilled13.vcd"   
-	scene "scenes/episode_1/npc/$gender01/cit_buddykilled14.vcd"   
-	scene "scenes/episode_1/npc/$gender01/cit_buddykilled15.vcd"   
+	scene "scenes/episode_1/npc/$gender01/cit_buddykilled01.vcd"	
+	scene "scenes/episode_1/npc/$gender01/cit_buddykilled02.vcd"	
+	scene "scenes/episode_1/npc/$gender01/cit_buddykilled03.vcd"	
+	scene "scenes/episode_1/npc/$gender01/cit_buddykilled04.vcd"	
+	scene "scenes/episode_1/npc/$gender01/cit_buddykilled05.vcd"	
+	scene "scenes/episode_1/npc/$gender01/cit_buddykilled06.vcd"	
+	scene "scenes/episode_1/npc/$gender01/cit_buddykilled07.vcd"	
+	scene "scenes/episode_1/npc/$gender01/cit_buddykilled08.vcd"	
+	scene "scenes/episode_1/npc/$gender01/cit_buddykilled09.vcd"	
+	scene "scenes/episode_1/npc/$gender01/cit_buddykilled10.vcd"	
+	scene "scenes/episode_1/npc/$gender01/cit_buddykilled11.vcd"	
+	scene "scenes/episode_1/npc/$gender01/cit_buddykilled12.vcd"	
+	scene "scenes/episode_1/npc/$gender01/cit_buddykilled13.vcd"	
+	scene "scenes/episode_1/npc/$gender01/cit_buddykilled14.vcd"	
+	scene "scenes/episode_1/npc/$gender01/cit_buddykilled15.vcd"	
 	scene "scenes/npc/$gender01/ohno.vcd"
 	scene "scenes/npc/$gender01/goodgod.vcd"
 	scene "scenes/npc/$gender01/startle01.vcd"
@@ -958,14 +956,14 @@ response CitizenCombineGroup
 
 response CitizenCombine
 {
-   response CitizenCombineGroup respeakdelay 300
+	response CitizenCombineGroup respeakdelay 300
 }
 
 rule CitizenStartCombatCombine
 {
-	criteria    IsCitizen ConceptStartCombat
+	criteria	 IsCitizen ConceptStartCombat
 	enemy npc_combine_s required
-	response    CitizenCombine
+	response	 CitizenCombine
 }
 
 //------------------------------------------------------------------------------------------------------------
@@ -978,28 +976,28 @@ response CitizenHeadcrabGroup
 
 response CitizenHeadcrab
 {
-   response CitizenHeadcrabGroup respeakdelay 300
+	response CitizenHeadcrabGroup respeakdelay 300
 }
 
 rule CitizenStartCombatHeadcrab
 {
-	criteria    IsCitizen ConceptStartCombat
+	criteria	 IsCitizen ConceptStartCombat
 	enemy npc_headcrab required
-	response    CitizenHeadcrab
+	response	 CitizenHeadcrab
 }
 
 rule CitizenStartCombatHeadcrabFast
 {
-	criteria    IsCitizen ConceptStartCombat
+	criteria	 IsCitizen ConceptStartCombat
 	enemy npc_headcrab_fast required
-	response    CitizenHeadcrab
+	response	 CitizenHeadcrab
 }
 
 rule CitizenStartCombatHeadcrabBlack
 {
-	criteria    IsCitizen ConceptStartCombat
+	criteria	 IsCitizen ConceptStartCombat
 	enemy npc_headcrab_black required
-	response    CitizenHeadcrab
+	response	 CitizenHeadcrab
 }
 
 //------------------------------------------------------------------------------------------------------------
@@ -1012,35 +1010,35 @@ response CitizenZombieGroup
 
 response CitizenZombie
 {
-   response CitizenZombieGroup respeakdelay 300
+	response CitizenZombieGroup respeakdelay 300
 }
 
 rule CitizenStartCombatZombie
 {
-	criteria    IsCitizen ConceptStartCombat
+	criteria	 IsCitizen ConceptStartCombat
 	enemy npc_zombie required
-	response    CitizenZombie
+	response	 CitizenZombie
 }
 
 rule CitizenStartCombatZombieTorso
 {
-	criteria    IsCitizen ConceptStartCombat
+	criteria	 IsCitizen ConceptStartCombat
 	enemy npc_zombie_torso required
-	response    CitizenZombie
+	response	 CitizenZombie
 }
 
 rule CitizenStartCombatZombieFast
 {
-	criteria    IsCitizen ConceptStartCombat
+	criteria	 IsCitizen ConceptStartCombat
 	enemy npc_fastzombie required
-	response    CitizenZombie
+	response	 CitizenZombie
 }
 
 rule CitizenStartCombatZombiePoison
 {
-	criteria    IsCitizen ConceptStartCombat
+	criteria	 IsCitizen ConceptStartCombat
 	enemy npc_poisonzombie required
-	response    CitizenZombie
+	response	 CitizenZombie
 }
 
 //------------------------------------------------------------------------------------------------------------
@@ -1053,15 +1051,15 @@ response CitizenScannersGroup
 
 response CitizenScanners
 {
-   response CitizenScannersGroup respeakdelay 300
+	response CitizenScannersGroup respeakdelay 300
 }
 
 
 rule CitizenStartCombatScanners
 {
-	criteria    IsCitizen ConceptStartCombat
+	criteria	 IsCitizen ConceptStartCombat
 	enemy npc_cscanner required
-	response    CitizenScanners
+	response	 CitizenScanners
 }
 
 //------------------------------------------------------------------------------------------------------------
@@ -1073,9 +1071,9 @@ response CitizenStrider
 
 rule CitizenStartCombatStrider
 {
-	criteria    IsCitizen ConceptStartCombat
+	criteria	 IsCitizen ConceptStartCombat
 	enemy npc_strider required
-	response    CitizenStrider
+	response	 CitizenStrider
 }
 
 //------------------------------------------------------------------------------------------------------------
@@ -1094,14 +1092,14 @@ response CitizenManhacksGroup
 
 response CitizenManhacks
 {
-   response CitizenManhacksGroup respeakdelay 300
+	response CitizenManhacksGroup respeakdelay 300
 }
 
 rule CitizenStartCombatManhacks
 {
-	criteria    IsCitizen ConceptStartCombat
+	criteria	 IsCitizen ConceptStartCombat
 	enemy npc_manhack required
-	response    CitizenManhacks
+	response	 CitizenManhacks
 }
 
 
@@ -1117,21 +1115,21 @@ response "CitizenMetroGroup"
 
 response CitizenMetro
 {
-   response CitizenMetroGroup respeakdelay 300
+	response CitizenMetroGroup respeakdelay 300
 }
 
 
 rule CitizenStartCombatMetro
 {
-	criteria    IsCitizen ConceptStartCombat
+	criteria	 IsCitizen ConceptStartCombat
 	enemy npc_metropolice required
-	response    CitizenMetro
+	response	 CitizenMetro
 }
 
 
-//============================================================================================================
+//=======================
 // Citizen misc speech
-//============================================================================================================
+//=======================
 
 //------------------------------------------------------------------------------------------------------------
 response "CitizenFiringRPG"
@@ -1145,9 +1143,9 @@ rule CitizenFiringRPG
 	response		CitizenFiringRPG
 }
 
-//============================================================================================================
+//=======================
 // Citizen Leader speech (a citizen that's leading the player somewhere)
-//============================================================================================================
+//=======================
 //response "CitizenLeadWaitOver"
 //{
 //	scene "scenes/npc/$gender01/gotone02.vcd"
@@ -1172,9 +1170,9 @@ rule CitizenSeeCombine
 	respeakdelay 	45
 }
 
-//============================================================================================================
+//=======================
 // Citizen responding to the player 'attacking' them with a physics object
-//============================================================================================================
+//=======================
 response "CitizenPlayerPhysAttack"
 {
 
@@ -1187,11 +1185,7 @@ rule CitizenPlayerPhysAttack
 }
 
 
-
-
-
-
-//============================================================================================================
+//=======================
 //#include "talker/npc_citizen_commandermode.txt"
 //#include "talker/npc_citizen_terminal.txt"
 //#include "talker/npc_citizen_tenement.txt"
