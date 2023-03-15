@@ -1,10 +1,16 @@
-// Created by Crowbar 0.57
-
 $modelname "player/playermodels/combine_soldier.mdl"
 
 $bodygroup "Soldier"
 {
 	studio "combine_soldier_reference.smd"
+}
+
+$texturegroup "Type"
+{
+	{ "combinesoldiersheet" }
+	{ "combinesoldiersheet_prisonguard" }
+	{ "combinesoldiersheet_shotgun" }
+	{ "combinesoldiersheet_prisonguard_shotgun" }
 }
 
 $lod 10
