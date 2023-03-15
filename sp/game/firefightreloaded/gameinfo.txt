@@ -1,8 +1,9 @@
-"GameInfo"
-{
+"GameInfo"{
 	game	"FIREFIGHT RELOADED"
 	title 	""
 	title2	""
+	gamepadui_title	"FIREFIGHT RELOADED"
+	gamepadui_title2	""
 	type	singleplayer_only
 	supportsvr	0
 	gamelogo	0
@@ -34,7 +35,7 @@
 		//
 		SearchPaths
 		{
-			// First, mount all user customizations.  This will search for VPKs and subfolders and mount them in alphabetical order. The easiest way to distribute a mod is to pack up the custom content into a VPK. To "install" a mod, just drop it in this folder.
+			// First, mount all user customizations. This will search for VPKs and subfolders and mount them in alphabetical order. The easiest way to distribute a mod is to pack up the custom content into a VPK. To "install" a mod, just drop it in this folder.
 			//
 			// Note that this folder is scanned only when the game is booted.
 			//game+mod	ep2/custom/*
