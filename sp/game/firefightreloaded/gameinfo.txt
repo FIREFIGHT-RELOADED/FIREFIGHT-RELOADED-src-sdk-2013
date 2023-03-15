@@ -1,27 +1,25 @@
 "GameInfo"
 {
-	game 		"FIREFIGHT RELOADED"
-	title 		""
-	title2		""
-	gamepadui_title "FIREFIGHT RELOADED"
-	gamepadui_title2 ""
-	type		singleplayer_only
+	game	"FIREFIGHT RELOADED"
+	title 	""
+	title2	""
+	type	singleplayer_only
 	supportsvr	0
+	gamelogo	0
 	developer	"Bitl Development Studios"
 	developer_url	"https://bitl.carrd.co"
-	manual		""
+	manual	""
 	GameData	"firefightreloaded.fgd"
-	icon		"resource/game"
+	icon	"resource/game"
 	hidden_maps
 	{
-		"credits"		1
+		"credits"	1
 	}
 
 	FileSystem
 	{
-		SteamAppId				397680		// This sets the app ID in Steam
+		SteamAppId	397680	// This sets the app ID in Steam
 		
-		//
 		// The code that loads this file automatically does a few things here:
 		//
 		// 1. For each "Game" search path, it adds a "GameBin" path, in <dir>\bin
@@ -29,70 +27,56 @@
 		//    For example: c:\hl2\cstrike on a french machine would get a c:\hl2\cstrike_french path added to it.
 		// 3. For the first "Game" search path, it adds a search path called "MOD".
 		// 4. For the first "Game" search path, it adds a search path called "DEFAULT_WRITE_PATH".
-		//
 
-		//
 		// Search paths are relative to the base directory, which is where hl2.exe is found.
 		//
-		// |gameinfo_path| points at the directory where gameinfo.txt is.
-		// We always want to mount that directory relative to gameinfo.txt, so
-		// people can mount stuff in c:\mymod, and the main game resources are in
-		// someplace like c:\program files\valve\steam\steamapps\half-life 2.
+		// |gameinfo_path| points at the directory where gameinfo.txt is. We always want to mount that directory relative to gameinfo.txt, so people can mount stuff in c:\mymod, and the main game resources are in someplace like c:\program files\valve\steam\steamapps\half-life 2.
 		//
 		SearchPaths
 		{
-			// First, mount all user customizations.  This will search for VPKs and subfolders
-			// and mount them in alphabetical order.  The easiest way to distribute a mod is to
-			// pack up the custom content into a VPK.  To "install" a mod, just drop it in this
-			// folder.
+			// First, mount all user customizations.  This will search for VPKs and subfolders and mount them in alphabetical order. The easiest way to distribute a mod is to pack up the custom content into a VPK. To "install" a mod, just drop it in this folder.
 			//
 			// Note that this folder is scanned only when the game is booted.
-			//game+mod			ep2/custom/*
-			//game+mod			episodic/custom/*
-			//game+mod			hl2/custom/*
+			//game+mod	ep2/custom/*
+			//game+mod	episodic/custom/*
+			//game+mod	hl2/custom/*
 
-			// Now search loose files.  We'll set the directory containing the gameinfo.txt file
-			// as the first "mod" search path (after any user customizations).  This is also the one
-			// that's used when writing to the "mod" path.
-			game+mod			|gameinfo_path|addons/*
-			game+mod			|gameinfo_path|custom/*
+			// Now search loose files. We'll set the directory containing the gameinfo.txt file as the first "mod" search path (after any user customizations). This is also the one that's used when writing to the "mod" path.
+			game+mod	|gameinfo_path|addons/*
+			game+mod	|gameinfo_path|custom/*
 			//mount Workshop stuff
-			game+mod			"|gameinfo_path|..\..\..\workshop\content\397680\*"
+			game+mod	"|gameinfo_path|..\..\..\workshop\content\397680\*"
 			//Mount the DLC.
-			game+mod			|all_source_engine_paths|firefightreloaded_dlc/cstrike/*
-			game+mod			|all_source_engine_paths|firefightreloaded_dlc/dod/*
+			game+mod	|all_source_engine_paths|firefightreloaded_dlc/cstrike/*
+			game+mod	|all_source_engine_paths|firefightreloaded_dlc/dod/*
 			//We need this to load any shared files the DLCs need.
-			game+mod			|all_source_engine_paths|firefightreloaded_dlc/dlc_shared/cstrike_shared.vpk
-			game+mod			|all_source_engine_paths|firefightreloaded_dlc/dlc_shared/dod_shared.vpk
-			game+mod+mod_write+default_write_path		|gameinfo_path|.
+			game+mod	|all_source_engine_paths|firefightreloaded_dlc/dlc_shared/cstrike_shared.vpk
+			game+mod	|all_source_engine_paths|firefightreloaded_dlc/dlc_shared/dod_shared.vpk
+			game+mod+mod_write+default_write_path	|gameinfo_path|.
 			
 			//Call the VPK
-			game				|gameinfo_path|firefightreloaded_pak.vpk
+			game	|gameinfo_path|firefightreloaded_pak.vpk
 
-			// We search VPK files before ordinary folders, because most files will be found in
-			// VPK and we can avoid making thousands of file system calls to attempt to open files
-			// in folders where they don't exist.  (Searching a VPK is much faster than making an operating
-			// system call.)
+			// We search VPK files before ordinary folders, because most files will be found in VPK and we can avoid making thousands of file system calls to attempt to open files in folders where they don't exist. (Searching a VPK is much faster than making an operating system call.)
 			// this VPK was made so we can load the contents of hl2mp without any config overrides.
-			game+mod			|all_source_engine_paths|base/hl2mp_shared.vpk
-			game+mod			|all_source_engine_paths|base/episodic_content.vpk
-			game				|all_source_engine_paths|base/main/hl2_textures.vpk
-			game				|all_source_engine_paths|base/main/hl2_sound_vo_english.vpk
-			game				|all_source_engine_paths|base/main/hl2_sound_misc.vpk
-			game				|all_source_engine_paths|base/main/hl2_misc.vpk
-			platform			|all_source_engine_paths|base/platform/platform_misc.vpk
+			game+mod	|all_source_engine_paths|base/hl2mp_shared.vpk
+			game+mod	|all_source_engine_paths|base/episodic_content.vpk
+			game	|all_source_engine_paths|base/main/hl2_textures.vpk
+			game	|all_source_engine_paths|base/main/hl2_sound_vo_english.vpk
+			game	|all_source_engine_paths|base/main/hl2_sound_misc.vpk
+			game	|all_source_engine_paths|base/main/hl2_misc.vpk
+			platform	|all_source_engine_paths|base/platform/platform_misc.vpk
 
-			// Add the HL2 directory as a game search path.  This is also where where writes
-			// to the "game" path go.
-			game+game_write                 |gameinfo_path|.
+			// Add the HL2 directory as a game search path. This is also where where writes to the "game" path go.
+			game+game_write	|gameinfo_path|.
 
 			// Where the game's binaries are
-			gamebin				|gameinfo_path|bin
+			gamebin	|gameinfo_path|bin
 			
 			// Last, mount in shared HL2 loose files
-			game				|all_source_engine_paths|base/episodic_shared
-			game				|all_source_engine_paths|base/main
-			platform			|all_source_engine_paths|base/platform
+			game	|all_source_engine_paths|base/episodic_shared
+			game	|all_source_engine_paths|base/main
+			platform	|all_source_engine_paths|base/platform
 		}
 	}
 }
