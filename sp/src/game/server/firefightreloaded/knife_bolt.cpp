@@ -33,8 +33,6 @@
 extern ConVar sk_plr_dmg_knife_thrown;
 extern ConVar sk_npc_dmg_knife_thrown;
 
-void TE_StickyBolt( IRecipientFilter& filter, float delay, Vector vecDirection, const Vector *origin );
-
 //-----------------------------------------------------------------------------
 // Crossbow Bolt
 //-----------------------------------------------------------------------------
@@ -43,7 +41,6 @@ class CKnifeBolt : public CBaseCombatCharacter
 	DECLARE_CLASS( CKnifeBolt, CBaseCombatCharacter );
 
 public:
-	CKnifeBolt() { };
 	~CKnifeBolt();
 
 	Class_T Classify( void ) { return CLASS_NONE; }
@@ -58,7 +55,6 @@ public:
 	static CKnifeBolt *BoltCreate( const Vector &vecOrigin, const QAngle &angAngles, CBasePlayer *pentOwner = NULL );
 
 protected:
-	void	DoneMoving( bool stuck );
 
 	DECLARE_DATADESC();
 };
@@ -143,6 +139,9 @@ void CKnifeBolt::Precache( void )
 //-----------------------------------------------------------------------------
 void CKnifeBolt::BoltTouch( CBaseEntity *pOther )
 {
+	bool doneMoving = false;
+	bool stuck = false;
+
 	if ( pOther->IsSolidFlagSet( FSOLID_VOLUME_CONTENTS | FSOLID_TRIGGER ) && !pOther->IsSolidFlagSet(FSOLID_USE_TRIGGER_BOUNDS) )
 	{
 		// Some NPCs are triggers that can take damage (like antlion grubs). We should hit them.
@@ -168,7 +167,7 @@ void CKnifeBolt::BoltTouch( CBaseEntity *pOther )
 			dmgInfo.AdjustPlayerDamageInflictedForSkillLevel();
 			CalculateMeleeDamageForce( &dmgInfo, vecNormalizedVel, tr.endpos, 0.7f );
 			dmgInfo.SetDamagePosition( tr.endpos );
-			DoneMoving( false );
+			doneMoving = true;
 			pOther->DispatchTraceAttack( dmgInfo, vecNormalizedVel, &tr );
 
 			CBasePlayer *pPlayer = ToBasePlayer( GetOwnerEntity() );
@@ -214,7 +213,7 @@ void CKnifeBolt::BoltTouch( CBaseEntity *pOther )
 					return;
 			}
 			else if ( pdata->game.material != CHAR_TEX_GLASS )
-				DoneMoving( false );
+				doneMoving = true;
 			pOther->DispatchTraceAttack( dmgInfo, vecNormalizedVel, &tr );
 		}
 
@@ -246,7 +245,19 @@ void CKnifeBolt::BoltTouch( CBaseEntity *pOther )
 
 				data.m_vOrigin = tr2.endpos;
 				data.m_vNormal = vForward;
-				data.m_nEntIndex = tr2.fraction != 1.0f;
+				data.m_fFlags = 2;
+
+				DispatchEffect( "BoltImpact", data );
+
+    			doneMoving = true;
+
+				auto anim = dynamic_cast<CBaseAnimating*>(pOther);
+				if ( anim != nullptr && anim->CanBecomeRagdoll(true) )
+				{
+					stuck = true;
+					UTIL_ImpactTrace( &tr2, DMG_BULLET );
+					SetAbsOrigin( tr2.endpos );
+				}
 			}
 		}
 	}
@@ -292,15 +303,18 @@ void CKnifeBolt::BoltTouch( CBaseEntity *pOther )
 				AngleVectors( GetAbsAngles(), &vForward );
 				VectorNormalize( vForward );
 
+				/*
 				CEffectData	data;
 
 				data.m_vOrigin = tr.endpos;
 				data.m_vNormal = vForward;
 				data.m_nEntIndex = 0;
+				*/
 
 				UTIL_ImpactTrace( &tr, DMG_BULLET );
 
-				DoneMoving(true);
+				doneMoving = true;
+				stuck = true;
 			}
 
 			// Shoot some sparks
@@ -310,40 +324,38 @@ void CKnifeBolt::BoltTouch( CBaseEntity *pOther )
 			}
 		}
 		else if (tr.surface.flags & SURF_SKY || tr.contents & CONTENTS_PLAYERCLIP)
-		{
-			DoneMoving(false);
-		}
+			doneMoving = true;
 		else
 		{
 			UTIL_ImpactTrace( &tr, DMG_BULLET );
-			DoneMoving( false );
+			doneMoving = true;
 		}
 	}
-}
 
-void CKnifeBolt::DoneMoving( bool stuck )
-{
-	auto angle = GetAbsAngles();
-	// The weapon model is reversed for some reason.
-	angle[0] += 180;
-	auto pWeap = (CBaseCombatWeapon*)CBaseEntity::CreateNoSpawn( "weapon_knife", GetAbsOrigin(), angle );
-	pWeap->AddSpawnFlags( SF_NORESPAWN );
-	DispatchSpawn( pWeap );
-
-	auto phys = pWeap->VPhysicsGetObject();
-	if ( stuck && phys != NULL )
+	if ( doneMoving )
 	{
-		phys->EnableMotion( false );
-		phys->EnableGravity(false);
-		phys->Sleep();
-		//pWeap->SetCollisionGroup( COLLISION_GROUP_DEBRIS );
+		auto angle = GetAbsAngles();
+		// The weapon model is reversed for some reason.
+		angle[0] += 180;
+		auto pWeap = (CBaseCombatWeapon*)CBaseEntity::CreateNoSpawn( "weapon_knife", GetAbsOrigin(), angle );
+		pWeap->AddSpawnFlags( SF_NORESPAWN );
+		DispatchSpawn( pWeap );
+
+		auto phys = pWeap->VPhysicsGetObject();
+		if ( stuck && phys != nullptr )
+		{
+			phys->EnableMotion( false );
+			//phys->EnableGravity(false);
+			phys->Sleep();
+			//pWeap->SetCollisionGroup( COLLISION_GROUP_DEBRIS );
+		}
+		pWeap->SetAbsVelocity( Vector( 0, 0, 0 ) );
+		pWeap->AddEffects( EF_ITEM_BLINK );
+
+		CCleanupManager::AddThrownKnife( pWeap );
+
+		Remove();
 	}
-	pWeap->SetAbsVelocity( Vector( 0, 0, 0 ) );
-	pWeap->AddEffects( EF_ITEM_BLINK );
-
-	CCleanupManager::AddThrownKnife( pWeap );
-
-	Remove();
 }
 
 //-----------------------------------------------------------------------------

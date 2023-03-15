@@ -860,7 +860,7 @@ bool CBaseAnimating::IsRagdoll()
 	return ( m_nRenderFX == kRenderFxRagdoll ) ? true : false;
 }
 
-bool CBaseAnimating::CanBecomeRagdoll( void ) 
+bool CBaseAnimating::CanBecomeRagdoll( bool ignoreTransition ) 
 {
 	MDLCACHE_CRITICAL_SECTION();
 	int ragdollSequence = SelectWeightedSequence( ACT_DIERAGDOLL );
@@ -870,7 +870,7 @@ bool CBaseAnimating::CanBecomeRagdoll( void )
 		 return false;
 	
 	if ( GetFlags() & FL_TRANSRAGDOLL )
-		 return false;
+		 return ignoreTransition;
 
 	return true;
 }
