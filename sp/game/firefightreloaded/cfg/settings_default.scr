@@ -41,50 +41,37 @@ VERSION 1.0
 
 DESCRIPTION SERVER_OPTIONS
 {
-	"hostname"
-	{
-		"#Valve_Hostname"
-		{ STRING }
+	"hostname"{
+		"#Valve_Hostname"{STRING }
 		{ "FIREFIGHT RELOADED Server" }
 	}
 
-	"sv_password"
-	{
-		"#Valve_Server_Password"
-		{ STRING }
+	"sv_password"{
+		"#Valve_Server_Password"{STRING }
 		{ "" }
 	}
 	
-	"sv_lan"
-	{
-		"#FRMP_LAN"
-		{ BOOL }
+	"sv_lan"{
+		"#FRMP_LAN"{BOOL }
 		{ "0" }
 	}
 	
-	"sk_spawnerminclientstospawn"
-	{
-		"#FRMP_Min_Players"
-		{ NUMBER 1 32 }
+	"sk_spawnerminclientstospawn"{
+		"#FRMP_Min_Players"{NUMBER 1 32 }
 		{ "2" }
 	}
 
-	"maxplayers"
-	{
-		"#Valve_Max_Players"
-		{ NUMBER 1 32 }
+	"maxplayers"{
+		"#Valve_Max_Players"{NUMBER 1 32 }
 		{ "6" }
 	}
 	
-	"sv_mp_pvp"
-	{
-		"#FRMP_PVP"
-		{ BOOL }
+	"sv_mp_pvp"{
+		"#FRMP_PVP"{BOOL }
 		{ "0" }
 	}
 	
-	"g_skill"
-	{
+	"g_skill"{
 		"#GameUI_SelectDifficulty"
 		{
 			LIST		
@@ -97,94 +84,68 @@ DESCRIPTION SERVER_OPTIONS
 		{ "0" }
 	}
 	
-	"g_fr_npclimit"
-	{
-		"#GameUI_NPCLimit"
-		{ NUMBER 0 200}
+	"g_fr_npclimit"{
+		"#GameUI_NPCLimit"{NUMBER 0 200}
 		{ "75" }
 	}
 	
-	"mp_timelimit"
-	{
-		"#Valve_Time_Limit"
-		{ NUMBER 0 100 }
+	"mp_timelimit"{
+		"#Valve_Time_Limit"{NUMBER 0 100 }
 		{ "5" }
 	}
 	
-	"sv_player_startingmoney"
-	{
-		"#GameUI_StartingKash"
-		{ BOOL }
+	"sv_player_startingmoney"{
+		"#GameUI_StartingKash"{BOOL }
 		{ "0" }
 	}
 	
-	"sv_player_startingmoney_amount"
-	{
-		"#GameUI_StartingKashAmount"
-		{ NUMBER 0 2500}
+	"sv_player_startingmoney_amount"{
+		"#GameUI_StartingKashAmount"{NUMBER 0 2500}
 		{ "300" }
 	}
 
-	"mp_flashlight"
-	{
-		"#Valve_Flashlight"
-		{ BOOL }
+	"mp_flashlight"{
+		"#Valve_Flashlight"{BOOL }
 		{ "0" }
 	}
 	
-	"firefightrumble_enemyattack"
-	{
-		"#GameUI_EnemyAttack"
-		{ BOOL }
+	"firefightrumble_enemyattack"{
+		"#GameUI_EnemyAttack"{BOOL }
 		{ "1" }
 	}
 	
-	"sk_spawnrareenemies"
-	{
-		"#GameUI_SpawnRareEnemies"
-		{ BOOL }
+	"sk_spawnrareenemies"{
+		"#GameUI_SpawnRareEnemies"{BOOL }
 		{ "1" }
 	}
 	
-	"g_fr_classic"
-	{
-		"#GameUI_ClassicMode"
-		{ BOOL }
+	"g_fr_classic"{
+		"#GameUI_ClassicMode"{BOOL }
 		{ "0" }
 	}
 	
-	"sv_player_hardcoremode"
-	{
-		"#GameUI_HardcoreMode"
-		{ BOOL }
+	"sv_player_hardcoremode"{
+		"#GameUI_HardcoreMode"{BOOL }
 		{ "0" }
 	}
 	
-	"fr_enable_bunnyhop"
-	{
-		"#GameUI_ToggleBunnyhop"
-		{ BOOL }
+	"fr_enable_bunnyhop"{
+		"#GameUI_ToggleBunnyhop"{BOOL }
 		{ "1" }
 	}
 	
-	"fr_autojump"
-	{
-		"#GameUI_ToggleAutojump"
-		{ BOOL }
+	"fr_autojump"{
+		"#GameUI_ToggleAutojump"{BOOL }
 		{ "1" }
 	}
 	
-	"fr_doublejump"
-	{
-		"#GameUI_ToggleDoubleJump"
-		{ BOOL }
+	"fr_doublejump"{
+		"#GameUI_ToggleDoubleJump"{BOOL }
 		{ "1" }
 	}
 	
-	"sv_fr_perks_oldperkbehavior"
-	{
-		"#GameUI_RewardSystem"	
-		{
+	"sv_fr_perks_oldperkbehavior"{
+		"#GameUI_RewardSystem"{
 			LIST
 			"#GameUI_RewardSystem_1" "0"
 			"#GameUI_RewardSystem_2" "1"
@@ -192,97 +153,69 @@ DESCRIPTION SERVER_OPTIONS
 		{ "0" }
     }
 	
-	"sv_fr_perks"
-	{
-		"#GameUI_Perks"
-		{ BOOL }
+	"sv_fr_perks"{
+		"#GameUI_Perks"{BOOL }
 		{ "1" }
 	}
-	"sv_fr_perks_healthregeneration"
-	{
-		"#GameUI_Perks_HealthRegen"
-		{ BOOL }
+	"sv_fr_perks_healthregeneration"{
+		"#GameUI_Perks_HealthRegen"{BOOL }
 		{ "1" }
 	}
-	"sv_fr_perks_infiniteauxpower"
-	{
-		"#GameUI_Perks_InfiniteAuxPower"
-		{ BOOL }
+	"sv_fr_perks_infiniteauxpower"{
+		"#GameUI_Perks_InfiniteAuxPower"{BOOL }
 		{ "1" }
 	}
-	"sv_fr_perks_infiniteammo"
-	{
-		"#GameUI_Perks_InfiniteAmmo"
-		{ BOOL }
+	"sv_fr_perks_infiniteammo"{
+		"#GameUI_Perks_InfiniteAmmo"{BOOL }
 		{ "1" }
 	}
-	"sv_fr_perks_healthregenerationrate"
-	{
-		"#GameUI_Perks_HelthRegenRate"
-		{ BOOL }
+	"sv_fr_perks_healthregenerationrate"{
+		"#GameUI_Perks_HelthRegenRate"{BOOL }
 		{ "1" }
 	}
 	
-	"sv_killingspree"
-	{
-		"#GameUI_KillingSprees"
-		{ BOOL }
+	"sv_killingspree"{
+		"#GameUI_KillingSprees"{BOOL }
 		{ "1" }
 	}
 	
-	"sk_spawnerhidefromplayer"
-	{
-		"#GameUI_SpawnerHideFromPlayer"
-		{ BOOL }
+	"sk_spawnerhidefromplayer"{
+		"#GameUI_SpawnerHideFromPlayer"{BOOL }
 		{ "1" }
 	}
 	
-	"metropolice_spawnwithmanhacks"
-	{
-		"#GameUI_MetropoliceManhacks"
-		{ BOOL }
+	"metropolice_spawnwithmanhacks"{
+		"#GameUI_MetropoliceManhacks"{BOOL }
 		{ "1" }
 	}
 	
-	"combine_soldier_spawnwithgrenades"
-	{
-		"#GameUI_CombineSoldierGrenades"
-		{ BOOL }
+	"combine_soldier_spawnwithgrenades"{
+		"#GameUI_CombineSoldierGrenades"{BOOL }
 		{ "1" }
 	}
 	
-	"combine_shot_spawnwithgrenades"
-	{
-		"#GameUI_CombineShotGrenades"
-		{ BOOL }
+	"combine_shot_spawnwithgrenades"{
+		"#GameUI_CombineShotGrenades"{BOOL }
 		{ "1" }
 	}
 	
-	"combine_p_spawnwithgrenades"
-	{
-		"#GameUI_CombinePrisonGrenades"
-		{ BOOL }
+	"combine_p_spawnwithgrenades"{
+		"#GameUI_CombinePrisonGrenades"{BOOL }
 		{ "1" }
 	}
 	
-	"combine_guard_spawnwithgrenades"
-	{
-		"#GameUI_CombineEliteGrenades"
-		{ BOOL }
+	"combine_guard_spawnwithgrenades"{
+		"#GameUI_CombineEliteGrenades"{BOOL }
 		{ "1" }
 	}
 	
-	"combine_ace_spawnwithgrenades"
-	{
-		"#GameUI_CombineAceGrenades"
-		{ BOOL }
+	"combine_ace_spawnwithgrenades"{
+		"#GameUI_CombineAceGrenades"{BOOL }
 		{ "1" }
 	}
 	
-	"combine_ace_shieldspawnmode"
-	{
-		"#GameUI_AceShieldMode"
-		{ 
+	"combine_ace_shieldspawnmode"{
+		"#GameUI_AceShieldMode"{
 			LIST
 			"#GameUI_ShieldMode_Ace_None" "0"
 			"#GameUI_ShieldMode_Ace_All" "1"
@@ -291,10 +224,8 @@ DESCRIPTION SERVER_OPTIONS
 		{ "2" }
 	}
 	
-	"sk_cremator_attackplayeronsight"
-	{
-		"#GameUI_CrematorAttackOnSight"
-		{ BOOL }
+	"sk_cremator_attackplayeronsight"{
+		"#GameUI_CrematorAttackOnSight"{BOOL }
 		{ "0" }
 	}
 }
