@@ -172,9 +172,8 @@ void CNPC_PoisonZombie::Spawn( void )
 		nCrabs = Clamp( m_nCrabCount, 0, MAX_CRABS );
 	else
 	{
-		nCrabs = m_nCrabCount < 1 ? MAX_CRABS
-			: m_nCrabCount > MAX_CRABS ? MAX_CRABS
-			: m_nCrabCount;
+		nCrabs = m_nCrabCount < 1 || m_nCrabCount > MAX_CRABS
+			? MAX_CRABS : m_nCrabCount;
 	}
 	m_nCrabCount = 0;
 
@@ -182,7 +181,7 @@ void CNPC_PoisonZombie::Spawn( void )
 	// Generate a random set of crabs based on the crab count
 	// specified by the level designer.
 	//
-	int nBits[] = 
+	static const int nBits[] = 
 	{
 		// One bit
 		0x01,

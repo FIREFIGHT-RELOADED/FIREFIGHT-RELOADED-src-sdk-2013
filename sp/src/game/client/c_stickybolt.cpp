@@ -13,7 +13,7 @@
 // $NoKeywords: $
 //=============================================================================//
 #include "cbase.h"
-#include "c_basetempentity.h"
+//#include "c_basetempentity.h"
 #include "fx.h"
 #include "decals.h"
 #include "iefx.h"
@@ -75,9 +75,7 @@ public:
 					ragdoll_t *pRagdollT = pCRagdoll->GetRagdoll();
 
 					if ( tr.physicsbone < pRagdollT->listCount )
-					{
 						pPhysicsObject = pRagdollT->list[tr.physicsbone].pObject;
-					}
 				}
 			}
 		}
@@ -135,11 +133,11 @@ void CreateCrossbowBolt( const Vector &vecOrigin, const Vector &vecDirection )
 	QAngle vAngles;
 
 	VectorAngles( vecDirection, vAngles );
-	
+
 	tempents->SpawnTempModel(pModel, vecOrigin - vecDirection * 8, vAngles, Vector(0, 0, 0), 30.0f, FTENT_NONE);
 }
 
-void StickRagdollNow( const Vector &vecOrigin, const Vector &vecDirection)
+void StickRagdollNow(const Vector &vecOrigin, const Vector &vecDirection, int flags)
 {
 	Ray_t	shotRay;
 	trace_t tr;
@@ -156,7 +154,8 @@ void StickRagdollNow( const Vector &vecOrigin, const Vector &vecDirection)
 	CRagdollBoltEnumerator	ragdollEnum( shotRay, vecOrigin );
 	partition->EnumerateElementsAlongRay( PARTITION_CLIENT_RESPONSIVE_EDICTS, shotRay, false, &ragdollEnum );
 	
-	CreateCrossbowBolt( vecOrigin, vecDirection);
+	if ( flags == 1 )
+		CreateCrossbowBolt( vecOrigin, vecDirection );
 }
 
 //-----------------------------------------------------------------------------
@@ -165,7 +164,7 @@ void StickRagdollNow( const Vector &vecOrigin, const Vector &vecDirection)
 //-----------------------------------------------------------------------------
 void StickyBoltCallback( const CEffectData &data )
 {
-	 StickRagdollNow( data.m_vOrigin, data.m_vNormal );
+	StickRagdollNow( data.m_vOrigin, data.m_vNormal, data.m_fFlags );
 }
 
 DECLARE_CLIENT_EFFECT( "BoltImpact", StickyBoltCallback );

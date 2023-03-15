@@ -21,6 +21,7 @@
 #include "rumble_shared.h"
 #include "gamestats.h"
 #include "cleanup_manager.h"
+#include "physics_prop_ragdoll.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -47,6 +48,11 @@ END_SEND_TABLE()
 LINK_ENTITY_TO_CLASS( weapon_knife, CWeaponKnife );
 PRECACHE_WEAPON_REGISTER( weapon_knife );
 #endif
+
+BEGIN_DATADESC( CWeaponKnife )
+// Function Pointers
+DEFINE_FUNCTION(KnifeTouch)
+END_DATADESC()
 
 acttable_t CWeaponKnife::m_acttable[] = 
 {
@@ -386,6 +392,22 @@ void CWeaponKnife::ImpactEffect(trace_t &traceHit)
 	//UTIL_DecalTrace(&traceHit, "ManhackCut");
 }
 
+void CWeaponKnife::DislodgeRagdoll()
+{
+#if 0
+	auto owner = dynamic_cast<CBaseAnimating*>(GetOwnerEntity());
+	if ( owner != nullptr && owner->IsRagdoll() )
+	{
+		CRagdollProp* ragdoll = (CRagdollProp*)CreateEntityByName( "prop_ragdoll" );
+		if ( ragdoll != nullptr )
+		{
+			ragdoll->CopyAnimationDataFrom( owner );
+			ragdoll->Spawn();
+		}
+	}
+#endif
+}
+
 int CWeaponKnife::OnTakeDamage( const CTakeDamageInfo& info )
 {
 	auto phys = VPhysicsGetObject();
@@ -397,10 +419,22 @@ int CWeaponKnife::OnTakeDamage( const CTakeDamageInfo& info )
 		phys->Wake();
 		forward *= Clamp( info.GetDamage() + 100, 100.0f, 250.0f );
 		phys->SetVelocity( &forward, NULL );
+		DislodgeRagdoll();
 		return 0;
 	}
 	else
 		return BaseClass::OnTakeDamage( info );
+}
+
+void CWeaponKnife::SetPickupTouch()
+{
+	SetTouch( &CWeaponKnife::KnifeTouch );
+}
+
+void CWeaponKnife::KnifeTouch(CBaseEntity* pOther)
+{
+	DislodgeRagdoll();
+	BaseClass::DefaultTouch(pOther);
 }
 
 void CWeaponKnife::Equip( CBaseCombatCharacter *pOwner )

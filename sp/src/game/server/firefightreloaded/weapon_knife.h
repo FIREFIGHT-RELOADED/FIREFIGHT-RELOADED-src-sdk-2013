@@ -32,6 +32,7 @@ public:
 
 	DECLARE_SERVERCLASS();
 	DECLARE_ACTTABLE();
+	DECLARE_DATADESC();
 
 	CWeaponKnife();
 
@@ -49,7 +50,12 @@ public:
 
 	int			OnTakeDamage( const CTakeDamageInfo& info );
 
+	virtual void SetPickupTouch();
+	virtual void KnifeTouch( CBaseEntity* pOther );
+
 	void UpdateOnRemove();
+
+	void DislodgeRagdoll();
 
 	virtual void Equip( CBaseCombatCharacter *pOwner );
 
