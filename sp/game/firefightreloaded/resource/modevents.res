@@ -25,31 +25,26 @@
 //   time	: firing server time
 //   eventid	: holds the event ID
 
-"modevents"
-{
-	"player_maxlevel"
-	{
+"modevents"{
+	"player_maxlevel"{
 		"userid"	"short"			
 	}
 	
-	"player_death"				// a game event, name may be 32 charaters long
-	{
-		"userid"	"short"   	// user ID who died				
-		"attacker"	"short"	 	// user ID who killed
-		"weapon"	"string" 	// weapon name killed used 
+	"player_death"{	// a game event, name may be 32 charaters long
+		"userid"	"short"  	// user ID who died				
+		"attacker"	"short"	// user ID who killed
+		"weapon"	"string"	// weapon name killed used 
 	}
 	
-	"npc_death"				// a game event, name may be 32 charaters long
-	{
-		"victimname" "string"   	// user ID who died				
-		"attacker"	"short"	 	// user ID who killed
-		"weapon"	"string" 	// weapon name killed used 
+	"npc_death"{	// a game event, name may be 32 charaters long
+		"victimname" "string"  	// user ID who died				
+		"attacker"	"short"		// user ID who killed
+		"weapon"	"string"	// weapon name killed used 
 	}
 	
-	"player_death_npc"				// a game event, name may be 32 charaters long
-	{
-		"userid"	"short"   	// user ID who died				
-		"attacker"	"string"	 	// user ID who killed
-		"weapon"	"string" 	// weapon name killed used 
+	"player_death_npc"{	// a game event, name may be 32 charaters long
+		"userid"	"short"  	// user ID who died				
+		"attacker"	"string"		// user ID who killed
+		"weapon"	"string"	// weapon name killed used 
 	}
 }
