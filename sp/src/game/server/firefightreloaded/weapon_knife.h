@@ -32,7 +32,6 @@ public:
 
 	DECLARE_SERVERCLASS();
 	DECLARE_ACTTABLE();
-	DECLARE_DATADESC();
 
 	CWeaponKnife();
 
@@ -50,9 +49,6 @@ public:
 
 	int			OnTakeDamage( const CTakeDamageInfo& info );
 
-	virtual void SetPickupTouch();
-	virtual void KnifeTouch( CBaseEntity* pOther );
-
 	void UpdateOnRemove();
 
 	void DislodgeRagdoll();
@@ -63,6 +59,8 @@ public:
 	virtual void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
 	void			Hit(trace_t &traceHit, Activity nHitActivity, bool bIsSecondary);
 	void			HandleAnimEventMeleeHit(animevent_t *pEvent, CBaseCombatCharacter *pOperator);
+
+	CNetworkHandle(CBaseAnimating, m_hStuckRagdoll);
 
 protected:
 	virtual	void	ImpactEffect(trace_t &trace);
