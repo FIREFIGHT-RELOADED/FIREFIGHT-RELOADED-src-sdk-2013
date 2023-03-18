@@ -132,6 +132,7 @@ public:
 	void StopSprint( void );
 
 	void DropGrenade( Vector vDir );
+	virtual void SetGrenadeCount( int count ) { m_iGrenadeCount = count < 1 ? 0 : 1; }
 
 	bool IsSprinting( void ) { return m_flSprintTime > gpGlobals->curtime;	}
 	bool HasGrenade( void ) { return m_hGrenade != NULL; }

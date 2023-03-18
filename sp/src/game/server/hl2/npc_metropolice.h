@@ -113,6 +113,8 @@ public:
 
 	void	PlayFlinchGesture( void );
 
+	virtual void SetGrenadeCount( int count ) { m_iManhacks = count < 1 ? 0 : count; }
+
 protected:
 	// Determines the best type of flinch anim to play.
 	virtual Activity GetFlinchActivity( bool bHeavyDamage, bool bGesture );
