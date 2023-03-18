@@ -395,6 +395,8 @@ void CWeaponKnife::DislodgeRagdoll()
 	auto ragdoll = dynamic_cast<CBaseAnimating*>(m_hStuckRagdoll.Get());
 	if ( ragdoll != nullptr && ragdoll->IsRagdoll() )
 	{
+		// This is an attempt to handle server-side ragdolls, but it doesn't seem
+		// to work now.
 		CRagdollProp* newRagdoll = (CRagdollProp*)CreateEntityByName( "prop_ragdoll" );
 		if ( newRagdoll != nullptr )
 		{
@@ -403,12 +405,10 @@ void CWeaponKnife::DislodgeRagdoll()
 			ragdoll->Remove();
 		}
 	}
-	else
-	{
-		CEffectData data;
-		data.m_nEntIndex = entindex();
-		DispatchEffect( "KnifeDislodge", data );
-	}
+
+	CEffectData data;
+	data.m_nEntIndex = entindex();
+	DispatchEffect( "KnifeDislodge", data );
 }
 
 int CWeaponKnife::OnTakeDamage( const CTakeDamageInfo& info )
