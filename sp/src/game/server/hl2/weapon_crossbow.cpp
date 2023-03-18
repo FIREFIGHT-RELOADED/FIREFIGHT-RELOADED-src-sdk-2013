@@ -27,6 +27,7 @@
 #include "hl2_player.h"
 #include "func_break.h"
 #include "func_breakablesurf.h"
+#include "stickybolt.h"
 
 #ifdef PORTAL
 	#include "portal_util_shared.h"
@@ -292,9 +293,11 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 
 				data.m_vOrigin = tr2.endpos;
 				data.m_vNormal = vForward;
-				data.m_fFlags = 1;
+				data.m_fFlags = SBFL_CROSSBOWBOLT | SBFL_STICKRAGDOLL;
 			
 				DispatchEffect("BoltImpact", data);
+
+				UTIL_ImpactTrace( &tr2, DMG_BULLET );
 			}
 		}
 		
@@ -349,7 +352,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 
 				data.m_vOrigin = tr.endpos;
 				data.m_vNormal = vForward;
-				data.m_nEntIndex = entindex();
+				data.m_fFlags = SBFL_CROSSBOWBOLT;
 			
 				DispatchEffect("BoltImpact", data);
 				

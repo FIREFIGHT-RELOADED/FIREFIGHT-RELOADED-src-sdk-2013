@@ -541,35 +541,14 @@ void CNPCMakerFirefight::MakeNPC()
 	pent->SetSquadName(m_SquadName);
 	pent->SetHintGroup(m_strHintGroup);
 
-	int grenades = entry->GetRandomGrenades();
-	if ( grenades >= 0 )
-	{
-		if ( Q_stristr( pRandomName, "npc_metropolice" ) )
-		{
-			auto pPolice = (CNPC_MetroPolice*)pent;
-			pPolice->m_iManhacks = grenades;
-		}
-		else if (Q_stristr(pRandomName, "npc_combine_s") ||
-				Q_stristr(pRandomName, "npc_combine_e") ||
-				Q_stristr(pRandomName, "npc_combine_p") ||
-				Q_stristr(pRandomName, "npc_combine_shot") || 
-				Q_stristr(pRandomName, "npc_combine_ace"))
-		{
-			auto pCombine = (CNPC_Combine*)pent;
-			pCombine->m_iNumGrenades = grenades;
-		}
-		else if ( Q_stristr( pRandomName, "npc_poisonzombie") )
-		{
-			auto pPoison = (CNPC_PoisonZombie*)pent;
-			pPoison->m_bCrabCountOverride = true;
-			pPoison->m_nCrabCount = grenades;
-		}
-	}
-
 	ChildPreSpawn(pent);
 
 	DispatchSpawn(pent);
-	pent->SetOwnerEntity(this);
+	pent->SetOwnerEntity( this );
+
+	int grenades = entry->GetRandomGrenades();
+	if ( grenades >= 0 )
+		pent->SetGrenadeCount( grenades );
 
 	// adding this check to make sure strders will work properly...
 	if (FClassnameIs(pent, "npc_strider") || 

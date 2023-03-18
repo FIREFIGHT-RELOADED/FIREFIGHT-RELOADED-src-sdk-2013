@@ -22,6 +22,8 @@
 #include "gamestats.h"
 #include "cleanup_manager.h"
 #include "physics_prop_ragdoll.h"
+#include "effect_dispatch_data.h"
+#include "te_effect_dispatch.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -42,17 +44,13 @@ ConVar    sk_npc_dmg_knife_thrown("sk_npc_dmg_knife_thrown", "0");
 //-----------------------------------------------------------------------------
 
 IMPLEMENT_SERVERCLASS_ST(CWeaponKnife, DT_WeaponKnife)
+SendPropEHandle(SENDINFO(m_hStuckRagdoll))
 END_SEND_TABLE()
 
 #ifndef HL2MP
 LINK_ENTITY_TO_CLASS( weapon_knife, CWeaponKnife );
 PRECACHE_WEAPON_REGISTER( weapon_knife );
 #endif
-
-BEGIN_DATADESC( CWeaponKnife )
-// Function Pointers
-DEFINE_FUNCTION(KnifeTouch)
-END_DATADESC()
 
 acttable_t CWeaponKnife::m_acttable[] = 
 {
@@ -394,18 +392,23 @@ void CWeaponKnife::ImpactEffect(trace_t &traceHit)
 
 void CWeaponKnife::DislodgeRagdoll()
 {
-#if 0
-	auto owner = dynamic_cast<CBaseAnimating*>(GetOwnerEntity());
-	if ( owner != nullptr && owner->IsRagdoll() )
+	auto ragdoll = dynamic_cast<CBaseAnimating*>(m_hStuckRagdoll.Get());
+	if ( ragdoll != nullptr && ragdoll->IsRagdoll() )
 	{
-		CRagdollProp* ragdoll = (CRagdollProp*)CreateEntityByName( "prop_ragdoll" );
-		if ( ragdoll != nullptr )
+		// This is an attempt to handle server-side ragdolls, but it doesn't seem
+		// to work now.
+		CRagdollProp* newRagdoll = (CRagdollProp*)CreateEntityByName( "prop_ragdoll" );
+		if ( newRagdoll != nullptr )
 		{
-			ragdoll->CopyAnimationDataFrom( owner );
-			ragdoll->Spawn();
+			newRagdoll->CopyAnimationDataFrom( ragdoll );
+			newRagdoll->Spawn();
+			ragdoll->Remove();
 		}
 	}
-#endif
+
+	CEffectData data;
+	data.m_nEntIndex = entindex();
+	DispatchEffect( "KnifeDislodge", data );
 }
 
 int CWeaponKnife::OnTakeDamage( const CTakeDamageInfo& info )
@@ -426,19 +429,9 @@ int CWeaponKnife::OnTakeDamage( const CTakeDamageInfo& info )
 		return BaseClass::OnTakeDamage( info );
 }
 
-void CWeaponKnife::SetPickupTouch()
-{
-	SetTouch( &CWeaponKnife::KnifeTouch );
-}
-
-void CWeaponKnife::KnifeTouch(CBaseEntity* pOther)
-{
-	DislodgeRagdoll();
-	BaseClass::DefaultTouch(pOther);
-}
-
 void CWeaponKnife::Equip( CBaseCombatCharacter *pOwner )
 {
+	DislodgeRagdoll();
 	CCleanupManager::RemoveThrownKnife( this );
 	BaseClass::Equip( pOwner );
 }

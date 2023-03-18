@@ -7,6 +7,34 @@
 #include "steam/steam_api.h"
 #endif
 
+CON_COMMAND( list_centities, "List all client entities." )
+{
+	for ( auto iter = ClientEntityList().FirstHandle(); iter.IsValid(); iter = ClientEntityList().NextHandle( iter ) )
+		ConMsg( "%d: %s\n", iter.GetEntryIndex(), ((C_BaseEntity*)iter.Get())->GetClassname() );
+}
+
+CON_COMMAND( report_centities, "Report all client entities." )
+{
+	CUtlStringMap<int> classnames_count;
+	CUtlVector<CUtlString> sorted_classnames;
+
+	for ( auto iter = ClientEntityList().FirstBaseEntity(); iter != nullptr; iter = ClientEntityList().NextBaseEntity( iter ))
+	{
+		auto classname = iter->GetClassname();
+		if ( classnames_count.Defined( classname ) )
+			++classnames_count[classname];
+		else
+		{
+			sorted_classnames.AddToTail( classname );
+			classnames_count[classname] = 1;
+		}
+	}
+
+	sorted_classnames.Sort(CUtlString::SortCaseSensitive);
+	for ( auto iter : sorted_classnames )
+		ConMsg( "Class: %s (%d)\n", (const char*)iter, classnames_count[iter] );
+}
+
 CON_COMMAND(toggle_ironsight, "")
 {
 	CBasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();

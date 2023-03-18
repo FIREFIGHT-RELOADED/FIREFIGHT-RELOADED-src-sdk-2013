@@ -1717,6 +1717,8 @@ public:
 
 	virtual bool		UseAttackSquadSlots()	{ return false; }
 
+	virtual void        SetGrenadeCount( int count ) { };
+
 	//---------------------------------
 	
 	virtual	CBaseEntity *FindNamedEntity( const char *pszName, IEntityFindFilter *pFilter = NULL );
