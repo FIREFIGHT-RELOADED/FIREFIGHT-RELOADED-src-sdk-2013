@@ -72,20 +72,6 @@
 				}
 			}
 
-			"FastSwitch"
-			{
-				"text"			"#GameUI_FastSwitchCheck"
-				"type"			"wheelywheel"
-				"advanced"		"1"
-				"convar"		"hud_fastswitch"
-
-				"options"
-				{
-					"0"		"#gameui_disabled"
-					"1"		"#gameui_enabled"
-				}
-			}
-
 			"FasterSwitch"
 			{
 				"text"			"#GameUI_FasterWeaponSwitch"
@@ -199,20 +185,6 @@
 				"advanced"		"1"
 			}
 
-			"Console"
-			{
-				"text"			"#GameUI_DeveloperConsoleCheck"
-				"type"			"wheelywheel"
-				"advanced"		"1"
-				"convar"		"con_enable"
-
-				"options"
-				{
-					"0"		"#gameui_disabled"
-					"1"		"#gameui_enabled"
-				}
-			}
-
 			"OldSpawner"
 			{
 				"text"			"#FR_OldSpawner"
@@ -307,6 +279,41 @@
 		"title"			"#GameUI_Keyboard"
 		"items_from"	"keyboard"
 		"alternating"   "1"
+		"items"
+		{
+			"AdvancedHeader"
+			{
+				"text"			"#GameUI_AdvancedNoEllipsis"
+				"type"			"headeryheader"
+				"advanced"		"1"
+			}
+
+			"FastWeaponSwitch"
+			{
+				"text"			"#GameUI_FastSwitchCheck"
+				"type"			"wheelywheel"
+				"convar"		"hud_fastswitch"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+
+			"DeveloperConsole"
+			{
+				"text"			"#GameUI_DeveloperConsoleCheck"
+				"type"			"wheelywheel"
+				"convar"		"con_enable"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+		}
 	}
 	"Mouse"
 	{
