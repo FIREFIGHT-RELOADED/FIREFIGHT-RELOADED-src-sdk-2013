@@ -190,6 +190,13 @@ $Project "Client (FR)"
 				$File	"gameui\SpawnlistDialog.h"
 			}
 
+			$Folder "Weapons"
+			{
+				$File	"$SRCDIR\game\shared\stickybolt.h"
+				$File	"firefightreloaded\c_weapon_knife.cpp"
+				$File	"firefightreloaded\c_weapon_knife.h"
+			}
+
 			$Folder	"HUD Elements"
 			{
 				$File	"firefightreloaded\hud_achievementhintdisplay.cpp"
