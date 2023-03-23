@@ -73,6 +73,8 @@ public:
 
     void LoadOptionTabs( const char* pszOptionsFile );
 
+    void ApplySchemeSettings(vgui::IScheme* pScheme) OVERRIDE;
+
     void SetActiveTab( int nTab );
     int GetActiveTab();
     void OnMouseWheeled( int delta ) OVERRIDE;
@@ -1864,6 +1866,68 @@ void GamepadUIOptionsPanel::LoadOptionTabs( const char *pszOptionsFile )
             m_Tabs[ m_nTabCount ].bAlternating = pTabData->GetBool( "alternating" );
             m_Tabs[ m_nTabCount ].bHorizontal = pTabData->GetBool( "horizontal" );
 
+            if (!V_strcmp(pTabData->GetString("items_from"), "keyboard"))
+            {
+                char szBinding[256];
+                char szDescription[256];
+
+                // Load the default keys list
+                CUtlBuffer buf(0, 0, CUtlBuffer::TEXT_BUFFER);
+                if (!g_pFullFileSystem->ReadFile("scripts/kb_act.lst", NULL, buf))
+                    return;
+
+                const char* data = (const char*)buf.Base();
+
+                char token[512];
+                while (1)
+                {
+                    data = UTIL_Parse(data, token, sizeof(token));
+                    // Done.
+                    if (strlen(token) <= 0)
+                        break;
+
+                    Q_strncpy(szBinding, token, sizeof(szBinding));
+
+                    data = UTIL_Parse(data, token, sizeof(token));
+                    if (strlen(token) <= 0)
+                    {
+                        break;
+                    }
+
+                    Q_strncpy(szDescription, token, sizeof(szDescription));
+
+                    // Skip '======' rows
+                    if (szDescription[0] != '=')
+                    {
+                        // Flag as special header row if binding is "blank"
+                        if (!stricmp(szBinding, "blank"))
+                        {
+                            // add header item
+                            auto button = new GamepadUIButton(
+                                this, this,
+                                GAMEPADUI_RESOURCE_FOLDER "schemeoptions_sectiontitle.res",
+                                "button_pressed",
+                                szDescription, "");
+                            //button->SetFooterButton( true );
+                            button->SetEnabled(false);
+                            m_Tabs[m_nTabCount].pButtons.AddToTail(button);
+                        }
+                        else
+                        {
+                            // Add to list
+                            auto button = new GamepadUIKeyButton(
+                                szBinding, this, this,
+                                GAMEPADUI_RESOURCE_FOLDER "schemeoptions_wheelywheel.res",
+                                "button_pressed",
+                                szDescription, "");
+                            m_Tabs[m_nTabCount].pButtons.AddToTail(button);
+                        }
+                    }
+                }
+
+                FillInBindings();
+            }
+
             KeyValues* pTabItems = pTabData->FindKey( "items" );
             if ( pTabItems )
             {
@@ -2038,68 +2102,6 @@ void GamepadUIOptionsPanel::LoadOptionTabs( const char *pszOptionsFile )
                 }
             }
 
-            if ( !V_strcmp( pTabData->GetString( "items_from" ), "keyboard" ) )
-            {
-	            char szBinding[256];
-	            char szDescription[256];
-
-	            // Load the default keys list
-	            CUtlBuffer buf( 0, 0, CUtlBuffer::TEXT_BUFFER );
-	            if ( !g_pFullFileSystem->ReadFile( "scripts/kb_act.lst", NULL, buf ) )
-		            return;
-
-	            const char *data = ( const char* )buf.Base();
-
-	            char token[512];
-	            while ( 1 )
-	            {
-		            data = UTIL_Parse( data, token, sizeof( token ) );
-		            // Done.
-		            if ( strlen( token ) <= 0 )
-			            break;
-
-		            Q_strncpy( szBinding, token, sizeof( szBinding ) );
-
-		            data = UTIL_Parse( data, token, sizeof( token ) );
-		            if ( strlen( token ) <= 0 )
-		            {
-			            break;
-		            }
-
-		            Q_strncpy( szDescription, token, sizeof( szDescription ) );
-
-		            // Skip '======' rows
-		            if ( szDescription[ 0 ] != '=' )
-		            {
-			            // Flag as special header row if binding is "blank"
-			            if ( !stricmp( szBinding, "blank" ) )
-			            {
-				            // add header item
-                            auto button = new GamepadUIButton(
-                                this, this,
-                                GAMEPADUI_RESOURCE_FOLDER "schemeoptions_sectiontitle.res",
-                                "button_pressed",
-                                szDescription, "" );
-                            //button->SetFooterButton( true );
-                            button->SetEnabled( false );
-                            m_Tabs[ m_nTabCount ].pButtons.AddToTail( button );
-			            }
-			            else
-			            {
-				            // Add to list
-                            auto button = new GamepadUIKeyButton(
-                                szBinding, this, this,
-                                GAMEPADUI_RESOURCE_FOLDER "schemeoptions_wheelywheel.res",
-                                "button_pressed",
-                                szDescription, "" );
-                            m_Tabs[ m_nTabCount ].pButtons.AddToTail( button );
-			            }
-		            }
-	            }
-
-                FillInBindings();
-            }
-
             CUtlVector< GamepadUIButton* >& pButtons = m_Tabs[ m_nTabCount ].pButtons;
             for ( int i = 1; i < pButtons.Count(); i++ )
             {
@@ -2117,6 +2119,17 @@ void GamepadUIOptionsPanel::LoadOptionTabs( const char *pszOptionsFile )
 
             m_nTabCount++;
         }
+    }
+}
+
+void GamepadUIOptionsPanel::ApplySchemeSettings(vgui::IScheme* pScheme)
+{
+    BaseClass::ApplySchemeSettings(pScheme);
+
+    if (GamepadUI::GetInstance().GetScreenRatio() != 1.0f)
+    {
+        float flScreenRatio = GamepadUI::GetInstance().GetScreenRatio();
+        m_flTabsOffsetX *= (flScreenRatio * flScreenRatio);
     }
 }
 
