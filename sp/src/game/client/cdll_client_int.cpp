@@ -383,7 +383,7 @@ const bool IsSteamDeck()
 	if ( pszSteamDeckEnv && *pszSteamDeckEnv )
 		return atoi( pszSteamDeckEnv ) != 0;
 
-	return false;
+	return true;
 }
 #endif
 
