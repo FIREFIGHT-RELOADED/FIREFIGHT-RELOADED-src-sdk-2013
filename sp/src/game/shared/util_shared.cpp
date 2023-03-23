@@ -34,6 +34,7 @@
 bool NPC_CheckBrushExclude( CBaseEntity *pEntity, CBaseEntity *pBrush );
 #endif
 
+#include "tier0/icommandline.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1172,4 +1173,21 @@ const char* UTIL_GetActiveHolidayString()
 #else
 	return NULL;
 #endif
+}
+
+// GAMEPADUI TODO - put this somewhere better. (Madi)
+// we could use this for adjusting certain features for Deck players. maybe add as an actual function on server and client.
+const bool UTIL_IsSteamDeck()
+{
+	if (CommandLine()->FindParm("-gamepadui"))
+		return true;
+
+	if (CommandLine()->FindParm("-nogamepadui"))
+		return false;
+
+	const char* pszSteamDeckEnv = getenv("SteamDeck");
+	if (pszSteamDeckEnv && *pszSteamDeckEnv)
+		return atoi(pszSteamDeckEnv) != 0;
+
+	return false;
 }

@@ -368,25 +368,6 @@ class IClientPurchaseInterfaceV2 *g_pClientPurchaseInterface = (class IClientPur
 
 static ConVar *g_pcv_ThreadMode = NULL;
 
-// GAMEPADUI TODO - put this somewhere better. (Madi)
-// we could use this for adjusting certain features for Deck players. maybe add as an actual function on server and client.
-#if defined( GAMEPADUI )
-const bool IsSteamDeck()
-{
-	if ( CommandLine()->FindParm( "-gamepadui" ) )
-		return true;
-
-	if ( CommandLine()->FindParm( "-nogamepadui" ) )
-		return false;
-
-	const char *pszSteamDeckEnv = getenv( "SteamDeck" );
-	if ( pszSteamDeckEnv && *pszSteamDeckEnv )
-		return atoi( pszSteamDeckEnv ) != 0;
-
-	return false;
-}
-#endif
-
 //-----------------------------------------------------------------------------
 // Purpose: interface for gameui to modify voice bans
 //-----------------------------------------------------------------------------
@@ -1285,7 +1266,7 @@ void CHLClient::PostInit()
 #endif
 
 #if defined(GAMEPADUI)
-	if (IsSteamDeck())
+	if (UTIL_IsSteamDeck())
 	{
 		CSysModule* pGamepadUIModule = g_pFullFileSystem->LoadModule("gamepadui", "GAMEBIN", false);
 		if (pGamepadUIModule != nullptr)
@@ -1362,7 +1343,7 @@ void CHLClient::Shutdown( void )
 	IGameSystem::ShutdownAllSystems();
 
 #if defined(GAMEPADUI)
-	if (IsSteamDeck())
+	if (UTIL_IsSteamDeck())
 	{
 		if (g_pGamepadUI != nullptr)
 			g_pGamepadUI->Shutdown();
@@ -1470,7 +1451,7 @@ void CHLClient::HudUpdate( bool bActive )
 #endif
 
 #if defined(GAMEPADUI)
-	if (IsSteamDeck())
+	if (UTIL_IsSteamDeck())
 	{
 		if (g_pGamepadUI != nullptr)
 			g_pGamepadUI->OnUpdate(frametime);
@@ -1862,7 +1843,7 @@ void CHLClient::LevelInitPreEntity( char const* pMapName )
 #endif
 
 #if defined(GAMEPADUI)
-	if (IsSteamDeck())
+	if (UTIL_IsSteamDeck())
 	{
 		if (g_pGamepadUI != nullptr)
 			g_pGamepadUI->OnLevelInitializePreEntity();
@@ -1881,7 +1862,7 @@ void CHLClient::LevelInitPostEntity( )
 	internalCenterPrint->Clear();
 
 #if defined(GAMEPADUI)
-	if (IsSteamDeck())
+	if (UTIL_IsSteamDeck())
 	{
 		if (g_pGamepadUI != nullptr)
 			g_pGamepadUI->OnLevelInitializePostEntity();
@@ -1954,7 +1935,7 @@ void CHLClient::LevelShutdown( void )
 	StopAllRumbleEffects();
 
 #if defined(GAMEPADUI)
-	if (IsSteamDeck())
+	if (UTIL_IsSteamDeck())
 	{
 		if (g_pGamepadUI != nullptr)
 			g_pGamepadUI->OnLevelShutdown();
