@@ -6,7 +6,6 @@
 	gamepadui_title2	""
 	type	singleplayer_only
 	supportsvr	0
-	gamelogo	0
 	developer	"Bitl Development Studios"
 	developer_url	"https://bitl.carrd.co"
 	manual	""
