@@ -52,7 +52,6 @@ CRandNPCLoader::CRandNPCLoader()
 CRandNPCLoader::~CRandNPCLoader()
 {
 	m_KVs->deleteThis();
-	m_Entries.PurgeAndDeleteElements();
 }
 
 bool CRandNPCLoader::Load()
