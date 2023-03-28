@@ -1,10 +1,5 @@
 "default"
 {
-	"settings"
-	{
-		"spawntime"		"5"
-		"spawntime_steamdeck"	"8"
-	}
 	"1"
 	{
 		"classname"		"npc_metropolice"
