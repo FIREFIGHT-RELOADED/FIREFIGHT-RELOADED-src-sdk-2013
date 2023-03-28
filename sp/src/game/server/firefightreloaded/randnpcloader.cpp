@@ -150,6 +150,9 @@ bool CRandNPCLoader::AddEntries( KeyValues* pKV )
 	bool ret = true;
 	for ( auto iter = pKV->GetFirstSubKey(); iter != NULL; iter = iter->GetNextKey() )
 	{
+		if (!strcmp(iter->GetName(), "settings"))
+			continue;
+
 		auto newKV = iter->MakeCopy();
 		m_KVs->AddSubKey( iter->MakeCopy() );
 		SpawnEntry_t entry;
