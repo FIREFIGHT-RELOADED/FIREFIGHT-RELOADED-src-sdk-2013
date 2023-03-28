@@ -1175,9 +1175,7 @@ const char* UTIL_GetActiveHolidayString()
 #endif
 }
 
-// GAMEPADUI TODO - put this somewhere better. (Madi)
-// we could use this for adjusting certain features for Deck players. maybe add as an actual function on server and client.
-const bool UTIL_IsSteamDeck()
+const bool UTIL_IsGamepadUIEnabled()
 {
 	if (CommandLine()->FindParm("-gamepadui"))
 		return true;
@@ -1185,6 +1183,11 @@ const bool UTIL_IsSteamDeck()
 	if (CommandLine()->FindParm("-nogamepadui"))
 		return false;
 
+	return UTIL_IsSteamDeck();
+}
+
+const bool UTIL_IsSteamDeck()
+{
 	const char* pszSteamDeckEnv = getenv("SteamDeck");
 	if (pszSteamDeckEnv && *pszSteamDeckEnv)
 		return atoi(pszSteamDeckEnv) != 0;

@@ -151,6 +151,12 @@ void CNPCMakerFirefight::Precache(void)
 	{
 		g_npcLoader = new CRandNPCLoader;
 		g_npcLoader->Load();
+
+		int setSpawnTime = g_npcLoader->m_Settings.spawnTime;
+		if (setSpawnTime != TIME_SETBYHAMMER)
+		{
+			m_flSpawnFrequency = setSpawnTime;
+		}
 	}
 
 	int nWeapons = ARRAYSIZE(g_Weapons);

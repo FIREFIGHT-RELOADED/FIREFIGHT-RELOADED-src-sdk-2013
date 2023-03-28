@@ -1266,7 +1266,7 @@ void CHLClient::PostInit()
 #endif
 
 #if defined(GAMEPADUI)
-	if (UTIL_IsSteamDeck())
+	if (UTIL_IsGamepadUIEnabled())
 	{
 		CSysModule* pGamepadUIModule = g_pFullFileSystem->LoadModule("gamepadui", "GAMEBIN", false);
 		if (pGamepadUIModule != nullptr)
@@ -1343,7 +1343,7 @@ void CHLClient::Shutdown( void )
 	IGameSystem::ShutdownAllSystems();
 
 #if defined(GAMEPADUI)
-	if (UTIL_IsSteamDeck())
+	if (UTIL_IsGamepadUIEnabled())
 	{
 		if (g_pGamepadUI != nullptr)
 			g_pGamepadUI->Shutdown();
@@ -1456,7 +1456,7 @@ void CHLClient::HudUpdate( bool bActive )
 #endif
 
 #if defined(GAMEPADUI)
-	if (UTIL_IsSteamDeck())
+	if (UTIL_IsGamepadUIEnabled())
 	{
 		if (g_pGamepadUI != nullptr)
 			g_pGamepadUI->OnUpdate(frametime);
@@ -1848,7 +1848,7 @@ void CHLClient::LevelInitPreEntity( char const* pMapName )
 #endif
 
 #if defined(GAMEPADUI)
-	if (UTIL_IsSteamDeck())
+	if (UTIL_IsGamepadUIEnabled())
 	{
 		if (g_pGamepadUI != nullptr)
 			g_pGamepadUI->OnLevelInitializePreEntity();
@@ -1867,7 +1867,7 @@ void CHLClient::LevelInitPostEntity( )
 	internalCenterPrint->Clear();
 
 #if defined(GAMEPADUI)
-	if (UTIL_IsSteamDeck())
+	if (UTIL_IsGamepadUIEnabled())
 	{
 		if (g_pGamepadUI != nullptr)
 			g_pGamepadUI->OnLevelInitializePostEntity();
@@ -1940,7 +1940,7 @@ void CHLClient::LevelShutdown( void )
 	StopAllRumbleEffects();
 
 #if defined(GAMEPADUI)
-	if (UTIL_IsSteamDeck())
+	if (UTIL_IsGamepadUIEnabled())
 	{
 		if (g_pGamepadUI != nullptr)
 			g_pGamepadUI->OnLevelShutdown();

@@ -52,6 +52,7 @@ CRandNPCLoader::CRandNPCLoader()
 CRandNPCLoader::~CRandNPCLoader()
 {
 	m_KVs->deleteThis();
+	m_Entries.PurgeAndDeleteElements();
 }
 
 bool CRandNPCLoader::Load()
@@ -85,6 +86,29 @@ bool CRandNPCLoader::Load()
 		{
 			DevWarning("CRandNPCLoader: Failed to load default spawnlist! File may not exist. Spawners will not function properly.\n");
 			return false;
+		}
+	}
+
+	//load settings in the spawnlist if any.
+	KeyValues* settings = pKV->FindKey("settings");
+	if (settings)
+	{
+		if (UTIL_IsSteamDeck())
+		{
+			float spawntimeDeck = settings->GetFloat("spawntime_steamdeck", TIME_SETBYHAMMER);
+
+			if (spawntimeDeck != TIME_SETBYHAMMER)
+			{
+				m_Settings.spawnTime = spawntimeDeck;
+			}
+			else
+			{
+				m_Settings.spawnTime = settings->GetFloat("spawntime", TIME_SETBYHAMMER);
+			}
+		}
+		else
+		{
+			m_Settings.spawnTime = settings->GetFloat("spawntime", TIME_SETBYHAMMER);
 		}
 	}
 
