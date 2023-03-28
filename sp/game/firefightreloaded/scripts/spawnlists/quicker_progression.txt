@@ -1,5 +1,10 @@
 "default"
 {
+	"settings"
+	{
+		"spawntime"		"3"
+		"spawntime_steamdeck"	"5"
+	}
 	//LEVEL 1
 	"1"
 	{
