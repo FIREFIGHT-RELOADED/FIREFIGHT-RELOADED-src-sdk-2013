@@ -169,6 +169,11 @@ void CNPCMakerFirefight::Precache(void)
 //-----------------------------------------------------------------------------
 void CNPCMakerFirefight::MakerThink(void)
 {
+	if (m_flSpawnFrequency <= 0)
+	{
+		m_flSpawnFrequency = 5;
+	}
+
 	SetNextThink(gpGlobals->curtime + m_flSpawnFrequency);
 
 	//rare npcs will be handled by the spawnlist
@@ -184,14 +189,14 @@ void CNPCMakerFirefight::MakerThink(void)
 		m_nLiveRareNPCs = 0;
 	}
 
-	if (m_nRareNPCRarity > SKILL_MEDIUM)
-	{
-		m_nRareNPCRarity = m_nRareNPCRarity - g_pGameRules->GetSkillLevel();
-	}
-
 	if (m_nRareNPCRarity <= 0)
 	{
 		m_nRareNPCRarity = 1;
+	}
+
+	if (g_pGameRules->GetSkillLevel() > SKILL_MEDIUM && m_nRareNPCRarity > 1)
+	{
+		m_nRareNPCRarity = m_nRareNPCRarity - g_pGameRules->GetSkillLevel();
 	}
 
 	if (debug_spawner_info.GetBool())
