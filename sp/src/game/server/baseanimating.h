@@ -330,6 +330,8 @@ public:
 
 	bool PrefetchSequence( int iSequence );
 
+	virtual bool ResetPosition(bool force = false);
+
 private:
 	void LockStudioHdr();
 	void UnlockStudioHdr();
@@ -414,6 +416,9 @@ protected:
 
 public:
 	COutputEvent m_OnIgnite;
+
+	Vector					m_vecSpawnOrigin;
+	QAngle					m_angSpawnAngles;
 
 private:
 	CStudioHdr			*m_pStudioHdr;

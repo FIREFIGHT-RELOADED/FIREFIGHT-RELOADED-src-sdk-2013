@@ -40,6 +40,7 @@ public:
 	virtual void OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason );
 
 	void RespawnThink( void );
+	void ResetPositionThink(void);
 
 protected:
 	virtual void OnBreak( const Vector &vecVelocity, const AngularImpulse &angVel, CBaseEntity *pBreaker );
@@ -58,8 +59,6 @@ private:
 	int					m_nItemCount;
 	string_t			m_strAlternateMaster;
 	string_t			m_CrateAppearance;
-	Vector				m_originalOrigin;
-	QAngle				m_originalAngles;
 	bool				m_bDoNotRespawn;
 	bool				m_bDoNotRespawnContents;
 
@@ -90,11 +89,10 @@ BEGIN_DATADESC(CItem_ItemCrateFirefight)
 	DEFINE_KEYFIELD(m_CrateAppearance, FIELD_STRING, "CrateAppearance"),
 	DEFINE_KEYFIELD(m_bDoNotRespawn, FIELD_BOOLEAN, "DoNotRespawn"),
 	DEFINE_KEYFIELD(m_bDoNotRespawnContents, FIELD_BOOLEAN, "DoNotRespawnContents"),
-	DEFINE_FIELD(m_originalOrigin, FIELD_VECTOR),
-	DEFINE_FIELD(m_originalAngles, FIELD_VECTOR),
 	DEFINE_INPUTFUNC(FIELD_VOID, "Kill", InputKill),
 	DEFINE_OUTPUT(m_OnCacheInteraction, "OnCacheInteraction"),
 	DEFINE_THINKFUNC(RespawnThink),
+	DEFINE_THINKFUNC(ResetPositionThink),
 
 END_DATADESC()
 
@@ -210,8 +208,6 @@ void CItem_ItemCrateFirefight::Spawn( void )
 		return;
 	}
 
-	m_originalOrigin = GetLocalOrigin();
-	m_originalAngles = GetLocalAngles();
 	SetLocalAngularVelocity(ZERO_ANGLE);
 	SetLocalVelocity(ZERO_VECTOR);
 
@@ -219,6 +215,10 @@ void CItem_ItemCrateFirefight::Spawn( void )
 	SetModel(STRING(m_CrateAppearance));
 	AddEFlags( EFL_NO_ROTORWASH_PUSH );
 	BaseClass::Spawn( );
+	m_vecSpawnOrigin = GetAbsOrigin();
+	m_angSpawnAngles = GetLocalAngles();
+	SetContextThink(&CItem_ItemCrateFirefight::ResetPositionThink,
+		gpGlobals->curtime + sv_crate_respawn_time.GetFloat(), "repo");
 }
 
 
@@ -274,6 +274,8 @@ void CItem_ItemCrateFirefight::VPhysicsCollision( int index, gamevcollisionevent
 //-----------------------------------------------------------------------------
 void CItem_ItemCrateFirefight::OnBreak( const Vector &vecVelocity, const AngularImpulse &angImpulse, CBaseEntity *pBreaker )
 {
+	SetContextThink(nullptr, 0, "repo");
+
 	// Should this crate respawn?
 	bool shouldRespawn = !m_bDoNotRespawn && sv_crate_respawn_time.GetFloat() >= 0;
 
@@ -347,6 +349,11 @@ void CItem_ItemCrateFirefight::OnBreak( const Vector &vecVelocity, const Angular
 			pItem->ActivateWhenAtRest();
 		}
 
+		// If this crate doesn't respawn, let its contents respawn unless other-
+		// wise specified.
+		if (shouldRespawn || m_bDoNotRespawnContents)
+			pSpawn->AddSpawnFlags(SF_NORESPAWN);
+
 		pSpawn->Spawn();
 
 		static ConVarRef sv_drops_cleanup_time( "sv_drops_cleanup_time" );
@@ -366,14 +373,12 @@ void CItem_ItemCrateFirefight::OnBreak( const Vector &vecVelocity, const Angular
 		}
 		else if ( shouldRespawn && sv_drops_cleanup_time.GetFloat() >= 0 )
 			pSpawn->SUB_StartFadeOut( sv_drops_cleanup_time.GetFloat(), false, "CleanUp" );
-
-		if (shouldRespawn || m_bDoNotRespawnContents)
-			pSpawn->AddSpawnFlags(SF_NORESPAWN);
 	}
 
 	if (shouldRespawn)
 	{
-		CItem_ItemCrateFirefight* pNewCrate = (CItem_ItemCrateFirefight*)CBaseEntity::CreateNoSpawn(GetClassname(), m_originalOrigin, m_originalAngles, GetOwnerEntity());
+		auto pNewCrate = (CItem_ItemCrateFirefight*)CBaseEntity::CreateNoSpawn(GetClassname(),
+			m_vecSpawnOrigin, m_angSpawnAngles, GetOwnerEntity());
 		if (pNewCrate == NULL)
 			return;
 		pNewCrate->m_strItemClass1 = m_strItemClass1;
@@ -424,8 +429,7 @@ void CItem_ItemCrateFirefight::RespawnThink(void)
 	physObj->EnableMotion(true);
 	physObj->Wake();
 
-	SetLocalAngles(m_originalAngles);
-	SetLocalOrigin(m_originalOrigin);
+	ResetPosition(true);
 	SetSolid( SOLID_VPHYSICS );
 
 	RemoveEffects(EF_NODRAW);
@@ -437,6 +441,22 @@ void CItem_ItemCrateFirefight::RespawnThink(void)
 #endif
 
 	SetThink(NULL);
+	SetContextThink(&CItem_ItemCrateFirefight::ResetPositionThink,
+		gpGlobals->curtime + sv_crate_respawn_time.GetFloat(), "repo");
+}
+
+void CItem_ItemCrateFirefight::ResetPositionThink(void)
+{
+	if (ResetPosition())
+	{
+#ifdef HL2MP
+		EmitSound("AlyxEmp.Charge");
+#else
+		EmitSound("Item.Materialize");
+#endif
+	}
+	SetContextThink(&CItem_ItemCrateFirefight::ResetPositionThink,
+		gpGlobals->curtime + sv_crate_respawn_time.GetFloat(), "repo");
 }
 
 void CItem_ItemCrateFirefight::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason )

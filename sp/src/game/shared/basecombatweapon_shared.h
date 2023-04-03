@@ -19,6 +19,7 @@
 #include "weapon_proficiency.h"
 #include "utlmap.h"
 #include "particle_parse.h"
+#include "convar.h"
 
 #if defined( CLIENT_DLL )
 #define CBaseCombatWeapon C_BaseCombatWeapon
@@ -473,6 +474,8 @@ public:
 
 	virtual CDmgAccumulator	*GetDmgAccumulator( void ) { return NULL; }
 
+	void ResetPositionThink();
+
 // Client only methods
 #else
 
@@ -651,7 +654,7 @@ private:
 	bool					m_bStandardHudHintDisplayed;	// Have we displayed a store HUD hint since this weapon was deployed?
 	float					m_flHudHintPollTime;	// When to poll the weapon again for whether it should display a hud hint.
 	float					m_flHudHintMinDisplayTime; // if the hint is squelched before this, reset my counter so we'll display it again.
-	
+
 	// Server only
 #if !defined( CLIENT_DLL )
 

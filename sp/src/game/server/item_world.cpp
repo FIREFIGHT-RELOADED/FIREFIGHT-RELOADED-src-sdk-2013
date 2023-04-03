@@ -86,15 +86,14 @@ void CWorldItem::Spawn( void )
 }
 
 
-BEGIN_DATADESC( CItem )
+BEGIN_DATADESC(CItem)
 
-	DEFINE_FIELD( m_bActivateWhenAtRest,	 FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_vOriginalSpawnOrigin, FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_vOriginalSpawnAngles, FIELD_VECTOR ),
-	DEFINE_PHYSPTR( m_pConstraint ),
+	DEFINE_FIELD(m_bActivateWhenAtRest, FIELD_BOOLEAN),
+	DEFINE_PHYSPTR(m_pConstraint),
 
-	// Function Pointers
-	DEFINE_ENTITYFUNC( ItemTouch ),
+// Function Pointers
+	DEFINE_ENTITYFUNC(ItemTouch),
+	DEFINE_THINKFUNC( ResetPositionThink ),
 	DEFINE_THINKFUNC( Materialize ),
 	DEFINE_THINKFUNC( ComeToRest ),
 
@@ -149,6 +148,9 @@ bool CItem::CreateItemVPhysicsObject( void )
 //-----------------------------------------------------------------------------
 void CItem::Spawn( void )
 {
+	m_vecSpawnOrigin = GetAbsOrigin();
+	m_angSpawnAngles = GetAbsAngles();
+
 	if ( g_pGameRules->IsAllowedToSpawn( this ) == false )
 	{
 		UTIL_Remove( this );
@@ -200,6 +202,9 @@ void CItem::Spawn( void )
 			m_pConstraint->SetGameData( (void *) this );
 		}
 	}
+
+	if (g_pGameRules->ItemShouldRespawn(this) == GR_ITEM_RESPAWN_YES)
+		ThinkSet( (BASEPTR)&CItem::ResetPositionThink, gpGlobals->curtime + g_pGameRules->FlItemRespawnTime(this), "repo" );
 #endif //CLIENT_DLL
 
 #if defined( HL2MP ) || defined( TF_DLL )
@@ -458,29 +463,43 @@ void CItem::ItemTouch( CBaseEntity *pOther )
 	}
 }
 
-CBaseEntity* CItem::Respawn( void )
+CBaseEntity* CItem::Respawn(void)
 {
-	SetTouch( NULL );
-	AddEffects( EF_NODRAW );
+	SetTouch(NULL);
+	AddEffects(EF_NODRAW);
+	ThinkSet(nullptr, 0, "repo");
 
 	VPhysicsDestroyObject();
 
-	SetMoveType( MOVETYPE_NONE );
-	SetSolid( SOLID_NONE );
-	RemoveSolidFlags( FSOLID_TRIGGER );
+	SetMoveType(MOVETYPE_NONE);
+	SetSolid(SOLID_NONE);
+	RemoveSolidFlags(FSOLID_TRIGGER);
 
-	UTIL_SetOrigin( this, g_pGameRules->VecItemRespawnSpot( this ) );// blip to whereever you should respawn.
-	SetAbsAngles( g_pGameRules->VecItemRespawnAngles( this ) );// set the angles.
+	UTIL_SetOrigin(this, g_pGameRules->VecItemRespawnSpot(this));// blip to whereever you should respawn.
+	SetAbsAngles(g_pGameRules->VecItemRespawnAngles(this));// set the angles.
 
 #if !defined( TF_DLL )
-	UTIL_DropToFloor( this, MASK_SOLID );
+	UTIL_DropToFloor(this, MASK_SOLID);
 #endif
 
 	RemoveAllDecals(); //remove any decals
 
-	SetThink ( &CItem::Materialize );
-	SetNextThink( gpGlobals->curtime + g_pGameRules->FlItemRespawnTime( this ) );
+	SetThink(&CItem::Materialize);
+	SetNextThink(gpGlobals->curtime + g_pGameRules->FlItemRespawnTime(this));
 	return this;
+}
+
+void CItem::ResetPositionThink()
+{
+	if (ResetPosition())
+	{
+#ifdef HL2MP
+		EmitSound("AlyxEmp.Charge");
+#else
+		EmitSound("Item.Materialize");
+#endif
+	}
+  ThinkSet((BASEPTR)&CItem::ResetPositionThink, gpGlobals->curtime + g_pGameRules->FlItemRespawnTime(this), "repo");
 }
 
 void CItem::Materialize( void )
@@ -500,6 +519,8 @@ void CItem::Materialize( void )
 		SetSolid(SOLID_BBOX);
 		AddSolidFlags(FSOLID_TRIGGER);
 		DoMuzzleFlash();
+		ResetPosition(true);
+    ThinkSet((BASEPTR)&CItem::ResetPositionThink, gpGlobals->curtime + g_pGameRules->FlItemRespawnTime(this), "repo");
 	}
 
 	SetTouch( &CItem::ItemTouch );
