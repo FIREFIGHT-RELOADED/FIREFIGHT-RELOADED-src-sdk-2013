@@ -20,6 +20,7 @@ void dumpspawnlist_cb()
 {
 	extern CRandNPCLoader* g_npcLoader;
 
+	ConMsg("m_Settings.spawnTime: %f\n", g_npcLoader->m_Settings.spawnTime);
 	for ( auto& iter : g_npcLoader->m_Entries )
 	{
 		ConMsg( "[%p] name=\"%s\", %s minPlayerLevel=%d npcAttributePreset=%d grenades=[%d, %d] weight=%f, totalEquipWeight=%f\n",
@@ -110,6 +111,8 @@ bool CRandNPCLoader::Load()
 			m_Settings.spawnTime = settings->GetFloat("spawntime", TIME_SETBYHAMMER);
 		}
 	}
+	else
+		m_Settings.spawnTime = TIME_SETBYHAMMER;
 
 	AddEntries( pKV );
 

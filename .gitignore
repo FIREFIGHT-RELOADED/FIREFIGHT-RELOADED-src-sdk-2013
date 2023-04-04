@@ -81,6 +81,7 @@ compile_commands.json
 !sourcesdk_def.mak
 *.vsidx
 sp/src/.vs/*
+.vs
 sp/game/firefightreloaded/cfg/user_sp.scr
 sp/game/firefightreloaded/cfg/steam_autocloud.vdf
 sp/src/lib/public/fgdlib.lib

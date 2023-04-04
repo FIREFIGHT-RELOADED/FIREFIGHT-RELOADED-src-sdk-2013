@@ -242,46 +242,60 @@ ConVar sv_player_autoswitch("sv_player_autoswitch", "1", FCVAR_ARCHIVE);
 ConVar sv_fr_perks_healthregeneration_perkmode("sv_fr_perks_healthregeneration_perkmode", "0", FCVAR_ARCHIVE);
 ConVar sv_fr_perks_healthregeneration_perkmode_inmutators("sv_fr_perks_healthregeneration_perkmode_inmutators", "1", FCVAR_ARCHIVE);
 
-void CC_GiveCurrentAmmo( void )
+static void GiveAmmo( CBasePlayer* player, CBaseCombatWeapon* weap )
 {
-	CBasePlayer *pPlayer = UTIL_GetCommandClient();
-
-	if( pPlayer )
+	if ( weap->UsesPrimaryAmmo() )
 	{
-		CBaseCombatWeapon *pWeapon = pPlayer->GetActiveWeapon();
+		int ammoIndex = weap->GetPrimaryAmmoType();
 
-		if( pWeapon )
+		if ( ammoIndex != -1 )
 		{
-			if( pWeapon->UsesPrimaryAmmo() )
-			{
-				int ammoIndex = pWeapon->GetPrimaryAmmoType();
+			int giveAmount;
+			giveAmount = GetAmmoDef()->MaxCarry( ammoIndex );
+			player->GiveAmmo( giveAmount, GetAmmoDef()->GetAmmoOfIndex( ammoIndex )->pName );
+		}
+	}
+	if ( weap->UsesSecondaryAmmo() )
+	{
+		int ammoIndex = weap->GetSecondaryAmmoType();
 
-				if( ammoIndex != -1 )
-				{
-					int giveAmount;
-					giveAmount = GetAmmoDef()->MaxCarry(ammoIndex);
-					pPlayer->GiveAmmo( giveAmount, GetAmmoDef()->GetAmmoOfIndex(ammoIndex)->pName );
-				}
-			}
-			if( pWeapon->UsesSecondaryAmmo() && pWeapon->HasSecondaryAmmo() )
-			{
-				// Give secondary ammo out, as long as the player already has some
-				// from a presumeably natural source. This prevents players on XBox
-				// having Combine Balls and so forth in areas of the game that
-				// were not tested with these items.
-				int ammoIndex = pWeapon->GetSecondaryAmmoType();
-
-				if( ammoIndex != -1 )
-				{
-					int giveAmount;
-					giveAmount = GetAmmoDef()->MaxCarry(ammoIndex);
-					pPlayer->GiveAmmo( giveAmount, GetAmmoDef()->GetAmmoOfIndex(ammoIndex)->pName );
-				}
-			}
+		if ( ammoIndex != -1 )
+		{
+			int giveAmount;
+			giveAmount = GetAmmoDef()->MaxCarry( ammoIndex );
+			player->GiveAmmo( giveAmount, GetAmmoDef()->GetAmmoOfIndex( ammoIndex )->pName );
 		}
 	}
 }
-static ConCommand givecurrentammo("givecurrentammo", CC_GiveCurrentAmmo, "Give a supply of ammo for current weapon..\n", FCVAR_CHEAT );
+
+void CC_GiveCurrentAmmo( void )
+{
+	CBasePlayer *player = UTIL_GetCommandClient();
+	if ( player == nullptr )
+		return;
+
+	CBaseCombatWeapon *weap = player->GetActiveWeapon();
+	if ( weap == nullptr )
+		return;
+
+	GiveAmmo( player, weap );
+}
+static ConCommand givecurrentammo("givecurrentammo", CC_GiveCurrentAmmo, "Give a supply of ammo for current weapon.\n", FCVAR_CHEAT );
+
+void CC_GiveAllAmmo( void )
+{
+	CBasePlayer *player = UTIL_GetCommandClient();
+	if ( player == nullptr )
+		return;
+
+	for ( int i = 0; i < player->WeaponCount(); ++i )
+	{
+		auto weap = player->GetWeapon( i );
+		if ( weap != nullptr )
+			GiveAmmo( player, weap );
+	}
+}
+static ConCommand giveallammo( "giveallammo", CC_GiveAllAmmo, "Give all weapons in inventory all ammo.\n", FCVAR_CHEAT );
 
 /*
 void CC_BuyItem(const CCommand &args)
@@ -8024,6 +8038,7 @@ bool CBasePlayer::BumpWeapon( CBaseCombatWeapon *pWeapon )
 	else 
 	{
 		pWeapon->CheckRespawn();
+		pWeapon->ThinkSet( nullptr, 0, "repo" );
 
 		pWeapon->AddSolidFlags( FSOLID_NOT_SOLID );
 		pWeapon->AddEffects( EF_NODRAW );
