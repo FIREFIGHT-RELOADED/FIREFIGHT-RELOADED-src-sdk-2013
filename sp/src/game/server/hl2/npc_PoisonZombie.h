@@ -101,6 +101,8 @@ public:
 
 	virtual bool ShouldPlayIdleSound( void );
 
+	virtual void SetGrenadeCount( int count );
+
 	//
 	// CBaseAnimating implementation.
 	//

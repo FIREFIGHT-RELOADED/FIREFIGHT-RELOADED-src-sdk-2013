@@ -368,25 +368,6 @@ class IClientPurchaseInterfaceV2 *g_pClientPurchaseInterface = (class IClientPur
 
 static ConVar *g_pcv_ThreadMode = NULL;
 
-// GAMEPADUI TODO - put this somewhere better. (Madi)
-// we could use this for adjusting certain features for Deck players. maybe add as an actual function on server and client.
-/*#if defined( GAMEPADUI )
-const bool IsSteamDeck()
-{
-	if ( CommandLine()->FindParm( "-gamepadui" ) )
-		return true;
-
-	if ( CommandLine()->FindParm( "-nogamepadui" ) )
-		return false;
-
-	const char *pszSteamDeckEnv = getenv( "SteamDeck" );
-	if ( pszSteamDeckEnv && *pszSteamDeckEnv )
-		return atoi( pszSteamDeckEnv ) != 0;
-
-	return false;
-}
-#endif*/
-
 //-----------------------------------------------------------------------------
 // Purpose: interface for gameui to modify voice bans
 //-----------------------------------------------------------------------------
@@ -1285,36 +1266,39 @@ void CHLClient::PostInit()
 #endif
 
 #if defined(GAMEPADUI)
-	CSysModule* pGamepadUIModule = g_pFullFileSystem->LoadModule( "gamepadui", "GAMEBIN", false );
-	if ( pGamepadUIModule != nullptr )
+	if (UTIL_IsGamepadUIEnabled())
 	{
-		GamepadUI_Log( "Loaded gamepadui module.\n" );
-
-		CreateInterfaceFn gamepaduiFactory = Sys_GetFactory( pGamepadUIModule );
-		if ( gamepaduiFactory != nullptr )
+		CSysModule* pGamepadUIModule = g_pFullFileSystem->LoadModule("gamepadui", "GAMEBIN", false);
+		if (pGamepadUIModule != nullptr)
 		{
-			g_pGamepadUI = (IGamepadUI*) gamepaduiFactory( GAMEPADUI_INTERFACE_VERSION, NULL );
-			if ( g_pGamepadUI != nullptr )
-			{
-				GamepadUI_Log( "Initializing IGamepadUI interface...\n" );
+			GamepadUI_Log("Loaded gamepadui module.\n");
 
-				factorylist_t factories;
-				FactoryList_Retrieve( factories );
-				g_pGamepadUI->Initialize( factories.appSystemFactory );
+			CreateInterfaceFn gamepaduiFactory = Sys_GetFactory(pGamepadUIModule);
+			if (gamepaduiFactory != nullptr)
+			{
+				g_pGamepadUI = (IGamepadUI*)gamepaduiFactory(GAMEPADUI_INTERFACE_VERSION, NULL);
+				if (g_pGamepadUI != nullptr)
+				{
+					GamepadUI_Log("Initializing IGamepadUI interface...\n");
+
+					factorylist_t factories;
+					FactoryList_Retrieve(factories);
+					g_pGamepadUI->Initialize(factories.appSystemFactory);
+				}
+				else
+				{
+					GamepadUI_Log("Unable to pull IGamepadUI interface.\n");
+				}
 			}
 			else
 			{
-				GamepadUI_Log( "Unable to pull IGamepadUI interface.\n" );
+				GamepadUI_Log("Unable to get gamepadui factory.\n");
 			}
 		}
 		else
 		{
-			GamepadUI_Log( "Unable to get gamepadui factory.\n" );
+			GamepadUI_Log("Unable to load gamepadui module\n");
 		}
-	}
-	else
-	{
-		GamepadUI_Log( "Unable to load gamepadui module\n" );
 	}
 #endif // GAMEPADUI
 }
@@ -1359,8 +1343,11 @@ void CHLClient::Shutdown( void )
 	IGameSystem::ShutdownAllSystems();
 
 #if defined(GAMEPADUI)
-	if (g_pGamepadUI != nullptr)
-		g_pGamepadUI->Shutdown();
+	if (UTIL_IsGamepadUIEnabled())
+	{
+		if (g_pGamepadUI != nullptr)
+			g_pGamepadUI->Shutdown();
+	}
 #endif // GAMEPADUI
 	
 	gHUD.Shutdown();
@@ -1411,6 +1398,11 @@ int CHLClient::HudVidInit( void )
 	gHUD.VidInit();
 
 	GetClientVoiceMgr()->VidInit();
+
+#if defined(GAMEPADUI)
+	if (g_pGamepadUI != nullptr)
+		g_pGamepadUI->VidInit();
+#endif // GAMEPADUI
 
 	return 1;
 }
@@ -1464,8 +1456,11 @@ void CHLClient::HudUpdate( bool bActive )
 #endif
 
 #if defined(GAMEPADUI)
-	if (g_pGamepadUI != nullptr)
-		g_pGamepadUI->OnUpdate( frametime );
+	if (UTIL_IsGamepadUIEnabled())
+	{
+		if (g_pGamepadUI != nullptr)
+			g_pGamepadUI->OnUpdate(frametime);
+	}
 #endif // GAMEPADUI
 }
 
@@ -1853,8 +1848,11 @@ void CHLClient::LevelInitPreEntity( char const* pMapName )
 #endif
 
 #if defined(GAMEPADUI)
-	if (g_pGamepadUI != nullptr)
-		g_pGamepadUI->OnLevelInitializePreEntity();
+	if (UTIL_IsGamepadUIEnabled())
+	{
+		if (g_pGamepadUI != nullptr)
+			g_pGamepadUI->OnLevelInitializePreEntity();
+	}
 #endif // GAMEPADUI
 }
 
@@ -1869,8 +1867,11 @@ void CHLClient::LevelInitPostEntity( )
 	internalCenterPrint->Clear();
 
 #if defined(GAMEPADUI)
-	if (g_pGamepadUI != nullptr)
-		g_pGamepadUI->OnLevelInitializePostEntity();
+	if (UTIL_IsGamepadUIEnabled())
+	{
+		if (g_pGamepadUI != nullptr)
+			g_pGamepadUI->OnLevelInitializePostEntity();
+	}
 #endif // GAMEPADUI
 }
 
@@ -1939,8 +1940,11 @@ void CHLClient::LevelShutdown( void )
 	StopAllRumbleEffects();
 
 #if defined(GAMEPADUI)
-	if (g_pGamepadUI != nullptr)
-		g_pGamepadUI->OnLevelShutdown();
+	if (UTIL_IsGamepadUIEnabled())
+	{
+		if (g_pGamepadUI != nullptr)
+			g_pGamepadUI->OnLevelShutdown();
+	}
 #endif // GAMEPADUI
 
 	gHUD.LevelShutdown();

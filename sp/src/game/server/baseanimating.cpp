@@ -33,6 +33,9 @@
 
 ConVar ai_sequence_debug( "ai_sequence_debug", "0" );
 
+extern ConVar sv_weapon_respawn_time;
+ConVar sv_reset_position_dist("sv_reset_position_dist", "64", FCVAR_ARCHIVE, "Distance outside of which position is always reset.");
+
 class CIKSaveRestoreOps : public CClassPtrSaveRestoreOps
 {
 	// save data type interface
@@ -215,7 +218,10 @@ DEFINE_INPUTFUNC( FIELD_VECTOR, "SetModelScale", InputSetModelScale ),
 
 DEFINE_FIELD( m_fBoneCacheFlags, FIELD_SHORT ),
 
-	END_DATADESC()
+DEFINE_FIELD(m_vecSpawnOrigin, FIELD_VECTOR),
+DEFINE_FIELD(m_angSpawnAngles, FIELD_VECTOR),
+
+END_DATADESC()
 
 // Sendtable for fields we don't want to send to clientside animating entities
 BEGIN_SEND_TABLE_NOBASE( CBaseAnimating, DT_ServerAnimationData )
@@ -380,6 +386,9 @@ void CBaseAnimating::OnRestore()
 //-----------------------------------------------------------------------------
 void CBaseAnimating::Spawn()
 {
+	m_vecSpawnOrigin = GetAbsOrigin();
+	m_angSpawnAngles = GetLocalAngles();
+
 	BaseClass::Spawn();
 }
 
@@ -860,7 +869,7 @@ bool CBaseAnimating::IsRagdoll()
 	return ( m_nRenderFX == kRenderFxRagdoll ) ? true : false;
 }
 
-bool CBaseAnimating::CanBecomeRagdoll( void ) 
+bool CBaseAnimating::CanBecomeRagdoll( bool ignoreTransition ) 
 {
 	MDLCACHE_CRITICAL_SECTION();
 	int ragdollSequence = SelectWeightedSequence( ACT_DIERAGDOLL );
@@ -870,7 +879,7 @@ bool CBaseAnimating::CanBecomeRagdoll( void )
 		 return false;
 	
 	if ( GetFlags() & FL_TRANSRAGDOLL )
-		 return false;
+		 return ignoreTransition;
 
 	return true;
 }
@@ -3596,4 +3605,39 @@ CStudioHdr *CBaseAnimating::OnNewModel()
 	}
 
 	return hdr;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Relocate weapon if it potentially can't be gotten by the player anymore.
+// Return true if repositioning occurred.
+//-----------------------------------------------------------------------------// 
+bool CBaseAnimating::ResetPosition(bool force)
+{
+	// Don't bother if we don't have any physics objects since we can't move.
+	auto phys = VPhysicsGetObject();
+	if (phys == nullptr || phys->GetGameFlags() & FVPHYSICS_PLAYER_HELD)
+		return false;
+
+	// If we're too far (or being forced), reset.
+	auto curOrigin = GetAbsOrigin();
+	if (!force && m_vecSpawnOrigin.DistTo(curOrigin) <= sv_reset_position_dist.GetFloat())
+	{
+		// We're not too far away yet, but we still might not be accessible. Estimate whether
+		// the player can still touch the item by tracing a line to the object from the spawn
+		// origin and seeing if there any impediments; if so, reset.
+		Ray_t ray;
+		ray.Init(m_vecSpawnOrigin, curOrigin);
+		trace_t trace;
+		UTIL_TraceRay(ray, MASK_PLAYERSOLID_BRUSHONLY, this,
+			COLLISION_GROUP_PLAYER, &trace);
+		if (!trace.DidHit())
+			return false;
+	}
+
+  phys->EnableMotion(false);
+  SetLocalAngularVelocity(vec3_angle);
+  Teleport(&m_vecSpawnOrigin, &m_angSpawnAngles, &vec3_origin);
+  phys->EnableMotion(true);
+  phys->Wake();
+  return true;
 }

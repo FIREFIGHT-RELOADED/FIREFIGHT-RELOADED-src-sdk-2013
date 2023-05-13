@@ -21,4 +21,5 @@ $Configuration
 //we're adding new interfaces soon ;D
 $Project "GamepadUI (FR)"
 {
+	$File "gamepadui_fr_mapchooser.cpp"
 }

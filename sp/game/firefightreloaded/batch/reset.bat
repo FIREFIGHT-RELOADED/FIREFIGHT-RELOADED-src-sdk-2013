@@ -16,6 +16,7 @@ del ep1_gamestats.dat
 del cfg\config.cfg
 del cfg\settings.scr
 del cfg\user.scr
+del cfg\user_sp.scr
 del bin\client.pdb
 del bin\gamepadui.pdb
 del bin\server.pdb

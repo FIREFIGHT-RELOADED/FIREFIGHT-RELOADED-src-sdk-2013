@@ -69,6 +69,8 @@ public:
 
 	virtual Vector  GetCrouchEyeOffset( void );
 
+	virtual void SetGrenadeCount( int count ) { m_iNumGrenades = count < 1 ? 0 : count; }
+
 	void Event_Killed( const CTakeDamageInfo &info );
 
 	void SetActivity( Activity NewActivity );

@@ -20,6 +20,7 @@ void dumpspawnlist_cb()
 {
 	extern CRandNPCLoader* g_npcLoader;
 
+	ConMsg("m_Settings.spawnTime: %f\n", g_npcLoader->m_Settings.spawnTime);
 	for ( auto& iter : g_npcLoader->m_Entries )
 	{
 		ConMsg( "[%p] name=\"%s\", %s minPlayerLevel=%d npcAttributePreset=%d grenades=[%d, %d] weight=%f, totalEquipWeight=%f\n",
@@ -88,6 +89,31 @@ bool CRandNPCLoader::Load()
 		}
 	}
 
+	//load settings in the spawnlist if any.
+	KeyValues* settings = pKV->FindKey("settings");
+	if (settings)
+	{
+		if (UTIL_IsSteamDeck())
+		{
+			float spawntimeDeck = settings->GetFloat("spawntime_steamdeck", TIME_SETBYHAMMER);
+
+			if (spawntimeDeck != TIME_SETBYHAMMER)
+			{
+				m_Settings.spawnTime = spawntimeDeck;
+			}
+			else
+			{
+				m_Settings.spawnTime = settings->GetFloat("spawntime", TIME_SETBYHAMMER);
+			}
+		}
+		else
+		{
+			m_Settings.spawnTime = settings->GetFloat("spawntime", TIME_SETBYHAMMER);
+		}
+	}
+	else
+		m_Settings.spawnTime = TIME_SETBYHAMMER;
+
 	AddEntries( pKV );
 
 	pKV->deleteThis();
@@ -127,6 +153,9 @@ bool CRandNPCLoader::AddEntries( KeyValues* pKV )
 	bool ret = true;
 	for ( auto iter = pKV->GetFirstSubKey(); iter != NULL; iter = iter->GetNextKey() )
 	{
+		if (!strcmp(iter->GetName(), "settings"))
+			continue;
+
 		auto newKV = iter->MakeCopy();
 		m_KVs->AddSubKey( iter->MakeCopy() );
 		SpawnEntry_t entry;

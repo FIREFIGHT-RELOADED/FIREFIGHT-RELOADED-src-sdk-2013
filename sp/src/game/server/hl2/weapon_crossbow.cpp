@@ -27,6 +27,7 @@
 #include "hl2_player.h"
 #include "func_break.h"
 #include "func_breakablesurf.h"
+#include "stickybolt.h"
 
 #ifdef PORTAL
 	#include "portal_util_shared.h"
@@ -43,8 +44,6 @@
 
 extern ConVar sk_plr_dmg_crossbow;
 extern ConVar sk_npc_dmg_crossbow;
-
-void TE_StickyBolt( IRecipientFilter& filter, float delay,	Vector vecDirection, const Vector *origin );
 
 #define	BOLT_SKIN_NORMAL	0
 #define BOLT_SKIN_GLOW		1
@@ -204,8 +203,10 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 	if ( pOther->IsSolidFlagSet(FSOLID_VOLUME_CONTENTS | FSOLID_TRIGGER) )
 	{
 		// Some NPCs are triggers that can take damage (like antlion grubs). We should hit them.
-		if ( ( pOther->m_takedamage == DAMAGE_NO ) || ( pOther->m_takedamage == DAMAGE_EVENTS_ONLY ) )
+		if ( (pOther->m_takedamage == DAMAGE_NO) || (pOther->m_takedamage == DAMAGE_EVENTS_ONLY) )
+		{
 			return;
+		}
 	}
 
 	if ( pOther->m_takedamage != DAMAGE_NO )
@@ -292,9 +293,11 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 
 				data.m_vOrigin = tr2.endpos;
 				data.m_vNormal = vForward;
-				data.m_nEntIndex = tr2.fraction != 1.0f;
+				data.m_fFlags = SBFL_CROSSBOWBOLT | SBFL_STICKRAGDOLL;
 			
 				DispatchEffect("BoltImpact", data);
+
+				UTIL_ImpactTrace( &tr2, DMG_BULLET );
 			}
 		}
 		
@@ -349,7 +352,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 
 				data.m_vOrigin = tr.endpos;
 				data.m_vNormal = vForward;
-				data.m_nEntIndex = 0;
+				data.m_fFlags = SBFL_CROSSBOWBOLT;
 			
 				DispatchEffect("BoltImpact", data);
 				

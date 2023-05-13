@@ -3085,6 +3085,7 @@ BEGIN_DATADESC( CBaseCombatWeapon )
 	DEFINE_THINKFUNC( AttemptToMaterialize ),
 	DEFINE_THINKFUNC( DestroyItem ),
 	DEFINE_THINKFUNC( SetPickupTouch ),
+	DEFINE_THINKFUNC( ResetPositionThink ),
 
 	DEFINE_THINKFUNC( HideThink ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "HideWeapon", InputHideWeapon ),

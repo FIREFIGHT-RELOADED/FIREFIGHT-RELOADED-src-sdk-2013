@@ -147,11 +147,16 @@ void CNPCMakerFirefight::Precache(void)
 {
 	BaseClass::Precache();
 
-	if ( g_npcLoader == NULL )
+	if (g_npcLoader == nullptr)
 	{
 		g_npcLoader = new CRandNPCLoader;
-		g_npcLoader->Load();
+		AssertFatal(g_npcLoader != nullptr);
+		AssertFatal(g_npcLoader->Load());
 	}
+
+	float setSpawnTime = g_npcLoader->m_Settings.spawnTime;
+	if (setSpawnTime != 0 && setSpawnTime != TIME_SETBYHAMMER)
+		m_flSpawnFrequency = setSpawnTime;
 
 	int nWeapons = ARRAYSIZE(g_Weapons);
 	for (int i = 0; i < nWeapons; ++i)
@@ -163,6 +168,11 @@ void CNPCMakerFirefight::Precache(void)
 //-----------------------------------------------------------------------------
 void CNPCMakerFirefight::MakerThink(void)
 {
+	if (m_flSpawnFrequency <= 0)
+	{
+		m_flSpawnFrequency = 5;
+	}
+
 	SetNextThink(gpGlobals->curtime + m_flSpawnFrequency);
 
 	//rare npcs will be handled by the spawnlist
@@ -178,14 +188,14 @@ void CNPCMakerFirefight::MakerThink(void)
 		m_nLiveRareNPCs = 0;
 	}
 
-	if (m_nRareNPCRarity > SKILL_MEDIUM)
-	{
-		m_nRareNPCRarity = m_nRareNPCRarity - g_pGameRules->GetSkillLevel();
-	}
-
 	if (m_nRareNPCRarity <= 0)
 	{
 		m_nRareNPCRarity = 1;
+	}
+
+	if (g_pGameRules->GetSkillLevel() > SKILL_MEDIUM && m_nRareNPCRarity > 1)
+	{
+		m_nRareNPCRarity = m_nRareNPCRarity - g_pGameRules->GetSkillLevel();
 	}
 
 	if (debug_spawner_info.GetBool())
@@ -541,35 +551,14 @@ void CNPCMakerFirefight::MakeNPC()
 	pent->SetSquadName(m_SquadName);
 	pent->SetHintGroup(m_strHintGroup);
 
-	int grenades = entry->GetRandomGrenades();
-	if ( grenades >= 0 )
-	{
-		if ( Q_stristr( pRandomName, "npc_metropolice" ) )
-		{
-			auto pPolice = (CNPC_MetroPolice*)pent;
-			pPolice->m_iManhacks = grenades;
-		}
-		else if (Q_stristr(pRandomName, "npc_combine_s") ||
-				Q_stristr(pRandomName, "npc_combine_e") ||
-				Q_stristr(pRandomName, "npc_combine_p") ||
-				Q_stristr(pRandomName, "npc_combine_shot") || 
-				Q_stristr(pRandomName, "npc_combine_ace"))
-		{
-			auto pCombine = (CNPC_Combine*)pent;
-			pCombine->m_iNumGrenades = grenades;
-		}
-		else if ( Q_stristr( pRandomName, "npc_poisonzombie") )
-		{
-			auto pPoison = (CNPC_PoisonZombie*)pent;
-			pPoison->m_bCrabCountOverride = true;
-			pPoison->m_nCrabCount = grenades;
-		}
-	}
-
 	ChildPreSpawn(pent);
 
 	DispatchSpawn(pent);
-	pent->SetOwnerEntity(this);
+	pent->SetOwnerEntity( this );
+
+	int grenades = entry->GetRandomGrenades();
+	if ( grenades >= 0 )
+		pent->SetGrenadeCount( grenades );
 
 	// adding this check to make sure strders will work properly...
 	if (FClassnameIs(pent, "npc_strider") || 

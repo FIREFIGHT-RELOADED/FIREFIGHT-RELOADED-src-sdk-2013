@@ -11,7 +11,7 @@
 	"NewGame"
 	{
 		"text"			"#GameUI_GameMenu_NewGame"
-		"command"		"cmd createnewgame"
+		"command"		"cmd gamepadui_openmapchooser"
 		"priority"		"9"
 		"family"		"all"
 	}

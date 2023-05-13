@@ -129,7 +129,8 @@ extern ConVar thirdperson_screenspace;
 //-----------------------------------------------------------------
 bool CInput::EnableJoystickMode()
 {
-	return IsConsole() || in_joystick.GetBool();
+	const bool bController = (g_pInputSystem->GetJoystickCount() >= 1);
+	return IsConsole() || UTIL_IsGamepadUIEnabled() || bController || in_joystick.GetBool();
 }
 
 
@@ -459,7 +460,9 @@ void CInput::Joystick_Advanced(void)
 	int	i;
 	DWORD dwTemp;
 
-	if ( IsX360() )
+	const bool bController = (g_pInputSystem->GetJoystickCount() >= 1);
+
+	if ( IsX360() || UTIL_IsGamepadUIEnabled() || bController)
 	{
 		// Xbox always uses a joystick
 		in_joystick.SetValue( 1 );

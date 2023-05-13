@@ -12,6 +12,8 @@
 
 #include "cbase.h"
 
+#define TIME_SETBYHAMMER -1
+
 //-----------------------------------------------------------------------------
 // Spawnflags
 //-----------------------------------------------------------------------------
@@ -23,6 +25,11 @@
 class CRandNPCLoader
 {
 public:
+	struct Settings_t
+	{
+		float spawnTime;
+	};
+
 	struct EquipEntry_t
 	{
 		const char *name;
@@ -53,6 +60,9 @@ public:
 	bool Load();
 	bool AddEntries( KeyValues *kv );
 	const SpawnEntry_t* GetRandomEntry(bool isRare) const;
+
+public:
+	Settings_t m_Settings;
 
 private:
 	static int GetLargestLevel();

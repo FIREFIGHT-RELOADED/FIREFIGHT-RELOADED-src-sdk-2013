@@ -49,7 +49,7 @@ short		g_sModelIndexBubbles;		// holds the index for the bubbles model
 short		g_sModelIndexBloodDrop;		// holds the sprite index for the initial blood
 short		g_sModelIndexBloodSpray;	// holds the sprite index for splattered blood
 
-
+extern ConVar sv_weapon_respawn_time;
 ConVar weapon_showproficiency( "weapon_showproficiency", "0" );
 extern ConVar ai_debug_shoot_positions;
 
@@ -199,7 +199,7 @@ CBaseEntity* CBaseCombatWeapon::Respawn( void )
 {
 	// make a copy of this weapon that is invisible and inaccessible to players (no touch function). The weapon spawn/respawn code
 	// will decide when to make the weapon visible and touchable.
-	CBaseEntity *pNewWeapon = CBaseEntity::Create( GetClassname(), g_pGameRules->VecWeaponRespawnSpot( this ), GetLocalAngles(), GetOwnerEntity() );
+	CBaseEntity *pNewWeapon = CBaseEntity::Create( GetClassname(), m_vecSpawnOrigin, m_angSpawnAngles, GetOwnerEntity() );
 
 	if ( pNewWeapon )
 	{
@@ -553,7 +553,7 @@ void CBaseCombatWeapon::FallThink ( void )
 		{
 			EmitSound( "BaseCombatWeapon.WeaponDrop" );
 		}
-		Materialize(); 
+		Materialize();
 	}
 }
 
@@ -584,6 +584,26 @@ void CBaseCombatWeapon::Materialize( void )
 	SetPickupTouch();
 
 	SetThink (NULL);
+	if ( g_pGameRules->WeaponShouldRespawn( this ) )
+		SetContextThink( &CBaseCombatWeapon::ResetPositionThink,
+			gpGlobals->curtime + sv_weapon_respawn_time.GetFloat(), "repo" );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Relocate weapon if it is too far from spawn.
+//-----------------------------------------------------------------------------// 
+void CBaseCombatWeapon::ResetPositionThink( void )
+{
+	if (ResetPosition())
+	{
+#ifdef HL2MP
+		EmitSound("AlyxEmp.Charge");
+#else
+		EmitSound("Item.Materialize");
+#endif
+	}
+	SetContextThink(&CBaseCombatWeapon::ResetPositionThink,
+		gpGlobals->curtime + sv_weapon_respawn_time.GetFloat(), "repo");
 }
 
 //-----------------------------------------------------------------------------
@@ -624,7 +644,6 @@ public:
 	CWeaponList( char const *name ) : CAutoGameSystem( name )
 	{
 	}
-
 
 	virtual void LevelShutdownPostEntity()  
 	{ 

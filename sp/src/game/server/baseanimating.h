@@ -128,7 +128,7 @@ public:
 	virtual void ClampRagdollForce( const Vector &vecForceIn, Vector *vecForceOut ) { *vecForceOut = vecForceIn; } // Base class does nothing.
 	virtual bool BecomeRagdollOnClient( const Vector &force );
 	virtual bool IsRagdoll();
-	virtual bool CanBecomeRagdoll( void ); //Check if this entity will ragdoll when dead.
+	virtual bool CanBecomeRagdoll( bool ignoreTransition = false ); //Check if this entity will ragdoll when dead.
 
 	virtual	void GetSkeleton( CStudioHdr *pStudioHdr, Vector pos[], Quaternion q[], int boneMask );
 
@@ -330,6 +330,8 @@ public:
 
 	bool PrefetchSequence( int iSequence );
 
+	virtual bool ResetPosition(bool force = false);
+
 private:
 	void LockStudioHdr();
 	void UnlockStudioHdr();
@@ -414,6 +416,9 @@ protected:
 
 public:
 	COutputEvent m_OnIgnite;
+
+	Vector					m_vecSpawnOrigin;
+	QAngle					m_angSpawnAngles;
 
 private:
 	CStudioHdr			*m_pStudioHdr;

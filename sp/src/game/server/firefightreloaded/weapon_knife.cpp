@@ -21,6 +21,9 @@
 #include "rumble_shared.h"
 #include "gamestats.h"
 #include "cleanup_manager.h"
+#include "physics_prop_ragdoll.h"
+#include "effect_dispatch_data.h"
+#include "te_effect_dispatch.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -41,6 +44,7 @@ ConVar    sk_npc_dmg_knife_thrown("sk_npc_dmg_knife_thrown", "0");
 //-----------------------------------------------------------------------------
 
 IMPLEMENT_SERVERCLASS_ST(CWeaponKnife, DT_WeaponKnife)
+SendPropEHandle(SENDINFO(m_hStuckRagdoll))
 END_SEND_TABLE()
 
 #ifndef HL2MP
@@ -386,6 +390,27 @@ void CWeaponKnife::ImpactEffect(trace_t &traceHit)
 	//UTIL_DecalTrace(&traceHit, "ManhackCut");
 }
 
+void CWeaponKnife::DislodgeRagdoll()
+{
+	auto ragdoll = dynamic_cast<CBaseAnimating*>(m_hStuckRagdoll.Get());
+	if ( ragdoll != nullptr && ragdoll->IsRagdoll() )
+	{
+		// This is an attempt to handle server-side ragdolls, but it doesn't seem
+		// to work now.
+		CRagdollProp* newRagdoll = (CRagdollProp*)CreateEntityByName( "prop_ragdoll" );
+		if ( newRagdoll != nullptr )
+		{
+			newRagdoll->CopyAnimationDataFrom( ragdoll );
+			newRagdoll->Spawn();
+			ragdoll->Remove();
+		}
+	}
+
+	CEffectData data;
+	data.m_nEntIndex = entindex();
+	DispatchEffect( "KnifeDislodge", data );
+}
+
 int CWeaponKnife::OnTakeDamage( const CTakeDamageInfo& info )
 {
 	auto phys = VPhysicsGetObject();
@@ -397,6 +422,7 @@ int CWeaponKnife::OnTakeDamage( const CTakeDamageInfo& info )
 		phys->Wake();
 		forward *= Clamp( info.GetDamage() + 100, 100.0f, 250.0f );
 		phys->SetVelocity( &forward, NULL );
+		DislodgeRagdoll();
 		return 0;
 	}
 	else
@@ -405,6 +431,7 @@ int CWeaponKnife::OnTakeDamage( const CTakeDamageInfo& info )
 
 void CWeaponKnife::Equip( CBaseCombatCharacter *pOwner )
 {
+	DislodgeRagdoll();
 	CCleanupManager::RemoveThrownKnife( this );
 	BaseClass::Equip( pOwner );
 }

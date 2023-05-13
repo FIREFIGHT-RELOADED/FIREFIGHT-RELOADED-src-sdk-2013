@@ -167,22 +167,18 @@ void CNPC_PoisonZombie::Spawn( void )
 	m_pSlowBreathSound = ENVELOPE_CONTROLLER.SoundCreate( filter2, entindex(), CHAN_ITEM, "NPC_PoisonZombie.Moan1", ATTN_NORM );
 	ENVELOPE_CONTROLLER.Play( m_pSlowBreathSound, BREATH_VOL_MAX, 100 );
 
-	int nCrabs;
-	if ( m_bCrabCountOverride )
-		nCrabs = Clamp( m_nCrabCount, 0, MAX_CRABS );
-	else
-	{
-		nCrabs = m_nCrabCount < 1 ? MAX_CRABS
-			: m_nCrabCount > MAX_CRABS ? MAX_CRABS
-			: m_nCrabCount;
-	}
+	int nCrabs = m_nCrabCount < 1 || m_nCrabCount > MAX_CRABS
+			? MAX_CRABS : m_nCrabCount;
 	m_nCrabCount = 0;
 
-	//
-	// Generate a random set of crabs based on the crab count
-	// specified by the level designer.
-	//
-	int nBits[] = 
+	SetGrenadeCount( nCrabs );
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CNPC_PoisonZombie::SetGrenadeCount( int count )
+{
+	static const int nBits[] =
 	{
 		// One bit
 		0x01,
@@ -196,21 +192,20 @@ void CNPC_PoisonZombie::Spawn( void )
 	};
 
 	int nBitMask;
-	if ( nCrabs == 0 )
+	if ( count == 0 )
 		nBitMask = 0;
-	else if ( nCrabs == 1 )
+	else if ( count == 1 )
 		nBitMask = nBits[random->RandomInt( 0, 2 )];
-	else if ( nCrabs == 2 )
+	else if ( count == 2 )
 		nBitMask = nBits[random->RandomInt( 3, 5 )];
 	else
 		nBitMask = 7;
 
 	for ( int i = 0; i < MAX_CRABS; i++ )
 	{
-		EnableCrab( i, ( nBitMask & ( 1 << i ) ) != 0 );
+		EnableCrab( i, (nBitMask & (1 << i)) != 0 );
 	}
 }
-
 
 //-----------------------------------------------------------------------------
 // Purpose: Returns a moan sound for this class of zombie.

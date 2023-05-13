@@ -34,6 +34,7 @@
 bool NPC_CheckBrushExclude( CBaseEntity *pEntity, CBaseEntity *pBrush );
 #endif
 
+#include "tier0/icommandline.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1172,4 +1173,24 @@ const char* UTIL_GetActiveHolidayString()
 #else
 	return NULL;
 #endif
+}
+
+const bool UTIL_IsGamepadUIEnabled()
+{
+	if (CommandLine()->FindParm("-gamepadui"))
+		return true;
+
+	if (CommandLine()->FindParm("-nogamepadui"))
+		return false;
+
+	return UTIL_IsSteamDeck();
+}
+
+const bool UTIL_IsSteamDeck()
+{
+	const char* pszSteamDeckEnv = getenv("SteamDeck");
+	if (pszSteamDeckEnv && *pszSteamDeckEnv)
+		return atoi(pszSteamDeckEnv) != 0;
+
+	return false;
 }
