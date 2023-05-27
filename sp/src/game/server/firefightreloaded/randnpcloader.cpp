@@ -151,6 +151,7 @@ const CRandNPCLoader::SpawnEntry_t* CRandNPCLoader::GetRandomEntry(bool isRare) 
 bool CRandNPCLoader::AddEntries( KeyValues* pKV )
 {
 	bool ret = true;
+	int num = 1;
 	for ( auto iter = pKV->GetFirstSubKey(); iter != NULL; iter = iter->GetNextKey() )
 	{
 		if (!strcmp(iter->GetName(), "settings"))
@@ -159,9 +160,29 @@ bool CRandNPCLoader::AddEntries( KeyValues* pKV )
 		auto newKV = iter->MakeCopy();
 		m_KVs->AddSubKey( iter->MakeCopy() );
 		SpawnEntry_t entry;
-		if ( !ParseEntry( entry, newKV ) )
+		if (!ParseEntry(entry, newKV))
+		{
+			DevMsg("CRandNPCLoader::AddEntries: Unable to add entry %s. Ending.\n", num);
 			return false;
-		m_Entries.AddToTail( entry );
+		}
+
+		if (!entry.maps.IsEmpty())
+		{
+			if (entry.IsInRightMap())
+			{
+				m_Entries.AddToTail(entry);
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			m_Entries.AddToTail(entry);
+		}
+		
+		num++;
 	}
 	return ret;
 }
@@ -199,6 +220,16 @@ bool CRandNPCLoader::ParseEntry( SpawnEntry_t& entry, KeyValues *kv)
 	{
 		if (!SetRandomGrenades(entry, grenades))
       		return false;
+	}
+
+	KeyValues* mapKv = kv->FindKey("mapspawn");
+	if (mapKv != NULL && mapKv->GetFirstSubKey() != NULL)
+	{
+		for (KeyValues* iter = mapKv->GetFirstSubKey(); iter != NULL; iter = iter->GetNextKey())
+		{
+			MapFilterEntry_t MapEntry{ iter->GetName() };
+			entry.maps.AddToTail(MapEntry);
+		}
 	}
 
 	// The equipment key can just have a string value, or a list of subkeys with weapon/weight pairs.
@@ -279,6 +310,21 @@ const char* CRandNPCLoader::SpawnEntry_t::GetRandomEquip() const
 	}
 
 	return NULL;
+}
+
+bool CRandNPCLoader::SpawnEntry_t::IsInRightMap() const
+{
+	const char* mapName = STRING(gpGlobals->mapname);
+
+	for (auto& iter : maps)
+	{
+		if (!strcmp(mapName, iter.name))
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 int CRandNPCLoader::SpawnEntry_t::GetRandomGrenades() const

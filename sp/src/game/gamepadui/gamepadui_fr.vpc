@@ -21,5 +21,11 @@ $Configuration
 //we're adding new interfaces soon ;D
 $Project "GamepadUI (FR)"
 {
-	$File "gamepadui_fr_mapchooser.cpp"
+	$Folder "Source Files"
+    {
+		$Folder "FIREFIGHT RELOADED DLL"
+    	{
+			$File "gamepadui_fr_mapchooser.cpp"
+		}
+	}
 }

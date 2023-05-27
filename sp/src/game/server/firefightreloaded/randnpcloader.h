@@ -36,14 +36,21 @@ public:
 		float weight;
 	};
 
+	struct MapFilterEntry_t
+	{
+		const char* name;
+	};
+
 	struct SpawnEntry_t
 	{
 		SpawnEntry_t();
 
 		const char* GetRandomEquip() const;
 		int GetRandomGrenades() const;
+		bool IsInRightMap() const;
 
 		const char* classname;
+		CCopyableUtlVector<MapFilterEntry_t> maps;
 		bool isRare;
 		float weight;
 		int minPlayerLevel;
