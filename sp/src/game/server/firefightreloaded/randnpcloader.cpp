@@ -137,6 +137,8 @@ const CRandNPCLoader::SpawnEntry_t* CRandNPCLoader::GetRandomEntry(bool isRare) 
 		}
 	}
 
+	// This naive algorithm (implemented elsewhere too) could ignore very small weights.
+	// If this comes up, then we'll look into this.
 	float choice = random->RandomFloat( 0, totalWeight );
 	for ( auto iter : candidates )
 	{
@@ -162,26 +164,17 @@ bool CRandNPCLoader::AddEntries( KeyValues* pKV )
 		SpawnEntry_t entry;
 		if (!ParseEntry(entry, newKV))
 		{
-			DevMsg("CRandNPCLoader::AddEntries: Unable to add entry %s. Ending.\n", num);
+			ConWarning("CRandNPCLoader::AddEntries: Unable to parse entry number %d. Ending.\n", num);
 			return false;
 		}
 
-		if (!entry.maps.IsEmpty())
+		if (!entry.maps.IsEmpty() && !entry.maps.HasElement(gpGlobals->mapname))
 		{
-			if (entry.IsInRightMap())
-			{
-				m_Entries.AddToTail(entry);
-			}
-			else
-			{
-				return false;
-			}
+			DevMsg("CRandNPCLoader::AddEntries: Not in right map for entry number %d. Ending.\n", num);
+			return false;
 		}
-		else
-		{
-			m_Entries.AddToTail(entry);
-		}
-		
+
+		m_Entries.AddToTail(entry);
 		num++;
 	}
 	return ret;
@@ -310,24 +303,4 @@ const char* CRandNPCLoader::SpawnEntry_t::GetRandomEquip() const
 	}
 
 	return NULL;
-}
-
-bool CRandNPCLoader::SpawnEntry_t::IsInRightMap() const
-{
-	const char* mapName = STRING(gpGlobals->mapname);
-
-	for (auto& iter : maps)
-	{
-		if (!strcmp(mapName, iter.name))
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
-int CRandNPCLoader::SpawnEntry_t::GetRandomGrenades() const
-{
-	return random->RandomInt( grenadesMin, grenadesMax );
 }

@@ -38,6 +38,18 @@ public:
 
 	struct MapFilterEntry_t
 	{
+		MapFilterEntry_t() { name = nullptr; }
+		MapFilterEntry_t(const char* map_name) { name = map_name;	}
+		MapFilterEntry_t(const string_t& str) { name = STRING(str); }
+
+		bool operator ==(const MapFilterEntry_t& other) const
+		{
+			if (name == nullptr || other.name == nullptr)
+				return name == other.name;
+			else
+				return strcmp(name, other.name) == 0;
+		}
+
 		const char* name;
 	};
 
@@ -46,8 +58,10 @@ public:
 		SpawnEntry_t();
 
 		const char* GetRandomEquip() const;
-		int GetRandomGrenades() const;
-		bool IsInRightMap() const;
+		int GetRandomGrenades() const
+		{
+			return random->RandomInt(grenadesMin, grenadesMax);
+		}
 
 		const char* classname;
 		CCopyableUtlVector<MapFilterEntry_t> maps;
