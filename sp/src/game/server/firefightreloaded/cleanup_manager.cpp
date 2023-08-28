@@ -3,10 +3,10 @@
 #include "cleanup_manager.h"
 #include "combine_mine.h"
 
-ConVar g_max_combine_mines( "g_max_combine_mines", "32", FCVAR_REPLICATED, "Maximum number of hoppers dropped by scanners." );
-ConVar g_max_gib_pieces( "g_max_gib_pieces", "32", FCVAR_REPLICATED, "Maximum number of gibs." );
-ConVar g_max_thrown_knives( "g_max_thrown_knives", "32", FCVAR_REPLICATED, "Maximum number of thrown knives." );
-ConVar g_ragdoll_maxcount( "g_ragdoll_maxcount", "32", FCVAR_REPLICATED, "Maximum number of ragdolls." );
+ConVar g_max_combine_mines( "g_max_combine_mines", "32", FCVAR_REPLICATED | FCVAR_ARCHIVE, "Maximum number of hoppers dropped by scanners." );
+ConVar g_max_gib_pieces( "g_max_gib_pieces", "32", FCVAR_REPLICATED | FCVAR_ARCHIVE, "Maximum number of gibs." );
+ConVar g_max_thrown_knives( "g_max_thrown_knives", "32", FCVAR_REPLICATED | FCVAR_ARCHIVE, "Maximum number of thrown knives." );
+ConVar g_ragdoll_maxcount( "g_ragdoll_maxcount", "32", FCVAR_REPLICATED | FCVAR_ARCHIVE, "Maximum number of ragdolls." );
 
 BEGIN_DATADESC( CCleanupManager )
 DEFINE_UTLVECTOR( m_CombineMines, FIELD_EHANDLE ),

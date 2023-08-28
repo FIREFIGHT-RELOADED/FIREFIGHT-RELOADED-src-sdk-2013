@@ -79,74 +79,74 @@ ConVar  physcannon_mega_enabled( "physcannon_mega_enabled", "0", FCVAR_REPLICATE
 ConVar	sv_robust_explosions( "sv_robust_explosions","1", FCVAR_REPLICATED );
 
 // Damage scale for damage inflicted by the player on each skill level.
-ConVar	sk_dmg_inflict_scale1( "sk_dmg_inflict_scale1", "1.50", FCVAR_REPLICATED );
-ConVar	sk_dmg_inflict_scale2( "sk_dmg_inflict_scale2", "1.00", FCVAR_REPLICATED );
-ConVar	sk_dmg_inflict_scale3( "sk_dmg_inflict_scale3", "0.75", FCVAR_REPLICATED );
-ConVar	sk_dmg_inflict_scale4( "sk_dmg_inflict_scale4", "0.75", FCVAR_REPLICATED );
-ConVar	sk_dmg_inflict_scale5( "sk_dmg_inflict_scale5", "0.75", FCVAR_REPLICATED );
+ConVar	sk_dmg_inflict_scale1( "sk_dmg_inflict_scale1", "1.50", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_dmg_inflict_scale2( "sk_dmg_inflict_scale2", "1.00", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_dmg_inflict_scale3( "sk_dmg_inflict_scale3", "0.75", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_dmg_inflict_scale4( "sk_dmg_inflict_scale4", "0.75", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_dmg_inflict_scale5( "sk_dmg_inflict_scale5", "0.75", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
 // Damage scale for damage taken by the player on each skill level.
-ConVar	sk_dmg_take_scale1( "sk_dmg_take_scale1", "0.50", FCVAR_REPLICATED );
-ConVar	sk_dmg_take_scale2( "sk_dmg_take_scale2", "1.00", FCVAR_REPLICATED );
-ConVar	sk_dmg_take_scale3("sk_dmg_take_scale3", "1.50", FCVAR_REPLICATED);
-ConVar	sk_dmg_take_scale4("sk_dmg_take_scale4", "2.00", FCVAR_REPLICATED);
-ConVar	sk_dmg_take_scale5("sk_dmg_take_scale5", "2.50", FCVAR_REPLICATED);
+ConVar	sk_dmg_take_scale1( "sk_dmg_take_scale1", "0.50", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_dmg_take_scale2( "sk_dmg_take_scale2", "1.00", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_dmg_take_scale3("sk_dmg_take_scale3", "1.50", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_dmg_take_scale4("sk_dmg_take_scale4", "2.00", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_dmg_take_scale5("sk_dmg_take_scale5", "2.50", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
-ConVar	sk_allow_autoaim( "sk_allow_autoaim", "1", FCVAR_REPLICATED | FCVAR_ARCHIVE_XBOX );
+ConVar	sk_allow_autoaim( "sk_allow_autoaim", "1", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
 ConVar	firefightrumble_enemyattack("firefightrumble_enemyattack", "1", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
 // Autoaim scale
-ConVar	sk_autoaim_scale1( "sk_autoaim_scale1", "1.0", FCVAR_REPLICATED );
-ConVar	sk_autoaim_scale2( "sk_autoaim_scale2", "1.0", FCVAR_REPLICATED );
-//ConVar	sk_autoaim_scale3( "sk_autoaim_scale3", "0.0", FCVAR_REPLICATED ); NOT CURRENTLY OFFERED ON SKILL 3
-//ConVar	sk_autoaim_scale4( "sk_autoaim_scale4", "0.0", FCVAR_REPLICATED ); NOT CURRENTLY OFFERED ON SKILL 4
-//ConVar	sk_autoaim_scale5( "sk_autoaim_scale5", "0.0", FCVAR_REPLICATED ); NOT CURRENTLY OFFERED ON SKILL 5
+ConVar	sk_autoaim_scale1( "sk_autoaim_scale1", "1.0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_autoaim_scale2( "sk_autoaim_scale2", "1.0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_autoaim_scale3( "sk_autoaim_scale3", "0.0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_autoaim_scale4( "sk_autoaim_scale4", "0.0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_autoaim_scale5( "sk_autoaim_scale5", "0.0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
 // Quantity scale for ammo received by the player.
-ConVar	sk_ammo_qty_scale1 ( "sk_ammo_qty_scale1", "1.20", FCVAR_REPLICATED );
-ConVar	sk_ammo_qty_scale2 ( "sk_ammo_qty_scale2", "1.00", FCVAR_REPLICATED );
-ConVar	sk_ammo_qty_scale3 ( "sk_ammo_qty_scale3", "0.60", FCVAR_REPLICATED );
-ConVar	sk_ammo_qty_scale4 ( "sk_ammo_qty_scale4", "0.40", FCVAR_REPLICATED );
-ConVar	sk_ammo_qty_scale5 ( "sk_ammo_qty_scale5", "0.20", FCVAR_REPLICATED );
+ConVar	sk_ammo_qty_scale1 ( "sk_ammo_qty_scale1", "1.20", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_ammo_qty_scale2 ( "sk_ammo_qty_scale2", "1.00", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_ammo_qty_scale3 ( "sk_ammo_qty_scale3", "0.60", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_ammo_qty_scale4 ( "sk_ammo_qty_scale4", "0.40", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_ammo_qty_scale5 ( "sk_ammo_qty_scale5", "0.20", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
-ConVar	sk_plr_health_drop_time		( "sk_plr_health_drop_time", "30", FCVAR_REPLICATED );
-ConVar	sk_plr_grenade_drop_time	( "sk_plr_grenade_drop_time", "30", FCVAR_REPLICATED );
+ConVar	sk_plr_health_drop_time		( "sk_plr_health_drop_time", "30", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_plr_grenade_drop_time	( "sk_plr_grenade_drop_time", "30", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
-ConVar	sk_plr_dmg_ar2			( "sk_plr_dmg_ar2","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_ar2			( "sk_npc_dmg_ar2","0", FCVAR_REPLICATED);
-ConVar	sk_max_ar2				( "sk_max_ar2","0", FCVAR_REPLICATED);
-ConVar	sk_max_ar2_altfire		( "sk_max_ar2_altfire","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_ar2			( "sk_plr_dmg_ar2","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_ar2			( "sk_npc_dmg_ar2","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_max_ar2				( "sk_max_ar2","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_max_ar2_altfire		( "sk_max_ar2_altfire","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
-ConVar	sk_plr_dmg_alyxgun		( "sk_plr_dmg_alyxgun","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_alyxgun		( "sk_npc_dmg_alyxgun","0", FCVAR_REPLICATED);
-ConVar	sk_max_alyxgun			( "sk_max_alyxgun","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_alyxgun		( "sk_plr_dmg_alyxgun","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_alyxgun		( "sk_npc_dmg_alyxgun","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_max_alyxgun			( "sk_max_alyxgun","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
-ConVar	sk_plr_dmg_pistol		( "sk_plr_dmg_pistol","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_pistol		( "sk_npc_dmg_pistol","0", FCVAR_REPLICATED);
-ConVar	sk_max_pistol			( "sk_max_pistol","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_pistol		( "sk_plr_dmg_pistol","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_pistol		( "sk_npc_dmg_pistol","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_max_pistol			( "sk_max_pistol","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
-ConVar	sk_plr_dmg_smg1			( "sk_plr_dmg_smg1","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_smg1			( "sk_npc_dmg_smg1","0", FCVAR_REPLICATED);
-ConVar	sk_max_smg1				( "sk_max_smg1","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_smg1			( "sk_plr_dmg_smg1","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_smg1			( "sk_npc_dmg_smg1","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_max_smg1				( "sk_max_smg1","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
 
-ConVar	sk_plr_dmg_flare_round	( "sk_plr_dmg_flare_round","0", FCVAR_REPLICATED);
-ConVar	sk_npc_dmg_flare_round	( "sk_npc_dmg_flare_round","0", FCVAR_REPLICATED);
-ConVar	sk_max_flare_round		( "sk_max_flare_round","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_flare_round	( "sk_plr_dmg_flare_round","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_flare_round	( "sk_npc_dmg_flare_round","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_max_flare_round		( "sk_max_flare_round","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
-ConVar	sk_plr_dmg_buckshot		( "sk_plr_dmg_buckshot","0", FCVAR_REPLICATED);	
-ConVar	sk_npc_dmg_buckshot		( "sk_npc_dmg_buckshot","0", FCVAR_REPLICATED);
-ConVar	sk_max_buckshot			( "sk_max_buckshot","0", FCVAR_REPLICATED);
-ConVar	sk_plr_num_shotgun_pellets( "sk_plr_num_shotgun_pellets","7", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_buckshot		( "sk_plr_dmg_buckshot","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_buckshot		( "sk_npc_dmg_buckshot","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_max_buckshot			( "sk_max_buckshot","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_plr_num_shotgun_pellets( "sk_plr_num_shotgun_pellets","7", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
-ConVar	sk_plr_dmg_rpg_round	( "sk_plr_dmg_rpg_round","0", FCVAR_REPLICATED);
-ConVar	sk_npc_dmg_rpg_round	( "sk_npc_dmg_rpg_round","0", FCVAR_REPLICATED);
-ConVar	sk_max_rpg_round		( "sk_max_rpg_round","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_rpg_round	( "sk_plr_dmg_rpg_round","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_rpg_round	( "sk_npc_dmg_rpg_round","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_max_rpg_round		( "sk_max_rpg_round","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
-ConVar	sk_plr_dmg_sniper_round	( "sk_plr_dmg_sniper_round","0", FCVAR_REPLICATED);	
-ConVar	sk_npc_dmg_sniper_round	( "sk_npc_dmg_sniper_round","0", FCVAR_REPLICATED);
-ConVar	sk_max_sniper_round		( "sk_max_sniper_round","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_sniper_round	( "sk_plr_dmg_sniper_round","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_sniper_round	( "sk_npc_dmg_sniper_round","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_max_sniper_round		( "sk_max_sniper_round","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
 //ConVar	sk_max_slam				( "sk_max_slam","0", FCVAR_REPLICATED);
 //ConVar	sk_max_tripwire			( "sk_max_tripwire","0", FCVAR_REPLICATED);
@@ -155,86 +155,86 @@ ConVar	sk_max_sniper_round		( "sk_max_sniper_round","0", FCVAR_REPLICATED);
 //ConVar	sk_npc_dmg_molotov		( "sk_npc_dmg_molotov","0", FCVAR_REPLICATED);
 //ConVar	sk_max_molotov			( "sk_max_molotov","0", FCVAR_REPLICATED);
 
-ConVar	sk_plr_dmg_grenade		( "sk_plr_dmg_grenade","0", FCVAR_REPLICATED);
-ConVar	sk_npc_dmg_grenade		( "sk_npc_dmg_grenade","0", FCVAR_REPLICATED);
-ConVar	sk_max_grenade			( "sk_max_grenade","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_grenade		( "sk_plr_dmg_grenade","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_grenade		( "sk_npc_dmg_grenade","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_max_grenade			( "sk_max_grenade","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
 #ifdef HL2_EPISODIC
-ConVar	sk_max_hopwire			( "sk_max_hopwire", "3", FCVAR_REPLICATED);
-ConVar	sk_max_striderbuster	( "sk_max_striderbuster", "3", FCVAR_REPLICATED);
+ConVar	sk_max_hopwire			( "sk_max_hopwire", "3", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_max_striderbuster	( "sk_max_striderbuster", "3", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 #endif
 
 //ConVar sk_plr_dmg_brickbat	( "sk_plr_dmg_brickbat","0", FCVAR_REPLICATED);
 //ConVar sk_npc_dmg_brickbat	( "sk_npc_dmg_brickbat","0", FCVAR_REPLICATED);
 //ConVar sk_max_brickbat		( "sk_max_brickbat","0", FCVAR_REPLICATED);
 
-ConVar	sk_plr_dmg_smg1_grenade	( "sk_plr_dmg_smg1_grenade","0", FCVAR_REPLICATED);
-ConVar	sk_npc_dmg_smg1_grenade	( "sk_npc_dmg_smg1_grenade","0", FCVAR_REPLICATED);
-ConVar	sk_max_smg1_grenade		( "sk_max_smg1_grenade","0", FCVAR_REPLICATED );
+ConVar	sk_plr_dmg_smg1_grenade	( "sk_plr_dmg_smg1_grenade","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_smg1_grenade	( "sk_npc_dmg_smg1_grenade","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_max_smg1_grenade		( "sk_max_smg1_grenade","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
-ConVar	sk_plr_dmg_357			( "sk_plr_dmg_357", "0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_357			( "sk_npc_dmg_357", "0", FCVAR_REPLICATED );
-ConVar	sk_max_357				( "sk_max_357", "0", FCVAR_REPLICATED );
+ConVar	sk_plr_dmg_357			( "sk_plr_dmg_357", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_357			( "sk_npc_dmg_357", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_max_357				( "sk_max_357", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
-ConVar	sk_plr_dmg_crossbow		( "sk_plr_dmg_crossbow", "0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_crossbow		( "sk_npc_dmg_crossbow", "0", FCVAR_REPLICATED );
-ConVar	sk_max_crossbow			( "sk_max_crossbow", "0", FCVAR_REPLICATED );
+ConVar	sk_plr_dmg_crossbow		( "sk_plr_dmg_crossbow", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_crossbow		( "sk_npc_dmg_crossbow", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_max_crossbow			( "sk_max_crossbow", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
-ConVar	sk_dmg_sniper_penetrate_plr( "sk_dmg_sniper_penetrate_plr","0", FCVAR_REPLICATED);
-ConVar	sk_dmg_sniper_penetrate_npc( "sk_dmg_sniper_penetrate_npc","0", FCVAR_REPLICATED);
+ConVar	sk_dmg_sniper_penetrate_plr( "sk_dmg_sniper_penetrate_plr","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_dmg_sniper_penetrate_npc( "sk_dmg_sniper_penetrate_npc","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
-ConVar	sk_plr_dmg_sniper("sk_plr_dmg_sniper", "0", FCVAR_REPLICATED);
-ConVar	sk_npc_dmg_sniper("sk_npc_dmg_sniper", "0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_sniper("sk_plr_dmg_sniper", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_sniper("sk_npc_dmg_sniper", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 ConVar	sk_max_sniper("sk_max_sniper", "0", FCVAR_REPLICATED);
 
-ConVar	sk_plr_dmg_m249para("sk_plr_dmg_m249para", "0", FCVAR_REPLICATED);
-ConVar	sk_npc_dmg_m249para("sk_npc_dmg_m249para", "0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_m249para("sk_plr_dmg_m249para", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_m249para("sk_npc_dmg_m249para", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 ConVar	sk_max_m249para("sk_max_m249para", "0", FCVAR_REPLICATED);
 
-ConVar	sk_plr_dmg_slam("sk_plr_dmg_slam", "0", FCVAR_REPLICATED);
-ConVar	sk_npc_dmg_slam("sk_npc_dmg_slam", "0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_slam("sk_plr_dmg_slam", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_slam("sk_npc_dmg_slam", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 ConVar	sk_max_slam("sk_max_slam", "0", FCVAR_REPLICATED);
 
-ConVar	sk_plr_dmg_oicw("sk_plr_dmg_oicw", "0", FCVAR_REPLICATED);
-ConVar	sk_npc_dmg_oicw("sk_npc_dmg_oicw", "0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_oicw("sk_plr_dmg_oicw", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_oicw("sk_npc_dmg_oicw", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 ConVar	sk_max_oicw("sk_max_oicw", "0", FCVAR_REPLICATED);
 
-ConVar	sk_plr_dmg_oicw_grenade("sk_plr_dmg_oicw_grenade", "0", FCVAR_REPLICATED);
-ConVar	sk_npc_dmg_oicw_grenade("sk_npc_dmg_oicw_grenade", "0", FCVAR_REPLICATED);
-ConVar	sk_max_oicw_grenade("sk_max_oicw_grenade", "0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_oicw_grenade("sk_plr_dmg_oicw_grenade", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_oicw_grenade("sk_npc_dmg_oicw_grenade", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_max_oicw_grenade("sk_max_oicw_grenade", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
 //Custom Ammo Types
-ConVar	sk_plr_dmg_custom_normal("sk_plr_dmg_custom_normal", "0", FCVAR_REPLICATED);
-ConVar	sk_npc_dmg_custom_normal("sk_npc_dmg_custom_normal", "0", FCVAR_REPLICATED);
-ConVar	sk_max_custom_normal("sk_max_custom_normal", "0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_custom_normal("sk_plr_dmg_custom_normal", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_custom_normal("sk_npc_dmg_custom_normal", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_max_custom_normal("sk_max_custom_normal", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
-ConVar	sk_plr_dmg_custom_buckshot("sk_plr_dmg_custom_buckshot", "0", FCVAR_REPLICATED);
-ConVar	sk_npc_dmg_custom_buckshot("sk_npc_dmg_custom_buckshot", "0", FCVAR_REPLICATED);
-ConVar	sk_max_custom_buckshot("sk_max_custom_buckshot", "0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_custom_buckshot("sk_plr_dmg_custom_buckshot", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_custom_buckshot("sk_npc_dmg_custom_buckshot", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_max_custom_buckshot("sk_max_custom_buckshot", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
-ConVar	sk_plr_dmg_custom_sniper("sk_plr_dmg_custom_sniper", "0", FCVAR_REPLICATED);
-ConVar	sk_npc_dmg_custom_sniper("sk_npc_dmg_custom_sniper", "0", FCVAR_REPLICATED);
-ConVar	sk_max_custom_sniper("sk_max_custom_sniper", "0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_custom_sniper("sk_plr_dmg_custom_sniper", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_custom_sniper("sk_npc_dmg_custom_sniper", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_max_custom_sniper("sk_max_custom_sniper", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
-ConVar	sk_plr_dmg_custom_buckshotsniper("sk_plr_dmg_custom_buckshotsniper", "0", FCVAR_REPLICATED);
-ConVar	sk_npc_dmg_custom_buckshotsniper("sk_npc_dmg_custom_buckshotsniper", "0", FCVAR_REPLICATED);
-ConVar	sk_max_custom_buckshotsniper("sk_max_custom_buckshotsniper", "0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_custom_buckshotsniper("sk_plr_dmg_custom_buckshotsniper", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_custom_buckshotsniper("sk_npc_dmg_custom_buckshotsniper", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_max_custom_buckshotsniper("sk_max_custom_buckshotsniper", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
-ConVar	sk_plr_dmg_airboat		( "sk_plr_dmg_airboat", "0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_airboat		( "sk_npc_dmg_airboat", "0", FCVAR_REPLICATED );
+ConVar	sk_plr_dmg_airboat		( "sk_plr_dmg_airboat", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_airboat		( "sk_npc_dmg_airboat", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
-ConVar	sk_max_gauss_round		( "sk_max_gauss_round", "0", FCVAR_REPLICATED );
+ConVar	sk_max_gauss_round		( "sk_max_gauss_round", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
-ConVar	sk_plr_dmg_mp5("sk_plr_dmg_mp5", "0", FCVAR_REPLICATED);
-ConVar	sk_npc_dmg_mp5("sk_npc_dmg_mp5", "0", FCVAR_REPLICATED);
-ConVar	sk_max_mp5("sk_max_mp5", "0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_mp5("sk_plr_dmg_mp5", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_mp5("sk_npc_dmg_mp5", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_max_mp5("sk_max_mp5", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
-ConVar    sk_plr_dmg_katana("sk_plr_dmg_katana", "0", FCVAR_REPLICATED);
-ConVar    sk_npc_dmg_katana("sk_npc_dmg_katana", "0", FCVAR_REPLICATED);
+ConVar    sk_plr_dmg_katana("sk_plr_dmg_katana", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar    sk_npc_dmg_katana("sk_npc_dmg_katana", "0", FCVAR_REPLICATED | FCVAR_ARCHIVED);
 
 // Gunship & Dropship cannons
-ConVar	sk_npc_dmg_gunship			( "sk_npc_dmg_gunship", "0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_gunship_to_plr	( "sk_npc_dmg_gunship_to_plr", "0", FCVAR_REPLICATED );
+ConVar	sk_npc_dmg_gunship			( "sk_npc_dmg_gunship", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_gunship_to_plr	( "sk_npc_dmg_gunship_to_plr", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
 extern ConVar mp_chattime;
 extern ConVar mp_mapcycle_empty_timeout_seconds;
@@ -1495,6 +1495,15 @@ float CHalfLife2::GetAutoAimScale( CBasePlayer *pPlayer )
 
 	case SKILL_MEDIUM:
 		return sk_autoaim_scale2.GetFloat();
+
+	case SKILL_HARD:
+		return sk_autoaim_scale3.GetFloat();
+
+	case SKILL_VERYHARD:
+		return sk_autoaim_scale4.GetFloat();
+
+	case SKILL_NIGHTMARE:
+		return sk_autoaim_scale5.GetFloat();
 
 	default:
 		return 0.0f;
