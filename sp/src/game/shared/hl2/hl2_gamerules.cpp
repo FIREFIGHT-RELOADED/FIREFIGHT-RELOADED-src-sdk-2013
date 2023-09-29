@@ -230,7 +230,7 @@ ConVar	sk_npc_dmg_mp5("sk_npc_dmg_mp5", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 ConVar	sk_max_mp5("sk_max_mp5", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
 ConVar    sk_plr_dmg_katana("sk_plr_dmg_katana", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
-ConVar    sk_npc_dmg_katana("sk_npc_dmg_katana", "0", FCVAR_REPLICATED | FCVAR_ARCHIVED);
+ConVar    sk_npc_dmg_katana("sk_npc_dmg_katana", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
 // Gunship & Dropship cannons
 ConVar	sk_npc_dmg_gunship			( "sk_npc_dmg_gunship", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);

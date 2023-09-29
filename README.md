@@ -17,11 +17,20 @@ Code used in FIREFIGHT RELOADED may be used for your Source Engine game/mod, how
 ## Compiling
 
 ### WINDOWS:
-You must have Visual Studio 2013 Build Tools installed alongside a compatible IDE (Visual Studio 2013 and above).\
-Read this for more details: https://developer.valvesoftware.com/wiki/Source_SDK_2013#Source_SDK_2013_on_Windows \
+
+To be able to build PoneDM you will need to download:
+* Visual Studio 2013 or later
+* C++ Build Tools for Visual Studio 2013 (Not required if you already have Visual Studio 2013)
+* Multibyte MFC Library for Visual Studio 2013
+
+Read this for more details: https://developer.valvesoftware.com/wiki/Source_SDK_2013#Source_SDK_2013_on_Windows
+
+You must also run this command in your CMD with administrator privileges in order to get VPC to build a project:
+* REG ADD "HKLM\SOFTWARE\WOW6432Node\Microsoft\VisualStudio\10.0\Projects\{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}" /v DefaultProjectExtension /t REG_SZ /d vcproj /f
+
 Note that the Microsoft Speech API is only required for certain SDK tools.
 
-Creating a solution is as simple as running sp/src/createfirefightreloadedproject.bat, then opening up the solution in Visual Studio.
+Creating a solution is as simple as running sp/src/creategameprojects.bat, then opening up the solution in Visual Studio.
 
 ### LINUX:
 Read this first to install the steam runtime and other necessary components.\
@@ -31,7 +40,7 @@ After installing it and other dependencies, do the 3 steps below.
 1. CD to your FIREFIGHT RELOADED git directory, I.E.\
 ```cd ~/projects/FIREFIGHT-RELOADED-src-sdk-2013```
 
-1. Run the steam-runtime. NOTE: Make sure you have the steam runtime installed in ~/valve.\
+1. Run the steam-runtime. NOTE: Make sure you have the steam runtime installed in /valve.\
 ```bash ./sandbox_setup.sh```
 
 3. Go back to this directory and run:\
