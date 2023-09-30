@@ -27,7 +27,7 @@ WeaponData
 	"UseMuzzleSmoke"		"1"
 	"useironsights"		"1"
 	"LowerWeapon"			"1"
-	"useironsightcrosshair" "0"
+	"useironsightcrosshair" "1"
 	
 	IronSight
 	{
