@@ -18,7 +18,7 @@ Code used in FIREFIGHT RELOADED may be used for your Source Engine game/mod, how
 
 ### WINDOWS:
 
-To be able to build PoneDM you will need to download:
+To be able to build FIREFIGHT RELOADED you will need to download:
 * Visual Studio 2013 or later
 * C++ Build Tools for Visual Studio 2013 (Not required if you already have Visual Studio 2013)
 * Multibyte MFC Library for Visual Studio 2013

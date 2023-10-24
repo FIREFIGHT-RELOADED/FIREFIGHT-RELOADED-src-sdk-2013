@@ -1345,7 +1345,8 @@ bool CAI_Hint::HintMatchesCriteria( CAI_BaseNPC *pNPC, const CHintCriteria &hint
 	{
 		CBasePlayer *pPlayer = UTIL_GetNearestVisiblePlayer(this);
 		if (!pPlayer)
-			UTIL_GetNearestPlayer(GetAbsOrigin());
+			//for some reason pPlayer isn't actually set!
+			pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 
 		if( pPlayer != NULL )
 		{
