@@ -156,6 +156,8 @@ public:
 	void			AnnounceEnemyType( CBaseEntity *pEnemy );
 	void			AnnounceEnemyKill( CBaseEntity *pEnemy );
 
+	int 			SpeakSentence(const char* szSentenceName, SentencePriority_t nSoundPriority = SENTENCE_PRIORITY_NORMAL, SentenceCriteria_t nCriteria = SENTENCE_CRITERIA_IN_SQUAD);
+
 	void			NotifyDeadFriend( CBaseEntity* pFriend );
 
 	virtual float	HearingSensitivity( void ) { return 1.0; };

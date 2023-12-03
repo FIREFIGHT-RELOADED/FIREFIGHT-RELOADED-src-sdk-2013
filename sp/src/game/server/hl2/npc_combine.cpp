@@ -1140,7 +1140,7 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 				{
 					m_flLastAttackTime = gpGlobals->curtime;
 
-					m_Sentences.Speak("COMBINE_ANNOUNCE", SENTENCE_PRIORITY_HIGH);
+					SpeakSentence("ANNOUNCE", SENTENCE_PRIORITY_HIGH);
 
 					// Wait two seconds
 					SetWait( 2.0 );
@@ -1164,7 +1164,7 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 			}
 			else
 			{
-				m_Sentences.Speak("COMBINE_THROW_GRENADE", SENTENCE_PRIORITY_MEDIUM);
+				SpeakSentence("THROW_GRENADE", SENTENCE_PRIORITY_MEDIUM);
 				SetActivity(ACT_IDLE);
 
 				// Wait two seconds
@@ -1300,7 +1300,7 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 							m_pSquad->SquadRemember(bits_MEMORY_PLAYER_HURT);
 						}
 
-						m_Sentences.Speak("COMBINE_PLAYERHIT", SENTENCE_PRIORITY_INVALID);
+						SpeakSentence("PLAYERHIT", SENTENCE_PRIORITY_INVALID);
 						JustMadeSound( SENTENCE_PRIORITY_HIGH );
 					}
 					if ( pEntity->MyNPCPointer() )
@@ -1789,47 +1789,47 @@ void CNPC_Combine::AnnounceAssault(void)
 	// Make sure player can see me
 	if ( FVisible( pBCC ))
 	{
-		m_Sentences.Speak("COMBINE_ASSAULT");
+		SpeakSentence("ASSAULT");
 	}
 }
 
 
 void CNPC_Combine::AnnounceEnemyType( CBaseEntity *pEnemy )
 {
-	const char* pSentenceName = "COMBINE_MONST";
+	const char* pSentenceName = "MONST";
 	switch (pEnemy->Classify())
 	{
 	case CLASS_PLAYER:
 	case CLASS_PLAYER_NPC:
-		pSentenceName = "COMBINE_ALERT";
+		pSentenceName = "ALERT";
 		break;
 
 	case CLASS_PLAYER_ALLY:
 	case CLASS_CITIZEN_REBEL:
 	case CLASS_CITIZEN_PASSIVE:
 	case CLASS_VORTIGAUNT:
-		pSentenceName = "COMBINE_MONST_CITIZENS";
+		pSentenceName = "MONST_CITIZENS";
 		break;
 
 	case CLASS_PLAYER_ALLY_VITAL:
-		pSentenceName = "COMBINE_MONST_CHARACTER";
+		pSentenceName = "MONST_CHARACTER";
 		break;
 
 	case CLASS_ANTLION:
-		pSentenceName = "COMBINE_MONST_BUGS";
+		pSentenceName = "MONST_BUGS";
 		break;
 
 	case CLASS_ZOMBIE:
-		pSentenceName = "COMBINE_MONST_ZOMBIES";
+		pSentenceName = "MONST_ZOMBIES";
 		break;
 
 	case CLASS_HEADCRAB:
 	case CLASS_BARNACLE:
-		pSentenceName = "COMBINE_MONST_PARASITES";
+		pSentenceName = "MONST_PARASITES";
 		break;
 	}
 
-	m_Sentences.Speak(pSentenceName, SENTENCE_PRIORITY_HIGH);
+	SpeakSentence(pSentenceName, SENTENCE_PRIORITY_HIGH);
 }
 
 void CNPC_Combine::AnnounceEnemyKill( CBaseEntity *pEnemy )
@@ -1837,12 +1837,12 @@ void CNPC_Combine::AnnounceEnemyKill( CBaseEntity *pEnemy )
 	if (!pEnemy)
 		return;
 
-	const char* pSentenceName = "COMBINE_KILL_MONST";
+	const char* pSentenceName = "KILL_MONST";
 	switch (pEnemy->Classify())
 	{
 	case CLASS_PLAYER:
 	case CLASS_PLAYER_NPC:
-		pSentenceName = "COMBINE_PLAYER_DEAD";
+		pSentenceName = "PLAYER_DEAD";
 		break;
 
 		// no sentences for these guys yet
@@ -1866,7 +1866,7 @@ void CNPC_Combine::AnnounceEnemyKill( CBaseEntity *pEnemy )
 		break;
 	}
 
-	m_Sentences.Speak(pSentenceName, SENTENCE_PRIORITY_HIGH);
+	SpeakSentence(pSentenceName, SENTENCE_PRIORITY_HIGH);
 }
 
 //-----------------------------------------------------------------------------
@@ -2065,7 +2065,7 @@ int CNPC_Combine::SelectCombatSchedule()
 			// A standing guy will either crouch or run.
 			// A crouching guy tries to stay stuck in.
 			//!!!KELLY - this grunt was hit and is going to run to cover.
-			// m_Sentences.Speak( "COMBINE_COVER" );
+			// SpeakSentence( "COVER" );
 			return SCHED_TAKE_COVER_FROM_ENEMY;
 		}
 		else
@@ -2244,7 +2244,7 @@ int CNPC_Combine::SelectSchedule( void )
 					{
 						// I hear something dangerous, probably need to take cover.
 						// dangerous sound nearby!, call it out if we are not elite metropolice
-						const char* pSentenceName = "COMBINE_DANGER";
+						const char* pSentenceName = "DANGER";
 
 						CBaseEntity* pSoundOwner = pSound->m_hOwner;
 						if (pSoundOwner)
@@ -2255,12 +2255,12 @@ int CNPC_Combine::SelectSchedule( void )
 								if (IRelationType(pGrenade->GetThrower()) != D_LI)
 								{
 									// special case call out for enemy grenades
-									pSentenceName = "COMBINE_GREN";
+									pSentenceName = "GREN";
 								}
 							}
 						}
 
-						m_Sentences.Speak(pSentenceName, SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL);
+						SpeakSentence(pSentenceName, SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL);
 
 						// If the sound is approaching danger, I have no enemy, and I don't see it, turn to face.
 						if( !GetEnemy() && pSound->IsSoundType(SOUND_CONTEXT_DANGER_APPROACH) && pSound->m_hOwner && !FInViewCone(pSound->GetSoundReactOrigin()) )
@@ -2532,7 +2532,7 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 				// Have to explicitly check innate range attack condition as may have weapon with range attack 2
 				if ((g_pGameRules->IsSkillLevel(SKILL_HARD) || g_pGameRules->IsSkillLevel(SKILL_VERYHARD) || g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE)) && HasCondition(COND_CAN_RANGE_ATTACK2) && OccupyStrategySlot(SQUAD_SLOT_GRENADE1))
 				{
-					m_Sentences.Speak("COMBINE_THROW_GRENADE");
+					SpeakSentence("THROW_GRENADE");
 					return SCHED_COMBINE_TOSS_GRENADE_COVER1;
 				}
 				else
@@ -3019,13 +3019,13 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 					}
 				}			
 
-				m_Sentences.Speak("COMBINE_KICK");
+				SpeakSentence("KICK");
 				handledEvent = true;
 				break;
 			}
 
 		case COMBINE_AE_CAUGHT_ENEMY:
-			m_Sentences.Speak("COMBINE_ALERT");
+			SpeakSentence("ALERT");
 			handledEvent = true;
 			break;
 
@@ -3112,7 +3112,7 @@ void CNPC_Combine::SpeakSentence( int sentenceType )
 		// If I'm moving more than 20ft, I need to talk about it
 		if (GetNavigator()->GetPath()->GetPathLength() > 20 * 12.0f)
 		{
-			m_Sentences.Speak("COMBINE_FLANK");
+			SpeakSentence("FLANK");
 		}
 		break;
 	}
@@ -3132,20 +3132,20 @@ void CNPC_Combine::PainSound (const CTakeDamageInfo& info)
 
 	if (gpGlobals->curtime > m_flNextPainSoundTime)
 	{
-		const char* pSentenceName = "COMBINE_PAIN";
+		const char* pSentenceName = "PAIN";
 		float healthRatio = (float)GetHealth() / (float)GetMaxHealth();
 		if (!HasMemory(bits_MEMORY_PAIN_LIGHT_SOUND) && healthRatio > 0.9)
 		{
 			Remember(bits_MEMORY_PAIN_LIGHT_SOUND);
-			pSentenceName = "COMBINE_TAUNT";
+			pSentenceName = "TAUNT";
 		}
 		else if (!HasMemory(bits_MEMORY_PAIN_HEAVY_SOUND) && healthRatio < 0.25)
 		{
 			Remember(bits_MEMORY_PAIN_HEAVY_SOUND);
-			pSentenceName = "COMBINE_COVER";
+			pSentenceName = "COVER";
 		}
 
-		m_Sentences.Speak(pSentenceName, SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS);
+		SpeakSentence(pSentenceName, SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS);
 		m_flNextPainSoundTime = gpGlobals->curtime + 1;
 	}
 }
@@ -3164,14 +3164,14 @@ void CNPC_Combine::LostEnemySound( void)
 	const char* pSentence;
 	if (!(CBaseEntity*)GetEnemy() || gpGlobals->curtime - GetEnemyLastTimeSeen() > 10)
 	{
-		pSentence = "COMBINE_LOST_LONG";
+		pSentence = "LOST_LONG";
 	}
 	else
 	{
-		pSentence = "COMBINE_LOST_SHORT";
+		pSentence = "LOST_SHORT";
 	}
 
-	if (m_Sentences.Speak(pSentence) >= 0)
+	if (SpeakSentence(pSentence) >= 0)
 	{
 		m_flNextLostSoundTime = gpGlobals->curtime + random->RandomFloat(5.0, 15.0);
 	}
@@ -3185,7 +3185,7 @@ void CNPC_Combine::LostEnemySound( void)
 //-----------------------------------------------------------------------------
 void CNPC_Combine::FoundEnemySound( void)
 {
-	m_Sentences.Speak("COMBINE_REFIND_ENEMY", SENTENCE_PRIORITY_HIGH);
+	m_Sentences.Speak("REFIND_ENEMY", SENTENCE_PRIORITY_HIGH);
 }
 
 //-----------------------------------------------------------------------------
@@ -3200,7 +3200,7 @@ void CNPC_Combine::AlertSound( void)
 {
 	if (gpGlobals->curtime > m_flNextAlertSoundTime)
 	{
-		m_Sentences.Speak("COMBINE_GO_ALERT", SENTENCE_PRIORITY_HIGH);
+		SpeakSentence("GO_ALERT", SENTENCE_PRIORITY_HIGH);
 		m_flNextAlertSoundTime = gpGlobals->curtime + 10.0f;
 	}
 }
@@ -3212,14 +3212,14 @@ void CNPC_Combine::NotifyDeadFriend ( CBaseEntity* pFriend )
 {
 	if (GetSquad()->NumMembers() < 2)
 	{
-		m_Sentences.Speak("COMBINE_LAST_OF_SQUAD", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_NORMAL);
+		SpeakSentence("LAST_OF_SQUAD", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_NORMAL);
 		JustMadeSound();
 		return;
 	}
 	// relaxed visibility test so that guys say this more often
 	//if( FInViewCone( pFriend ) && FVisible( pFriend ) )
 	{
-		m_Sentences.Speak("COMBINE_MAN_DOWN");
+		SpeakSentence("MAN_DOWN");
 	}
 
 	BaseClass::NotifyDeadFriend(pFriend);
@@ -3237,7 +3237,7 @@ void CNPC_Combine::DeathSound (const CTakeDamageInfo& info)
 	if (IsOnFire())
 		return;
 
-	m_Sentences.Speak("COMBINE_DIE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS);
+	SpeakSentence("DIE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS);
 }
 
 //=========================================================
@@ -3253,21 +3253,21 @@ void CNPC_Combine::IdleSound( void )
 			switch (random->RandomInt(0, 2))
 			{
 			case 0: // check in
-				if (m_Sentences.Speak("COMBINE_CHECK") >= 0)
+				if (SpeakSentence("CHECK") >= 0)
 				{
 					g_fCombineQuestion = 1;
 				}
 				break;
 
 			case 1: // question
-				if (m_Sentences.Speak("COMBINE_QUEST") >= 0)
+				if (SpeakSentence("QUEST") >= 0)
 				{
 					g_fCombineQuestion = 2;
 				}
 				break;
 
 			case 2: // statement
-				m_Sentences.Speak("COMBINE_IDLE");
+				SpeakSentence("IDLE");
 				break;
 			}
 		}
@@ -3276,13 +3276,13 @@ void CNPC_Combine::IdleSound( void )
 			switch (g_fCombineQuestion)
 			{
 			case 1: // check in
-				if (m_Sentences.Speak("COMBINE_CLEAR") >= 0)
+				if (SpeakSentence("CLEAR") >= 0)
 				{
 					g_fCombineQuestion = 0;
 				}
 				break;
 			case 2: // question 
-				if (m_Sentences.Speak("COMBINE_ANSWER") >= 0)
+				if (SpeakSentence("ANSWER") >= 0)
 				{
 					g_fCombineQuestion = 0;
 				}
@@ -3290,6 +3290,21 @@ void CNPC_Combine::IdleSound( void )
 			}
 		}
 	}
+}
+
+int CNPC_Combine::SpeakSentence(const char* szSentenceName, SentencePriority_t nSoundPriority, SentenceCriteria_t nCriteria)
+{
+	const char* szType = "COMBINE";
+
+	if (IsAce())
+	{ 
+		szType = "COMBINE_ACE";
+	}
+
+	const char* fullSentenceString = CFmtStr("%s_%s", szType, szSentenceName);
+
+	DevMsg("CNPC_Combine: Speaking sentence %s\n", fullSentenceString);
+	return GetSentences()->Speak(fullSentenceString, nSoundPriority, nCriteria);
 }
 
 //-----------------------------------------------------------------------------

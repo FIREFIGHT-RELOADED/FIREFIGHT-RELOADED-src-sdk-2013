@@ -350,14 +350,14 @@ void CNPC_CombineAce::DeathSound( const CTakeDamageInfo &info )
 	if (IsOnFire())
 		return;
 
-	GetSentences()->Speak( "COMBINE_DIE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS ); 
+	SpeakSentence("DIE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS );
 }
 
 void CNPC_CombineAce::PainSound(const CTakeDamageInfo& info)
 {
 	if (!m_bBulletResistanceBroken)
 	{
-		m_Sentences.Speak("COMBINE_TAUNT", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS);
+		SpeakSentence("TAUNT", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS);
 		return;
 	}
 
@@ -557,7 +557,8 @@ CTakeDamageInfo CNPC_CombineAce::BulletResistanceLogic(const CTakeDamageInfo& in
 		CBroadcastRecipientFilter filter2;
 		te->BeamRingPoint(filter2, 0.0, GetAbsOrigin() + Vector(0, 0, 16), 16, 500, m_iSpriteTexture, 0, 0, 0, 0.2, 24, 16, 0, 254, 189, 255, 50, 0);
 		SetHealth(GetMaxHealth());
-		m_Sentences.Speak("COMBINE_ACE_DANGER", SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL);
+		//i'm going to regret this
+		SpeakSentence("SHIELDDANGER", SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL);
 		EmitSound("Weapon_StriderBuster.Detonate");
 		SetBloodColor(BLOOD_COLOR_RED);
 		m_bBulletResistanceBroken = true;

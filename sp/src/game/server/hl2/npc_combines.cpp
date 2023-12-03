@@ -369,9 +369,8 @@ void CNPC_CombineS::DeathSound( const CTakeDamageInfo &info )
 	if (IsOnFire())
 		return;
 
-	GetSentences()->Speak( "COMBINE_DIE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS ); 
+	SpeakSentence( "DIE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS );
 }
-
 
 //-----------------------------------------------------------------------------
 // Purpose: Soldiers use CAN_RANGE_ATTACK2 to indicate whether they can throw
