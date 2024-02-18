@@ -347,8 +347,6 @@ void RadioButton::OnKeyCodeTyped(KeyCode code)
 
 		case KEY_DOWN:
 		case KEY_RIGHT:
-		case KEY_S:
-		case KEY_D:
 			{
 				RadioButton *bestRadio = FindBestRadioButton( DOWN );
 				if (bestRadio)
@@ -359,8 +357,6 @@ void RadioButton::OnKeyCodeTyped(KeyCode code)
 			break;
 		case KEY_UP:
 		case KEY_LEFT:
-		case KEY_W:
-		case KEY_A:
 			{
 				RadioButton *bestRadio = FindBestRadioButton( UP );
 				if (bestRadio)

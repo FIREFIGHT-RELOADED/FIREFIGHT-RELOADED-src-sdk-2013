@@ -1671,8 +1671,7 @@ void SectionedListPanel::OnKeyCodePressed( KeyCode code )
 	if ( nButtonCode == KEY_XBUTTON_DOWN || 
 		 nButtonCode == KEY_XSTICK1_DOWN ||
 		 nButtonCode == KEY_XSTICK2_DOWN ||
-		 code == KEY_DOWN ||
-		 code == KEY_S)
+		 code == KEY_DOWN )
 	{
 		int itemID = GetSelectedItem();
 		MoveSelectionDown();
@@ -1685,8 +1684,7 @@ void SectionedListPanel::OnKeyCodePressed( KeyCode code )
 	else if ( nButtonCode == KEY_XBUTTON_UP || 
 			  nButtonCode == KEY_XSTICK1_UP ||
 			  nButtonCode == KEY_XSTICK2_UP ||
-			  code == KEY_UP ||
-			  code == KEY_W)
+			  code == KEY_UP)
 	{
 		int itemID = GetSelectedItem();
 		MoveSelectionUp();

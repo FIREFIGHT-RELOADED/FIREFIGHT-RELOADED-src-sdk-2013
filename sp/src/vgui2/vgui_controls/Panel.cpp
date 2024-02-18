@@ -2968,7 +2968,6 @@ void Panel::OnKeyCodePressed(KeyCode code)
 	case KEY_XSTICK1_UP:
 	case KEY_XSTICK2_UP:
 	case KEY_UP:
-	case KEY_W:
 		if ( ( !vgui_nav_lock.IsValid() || vgui_nav_lock.GetInt() == 0 ) && NavigateUp() )
 		{
 			vgui_nav_lock.SetValue( 1 );
@@ -2980,7 +2979,6 @@ void Panel::OnKeyCodePressed(KeyCode code)
 	case KEY_XSTICK1_DOWN:
 	case KEY_XSTICK2_DOWN:
 	case KEY_DOWN:
-	case KEY_S:
 		if ( ( !vgui_nav_lock.IsValid() || vgui_nav_lock.GetInt() == 0 ) && NavigateDown() )
 		{
 			vgui_nav_lock.SetValue( 1 );
@@ -2992,7 +2990,6 @@ void Panel::OnKeyCodePressed(KeyCode code)
 	case KEY_XSTICK1_LEFT:
 	case KEY_XSTICK2_LEFT:
 	case KEY_LEFT:
-	case KEY_A:
 		if ( ( !vgui_nav_lock.IsValid() || vgui_nav_lock.GetInt() == 0 ) && NavigateLeft() )
 		{
 			vgui_nav_lock.SetValue( 1 );
@@ -3004,7 +3001,6 @@ void Panel::OnKeyCodePressed(KeyCode code)
 	case KEY_XSTICK1_RIGHT:
 	case KEY_XSTICK2_RIGHT:
 	case KEY_RIGHT:
-	case KEY_D:
 		if ( ( !vgui_nav_lock.IsValid() || vgui_nav_lock.GetInt() == 0 ) && NavigateRight() )
 		{
 			vgui_nav_lock.SetValue( 1 );
@@ -3067,10 +3063,6 @@ void Panel::OnKeyCodeTyped(KeyCode keycode)
 		case KEY_DOWN:
 		case KEY_LEFT:
 		case KEY_RIGHT:
-		case KEY_W:
-		case KEY_S:
-		case KEY_A:
-		case KEY_D:
 			return;
 		}
 

@@ -378,7 +378,7 @@ void FileCompletionEdit::ShowMenu(void)
 
 void FileCompletionEdit::OnKeyCodeTyped(KeyCode code)
 {
-	if ( code == KEY_DOWN || code == KEY_S)
+	if ( code == KEY_DOWN )
 	{
 		if (m_pDropDown->GetItemCount() > 0)
 		{
@@ -402,7 +402,7 @@ void FileCompletionEdit::OnKeyCodeTyped(KeyCode code)
 			return;
 		}
 	}
-	else if ( code == KEY_UP || code == KEY_W)
+	else if ( code == KEY_UP )
 	{
 		if (m_pDropDown->GetItemCount() > 0)
 		{

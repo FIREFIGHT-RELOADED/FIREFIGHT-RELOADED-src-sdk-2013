@@ -879,8 +879,6 @@ void ComboBox::OnKeyCodeTyped(KeyCode code)
 		{
 		case KEY_UP:
 		case KEY_DOWN:
-		case KEY_W:
-		case KEY_S:
 			{
 				DoClick();
 				break;
@@ -902,8 +900,6 @@ void ComboBox::OnKeyCodeTyped(KeyCode code)
 		case KEY_PAGEDOWN:
 		case KEY_UP:
 		case KEY_DOWN:
-		case KEY_W:
-		case KEY_S:
 			{
 				int itemSelected = m_pDropDown->GetCurrentlyHighlightedItem();
 				m_pDropDown->OnKeyCodeTyped(code);				

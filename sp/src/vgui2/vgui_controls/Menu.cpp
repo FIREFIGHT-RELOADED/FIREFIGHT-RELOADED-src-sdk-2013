@@ -1276,7 +1276,6 @@ void Menu::OnKeyCodeTyped(KeyCode keycode)
 		// arrow keys scroll through items on the list.
 		// they should also scroll the scroll bar if needed
 	case KEY_UP:
-	case KEY_W:
 	case KEY_XBUTTON_UP: 
 	case KEY_XSTICK1_UP: 
 		{	
@@ -1292,7 +1291,6 @@ void Menu::OnKeyCodeTyped(KeyCode keycode)
 			break;
 		}
 	case KEY_DOWN:
-	case KEY_S:
 	case KEY_XBUTTON_DOWN: 
 	case KEY_XSTICK1_DOWN: 
 		{
@@ -1309,7 +1307,6 @@ void Menu::OnKeyCodeTyped(KeyCode keycode)
 		}
 	// for now left and right arrows just open or close submenus if they are there.
 	case KEY_RIGHT:
-	case KEY_D:
 	case KEY_XBUTTON_RIGHT: 
 	case KEY_XSTICK1_RIGHT: 
 		{
@@ -1332,7 +1329,6 @@ void Menu::OnKeyCodeTyped(KeyCode keycode)
 			break;
 		}
 	case KEY_LEFT:
-	case KEY_A:
 	case KEY_XBUTTON_LEFT: 
 	case KEY_XSTICK1_LEFT: 
 		{

@@ -1273,7 +1273,6 @@ void TreeNode::OnKeyCodeTyped(KeyCode code)
 {
     switch (code)
     {
-		case KEY_A:
         case KEY_LEFT:
         {
             if (m_bExpand && GetChildrenCount() > 0)
@@ -1289,7 +1288,6 @@ void TreeNode::OnKeyCodeTyped(KeyCode code)
             }
             break;
         }
-		case KEY_D:
         case KEY_RIGHT:
         {
             if (!m_bExpand)
@@ -1302,7 +1300,6 @@ void TreeNode::OnKeyCodeTyped(KeyCode code)
             }
             break;
         }
-		case KEY_W:
         case KEY_UP:
         {
             if (GetParentNode())
@@ -1311,7 +1308,6 @@ void TreeNode::OnKeyCodeTyped(KeyCode code)
             }
             break;
         }
-		case KEY_S:
         case KEY_DOWN:
         {
             if (GetChildrenCount() > 0 && m_bExpand)
@@ -1363,6 +1359,19 @@ void TreeNode::OnKeyCodeTyped(KeyCode code)
 				if ( m_pTreeView->GetSelectedItemCount() > 0 )
 				{
 					m_pTreeView->ClearSelection();
+				}
+				else
+				{
+					BaseClass::OnKeyCodeTyped(code);
+				}
+			}
+			break;
+		case KEY_A:
+			{
+				bool ctrldown = input()->IsKeyDown( KEY_LCONTROL ) ||  input()->IsKeyDown( KEY_RCONTROL );
+				if ( ctrldown )
+				{
+					m_pTreeView->SelectAll();
 				}
 				else
 				{

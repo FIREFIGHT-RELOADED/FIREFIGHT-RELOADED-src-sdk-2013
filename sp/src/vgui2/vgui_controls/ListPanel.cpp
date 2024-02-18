@@ -2459,7 +2459,6 @@ void ListPanel::OnKeyCodePressed(KeyCode code)
 		break;
 
 	case KEY_UP:
-	case KEY_W:
 	case KEY_XBUTTON_UP:
 	case KEY_XSTICK1_UP:
 	case KEY_XSTICK2_UP:
@@ -2471,7 +2470,6 @@ void ListPanel::OnKeyCodePressed(KeyCode code)
 		// fall through
 
 	case KEY_DOWN:
-	case KEY_S:
 	case KEY_XBUTTON_DOWN:
 	case KEY_XSTICK1_DOWN:
 	case KEY_XSTICK2_DOWN:
@@ -2483,7 +2481,6 @@ void ListPanel::OnKeyCodePressed(KeyCode code)
 		// fall through
 
 	case KEY_LEFT:
-	case KEY_A:
 	case KEY_XBUTTON_LEFT:
 	case KEY_XSTICK1_LEFT:
 	case KEY_XSTICK2_LEFT:
@@ -2499,7 +2496,6 @@ void ListPanel::OnKeyCodePressed(KeyCode code)
 		// fall through
 
 	case KEY_RIGHT:
-	case KEY_D:
 	case KEY_XBUTTON_RIGHT:
 	case KEY_XSTICK1_RIGHT:
 	case KEY_XSTICK2_RIGHT:

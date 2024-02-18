@@ -804,7 +804,7 @@ void CConsolePanel::OnKeyCodeTyped(KeyCode code)
 			OnAutoComplete(reverse);
 			m_pEntry->RequestFocus();
 		}
-		else if (code == KEY_DOWN || code == KEY_S)
+		else if (code == KEY_DOWN)
 		{
 			OnAutoComplete(false);
 		//	UpdateCompletionListPosition();
@@ -812,7 +812,7 @@ void CConsolePanel::OnKeyCodeTyped(KeyCode code)
 
 			m_pEntry->RequestFocus();
 		}
-		else if (code == KEY_UP || code == KEY_W)
+		else if (code == KEY_UP)
 		{
 			OnAutoComplete(true);
 			m_pEntry->RequestFocus();

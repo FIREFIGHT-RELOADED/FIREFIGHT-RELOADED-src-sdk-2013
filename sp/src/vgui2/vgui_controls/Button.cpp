@@ -1066,8 +1066,7 @@ void Button::OnKeyCodeReleased( KeyCode keycode )
 	if ( !( code == KEY_XSTICK1_UP || code == KEY_XSTICK1_DOWN || code == KEY_XSTICK1_LEFT || code == KEY_XSTICK1_RIGHT || 
 			code == KEY_XSTICK2_UP || code == KEY_XSTICK2_DOWN || code == KEY_XSTICK2_LEFT || code == KEY_XSTICK2_RIGHT || 
 			code == KEY_XBUTTON_UP || code == KEY_XBUTTON_DOWN || code == KEY_XBUTTON_LEFT || code == KEY_XBUTTON_RIGHT || 
-			keycode == KEY_UP|| keycode == KEY_DOWN || keycode == KEY_LEFT || keycode == KEY_RIGHT ||
-			keycode == KEY_W || keycode == KEY_S || keycode == KEY_A || keycode == KEY_D) )
+			keycode == KEY_UP|| keycode == KEY_DOWN || keycode == KEY_LEFT || keycode == KEY_RIGHT ) )
 	{
 		SetArmed( false );
 	}

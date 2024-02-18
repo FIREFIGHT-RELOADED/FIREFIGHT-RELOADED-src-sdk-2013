@@ -130,22 +130,18 @@ void EditablePanel::OnKeyCodePressed( KeyCode code )
 			case KEY_XSTICK1_UP:
 			case KEY_XSTICK2_UP:
 			case KEY_UP:
-			case KEY_W:
 			case KEY_XBUTTON_DOWN:
 			case KEY_XSTICK1_DOWN:
 			case KEY_XSTICK2_DOWN:
 			case KEY_DOWN:
-			case KEY_S:
 			case KEY_XBUTTON_LEFT:
 			case KEY_XSTICK1_LEFT:
 			case KEY_XSTICK2_LEFT:
 			case KEY_LEFT:
-			case KEY_A:
 			case KEY_XBUTTON_RIGHT:
 			case KEY_XSTICK1_RIGHT:
 			case KEY_XSTICK2_RIGHT:
 			case KEY_RIGHT:
-			case KEY_D:
 			case KEY_XBUTTON_B:
 				// Navigating menus
 				vgui_nav_lock_default_button.SetValue( 1 );
