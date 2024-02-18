@@ -901,6 +901,7 @@ void ListViewPanel::OnKeyCodeTyped( KeyCode code )
 		}
 
 		case KEY_UP:
+		case KEY_W:
 		{
 			int itemPos = m_SortedItems.Find( m_LastSelectedItemID );
 			itemPos--;
@@ -912,6 +913,7 @@ void ListViewPanel::OnKeyCodeTyped( KeyCode code )
 		}
 		
 		case KEY_DOWN:
+		case KEY_S:
 		{
 			int itemPos = m_SortedItems.Find( m_LastSelectedItemID );
 			itemPos++;
@@ -923,6 +925,7 @@ void ListViewPanel::OnKeyCodeTyped( KeyCode code )
 		}
 
 		case KEY_LEFT:
+		case KEY_A:
 		{
 			int itemPos = m_SortedItems.Find( m_LastSelectedItemID );
 			itemPos -= GetItemsPerColumn();
@@ -935,6 +938,7 @@ void ListViewPanel::OnKeyCodeTyped( KeyCode code )
 		}
 
 		case KEY_RIGHT:
+		case KEY_D:
 		{
 			int itemPos = m_SortedItems.Find( m_LastSelectedItemID );
 			itemPos += GetItemsPerColumn();
