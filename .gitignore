@@ -81,6 +81,7 @@ compile_commands.json
 !sourcesdk_def.mak
 *.vsidx
 sp/src/.vs/*
+sp/src/.steam/*
 .vs
 sp/game/firefightreloaded/cfg/user_sp.scr
 sp/game/firefightreloaded/cfg/steam_autocloud.vdf
@@ -104,3 +105,5 @@ sp/game/firefightreloaded/bin/gamepadui.dll
 
 //temporary so i can keep it from changing when adding the new menu.
 sp/game/firefightreloaded/cfg/user_default_sp.scr
+sp/src/steam_api_restore.bat
+sp/src/steam_api_upgrade.bat

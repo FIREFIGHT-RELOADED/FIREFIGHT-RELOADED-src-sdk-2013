@@ -1,0 +1,38 @@
+//
+// This file remaps localized hints since conditionals can't be used
+//
+"scripts/steaminput_remap.txt"
+{
+	// Movement keys
+	"#Valve_Hint_Movement"
+	{
+		"#Analog_Hint_Movement"		"default"
+	}
+	
+	// Airboat keys
+	"#Valve_Hint_BoatKeys"
+	{
+		"#Analog_Hint_BoatKeys"		"default"
+		
+		"#Analog_Hint_BoatKeys_SeparateAccelBrake"
+		{
+			if_action_bound			"xbrake"
+		}
+	}
+	
+	// Crane keys
+	"#Valve_Hint_CraneKeys"
+	{
+		"#Analog_Hint_CraneKeys"	"default"
+		
+		"#Analog_Hint_CraneKeys_SeparateAccelBrake"
+		{
+			if_action_bound			"xbrake"
+		}
+		
+		//"#Deck_Valve_Hint_CraneKeys"
+		//{
+		//	if_input_type			"deck"
+		//}
+	}
+}

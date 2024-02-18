@@ -16,6 +16,22 @@ Code used in FIREFIGHT RELOADED may be used for your Source Engine game/mod, how
 
 ## Compiling
 
+### EXPANDED STEAM:
+
+FIREFIGHT RELOADED has support for newer Steamworks APIs and Steam Input, however the newer Steamworks SDK headers aren't added by default as that would be a violation of the Steamworks SDK Access Agreement.
+You must be a Steamworks partner to download and use the SDK.
+
+To enable these APIs, do the following: 
+
+1. Replace lib/public/steam_api.lib and lib/public/linux32/libsteam_api.so with the files included in redistributable_bin. 
+* The newer .lib files aren't included as the repository is pre-configured to use the original binaries from the Source SDK 2013.
+2. Replace the contents of public/steam with the contents of the public/steam folder included with the Steamworks SDK.
+3. Open vpc_scripts/default.vgc and set BUILD_EXPANDED_STEAM to 1.
+4. Open vpc_scripts/source_base.vgc and uncomment the NEW_STEAM_API line.
+* Lastly, if you are using a Steamworks version newer than the one listed in vpc_scripts/steamworks_update.vpc, update line 20 with the version accordingly.
+
+Read README_EXPANDED_STEAM.md for more information.
+
 ### WINDOWS:
 
 To be able to build FIREFIGHT RELOADED you will need to download:

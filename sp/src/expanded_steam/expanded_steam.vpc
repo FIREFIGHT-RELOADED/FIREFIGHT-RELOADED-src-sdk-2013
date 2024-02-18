@@ -1,0 +1,32 @@
+//-----------------------------------------------------------------------------
+//	EXPANDED_STEAM.VPC
+//
+//	Project Script
+//-----------------------------------------------------------------------------
+
+$macro SRCDIR		".."
+ 
+$include "$SRCDIR\vpc_scripts\source_lib_base.vpc"
+
+$Configuration
+{
+	$Compiler
+	{
+		$PreprocessorDefinitions		"$BASE;EXPANDED_STEAM_STATIC_LIB"
+	}
+}
+
+$Project "Expanded Steam"
+{
+	$Folder	"Source Files"
+	{
+		$File	"in_steaminput.cpp"
+		//$File	"steam_stubs.cpp"
+	}
+	
+	$Folder	"Header Files"
+	{
+        $File "$SRCDIR\public\expanded_steam\isteaminput.h"
+        //$File "$SRCDIR\public\expanded_steam\isteamstubs.h"
+	}
+}

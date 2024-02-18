@@ -1241,5 +1241,6 @@ Scheme
 		"6"		"resource/cs.ttf"
 		"7"		"resource/csd.ttf"
 	}
-
 }
+
+#base "clientscheme_steaminput.res"

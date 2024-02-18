@@ -67,6 +67,11 @@ ConVar debug_latch_reset_onduck( "debug_latch_reset_onduck", "1", FCVAR_CHEAT );
 #endif
 #endif
 
+#ifdef STEAM_INPUT
+ConVar player_x360_crouch_friction( "player_x360_crouch_friction", "0" );
+ConVar player_x360_crouch_hints( "player_x360_crouch_hints", "0" );
+#endif
+
 // [MD] I'll remove this eventually. For now, I want the ability to A/B the optimizations.
 bool g_bMovementOptimizations = true;
 
@@ -1648,7 +1653,11 @@ void CGameMovement::Friction( void )
 		// Bleed off some speed, but if we have less than the bleed
 		//  threshold, bleed the threshold amount.
 
+#ifdef STEAM_INPUT
+		if ( IsX360() || player_x360_crouch_friction.GetBool() )
+#else
 		if ( IsX360() )
+#endif
 		{
 			if( player->m_Local.m_bDucked )
 			{
@@ -2898,6 +2907,9 @@ inline bool CGameMovement::OnLadder( trace_t &trace )
 ConVar sv_ladder_dampen ( "sv_ladder_dampen", "0.2", FCVAR_REPLICATED, "Amount to dampen perpendicular movement on a ladder", true, 0.0f, true, 1.0f );
 ConVar sv_ladder_angle( "sv_ladder_angle", "-0.707", FCVAR_REPLICATED, "Cos of angle of incidence to ladder perpendicular for applying ladder_dampen", true, -1.0f, true, 1.0f );
 #endif
+#ifdef STEAM_INPUT
+ConVar sv_ladder_use_movespeeds( "sv_ladder_use_movespeeds", "1", FCVAR_REPLICATED );
+#endif
 //=============================================================================
 // HPE_END
 //=============================================================================
@@ -2973,18 +2985,29 @@ bool CGameMovement::LadderMove( void )
 	float climbSpeed = ClimbSpeed();
 
 	float forwardSpeed = 0, rightSpeed = 0;
-	if ( mv->m_nButtons & IN_BACK )
-		forwardSpeed -= climbSpeed;
-	
-	if ( mv->m_nButtons & IN_FORWARD )
-		forwardSpeed += climbSpeed;
-	
-	if ( mv->m_nButtons & IN_MOVELEFT )
-		rightSpeed -= climbSpeed;
-	
-	if ( mv->m_nButtons & IN_MOVERIGHT )
-		rightSpeed += climbSpeed;
-
+    
+#ifdef STEAM_INPUT
+	if (sv_ladder_use_movespeeds.GetBool())
+	{
+		forwardSpeed = clamp( mv->m_flForwardMove, -MAX_CLIMB_SPEED, MAX_CLIMB_SPEED );
+		rightSpeed = clamp( mv->m_flSideMove, -MAX_CLIMB_SPEED, MAX_CLIMB_SPEED );
+	}
+	else
+#endif
+    {
+        if ( mv->m_nButtons & IN_BACK )
+            forwardSpeed -= climbSpeed;
+        
+        if ( mv->m_nButtons & IN_FORWARD )
+            forwardSpeed += climbSpeed;
+        
+        if ( mv->m_nButtons & IN_MOVELEFT )
+            rightSpeed -= climbSpeed;
+        
+        if ( mv->m_nButtons & IN_MOVERIGHT )
+            rightSpeed += climbSpeed;
+    }
+    
 	if ( mv->m_nButtons & IN_JUMP )
 	{
 		player->SetMoveType( MOVETYPE_WALK );
@@ -4421,7 +4444,11 @@ void CGameMovement::Duck( void )
 		{
 // XBOX SERVER ONLY
 #if !defined(CLIENT_DLL)
+#ifdef STEAM_INPUT
+			if ( (IsX360() || player_x360_crouch_hints.GetBool()) && buttonsPressed & IN_DUCK )
+#else
 			if ( IsX360() && buttonsPressed & IN_DUCK )
+#endif
 			{
 				// Hinting logic
 				if ( player->GetToggledDuckState() && player->m_nNumCrouches < NUM_CROUCH_HINTS )
