@@ -853,6 +853,7 @@ void Slider::OnKeyCodeTyped(KeyCode code)
 		// for now left and right arrows just open or close submenus if they are there.
         case KEY_LEFT:
         case KEY_DOWN:
+
             {
                 int val = GetValue();
                 SetValue(val-1);

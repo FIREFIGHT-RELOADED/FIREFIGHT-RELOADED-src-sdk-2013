@@ -603,21 +603,25 @@ bool BuildGroup::KeyCodeTyped(KeyCode code, Panel *panel)
 	switch (code)
 	{
 		case KEY_LEFT:
+		case KEY_A:
 		{
 			dx-=_snapX;
 			break;
 		}
 		case KEY_RIGHT:
+		case KEY_D:
 		{
 			dx+=_snapX;
 			break;
 		}
 		case KEY_UP:
+		case KEY_W:
 		{
 			dy-=_snapY;
 			break;
 		}
 		case KEY_DOWN:
+		case KEY_S:
 		{
 			dy+=_snapY;
 			break;
