@@ -81,7 +81,10 @@ compile_commands.json
 !sourcesdk_def.mak
 *.vsidx
 sp/src/.vs/*
+# steam api scripts.
 sp/src/.steam/*
+sp/src/steam_api_restore.bat
+sp/src/steam_api_upgrade.bat
 .vs
 sp/game/firefightreloaded/cfg/user_sp.scr
 sp/game/firefightreloaded/cfg/steam_autocloud.vdf
@@ -90,6 +93,7 @@ sp/src/lib/public/mathlib.lib
 sp/src/lib/public/raytrace.lib
 sp/src/lib/public/tier1.lib
 sp/src/lib/public/vgui_controls.lib
+sp/src/lib/public/expanded_steam.lib
 sp/game/bin/vbsp.exe
 sp/game/bin/vbsp.pdb
 sp/game/bin/vrad.exe
@@ -103,7 +107,5 @@ sp/game/bin/vvis_dll.pdb
 sp/game/firefightreloaded/bin/gamepadui.pdb
 sp/game/firefightreloaded/bin/gamepadui.dll
 
-//temporary so i can keep it from changing when adding the new menu.
+# temporary so i can keep it from changing when adding the new menu.
 sp/game/firefightreloaded/cfg/user_default_sp.scr
-sp/src/steam_api_restore.bat
-sp/src/steam_api_upgrade.bat

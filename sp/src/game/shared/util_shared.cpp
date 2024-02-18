@@ -1186,7 +1186,7 @@ const bool UTIL_IsGamepadUIEnabled()
 	if (CommandLine()->FindParm("-nogamepadui"))
 		return false;
 
-#ifdef STEAM_INPUT && CLIENT_DLL
+#if defined(STEAM_INPUT) && defined(CLIENT_DLL)
 	return IsDeck();
 #else
 	return UTIL_IsSteamDeck();
@@ -1196,7 +1196,7 @@ const bool UTIL_IsGamepadUIEnabled()
 //kinda useless now, whatever
 const bool UTIL_IsSteamDeck()
 {
-#ifdef STEAM_INPUT && CLIENT_DLL
+#if defined(STEAM_INPUT) && defined(CLIENT_DLL)
 	return IsDeck();
 #else
 	const char* pszSteamDeckEnv = getenv("SteamDeck");
