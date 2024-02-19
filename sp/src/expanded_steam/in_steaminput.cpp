@@ -1285,7 +1285,7 @@ void CSource2013SteamInput::ResetLEDColor( InputHandle_t nController )
 	SteamInput()->SetLEDColor( nController, 0, 0, 0, k_ESteamInputLEDFlag_RestoreUserDefault );
 }
 
-void CSource2013SteamInput::SetDualSenseTriggerEffect(InputHandle_t nController, const ScePadTriggerEffectParam *pParam)
+void SetDualSenseTriggerEffect(InputHandle_t nController, const ScePadTriggerEffectParam *pParam)
 {
     SteamInput()->SetDualSenseTriggerEffect(nController, pParam);
 }
