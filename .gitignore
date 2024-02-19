@@ -81,7 +81,7 @@ compile_commands.json
 !sourcesdk_def.mak
 *.vsidx
 sp/src/.vs/*
-# steam api switching scripts.
+# steam api scripts.
 sp/src/.steam/*
 sp/src/steam_api_restore.bat
 sp/src/steam_api_upgrade.bat
