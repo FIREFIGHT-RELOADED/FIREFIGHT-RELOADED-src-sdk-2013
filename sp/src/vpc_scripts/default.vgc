@@ -16,10 +16,6 @@ $Games
 // Makes the VPC scripts work in the SDK's context
 $Conditional "SOURCESDK" "1"
 
-// Adds expanded_steam to game projects so that its source code can be built. Only use with updated Steamworks API headers.
-// (Be sure to change NEW_STEAM_API in steamworks_update.vpc as well!)
-$Conditional BUILD_EXPANDED_STEAM	"0"
-
 $Include "vpc_scripts\projects.vgc"
 $Include "vpc_scripts\groups.vgc"
 

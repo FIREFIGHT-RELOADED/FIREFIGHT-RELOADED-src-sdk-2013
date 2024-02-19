@@ -1,6 +1,0 @@
-//
-// Put custom remapped hints in this file
-//
-"scripts/mod_hintremap.txt"
-{
-}

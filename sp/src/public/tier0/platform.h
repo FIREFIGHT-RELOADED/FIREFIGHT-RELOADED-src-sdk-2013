@@ -1256,12 +1256,6 @@ inline bool Plat_IsInDebugSession( bool bForceRecheck = false ) { return false; 
 //-----------------------------------------------------------------------------
 PLATFORM_INTERFACE bool Is64BitOS();
 
-#ifdef STEAM_INPUT
-//-----------------------------------------------------------------------------
-// For easy access beyond the client (better solution in the future?)
-//-----------------------------------------------------------------------------
-#define IsDeck() (CommandLine()->CheckParm("-deck") != 0)
-#endif
 
 //-----------------------------------------------------------------------------
 // XBOX Components valid in PC compilation space

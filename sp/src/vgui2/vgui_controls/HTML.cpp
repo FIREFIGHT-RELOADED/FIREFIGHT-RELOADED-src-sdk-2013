@@ -29,19 +29,6 @@ using namespace vgui;
 
 const int k_nMaxCustomCursors = 2; // the max number of custom cursors we keep cached PER html control
 
-#if NEW_STEAM_HTML
-// Some typo fixes
-#define INVALID_HTTMLBROWSER INVALID_HTMLBROWSER
-#define eHTMLKeyModifier_CrtlDown k_eHTMLKeyModifier_CtrlDown
-#define eHTMLKeyModifier_AltDown k_eHTMLKeyModifier_AltDown
-#define eHTMLKeyModifier_ShiftDown k_eHTMLKeyModifier_ShiftDown
-
-#ifdef _WIN32
-// disable this warning; this pattern need for steam callback registration
-#pragma warning( disable: 4355 )	// 'this' : used in base member initializer list
-#endif
-#endif
-
 //-----------------------------------------------------------------------------
 // Purpose: A simple passthrough panel to render the border onto the HTML widget
 //-----------------------------------------------------------------------------
@@ -176,17 +163,13 @@ private:
 //-----------------------------------------------------------------------------
 HTML::HTML(Panel *parent, const char *name, bool allowJavaScript, bool bPopupWindow) : Panel(parent, name), 
 m_NeedsPaint( this, &HTML::BrowserNeedsPaint ),
-#if !NEW_STEAM_HTML
-m_ComboNeedsPaint(this, &HTML::BrowserComboNeedsPaint),
-#endif
-m_StartRequest(this, &HTML::BrowserStartRequest),
-m_URLChanged(this, &HTML::BrowserURLChanged),
-m_FinishedRequest(this, &HTML::BrowserFinishedRequest),
-#if !NEW_STEAM_HTML
-m_ShowPopup(this, &HTML::BrowserShowPopup),
-m_HidePopup(this, &HTML::BrowserHidePopup),
-m_SizePopup(this, &HTML::BrowserSizePopup),
-#endif
+m_ComboNeedsPaint( this, &HTML::BrowserComboNeedsPaint ),
+m_StartRequest( this, &HTML::BrowserStartRequest ),
+m_URLChanged( this, &HTML::BrowserURLChanged ),
+m_FinishedRequest( this, &HTML::BrowserFinishedRequest ),
+m_ShowPopup( this, &HTML::BrowserShowPopup ),
+m_HidePopup( this, &HTML::BrowserHidePopup ),
+m_SizePopup( this, &HTML::BrowserSizePopup ),
 m_LinkInNewTab( this, &HTML::BrowserOpenNewTab ),
 m_ChangeTitle( this, &HTML::BrowserSetHTMLTitle ),
 m_FileLoadDialog( this, &HTML::BrowserFileLoadDialog ),
@@ -1459,42 +1442,40 @@ void HTML::BrowserNeedsPaint( HTML_NeedsPaint_t *pCallback )
 }
 
 
-#if !NEW_STEAM_HTML
 //-----------------------------------------------------------------------------
 // Purpose: we have a new texture to update
 //-----------------------------------------------------------------------------
-void HTML::BrowserComboNeedsPaint(HTML_ComboNeedsPaint_t* pCallback)
+void HTML::BrowserComboNeedsPaint( HTML_ComboNeedsPaint_t *pCallback )
 {
-	if (m_pComboBoxHost->IsVisible())
+	if ( m_pComboBoxHost->IsVisible() )
 	{
 		int tw = 0, tt = 0;
 		// update the combo box texture also
-		if (m_iComboBoxTextureID != 0)
+		if ( m_iComboBoxTextureID != 0 )
 		{
 			tw = m_allocedComboBoxWidth;
 			tt = m_allocedComboBoxHeight;
 		}
 
-		if (m_iComboBoxTextureID == 0 || tw != (int)pCallback->unWide || tt != (int)pCallback->unTall)
+		if ( m_iComboBoxTextureID == 0  || tw != (int)pCallback->unWide || tt != (int)pCallback->unTall )
 		{
-			if (m_iComboBoxTextureID != 0)
-				surface()->DeleteTextureByID(m_iComboBoxTextureID);
+			if ( m_iComboBoxTextureID != 0 )
+				surface()->DeleteTextureByID( m_iComboBoxTextureID );
 
 			// if the dimensions changed we also need to re-create the texture ID to support the overlay properly (it won't resize a texture on the fly, this is the only control that needs
 			//   to so lets have a tiny bit more code here to support that)
-			m_iComboBoxTextureID = surface()->CreateNewTextureID(true);
-			surface()->DrawSetTextureRGBAEx(m_iComboBoxTextureID, (const unsigned char*)pCallback->pBGRA, pCallback->unWide, pCallback->unTall, IMAGE_FORMAT_BGRA8888);
+			m_iComboBoxTextureID = surface()->CreateNewTextureID( true );
+			surface()->DrawSetTextureRGBAEx( m_iComboBoxTextureID, (const unsigned char *)pCallback->pBGRA, pCallback->unWide, pCallback->unTall, IMAGE_FORMAT_BGRA8888 );
 			m_allocedComboBoxWidth = (int)pCallback->unWide;
 			m_allocedComboBoxHeight = (int)pCallback->unTall;
 		}
 		else
 		{
 			// same size texture, just bits changing in it, lets twiddle
-			surface()->DrawUpdateRegionTextureRGBA(m_iComboBoxTextureID, 0, 0, (const unsigned char*)pCallback->pBGRA, pCallback->unWide, pCallback->unTall, IMAGE_FORMAT_BGRA8888);
+			surface()->DrawUpdateRegionTextureRGBA( m_iComboBoxTextureID, 0, 0, (const unsigned char *)pCallback->pBGRA, pCallback->unWide, pCallback->unTall, IMAGE_FORMAT_BGRA8888 );
 		}
 	}
 }
-#endif
 
 
 //-----------------------------------------------------------------------------
@@ -1599,15 +1580,13 @@ void HTML::BrowserFinishedRequest( HTML_FinishedRequest_t *pCmd )
 }
 
 
-#if !NEW_STEAM_HTML
 //-----------------------------------------------------------------------------
 // Purpose: show a popup dialog
 //-----------------------------------------------------------------------------
-void HTML::BrowserShowPopup(HTML_ShowPopup_t* pCmd)
+void HTML::BrowserShowPopup( HTML_ShowPopup_t *pCmd )
 {
-	m_pComboBoxHost->SetVisible(true);
+	m_pComboBoxHost->SetVisible( true );
 }
-#endif
 
 
 //-----------------------------------------------------------------------------
@@ -1619,11 +1598,10 @@ void HTML::HidePopup()
 }
 
 
-#if !NEW_STEAM_HTML
 //-----------------------------------------------------------------------------
 // Purpose: browser wants us to hide a popup
 //-----------------------------------------------------------------------------
-void HTML::BrowserHidePopup(HTML_HidePopup_t* pCmd)
+void HTML::BrowserHidePopup( HTML_HidePopup_t *pCmd )
 {
 	HidePopup();
 }
@@ -1632,13 +1610,12 @@ void HTML::BrowserHidePopup(HTML_HidePopup_t* pCmd)
 //-----------------------------------------------------------------------------
 // Purpose: browser wants us to position a popup
 //-----------------------------------------------------------------------------
-void HTML::BrowserSizePopup(HTML_SizePopup_t* pCmd)
+void HTML::BrowserSizePopup( HTML_SizePopup_t *pCmd )
 {
 	int nAbsX, nAbsY;
-	ipanel()->GetAbsPos(GetVPanel(), nAbsX, nAbsY);
-	m_pComboBoxHost->SetBounds(pCmd->unX + 1 + nAbsX, pCmd->unY + nAbsY, pCmd->unWide, pCmd->unTall);
+	ipanel()->GetAbsPos( GetVPanel(), nAbsX, nAbsY );
+	m_pComboBoxHost->SetBounds( pCmd->unX + 1 + nAbsX, pCmd->unY+ nAbsY, pCmd->unWide, pCmd->unTall );
 }
-#endif
 
 
 //-----------------------------------------------------------------------------

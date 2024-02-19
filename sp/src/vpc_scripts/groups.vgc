@@ -25,7 +25,6 @@ $Group "game"
 	"tier1"
 	"vgui_controls"
 	//"game_shader_dx9"
-    "expanded_steam"
 }
 
 $Group "gameandtools"
@@ -44,7 +43,6 @@ $Group "gameandtools"
 	"vrad_launcher"
 	"vvis_dll"
 	"vvis_launcher"
-    "expanded_steam"
 }
 
 $Group "shaders"
@@ -79,7 +77,6 @@ $Group "everything"
 	"vtfdiff"
 	"vvis_dll"
 	"vvis_launcher"
-    "expanded_steam"
 }
 
 $Group "dedicated"
