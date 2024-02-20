@@ -130,6 +130,17 @@
 				"antialias"		"1"
 			}
 		}
+        
+        "Button.Prompt.Font"
+		{
+			"settings"
+			{
+				"name"			"Noto Sans"
+				"tall"			"25"
+				"weight"		"600"
+				"antialias"		"1"
+			}
+		}
 
 		"Button.Description.Font"
 		{

@@ -456,6 +456,63 @@ Scheme
 				"scanlines" "0"
 			}
 		}
+        DefaultButtonPrompt
+		{
+			"1"	[$X360]
+			{
+				"name"		"PromptFont"
+				"tall"		"12"
+				"weight"	"700"
+				"scanlines" "0"
+				"antialias" "1"
+			}
+			"1"	[$WIN32]
+			{
+				"name"		"PromptFont"
+				"tall"		"9"
+				"weight"	"700"
+				"scanlines" "0"
+				"antialias" "1"
+				"yres"	"1 599"
+			}
+			"2"
+			{
+				"name"		"PromptFont"
+				"tall"		"12"
+				"weight"	"700"
+				"scanlines" "0"
+				"antialias" "1"
+				"yres"	"600 767"
+			}
+			"3"
+			{
+				"name"		"PromptFont"
+				"tall"		"14"
+				"weight"	"900"
+				"scanlines" "0"
+				"antialias" "1"
+				"yres"	"768 1023"
+			}
+			"4"
+			{
+				"name"		"PromptFont"
+				"tall"		"20"
+				"weight"	"900"
+				"scanlines" "0"
+				"antialias" "1"
+				"yres"	"1024 1199"
+			}
+			"5"
+			{
+				"name"		"PromptFont"
+				"tall"		"24"
+				"weight"	"900"
+				"scanlines" "0"
+				"antialias" "1"
+				"yres"	"1200 10000"
+				"additive"	"1"
+			}
+		}
 		DefaultKillFeed
 		{
 			"1"
@@ -1241,5 +1298,4 @@ Scheme
 		"6"		"resource/cs.ttf"
 		"7"		"resource/csd.ttf"
 	}
-
 }

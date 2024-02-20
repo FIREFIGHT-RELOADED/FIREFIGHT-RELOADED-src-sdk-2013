@@ -202,9 +202,9 @@ namespace FooterButtons
         case Apply:  return ButtonLabels::GetLabelName(setting, ButtonLabels::Y);
         case Okay:   return ButtonLabels::GetLabelName(setting, ButtonLabels::A);
         case Commentary: return ButtonLabels::GetLabelName(setting, ButtonLabels::Y);
-        case BonusMaps: return ButtonLabels::GetLabelName(setting, ButtonLabels::Y);
+        case BonusMaps: return ButtonLabels::GetLabelName(setting, ButtonLabels::X);
         case Challenge: return ButtonLabels::GetLabelName(setting, ButtonLabels::Y);
-        case UseDefaults: return ButtonLabels::GetLabelName(setting, ButtonLabels::Y);
+        case UseDefaults: return ButtonLabels::GetLabelName(setting, ButtonLabels::X);
         }
         return L"N";
     }
