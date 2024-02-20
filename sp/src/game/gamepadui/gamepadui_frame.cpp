@@ -160,6 +160,7 @@ void GamepadUIFrame::SetFooterButtons( FooterButtonMask mask, FooterButtonMask c
             m_pFooterButtons[i]->SetFooterButton( button );
             // Make footer buttons render over everything.
             m_pFooterButtons[i]->SetZPos( 100 );
+            m_pFooterButtons[i]->Repaint();
         }
     }
 
@@ -224,6 +225,7 @@ void GamepadUIFrame::OnKeyCodePressed( vgui::KeyCode code )
 
     case KEY_XBUTTON_A:
     case KEY_ENTER:
+    case KEY_SPACE:
         for ( int i = 0; i < FooterButtons::MaxFooterButtons; i++ )
         {
             if ( FooterButtons::GetButtonByIdx(i) & FooterButtons::ConfirmMask )
@@ -239,6 +241,7 @@ void GamepadUIFrame::OnKeyCodePressed( vgui::KeyCode code )
 #endif
 
     case KEY_XBUTTON_Y:
+    case KEY_Q:
         for ( int i = 0; i < FooterButtons::MaxFooterButtons; i++ )
         {
             if ( FooterButtons::GetButtonByIdx(i) & ( FooterButtons::Apply | FooterButtons::Commentary | FooterButtons::Challenge ) )
@@ -254,6 +257,7 @@ void GamepadUIFrame::OnKeyCodePressed( vgui::KeyCode code )
 #endif
 
     case KEY_XBUTTON_X:
+    case KEY_R:
         for ( int i = 0; i < FooterButtons::MaxFooterButtons; i++ )
         {
             if ( FooterButtons::GetButtonByIdx(i) & ( FooterButtons::BonusMaps | FooterButtons::UseDefaults ) )
@@ -270,6 +274,8 @@ void GamepadUIFrame::OnKeyCodePressed( vgui::KeyCode code )
 
     case KEY_XBUTTON_B:
     case KEY_ESCAPE:
+    case KEY_LCONTROL:
+    case KEY_RCONTROL:
         for ( int i = 0; i < FooterButtons::MaxFooterButtons; i++ )
         {
             if ( FooterButtons::GetButtonByIdx(i) & FooterButtons::DeclineMask )
@@ -296,6 +302,7 @@ void GamepadUIFrame::OnKeyCodeReleased( vgui::KeyCode code )
 
     case KEY_XBUTTON_A:
     case KEY_ENTER:
+    case KEY_SPACE:
         for ( int i = 0; i < FooterButtons::MaxFooterButtons; i++ )
         {
             if ( FooterButtons::GetButtonByIdx(i) & FooterButtons::ConfirmMask )
@@ -317,6 +324,7 @@ void GamepadUIFrame::OnKeyCodeReleased( vgui::KeyCode code )
 #endif
 
     case KEY_XBUTTON_Y:
+    case KEY_Q:
         for ( int i = 0; i < FooterButtons::MaxFooterButtons; i++ )
         {
             if ( FooterButtons::GetButtonByIdx(i) & ( FooterButtons::Apply | FooterButtons::Commentary | FooterButtons::Challenge ) )
@@ -338,6 +346,7 @@ void GamepadUIFrame::OnKeyCodeReleased( vgui::KeyCode code )
 #endif
 
     case KEY_XBUTTON_X:
+    case KEY_R:
         for ( int i = 0; i < FooterButtons::MaxFooterButtons; i++ )
         {
             if ( FooterButtons::GetButtonByIdx(i) & ( FooterButtons::BonusMaps | FooterButtons::UseDefaults ) )
@@ -360,6 +369,8 @@ void GamepadUIFrame::OnKeyCodeReleased( vgui::KeyCode code )
 
     case KEY_XBUTTON_B:
     case KEY_ESCAPE:
+    case KEY_LCONTROL:
+    case KEY_RCONTROL:
         for ( int i = 0; i < FooterButtons::MaxFooterButtons; i++ )
         {
             if ( FooterButtons::GetButtonByIdx(i) & FooterButtons::DeclineMask )

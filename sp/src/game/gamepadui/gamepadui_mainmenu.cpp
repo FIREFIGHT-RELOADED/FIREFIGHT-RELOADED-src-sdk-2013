@@ -33,7 +33,7 @@ GamepadUIMainMenu::GamepadUIMainMenu( vgui::Panel* pParent )
 
     LoadMenuButtons();
 
-    SetFooterButtons( FooterButtons::Select, FooterButtons::Select );
+    SetFooterButtons( FooterButtons::Select/*, FooterButtons::Select*/);
 }
 
 void GamepadUIMainMenu::UpdateGradients()

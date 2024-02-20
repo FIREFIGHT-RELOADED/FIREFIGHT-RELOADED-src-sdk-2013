@@ -154,7 +154,7 @@ GamepadUIMapChooser::GamepadUIMapChooser( vgui::Panel *pParent, const char* Pane
 
     GetFrameTitle() = GamepadUIString( "#GameUI_NewGame" );
     FooterButtonMask buttons = FooterButtons::Back | FooterButtons::Select;
-    SetFooterButtons( buttons, FooterButtons::Select );
+    SetFooterButtons(buttons/*, FooterButtons::Select*/);
 
     Activate();
 

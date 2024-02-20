@@ -11,7 +11,6 @@
 #define DEFAULT_BTN_ARMED_SOUND "ui/buttonrollover.wav"
 #define DEFAULT_BTN_RELEASED_SOUND "ui/buttonclickrelease.wav"
 
-
 GamepadUIButton::GamepadUIButton( vgui::Panel *pParent, vgui::Panel* pActionSignalTarget, const char *pSchemeFile, const char *pCommand, const char *pText, const char *pDescription )
     : BaseClass( pParent, "", "", pActionSignalTarget, pCommand )
     , m_strButtonText( pText )
@@ -58,6 +57,11 @@ void GamepadUIButton::ApplySchemeSettings(vgui::IScheme* pScheme)
     m_hTextFontOver    = pScheme->GetFont( "Button.Text.Font.Over", true );
     if (m_hTextFontOver == vgui::INVALID_FONT )
         m_hTextFontOver = m_hTextFont;
+
+    m_hPromptFont = pScheme->GetFont("Button.Prompt.Font", true);
+    m_hPromptFontOver = pScheme->GetFont("Button.Prompt.Font.Over", true);
+    if (m_hPromptFontOver == vgui::INVALID_FONT)
+        m_hPromptFontOver = m_hPromptFont;
     m_hDescriptionFont = pScheme->GetFont( "Button.Description.Font", true );
 
     m_ePreviousState = ButtonStates::Out;
@@ -183,6 +187,31 @@ int GamepadUIButton::PaintText()
 
             m_glyph.PaintGlyph( nGlyphPosX, nGlyphPosY, nGlyphSize, nAlpha );
         }
+    }
+#else
+    FooterButton footer = GetFooterButton();
+
+    if (footer)
+    {
+        const int nGlyphSize = m_flHeight * 0.9f;
+        int nGlyphPosX = m_flTextOffsetX;
+        if (m_CenterX)
+        {
+            nGlyphPosX = nTextPosX - m_flHeight / 2;
+            nTextPosX += m_flHeight / 2;
+        }
+        else
+        {
+            nTextPosX += nGlyphSize + (m_flTextOffsetX / 2);
+        }
+        int nGlyphPosY = m_flHeight / 2 - nGlyphSize / 2;
+
+        vgui::surface()->DrawSetTextColor(m_colTextColor);
+        vgui::surface()->DrawSetTextFont(state == ButtonStates::Out ? m_hPromptFont : m_hPromptFontOver);
+        vgui::surface()->DrawSetTextPos(nGlyphPosX, nGlyphPosY);
+        ConVarRef cl_glyphtype("cl_glyphtype");
+        GamepadUIString glyph = GamepadUIString(FooterButtons::GetButtonLabel(footer, (LabelType)cl_glyphtype.GetInt()));
+        vgui::surface()->DrawPrintText(glyph.String(), glyph.Length());
     }
 #endif // HL2_RETAIL
 

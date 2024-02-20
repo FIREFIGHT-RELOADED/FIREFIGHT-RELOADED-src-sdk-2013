@@ -1,4 +1,4 @@
-#ifndef GAMEPADUI_BUTTON_H
+﻿#ifndef GAMEPADUI_BUTTON_H
 #define GAMEPADUI_BUTTON_H
 #ifdef _WIN32
 #pragma once
@@ -21,6 +21,94 @@ namespace ButtonStates
     };
 }
 using ButtonState = ButtonStates::ButtonState;
+
+namespace ButtonLabels
+{
+    enum LabelType
+    {
+        None,
+        Xbox,
+        PlayStation,
+        Switch,
+        Generic
+    };
+
+    enum ButtonType
+    {
+        X,
+        A,
+        B,
+        Y
+    };
+
+    inline const wchar_t* GetLabelName(LabelType setting, ButtonType button)
+    {
+        switch (setting)
+        {
+            case Xbox:
+                switch (button)
+                {
+                case A:
+                    return L"A";
+                case B:
+                    return L"B";
+                case X:
+                    return L"X";
+                case Y:
+                    return L"Y";
+                default:
+                    break;
+                }
+            case PlayStation:
+                switch (button)
+                {
+                case A:
+                    return L"x";
+                case B:
+                    return L"○";
+                case X:
+                    return L"□";
+                case Y:
+                    return L"△";
+                default:
+                    break;
+                }
+            case Switch:
+                switch (button)
+                {
+                case A:
+                    return L"B";
+                case B:
+                    return L"A";
+                case X:
+                    return L"Y";
+                case Y:
+                    return L"X";
+                default:
+                    break;
+                }
+            case Generic:
+                switch (button)
+                {
+                case A:
+                    return L"1";
+                case B:
+                    return L"2";
+                case X:
+                    return L"0";
+                case Y:
+                    return L"3";
+                default:
+                    break;
+                }
+            case None:
+            default:
+                return L"";
+        }
+    }
+}
+
+using LabelType = ButtonLabels::LabelType;
 
 namespace FooterButtons
 {
@@ -101,6 +189,24 @@ namespace FooterButtons
             case UseDefaults: return "menu_x";
         }
         return "";
+    }
+
+    inline const wchar_t* GetButtonLabel(FooterButton button, LabelType setting)
+    {
+        switch (button)
+        {
+        case Back:   return ButtonLabels::GetLabelName(setting, ButtonLabels::B);
+        case Cancel: return ButtonLabels::GetLabelName(setting, ButtonLabels::B);
+        case LeftSelect:
+        case Select: return ButtonLabels::GetLabelName(setting, ButtonLabels::A);
+        case Apply:  return ButtonLabels::GetLabelName(setting, ButtonLabels::Y);
+        case Okay:   return ButtonLabels::GetLabelName(setting, ButtonLabels::A);
+        case Commentary: return ButtonLabels::GetLabelName(setting, ButtonLabels::Y);
+        case BonusMaps: return ButtonLabels::GetLabelName(setting, ButtonLabels::Y);
+        case Challenge: return ButtonLabels::GetLabelName(setting, ButtonLabels::Y);
+        case UseDefaults: return ButtonLabels::GetLabelName(setting, ButtonLabels::Y);
+        }
+        return L"N";
     }
 
 	inline FooterButton GetButtonByIdx( int i )
@@ -211,6 +317,8 @@ public:
     vgui::HFont m_hTextFont        = vgui::INVALID_FONT;
     vgui::HFont m_hTextFontOver    = vgui::INVALID_FONT;
     vgui::HFont m_hDescriptionFont = vgui::INVALID_FONT;
+    vgui::HFont m_hPromptFont = vgui::INVALID_FONT;
+    vgui::HFont m_hPromptFontOver = vgui::INVALID_FONT;
 };
 
 #endif // GAMEPADUI_BUTTON_H

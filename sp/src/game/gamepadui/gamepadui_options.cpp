@@ -236,10 +236,13 @@ public:
         switch ( buttonCode )
         {
         case KEY_ENTER:
+        case KEY_SPACE:
             if ( !s_bBeingBound )
                 StartCapture();
             break;
         case KEY_DELETE:
+        case KEY_LCONTROL:
+        case KEY_RCONTROL:
             if ( !s_bBeingBound )
                 ClearKey();
             break;
@@ -373,6 +376,7 @@ public:
         {
         case KEY_LEFT:
         case KEY_XBUTTON_LEFT:
+        case KEY_A:
 
 #ifdef HL2_RETAIL // Steam input and Steam Controller are not supported in SDK2013 (Madi)
         case STEAMCONTROLLER_DPAD_LEFT:
@@ -385,6 +389,7 @@ public:
 
         case KEY_RIGHT:
         case KEY_XBUTTON_RIGHT:
+        case KEY_D:
 
 #ifdef HL2_RETAIL
         case STEAMCONTROLLER_DPAD_RIGHT:
@@ -563,6 +568,7 @@ public:
         {
         case KEY_LEFT:
         case KEY_XBUTTON_LEFT:
+        case KEY_A:
 
 #ifdef HL2_RETAIL // Steam input and Steam Controller are not supported in SDK2013 (Madi)
         case STEAMCONTROLLER_DPAD_LEFT:
@@ -574,6 +580,7 @@ public:
 
         case KEY_RIGHT:
         case KEY_XBUTTON_RIGHT:
+        case KEY_D:
 
 #ifdef HL2_RETAIL
         case STEAMCONTROLLER_DPAD_RIGHT:
@@ -1194,6 +1201,8 @@ void FlushPendingSkill()
     skill.SetValue( _gamepadui_skill.GetInt() );
 }
 
+bool buttonsNeedUpdate = false;
+
 void UpdateHelperConvars()
 {
     _gamepadui_water_detail.SetValue( GetCurrentWaterDetail() );
@@ -1314,6 +1323,7 @@ void GamepadUIOptionsPanel::LayoutCurrentTab()
         for ( int i = 0; i < m_Tabs[nActiveTab].pButtons.Count(); i++ )
         {
             GamepadUIButton *pButton = m_Tabs[ nActiveTab ].pButtons[ i ];
+
             if ( i < nScrollCount )
                 yMax += pButton->GetTall();
         }
@@ -1425,6 +1435,27 @@ void GamepadUIOptionsPanel::OnCommand( char const* pCommand )
 {
     if ( !V_strcmp( pCommand, "action_back" ) )
     {
+        for (int i = 0; i < m_Tabs[GetActiveTab()].pButtons.Count(); i++)
+        {
+            GamepadUIConvarButton* pConVarButton = dynamic_cast<GamepadUIConvarButton*>(m_Tabs[GetActiveTab()].pButtons[i]);
+            if (pConVarButton)
+                pConVarButton->UpdateConVar();
+        }
+
+        FlushHelperConVars();
+
+        for (GamepadUIButton* pOtherButton : m_Tabs[GetActiveTab()].pButtons)
+        {
+            FooterButton footer = pOtherButton->GetFooterButton();
+
+            if (footer)
+            {
+                Repaint();
+            }
+        }
+
+        ApplyKeyBindings();
+        GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted("host_writeconfig\nmat_savechanges\nexec config.cfg");
         Close();
     }
     else if ( !V_strcmp( pCommand, "action_apply" ) )
@@ -1437,8 +1468,18 @@ void GamepadUIOptionsPanel::OnCommand( char const* pCommand )
         }
 
         FlushHelperConVars();
+
+        for (GamepadUIButton* pOtherButton : m_Tabs[GetActiveTab()].pButtons)
+        {
+            FooterButton footer = pOtherButton->GetFooterButton();
+
+            if (footer)
+            {
+                Repaint();
+            }
+        }
         ApplyKeyBindings();
-        GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted( "exec userconfig.cfg\nhost_writeconfig\nmat_savechanges\n" );
+        GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted( "host_writeconfig\nmat_savechanges\nexec config.cfg\n" );
     }
     else if ( !V_strcmp( pCommand, "action_usedefaults" ) )
     {
@@ -1720,13 +1761,13 @@ void GamepadUIOptionsPanel::OnKeyCodePressed( vgui::KeyCode code )
 {
     ButtonCode_t buttonCode = GetBaseButtonCode( code );
 
-
     switch ( buttonCode )
     {
 #ifdef HL2_RETAIL // Steam input and Steam Controller are not supported in SDK2013 (Madi)
         case STEAMCONTROLLER_LEFT_BUMPER:
 #else
         case KEY_XBUTTON_LEFT_SHOULDER:
+        case KEY_G:
 #endif
             SetActiveTab( GetActiveTab() - 1 );
             break;
@@ -1735,6 +1776,7 @@ void GamepadUIOptionsPanel::OnKeyCodePressed( vgui::KeyCode code )
         case STEAMCONTROLLER_RIGHT_BUMPER:
 #else
         case KEY_XBUTTON_RIGHT_SHOULDER:
+        case KEY_V:
 #endif
             SetActiveTab( GetActiveTab() + 1 );
             break;
@@ -1819,6 +1861,16 @@ void GamepadUIOptionsPanel::SetActiveTab( int nTab )
     }
 
     SetFooterButtons( buttons );
+
+    for (GamepadUIButton* pOtherButton : m_Tabs[nActiveTab].pButtons)
+    {
+        FooterButton footer = pOtherButton->GetFooterButton();
+
+        if (footer)
+        {
+            Repaint();
+        }
+    }
 
     for ( GamepadUIButton *pButton : m_Tabs[ nActiveTab ].pButtons )
     {
@@ -1979,7 +2031,7 @@ void GamepadUIOptionsPanel::LoadOptionTabs( const char *pszOptionsFile )
                             this, this,
                             GAMEPADUI_RESOURCE_FOLDER "schemeoptions_sectiontitle.res",
                             "button_pressed",
-                            pItemData->GetString( "text", "" ), pItemData->GetString( "description", "" ) );
+                            pItemData->GetString( "text", "" ), pItemData->GetString( "description", "" ));
                         //button->SetFooterButton( true );
                         button->SetEnabled( false );
                         m_Tabs[ m_nTabCount ].pButtons.AddToTail( button );
