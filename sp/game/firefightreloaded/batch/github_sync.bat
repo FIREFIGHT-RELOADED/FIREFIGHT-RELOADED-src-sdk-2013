@@ -1,6 +1,7 @@
 @ECHO OFF
 
 SET dest=G:\Projects\GitHub\FIREFIGHT-RELOADED-src-sdk-2013
+SET modDir=D:\SteamLibrary\steamapps\common\FIREFIGHT RELOADED\firefightreloaded
 echo Destination set to %dest%
 
 SET debug=0
@@ -38,6 +39,6 @@ echo.
 echo Coying additional files to GitHub folder...
 if not exist "%scriptsdir%\batch" mkdir "%scriptsdir%\batch"
 XCOPY "%cd%\github_sync.bat" "%scriptsdir%\batch" /y
-XCOPY "%cd%\steam_copy.bat" "%scriptsdir%\batch" /y
-XCOPY "%cd%\reset.bat" "%scriptsdir%\batch" /y
+XCOPY "%modDir%\steam_copy.bat" "%scriptsdir%\batch" /y
+XCOPY "%modDir%\reset.bat" "%scriptsdir%\batch" /y
 if %debug%==1 pause

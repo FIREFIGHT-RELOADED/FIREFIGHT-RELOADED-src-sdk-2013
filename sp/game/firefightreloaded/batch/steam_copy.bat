@@ -32,6 +32,7 @@ XCOPY "%CD%\gameinfo.txt" "%basedir%" /y
 XCOPY "%CD%\steam.inf" "%basedir%" /y
 XCOPY "%CD%\version.txt" "%basedir%" /y
 XCOPY "%CD%\firefightreloaded_pak_000.vpk" "%basedir%" /y
+XCOPY "%CD%\firefightreloaded_pak_001.vpk" "%basedir%" /y
 XCOPY "%CD%\firefightreloaded_pak_dir.vpk" "%basedir%" /y
 
 echo.
@@ -43,7 +44,5 @@ rmdir "%basedir%" /s /q
 
 echo.
 echo Coying additional files to release folder...
-XCOPY "%cd%\github_sync.bat" "%dest%" /y
-XCOPY "%cd%\steam_copy.bat" "%dest%" /y
 XCOPY "%cd%\reset.bat" "%dest%" /y
 if %debug%==1 pause
