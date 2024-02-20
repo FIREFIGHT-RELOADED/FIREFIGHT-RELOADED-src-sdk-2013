@@ -110,6 +110,7 @@ void CItemBattery::Spawn( void )
     if (m_bInBlueheartMode)
 	{
 		SetModel("models/blueheart.mdl");
+		DevMsg("I miss you, Pepper.\n");
 		m_nSkin = 1;
 	}
 	else

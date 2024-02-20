@@ -116,6 +116,7 @@ void CHealthKit::Spawn( void )
 	if (m_bInBlueheartMode)
 	{
 		SetModel("models/blueheart.mdl");
+		DevMsg("I miss you, Pepper.\n");
 	}
 	else
 	{
