@@ -45,6 +45,7 @@ void GamepadUIFrame::ApplySchemeSettings( vgui::IScheme* pScheme )
 
     m_hTitleFont = pScheme->GetFont( "Title.Font", true );
     m_hGenericFont = pScheme->GetFont( "Generic.Text.Font", true );
+    m_hPromptFont = pScheme->GetFont("Button.Prompt.Font", true);
 }
 
 void GamepadUIFrame::OnThink()

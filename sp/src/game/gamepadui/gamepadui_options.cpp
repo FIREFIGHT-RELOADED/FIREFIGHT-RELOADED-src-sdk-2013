@@ -1282,11 +1282,26 @@ void GamepadUIOptionsPanel::Paint()
     const int nGlyphOffsetX = nGlyphSize / 4.0f;
     const int nGlyphOffsetY = nTabSize - nGlyphSize;
 
+#ifdef HL2_RETAIL // Steam input and Steam Controller are not supported in SDK2013 (Madi)
     if ( m_leftGlyph.SetupGlyph( nGlyphSize, "menu_lb", true ) )
         m_leftGlyph.PaintGlyph( m_flTabsOffsetX - nGlyphSize - nGlyphOffsetX, m_flTabsOffsetY + nGlyphOffsetY / 2, nGlyphSize, 255 );
 
     if ( m_rightGlyph.SetupGlyph( nGlyphSize, "menu_rb", true ) )
         m_rightGlyph.PaintGlyph( nLastTabX + nGlyphOffsetX, m_flTabsOffsetY + nGlyphOffsetY / 2, nGlyphSize, 255 );
+#else
+
+    vgui::surface()->DrawSetTextColor(m_colTitleColor);
+    vgui::surface()->DrawSetTextFont(m_hPromptFont);
+    ConVarRef cl_glyphtype("cl_glyphtype");
+
+    vgui::surface()->DrawSetTextPos(m_flTabsOffsetX - nGlyphSize - nGlyphOffsetX, m_flTabsOffsetY + nGlyphOffsetY / 2);
+    GamepadUIString glyph = GamepadUIString(ButtonLabels::GetLabelName((LabelType)cl_glyphtype.GetInt(), ButtonLabels::LB));
+    vgui::surface()->DrawPrintText(glyph.String(), glyph.Length());
+
+    vgui::surface()->DrawSetTextPos(nLastTabX + nGlyphOffsetX, m_flTabsOffsetY + nGlyphOffsetY / 2);
+    glyph = GamepadUIString(ButtonLabels::GetLabelName((LabelType)cl_glyphtype.GetInt(), ButtonLabels::RB));
+    vgui::surface()->DrawPrintText(glyph.String(), glyph.Length());
+#endif
 }
 
 void GamepadUIOptionsPanel::UpdateGradients()

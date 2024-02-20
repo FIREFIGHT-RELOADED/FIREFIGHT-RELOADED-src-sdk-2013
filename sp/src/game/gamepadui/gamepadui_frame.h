@@ -47,6 +47,7 @@ protected:
 
     vgui::HFont m_hTitleFont = vgui::INVALID_FONT;
     vgui::HFont m_hGenericFont = vgui::INVALID_FONT;
+    vgui::HFont m_hPromptFont = vgui::INVALID_FONT;
     int m_nFooterButtonWidth = 0;
     int m_nFooterButtonHeight = 0;
 };

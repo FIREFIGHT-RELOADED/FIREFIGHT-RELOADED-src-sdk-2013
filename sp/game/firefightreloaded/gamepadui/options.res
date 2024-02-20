@@ -639,7 +639,7 @@
 
 			"AutoAim"
 			{
-				"text"			"#GameUI_AutoaimController"
+				"text"			"#GameUI_Autoaim"
 				"type"			"wheelywheel"
 				"convar"		"sk_allow_autoaim"
 

@@ -38,7 +38,9 @@ namespace ButtonLabels
         X,
         A,
         B,
-        Y
+        Y,
+        LB,
+        RB
     };
 
     inline const wchar_t* GetLabelName(LabelType setting, ButtonType button)
@@ -56,6 +58,10 @@ namespace ButtonLabels
                     return L"X";
                 case Y:
                     return L"Y";
+                case LB:
+                    return L"LB";
+                case RB:
+                    return L"RB";
                 default:
                     break;
                 }
@@ -70,6 +76,10 @@ namespace ButtonLabels
                     return L"□";
                 case Y:
                     return L"△";
+                case LB:
+                    return L"L1";
+                case RB:
+                    return L"R1";
                 default:
                     break;
                 }
@@ -84,6 +94,10 @@ namespace ButtonLabels
                     return L"Y";
                 case Y:
                     return L"X";
+                case LB:
+                    return L"L";
+                case RB:
+                    return L"R";
                 default:
                     break;
                 }
@@ -98,6 +112,10 @@ namespace ButtonLabels
                     return L"0";
                 case Y:
                     return L"3";
+                case LB:
+                    return L"4";
+                case RB:
+                    return L"5";
                 default:
                     break;
                 }
