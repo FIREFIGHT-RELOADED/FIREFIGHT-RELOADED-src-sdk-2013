@@ -7,6 +7,12 @@ $bodygroup "axebane"
 	studio "heart.smd"
 }
 
+$texturegroup "astro"
+{
+	{ "blueheart" }
+	{ "blueheart2" }
+}
+
 $surfaceprop "plastic"
 
 $contents "solid"

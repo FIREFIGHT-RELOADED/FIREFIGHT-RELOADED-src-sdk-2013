@@ -110,6 +110,7 @@ void CItemBattery::Spawn( void )
     if (m_bInBlueheartMode)
 	{
 		SetModel("models/blueheart.mdl");
+		m_nSkin = 1;
 	}
 	else
 	{
