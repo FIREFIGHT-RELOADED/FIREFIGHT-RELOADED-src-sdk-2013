@@ -26,6 +26,7 @@ $Project "GamepadUI (FR)"
 		$Folder "FIREFIGHT RELOADED DLL"
     	{
 			$File "gamepadui_fr_mapchooser.cpp"
+            $File "gamepadui_fr_playermodelchooser.cpp"
 		}
 	}
 }

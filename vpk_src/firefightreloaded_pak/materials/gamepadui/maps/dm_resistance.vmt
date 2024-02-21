@@ -1,6 +1,6 @@
 //"LightmappedGeneric"
 "UnlitGeneric"
 {
-	"$baseTexture" "vgui/chapters/chapter_powerhouse"
+	"$baseTexture" "gamepadui\maps\chapter_resistance"
 	"$vertexalpha" 1
 }

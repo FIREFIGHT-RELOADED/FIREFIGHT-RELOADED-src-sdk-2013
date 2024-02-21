@@ -1,14 +1,14 @@
 #include "gamepadui_interface.h"
 #include "gamepadui_image.h"
 #include "gamepadui_util.h"
-#include "gamepadui_frame.h"
-#include "gamepadui_scroll.h"
 #include "gamepadui_genericconfirmation.h"
+#include "gamepadui_scroll.h"
 
 #include "ienginevgui.h"
 #include "vgui/ILocalize.h"
 #include "vgui/ISurface.h"
 #include "vgui/IVGui.h"
+#include "GameUI/IGameUI.h"
 
 #include "vgui_controls/ComboBox.h"
 #include "vgui_controls/ImagePanel.h"
@@ -16,74 +16,57 @@
 
 #include "KeyValues.h"
 #include "filesystem.h"
-
-#include "icommandline.h"
+#include "materialsystem/imaterial.h"
 
 #include "tier0/memdbgon.h"
 
-class GamepadUIMapButton;
-
-#define GAMEPADUI_MAP_SCHEME GAMEPADUI_RESOURCE_FOLDER "schemechapterbutton.res"
+class GamepadUIMapChooserButton;
 
 class GamepadUIMapChooser : public GamepadUIFrame
 {
     DECLARE_CLASS_SIMPLE( GamepadUIMapChooser, GamepadUIFrame );
 
 public:
-    GamepadUIMapChooser( vgui::Panel *pParent, const char* pPanelName );
+    GamepadUIMapChooser( vgui::Panel *pParent, const char* pPanelName);
 
     void UpdateGradients();
 
-    void OnThink() OVERRIDE;
-    void ApplySchemeSettings(vgui::IScheme* pScheme) OVERRIDE;
+	void OnThink() OVERRIDE;
+    void Paint() OVERRIDE;
     void OnCommand( char const* pCommand ) OVERRIDE;
+    void OnMouseWheeled( int nDelta ) OVERRIDE;
 
     MESSAGE_FUNC_HANDLE( OnGamepadUIButtonNavigatedTo, "OnGamepadUIButtonNavigatedTo", button );
 
+private:
+    void ScanMaps();
     void LayoutMapButtons();
 
-    void OnMouseWheeled( int delta ) OVERRIDE;
-
-private:
-    CUtlVector< GamepadUIMapButton* > m_pChapterButtons;
+    CUtlVector<GamepadUIMapChooserButton*> m_pMapPanels;
 
     GamepadUIScrollState m_ScrollState;
 
-    GAMEPADUI_PANEL_PROPERTY( float, m_ChapterOffsetX, "Chapters.OffsetX", "0", SchemeValueTypes::ProportionalFloat );
-    GAMEPADUI_PANEL_PROPERTY( float, m_ChapterOffsetY, "Chapters.OffsetY", "0", SchemeValueTypes::ProportionalFloat );
-    GAMEPADUI_PANEL_PROPERTY( float, m_ChapterSpacing, "Chapters.Spacing", "0", SchemeValueTypes::ProportionalFloat );
-
-    bool m_bCommentaryMode = false;
+    GAMEPADUI_PANEL_PROPERTY( float, m_flMapFade, "Saves.Fade", "0", SchemeValueTypes::ProportionalFloat );
+    GAMEPADUI_PANEL_PROPERTY( float, m_flMapOffsetX, "Saves.OffsetX", "0", SchemeValueTypes::ProportionalFloat );
+    GAMEPADUI_PANEL_PROPERTY( float, m_flMapOffsetY, "Saves.OffsetY", "0", SchemeValueTypes::ProportionalFloat );
+    GAMEPADUI_PANEL_PROPERTY( float, m_flMapSpacing, "Saves.Spacing", "0", SchemeValueTypes::ProportionalFloat );
 };
 
-class GamepadUIMapButton : public GamepadUIButton
+class GamepadUIMapChooserButton : public GamepadUIButton
 {
 public:
-    DECLARE_CLASS_SIMPLE( GamepadUIMapButton, GamepadUIButton );
+    DECLARE_CLASS_SIMPLE( GamepadUIMapChooserButton, GamepadUIButton );
 
-    GamepadUIMapButton( vgui::Panel* pParent, vgui::Panel* pActionSignalTarget, const char* pSchemeFile, const char* pCommand, const char* pText, const char* pDescription, const char *pChapterImage )
-        : BaseClass( pParent, pActionSignalTarget, pSchemeFile, pCommand, pText, pDescription )
+    GamepadUIMapChooserButton( vgui::Panel* pParent, vgui::Panel* pActionSignalTarget, const char *pSchemeFile, const char* pCommand, const char* pText, const char* pDescription, const char *pChapterImage )
+        : BaseClass( pParent, pActionSignalTarget, pSchemeFile, pCommand, pText, pDescription)
         , m_Image( pChapterImage )
     {
     }
 
-    GamepadUIMapButton( vgui::Panel* pParent, vgui::Panel* pActionSignalTarget, const char* pSchemeFile, const char* pCommand, const wchar* pText, const wchar* pDescription, const char *pChapterImage )
-        : BaseClass( pParent, pActionSignalTarget, pSchemeFile, pCommand, pText, pDescription )
-        , m_Image( pChapterImage )
+    GamepadUIMapChooserButton(vgui::Panel* pParent, vgui::Panel* pActionSignalTarget, const char* pSchemeFile, const char* pCommand, const wchar* pText, const wchar* pDescription, const char* pChapterImage)
+        : BaseClass(pParent, pActionSignalTarget, pSchemeFile, pCommand, pText, pDescription)
+        , m_Image(pChapterImage)
     {
-    }
-
-    ~GamepadUIMapButton()
-    {
-        if ( s_pLastNewGameButton == this )
-            s_pLastNewGameButton = NULL;
-    }
-
-    ButtonState GetCurrentButtonState() OVERRIDE
-    {
-        if ( s_pLastNewGameButton == this )
-            return ButtonState::Over;
-        return BaseClass::GetCurrentButtonState();
     }
 
     void Paint() OVERRIDE
@@ -93,72 +76,79 @@ public:
 
         PaintButton();
 
-        vgui::surface()->DrawSetColor( Color( 255, 255, 255, 255 ) );
-        vgui::surface()->DrawSetTexture( m_Image );
-        int imgH = ( w * 9 ) / 16;
-        //vgui::surface()->DrawTexturedRect( 0, 0, w, );
-        float offset = m_flTextOffsetYAnimationValue[ButtonStates::Out] - m_flTextOffsetY;
-        vgui::surface()->DrawTexturedSubRect( 0, 0, w, imgH - offset, 0.0f, 0.0f, 1.0f, ( imgH - offset ) / imgH );
-        vgui::surface()->DrawSetTexture( 0 );
-        if ( !IsEnabled() )
-        {
-            vgui::surface()->DrawSetColor( Color( 255, 255, 255, 16 ) );
-            vgui::surface()->DrawFilledRect( 0, 0, w, imgH - offset );
-        }
+		if ( m_Image.IsValid() )
+		{
+			vgui::surface()->DrawSetColor( Color( 255, 255, 255, 255 ) );
+			vgui::surface()->DrawSetTexture( m_Image );
+			// Save game icons are 180x100
+			int imgW = ( t * 180 ) / 100;
+			int imgH = t;
+			// Half pixel offset to avoid leaking into pink + black
+			vgui::surface()->DrawTexturedRect( 0, 0, imgW, imgH );
+			vgui::surface()->DrawSetTexture( 0 );
+		}
+		else
+		{
+			vgui::surface()->DrawSetColor( Color( 0, 0, 0, 255 ) );
+			int imgW = ( t * 180 ) / 100;
+			int imgH = t;
+			vgui::surface()->DrawFilledRect( 0, 0, imgW, imgH );
+		}
 
         PaintText();
     }
 
-    void ApplySchemeSettings(vgui::IScheme* pScheme)
-    {
-        BaseClass::ApplySchemeSettings(pScheme);
-
-        if (GamepadUI::GetInstance().GetScreenRatio() != 1.0f)
-        {
-            float flScreenRatio = GamepadUI::GetInstance().GetScreenRatio();
-
-            m_flHeight *= flScreenRatio;
-            for (int i = 0; i < ButtonStates::Count; i++)
-                m_flHeightAnimationValue[i] *= flScreenRatio;
-
-            // Also change the text offset
-            m_flTextOffsetY *= flScreenRatio;
-            for (int i = 0; i < ButtonStates::Count; i++)
-                m_flTextOffsetYAnimationValue[i] *= flScreenRatio;
-
-            SetSize(m_flWidth, m_flHeight + m_flExtraHeight);
-            DoAnimations(true);
-        }
-    }
-
-    void NavigateTo() OVERRIDE
-    {
-        BaseClass::NavigateTo();
-        s_pLastNewGameButton = this;
-    }
-
-    static GamepadUIMapButton* GetLastNewGameButton() { return s_pLastNewGameButton; }
-
 private:
     GamepadUIImage m_Image;
-
-    static GamepadUIMapButton *s_pLastNewGameButton;
 };
 
-GamepadUIMapButton* GamepadUIMapButton::s_pLastNewGameButton = NULL;
-
-GamepadUIMapChooser::GamepadUIMapChooser( vgui::Panel *pParent, const char* PanelName ) : BaseClass( pParent, PanelName )
+GamepadUIMapChooser::GamepadUIMapChooser( vgui::Panel* pParent, const char* pPanelName)
+	: BaseClass( pParent, pPanelName )
 {
-    vgui::HScheme hScheme = vgui::scheme()->LoadSchemeFromFile( GAMEPADUI_DEFAULT_PANEL_SCHEME, "SchemePanel" );
-    SetScheme( hScheme );
+    vgui::HScheme Scheme = vgui::scheme()->LoadSchemeFromFile( GAMEPADUI_DEFAULT_PANEL_SCHEME, "SchemePanel" );
+    SetScheme( Scheme );
 
     GetFrameTitle() = GamepadUIString( "#GameUI_NewGame" );
-    FooterButtonMask buttons = FooterButtons::Back | FooterButtons::Select;
-    SetFooterButtons(buttons/*, FooterButtons::Select*/);
 
     Activate();
 
-    FileFindHandle_t findHandle = NULL;
+    ScanMaps();
+
+    if ( m_pMapPanels.Count() )
+        m_pMapPanels[0]->NavigateTo();
+
+    for ( int i = 1; i < m_pMapPanels.Count(); i++ )
+    {
+        m_pMapPanels[i]->SetNavUp( m_pMapPanels[i - 1] );
+        m_pMapPanels[i - 1]->SetNavDown( m_pMapPanels[i] );
+    }
+
+	UpdateGradients();
+}
+
+void GamepadUIMapChooser::UpdateGradients()
+{
+	const float flTime = GamepadUI::GetInstance().GetTime();
+	GamepadUI::GetInstance().GetGradientHelper()->ResetTargets( flTime );
+	GamepadUI::GetInstance().GetGradientHelper()->SetTargetGradient( GradientSide::Up, { 1.0f, 1.0f }, flTime );
+	GamepadUI::GetInstance().GetGradientHelper()->SetTargetGradient( GradientSide::Down, { 1.0f, 1.0f }, flTime );
+}
+
+void GamepadUIMapChooser::OnThink()
+{
+	BaseClass::OnThink();
+
+	LayoutMapButtons();
+}
+
+void GamepadUIMapChooser::Paint()
+{
+    BaseClass::Paint();
+}
+
+void GamepadUIMapChooser::ScanMaps()
+{
+	FileFindHandle_t findHandle = NULL;
 
     int mapIndex = 0;
     const char* pszFilename = g_pFullFileSystem->FindFirst("maps/*.bsp", &findHandle);
@@ -188,6 +178,7 @@ GamepadUIMapChooser::GamepadUIMapChooser( vgui::Panel *pParent, const char* Pane
         {
             Q_strncpy(mapname, pszFilename, sizeof(mapname) - 1);
         }
+
         char* ext = Q_strstr(mapname, ".bsp");
         if (ext)
         {
@@ -214,63 +205,34 @@ GamepadUIMapChooser::GamepadUIMapChooser( vgui::Panel *pParent, const char* Pane
 
         char chapterImage[64];
         Q_snprintf(chapterImage, sizeof(chapterImage), "gamepadui/maps/%s.vmt", mapname);
-        if (!g_pFullFileSystem->FileExists(chapterImage))
+
+        IMaterial* pMaterial = g_pMaterialSystem->FindMaterial(chapterImage, TEXTURE_GROUP_VGUI);
+
+        if (IsErrorMaterial(pMaterial))
         {
-            Q_snprintf(chapterImage, sizeof(chapterImage), "vgui/hud/icon_locked.vmt", mapname);
+            Q_snprintf(chapterImage, sizeof(chapterImage), "gamepadui/maps/unknown.vmt");
         }
 
-        GamepadUIMapButton* pChapterButton = new GamepadUIMapButton(
+        GamepadUIMapChooserButton* button = new GamepadUIMapChooserButton(
             this, this,
-            GAMEPADUI_MAP_SCHEME, command,
+            GAMEPADUI_RESOURCE_FOLDER "schemesavebutton.res", command,
             strChapterName.String(), text, chapterImage);
-        pChapterButton->SetEnabled(true);
-        pChapterButton->SetPriority(mapIndex);
-        pChapterButton->SetForwardToParent(true);
+        button->SetEnabled(true);
+        button->SetPriority(mapIndex);
+        button->SetForwardToParent(true);
 
-        m_pChapterButtons.AddToTail(pChapterButton);
+        m_pMapPanels.AddToTail( button );
         mapIndex++;
 
         // get the next file
         pszFilename = g_pFullFileSystem->FindNext(findHandle);
     }
     g_pFullFileSystem->FindClose(findHandle);
-
-    if ( m_pChapterButtons.Count() > 0 )
-        m_pChapterButtons[0]->NavigateTo();
-
-    for ( int i = 1; i < m_pChapterButtons.Count(); i++ )
-    {
-        m_pChapterButtons[i]->SetNavLeft( m_pChapterButtons[i - 1] );
-        m_pChapterButtons[i - 1]->SetNavRight( m_pChapterButtons[i] );
-    }
-
-    UpdateGradients();
-}
-
-void GamepadUIMapChooser::UpdateGradients()
-{
-    const float flTime = GamepadUI::GetInstance().GetTime();
-    GamepadUI::GetInstance().GetGradientHelper()->ResetTargets( flTime );
-    GamepadUI::GetInstance().GetGradientHelper()->SetTargetGradient( GradientSide::Up, { 1.0f, 1.0f }, flTime );
-    GamepadUI::GetInstance().GetGradientHelper()->SetTargetGradient( GradientSide::Down, { 1.0f, 0.5f }, flTime );
-}
-
-void GamepadUIMapChooser::OnThink()
-{
-    BaseClass::OnThink();
-
-    LayoutMapButtons();
-}
-
-void GamepadUIMapChooser::ApplySchemeSettings(vgui::IScheme* pScheme)
-{
-    BaseClass::ApplySchemeSettings(pScheme);
-
-    if (GamepadUI::GetInstance().GetScreenRatio() != 1.0f)
-    {
-        float flScreenRatio = GamepadUI::GetInstance().GetScreenRatio();
-        m_ChapterOffsetX *= (flScreenRatio * flScreenRatio);
-    }
+    
+    SetFooterButtons( FooterButtons::Back | FooterButtons::Select /*, FooterButtons::Select*/);
+    
+	SetControlEnabled( "loadsave", false );
+	SetControlEnabled( "delete", false );
 }
 
 void GamepadUIMapChooser::OnGamepadUIButtonNavigatedTo( vgui::VPANEL button )
@@ -278,30 +240,31 @@ void GamepadUIMapChooser::OnGamepadUIButtonNavigatedTo( vgui::VPANEL button )
     GamepadUIButton *pButton = dynamic_cast< GamepadUIButton * >( vgui::ipanel()->GetPanel( button, GetModuleName() ) );
     if ( pButton )
     {
-        int nParentW, nParentH;
-	    GetParent()->GetSize( nParentW, nParentH );
-
-        int nX, nY;
-        pButton->GetPos( nX, nY );
-        if ( nX + pButton->m_flWidth > nParentW || nX < 0 )
+        if ( pButton->GetAlpha() != 255 )
         {
-            int nTargetX = pButton->GetPriority() * (pButton->m_flWidth + m_ChapterSpacing);
+            int nParentW, nParentH;
+			GetParent()->GetSize( nParentW, nParentH );
 
-            if ( nX < nParentW / 2 )
+            int nX, nY;
+            pButton->GetPos( nX, nY );
+
+            int nTargetY = pButton->GetPriority() * ( pButton->m_flHeightAnimationValue[ButtonStates::Out] + m_flMapSpacing );
+
+            if ( nY < nParentH / 2 )
             {
-                nTargetX += nParentW - m_ChapterOffsetX;
+                nTargetY += nParentH - m_flMapOffsetY;
                 // Add a bit of spacing to make this more visually appealing :)
-                nTargetX -= m_ChapterSpacing;
+                nTargetY -= m_flMapSpacing;
             }
             else
             {
-                nTargetX += pButton->m_flWidth;
+                nTargetY += pButton->m_flHeightAnimationValue[ButtonStates::Over];
                 // Add a bit of spacing to make this more visually appealing :)
-                nTargetX += (pButton->m_flWidth / 2) + m_ChapterSpacing;
+                nTargetY += (pButton->m_flHeightAnimationValue[ButtonStates::Over] / 2) + m_flMapSpacing;
             }
 
 
-            m_ScrollState.SetScrollTarget( nTargetX - ( nParentW - m_ChapterOffsetX ), GamepadUI::GetInstance().GetTime() );
+            m_ScrollState.SetScrollTarget( nTargetY - ( nParentH - m_flMapOffsetY), GamepadUI::GetInstance().GetTime() );
         }
     }
 }
@@ -311,23 +274,35 @@ void GamepadUIMapChooser::LayoutMapButtons()
     int nParentW, nParentH;
 	GetParent()->GetSize( nParentW, nParentH );
 
-    float flScrollClamp = 0.0f;
-    for ( int i = 0; i < m_pChapterButtons.Count(); i++ )
+    float scrollClamp = 0.0f;
+    for ( int i = 0; i < ( int )m_pMapPanels.Count(); i++ )
     {
-        int nSize = ( m_pChapterButtons[0]->GetWide() + m_ChapterSpacing );
+        int size = ( m_pMapPanels[i]->GetTall() + m_flMapSpacing );
 
-        if ( i < m_pChapterButtons.Count() - 2 )
-            flScrollClamp += nSize;
+        if ( i < ( ( int )m_pMapPanels.Count() ) - 3 )
+            scrollClamp += size;
     }
 
-    m_ScrollState.UpdateScrollBounds( 0.0f, flScrollClamp );
+    m_ScrollState.UpdateScrollBounds( 0.0f, scrollClamp );
 
-    for ( int i = 0; i < m_pChapterButtons.Count(); i++ )
+    int previousSizes = 0;
+    for ( int i = 0; i < ( int )m_pMapPanels.Count(); i++ )
     {
-        int size = ( m_pChapterButtons[0]->GetWide() + m_ChapterSpacing );
+        int tall = m_pMapPanels[i]->GetTall();
+        int size = ( tall + m_flMapSpacing );
 
-        m_pChapterButtons[i]->SetPos( m_ChapterOffsetX + i * size - m_ScrollState.GetScrollProgress(), m_ChapterOffsetY );
-        m_pChapterButtons[i]->SetVisible( true );
+        int y = m_flMapOffsetY + previousSizes - m_ScrollState.GetScrollProgress();
+        int fade = 255;
+        if ( y < m_flMapOffsetY )
+            fade = ( 1.0f - clamp( -( y - m_flMapOffsetY ) / m_flMapFade, 0.0f, 1.0f ) ) * 255.0f;
+        if ( y > nParentH - m_flMapFade )
+            fade = ( 1.0f - clamp( ( y - ( nParentH - m_flMapFade - size ) ) / m_flMapFade, 0.0f, 1.0f ) ) * 255.0f;
+        if ( m_pMapPanels[i]->HasFocus() && fade != 0 )
+            fade = 255;
+        m_pMapPanels[i]->SetAlpha( fade );
+        m_pMapPanels[i]->SetPos( m_flMapOffsetX, y );
+        m_pMapPanels[i]->SetVisible( true );
+        previousSizes += size;
     }
 
     m_ScrollState.UpdateScrolling( 2.0f, GamepadUI::GetInstance().GetTime() );
@@ -339,7 +314,7 @@ void GamepadUIMapChooser::OnCommand( char const* pCommand )
     {
         Close();
     }
-    else if ( StringHasPrefixCaseSensitive( pCommand, "load_map " ) )
+	 else if ( StringHasPrefixCaseSensitive( pCommand, "load_map " ) )
     {
         const char* pszMap = pCommand + 9;
         
@@ -358,9 +333,9 @@ void GamepadUIMapChooser::OnCommand( char const* pCommand )
     }
 }
 
-void GamepadUIMapChooser::OnMouseWheeled( int nDelta )
+void GamepadUIMapChooser::OnMouseWheeled( int delta )
 {
-    m_ScrollState.OnMouseWheeled( nDelta * m_ChapterSpacing * 20.0f, GamepadUI::GetInstance().GetTime() );
+    m_ScrollState.OnMouseWheeled(delta * 200.0f, GamepadUI::GetInstance().GetTime());
 }
 
 CON_COMMAND( gamepadui_openmapchooser, "" )

@@ -164,6 +164,32 @@
 				"type"			"headeryheader"
 				"advanced"		"1"
 			}
+            
+            "AutoAim"
+			{
+				"text"			"#GameUI_Autoaim"
+				"type"			"wheelywheel"
+				"convar"		"sk_allow_autoaim"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+			
+			"AutoTarget"
+			{
+				"text"			"#GameUI_AutoaimController"
+				"type"			"wheelywheel"
+				"convar"		"sv_player_autoaimcrosshair"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
 			
 			"ClassicModifier"
 			{
@@ -615,55 +641,6 @@
 			}
 		}
 	}
-    "Controller"
-	{
-		"title"			"#GameUI_Joystick"
-		"alternating"   "1"
-		"items"
-		{
-			"Glyphs"
-			{
-				"text"			"#Deck_Glyphs"
-				"type"			"wheelywheel"
-				"convar"		"cl_glyphtype"
-
-				"options"
-				{
-					"0"		"#Deck_Glyphs_Off"
-					"1"		"#Deck_Glyphs_Xbone"
-                    "2"		"#Deck_Glyphs_PS"
-                    "3"		"#Deck_Glyphs_Switch"
-                    "4"		"#Deck_Glyphs_Generic"
-				}
-			}
-
-			"AutoAim"
-			{
-				"text"			"#GameUI_Autoaim"
-				"type"			"wheelywheel"
-				"convar"		"sk_allow_autoaim"
-
-				"options"
-				{
-					"0"		"#gameui_disabled"
-					"1"		"#gameui_enabled"
-				}
-			}
-			
-			"AutoTarget"
-			{
-				"text"			"#GameUI_AutoaimController"
-				"type"			"wheelywheel"
-				"convar"		"sv_player_autoaimcrosshair"
-
-				"options"
-				{
-					"0"		"#gameui_disabled"
-					"1"		"#gameui_enabled"
-				}
-			}
-		}
-	}
 	"Audio"
 	{
 		"title"			"#GameUI_Audio"
@@ -836,6 +813,22 @@
 				"instantapply"	"1"
 
 				"options_from"	"displaymode"
+			}
+            
+            "Glyphs"
+			{
+				"text"			"#Deck_Glyphs"
+				"type"			"wheelywheel"
+				"convar"		"cl_glyphtype"
+
+				"options"
+				{
+					"0"		"#Deck_Glyphs_Off"
+					"1"		"#Deck_Glyphs_Xbone"
+                    "2"		"#Deck_Glyphs_PS"
+                    "3"		"#Deck_Glyphs_Switch"
+                    "4"		"#Deck_Glyphs_Generic"
+				}
 			}
 
 			"AdvancedHeader"
