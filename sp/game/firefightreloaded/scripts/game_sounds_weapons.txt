@@ -2056,3 +2056,12 @@
  	"pitch"      "100"
  	"wave"       "weapons/pistol/WP_HGUN_RLOAD_c.wav"
 }
+
+"Weapon_grapple.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"pitch"			"90,110"
+	"soundlevel"		"SNDLVL_GUNFIRE"
+	"wave"			"^weapons/grapple/grapple_fire.wav"
+}

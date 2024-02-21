@@ -13,6 +13,9 @@ SET gamesresourcedir=%basedir%\resource
 SET gamemapadddir=%basedir%\mapadd
 SET gamepaduidir=%basedir%\gamepadui
 SET gamebindir=%basedir%\bin
+SET gamescriptdir=%basedir%\scripts
+SET gamesounddir=%basedir%\sound
+if not exist "%gamesounddir%" mkdir "%gamesounddir%"
 if not exist "%gamescriptdir%" mkdir "%gamescriptdir%"
 if not exist "%gamecfgdir%" mkdir "%gamecfgdir%"
 if not exist "%gamesresourcedir%" mkdir "%gamesresourcedir%"
@@ -24,6 +27,7 @@ echo.
 echo Copying game data...
 XCOPY /E "%CD%\resource" "%gamesresourcedir%" /sy
 XCOPY /E "%CD%\scripts" "%gamescriptdir%" /sy
+XCOPY /E "%CD%\sound" "%gamesounddir%" /sy
 XCOPY /E "%CD%\cfg" "%gamecfgdir%" /sy
 XCOPY /E "%CD%\mapadd" "%gamemapadddir%" /sy
 XCOPY /E "%CD%\gamepadui" "%gamepaduidir%" /sy
