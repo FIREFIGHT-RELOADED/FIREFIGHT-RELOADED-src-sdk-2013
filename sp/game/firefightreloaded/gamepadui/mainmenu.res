@@ -51,7 +51,7 @@
 	"SpawnlistOptions"
 	{
 		"text"			"#FR_Spawnlist_Title"
-		"command"		"cmd spawnlistdialog"
+		"command"		"cmd gamepadui_openspawnlistchooser"
 		"priority"		"4"
 		"family"		"all"
 	}
