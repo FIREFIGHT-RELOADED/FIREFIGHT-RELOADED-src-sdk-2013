@@ -43,7 +43,7 @@
 	"ModelOptions"
 	{
 		"text"			"#FRMP_PlayerModel_Title"
-		"command"		"cmd playermodeldialog"
+		"command"		"cmd gamepadui_openmodelchooser"
 		"priority"		"5"
 		"family"		"all"
 	}

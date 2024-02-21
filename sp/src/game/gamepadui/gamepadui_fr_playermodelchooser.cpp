@@ -107,8 +107,35 @@ GamepadUIPlayerModelChooser::GamepadUIPlayerModelChooser( vgui::Panel* pParent, 
 {
     vgui::HScheme Scheme = vgui::scheme()->LoadSchemeFromFile( GAMEPADUI_DEFAULT_PANEL_SCHEME, "SchemePanel" );
     SetScheme( Scheme );
+        
+    static ConVarRef cl_playermodel("cl_playermodel");
+    const char* playermodel = cl_playermodel.GetString();
 
-    GetFrameTitle() = GamepadUIString("#FRMP_PlayerModel_Title" );
+    char modelname[1024];
+
+    // FindFirst ignores the pszPathID, so check it here
+    // TODO: this doesn't find maps in fallback dirs
+    Q_strncpy(modelname, playermodel + 27, sizeof(modelname) - 1); // models/player/playermodels/ = 27
+
+    char* ext = Q_strstr(modelname, ".mdl");
+    if (ext)
+    {
+        *ext = 0;
+    }
+
+    for (int i = Q_strlen(modelname); i >= 0; --i)
+    {
+        modelname[i] = toupper(modelname[i]);
+    }
+
+    wchar_t wzplayermodel[1024];
+
+    g_pVGuiLocalize->ConvertANSIToUnicode(modelname, wzplayermodel, sizeof(wzplayermodel));
+
+    wchar_t string1[1024];
+    g_pVGuiLocalize->ConstructString(string1, sizeof(string1), g_pVGuiLocalize->Find("#FRMP_PlayerModel_Title_Expanded"), 1, wzplayermodel);
+
+    GetFrameTitle() = GamepadUIString(string1);
 
     Activate();
 
@@ -163,7 +190,7 @@ void GamepadUIPlayerModelChooser::ScanModels()
         const char* str = Q_strstr(pszFilename, "models/player/playermodels/");
         if (str)
         {
-            Q_strncpy(modelname, str + 31, sizeof(modelname) - 1);	// maps + \\ = 5
+            Q_strncpy(modelname, str + 31, sizeof(modelname) - 1);	// models/player/playermodels/ + // = 31
         }
         else
         {
