@@ -81,7 +81,7 @@ bool CRandNPCLoader::Load()
 	{
 		DevWarning("CRandNPCLoader: Failed to load %s spawnlist! File may not exist. Using default spawn list...\n", name);
 		if (pKV->LoadFromFile(filesystem, sk_spawner_defaultspawnlist.GetString()))
-			DevMsg("CRandNPCLoader: Default Spawnlist loaded.\n");
+			DevMsg("CRandNPCLoader: User-specified default spawnlist loaded.\n");
 		else
 		{
 			DevWarning("CRandNPCLoader: Failed to load default spawnlist! File may not exist. Spawners will not function properly.\n");
@@ -112,7 +112,9 @@ bool CRandNPCLoader::Load()
 		}
 	}
 	else
+	{
 		m_Settings.spawnTime = TIME_SETBYHAMMER;
+	}
 
 	AddEntries( pKV );
 

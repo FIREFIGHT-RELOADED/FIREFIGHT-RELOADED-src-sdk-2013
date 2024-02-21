@@ -1,0 +1,29 @@
+"default"
+{
+	"settings"
+	{
+		"spawntime"		"5"
+		"spawntime_steamdeck"	"7"
+	}
+	"1"
+	{
+		"classname"		"npc_headcrab"
+	}
+	"2"
+	{
+		"classname"		"npc_headcrab_fast"
+		"rare"			"1"
+	}
+	"3"
+	{
+		"classname"		"npc_headcrab_poison"
+		"rare"			"1"
+	}
+	"4"
+	{
+		//kamikaze headcrab
+		"classname"		"npc_headcrab_fast"
+		"preset"		"1"
+		"rare"			"1"
+	}
+}
