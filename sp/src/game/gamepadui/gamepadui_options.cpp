@@ -1021,8 +1021,8 @@ int GetCurrentHudAspectRatio()
 
 int GetCurrentSkill()
 {
-    ConVarRef skill( "skill" );
-    return skill.GetInt();
+    ConVarRef g_skill( "g_skill" );
+    return g_skill.GetInt();
 }
 
 void FlushPendingAntialiasing()
@@ -1203,8 +1203,8 @@ void FlushPendingHudAspectRatio()
 
 void FlushPendingSkill()
 {
-    ConVarRef skill( "skill" );
-    skill.SetValue( _gamepadui_skill.GetInt() );
+    ConVarRef g_skill( "g_skill" );
+    g_skill.SetValue( _gamepadui_skill.GetInt() );
 }
 
 bool buttonsNeedUpdate = false;

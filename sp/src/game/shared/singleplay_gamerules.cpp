@@ -44,9 +44,9 @@ ConVar sk_exp_multiplier5("sk_exp_multiplier5", "1");
 ConVar sv_killingspree("sv_killingspree", "1", FCVAR_ARCHIVE);
 
 ConVar sv_healthcharger_recharge("sv_healthcharger_recharge", "1", FCVAR_ARCHIVE);
-ConVar sv_healthcharger_recharge_time("sv_healthcharger_recharge_time", "180", FCVAR_CHEAT);
+ConVar sv_healthcharger_recharge_time("sv_healthcharger_recharge_time", "180", FCVAR_ARCHIVE);
 ConVar sv_suitcharger_recharge("sv_suitcharger_recharge", "1", FCVAR_ARCHIVE);
-ConVar sv_suitcharger_recharge_time("sv_suitcharger_recharge_time", "180", FCVAR_CHEAT);
+ConVar sv_suitcharger_recharge_time("sv_suitcharger_recharge_time", "180", FCVAR_ARCHIVE);
 ConVar sv_item_respawn("sv_item_respawn", "1", FCVAR_ARCHIVE);
 ConVar sv_item_respawn_time("sv_item_respawn_time", "180", FCVAR_ARCHIVE);
 ConVar sv_weapon_respawn("sv_weapon_respawn", "1", FCVAR_ARCHIVE);

@@ -152,35 +152,17 @@
 	}
 	"26"
 	{
-		"name"		"OCIW"
-		"price"		"265"
-		"command"	"item weapon_oicw 0" 
-	}
-	"27"
-	{
-		"name"		"OCIWAmmo"
-		"price"		"65"
-		"command"	"ammo OICW 30" 
-	}
-	"28"
-	{
-		"name"		"OCIWGrenade"
-		"price"		"85"
-		"command"	"ammo OICW_Grenade 1" 
-	}
-	"29"
-	{
 		"name"		"Gauss"
 		"price"		"1500"
 		"command"	"item weapon_gauss 0" 
 	}
-	"30"
+	"27"
 	{
 		"name"		"GaussAmmo"
 		"price"		"200"
 		"command"	"ammo GaussEnergy 30" 
 	}
-	"31"
+	"28"
 	{
 		"name"		"Katana"
 		"price"		"3000"

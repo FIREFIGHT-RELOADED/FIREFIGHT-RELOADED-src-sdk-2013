@@ -195,14 +195,6 @@ ConVar	sk_plr_dmg_slam("sk_plr_dmg_slam", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE)
 ConVar	sk_npc_dmg_slam("sk_npc_dmg_slam", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 ConVar	sk_max_slam("sk_max_slam", "0", FCVAR_REPLICATED);
 
-ConVar	sk_plr_dmg_oicw("sk_plr_dmg_oicw", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
-ConVar	sk_npc_dmg_oicw("sk_npc_dmg_oicw", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
-ConVar	sk_max_oicw("sk_max_oicw", "0", FCVAR_REPLICATED);
-
-ConVar	sk_plr_dmg_oicw_grenade("sk_plr_dmg_oicw_grenade", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
-ConVar	sk_npc_dmg_oicw_grenade("sk_npc_dmg_oicw_grenade", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
-ConVar	sk_max_oicw_grenade("sk_max_oicw_grenade", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
-
 //Custom Ammo Types
 ConVar	sk_plr_dmg_custom_normal("sk_plr_dmg_custom_normal", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 ConVar	sk_npc_dmg_custom_normal("sk_npc_dmg_custom_normal", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
@@ -1733,8 +1725,6 @@ CAmmoDef *GetAmmoDef()
 		def.AddAmmoType("Sniper",			DMG_BULLET | DMG_SNIPER, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_sniper", "sk_npc_dmg_sniper", "sk_max_sniper", BULLET_IMPULSE(800, 5000), 0, 'r');
 		def.AddAmmoType("M249",				DMG_BULLET | DMG_SNIPER, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_m249para", "sk_npc_dmg_m249para", "sk_max_m249para", BULLET_IMPULSE(200, 1225), 0, 'r');
 		def.AddAmmoType("slam",				DMG_BURN | DMG_ALWAYSGIB, TRACER_NONE, "sk_plr_dmg_slam", "sk_npc_dmg_slam", "sk_max_slam", 0, 0, 'o');
-		def.AddAmmoType("OICW",				DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_oicw", "sk_npc_dmg_oicw", "sk_max_oicw", BULLET_IMPULSE(200, 1225), 0, 'r');
-		def.AddAmmoType("OICW_Grenade",		DMG_BURN | DMG_ALWAYSGIB, TRACER_NONE, "sk_plr_dmg_oicw_grenade", "sk_npc_dmg_oicw_grenade", "sk_max_oicw_grenade", 0, 0, 't');
 		def.AddAmmoType("MP5Ammo", DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_mp5", "sk_npc_dmg_mp5", "sk_max_mp5", BULLET_IMPULSE(200, 1225), 0, 'p');
 		def.AddAmmoType("Katana", DMG_SLASH, TRACER_NONE, "sk_plr_dmg_katana", "sk_npc_dmg_katana", 1, BULLET_IMPULSE(200, 1225), 0);
 		//CUSTOM AMMO TYPES HERE.
