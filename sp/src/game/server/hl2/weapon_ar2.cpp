@@ -128,6 +128,16 @@ CWeaponAR2::CWeaponAR2( )
 	m_bAltFiresUnderwater = false;
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: Offset the autoreload
+//-----------------------------------------------------------------------------
+bool CWeaponAR2::Deploy(void)
+{
+	m_nShotsFired = 0;
+
+	return BaseClass::Deploy();
+}
+
 void CWeaponAR2::Precache( void )
 {
 	BaseClass::Precache();
@@ -141,6 +151,7 @@ void CWeaponAR2::Precache( void )
 //-----------------------------------------------------------------------------
 void CWeaponAR2::ItemPostFrame( void )
 {
+
 	// See if we need to fire off our secondary round
 	if ( m_bShotDelayed && gpGlobals->curtime > m_flDelayedFire )
 	{
@@ -148,7 +159,7 @@ void CWeaponAR2::ItemPostFrame( void )
 	}
 
 	// Update our pose parameter for the vents
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
 
 	if ( pOwner )
 	{
@@ -163,6 +174,75 @@ void CWeaponAR2::ItemPostFrame( void )
 			
 			float flVentPose = RemapValClamped( m_nShotsFired, 0, 5, 0.0f, 1.0f );
 			pVM->SetPoseParameter( m_nVentPose, flVentPose );
+		}
+
+		if (pOwner->m_afButtonPressed & IN_ATTACK2)
+		{
+			if (m_iFireMode == 0)
+			{
+				if (m_flNextSecondaryAttack <= gpGlobals->curtime)
+				{
+					if (pOwner->GetAmmoCount(m_iSecondaryAmmoType) <= 0)
+					{
+						if (m_flNextEmptySoundTime < gpGlobals->curtime)
+						{
+							WeaponSound(EMPTY);
+							m_flNextSecondaryAttack = m_flNextEmptySoundTime = gpGlobals->curtime + 0.5;
+						}
+					}
+					else if (pOwner->GetWaterLevel() == 3 && m_bAltFiresUnderwater == false)
+					{
+						// This weapon doesn't fire underwater
+						WeaponSound(EMPTY);
+						m_flNextPrimaryAttack = gpGlobals->curtime + 0.2;
+						return;
+					}
+					else
+					{
+						BallAttack();
+					}
+				}
+			}
+			else if (m_iFireMode == 1)
+			{
+				Zoom();
+			}
+		}
+
+		if (pOwner->m_afButtonPressed & IN_ATTACK3)
+		{
+			if (m_iFireMode == 0)
+			{
+				CFmtStr hint;
+				hint.sprintf("#Valve_AR2_Scope");
+				pOwner->ShowLevelMessage(hint.Access());
+				m_iFireMode = 1;
+				WeaponSound(EMPTY);
+			}
+			else if (m_iFireMode == 1)
+			{
+				if (m_bZoomed)
+				{
+					Zoom();
+				}
+				CFmtStr hint;
+				hint.sprintf("#Valve_AR2_Grenades");
+				pOwner->ShowLevelMessage(hint.Access());
+				m_iFireMode = 0;
+				WeaponSound(EMPTY);
+			}
+		}
+
+		//Allow a refire as fast as the player can click
+		if (m_bZoomed && ((pOwner->m_nButtons & IN_ATTACK) == false) && (m_flSoonestPrimaryAttack < gpGlobals->curtime))
+		{
+			m_flNextPrimaryAttack = gpGlobals->curtime - 0.1f;
+		}
+
+		//Don't kick the same when we're zoomed in
+		if (m_bZoomed)
+		{
+			m_fFireDuration = 0.05f;
 		}
 	}
 
@@ -272,7 +352,7 @@ void CWeaponAR2::DelayedAttack( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CWeaponAR2::SecondaryAttack( void )
+void CWeaponAR2::BallAttack(void)
 {
 	if ( m_bShotDelayed )
 		return;
@@ -302,6 +382,47 @@ void CWeaponAR2::SecondaryAttack( void )
 	gamestats->Event_WeaponFired( pPlayer, false, GetClassname() );
 }
 
+void CWeaponAR2::Zoom(void)
+{
+	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+
+	if (pPlayer == NULL)
+		return;
+
+	color32 lightBlue = { 55, 157, 230, 64 };
+
+	if (m_bZoomed)
+	{
+		if (pPlayer->SetFOV(this, 0, 0.1f))
+		{
+			pPlayer->ShowViewModel(true);
+
+			m_bZoomed = false;
+
+			UTIL_ScreenFade(pPlayer, lightBlue, 0.2f, 0, (FFADE_IN | FFADE_PURGE));
+		}
+	}
+	else
+	{
+		if (pPlayer->SetFOV(this, 35, 0.1f))
+		{
+			pPlayer->ShowViewModel(false);
+
+			m_bZoomed = true;
+
+			UTIL_ScreenFade(pPlayer, lightBlue, 0.2f, 0, (FFADE_OUT | FFADE_PURGE | FFADE_STAYOUT));
+		}
+	}
+}
+
+float CWeaponAR2::GetFireRate(void)
+{
+	if (m_bZoomed)
+		return 0.4f;
+
+	return 0.1f;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Override if we're waiting to release a shot
 // Output : Returns true on success, false on failure.
@@ -315,10 +436,42 @@ bool CWeaponAR2::CanHolster( void )
 }
 
 //-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : NULL - 
+//-----------------------------------------------------------------------------
+bool CWeaponAR2::Holster(CBaseCombatWeapon* pSwitchingTo)
+{
+	if (m_bZoomed)
+	{
+		Zoom();
+	}
+
+	return BaseClass::Holster(pSwitchingTo);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CWeaponAR2::Drop(const Vector& velocity)
+{
+	if (m_bZoomed)
+	{
+		Zoom();
+	}
+
+	BaseClass::Drop(velocity);
+}
+
+//-----------------------------------------------------------------------------
 // Purpose: Override if we're waiting to release a shot
 //-----------------------------------------------------------------------------
 bool CWeaponAR2::Reload( void )
 {
+	if (m_bZoomed)
+	{
+		Zoom();
+	}
+
 	if ( m_bShotDelayed )
 		return false;
 

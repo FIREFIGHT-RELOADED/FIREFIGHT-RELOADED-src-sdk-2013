@@ -28,8 +28,7 @@ public:
 
 	void	ItemPostFrame( void );
 	void	Precache( void );
-	
-	void	SecondaryAttack( void );
+	void	BallAttack(void);
 	void	DelayedAttack( void );
 
 	const char *GetTracerType( void ) { return "AR2Tracer"; }
@@ -43,9 +42,10 @@ public:
 
 	int		GetMinBurst( void ) { return 2; }
 	int		GetMaxBurst( void ) { return 5; }
-	float	GetFireRate( void ) { return 0.1f; }
+	float	GetFireRate(void);
 
 	bool	CanHolster( void );
+	bool	Holster(CBaseCombatWeapon* pSwitchingTo = NULL);
 	bool	Reload( void );
 
 	int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
@@ -54,21 +54,38 @@ public:
 	
 	void	DoImpactEffect( trace_t &tr, int nDamageType );
 
-	virtual const Vector& GetBulletSpread( void )
+	virtual const Vector& GetBulletSpread(void)
 	{
-		static Vector cone = VECTOR_CONE_3DEGREES;
-		static const Vector ironsightCone = VECTOR_CONE_1DEGREES;
-		if (IsIronsighted())
+		static Vector cone;
+
+		if (GetOwner() && GetOwner()->IsPlayer())
 		{
-			return ironsightCone;
+			if (IsIronsighted() || m_bZoomed)
+			{
+				cone = VECTOR_CONE_1DEGREES;
+			}
+		}
+		else
+		{
+			cone = VECTOR_CONE_3DEGREES;
 		}
 
 		return cone;
 	}
 
+	virtual bool	Deploy(void);
+	virtual void	Drop(const Vector& velocity);
+
 	const WeaponProficiencyInfo_t *GetProficiencyValues();
 
 protected:
+	void				Zoom(void);
+
+	bool				m_bZoomed;
+
+	int					m_iFireMode;
+
+	float				m_flSoonestPrimaryAttack;
 
 	float					m_flDelayedFire;
 	bool					m_bShotDelayed;
