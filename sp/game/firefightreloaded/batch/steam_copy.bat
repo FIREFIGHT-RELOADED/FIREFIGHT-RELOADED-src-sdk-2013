@@ -50,3 +50,5 @@ echo.
 echo Coying additional files to release folder...
 XCOPY "%cd%\reset.bat" "%dest%" /y
 if %debug%==1 pause
+
+call github_sync.bat
