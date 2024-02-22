@@ -60,8 +60,10 @@ void GamepadUIBasePanel::OnMenuStateChanged()
         if ( !IsBackgroundMusicPlaying() )
             ActivateBackgroundEffects();
     }
-    else
+    else if (GamepadUI::GetInstance().IsInLevel())
+    {
         ReleaseBackgroundMusic();
+    }
 }
 
 void GamepadUIBasePanel::ActivateBackgroundEffects()
@@ -152,7 +154,7 @@ bool GamepadUIBasePanel::StartBackgroundMusic( float flVolume )
     {
         // old way, failsafe in case we don't have a background level.
         char found[ 512 ];
-        Q_snprintf( found, sizeof( found ), "play *#%s\n", pSoundFile );
+        Q_snprintf( found, sizeof( found ), "play %s", pSoundFile );
         GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted( found );
     }
 

@@ -1476,7 +1476,7 @@ void GamepadUIOptionsPanel::OnCommand( char const* pCommand )
         }
 
         ApplyKeyBindings();
-        GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted("host_writeconfig\nmat_savechanges\nexec config.cfg");
+        GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted("exec userconfig.cfg\nhost_writeconfig\nmat_savechanges\n");
         Close();
     }
     else if ( !V_strcmp( pCommand, "action_apply" ) )
@@ -1500,7 +1500,7 @@ void GamepadUIOptionsPanel::OnCommand( char const* pCommand )
             }
         }
         ApplyKeyBindings();
-        GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted( "host_writeconfig\nmat_savechanges\nexec config.cfg\n" );
+        GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted( "exec userconfig.cfg\nhost_writeconfig\nmat_savechanges\n" );
     }
     else if ( !V_strcmp( pCommand, "action_usedefaults" ) )
     {
