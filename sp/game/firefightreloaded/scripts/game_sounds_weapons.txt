@@ -2074,7 +2074,7 @@
 	"soundlevel"		"SNDLVL_GUNFIRE"
 	"pitch"			"95,105"
 
-	"wave"			")weapons/cow_mangler_main_shot.wav"
+	"wave"			")weapons/railgun/singleshotfp.wav"
 }
 
 "Weapon_Railgun.Ready"
