@@ -272,8 +272,8 @@ void CWeaponRailgun::Fire( void )
 
 	//Gassian spread
 	do {
-		x = 0.3;
-		y = 0.3;
+		x = 0.25;
+		y = 0.25;
 		z = x * x + y * y;
 	} while (z > 1);
 
