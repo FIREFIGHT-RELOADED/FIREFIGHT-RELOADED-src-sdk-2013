@@ -42,27 +42,27 @@ WeaponData
 	{
 		"weapon"
 		{
-				"file"		"VGUI/weaponicons/icon_railgun"
+				"file"		"sprites/weapons/icon_railgun"
 				"x"			"0"
 				"y"			"0"
 				"width"		"64"
-				"height"	"64"
+				"height"	"32"
 		}
 		"weapon_s"
 		{	
-				"file"		"VGUI/weaponicons/icon_railgun"
+				"file"		"sprites/weapons/icon_railgun"
 				"x"			"0"
 				"y"			"0"
 				"width"		"64"
-				"height"	"64"
+				"height"	"32"
 		}
 		"weapon_small"
 		{	
-				"file"		"VGUI/weaponicons/icon_railgun"
+				"file"		"sprites/weapons/icon_railgun"
 				"x"			"0"
 				"y"			"0"
 				"width"		"64"
-				"height"	"64"
+				"height"	"32"
 		}
 		"ammo"
 		{
