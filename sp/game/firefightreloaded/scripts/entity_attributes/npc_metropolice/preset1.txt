@@ -1,6 +1,7 @@
 //metrocop ace.
 "npc_metropolice_preset1"
 {
+	"new_model"		"models/police_soldieranims.mdl"
 	"new_color"		"128 180 128 255"
 	"additional_health"	"5"
 	"manhack_override"	"1"
