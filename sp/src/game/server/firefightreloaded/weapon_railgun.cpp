@@ -285,8 +285,9 @@ void CWeaponRailgun::Fire( void )
 	trace_t	tr;
 	UTIL_TraceLine( startPos, endPos, MASK_SHOT, pOwner, COLLISION_GROUP_NONE, &tr );
 
-	//TODO: USE THE AMMO DMANGE.
-	int iDamage = (m_bOverchargeDamageBenefits ? (int)(25 * 2) : 25);
+	CAmmoDef *def = GetAmmoDef();
+	int definedDamage = def->PlrDamage(m_iPrimaryAmmoType);
+	int iDamage = (m_bOverchargeDamageBenefits ? (int)(definedDamage * 2) : definedDamage);
 
 	FireBulletsInfo_t info(1, startPos, aimDir, vec3_origin, MAX_TRACE_LENGTH, m_iPrimaryAmmoType);
 	info.m_pAttacker = pOwner;
