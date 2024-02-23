@@ -70,6 +70,7 @@ ConVar sk_combine_ace_kick( "sk_combine_ace_kick", "0");
 ConVar sk_combine_ace_shielddamage_normal("sk_combine_ace_shielddamage_normal", "2");
 ConVar sk_combine_ace_shielddamage_hard("sk_combine_ace_shielddamage_hard", "1");
 ConVar sk_combine_ace_shielddamage_explosive_multiplier("sk_combine_ace_shielddamage_explosive_multiplier", "0.55");
+ConVar sk_combine_ace_shielddamage_shock_multiplier("sk_combine_ace_shielddamage_shock_multiplier", "0.6");
  
 // Whether or not the combine guard should spawn health on death
 ConVar combine_ace_spawn_health("combine_ace_spawn_health", "1");
@@ -527,6 +528,10 @@ CTakeDamageInfo CNPC_CombineAce::BulletResistanceLogic(const CTakeDamageInfo& in
 				if (outputInfo.GetDamageType() & DMG_BLAST)
 				{
 					outputInfo.SetDamage(outputInfo.GetDamage() * sk_combine_ace_shielddamage_explosive_multiplier.GetFloat());
+				}
+				else if (outputInfo.GetDamageType() & DMG_SHOCK)
+				{
+					outputInfo.SetDamage(outputInfo.GetDamage() * sk_combine_ace_shielddamage_shock_multiplier.GetFloat());
 				}
 				else
 				{
