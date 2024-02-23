@@ -7323,6 +7323,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveAmmo(999, "slam");
 		GiveAmmo(999, "GaussEnergy");
 		GiveAmmo(999, "MP5Ammo");
+		GiveAmmo(999, "Railgun");
 //#ifdef HL2_EPISODIC
 		//GiveAmmo( 999, "Hopwire" );
 //#endif		
@@ -7345,6 +7346,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveNamedItem("weapon_mp5");
 		GiveNamedItem("weapon_grapple");
 		GiveNamedItem("weapon_katana");
+		GiveNamedItem("weapon_railgun");
 #ifdef HL2_EPISODIC
 		// GiveNamedItem( "weapon_magnade" );
 #endif

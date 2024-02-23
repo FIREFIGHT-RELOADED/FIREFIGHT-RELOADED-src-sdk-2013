@@ -16,15 +16,10 @@
        
 #include "Sprite.h"                            
  
-#ifdef CLIENT_DLL
-	#include "c_te_effect_dispatch.h"
-	#include "c_basehlcombatweapon.h" 
-#else
-	#include "te_effect_dispatch.h"
-	#include "basehlcombatweapon.h"
-	#include "rope.h"
-	#include "props.h"
-#endif
+#include "te_effect_dispatch.h"
+#include "basehlcombatweapon.h"
+#include "rope.h"
+#include "props.h"
  
 #include "rope_shared.h"
 #include "beam_shared.h"

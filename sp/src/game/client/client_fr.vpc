@@ -189,8 +189,8 @@ $Project "Client (FR)"
 				$File	"gameui\SpawnlistDialog.cpp"
 				$File	"gameui\SpawnlistDialog.h"
 			}
-
-			$Folder "Weapons"
+            
+            $Folder	"Weapons"
 			{
 				$File	"$SRCDIR\game\shared\stickybolt.h"
 				$File	"firefightreloaded\c_weapon_knife.cpp"

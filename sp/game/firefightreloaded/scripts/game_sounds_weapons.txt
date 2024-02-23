@@ -2065,3 +2065,23 @@
 	"soundlevel"		"SNDLVL_GUNFIRE"
 	"wave"			"^weapons/grapple/grapple_fire.wav"
 }
+
+//railgun
+"Weapon_Railgun.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.45"
+	"soundlevel"		"SNDLVL_GUNFIRE"
+	"pitch"			"95,105"
+
+	"wave"			")weapons/cow_mangler_main_shot.wav"
+}
+
+"Weapon_Railgun.Ready"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"0.9"
+	"soundlevel"  		"SNDLVL_90dB"
+
+	"wave"			"weapons/slam/buttonclick.wav"
+}

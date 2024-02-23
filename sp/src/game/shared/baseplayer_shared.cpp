@@ -33,6 +33,7 @@
 	#include "doors.h"
 	#include "ai_basenpc.h"
 	#include "env_zoom.h"
+	#include "firefightreloaded/weapon_railgun.h"
 
 	extern int TrainSpeed(int iSpeed, int iMax);
 	
@@ -40,7 +41,7 @@
 
 #if defined( CSTRIKE_DLL )
 #include "weapon_c4.h"
-#endif // CSTRIKE_DLL
+#endif // CSTRIKE_DLl
 
 #include "in_buttons.h"
 #include "engine/IEngineSound.h"
@@ -343,6 +344,34 @@ void CBasePlayer::ItemPostFrame()
 	}
 
 #if !defined( CLIENT_DLL )
+	CBaseCombatWeapon* pWeapon;
+	CWeaponRailgun* pRailgun = NULL;
+
+	//find the railgun and update its itempostframe.
+	for (int i = 0; i < WeaponCount(); i++)
+	{
+		pWeapon = GetWeapon(i);
+
+		if (pWeapon == NULL)
+			continue;
+
+		// If we have an active weapon, skip it.
+		if (pWeapon == GetActiveWeapon())
+			continue;
+
+		if (FStrEq(pWeapon->GetClassname(), "weapon_railgun"))
+		{
+			pRailgun = (CWeaponRailgun*)pWeapon;
+			break;
+		}
+}
+
+	if (pRailgun)
+	{
+		pRailgun->HolsterThink();
+	}
+
+
 	ImpulseCommands();
 #else
 	// NOTE: If we ever support full impulse commands on the client,

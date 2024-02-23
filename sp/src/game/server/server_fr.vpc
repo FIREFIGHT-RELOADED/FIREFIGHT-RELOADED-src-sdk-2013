@@ -381,6 +381,8 @@ $Project "Server (FR)"
 				$File	"firefightreloaded\weapon_katana.h"
 				$File	"firefightreloaded\weapon_grapple.cpp"
 				$File	"firefightreloaded\weapon_grapple.h"
+                $File	"firefightreloaded\weapon_railgun.cpp"
+				$File	"firefightreloaded\weapon_railgun.h"
 			}
 			
 			$Folder	"HL2 Imported"
