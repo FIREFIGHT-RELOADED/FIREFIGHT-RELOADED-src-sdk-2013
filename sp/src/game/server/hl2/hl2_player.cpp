@@ -218,6 +218,13 @@ bool Flashlight_UseLegacyVersion( void )
 	return g_bUseLegacyFlashlight;
 }
 
+CON_COMMAND(showposition, "shows the player's position for mapadds.")
+{
+	CHL2_Player* pPlayer = ToHL2Player(UTIL_GetCommandClient());
+	Vector vecOrigin = pPlayer->GetAbsOrigin() + Vector(0, 0, 10);
+	Msg("Player position XYZ Coords: X: %f Y: %f Z: %f\n", vecOrigin.x, vecOrigin.y, vecOrigin.z);
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Used to relay outputs/inputs from the player to the world and viceversa
 //-----------------------------------------------------------------------------

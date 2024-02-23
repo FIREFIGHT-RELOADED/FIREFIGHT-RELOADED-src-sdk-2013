@@ -26,8 +26,7 @@ END_DATADESC()
 LINK_ENTITY_TO_CLASS( weapon_railgun, CWeaponRailgun );
 PRECACHE_WEAPON_REGISTER( weapon_railgun );
 
-#ifndef CLIENT_DLL
-acttable_t CWeaponRailgun::m_acttable[] = 
+acttable_t CWeaponRailgun::m_acttable[] =
 {
 	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_CROSSBOW,					false },
 	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_CROSSBOW,						false },
@@ -38,9 +37,7 @@ acttable_t CWeaponRailgun::m_acttable[] =
 	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_CROSSBOW,					false },
 };
 
-IMPLEMENT_ACTTABLE( CWeaponRailgun );
-
-#endif
+IMPLEMENT_ACTTABLE(CWeaponRailgun);
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
@@ -73,7 +70,6 @@ bool CWeaponRailgun::Deploy(void)
 //-----------------------------------------------------------------------------
 bool CWeaponRailgun::Holster(CBaseCombatWeapon* pSwitchingTo)
 {
-#ifndef CLIENT_DLL
 	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
 
 	if (!pPlayer)
@@ -83,7 +79,6 @@ bool CWeaponRailgun::Holster(CBaseCombatWeapon* pSwitchingTo)
 	{
 		pPlayer->GiveAmmo(1, m_iPrimaryAmmoType, true);
 	}
-#endif
 
 	if (m_bInZoom)
 	{
@@ -194,12 +189,8 @@ void CWeaponRailgun::ItemPostFrame(void)
 		if (AutoFiresFullClip())
 		{
 			m_bFiringWholeClip = true;
+		}
 	}
-
-#ifdef CLIENT_DLL
-		pOwner->SetFiredWeapon(true);
-#endif
-}
 
 	// -----------------------
 	//  No buttons down
@@ -229,18 +220,11 @@ void CWeaponRailgun::ToggleZoom(void)
 	if (vm == NULL)
 		return;
 
-	CBaseViewModel* hands = pPlayer->GetViewModel(1);
-
-	if (hands == NULL)
-		return;
-
-#ifndef CLIENT_DLL
 	if (m_bInZoom)
 	{
 		if (pPlayer->SetFOV(this, 0, 0.2f))
 		{
 			vm->RemoveEffects(EF_NODRAW);
-			hands->RemoveEffects(EF_NODRAW);
 			m_bInZoom = false;
 		}
 	}
@@ -249,11 +233,9 @@ void CWeaponRailgun::ToggleZoom(void)
 		if (pPlayer->SetFOV(this, 20, 0.1f))
 		{
 			vm->AddEffects(EF_NODRAW);
-			hands->AddEffects(EF_NODRAW);
 			m_bInZoom = true;
 		}
 	}
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -336,10 +318,8 @@ void CWeaponRailgun::Fire( void )
 	//Draw beam to reflection point
 	DrawBeam(tr.startpos, tr.endpos);
 
-#ifndef CLIENT_DLL
 	// Register a muzzleflash for the AI
 	pOwner->SetMuzzleFlashTime( gpGlobals->curtime + 0.5 );
-#endif
 }
 
 //-----------------------------------------------------------------------------

@@ -371,7 +371,6 @@ void CBasePlayer::ItemPostFrame()
 		pRailgun->HolsterThink();
 	}
 
-
 	ImpulseCommands();
 #else
 	// NOTE: If we ever support full impulse commands on the client,

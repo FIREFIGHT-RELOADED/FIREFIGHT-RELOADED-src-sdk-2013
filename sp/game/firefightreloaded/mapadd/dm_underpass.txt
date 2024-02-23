@@ -289,7 +289,7 @@
                 "ItemClass1"    "weapon_sniper_rifle"
                 "ItemClass2"    "weapon_smg1"
                 "ItemClass3"    "weapon_shotgun"
-                "ItemClass4"    "weapon_OICW"
+                "ItemClass4"    "weapon_gauss"
                 "ItemClass5"    "weapon_ar2"
                 "ItemClass6"    "weapon_m249para"
                 "ItemClass7"    "item_ammo_grenade"
@@ -316,7 +316,7 @@
                 "ItemClass1"    "weapon_sniper_rifle"
                 "ItemClass2"    "weapon_smg1"
                 "ItemClass3"    "weapon_shotgun"
-                "ItemClass4"    "weapon_OICW"
+                "ItemClass4"    "weapon_railgun"
                 "ItemClass5"    "weapon_ar2"
                 "ItemClass6"    "weapon_m249para"
                 "ItemClass7"    "item_ammo_grenade"
@@ -343,7 +343,7 @@
                 "ItemClass1"    "weapon_sniper_rifle"
                 "ItemClass2"    "weapon_smg1"
                 "ItemClass3"    "weapon_shotgun"
-                "ItemClass4"    "weapon_OICW"
+                "ItemClass4"    "weapon_gauss"
                 "ItemClass5"    "weapon_ar2"
                 "ItemClass6"    "weapon_m249para"
                 "ItemClass7"    "item_ammo_grenade"
@@ -370,7 +370,7 @@
                 "ItemClass1"    "weapon_sniper_rifle"
                 "ItemClass2"    "weapon_smg1"
                 "ItemClass3"    "weapon_shotgun"
-                "ItemClass4"    "weapon_OICW"
+                "ItemClass4"    "weapon_railgun"
                 "ItemClass5"    "weapon_ar2"
                 "ItemClass6"    "weapon_m249para"
                 "ItemClass7"    "item_ammo_grenade"
@@ -381,5 +381,22 @@
                 "CrateAppearance"    "models/items/item_beacon_crate.mdl"
             }
         }
+        
+        "weapon_railgun"
+		{
+			//Positions
+			"x" "-80.286865"
+			"y" "-2592.359131"
+			"z" "-421.968750"
+			//Rotations
+			"roll"  "0"  
+			"yaw"   "0"
+			"pitch" "0"
+			"KeyValues"
+			{
+				"targetname" "Railgun"
+				"StartDisabled"	"0"
+			}
+		}
     }
 }

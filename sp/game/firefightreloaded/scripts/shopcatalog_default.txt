@@ -18,12 +18,12 @@
 		"price"		"150"
 		"command"	"upgrade 0"
 	}
-        "4"
-        {
-		"name"		"Knife"
-		"price"		"450"
-		"command"	"item weapon_knife 0"
-        }
+    "4"
+    {
+        "name"		"Knife"
+        "price"		"450"
+        "command"	"item weapon_knife 0"
+    }
 	"5"
 	{
 		"name"		"PistolAmmo"
@@ -167,5 +167,23 @@
 		"name"		"Katana"
 		"price"		"3000"
 		"command"	"item weapon_katana 0" 
+	}
+    "29"
+	{
+		"name"		"Railgun"
+		"price"		"3500"
+		"command"	"item weapon_railgun 0" 
+	}
+	"30"
+	{
+		"name"		"RailgunAmmo"
+		"price"		"800"
+		"command"	"ammo Railgun 25" 
+	}
+    "31"
+	{
+		"name"		"RailgunOvercharge"
+		"price"		"6400"
+		"command"	"ammo Railgun 200" 
 	}
 }

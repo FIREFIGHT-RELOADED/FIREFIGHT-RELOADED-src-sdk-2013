@@ -216,12 +216,6 @@
 				"font"		"WeaponIconsKillFeed"
 				"character"	"6"
 		}
-		"weapon_oicw"
-		{
-				"font"		"WeaponIconsKillFeed2"
-				"character"	"f"
-				"weaponicon"	"1"
-		}
 		"weapon_gauss"
 		{
 				"font"		"WeaponIconsKillFeed2"
@@ -266,6 +260,15 @@
 				"y"		"0"
 				"width"		"128"
 				"height"	"32"
+				"weaponicon"	"1"
+		}
+		"weapon_railgun"
+		{
+				"file"		"VGUI/weaponicons/icon_railgun"
+				"x"			"0"
+				"y"			"0"
+				"width"		"64"
+				"height"	"64"
 				"weaponicon"	"1"
 		}
 		"weapon_mp5"

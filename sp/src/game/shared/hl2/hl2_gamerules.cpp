@@ -195,6 +195,10 @@ ConVar	sk_plr_dmg_slam("sk_plr_dmg_slam", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE)
 ConVar	sk_npc_dmg_slam("sk_npc_dmg_slam", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 ConVar	sk_max_slam("sk_max_slam", "0", FCVAR_REPLICATED);
 
+ConVar	sk_plr_dmg_railgun("sk_plr_dmg_railgun", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_npc_dmg_railgun("sk_npc_dmg_railgun", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_max_railgun("sk_max_railgun", "0", FCVAR_REPLICATED);
+
 //Custom Ammo Types
 ConVar	sk_plr_dmg_custom_normal("sk_plr_dmg_custom_normal", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 ConVar	sk_npc_dmg_custom_normal("sk_npc_dmg_custom_normal", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);

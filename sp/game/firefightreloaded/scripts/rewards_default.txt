@@ -284,4 +284,27 @@
 		"weapon_classname" "weapon_knife"
 		"unlocks_in_iron_kick" "1"
 	}
+    "37"
+	{
+		"name"		"#GameUI_Store_Buy_Railgun"
+		"item_type"	"5"
+		"min_level"	"8"
+		"weapon_classname" "weapon_railgun"
+	}
+    "38"
+	{
+		"name"		"#GameUI_Store_Buy_RailgunAmmo"
+		"item_type"	"7"
+		"min_level"	"8"
+		"weapon_classname" "weapon_railgun"
+		"ammo_num"	"25"
+	}
+    "39"
+	{
+		"name"		"#GameUI_Store_Buy_RailgunOvercharge"
+		"item_type"	"7"
+		"min_level"	"12"
+		"weapon_classname" "weapon_railgun"
+		"ammo_num"	"200"
+	}
 }
