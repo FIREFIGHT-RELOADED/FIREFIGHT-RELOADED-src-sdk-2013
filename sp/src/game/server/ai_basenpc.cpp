@@ -7050,6 +7050,8 @@ void CAI_BaseNPC::NPCInit ( void )
 
 	m_EnemiesSerialNumber = -1;
 
+	m_denyOutlines = false;
+
 	if (!m_bDisableInitAttributes && entity_attributes.GetBool())
 	{
 		m_pAttributes = LoadRandomPresetFile(GetClassname());
@@ -7107,7 +7109,7 @@ void CAI_BaseNPC::LoadInitAttributes()
 
 		bool showOutlines = m_pAttributes->GetBool("has_outlines", 0);
 
-		if (showOutlines)
+		if (showOutlines && !m_denyOutlines)
 		{
 			//we can't transfer Color objects through the server, so we use Vectors.
 			Vector outlineColor = m_pAttributes->GetVector("outline_color");

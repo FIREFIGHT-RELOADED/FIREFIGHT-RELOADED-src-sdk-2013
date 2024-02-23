@@ -194,9 +194,16 @@ void CNPC_CombineAce::Spawn( void )
 		m_bNoArmor = true;
 	}
 
+	m_iOutlineRed = 0;
+	m_iOutlineGreen = 255;
+	m_bBulletResistanceOutlineDisabled = false;
+
 	if (g_pGameRules->GetSkillLevel() > SKILL_EASY)
 	{
 		m_bBulletResistanceBroken = combine_ace_disablebulletresistance.GetBool();
+		m_denyOutlines = true;
+		Vector outline = Vector(m_iOutlineRed, m_iOutlineGreen, 0);
+		GiveOutline(outline);
 	}
 	else
 	{
@@ -251,10 +258,17 @@ void CNPC_CombineAce::LoadInitAttributes()
 			m_pAttributes->SwitchEntityColor(pArmor, "new_shield_color");
 		}
 
-		int disableBulletResistance = m_pAttributes->GetInt("disable_bullet_resistance", -1);
-
+		int disableBulletResistance = m_pAttributes->GetInt("disable_bullet_resistance", 0);
+		bool showOutlines = m_pAttributes->GetBool("has_outlines", 0);
+		
 		if (disableBulletResistance == 0)
 		{
+			if (showOutlines)
+			{
+				m_denyOutlines = true;
+				RemoveGlowEffect();
+			}
+
 			if (m_bBulletResistanceBroken)
 			{
 				m_bBulletResistanceBroken = false;
@@ -262,9 +276,27 @@ void CNPC_CombineAce::LoadInitAttributes()
 		}
 		else if (disableBulletResistance == 1)
 		{
+			if (showOutlines)
+			{
+				m_denyOutlines = false;
+			}
+
 			if (!m_bBulletResistanceBroken)
 			{
 				m_bBulletResistanceBroken = true;
+			}
+		}
+
+		bool disableBulletResistanceOutline = m_pAttributes->GetBool("disable_bullet_resistance_outline", 0);
+
+		if (disableBulletResistanceOutline)
+		{
+			RemoveGlowEffect();
+			m_bBulletResistanceOutlineDisabled = true;
+
+			if (m_denyOutlines)
+			{
+				m_denyOutlines = false;
 			}
 		}
 	}
@@ -509,9 +541,11 @@ Vector CNPC_CombineAce::CalcThrowVelocity(const Vector& startPos, const Vector& 
 
 CTakeDamageInfo CNPC_CombineAce::BulletResistanceLogic(const CTakeDamageInfo& info, trace_t* ptr)
 {
+	int shieldhealth = GetMaxHealth() * 0.5;
+
 	CTakeDamageInfo outputInfo = info;
 
-	if ((GetHealth() > GetMaxHealth() * 0.5) && !FStrEq(outputInfo.GetAmmoName(), "Katana") && !m_bBulletResistanceBroken)
+	if ((GetHealth() > shieldhealth) && !FStrEq(outputInfo.GetAmmoName(), "Katana") && !m_bBulletResistanceBroken)
 	{
 		if (!(outputInfo.GetDamageType() & (DMG_GENERIC)))
 		{
@@ -552,9 +586,21 @@ CTakeDamageInfo CNPC_CombineAce::BulletResistanceLogic(const CTakeDamageInfo& in
 				outputInfo.SetDamage(0.0f);
 			}
 		}
+
+		if (!m_bBulletResistanceOutlineDisabled)
+		{
+			int damageAdj = (outputInfo.GetDamageType() & (DMG_SHOCK | DMG_BLAST)) ? 15 : 6;
+			DevMsg("AceDamageAdjustOutline: %i\n", damageAdj);
+
+			m_iOutlineRed = clamp(m_iOutlineRed + (outputInfo.GetDamage() + damageAdj), 0, 255);
+			m_iOutlineGreen = clamp(m_iOutlineGreen - (outputInfo.GetDamage() + damageAdj), 0, 255);
+
+			Vector outline = Vector(m_iOutlineRed, m_iOutlineGreen, 0);
+			GiveOutline(outline);
+		}
 	}
 
-	if ((GetHealth() <= GetMaxHealth() * 0.5) && !m_bBulletResistanceBroken)
+	if ((GetHealth() <= shieldhealth) && !m_bBulletResistanceBroken)
 	{
 		//this is so rpg rockets don't instantly kill us when our shield breaks.
 		outputInfo.SetDamage(0.0f);
@@ -566,6 +612,7 @@ CTakeDamageInfo CNPC_CombineAce::BulletResistanceLogic(const CTakeDamageInfo& in
 		SpeakSentence("SHIELDDANGER", SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL);
 		EmitSound("Weapon_StriderBuster.Detonate");
 		SetBloodColor(BLOOD_COLOR_RED);
+		RemoveGlowEffect();
 		m_bBulletResistanceBroken = true;
 	}
 

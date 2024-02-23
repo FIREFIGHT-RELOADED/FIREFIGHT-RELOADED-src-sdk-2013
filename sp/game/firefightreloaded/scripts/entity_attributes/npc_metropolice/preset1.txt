@@ -7,6 +7,7 @@
 	"manhack_override"	"1"
 	"manhack_count_min"	"3"
 	"manhack_count_max"	"5"
+	"additional_speed"	"150"
 	"is_rare"		"1"
 	"persist"		"0"
 }
