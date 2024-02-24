@@ -880,24 +880,10 @@
 				"advanced"		"1"
 
 				"min"			"0.1"
-				"max"			"2.5"
+				"max"			"3.5"
 				"step"			"0.1"
 
 				"textprecision" "2"
-			}
-            
-            "StalkerLasers"
-			{
-				"text"			"#GameUI_StalkerLasers"
-				"type"			"wheelywheel"
-				"advanced"		"1"
-				"convar"		"stalker_skilllevellasers"
-
-				"options"
-				{
-					"0"		"#gameui_disabled"
-					"1"		"#gameui_enabled"
-				}
 			}
             
             "StalkerLasers"
