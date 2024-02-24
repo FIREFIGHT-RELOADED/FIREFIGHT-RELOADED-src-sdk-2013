@@ -37,6 +37,7 @@ XCOPY "%CD%\steam.inf" "%basedir%" /y
 XCOPY "%CD%\version.txt" "%basedir%" /y
 XCOPY "%CD%\firefightreloaded_pak_000.vpk" "%basedir%" /y
 XCOPY "%CD%\firefightreloaded_pak_001.vpk" "%basedir%" /y
+XCOPY "%CD%\firefightreloaded_pak_002.vpk" "%basedir%" /y
 XCOPY "%CD%\firefightreloaded_pak_dir.vpk" "%basedir%" /y
 
 echo.
