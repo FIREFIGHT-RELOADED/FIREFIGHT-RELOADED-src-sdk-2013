@@ -92,7 +92,7 @@
 				"max"			"999"
 				"step"			"1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
             
             "ArmorMode"
@@ -133,7 +133,7 @@
 				"max"			"9999"
 				"step"			"1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
 			
 			"Grapple"
@@ -201,7 +201,7 @@
 				"max"			"100"
 				"step"			"1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
 			
 			"BullettimeScaleShop"
@@ -215,7 +215,7 @@
 				"max"			"100"
 				"step"			"1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
             
             "HealthChargerRecharge"
@@ -243,7 +243,7 @@
 				"max"			"300"
 				"step"			"1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
             
             "SuitChargerRecharge"
@@ -271,7 +271,7 @@
 				"max"			"300"
 				"step"			"1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
             
             "HealthChargerUsesMoney"
@@ -467,7 +467,7 @@
 				"max"			"15"
 				"step"			"1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
             
             "PlayerAllyRegenTime"
@@ -481,7 +481,7 @@
 				"max"			"2"
 				"step"			"0.1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
             
             "CustomWeaponOptions"
@@ -583,7 +583,7 @@
 				"max"			"30"
 				"step"			"1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
             
             "CombineBallGuideFactor"
@@ -597,7 +597,7 @@
 				"max"			"4"
 				"step"			"0.1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
             
             "CombineBallSearchRadius"
@@ -611,7 +611,7 @@
 				"max"			"2048"
 				"step"			"8"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
             
             "CombineBallSeekKill"
@@ -785,7 +785,7 @@
 				"max"			"2"
 				"step"			"0.1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
             
             "HeadcrablessDamage"
@@ -841,7 +841,7 @@
 				"max"			"15"
 				"step"			"1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
             
             "SayCheeseHoldOnTheXbox360"
@@ -869,7 +869,7 @@
 				"max"			"15"
 				"step"			"1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
             
             "RollermineStunDelay"
@@ -883,7 +883,7 @@
 				"max"			"2.5"
 				"step"			"0.1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
             
             "StalkerLasers"
@@ -925,7 +925,7 @@
 				"max"			"1500"
 				"step"			"1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
             
             "AdvisorThrowVelocity"
@@ -939,7 +939,7 @@
 				"max"			"4500"
 				"step"			"1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
             
             "AdvisorThrowRate"
@@ -953,7 +953,7 @@
 				"max"			"10"
 				"step"			"1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
             
             "AdvisorThrowWarnTime"
@@ -967,7 +967,7 @@
 				"max"			"2"
 				"step"			"0.1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
             
             "AdvisorThrowLeadPrefetchTime"
@@ -981,7 +981,7 @@
 				"max"			"2"
 				"step"			"0.1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
             
             "AdvisorStagingNum"
@@ -995,7 +995,7 @@
 				"max"			"8"
 				"step"			"1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
 			
 			"AdvancedHeader"
@@ -1042,7 +1042,7 @@
 				"max"			"15"
 				"step"			"1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
 
 			"AttributesNumPresets"
@@ -1056,7 +1056,7 @@
 				"max"			"30"
 				"step"			"1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
 		}
 	}
@@ -1252,7 +1252,7 @@
 				"max"			"50"
 				"step"			"0.1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
 			
 			"RollAngle"
@@ -1266,7 +1266,7 @@
 				"max"			"14.0"
 				"step"			"0.1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
 
 			"RollSpeed"
@@ -1280,7 +1280,7 @@
 				"max"			"200"
 				"step"			"1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
 
 			"OldSpawner"
@@ -2018,7 +2018,7 @@
 				"max"			"150"
 				"step"			"1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
 
 			"ViewmodelFOV"
@@ -2032,7 +2032,7 @@
 				"max"			"90"
 				"step"			"1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
 
 			"FlipViewModels"
@@ -2074,7 +2074,7 @@
 				"max"			"128"
 				"step"			"1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
 			
 			"GibCount"
@@ -2088,7 +2088,7 @@
 				"max"			"128"
 				"step"			"1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
 			
 			"KnifeCount"
@@ -2102,7 +2102,7 @@
 				"max"			"128"
 				"step"			"1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
 			
 			"RagdollCount"
@@ -2116,7 +2116,7 @@
 				"max"			"128"
 				"step"			"1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
             
             "EntTolerance"
@@ -2130,7 +2130,7 @@
 				"max"			"100"
 				"step"			"1"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
             
             "AIGoByeBye"
@@ -2158,7 +2158,7 @@
 				"max"			"600"
 				"step"			"15"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
             
             "AIGoByeByeTimeRare"
@@ -2172,7 +2172,7 @@
 				"max"			"600"
 				"step"			"15"
 
-				"textprecision" "0"
+				"textprecision" "2"
 			}
 			
 			"RagdollFade"
