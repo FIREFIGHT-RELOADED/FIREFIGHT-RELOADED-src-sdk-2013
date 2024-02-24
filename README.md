@@ -11,7 +11,7 @@ FIREFIGHT RELOADED is an open-source Source SDK 2013 modification with the goal 
 **NOTE: PLEASE NOTE THAT THIS REPOSITORY WILL HAVE UNFINISHED OR BUGGY CODE FROM A NEWER RELEASE OF FIREFIGHT RELOADED. KEEP THIS IN MIND BEFORE COMPILING OR FORKING.**
 
 As this is a Half-Life 2/Source Engine mod, a file named LICENCE-VALVE.md is included which includes Valve's Source 1 SDK licence.\
-All code written by Valve and Bitl are covered by this licence.\
+All code written by Valve and Bitl are covered by this license.\
 Code used in FIREFIGHT RELOADED may be used for your Source Engine game/mod, however you must give credit to Bitl if you do use code from this mod into your Source SDK project.
 
 ## Compiling
@@ -50,5 +50,7 @@ After it installs, it will start steam-runtime.
 ```bash ./build_fr_linux.sh```\
 This will update the repo automatically. If you would like to update the repo without building it, run:\
 ```bash ./update_fr_linux.sh```
+
+Read [sp/game/firefightreloaded/scripts/credits.txt](https://github.com/FIREFIGHT-RELOADED/FIREFIGHT-RELOADED-src-sdk-2013/blob/endgame/sp/game/firefightreloaded/scripts/credits.txt) for credits and citations.
 
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/made-with-c-plus-plus.svg)](https://forthebadge.com)

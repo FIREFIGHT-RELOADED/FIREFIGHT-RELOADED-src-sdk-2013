@@ -27,10 +27,16 @@
 #include "movevars_shared.h"
 #include "particle_parse.h"
 #include "weapon_physcannon.h"
+#include "ai_basenpc_flyer.h"
 // #include "mathlib/noise.h"
 
 // this file contains the definitions for the message ID constants (eg ADVISOR_MSG_START_BEAM etc)
 #include "npc_advisor_shared.h"
+
+#include "ai_default.h"
+#include "ai_task.h"
+#include "npcevent.h"
+#include "activitylist.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -45,21 +51,22 @@
 ConVar sk_advisor_health( "sk_advisor_health", "0" );
 ConVar advisor_use_impact_table("advisor_use_impact_table","1",FCVAR_NONE,"If true, advisor will use her custom impact damage table.");
 
+ConVar sk_advisor_melee_dmg("sk_advisor_melee_dmg", "0");
+
 #if NPC_ADVISOR_HAS_BEHAVIOR
-ConVar advisor_throw_velocity( "advisor_throw_velocity", "1100" );
-ConVar advisor_throw_rate( "advisor_throw_rate", "4" );					// Throw an object every 4 seconds.
-ConVar advisor_throw_warn_time( "advisor_throw_warn_time", "1.0" );		// Warn players one second before throwing an object.
-ConVar advisor_throw_lead_prefetch_time ( "advisor_throw_lead_prefetch_time", "0.66", FCVAR_NONE, "Save off the player's velocity this many seconds before throwing.");
+ConVar advisor_throw_velocity( "advisor_throw_velocity", "3500" );
+ConVar advisor_throw_rate( "advisor_throw_rate", "1" );					// Throw an object every 4 seconds.
+ConVar advisor_throw_warn_time( "advisor_throw_warn_time", "0.5" );		// Warn players one second before throwing an object.
+ConVar advisor_throw_lead_prefetch_time ( "advisor_throw_lead_prefetch_time", "0.3", FCVAR_NONE, "Save off the player's velocity this many seconds before throwing.");
 ConVar advisor_throw_stage_distance("advisor_throw_stage_distance","180.0",FCVAR_NONE,"Advisor will try to hold an object this far in front of him just before throwing it at you. Small values will clobber the shield and be very bad.");
-// ConVar advisor_staging_num("advisor_staging_num","1",FCVAR_NONE,"Advisor will queue up this many objects to throw at Gordon.");
+//ConVar advisor_staging_num("advisor_staging_num","1",FCVAR_NONE,"Advisor will queue up this many objects to throw at Gordon.");
 ConVar advisor_throw_clearout_vel("advisor_throw_clearout_vel","200",FCVAR_NONE,"TEMP: velocity with which advisor clears things out of a throwable's way");
 // ConVar advisor_staging_duration("
 
 // how long it will take an object to get hauled to the staging point
 #define STAGING_OBJECT_FALLOFF_TIME 0.15f
+#define DIST_TO_CHECK	200
 #endif
-
-
 
 //
 // Spawnflags.
@@ -68,7 +75,8 @@ ConVar advisor_throw_clearout_vel("advisor_throw_clearout_vel","200",FCVAR_NONE,
 //
 // Animation events.
 //
-
+#define ADVISOR_MELEE_LEFT					( 3 )
+#define ADVISOR_MELEE_RIGHT					( 4 )
 
 #if NPC_ADVISOR_HAS_BEHAVIOR
 //
@@ -145,7 +153,7 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 class CNPC_Advisor : public CAI_BaseNPC
 {
-	DECLARE_CLASS( CNPC_Advisor, CAI_BaseNPC );
+	DECLARE_CLASS( CNPC_Advisor, CAI_BaseNPC);
 
 #if NPC_ADVISOR_HAS_BEHAVIOR
 	DECLARE_SERVERCLASS();
@@ -167,7 +175,7 @@ public:
 	//
 	// CAI_BaseNPC:
 	//
-	virtual float MaxYawSpeed() { return 120.0f; }
+	virtual float MaxYawSpeed() { return 90.0f; } //120.0f 90.0f
 	
 	virtual Class_T Classify();
 
@@ -177,6 +185,14 @@ public:
 	virtual void StartTask( const Task_t *pTask );
 	virtual void RunTask( const Task_t *pTask );
 	virtual void OnScheduleChange( void );
+
+	void HandleAnimEvent(animevent_t *pEvent);
+	int MeleeAttack1Conditions(float flDot, float flDist);
+
+	void Event_Killed(const CTakeDamageInfo &info);
+
+	void MovetoTarget(Vector vecTarget);
+
 #endif
 
 	virtual void PainSound( const CTakeDamageInfo &info );
@@ -212,6 +228,8 @@ public:
 	void InputTurnBeamOff( inputdata_t &inputdata );
 	void InputElightOn( inputdata_t &inputdata );
 	void InputElightOff( inputdata_t &inputdata );
+
+	void StopPinPlayer(inputdata_t &inputdata);
 
 	COutputEvent m_OnPickingThrowable, m_OnThrowWarn, m_OnThrow;
 
@@ -263,6 +281,8 @@ protected:
 	void Write_BeamOff( CBaseEntity *pEnt );   	///< write a message turning a beam off
 	void Write_AllBeamsOff( void );				///< tell client to kill all beams
 
+	int beamonce = 1; //Makes sure it only plays once the beam
+
 	// for the pin-the-player-to-something behavior
 	EHANDLE m_hPlayerPinPos;
 	float  m_playerPinFailsafeTime;
@@ -288,6 +308,8 @@ protected:
 
 	int   m_iStagingNum; ///< number of objects advisor stages at once
 	bool  m_bWasScripting;
+
+	Vector m_vecIdeal;
 
 	// unsigned char m_pickFailures; // the number of times we have tried to pick a throwable and failed 
 
@@ -334,6 +356,8 @@ BEGIN_DATADESC( CNPC_Advisor )
 	DEFINE_FIELD( m_flLastThrowTime, FIELD_TIME ),
 	DEFINE_FIELD( m_vSavedLeadVel, FIELD_VECTOR ),
 
+	DEFINE_FIELD(m_vecIdeal, FIELD_VECTOR),
+
 	DEFINE_OUTPUT( m_OnPickingThrowable, "OnPickingThrowable" ),
 	DEFINE_OUTPUT( m_OnThrowWarn, "OnThrowWarn" ),
 	DEFINE_OUTPUT( m_OnThrow, "OnThrow" ),
@@ -347,6 +371,9 @@ BEGIN_DATADESC( CNPC_Advisor )
 	DEFINE_INPUTFUNC( FIELD_STRING,  "BeamOff",         InputTurnBeamOff ),
 	DEFINE_INPUTFUNC( FIELD_STRING,  "ElightOn",         InputElightOn ),
 	DEFINE_INPUTFUNC( FIELD_STRING,  "ElightOff",         InputElightOff ),
+
+	DEFINE_INPUTFUNC(FIELD_VOID, "StopPinPlayer", StopPinPlayer),
+
 #endif
 
 END_DATADESC()
@@ -382,17 +409,21 @@ void CNPC_Advisor::Spawn()
 	SetHullSizeNormal();
 
 	SetSolid( SOLID_BBOX );
-	// AddSolidFlags( FSOLID_NOT_SOLID );
+	AddSolidFlags(FSOLID_NOT_STANDABLE); //FSOLID_NOT_SOLID
 
 	SetMoveType( MOVETYPE_FLY );
+	SetGravity(0.001);
+	AddFlag( FL_FLY );
+	SetNavType( NAV_FLY );
 
-	m_flFieldOfView = VIEW_FIELD_FULL;
+	m_flFieldOfView = 0.2; //VIEW_FIELD_FULL
 	SetViewOffset( Vector( 0, 0, 80 ) );		// Position of the eyes relative to NPC's origin.
 
 	SetBloodColor( BLOOD_COLOR_GREEN );
 	m_NPCState = NPC_STATE_NONE;
 
-	CapabilitiesClear();
+	//CapabilitiesClear();
+	CapabilitiesAdd(bits_CAP_INNATE_MELEE_ATTACK1);
 
 	NPCInit();
 
@@ -466,6 +497,7 @@ void CNPC_Advisor::Activate()
 	m_iStagingNum = 1;
 
 	AssertMsg(m_hvStagingPositions.Count() > 0, "You did not specify any staging positions in the advisor's staging_ent_names !");
+
 #endif
 }
 #pragma warning(pop)
@@ -774,12 +806,12 @@ void CNPC_Advisor::StartTask( const Task_t *pTask )
 		{
 
 			// should never be here
-			/*
+			
 			Assert( m_hPlayerPinPos.IsValid() );
 			m_playerPinFailsafeTime = gpGlobals->curtime + 10.0f;
 
 			break;
-			*/
+			
 		}
 
 		default:
@@ -789,12 +821,49 @@ void CNPC_Advisor::StartTask( const Task_t *pTask )
 	}
 }
 
+void CNPC_Advisor::MovetoTarget(Vector vecTarget)
+{
+	// Trace down and make sure we can fit here
+	trace_t	tr;
+	AI_TraceHull(m_vecIdeal, m_vecIdeal - Vector(0, 0, 64), GetHullMins(), GetHullMaxs(), MASK_NPCSOLID, this, COLLISION_GROUP_NONE, &tr);
+
+	// Move up otherwise
+	if (tr.fraction < 1.0f)
+	{
+		m_vecIdeal.z += (64 * (1.0f - tr.fraction));
+	}
+
+	// accelerate
+	float flSpeed = m_vecIdeal.Length();
+	if (flSpeed == 0)
+	{
+		m_vecIdeal = GetAbsVelocity();
+		flSpeed = m_vecIdeal.Length();
+	}
+	else if (flSpeed > 100)
+	{
+		VectorNormalize(m_vecIdeal);
+		m_vecIdeal = m_vecIdeal * 100;
+	}
+
+	Vector t = vecTarget - GetAbsOrigin();
+	VectorNormalize(t);
+	m_vecIdeal = m_vecIdeal + t * 100;
+
+	SetAbsVelocity(m_vecIdeal);
+}
 
 //-----------------------------------------------------------------------------
 // todo: find a way to guarantee that objects are made pickupable again when bailing out of a task
 //-----------------------------------------------------------------------------
 void CNPC_Advisor::RunTask( const Task_t *pTask )
 {
+	//Needed for the npc face constantly at player
+	GetMotor()->SetIdealYawToTargetAndUpdate(GetEnemyLKP(), AI_KEEP_YAW_SPEED);
+	if (GetEnemy() && GetEnemy()->IsAlive())
+	{
+		MovetoTarget(GetEnemy()->GetAbsOrigin());
+	}
 
 	switch ( pTask->iTask )
 	{
@@ -817,7 +886,7 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 				// swap them if necessary (1 must be the bottom)
 				if (m_levitateCallback.m_vecGoalPos1.z > m_levitateCallback.m_vecGoalPos2.z)
 				{
-					swap(m_levitateCallback.m_vecGoalPos1,m_levitateCallback.m_vecGoalPos2);
+					//swap(m_levitateCallback.m_vecGoalPos1,m_levitateCallback.m_vecGoalPos2);
 				}
 
 				m_levitateCallback.m_flFloat = 0.06f; // this is an absolute accumulation upon gravity
@@ -861,6 +930,7 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 		// to our enemy's eyes, choose that one to throw. Otherwise, keep looking.
 		case TASK_ADVISOR_STAGE_OBJECTS:
 		{	
+
 			if (m_iStagingNum > m_hvStagingPositions.Count())
 			{
 				Warning( "Advisor tries to stage %d objects but only has %d positions named %s! Overriding.\n", m_iStagingNum, m_hvStagingPositions.Count(), m_iszStagingEntities );
@@ -883,7 +953,7 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 					if ( pPhys )
 					{
 						// no pickup!
-						pPhys->SetGameFlags(pPhys->GetGameFlags() | FVPHYSICS_NO_PLAYER_PICKUP );;
+						pPhys->SetGameFlags(pPhys->GetGameFlags() | FVPHYSICS_NO_PLAYER_PICKUP); 
 					}
 
 					m_hvStagedEnts.AddToTail( pThrowable );
@@ -924,6 +994,7 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 		// Fling the object that we picked at our enemy's eyes!
 		case TASK_ADVISOR_BARRAGE_OBJECTS:
 		{
+
 			Assert(m_hvStagedEnts.Count() > 0);
 
 			// do I still have an enemy?
@@ -936,7 +1007,8 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 					IPhysicsObject *pPhys = m_hvStagedEnts[ii]->VPhysicsGetObject();
 					if ( pPhys )
 					{  
-						pPhys->SetGameFlags(pPhys->GetGameFlags() & (~FVPHYSICS_NO_PLAYER_PICKUP) );
+						//Removes the nopickup flag from the prop
+						pPhys->SetGameFlags(pPhys->GetGameFlags() & (~FVPHYSICS_NO_PLAYER_PICKUP)); 
 					}
 				}
 
@@ -983,7 +1055,8 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 				IPhysicsObject *pPhys = pThrowable->VPhysicsGetObject();
 				Assert(pPhys);
 
-				pPhys->SetGameFlags(pPhys->GetGameFlags() & (~FVPHYSICS_NO_PLAYER_PICKUP) );
+				//Removes the nopickup flag from the prop
+				pPhys->SetGameFlags(pPhys->GetGameFlags() & (~FVPHYSICS_NO_PLAYER_PICKUP));
 				HurlObjectAtPlayer(pThrowable,Vector(0,0,0)/*m_vSavedLeadVel*/);
 				m_flLastThrowTime = gpGlobals->curtime;
 				m_flThrowPhysicsTime = gpGlobals->curtime + 0.75f;
@@ -1011,13 +1084,15 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 
 		case TASK_ADVISOR_PIN_PLAYER:
 		{
-			/*
+			
 			// bail out if the pin entity went away.
 			CBaseEntity *pPinEnt = m_hPlayerPinPos;
 			if (!pPinEnt)
 			{
 				GetEnemy()->SetGravity(1.0f);
 				GetEnemy()->SetMoveType( MOVETYPE_WALK );
+				Write_BeamOff(GetEnemy());
+				beamonce = 1;
 				TaskComplete();
 				break;
 			}
@@ -1027,6 +1102,8 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 			{
 				GetEnemy()->SetGravity(1.0f);
 				GetEnemy()->SetMoveType( MOVETYPE_WALK );
+				Write_BeamOff(GetEnemy());
+				beamonce = 1;
 				Warning( "Advisor did not leave PIN PLAYER mode. Aborting due to ten second failsafe!\n" );
 				TaskFail("Advisor did not leave PIN PLAYER mode. Aborting due to ten second failsafe!\n");
 				break;
@@ -1037,11 +1114,20 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 			{
 				GetEnemy()->SetGravity(1.0f);
 				GetEnemy()->SetMoveType( MOVETYPE_WALK );
+				Write_BeamOff(GetEnemy());
+				beamonce = 1;
 				TaskFail( "Player is not the enemy?!" );
 				break;
 			}
-
-			GetEnemy()->SetMoveType( MOVETYPE_FLY );
+			
+			//FUgly, yet I can't think right now a quicker solution to only make one beam on this loop case
+			if (beamonce == 1)
+			{
+				Write_BeamOn(GetEnemy());
+				beamonce++;
+			}
+			
+			GetEnemy()->SetMoveType( MOVETYPE_NONE ); //MOVETYPE_FLY
 			GetEnemy()->SetGravity(0);
 
 			// use exponential falloff to peg the player to the pin point
@@ -1057,7 +1143,7 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 			GetEnemy()->SetAbsOrigin( nuPos );
 
 			break;
-			*/
+			
 		}
 
 		default:
@@ -1067,6 +1153,21 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 	}
 }
 
+//----------------------------------------------------------------------------------------------
+// Failsafe for restoring mobility to the player if the Advisor gets killed while PinPlayer task
+//----------------------------------------------------------------------------------------------
+void CNPC_Advisor::Event_Killed(const CTakeDamageInfo &info)
+{
+	m_OnDeath.FireOutput(info.GetAttacker(), this);
+	if (info.GetAttacker())
+	{
+		info.GetAttacker()->SetGravity(1.0f);
+		info.GetAttacker()->SetMoveType(MOVETYPE_WALK);
+		Write_BeamOff(info.GetAttacker());
+		beamonce = 1;
+	}
+	BaseClass::Event_Killed(info);
+}
 
 #endif
 
@@ -1489,6 +1590,25 @@ int	CNPC_Advisor::OnTakeDamage( const CTakeDamageInfo &info )
 
 
 #if NPC_ADVISOR_HAS_BEHAVIOR
+
+//-----------------------------------------------------------------------------
+// Purpose: For innate melee attack
+// Input :
+// Output :
+//-----------------------------------------------------------------------------
+int CNPC_Advisor::MeleeAttack1Conditions(float flDot, float flDist)
+{
+	if (flDist > 128)
+	{
+		return COND_TOO_FAR_TO_ATTACK;
+	}
+	else if (flDot < 0.7)
+	{
+		return COND_NOT_FACING_ATTACK;
+	}
+	return COND_CAN_MELEE_ATTACK1;
+}
+
 //-----------------------------------------------------------------------------
 //  Returns the best new schedule for this NPC based on current conditions.
 //-----------------------------------------------------------------------------
@@ -1496,6 +1616,12 @@ int CNPC_Advisor::SelectSchedule()
 {
     if ( IsInAScript() )
         return SCHED_ADVISOR_IDLE_STAND;
+
+	// Kick attack?
+	if (HasCondition(COND_CAN_MELEE_ATTACK1))
+	{
+		return SCHED_MELEE_ATTACK1;
+	}
 
 	switch ( m_NPCState )
 	{
@@ -1507,22 +1633,82 @@ int CNPC_Advisor::SelectSchedule()
 
 		case NPC_STATE_COMBAT:
 		{
-			if ( GetEnemy() && GetEnemy()->IsAlive() )
+			if (GetEnemy() && GetEnemy()->IsAlive())
 			{
-				if ( false /* m_hPlayerPinPos.IsValid() */ )
-					return SCHED_ADVISOR_TOSS_PLAYER;
-				else
-					return SCHED_ADVISOR_COMBAT;
-				
+				if (HasCondition(COND_HAVE_ENEMY_LOS) && HasCondition(COND_SEE_ENEMY))
+				{
+					if (m_hPlayerPinPos.IsValid())//false
+						return SCHED_ADVISOR_TOSS_PLAYER;
+					else
+						return SCHED_ADVISOR_COMBAT;
+				}
 			}
 			
-			return SCHED_ADVISOR_IDLE_STAND;
+			return SelectCombatSchedule();
 		}
 	}
 
 	return BaseClass::SelectSchedule();
 }
 
+
+void CNPC_Advisor::HandleAnimEvent(animevent_t *pEvent)
+{
+	switch (pEvent->event)
+	{
+	case ADVISOR_MELEE_LEFT:
+	{
+		CBaseEntity *pHurt = CheckTraceHullAttack(70, -Vector(128, 128, 128), Vector(128, 128, 128), sk_advisor_melee_dmg.GetFloat(), DMG_SLASH);
+		if (pHurt)
+		{
+			Vector forward, up;
+			AngleVectors(GetLocalAngles(), &forward, NULL, &up);
+
+			if (pHurt->GetFlags() & (FL_NPC | FL_CLIENT))
+			{
+				pHurt->ViewPunch(QAngle(5, 0, random->RandomInt(-10, 10)));
+			}
+			// Spawn some extra blood if we hit a BCC
+			CBaseCombatCharacter* pBCC = ToBaseCombatCharacter(pHurt);
+			if (pBCC)
+			{
+				SpawnBlood(pBCC->EyePosition(), g_vecAttackDir, pBCC->BloodColor(), sk_advisor_melee_dmg.GetFloat());
+			}
+			// Play a attack hit sound
+			EmitSound("NPC_Stalker.Hit");
+		}
+		break;
+	}
+
+	case ADVISOR_MELEE_RIGHT:
+	{
+		CBaseEntity *pHurt = CheckTraceHullAttack(70, -Vector(128, 128, 128), Vector(128, 128, 128), sk_advisor_melee_dmg.GetFloat(), DMG_SLASH);
+		if (pHurt)
+		{
+			Vector forward, up;
+			AngleVectors(GetLocalAngles(), &forward, NULL, &up);
+
+			if (pHurt->GetFlags() & (FL_NPC | FL_CLIENT))
+			{
+				pHurt->ViewPunch(QAngle(5, 0, random->RandomInt(-10, 10)));
+			}
+			// Spawn some extra blood if we hit a BCC
+			CBaseCombatCharacter* pBCC = ToBaseCombatCharacter(pHurt);
+			if (pBCC)
+			{
+				SpawnBlood(pBCC->EyePosition(), g_vecAttackDir, pBCC->BloodColor(), sk_advisor_melee_dmg.GetFloat());
+			}
+			// Play a attack hit sound
+			EmitSound("NPC_Stalker.Hit");
+		}
+		break;
+	}
+
+	default:
+		BaseClass::HandleAnimEvent(pEvent);
+		break;
+	}
+}
 
 //-----------------------------------------------------------------------------
 // return the position where an object should be staged before throwing
@@ -1558,15 +1744,17 @@ void CNPC_Advisor::Precache()
 #endif
 
 	PrecacheScriptSound( "NPC_Advisor.Blast" );
-	PrecacheScriptSound( "NPC_Advisor.Gib" );
-	PrecacheScriptSound( "NPC_Advisor.Idle" );
-	PrecacheScriptSound( "NPC_Advisor.Alert" );
-	PrecacheScriptSound( "NPC_Advisor.Die" );
+	PrecacheScriptSound( "BaseCombatCharacter.CorpseGib" );	//NPC_Advisor.Gib
+	PrecacheScriptSound( "NPC_Advisor.Speak" );	//NPC_Advisor.Idle
+	PrecacheScriptSound( "NPC_Advisor.ScreenVx02" );	//NPC_Advisor.Alert
+	PrecacheScriptSound( "NPC_Advisor.Scream" ); //NPC_Advisor.Die
 	PrecacheScriptSound( "NPC_Advisor.Pain" );
 	PrecacheScriptSound( "NPC_Advisor.ObjectChargeUp" );
 	PrecacheParticleSystem( "Advisor_Psychic_Beam" );
 	PrecacheParticleSystem( "advisor_object_charge" );
 	PrecacheModel("sprites/greenglow1.vmt");
+
+	PrecacheScriptSound("NPC_Stalker.Hit");
 }
 
 
@@ -1574,31 +1762,25 @@ void CNPC_Advisor::Precache()
 //-----------------------------------------------------------------------------
 void CNPC_Advisor::IdleSound()
 {
-	EmitSound( "NPC_Advisor.Idle" );
+	EmitSound( "NPC_Advisor.Speak" );
 }
 
 
 void CNPC_Advisor::AlertSound()
 {
-	EmitSound( "NPC_Advisor.Alert" );
+	EmitSound( "NPC_Advisor.ScreenVx02" );
 }
 
 
 void CNPC_Advisor::PainSound( const CTakeDamageInfo &info )
 {
-	if (IsOnFire())
-		return;
-
 	EmitSound( "NPC_Advisor.Pain" );
 }
 
 
 void CNPC_Advisor::DeathSound( const CTakeDamageInfo &info )
 {
-	if (IsOnFire())
-		return;
-
-	EmitSound( "NPC_Advisor.Die" );
+	EmitSound( "NPC_Advisor.Scream" );
 }
 
 
@@ -1645,14 +1827,17 @@ void CNPC_Advisor::InputSetThrowRate( inputdata_t &inputdata )
 	advisor_throw_rate.SetValue(inputdata.value.Float());
 }
 
+//-----------------------------------------------------------------------------
+// Sets the number of staging points to levitate the props before being launched
+//-----------------------------------------------------------------------------
 void CNPC_Advisor::InputSetStagingNum( inputdata_t &inputdata )
 {
 	m_iStagingNum = inputdata.value.Int();
 }
 
-// 
+//-----------------------------------------------------------------------------
 //  cause the player to be pinned to a point in space
-// 
+//-----------------------------------------------------------------------------
 void CNPC_Advisor::InputPinPlayer( inputdata_t &inputdata )
 {
 	string_t targetname = inputdata.value.StringID();
@@ -1676,6 +1861,14 @@ void CNPC_Advisor::InputPinPlayer( inputdata_t &inputdata )
 		Warning("Advisor tried to pin player to %s but that does not exist.\n", targetname.ToCStr());
 		m_hPlayerPinPos = NULL;
 	}
+}
+
+//-----------------------------------------------------------------------------
+//Stops the Advisor to try pin the player into a point in space
+//-----------------------------------------------------------------------------
+void CNPC_Advisor::StopPinPlayer(inputdata_t &inputdata)
+{
+	m_hPlayerPinPos = NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -2019,11 +2212,13 @@ AI_BEGIN_CUSTOM_NPC( npc_advisor, CNPC_Advisor )
 		"		TASK_ADVISOR_FIND_OBJECTS			0"
 		"		TASK_ADVISOR_LEVITATE_OBJECTS		0"
 		"		TASK_ADVISOR_STAGE_OBJECTS			1"
+		"		TASK_FACE_ENEMY						0"
 		"		TASK_ADVISOR_BARRAGE_OBJECTS		0"
 		"	"
 		"	Interrupts"
 		"		COND_ADVISOR_PHASE_INTERRUPT"
 		"		COND_ENEMY_DEAD"
+		"		COND_CAN_MELEE_ATTACK1"
 	)
 
 	//=========================================================
@@ -2048,6 +2243,7 @@ AI_BEGIN_CUSTOM_NPC( npc_advisor, CNPC_Advisor )
 		"	Tasks"
 		"		TASK_ADVISOR_FIND_OBJECTS			0"
 		"		TASK_ADVISOR_LEVITATE_OBJECTS		0"
+		"		TASK_FACE_ENEMY						0"
 		"		TASK_ADVISOR_PIN_PLAYER				0"
 		"	"
 		"	Interrupts"

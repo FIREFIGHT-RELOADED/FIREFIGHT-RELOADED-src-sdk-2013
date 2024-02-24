@@ -719,6 +719,14 @@ public:
 
 	virtual const char *GetSchedulingErrorName()					{ return "CAI_BaseNPC"; }
 
+	// Various schedule selections based on NPC_STATE
+	int					SelectIdleSchedule();
+	int					SelectAlertSchedule();
+	int					SelectCombatSchedule();
+	virtual int			SelectDeadSchedule();
+	int					SelectScriptSchedule();
+	int					SelectInteractionSchedule();
+
 protected:
 	static bool			LoadSchedules(void);
 	virtual bool		LoadedSchedules(void);
@@ -761,14 +769,6 @@ private:
 	NPC_STATE			SelectIdleIdealState();
 	NPC_STATE			SelectAlertIdealState();
 	NPC_STATE			SelectScriptIdealState();
-
-	// Various schedule selections based on NPC_STATE
-	int					SelectIdleSchedule();
-	int					SelectAlertSchedule();
-	int					SelectCombatSchedule();
-	virtual int			SelectDeadSchedule();
-	int					SelectScriptSchedule();
-	int					SelectInteractionSchedule();
 
 	void				OnStartTask( void ) 					{ SetTaskStatus( TASKSTATUS_RUN_MOVE_AND_TASK ); }
 	void 				SetTaskStatus( TaskStatus_e status )	{ m_ScheduleState.fTaskStatus = status; 	}

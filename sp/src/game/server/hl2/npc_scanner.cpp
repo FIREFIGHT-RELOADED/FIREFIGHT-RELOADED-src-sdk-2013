@@ -224,23 +224,26 @@ CNPC_CScanner::CNPC_CScanner()
 //-----------------------------------------------------------------------------
 void CNPC_CScanner::Spawn(void)
 {
-	// Check for user error
-	if (m_flSpotlightMaxLength <= 0)
+	if (!m_bFlyerOnly)
 	{
-		DevMsg("CNPC_CScanner::Spawn: Invalid spotlight length <= 0, setting to 500\n");
-		m_flSpotlightMaxLength = 500;
-	}
-	
-	if (m_flSpotlightGoalWidth <= 0)
-	{
-		DevMsg("CNPC_CScanner::Spawn: Invalid spotlight width <= 0, setting to 100\n");
-		m_flSpotlightGoalWidth = 100;
-	}
+		// Check for user error
+		if (m_flSpotlightMaxLength <= 0)
+		{
+			DevMsg("CNPC_CScanner::Spawn: Invalid spotlight length <= 0, setting to 500\n");
+			m_flSpotlightMaxLength = 500;
+		}
 
-	if (m_flSpotlightGoalWidth > MAX_BEAM_WIDTH )
-	{
-		DevMsg("CNPC_CScanner::Spawn: Invalid spotlight width %.1f (max %.1f).\n", m_flSpotlightGoalWidth, MAX_BEAM_WIDTH );
-		m_flSpotlightGoalWidth = MAX_BEAM_WIDTH; 
+		if (m_flSpotlightGoalWidth <= 0)
+		{
+			DevMsg("CNPC_CScanner::Spawn: Invalid spotlight width <= 0, setting to 100\n");
+			m_flSpotlightGoalWidth = 100;
+		}
+
+		if (m_flSpotlightGoalWidth > MAX_BEAM_WIDTH)
+		{
+			DevMsg("CNPC_CScanner::Spawn: Invalid spotlight width %.1f (max %.1f).\n", m_flSpotlightGoalWidth, MAX_BEAM_WIDTH);
+			m_flSpotlightGoalWidth = MAX_BEAM_WIDTH;
+		}
 	}
 
 	Precache();

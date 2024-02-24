@@ -141,6 +141,8 @@ public:
 	void			SpotlightCreate(void);
 	void			SpotlightDestroy(void);
 
+	bool			m_bFlyerOnly;
+
 private:
 	bool			MovingToInspectTarget( void );
 	virtual float	GetGoalDistance( void );

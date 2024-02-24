@@ -389,7 +389,7 @@ void CWeaponAR2::Zoom(void)
 	if (pPlayer == NULL)
 		return;
 
-	color32 lightBlue = { 55, 157, 230, 64 };
+	color32 lightBlue = { 55, 157, 230, 32 };
 
 	if (m_bZoomed)
 	{
