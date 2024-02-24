@@ -105,11 +105,11 @@ int g_interactionMetrocopClearSentenceQueues = 0;
 
 extern int g_interactionHitByPlayerThrownPhysObj;
 
-ConVar	sk_metropolice_stitch_reaction( "sk_metropolice_stitch_reaction","1.0");
-ConVar	sk_metropolice_stitch_tight_hitcount( "sk_metropolice_stitch_tight_hitcount","2");
-ConVar	sk_metropolice_stitch_at_hitcount( "sk_metropolice_stitch_at_hitcount","1");
-ConVar	sk_metropolice_stitch_behind_hitcount( "sk_metropolice_stitch_behind_hitcount","3");
-ConVar	sk_metropolice_stitch_along_hitcount( "sk_metropolice_stitch_along_hitcount","2");
+ConVar	sk_metropolice_stitch_reaction( "sk_metropolice_stitch_reaction","1.0", FCVAR_ARCHIVE);
+ConVar	sk_metropolice_stitch_tight_hitcount( "sk_metropolice_stitch_tight_hitcount","2", FCVAR_ARCHIVE);
+ConVar	sk_metropolice_stitch_at_hitcount( "sk_metropolice_stitch_at_hitcount","1", FCVAR_ARCHIVE);
+ConVar	sk_metropolice_stitch_behind_hitcount( "sk_metropolice_stitch_behind_hitcount","3", FCVAR_ARCHIVE);
+ConVar	sk_metropolice_stitch_along_hitcount( "sk_metropolice_stitch_along_hitcount","2", FCVAR_ARCHIVE);
 
 
 ConVar	sk_metropolice_health( "sk_metropolice_health","0");

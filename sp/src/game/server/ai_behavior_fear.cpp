@@ -27,7 +27,7 @@ END_DATADESC();
 #define FEAR_ENEMY_TOLERANCE_CLOSE_DIST_SQR		Square(300.0f) // (25 feet)
 #define FEAR_ENEMY_TOLERANCE_TOO_CLOSE_DIST_SQR	Square( 60.0f ) // (5 Feet)
 
-ConVar ai_enable_fear_behavior( "ai_enable_fear_behavior", "1" );
+ConVar ai_enable_fear_behavior( "ai_enable_fear_behavior", "1", FCVAR_ARCHIVE );
 
 ConVar ai_fear_player_dist("ai_fear_player_dist", "720" );
 

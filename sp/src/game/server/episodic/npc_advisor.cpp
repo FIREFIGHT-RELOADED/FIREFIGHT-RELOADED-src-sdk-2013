@@ -48,24 +48,23 @@
 //
 // Skill settings.
 //
-ConVar sk_advisor_health( "sk_advisor_health", "0" );
+ConVar sk_advisor_health( "sk_advisor_health", "0");
 ConVar advisor_use_impact_table("advisor_use_impact_table","1",FCVAR_NONE,"If true, advisor will use her custom impact damage table.");
 
 ConVar sk_advisor_melee_dmg("sk_advisor_melee_dmg", "0");
 
 #if NPC_ADVISOR_HAS_BEHAVIOR
-ConVar advisor_throw_velocity( "advisor_throw_velocity", "3500" );
-ConVar advisor_throw_rate( "advisor_throw_rate", "1" );					// Throw an object every 4 seconds.
-ConVar advisor_throw_warn_time( "advisor_throw_warn_time", "0.5" );		// Warn players one second before throwing an object.
-ConVar advisor_throw_lead_prefetch_time ( "advisor_throw_lead_prefetch_time", "0.3", FCVAR_NONE, "Save off the player's velocity this many seconds before throwing.");
+ConVar advisor_throw_velocity( "advisor_throw_velocity", "3500", FCVAR_ARCHIVE);
+ConVar advisor_throw_rate( "advisor_throw_rate", "1", FCVAR_ARCHIVE);					// Throw an object every 4 seconds.
+ConVar advisor_throw_warn_time( "advisor_throw_warn_time", "0.5", FCVAR_ARCHIVE);		// Warn players one second before throwing an object.
+ConVar advisor_throw_lead_prefetch_time ( "advisor_throw_lead_prefetch_time", "0.3", FCVAR_ARCHIVE, "Save off the player's velocity this many seconds before throwing.");
 ConVar advisor_throw_stage_distance("advisor_throw_stage_distance","180.0",FCVAR_NONE,"Advisor will try to hold an object this far in front of him just before throwing it at you. Small values will clobber the shield and be very bad.");
-//ConVar advisor_staging_num("advisor_staging_num","1",FCVAR_NONE,"Advisor will queue up this many objects to throw at Gordon.");
+ConVar advisor_staging_num("advisor_staging_num","2", FCVAR_ARCHIVE,"Advisor will queue up this many objects to throw at Gordon.");
 ConVar advisor_throw_clearout_vel("advisor_throw_clearout_vel","200",FCVAR_NONE,"TEMP: velocity with which advisor clears things out of a throwable's way");
 // ConVar advisor_staging_duration("
 
 // how long it will take an object to get hauled to the staging point
 #define STAGING_OBJECT_FALLOFF_TIME 0.15f
-#define DIST_TO_CHECK	200
 #endif
 
 //
@@ -494,7 +493,7 @@ void CNPC_Advisor::Activate()
 	// positions loaded, null out the m_hvStagedEnts array with exactly as many null spaces
 	m_hvStagedEnts.SetCount( m_hvStagingPositions.Count() );
 
-	m_iStagingNum = 1;
+	m_iStagingNum = advisor_staging_num.GetInt();
 
 	AssertMsg(m_hvStagingPositions.Count() > 0, "You did not specify any staging positions in the advisor's staging_ent_names !");
 

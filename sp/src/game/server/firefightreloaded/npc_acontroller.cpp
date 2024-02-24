@@ -57,7 +57,7 @@
 
 ConVar sk_controller_health ( "sk_controller_health", "0" );
 ConVar sk_controller_dmgzap ( "sk_controller_dmgzap", "0" );
-ConVar sk_controller_speedball ( "sk_controller_speedball", "0" );
+ConVar sk_controller_speedball ( "sk_controller_speedball", "0", FCVAR_ARCHIVE );
 ConVar sk_controller_dmgball ( "sk_controller_dmgball", "0" );
 
 class CSprite;

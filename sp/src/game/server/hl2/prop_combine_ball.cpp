@@ -42,10 +42,10 @@
 #define	MAX_COMBINEBALL_RADIUS	12
 
 ConVar	sk_npc_dmg_combineball( "sk_npc_dmg_combineball","15", FCVAR_REPLICATED);
-ConVar	sk_combineball_guidefactor( "sk_combineball_guidefactor","0.5", FCVAR_REPLICATED);
-ConVar	sk_combine_ball_search_radius( "sk_combine_ball_search_radius", "512", FCVAR_REPLICATED);
-ConVar	sk_combineball_seek_angle( "sk_combineball_seek_angle","15.0", FCVAR_REPLICATED);
-ConVar	sk_combineball_seek_kill( "sk_combineball_seek_kill","0", FCVAR_REPLICATED);
+ConVar	sk_combineball_guidefactor( "sk_combineball_guidefactor","0.5", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_combine_ball_search_radius( "sk_combine_ball_search_radius", "512", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_combineball_seek_angle( "sk_combineball_seek_angle","15.0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	sk_combineball_seek_kill( "sk_combineball_seek_kill","0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
 // For our ring explosion
 int s_nExplosionTexture = -1;

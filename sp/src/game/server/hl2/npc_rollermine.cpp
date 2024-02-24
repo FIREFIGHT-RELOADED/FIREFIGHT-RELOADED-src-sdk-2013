@@ -46,7 +46,7 @@
 extern short g_sModelIndexWExplosion;
 
 ConVar	sk_rollermine_shock( "sk_rollermine_shock","1");
-ConVar	sk_rollermine_stun_delay("sk_rollermine_stun_delay", "1");
+ConVar	sk_rollermine_stun_delay("sk_rollermine_stun_delay", "1", FCVAR_ARCHIVE);
 ConVar	sk_rollermine_vehicle_intercept( "sk_rollermine_vehicle_intercept","1");
 ConVar	sk_rollermine_health("sk_rollermine_health", "0");
 
