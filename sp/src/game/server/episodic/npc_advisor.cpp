@@ -405,7 +405,7 @@ BEGIN_DATADESC( CNPC_Advisor )
 	DEFINE_INPUTFUNC( FIELD_STRING,  "BeamOff",         InputTurnBeamOff ),
 	DEFINE_INPUTFUNC( FIELD_STRING,  "ElightOn",         InputElightOn ),
 	DEFINE_INPUTFUNC( FIELD_STRING,  "ElightOff",         InputElightOff ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT,	"TurnOnBulletResistanceOutline", InputSetTurnOnBulletResistanceOutline),
+	DEFINE_INPUTFUNC(	FIELD_VOID,	"TurnOnBulletResistanceOutline", InputSetTurnOnBulletResistanceOutline),
 
 	DEFINE_INPUTFUNC(FIELD_VOID, "StopPinPlayer", StopPinPlayer),
 
