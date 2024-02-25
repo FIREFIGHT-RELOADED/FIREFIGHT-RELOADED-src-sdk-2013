@@ -210,6 +210,7 @@ public:
 	void MovetoTarget(Vector vecTarget);
 
 	//bullet resistance
+	void				EnableBulletResistanceOutline(void);
 	CTakeDamageInfo		BulletResistanceLogic(const CTakeDamageInfo& info, trace_t* ptr);
 	virtual bool		PassesDamageFilter(const CTakeDamageInfo& info);
 	bool				m_bBulletResistanceBroken;
@@ -219,8 +220,6 @@ public:
 
 private:
 	int					m_iSpriteTexture;
-	int					m_iOutlineRed;
-	int					m_iOutlineBlue;
 	bool				m_bDefenseTeamsDown;
 
 public:
@@ -259,6 +258,7 @@ public:
 	void InputTurnBeamOff( inputdata_t &inputdata );
 	void InputElightOn( inputdata_t &inputdata );
 	void InputElightOff( inputdata_t &inputdata );
+	void InputSetTurnOnBulletResistanceOutline(inputdata_t& inputdata);
 
 	void StopPinPlayer(inputdata_t &inputdata);
 
@@ -405,6 +405,7 @@ BEGIN_DATADESC( CNPC_Advisor )
 	DEFINE_INPUTFUNC( FIELD_STRING,  "BeamOff",         InputTurnBeamOff ),
 	DEFINE_INPUTFUNC( FIELD_STRING,  "ElightOn",         InputElightOn ),
 	DEFINE_INPUTFUNC( FIELD_STRING,  "ElightOff",         InputElightOff ),
+	DEFINE_INPUTFUNC( FIELD_FLOAT,	"TurnOnBulletResistanceOutline", InputSetTurnOnBulletResistanceOutline),
 
 	DEFINE_INPUTFUNC(FIELD_VOID, "StopPinPlayer", StopPinPlayer),
 
@@ -457,17 +458,8 @@ void CNPC_Advisor::Spawn()
 
 #if NPC_ADVISOR_HAS_BEHAVIOR
 	m_bDefenseTeamsDown = false;
-	m_iOutlineRed = 0;
-	m_iOutlineBlue = 255;
 	m_bBulletResistanceOutlineDisabled = false;
-
 	m_bBulletResistanceBroken = advisor_disablebulletresistance.GetBool();
-	if (!m_bBulletResistanceBroken)
-	{
-		m_denyOutlines = true;
-		Vector outline = Vector(m_iOutlineRed, 84, m_iOutlineBlue);
-		GiveOutline(outline);
-	}
 #endif
 
 	//CapabilitiesClear();
@@ -482,6 +474,16 @@ void CNPC_Advisor::Spawn()
 
 
 #if NPC_ADVISOR_HAS_BEHAVIOR
+
+void CNPC_Advisor::EnableBulletResistanceOutline()
+{
+	if (!m_bBulletResistanceBroken)
+	{
+		m_denyOutlines = true;
+		Vector outline = Vector(255, 0, 255);
+		GiveOutline(outline);
+	}
+}
 
 void CNPC_Advisor::LoadInitAttributes()
 {
@@ -610,18 +612,6 @@ CTakeDamageInfo CNPC_Advisor::BulletResistanceLogic(const CTakeDamageInfo& info,
 			{
 				outputInfo.SetDamage(0.0f);
 			}
-		}
-
-		if (!m_bBulletResistanceOutlineDisabled)
-		{
-			int damageAdj = (outputInfo.GetDamageType() & (DMG_SHOCK | DMG_BLAST)) ? 15 : 6;
-			DevMsg("BOSSDamageAdjustOutline: %i\n", damageAdj);
-
-			m_iOutlineRed = clamp(m_iOutlineRed + (outputInfo.GetDamage() + damageAdj), 0, 255);
-			m_iOutlineBlue = clamp(m_iOutlineBlue - (outputInfo.GetDamage() + damageAdj), 0, 255);
-
-			Vector outline = Vector(m_iOutlineRed, 84, m_iOutlineBlue);
-			GiveOutline(outline);
 		}
 	}
 
@@ -2095,6 +2085,16 @@ bool CNPC_Advisor::QueryHearSound( CSound *pSound )
 	}
 
 	return BaseClass::QueryHearSound(pSound);
+}
+
+
+
+//-----------------------------------------------------------------------------
+// designer hook for setting throw rate
+//-----------------------------------------------------------------------------
+void CNPC_Advisor::InputSetTurnOnBulletResistanceOutline(inputdata_t& inputdata)
+{
+	EnableBulletResistanceOutline();
 }
 
 //-----------------------------------------------------------------------------

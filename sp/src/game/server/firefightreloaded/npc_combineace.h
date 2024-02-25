@@ -86,8 +86,6 @@ private:
 	bool					m_bNoArmor;
 	bool					m_bisEyeForcedDead;
 	int					m_iSpriteTexture;
-	int					m_iOutlineRed;
-	int					m_iOutlineGreen;
 
 #if HL2_EPISODIC
 public:

@@ -194,8 +194,6 @@ void CNPC_CombineAce::Spawn( void )
 		m_bNoArmor = true;
 	}
 
-	m_iOutlineRed = 0;
-	m_iOutlineGreen = 255;
 	m_bBulletResistanceOutlineDisabled = false;
 
 	if (g_pGameRules->GetSkillLevel() > SKILL_EASY)
@@ -204,7 +202,7 @@ void CNPC_CombineAce::Spawn( void )
 		if (!m_bBulletResistanceBroken)
 		{
 			m_denyOutlines = true;
-			Vector outline = Vector(m_iOutlineRed, m_iOutlineGreen, 0);
+			Vector outline = Vector(0, 255, 0);
 			GiveOutline(outline);
 		}
 	}
@@ -588,18 +586,6 @@ CTakeDamageInfo CNPC_CombineAce::BulletResistanceLogic(const CTakeDamageInfo& in
 			{
 				outputInfo.SetDamage(0.0f);
 			}
-		}
-
-		if (!m_bBulletResistanceOutlineDisabled)
-		{
-			int damageAdj = (outputInfo.GetDamageType() & (DMG_SHOCK | DMG_BLAST)) ? 15 : 6;
-			DevMsg("AceDamageAdjustOutline: %i\n", damageAdj);
-
-			m_iOutlineRed = clamp(m_iOutlineRed + (outputInfo.GetDamage() + damageAdj), 0, 255);
-			m_iOutlineGreen = clamp(m_iOutlineGreen - (outputInfo.GetDamage() + damageAdj), 0, 255);
-
-			Vector outline = Vector(m_iOutlineRed, m_iOutlineGreen, 0);
-			GiveOutline(outline);
 		}
 	}
 
