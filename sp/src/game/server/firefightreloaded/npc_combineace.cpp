@@ -201,9 +201,12 @@ void CNPC_CombineAce::Spawn( void )
 	if (g_pGameRules->GetSkillLevel() > SKILL_EASY)
 	{
 		m_bBulletResistanceBroken = combine_ace_disablebulletresistance.GetBool();
-		m_denyOutlines = true;
-		Vector outline = Vector(m_iOutlineRed, m_iOutlineGreen, 0);
-		GiveOutline(outline);
+		if (!m_bBulletResistanceBroken)
+		{
+			m_denyOutlines = true;
+			Vector outline = Vector(m_iOutlineRed, m_iOutlineGreen, 0);
+			GiveOutline(outline);
+		}
 	}
 	else
 	{
@@ -966,6 +969,8 @@ BEGIN_DATADESC( CNPC_CombineAce )
 	DEFINE_KEYFIELD( m_iUseMarch, FIELD_INTEGER, "usemarch" ),
 	DEFINE_FIELD(m_pEyeSprite, FIELD_CLASSPTR),
 	DEFINE_FIELD(m_pEyeTrail, FIELD_CLASSPTR),
+	DEFINE_FIELD(m_bBulletResistanceBroken, FIELD_BOOLEAN),
+	DEFINE_FIELD(m_bBulletResistanceOutlineDisabled, FIELD_BOOLEAN),
 
 END_DATADESC()
 #endif

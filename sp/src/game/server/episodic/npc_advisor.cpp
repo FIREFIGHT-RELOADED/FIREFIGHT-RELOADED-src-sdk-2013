@@ -27,8 +27,10 @@
 #include "movevars_shared.h"
 #include "particle_parse.h"
 #include "weapon_physcannon.h"
-#include "ai_basenpc_flyer.h"
+#include "ai_baseactor.h"
+#include "hl2/prop_combine_ball.h"
 // #include "mathlib/noise.h"
+#include "firefightreloaded/monstermaker_firefight.h"
 
 // this file contains the definitions for the message ID constants (eg ADVISOR_MSG_START_BEAM etc)
 #include "npc_advisor_shared.h"
@@ -59,8 +61,21 @@ ConVar advisor_throw_rate( "advisor_throw_rate", "1", FCVAR_ARCHIVE);					// Thr
 ConVar advisor_throw_warn_time( "advisor_throw_warn_time", "0.5", FCVAR_ARCHIVE);		// Warn players one second before throwing an object.
 ConVar advisor_throw_lead_prefetch_time ( "advisor_throw_lead_prefetch_time", "0.3", FCVAR_ARCHIVE, "Save off the player's velocity this many seconds before throwing.");
 ConVar advisor_throw_stage_distance("advisor_throw_stage_distance","180.0",FCVAR_NONE,"Advisor will try to hold an object this far in front of him just before throwing it at you. Small values will clobber the shield and be very bad.");
-ConVar advisor_staging_num("advisor_staging_num","2", FCVAR_ARCHIVE,"Advisor will queue up this many objects to throw at Gordon.");
+ConVar advisor_staging_num("advisor_staging_num","3", FCVAR_ARCHIVE,"Advisor will queue up this many objects to throw at Gordon.");
 ConVar advisor_throw_clearout_vel("advisor_throw_clearout_vel","200",FCVAR_NONE,"TEMP: velocity with which advisor clears things out of a throwable's way");
+ConVar advisor_max_damage("advisor_max_damage", "15", FCVAR_CHEAT);
+ConVar advisor_bulletresistance_throw_velocity("advisor_bulletresistance_throw_velocity", "2500", FCVAR_ARCHIVE);
+ConVar advisor_bulletresistance_throw_rate("advisor_bulletresistance_throw_rate", "3", FCVAR_ARCHIVE);					// Throw an object every 4 seconds.
+ConVar advisor_bulletresistance_staging_num("advisor_bulletresistance_staging_num", "1", FCVAR_ARCHIVE, "Advisor will queue up this many objects to throw at Gordon.");
+ConVar advisor_disablebulletresistance("advisor_disablebulletresistance", "0", FCVAR_ARCHIVE);
+
+ConVar advisor_speed("advisor_speed", "90", FCVAR_ARCHIVE);
+ConVar advisor_bulletresistance_speed("advisor_bulletresistance_speed", "20", FCVAR_ARCHIVE);
+
+extern ConVar sk_combine_ace_shielddamage_normal;
+extern ConVar sk_combine_ace_shielddamage_hard;
+extern ConVar sk_combine_ace_shielddamage_explosive_multiplier;
+extern ConVar sk_combine_ace_shielddamage_shock_multiplier;
 // ConVar advisor_staging_duration("
 
 // how long it will take an object to get hauled to the staging point
@@ -150,9 +165,9 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 // The advisor class.
 //-----------------------------------------------------------------------------
-class CNPC_Advisor : public CAI_BaseNPC
+class CNPC_Advisor : public CAI_BaseActor
 {
-	DECLARE_CLASS( CNPC_Advisor, CAI_BaseNPC);
+	DECLARE_CLASS( CNPC_Advisor, CAI_BaseActor);
 
 #if NPC_ADVISOR_HAS_BEHAVIOR
 	DECLARE_SERVERCLASS();
@@ -174,7 +189,9 @@ public:
 	//
 	// CAI_BaseNPC:
 	//
-	virtual float MaxYawSpeed() { return 90.0f; } //120.0f 90.0f
+	virtual float MaxYawSpeed() { return (!m_bBulletResistanceBroken ? advisor_bulletresistance_speed.GetFloat() : advisor_speed.GetFloat()); } //120.0f 90.0f
+
+	virtual void LoadInitAttributes(void);
 	
 	virtual Class_T Classify();
 
@@ -192,6 +209,21 @@ public:
 
 	void MovetoTarget(Vector vecTarget);
 
+	//bullet resistance
+	CTakeDamageInfo		BulletResistanceLogic(const CTakeDamageInfo& info, trace_t* ptr);
+	virtual bool		PassesDamageFilter(const CTakeDamageInfo& info);
+	bool				m_bBulletResistanceBroken;
+	bool				m_bBulletResistanceOutlineDisabled;
+	int					OnTakeDamage_Alive(const CTakeDamageInfo& info);
+	void				TraceAttack(const CTakeDamageInfo& inputInfo, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator);
+
+private:
+	int					m_iSpriteTexture;
+	int					m_iOutlineRed;
+	int					m_iOutlineBlue;
+	bool				m_bDefenseTeamsDown;
+
+public:
 #endif
 
 	virtual void PainSound( const CTakeDamageInfo &info );
@@ -356,6 +388,9 @@ BEGIN_DATADESC( CNPC_Advisor )
 	DEFINE_FIELD( m_vSavedLeadVel, FIELD_VECTOR ),
 
 	DEFINE_FIELD(m_vecIdeal, FIELD_VECTOR),
+	DEFINE_FIELD(m_bBulletResistanceBroken, FIELD_BOOLEAN),
+	DEFINE_FIELD(m_bBulletResistanceOutlineDisabled, FIELD_BOOLEAN),
+	DEFINE_FIELD(m_bDefenseTeamsDown, FIELD_BOOLEAN),
 
 	DEFINE_OUTPUT( m_OnPickingThrowable, "OnPickingThrowable" ),
 	DEFINE_OUTPUT( m_OnThrowWarn, "OnThrowWarn" ),
@@ -418,8 +453,22 @@ void CNPC_Advisor::Spawn()
 	m_flFieldOfView = 0.2; //VIEW_FIELD_FULL
 	SetViewOffset( Vector( 0, 0, 80 ) );		// Position of the eyes relative to NPC's origin.
 
-	SetBloodColor( BLOOD_COLOR_GREEN );
 	m_NPCState = NPC_STATE_NONE;
+
+#if NPC_ADVISOR_HAS_BEHAVIOR
+	m_bDefenseTeamsDown = false;
+	m_iOutlineRed = 0;
+	m_iOutlineBlue = 255;
+	m_bBulletResistanceOutlineDisabled = false;
+
+	m_bBulletResistanceBroken = advisor_disablebulletresistance.GetBool();
+	if (!m_bBulletResistanceBroken)
+	{
+		m_denyOutlines = true;
+		Vector outline = Vector(m_iOutlineRed, 84, m_iOutlineBlue);
+		GiveOutline(outline);
+	}
+#endif
 
 	//CapabilitiesClear();
 	CapabilitiesAdd(bits_CAP_INNATE_MELEE_ATTACK1);
@@ -433,6 +482,223 @@ void CNPC_Advisor::Spawn()
 
 
 #if NPC_ADVISOR_HAS_BEHAVIOR
+
+void CNPC_Advisor::LoadInitAttributes()
+{
+	if (m_pAttributes != NULL)
+	{
+		int disableBulletResistance = m_pAttributes->GetInt("disable_bullet_resistance", 0);
+		bool showOutlines = m_pAttributes->GetBool("has_outlines", 0);
+
+		if (disableBulletResistance == 0)
+		{
+			if (showOutlines)
+			{
+				m_denyOutlines = true;
+				RemoveGlowEffect();
+			}
+
+			if (m_bBulletResistanceBroken)
+			{
+				m_bBulletResistanceBroken = false;
+			}
+		}
+		else if (disableBulletResistance == 1)
+		{
+			if (showOutlines)
+			{
+				m_denyOutlines = false;
+			}
+
+			if (!m_bBulletResistanceBroken)
+			{
+				m_bBulletResistanceBroken = true;
+			}
+		}
+
+		bool disableBulletResistanceOutline = m_pAttributes->GetBool("disable_bullet_resistance_outline", 0);
+
+		if (disableBulletResistanceOutline)
+		{
+			RemoveGlowEffect();
+			m_bBulletResistanceOutlineDisabled = true;
+
+			if (m_denyOutlines)
+			{
+				m_denyOutlines = false;
+			}
+		}
+	}
+
+	BaseClass::LoadInitAttributes();
+}
+
+CTakeDamageInfo CNPC_Advisor::BulletResistanceLogic(const CTakeDamageInfo& info, trace_t* ptr)
+{
+	CTakeDamageInfo outputInfo = info;
+
+	if (!m_bDefenseTeamsDown)
+	{
+		outputInfo.SetDamage(0.0f);
+		outputInfo.SetDamageType(DMG_GENERIC);
+
+		CBaseEntity* pEnt = NULL;
+		int AliveSpawners = 0;
+
+		while ((pEnt = gEntList.FindEntityByName(pEnt, "npc_maker_firefight")) != NULL)
+		{
+			CNPCMakerFirefight* pMaker = (CNPCMakerFirefight*)pEnt;
+			if (pMaker)
+			{
+				if (!pMaker->m_bDisabled)
+				{
+					AliveSpawners++;
+				}
+			}
+		}
+
+		if (AliveSpawners > 0)
+		{
+			return outputInfo;
+		}
+		else
+		{
+			m_bDefenseTeamsDown = true;
+			EmitSound("NPC_Advisor.ScreenVx02");
+		}
+	}
+
+	int shieldhealth = GetMaxHealth() * 0.5;
+
+	if ((GetHealth() > shieldhealth) && !m_bBulletResistanceBroken)
+	{
+		if (!(outputInfo.GetDamageType() & (DMG_GENERIC)))
+		{
+			SetBloodColor(BLOOD_COLOR_MECH);
+			if (ptr != NULL)
+			{
+				CPVSFilter filter(ptr->endpos);
+				te->ArmorRicochet(filter, 0.0, &ptr->endpos, &ptr->plane.normal);
+			}
+
+			//squad doesn't cause any damage unless our shield is down.
+			if (!(IRelationType(outputInfo.GetAttacker()) == D_LI))
+			{
+				if (outputInfo.GetDamageType() & DMG_BLAST)
+				{
+					outputInfo.SetDamage(outputInfo.GetDamage() * sk_combine_ace_shielddamage_explosive_multiplier.GetFloat());
+				}
+				else if (outputInfo.GetDamageType() & DMG_SHOCK)
+				{
+					outputInfo.SetDamage(outputInfo.GetDamage() * sk_combine_ace_shielddamage_shock_multiplier.GetFloat());
+				}
+				else
+				{
+					if (g_pGameRules->GetSkillLevel() < SKILL_VERYHARD)
+					{
+						outputInfo.SetDamage(sk_combine_ace_shielddamage_normal.GetFloat());
+					}
+					else if (g_pGameRules->GetSkillLevel() >= SKILL_VERYHARD)
+					{
+						outputInfo.SetDamage(sk_combine_ace_shielddamage_hard.GetFloat());
+					}
+				}
+
+				outputInfo.AddDamageType(DMG_NEVERGIB);
+			}
+			else
+			{
+				outputInfo.SetDamage(0.0f);
+			}
+		}
+
+		if (!m_bBulletResistanceOutlineDisabled)
+		{
+			int damageAdj = (outputInfo.GetDamageType() & (DMG_SHOCK | DMG_BLAST)) ? 15 : 6;
+			DevMsg("BOSSDamageAdjustOutline: %i\n", damageAdj);
+
+			m_iOutlineRed = clamp(m_iOutlineRed + (outputInfo.GetDamage() + damageAdj), 0, 255);
+			m_iOutlineBlue = clamp(m_iOutlineBlue - (outputInfo.GetDamage() + damageAdj), 0, 255);
+
+			Vector outline = Vector(m_iOutlineRed, 84, m_iOutlineBlue);
+			GiveOutline(outline);
+		}
+	}
+
+	if ((GetHealth() <= shieldhealth) && !m_bBulletResistanceBroken)
+	{
+		//this is so rpg rockets don't instantly kill us when our shield breaks.
+		outputInfo.SetDamage(0.0f);
+		outputInfo.SetDamageType(DMG_GENERIC);
+		CBroadcastRecipientFilter filter2;
+		te->BeamRingPoint(filter2, 0.0, GetAbsOrigin() + Vector(0, 0, 16), 16, 500, m_iSpriteTexture, 0, 0, 0, 0.2, 24, 16, 0, 254, 189, 255, 50, 0);
+		SetHealth(GetMaxHealth());
+		//i'm going to regret this
+		EmitSound("Weapon_StriderBuster.Detonate");
+		EmitSound("NPC_Advisor.Scream");
+		SetBloodColor(BLOOD_COLOR_GREEN);
+		RemoveGlowEffect();
+		m_bBulletResistanceBroken = true;
+	}
+
+	if (m_bBulletResistanceBroken)
+	{
+		int randAttack = random->RandomInt(0, 8);
+
+		if (randAttack < 6)
+		{
+			SetSchedule(SCHED_TAKE_COVER_FROM_ENEMY);
+		}
+		else
+		{
+			SetSchedule(SCHED_RUN_FROM_ENEMY);
+		}
+	}
+
+	return outputInfo;
+}
+
+//---------------------------------------------------------
+//---------------------------------------------------------
+void CNPC_Advisor::TraceAttack(const CTakeDamageInfo& inputInfo, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator)
+{
+	// special interaction with combine balls
+	if (!m_bBulletResistanceBroken)
+	{
+		CTakeDamageInfo bulletResistanceInfo = BulletResistanceLogic(inputInfo, ptr);
+		BaseClass::TraceAttack(bulletResistanceInfo, vecDir, ptr, pAccumulator);
+	}
+	else
+	{
+		BaseClass::TraceAttack(inputInfo, vecDir, ptr, pAccumulator);
+	}
+}
+
+int CNPC_Advisor::OnTakeDamage_Alive(const CTakeDamageInfo& info)
+{
+	// special interaction with combine balls
+	if (!m_bBulletResistanceBroken)
+	{
+		CTakeDamageInfo bulletResistanceInfo = BulletResistanceLogic(info, NULL);
+		return BaseClass::OnTakeDamage_Alive(bulletResistanceInfo);
+	}
+	else
+	{
+		return BaseClass::OnTakeDamage_Alive(info);
+	}
+}
+
+//-----------------------------------------------------------------------------
+bool CNPC_Advisor::PassesDamageFilter(const CTakeDamageInfo& info)
+{
+	if (UTIL_IsAR2CombineBall(info.GetInflictor()) && !m_bBulletResistanceBroken)
+	{
+		return false;
+	}
+
+	return BaseClass::PassesDamageFilter(info);
+}
+
 //-----------------------------------------------------------------------------
 // comparison function for qsort used below. Compares "StagingPriority" keyfield
 //-----------------------------------------------------------------------------
@@ -492,8 +758,6 @@ void CNPC_Advisor::Activate()
 
 	// positions loaded, null out the m_hvStagedEnts array with exactly as many null spaces
 	m_hvStagedEnts.SetCount( m_hvStagingPositions.Count() );
-
-	m_iStagingNum = advisor_staging_num.GetInt();
 
 	AssertMsg(m_hvStagingPositions.Count() > 0, "You did not specify any staging positions in the advisor's staging_ent_names !");
 
@@ -760,7 +1024,7 @@ void CNPC_Advisor::StartTask( const Task_t *pTask )
 		{
 			StartLevitatingObjects();
 
-			m_flThrowPhysicsTime = gpGlobals->curtime + advisor_throw_rate.GetFloat();
+			m_flThrowPhysicsTime = !m_bBulletResistanceBroken ? gpGlobals->curtime + advisor_bulletresistance_throw_rate.GetFloat() : gpGlobals->curtime + advisor_throw_rate.GetFloat();
 			
 			break;
 		}
@@ -842,7 +1106,7 @@ void CNPC_Advisor::MovetoTarget(Vector vecTarget)
 	else if (flSpeed > 100)
 	{
 		VectorNormalize(m_vecIdeal);
-		m_vecIdeal = m_vecIdeal * 100;
+		m_vecIdeal = m_vecIdeal * MaxYawSpeed();
 	}
 
 	Vector t = vecTarget - GetAbsOrigin();
@@ -857,297 +1121,306 @@ void CNPC_Advisor::MovetoTarget(Vector vecTarget)
 //-----------------------------------------------------------------------------
 void CNPC_Advisor::RunTask( const Task_t *pTask )
 {
-	//Needed for the npc face constantly at player
-	GetMotor()->SetIdealYawToTargetAndUpdate(GetEnemyLKP(), AI_KEEP_YAW_SPEED);
-	if (GetEnemy() && GetEnemy()->IsAlive())
+	if (!IsInAScript())
 	{
-		MovetoTarget(GetEnemy()->GetAbsOrigin());
+		//Needed for the npc face constantly at player
+		GetMotor()->SetIdealYawToTargetAndUpdate(GetEnemyLKP(), AI_KEEP_YAW_SPEED);
+		if (GetEnemy() && GetEnemy()->IsAlive())
+		{
+			MovetoTarget(GetEnemy()->GetAbsOrigin());
+		}
 	}
 
-	switch ( pTask->iTask )
+	switch (pTask->iTask)
 	{
-		// Raise up the objects that we found and then hold them.
+			// Raise up the objects that we found and then hold them.
 		case TASK_ADVISOR_LEVITATE_OBJECTS:
 		{
-			float flTimeToThrow = m_flThrowPhysicsTime - gpGlobals->curtime;
-			if ( flTimeToThrow < 0 )
+			if (!IsInAScript())
 			{
-				TaskComplete();
-				return;
-			}
-						
-			// set the top and bottom on the levitation volume from the entities. If we don't have
-			// both, zero it out so that we can use the old-style simpler mechanism.
-			if ( m_hLevitateGoal1 && m_hLevitateGoal2 )
-			{
-				m_levitateCallback.m_vecGoalPos1 = m_hLevitateGoal1->GetAbsOrigin();
-				m_levitateCallback.m_vecGoalPos2 = m_hLevitateGoal2->GetAbsOrigin();
-				// swap them if necessary (1 must be the bottom)
-				if (m_levitateCallback.m_vecGoalPos1.z > m_levitateCallback.m_vecGoalPos2.z)
+				float flTimeToThrow = m_flThrowPhysicsTime - gpGlobals->curtime;
+				if (flTimeToThrow < 0)
 				{
-					//swap(m_levitateCallback.m_vecGoalPos1,m_levitateCallback.m_vecGoalPos2);
+					TaskComplete();
+					return;
 				}
 
-				m_levitateCallback.m_flFloat = 0.06f; // this is an absolute accumulation upon gravity
-			}
-			else
-			{
-				m_levitateCallback.m_vecGoalPos1.Invalidate(); 
-				m_levitateCallback.m_vecGoalPos2.Invalidate(); 
-
-				// the below two stanzas are used for old-style floating, which is linked 
-				// to float up before thrown and down after
-				if ( flTimeToThrow > 2.0f )
+				// set the top and bottom on the levitation volume from the entities. If we don't have
+				// both, zero it out so that we can use the old-style simpler mechanism.
+				if (m_hLevitateGoal1 && m_hLevitateGoal2)
 				{
-					m_levitateCallback.m_flFloat = 1.06f; 
+					m_levitateCallback.m_vecGoalPos1 = m_hLevitateGoal1->GetAbsOrigin();
+					m_levitateCallback.m_vecGoalPos2 = m_hLevitateGoal2->GetAbsOrigin();
+					// swap them if necessary (1 must be the bottom)
+					if (m_levitateCallback.m_vecGoalPos1.z > m_levitateCallback.m_vecGoalPos2.z)
+					{
+						//swap(m_levitateCallback.m_vecGoalPos1,m_levitateCallback.m_vecGoalPos2);
+					}
+
+					m_levitateCallback.m_flFloat = 0.06f; // this is an absolute accumulation upon gravity
 				}
 				else
 				{
-					m_levitateCallback.m_flFloat = 0.94f; 
+					m_levitateCallback.m_vecGoalPos1.Invalidate();
+					m_levitateCallback.m_vecGoalPos2.Invalidate();
+
+					// the below two stanzas are used for old-style floating, which is linked 
+					// to float up before thrown and down after
+					if (flTimeToThrow > 2.0f)
+					{
+						m_levitateCallback.m_flFloat = 1.06f;
+					}
+					else
+					{
+						m_levitateCallback.m_flFloat = 0.94f;
+					}
 				}
-			}
 
-			/*
-			// Draw boxes around the objects we're levitating.
-			for ( int i = 0; i < m_physicsObjects.Count(); i++ )
-			{
-				CBaseEntity *pEnt = m_physicsObjects.Element( i );
-				if ( !pEnt )
-					continue;	// The prop has been broken!
-
-				IPhysicsObject *pPhys = pEnt->VPhysicsGetObject();
-				if ( pPhys && pPhys->IsMoveable() )
+				/*
+				// Draw boxes around the objects we're levitating.
+				for ( int i = 0; i < m_physicsObjects.Count(); i++ )
 				{
-					NDebugOverlay::Box( pEnt->GetAbsOrigin(), pEnt->CollisionProp()->OBBMins(), pEnt->CollisionProp()->OBBMaxs(), 0, 255, 0, 1, 0.1 );
-				}
-			}*/
+					CBaseEntity *pEnt = m_physicsObjects.Element( i );
+					if ( !pEnt )
+						continue;	// The prop has been broken!
 
+					IPhysicsObject *pPhys = pEnt->VPhysicsGetObject();
+					if ( pPhys && pPhys->IsMoveable() )
+					{
+						NDebugOverlay::Box( pEnt->GetAbsOrigin(), pEnt->CollisionProp()->OBBMins(), pEnt->CollisionProp()->OBBMaxs(), 0, 255, 0, 1, 0.1 );
+					}
+				}*/
+			}
 			break;
-		}	
-		
+		}
+
 		// Pick a random object that we are levitating. If we have a clear LOS from that object
 		// to our enemy's eyes, choose that one to throw. Otherwise, keep looking.
 		case TASK_ADVISOR_STAGE_OBJECTS:
-		{	
-
-			if (m_iStagingNum > m_hvStagingPositions.Count())
+		{
+			if (!IsInAScript())
 			{
-				Warning( "Advisor tries to stage %d objects but only has %d positions named %s! Overriding.\n", m_iStagingNum, m_hvStagingPositions.Count(), m_iszStagingEntities );
-				m_iStagingNum = m_hvStagingPositions.Count() ;
-			}
+				m_iStagingNum = !m_bBulletResistanceBroken ? advisor_bulletresistance_staging_num.GetInt() : advisor_staging_num.GetInt();
 
-
-// advisor_staging_num
-
-			// in the future i'll distribute the staging chronologically. For now, yank all the objects at once.
-			if (m_hvStagedEnts.Count() < m_iStagingNum)
-			{	
-				// pull another object
-				bool bDesperate = m_flStagingEnd - gpGlobals->curtime < 0.50f; // less than one half second left
-				CBaseEntity *pThrowable = PickThrowable(!bDesperate);
-				if (pThrowable)
+				if (m_iStagingNum > m_hvStagingPositions.Count())
 				{
-					// don't let the player take it from me
-					IPhysicsObject *pPhys = pThrowable->VPhysicsGetObject();
-					if ( pPhys )
+					Warning("Advisor tries to stage %d objects but only has %d positions named %s! Overriding.\n", m_iStagingNum, m_hvStagingPositions.Count(), m_iszStagingEntities);
+					m_iStagingNum = m_hvStagingPositions.Count();
+				}
+
+
+				// advisor_staging_num
+
+							// in the future i'll distribute the staging chronologically. For now, yank all the objects at once.
+				if (m_hvStagedEnts.Count() < m_iStagingNum)
+				{
+					// pull another object
+					bool bDesperate = m_flStagingEnd - gpGlobals->curtime < 0.50f; // less than one half second left
+					CBaseEntity* pThrowable = PickThrowable(!bDesperate);
+					if (pThrowable)
 					{
-						// no pickup!
-						pPhys->SetGameFlags(pPhys->GetGameFlags() | FVPHYSICS_NO_PLAYER_PICKUP); 
+						// don't let the player take it from me
+						IPhysicsObject* pPhys = pThrowable->VPhysicsGetObject();
+						if (pPhys)
+						{
+							// no pickup!
+							pPhys->SetGameFlags(pPhys->GetGameFlags() | FVPHYSICS_NO_PLAYER_PICKUP);
+						}
+
+						m_hvStagedEnts.AddToTail(pThrowable);
+						Write_BeamOn(pThrowable);
+
+
+						DispatchParticleEffect("advisor_object_charge", PATTACH_ABSORIGIN_FOLLOW,
+							pThrowable, 0,
+							false);
 					}
-
-					m_hvStagedEnts.AddToTail( pThrowable );
-					Write_BeamOn(pThrowable);
-
-					
-					DispatchParticleEffect( "advisor_object_charge", PATTACH_ABSORIGIN_FOLLOW, 
-							pThrowable, 0, 
-							false  );
 				}
-			}
 
 
-			Assert(m_hvStagedEnts.Count() <= m_hvStagingPositions.Count());
+				Assert(m_hvStagedEnts.Count() <= m_hvStagingPositions.Count());
 
-			// yank all objects into place
-			for (int ii = m_hvStagedEnts.Count() - 1 ; ii >= 0 ; --ii)
-			{
-
-				// just ignore lost objects (if the player destroys one, that's fine, leave a hole)
-				CBaseEntity *pThrowable = m_hvStagedEnts[ii];
-				if (pThrowable)
+				// yank all objects into place
+				for (int ii = m_hvStagedEnts.Count() - 1; ii >= 0; --ii)
 				{
-					PullObjectToStaging(pThrowable, m_hvStagingPositions[ii]->GetAbsOrigin());
+
+					// just ignore lost objects (if the player destroys one, that's fine, leave a hole)
+					CBaseEntity* pThrowable = m_hvStagedEnts[ii];
+					if (pThrowable)
+					{
+						PullObjectToStaging(pThrowable, m_hvStagingPositions[ii]->GetAbsOrigin());
+					}
+				}
+
+				// are we done yet?
+				if (gpGlobals->curtime > m_flStagingEnd)
+				{
+					TaskComplete();
+					break;
 				}
 			}
-
-			// are we done yet?
-			if (gpGlobals->curtime > m_flStagingEnd)
-			{
-				TaskComplete();
-				break;
-			}
-			
 			break;
 		}
 
 		// Fling the object that we picked at our enemy's eyes!
 		case TASK_ADVISOR_BARRAGE_OBJECTS:
 		{
-
-			Assert(m_hvStagedEnts.Count() > 0);
-
-			// do I still have an enemy?
-			if ( !GetEnemy() )
+			if (!IsInAScript())
 			{
-				// no? bail all the objects. 
-				for (int ii = m_hvStagedEnts.Count() - 1 ; ii >=0 ; --ii)
-				{
+				Assert(m_hvStagedEnts.Count() > 0);
 
-					IPhysicsObject *pPhys = m_hvStagedEnts[ii]->VPhysicsGetObject();
-					if ( pPhys )
-					{  
-						//Removes the nopickup flag from the prop
-						pPhys->SetGameFlags(pPhys->GetGameFlags() & (~FVPHYSICS_NO_PLAYER_PICKUP)); 
+				// do I still have an enemy?
+				if (!GetEnemy())
+				{
+					// no? bail all the objects. 
+					for (int ii = m_hvStagedEnts.Count() - 1; ii >= 0; --ii)
+					{
+
+						IPhysicsObject* pPhys = m_hvStagedEnts[ii]->VPhysicsGetObject();
+						if (pPhys)
+						{
+							//Removes the nopickup flag from the prop
+							pPhys->SetGameFlags(pPhys->GetGameFlags() & (~FVPHYSICS_NO_PLAYER_PICKUP));
+						}
+					}
+
+					Write_AllBeamsOff();
+					m_hvStagedEnts.RemoveAll();
+
+					TaskFail("Lost enemy");
+					return;
+				}
+
+				// do I still have something to throw at the player?
+				CBaseEntity* pThrowable = m_hvStagedEnts[0];
+				while (!pThrowable)
+				{	// player has destroyed whatever I planned to hit him with, get something else
+					if (m_hvStagedEnts.Count() > 0)
+					{
+						pThrowable = ThrowObjectPrepare();
+					}
+					else
+					{
+						TaskComplete();
+						break;
 					}
 				}
 
-				Write_AllBeamsOff();
-				m_hvStagedEnts.RemoveAll();
-
-				TaskFail( "Lost enemy" );
-				return;
-			}
-
-			// do I still have something to throw at the player?
-			CBaseEntity *pThrowable = m_hvStagedEnts[0];
-			while (!pThrowable) 
-			{	// player has destroyed whatever I planned to hit him with, get something else
-                if (m_hvStagedEnts.Count() > 0)
+				// If we've gone NULL, then opt out
+				if (pThrowable == NULL)
 				{
-					pThrowable = ThrowObjectPrepare();
+					TaskComplete();
+					break;
+				}
+
+				if ((gpGlobals->curtime > m_flThrowPhysicsTime - advisor_throw_lead_prefetch_time.GetFloat()) &&
+					!m_vSavedLeadVel.IsValid())
+				{
+					// save off the velocity we will use to lead the player a little early, so that if he jukes 
+					// at the last moment he'll have a better shot of dodging the object.
+					m_vSavedLeadVel = GetEnemy()->GetAbsVelocity();
+				}
+
+				// if it's time to throw something, throw it and go on to the next one. 
+				if (gpGlobals->curtime > m_flThrowPhysicsTime)
+				{
+					IPhysicsObject* pPhys = pThrowable->VPhysicsGetObject();
+					Assert(pPhys);
+
+					//Removes the nopickup flag from the prop
+					pPhys->SetGameFlags(pPhys->GetGameFlags() & (~FVPHYSICS_NO_PLAYER_PICKUP));
+					HurlObjectAtPlayer(pThrowable, Vector(0, 0, 0)/*m_vSavedLeadVel*/);
+					m_flLastThrowTime = gpGlobals->curtime;
+					m_flThrowPhysicsTime = gpGlobals->curtime + 0.75f;
+					// invalidate saved lead for next time
+					m_vSavedLeadVel.Invalidate();
+
+					EmitSound("NPC_Advisor.Blast");
+
+					Write_BeamOff(m_hvStagedEnts[0]);
+					m_hvStagedEnts.Remove(0);
+					if (!ThrowObjectPrepare())
+					{
+						TaskComplete();
+						break;
+					}
 				}
 				else
 				{
-					TaskComplete();
-					break;
+					// wait, bide time
+					// PullObjectToStaging(pThrowable, m_hvStagingPositions[ii]->GetAbsOrigin());
 				}
 			}
-
-			// If we've gone NULL, then opt out
-			if ( pThrowable == NULL )
-			{
-				TaskComplete();
-				break;
-			}
-
-			if ( (gpGlobals->curtime > m_flThrowPhysicsTime - advisor_throw_lead_prefetch_time.GetFloat()) && 
-				!m_vSavedLeadVel.IsValid() )
-			{
-				// save off the velocity we will use to lead the player a little early, so that if he jukes 
-				// at the last moment he'll have a better shot of dodging the object.
-				m_vSavedLeadVel = GetEnemy()->GetAbsVelocity();
-			}
-
-			// if it's time to throw something, throw it and go on to the next one. 
-			if (gpGlobals->curtime > m_flThrowPhysicsTime)
-			{
-				IPhysicsObject *pPhys = pThrowable->VPhysicsGetObject();
-				Assert(pPhys);
-
-				//Removes the nopickup flag from the prop
-				pPhys->SetGameFlags(pPhys->GetGameFlags() & (~FVPHYSICS_NO_PLAYER_PICKUP));
-				HurlObjectAtPlayer(pThrowable,Vector(0,0,0)/*m_vSavedLeadVel*/);
-				m_flLastThrowTime = gpGlobals->curtime;
-				m_flThrowPhysicsTime = gpGlobals->curtime + 0.75f;
-				// invalidate saved lead for next time
-				m_vSavedLeadVel.Invalidate();
-
-				EmitSound( "NPC_Advisor.Blast" );
-
-				Write_BeamOff(m_hvStagedEnts[0]);
-				m_hvStagedEnts.Remove(0);
-				if (!ThrowObjectPrepare())
-				{
-					TaskComplete();
-					break;
-				}
-			}
-			else
-			{	
-				// wait, bide time
-				// PullObjectToStaging(pThrowable, m_hvStagingPositions[ii]->GetAbsOrigin());
-			}
-		
 			break;
 		}
 
 		case TASK_ADVISOR_PIN_PLAYER:
 		{
-			
-			// bail out if the pin entity went away.
-			CBaseEntity *pPinEnt = m_hPlayerPinPos;
-			if (!pPinEnt)
+			if (!IsInAScript())
 			{
-				GetEnemy()->SetGravity(1.0f);
-				GetEnemy()->SetMoveType( MOVETYPE_WALK );
-				Write_BeamOff(GetEnemy());
-				beamonce = 1;
-				TaskComplete();
-				break;
+				// bail out if the pin entity went away.
+				CBaseEntity* pPinEnt = m_hPlayerPinPos;
+				if (!pPinEnt)
+				{
+					GetEnemy()->SetGravity(1.0f);
+					GetEnemy()->SetMoveType(MOVETYPE_WALK);
+					Write_BeamOff(GetEnemy());
+					beamonce = 1;
+					TaskComplete();
+					break;
+				}
+
+				// failsafe: don't do this for more than ten seconds.
+				if (gpGlobals->curtime > m_playerPinFailsafeTime)
+				{
+					GetEnemy()->SetGravity(1.0f);
+					GetEnemy()->SetMoveType(MOVETYPE_WALK);
+					Write_BeamOff(GetEnemy());
+					beamonce = 1;
+					Warning("Advisor did not leave PIN PLAYER mode. Aborting due to ten second failsafe!\n");
+					TaskFail("Advisor did not leave PIN PLAYER mode. Aborting due to ten second failsafe!\n");
+					break;
+				}
+
+				// if the player isn't the enemy, bail out.
+				if (!GetEnemy()->IsPlayer())
+				{
+					GetEnemy()->SetGravity(1.0f);
+					GetEnemy()->SetMoveType(MOVETYPE_WALK);
+					Write_BeamOff(GetEnemy());
+					beamonce = 1;
+					TaskFail("Player is not the enemy?!");
+					break;
+				}
+
+				//FUgly, yet I can't think right now a quicker solution to only make one beam on this loop case
+				if (beamonce == 1)
+				{
+					Write_BeamOn(GetEnemy());
+					beamonce++;
+				}
+
+				GetEnemy()->SetMoveType(MOVETYPE_NONE); //MOVETYPE_FLY
+				GetEnemy()->SetGravity(0);
+
+				// use exponential falloff to peg the player to the pin point
+				const Vector& desiredPos = pPinEnt->GetAbsOrigin();
+				const Vector& playerPos = GetEnemy()->GetAbsOrigin();
+
+				Vector displacement = desiredPos - playerPos;
+
+				float desiredDisplacementLen = ExponentialDecay(0.250f, gpGlobals->frametime);// * sqrt(displacementLen);			
+
+				Vector nuPos = playerPos + (displacement * (1.0f - desiredDisplacementLen));
+
+				GetEnemy()->SetAbsOrigin(nuPos);
 			}
-
-			// failsafe: don't do this for more than ten seconds.
-			if ( gpGlobals->curtime > m_playerPinFailsafeTime )
-			{
-				GetEnemy()->SetGravity(1.0f);
-				GetEnemy()->SetMoveType( MOVETYPE_WALK );
-				Write_BeamOff(GetEnemy());
-				beamonce = 1;
-				Warning( "Advisor did not leave PIN PLAYER mode. Aborting due to ten second failsafe!\n" );
-				TaskFail("Advisor did not leave PIN PLAYER mode. Aborting due to ten second failsafe!\n");
-				break;
-			}
-
-			// if the player isn't the enemy, bail out.
-			if ( !GetEnemy()->IsPlayer() )
-			{
-				GetEnemy()->SetGravity(1.0f);
-				GetEnemy()->SetMoveType( MOVETYPE_WALK );
-				Write_BeamOff(GetEnemy());
-				beamonce = 1;
-				TaskFail( "Player is not the enemy?!" );
-				break;
-			}
-			
-			//FUgly, yet I can't think right now a quicker solution to only make one beam on this loop case
-			if (beamonce == 1)
-			{
-				Write_BeamOn(GetEnemy());
-				beamonce++;
-			}
-			
-			GetEnemy()->SetMoveType( MOVETYPE_NONE ); //MOVETYPE_FLY
-			GetEnemy()->SetGravity(0);
-
-			// use exponential falloff to peg the player to the pin point
-			const Vector &desiredPos = pPinEnt->GetAbsOrigin();
-			const Vector &playerPos = GetEnemy()->GetAbsOrigin();
-
-			Vector displacement = desiredPos - playerPos;
-
-			float desiredDisplacementLen = ExponentialDecay(0.250f,gpGlobals->frametime);// * sqrt(displacementLen);			
-
-			Vector nuPos = playerPos + (displacement * (1.0f - desiredDisplacementLen));
-
-			GetEnemy()->SetAbsOrigin( nuPos );
-
 			break;
-			
 		}
 
 		default:
 		{
-			BaseClass::RunTask( pTask );
+			BaseClass::RunTask(pTask);
 		}
 	}
 }
@@ -1335,7 +1608,7 @@ void CNPC_Advisor::HurlObjectAtPlayer( CBaseEntity *pEnt, const Vector &leadVel 
 	Vector vecDelta = vecEnemyPos - vecObjOrigin;
 	float flDist = vecDelta.Length();
 
-	float flVelocity = advisor_throw_velocity.GetFloat();
+	float flVelocity = !m_bBulletResistanceBroken ? advisor_bulletresistance_throw_velocity.GetFloat() : advisor_throw_velocity.GetFloat();
 
 	if ( flVelocity == 0 )
 	{
@@ -1563,9 +1836,9 @@ int	CNPC_Advisor::OnTakeDamage( const CTakeDamageInfo &info )
 {
 	// Clip our max 
 	CTakeDamageInfo newInfo = info;
-	if ( newInfo.GetDamage() > 20.0f )
+	if ( newInfo.GetDamage() > advisor_max_damage.GetFloat())
 	{
-		newInfo.SetDamage( 20.0f );
+		newInfo.SetDamage(advisor_max_damage.GetFloat());
 	}
 
 	// Hack to make him constantly flinch
@@ -1749,11 +2022,14 @@ void CNPC_Advisor::Precache()
 	PrecacheScriptSound( "NPC_Advisor.Scream" ); //NPC_Advisor.Die
 	PrecacheScriptSound( "NPC_Advisor.Pain" );
 	PrecacheScriptSound( "NPC_Advisor.ObjectChargeUp" );
+	PrecacheScriptSound("Weapon_StriderBuster.Detonate");
 	PrecacheParticleSystem( "Advisor_Psychic_Beam" );
 	PrecacheParticleSystem( "advisor_object_charge" );
 	PrecacheModel("sprites/greenglow1.vmt");
 
 	PrecacheScriptSound("NPC_Stalker.Hit");
+
+	m_iSpriteTexture = PrecacheModel("sprites/shockwave.vmt");
 }
 
 
@@ -1773,7 +2049,10 @@ void CNPC_Advisor::AlertSound()
 
 void CNPC_Advisor::PainSound( const CTakeDamageInfo &info )
 {
-	EmitSound( "NPC_Advisor.Pain" );
+	if (m_bBulletResistanceBroken)
+	{
+		EmitSound("NPC_Advisor.Pain");
+	}
 }
 
 
@@ -1823,7 +2102,14 @@ bool CNPC_Advisor::QueryHearSound( CSound *pSound )
 //-----------------------------------------------------------------------------
 void CNPC_Advisor::InputSetThrowRate( inputdata_t &inputdata )
 {
-	advisor_throw_rate.SetValue(inputdata.value.Float());
+	if (!m_bBulletResistanceBroken)
+	{
+		advisor_bulletresistance_throw_rate.SetValue(inputdata.value.Float());
+	}
+	else
+	{
+		advisor_throw_rate.SetValue(inputdata.value.Float());
+	}
 }
 
 //-----------------------------------------------------------------------------

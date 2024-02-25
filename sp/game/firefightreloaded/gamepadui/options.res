@@ -914,6 +914,20 @@
 				"textprecision" "2"
 			}
             
+            "AdvisorSpeed"
+			{
+				"text"			"#GameUI_AdvisorSpeed"
+				"type"			"slideyslide"
+				"convar"		"advisor_speed"
+				"advanced"		"1"
+
+				"min"			"0"
+				"max"			"150"
+				"step"			"1"
+
+				"textprecision" "2"
+			}
+            
             "AdvisorThrowVelocity"
 			{
 				"text"			"#GameUI_AdvisorThrowVelocity"
@@ -982,6 +996,76 @@
 				"step"			"1"
 
 				"textprecision" "2"
+			}
+            
+            "AdvisorBulletResistThrowVelocity"
+			{
+				"text"			"#GameUI_AdvisorBulletResistThrowVelocity"
+				"type"			"slideyslide"
+				"convar"		"advisor_bulletresistance_throw_velocity"
+				"advanced"		"1"
+
+				"min"			"750"
+				"max"			"4500"
+				"step"			"1"
+
+				"textprecision" "2"
+			}
+            
+            "AdvisorBulletResistThrowRate"
+			{
+				"text"			"#GameUI_AdvisorBulletResistThrowRate"
+				"type"			"slideyslide"
+				"convar"		"advisor_bulletresistance_throw_rate"
+				"advanced"		"1"
+
+				"min"			"1"
+				"max"			"10"
+				"step"			"1"
+
+				"textprecision" "2"
+			}
+            
+            "AdvisorBulletResistStagingNum"
+			{
+				"text"			"#GameUI_AdvisorBulletResistStagingNum"
+				"type"			"slideyslide"
+				"convar"		"advisor_bulletresistance_staging_num"
+				"advanced"		"1"
+
+				"min"			"1"
+				"max"			"8"
+				"step"			"1"
+
+				"textprecision" "2"
+			}
+            
+            "AdvisorBulletResistSpeed"
+			{
+				"text"			"#GameUI_AdvisorBulletResistSpeed"
+				"type"			"slideyslide"
+				"convar"		"advisor_bulletresistance_speed"
+				"advanced"		"1"
+
+				"min"			"0"
+				"max"			"150"
+				"step"			"1"
+
+				"textprecision" "2"
+			}
+            
+            "AdvisorBulletResistance"
+			{
+				"text"			"#GameUI_AdvisorBulletResistance"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"advisor_disablebulletresistance"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
 			}
 			
 			"AdvancedHeader"
