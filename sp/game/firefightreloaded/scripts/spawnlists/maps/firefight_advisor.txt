@@ -47,43 +47,31 @@
 	}
 	"9"
 	{
-		"classname"		"npc_zombine"
+		"classname"		"npc_assassin"
 		"preset"		"0"
 		"rare"			"1"
 	}
 	"10"
 	{
-		"classname"		"npc_assassin"
+		"classname"		"npc_rollermine"
 		"preset"		"0"
 		"rare"			"1"
 	}
 	"11"
 	{
-		"classname"		"npc_rollermine"
+		"classname"		"npc_cscanner"
 		"preset"		"0"
 		"rare"			"1"
 	}
 	"12"
 	{
-		"classname"		"npc_cscanner"
+		"classname"		"npc_strider"
 		"preset"		"0"
 		"rare"			"1"
 	}
 	"13"
 	{
-		"classname"		"npc_strider"
-		"preset"		"0"
-		"rare"			"1"
-	}
-	"14"
-	{
 		"classname"		"npc_manhack"
-		"preset"		"0"
-		"rare"			"1"
-	}
-	"15"
-	{
-		"classname"		"npc_playerbot"
 		"preset"		"0"
 		"rare"			"1"
 	}

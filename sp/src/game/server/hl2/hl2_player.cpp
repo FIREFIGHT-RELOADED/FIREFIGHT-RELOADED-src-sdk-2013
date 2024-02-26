@@ -1811,13 +1811,65 @@ void CHL2_Player::Spawn(void)
 		else if (IsAtMaxLevel())
 		{
 			EquipSuit();
-			GiveNamedItem("weapon_physcannon");
-			if (sv_player_grapple.GetBool())
-			{
-				GiveNamedItem("weapon_grapple");
-			}
 
-			Weapon_Switch(Weapon_OwnsThisType("weapon_physcannon"));
+			if (GlobalEntity_GetState("player_inbossbattle") == GLOBAL_OFF)
+			{
+				GiveNamedItem("weapon_physcannon");
+				if (sv_player_grapple.GetBool())
+				{
+					GiveNamedItem("weapon_grapple");
+				}
+
+				Weapon_Switch(Weapon_OwnsThisType("weapon_physcannon"));
+			}
+			else
+			{
+				IncrementArmorValue(200);
+
+				// Give the player everything!
+				BaseClass::GiveAmmo(999, "Pistol");
+				BaseClass::GiveAmmo(999, "AR2");
+				BaseClass::GiveAmmo(999, "AR2AltFire");
+				BaseClass::GiveAmmo(999, "SMG1");
+				BaseClass::GiveAmmo(999, "Buckshot");
+				BaseClass::GiveAmmo(999, "smg1_grenade");
+				BaseClass::GiveAmmo(999, "rpg_round");
+				BaseClass::GiveAmmo(999, "grenade");
+				BaseClass::GiveAmmo(999, "357");
+				BaseClass::GiveAmmo(999, "XBowBolt");
+				BaseClass::GiveAmmo(999, "Sniper");
+				BaseClass::GiveAmmo(999, "M249");
+				BaseClass::GiveAmmo(999, "slam");
+				BaseClass::GiveAmmo(999, "GaussEnergy");
+				BaseClass::GiveAmmo(999, "MP5Ammo");
+				BaseClass::GiveAmmo(999, "Railgun");
+				//#ifdef HL2_EPISODIC
+						//GiveAmmo( 999, "Hopwire" );
+				//#endif		
+				GiveNamedItem("weapon_smg1");
+				GiveNamedItem("weapon_frag");
+				GiveNamedItem("weapon_crowbar");
+				GiveNamedItem("weapon_pistol");
+				GiveNamedItem("weapon_ar2");
+				GiveNamedItem("weapon_shotgun");
+				GiveNamedItem("weapon_physcannon");
+				GiveNamedItem("weapon_bugbait");
+				GiveNamedItem("weapon_rpg");
+				GiveNamedItem("weapon_357");
+				GiveNamedItem("weapon_crossbow");
+				GiveNamedItem("weapon_sniper_rifle");
+				GiveNamedItem("weapon_m249para");
+				GiveNamedItem("weapon_slam");
+				GiveNamedItem("weapon_knife");
+				GiveNamedItem("weapon_gauss");
+				GiveNamedItem("weapon_mp5");
+				GiveNamedItem("weapon_grapple");
+				GiveNamedItem("weapon_katana");
+				GiveNamedItem("weapon_railgun");
+#ifdef HL2_EPISODIC
+				// GiveNamedItem( "weapon_magnade" );
+#endif
+			}
 		}
 		else
 		{

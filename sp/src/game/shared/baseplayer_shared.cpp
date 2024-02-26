@@ -189,16 +189,7 @@ bool CBasePlayer::IsAtMaxLevel()
 
 int CBasePlayer::GetMaxLevel()
 {
-	if (!g_fr_classic.GetBool())
-	{
-		return MAX_LEVEL;
-	}
-	else
-	{
-		return MAX_LEVEL * 15;
-	}
-
-	return 0;
+	return MAX_LEVEL;
 }
 
 float CBasePlayer::GetPlayerMaxSpeed()

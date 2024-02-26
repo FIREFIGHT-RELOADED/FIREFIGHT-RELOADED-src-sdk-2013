@@ -4121,7 +4121,7 @@ void CAI_BaseNPC::NPCThink( void )
 		m_flNextDecisionTime = 0;
 	}
 
-	if (ai_disappear.GetBool() && gpGlobals->curtime >= m_fIdleTime)
+	if (ai_disappear.GetBool() && gpGlobals->curtime >= m_fIdleTime && !m_bBoss)
 	{
 		auto* pEnemy = GetEnemy();
 		auto* pComChar = pEnemy != nullptr ? pEnemy->MyCombatCharacterPointer() : nullptr;
@@ -10939,6 +10939,7 @@ BEGIN_DATADESC( CAI_BaseNPC )
 	DEFINE_KEYFIELD( m_iszEnemyFilterName,		FIELD_STRING, "enemyfilter" ),
 	DEFINE_FIELD( m_bImportanRagdoll,			FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bPlayerAvoidState,			FIELD_BOOLEAN ),
+	DEFINE_FIELD(m_bBoss, FIELD_BOOLEAN),
 
 	// Satisfy classcheck
 	// DEFINE_FIELD( m_ScheduleHistory, CUtlVector < AIScheduleChoice_t > ),

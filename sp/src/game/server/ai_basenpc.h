@@ -924,6 +924,7 @@ public:
 
 	NPC_STATE			m_NPCState;				// npc's current state
 	float				m_flLastStateChangeTime;
+	bool				m_bBoss;
 
 private:
 	NPC_STATE			m_IdealNPCState;		// npc should change to this state

@@ -95,6 +95,20 @@
 				"textprecision" "2"
 			}
             
+            "PlayerArmor"
+			{
+				"text"			"#GameUI_PlayerArmor"
+				"type"			"slideyslide"
+				"convar"		"sv_player_maxsuitpower"
+				"advanced"		"1"
+
+				"min"			"1"
+				"max"			"999"
+				"step"			"1"
+
+				"textprecision" "2"
+			}
+            
             "ArmorMode"
 			{
 				"text"			"#GameUI_ArmorMode"

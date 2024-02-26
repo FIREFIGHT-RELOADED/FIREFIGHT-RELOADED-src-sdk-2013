@@ -88,7 +88,7 @@ BEGIN_DATADESC(CNPCMakerFirefight)
 	DEFINE_KEYFIELD( m_nMaxLiveRareNPCs, FIELD_INTEGER, "MaxLiveRareNPCs" ),
 	DEFINE_KEYFIELD( m_nRareNPCRarity, FIELD_INTEGER, "RareNPCRarity" ),
 
-	DEFINE_FIELD(	m_nLiveChildren,		FIELD_INTEGER ),
+	DEFINE_FIELD(	m_nLiveChildren,	FIELD_INTEGER),
 	DEFINE_FIELD(	m_nLiveRareNPCs,		FIELD_INTEGER ),
 	DEFINE_FIELD(	m_flLastLargeNPCSpawn,	FIELD_TIME),
 
@@ -406,6 +406,11 @@ bool CNPCMakerFirefight::KilledNotice(CBaseEntity *pVictim)
 
 		// If we're here, we're getting erroneous death messages from children we haven't created
 		AssertMsg(m_nLiveRareNPCs >= 0, "npc_maker_firefight receiving child death notice but thinks has no children (RARE)\n");
+	}
+
+	if (m_nLiveChildren <= 0)
+	{
+		m_OnAllLiveChildrenDead.FireOutput(this, this);
 	}
 
 	return true;

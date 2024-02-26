@@ -2700,18 +2700,9 @@ void CBasePlayer::Event_Killed( const CTakeDamageInfo &info )
 
 	ClearLastKnownArea();
 
-	if ((IsAtMaxLevel() || g_fr_hardcore.GetBool()) && !g_pGameRules->IsMultiplayer())
-	{
-		// Clear any screenfade
-		color32 nothing = { 0, 0, 0, 255 };
-		UTIL_ScreenFade(this, nothing, 0.6, 9999, FFADE_OUT | FFADE_PURGE | FFADE_STAYOUT);
-	}
-	else
-	{
-		// Clear any screenfade
-		color32 nothing = { 0, 0, 0, 255 };
-		UTIL_ScreenFade(this, nothing, 0, 0, FFADE_IN | FFADE_PURGE);
-	}
+	// Clear any screenfade
+	color32 nothing = { 0, 0, 0, 255 };
+	UTIL_ScreenFade(this, nothing, 0, 0, FFADE_IN | FFADE_PURGE);
 
 	BaseClass::Event_Killed( info );
 }
@@ -3138,27 +3129,20 @@ void CBasePlayer::PlayerDeathThink(void)
 		StartObserverMode( m_iObserverLastMode );
 	}
 
-	if ((IsAtMaxLevel() || g_fr_hardcore.GetBool()) && !g_pGameRules->IsMultiplayer())
+	if (g_fr_hardcore.GetBool() && !g_pGameRules->IsMultiplayer())
 	{
 		if ((gpGlobals->curtime > (m_flDeathTime + DEATH_MESSAGE_TIME)))
 		{
 			if (!m_bDeathMessage)
 			{
-				if (g_fr_hardcore.GetBool() && GetLevel() != GetMaxLevel())
-				{
-					UTIL_ShowMessage("FR_HardcoreEnding", this);
-				}
-				else
-				{
-					UTIL_ShowMessage("FR_ENDING", this);
-				}
+				UTIL_ShowMessage("FR_HardcoreEnding", this);
 				m_bDeathMessage = true;
 			}
 		}
 	}
 	
 // wait for any button down,  or mp_forcerespawn is set and the respawn time is up
-	if ((IsAtMaxLevel() || g_fr_hardcore.GetBool()) && !g_pGameRules->IsMultiplayer())
+	if (g_fr_hardcore.GetBool() && !g_pGameRules->IsMultiplayer())
 	{
 		if (!(gpGlobals->curtime > (m_flDeathTime + DEATH_WAIT_TIME) && m_bDeathMessage))
 			return;
@@ -7352,8 +7336,10 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 #endif
 		if (GetHealth() < GetMaxHealth())
 		{
-			TakeHealth( 25, DMG_GENERIC );
+			TakeHealth( player_defaulthealth.GetInt(), DMG_GENERIC);
 		}
+
+		IncrementArmorValue(200, GetMaxArmorValue());
 		
 		gEvilImpulse101		= false;
 

@@ -504,7 +504,7 @@ bool CNPC_Combine::CorpseGib(const CTakeDamageInfo& info)
 	static ConVarRef violence_hgibs( "violence_hgibs" );
 	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence())
 		&& (violence_hgibs.IsValid() && violence_hgibs.GetBool())
-		&& info.GetDamageType() & (DMG_BLAST) && !(info.GetDamageType() & (DMG_DISSOLVE)) && !PlayerHasMegaPhysCannon() && gibs)
+		&& info.GetDamageType() & (DMG_BLAST) && !(info.GetDamageType() & (DMG_DISSOLVE)) && gibs)
 	{
 		if (IsCurSchedule(SCHED_NPC_FREEZE))
 		{

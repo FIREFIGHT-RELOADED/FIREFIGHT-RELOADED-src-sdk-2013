@@ -26,6 +26,7 @@
 #include "filesystem.h"
 
 #include "tier0/vprof.h"
+#include "globalstate.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -154,7 +155,21 @@ void respawn( CBaseEntity *pEdict, bool fCopyCorpse )
 	CHL2_Player *pPlayer = (CHL2_Player *)pEdict;
 	if (pPlayer)
 	{
-		if ((pPlayer->IsAtMaxLevel() || g_fr_hardcore.GetBool()) && !g_pGameRules->IsMultiplayer())
+		if (pPlayer->IsAtMaxLevel() && !g_pGameRules->IsMultiplayer())
+		{
+			if (GlobalEntity_GetState("player_inbossbattle") == GLOBAL_OFF)
+			{
+				char szMapCommand[1024];
+				// create the command to execute
+				Q_snprintf(szMapCommand, sizeof(szMapCommand), "map credits\nprogress_enable\n");
+				engine->ClientCommand(pPlayer->edict(), szMapCommand);
+			}
+			else
+			{
+				pPlayer->Spawn();
+			}
+		}
+		else if (g_fr_hardcore.GetBool() && !g_pGameRules->IsMultiplayer())
 		{
 			char szMapCommand[1024];
 			// create the command to execute

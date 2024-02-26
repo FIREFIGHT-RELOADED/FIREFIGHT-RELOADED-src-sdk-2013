@@ -220,7 +220,6 @@ public:
 
 private:
 	int					m_iSpriteTexture;
-	bool				m_bDefenseTeamsDown;
 
 public:
 #endif
@@ -390,7 +389,6 @@ BEGIN_DATADESC( CNPC_Advisor )
 	DEFINE_FIELD(m_vecIdeal, FIELD_VECTOR),
 	DEFINE_FIELD(m_bBulletResistanceBroken, FIELD_BOOLEAN),
 	DEFINE_FIELD(m_bBulletResistanceOutlineDisabled, FIELD_BOOLEAN),
-	DEFINE_FIELD(m_bDefenseTeamsDown, FIELD_BOOLEAN),
 
 	DEFINE_OUTPUT( m_OnPickingThrowable, "OnPickingThrowable" ),
 	DEFINE_OUTPUT( m_OnThrowWarn, "OnThrowWarn" ),
@@ -449,6 +447,7 @@ void CNPC_Advisor::Spawn()
 	SetMoveType( MOVETYPE_FLY );
 	SetGravity(0.001);
 	AddFlag( FL_FLY );
+	AddEFlags(EFL_NO_MEGAPHYSCANNON_RAGDOLL | EFL_NO_PHYSCANNON_INTERACTION);
 	SetNavType( NAV_FLY );
 
 	m_flFieldOfView = 0.2; //VIEW_FIELD_FULL
@@ -456,8 +455,9 @@ void CNPC_Advisor::Spawn()
 
 	m_NPCState = NPC_STATE_NONE;
 
+	m_bBoss = true;
+
 #if NPC_ADVISOR_HAS_BEHAVIOR
-	m_bDefenseTeamsDown = false;
 	m_bBulletResistanceOutlineDisabled = false;
 	m_bBulletResistanceBroken = advisor_disablebulletresistance.GetBool();
 #endif
@@ -538,37 +538,6 @@ void CNPC_Advisor::LoadInitAttributes()
 CTakeDamageInfo CNPC_Advisor::BulletResistanceLogic(const CTakeDamageInfo& info, trace_t* ptr)
 {
 	CTakeDamageInfo outputInfo = info;
-
-	if (!m_bDefenseTeamsDown)
-	{
-		outputInfo.SetDamage(0.0f);
-		outputInfo.SetDamageType(DMG_GENERIC);
-
-		CBaseEntity* pEnt = NULL;
-		int AliveSpawners = 0;
-
-		while ((pEnt = gEntList.FindEntityByName(pEnt, "npc_maker_firefight")) != NULL)
-		{
-			CNPCMakerFirefight* pMaker = (CNPCMakerFirefight*)pEnt;
-			if (pMaker)
-			{
-				if (!pMaker->m_bDisabled)
-				{
-					AliveSpawners++;
-				}
-			}
-		}
-
-		if (AliveSpawners > 0)
-		{
-			return outputInfo;
-		}
-		else
-		{
-			m_bDefenseTeamsDown = true;
-			EmitSound("NPC_Advisor.ScreenVx02");
-		}
-	}
 
 	int shieldhealth = GetMaxHealth() * 0.5;
 
@@ -793,8 +762,6 @@ bool CNPC_Advisor::IsHeavyDamage( const CTakeDamageInfo &info )
 {
 	return (info.GetDamage() > 0);
 }
-
-
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
