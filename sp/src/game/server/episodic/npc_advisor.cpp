@@ -458,7 +458,7 @@ void CNPC_Advisor::Spawn()
 	m_bBoss = true;
 
 #if NPC_ADVISOR_HAS_BEHAVIOR
-	m_bBulletResistanceOutlineDisabled = false;
+	m_bBulletResistanceOutlineDisabled = true;
 	m_bBulletResistanceBroken = advisor_disablebulletresistance.GetBool();
 #endif
 
@@ -479,9 +479,15 @@ void CNPC_Advisor::EnableBulletResistanceOutline()
 {
 	if (!m_bBulletResistanceBroken)
 	{
-		m_denyOutlines = true;
-		Vector outline = Vector(255, 0, 255);
-		GiveOutline(outline);
+		bool disableBulletResistanceOutline = m_pAttributes != NULL ? m_pAttributes->GetBool("disable_bullet_resistance_outline", 0) : false;
+
+		if (!disableBulletResistanceOutline)
+		{
+			m_denyOutlines = true;
+			Vector outline = Vector(255, 0, 255);
+			GiveOutline(outline);
+			m_bBulletResistanceOutlineDisabled = false;
+		}
 	}
 }
 
@@ -598,6 +604,13 @@ CTakeDamageInfo CNPC_Advisor::BulletResistanceLogic(const CTakeDamageInfo& info,
 		SetBloodColor(BLOOD_COLOR_GREEN);
 		RemoveGlowEffect();
 		m_bBulletResistanceBroken = true;
+
+		if (!m_bBulletResistanceOutlineDisabled)
+		{
+			m_denyOutlines = true;
+			Vector outline = Vector(255, 0, 0);
+			GiveOutline(outline);
+		}
 	}
 
 	if (m_bBulletResistanceBroken)
