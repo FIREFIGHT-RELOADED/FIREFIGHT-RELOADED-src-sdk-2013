@@ -172,8 +172,6 @@
 	"Any resemblance to actual persons, living or dead, or actual events is purely coincidental."	"CreditsOutroText"
 	" "	"CreditsOutroText"
 	" "	"CreditsOutroText"
-	" "	"CreditsOutroText"
-	" "	"CreditsOutroText"
 	"However, this shouldn't really matter since you shoot heads off of Combine Soldiers anyways."	"CreditsOutroText"
 	" "	"CreditsOutroText"
 	" "	"CreditsOutroText"
