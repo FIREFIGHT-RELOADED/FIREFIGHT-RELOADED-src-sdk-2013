@@ -1,0 +1,93 @@
+"ShopCatalog"
+{
+    "1"
+    {
+        "name"		"Knife"
+        "price"		"450"
+        "command"	"item weapon_knife 0"
+    }
+	"2"
+	{
+		"name"		"FragGrenade"
+		"price"		"150"
+		"command"	"item item_ammo_grenade 1"
+	}
+	"3"
+	{
+		"name"		"SLAM"
+		"price"		"175"
+		"command"	"item item_slam_ammo 1"
+	}
+	"4"
+	{
+		"name"		"357Magnum"
+		"price"		"200"
+		"command"	"item weapon_357 0"
+	}
+	"5"
+	{
+		"name"		"AR2"
+		"price"		"245"
+		"command"	"item weapon_ar2 0"
+	}
+	"6"
+	{
+		"name"		"Crossbow"
+		"price"		"255"
+		"command"	"item weapon_crossbow 0"
+	}
+	"7"
+	{
+		"name"		"Shotgun"
+		"price"		"250"
+		"command"	"item weapon_shotgun 0"
+	}
+	"8"
+	{
+		"name"		"RPG"
+		"price"		"350"
+		"command"	"item weapon_rpg 0" 
+	}
+	"9"
+	{
+		"name"		"SniperRifle"
+		"price"		"260"
+		"command"	"item weapon_sniper_rifle 0" 
+	}
+	"10"
+	{
+		"name"		"M249Para"
+		"price"		"330"
+		"command"	"item weapon_m249para 0" 
+	}
+	"11"
+	{
+		"name"		"Gauss"
+		"price"		"1500"
+		"command"	"item weapon_gauss 0" 
+	}
+	"12"
+	{
+		"name"		"Katana"
+		"price"		"3000"
+		"command"	"item weapon_katana 0" 
+	}
+    "13"
+	{
+		"name"		"Railgun"
+		"price"		"3500"
+		"command"	"item weapon_railgun 0" 
+	}
+	"14"
+	{
+		"name"		"RailgunAmmo"
+		"price"		"800"
+		"command"	"ammo Railgun 25" 
+	}
+    "15"
+	{
+		"name"		"RailgunOvercharge"
+		"price"		"6400"
+		"command"	"ammo Railgun 200" 
+	}
+}

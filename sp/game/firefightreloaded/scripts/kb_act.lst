@@ -14,6 +14,7 @@
 "moddingmenu"			"#FIREFIGHTRELOADED_Modding_Menu"
 "ai_nodes_add"			"#FIREFIGHTRELOADED_Modding_AddNode"
 "ai_nodes_undo"			"#FIREFIGHTRELOADED_Modding_UndoNode"
+"showposition"          "#FIREFIGHTRELOADED_Modding_PrintPos"
 "blank"			"=========================="
 "blank"			"#GameUI_SPTitle"
 "blank"			"=========================="

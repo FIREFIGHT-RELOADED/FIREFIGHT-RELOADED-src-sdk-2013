@@ -1,0 +1,122 @@
+//Item Types
+//FR_HEALTHKIT = 1
+//FR_BATTERY = 2
+//FR_HEALTHKIT_BIG = 3
+//FR_BATTERY_BIG = 4
+//FR_WEAPON = 5
+//FR_AMMOWEAPON = 6
+//FR_AMMO = 7
+//FR_PERK = 8
+//FR_KASHBONUS = 9
+//FR_SERVERCMD = 10
+//FR_CLIENTCMD = 11
+
+//Perk IDs
+//FIREFIGHT_PERK_INFINITEAUXPOWER = 1
+//FIREFIGHT_PERK_INFINITEAMMO = 2
+//FIREFIGHT_PERK_HEALTHREGENERATIONRATE = 3
+//FIREFIGHT_PERK_HEALTHREGENERATION = 4
+
+"Rewards"
+{
+	"1"
+	{
+		"name"		"#GameUI_Store_Buy_FragGrenade"
+		"item_type"	"6"
+		"min_level"	"3"
+		"weapon_classname"	"item_ammo_grenade"
+	}
+	"2"
+	{
+		"name"		"#GameUI_Store_Buy_SLAM"
+		"item_type"	"6"
+		"min_level"	"3"
+		"weapon_classname"	"item_slam_ammo"
+	}
+	"3"
+	{
+		"name"		"#GameUI_Store_Buy_357Magnum"
+		"item_type"	"5"
+		"min_level"	"1"
+		"weapon_classname" "weapon_357"
+	}
+	"4"
+	{
+		"name"		"#GameUI_Store_Buy_AR2"
+		"item_type"	"5"
+		"min_level"	"1"
+		"weapon_classname" "weapon_ar2"
+	}
+	"5"
+	{
+		"name"		"#GameUI_Store_Buy_Crossbow"
+		"item_type"	"5"
+		"min_level"	"1"
+		"weapon_classname" "weapon_crossbow"
+	}
+	"6"
+	{
+		"name"		"#GameUI_Store_Buy_Shotgun"
+		"item_type"	"5"
+		"min_level"	"1"
+		"weapon_classname" "weapon_shotgun"
+	}
+	"7"
+	{
+		"name"		"#GameUI_Store_Buy_RPG"
+		"item_type"	"5"
+		"min_level"	"5"
+		"weapon_classname" "weapon_rpg"
+	}
+	"8"
+	{
+		"name"		"#GameUI_Store_Buy_SniperRifle"
+		"item_type"	"5"
+		"min_level"	"1"
+		"weapon_classname" "weapon_sniper_rifle"
+	}
+	"9"
+	{
+		"name"		"#GameUI_Store_Buy_M249Para"
+		"item_type"	"5"
+		"min_level"	"5"
+		"weapon_classname" "weapon_m249para"
+	}
+	"10"
+	{
+		"name"		"#GameUI_Store_Buy_Gauss"
+		"item_type"	"5"
+		"min_level"	"7"
+		"weapon_classname" "weapon_gauss"
+	}
+	"11"
+	{
+		"name"		"#GameUI_Store_Buy_Katana"
+		"item_type"	"5"
+		"min_level"	"10"
+		"weapon_classname" "weapon_katana"
+	}
+	"12"
+	{
+		"name"		"#GameUI_Bugbait"
+		"item_type"	"5"
+		"min_level"	"7"
+		"unlocks_in_lone_wolf"	"0"
+		"weapon_classname" "weapon_bugbait"
+	}
+	"13"
+	{
+		"name"		"#GameUI_Store_Buy_Knife"
+		"item_type"	"5"
+		"min_level"	"5"
+		"weapon_classname" "weapon_knife"
+		"unlocks_in_iron_kick" "1"
+	}
+    "14"
+	{
+		"name"		"#GameUI_Store_Buy_Railgun"
+		"item_type"	"5"
+		"min_level"	"8"
+		"weapon_classname" "weapon_railgun"
+	}
+}

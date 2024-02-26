@@ -1,0 +1,62 @@
+//Item Types
+//FR_HEALTHKIT = 1
+//FR_BATTERY = 2
+//FR_HEALTHKIT_BIG = 3
+//FR_BATTERY_BIG = 4
+//FR_WEAPON = 5
+//FR_AMMOWEAPON = 6
+//FR_AMMO = 7
+//FR_PERK = 8
+//FR_KASHBONUS = 9
+//FR_SERVERCMD = 10
+//FR_CLIENTCMD = 11
+
+//Perk IDs
+//FIREFIGHT_PERK_INFINITEAUXPOWER = 1
+//FIREFIGHT_PERK_INFINITEAMMO = 2
+//FIREFIGHT_PERK_HEALTHREGENERATIONRATE = 3
+//FIREFIGHT_PERK_HEALTHREGENERATION = 4
+
+"Rewards"
+{
+	"1"
+	{
+		"name"		"#GameUI_PerkInfiniteAmmo"
+		"item_type"	"8"
+		"min_level"	"10"
+		"perk_id"	"2"
+		"unlocks_in_iron_kick" "1"
+	}
+	"2"
+	{
+		"name"		"#GameUI_PerkInfiniteAuxPower"
+		"item_type"	"8"
+		"min_level"	"7"
+		//aux power is default perk inder perk_id
+		"unlocks_in_iron_kick" "1"
+	}
+	"3"
+	{
+		"name"		"#GameUI_PerkHealthRegeneration"
+		"item_type"	"8"
+		"min_level"	"1"
+		"perk_id"	"4"
+		"unlocks_in_iron_kick" "1"
+	}
+	"4"
+	{
+		"name"		"#GameUI_PerkHealthRegenerationRate"
+		"item_type"	"8"
+		"min_level"	"1"
+		"perk_id"	"3"
+		"unlocks_in_iron_kick" "1"
+	}
+	"5"
+	{
+		"name"		"#GameUI_KashBonus"
+		"item_type"	"9"
+		"min_level"	"1"
+		"perk_id"	"3"
+		"unlocks_in_iron_kick" "1"
+	}
+}
