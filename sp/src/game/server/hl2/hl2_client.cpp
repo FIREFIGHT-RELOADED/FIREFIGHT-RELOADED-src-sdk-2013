@@ -161,7 +161,7 @@ void respawn( CBaseEntity *pEdict, bool fCopyCorpse )
 			{
 				char szMapCommand[1024];
 				// create the command to execute
-				Q_snprintf(szMapCommand, sizeof(szMapCommand), "map credits\nprogress_enable\n");
+				Q_snprintf(szMapCommand, sizeof(szMapCommand), "map firefight_advisor\nprogress_enable\n");
 				engine->ClientCommand(pPlayer->edict(), szMapCommand);
 			}
 			else
@@ -173,7 +173,7 @@ void respawn( CBaseEntity *pEdict, bool fCopyCorpse )
 		{
 			char szMapCommand[1024];
 			// create the command to execute
-			Q_snprintf(szMapCommand, sizeof(szMapCommand), "map credits\nprogress_enable\n");
+			Q_snprintf(szMapCommand, sizeof(szMapCommand), "disconnect\n");
 			engine->ClientCommand(pPlayer->edict(), szMapCommand);
 		}
 		else

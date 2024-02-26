@@ -169,6 +169,12 @@ void GamepadUIMapChooser::ScanMaps()
             pszFilename = g_pFullFileSystem->FindNext(findHandle);
         }
 
+        creditsstr = Q_strstr(pszFilename, "firefight_advisor");
+        if (creditsstr)
+        {
+            pszFilename = g_pFullFileSystem->FindNext(findHandle);
+        }
+
         const char* str = Q_strstr(pszFilename, "maps");
         if (str)
         {
