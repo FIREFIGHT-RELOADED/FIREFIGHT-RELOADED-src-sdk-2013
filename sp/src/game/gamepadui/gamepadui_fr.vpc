@@ -28,6 +28,7 @@ $Project "GamepadUI (FR)"
 			$File "firefightreloaded/gamepadui_fr_mapchooser.cpp"
             $File "firefightreloaded/gamepadui_fr_playermodelchooser.cpp"
             $File "firefightreloaded/gamepadui_fr_spawnlistchooser.cpp"
+            $File "firefightreloaded/gamepadui_fr_store.cpp"
 		}
 	}
 }
