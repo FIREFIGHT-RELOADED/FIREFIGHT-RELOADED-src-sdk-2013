@@ -1884,11 +1884,12 @@ int CNPC_Advisor::SelectSchedule()
 
 void CNPC_Advisor::Touch(CBaseEntity* pOther)
 {
+	Write_BeamOn(pOther);
 	//Toss them back!
 	Vector forward2, up2;
 	AngleVectors(pOther->GetLocalAngles(), &forward2, NULL, &up2);
-	forward2 = forward2 * 100 * sk_advisor_melee_dmg.GetFloat();
-	up2 = up2 * 100 * sk_advisor_melee_dmg.GetFloat();
+	forward2 = forward2 * 200 * sk_advisor_melee_dmg.GetFloat();
+	up2 = up2 * 200 * sk_advisor_melee_dmg.GetFloat();
 
 	pOther->VelocityPunch(-forward2);
 	pOther->VelocityPunch(up2);
