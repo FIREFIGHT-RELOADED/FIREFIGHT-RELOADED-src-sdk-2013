@@ -950,7 +950,7 @@
 				"advanced"		"1"
 
 				"min"			"750"
-				"max"			"4500"
+				"max"			"20000"
 				"step"			"1"
 
 				"textprecision" "2"
@@ -1020,7 +1020,7 @@
 				"advanced"		"1"
 
 				"min"			"750"
-				"max"			"4500"
+				"max"			"20000"
 				"step"			"1"
 
 				"textprecision" "2"
