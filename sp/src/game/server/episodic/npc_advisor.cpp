@@ -613,20 +613,6 @@ CTakeDamageInfo CNPC_Advisor::BulletResistanceLogic(const CTakeDamageInfo& info,
 		}
 	}
 
-	if (m_bBulletResistanceBroken)
-	{
-		int randAttack = random->RandomInt(0, 8);
-
-		if (randAttack < 6)
-		{
-			SetSchedule(SCHED_TAKE_COVER_FROM_ENEMY);
-		}
-		else
-		{
-			SetSchedule(SCHED_RUN_FROM_ENEMY);
-		}
-	}
-
 	return outputInfo;
 }
 
