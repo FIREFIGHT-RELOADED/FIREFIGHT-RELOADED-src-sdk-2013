@@ -39,8 +39,8 @@ ConVar sk_grapple_delay("sk_grapple_delay", "0.5");
 
 static const char* ppszIgnoredClasses[] =
 {
-	"prop_dynamic",
-	"prop_dynamic_override"
+	"prop_dynamic_override",
+	"prop_static"
 };
  
 LINK_ENTITY_TO_CLASS( grapple_hook, CGrappleHook );
