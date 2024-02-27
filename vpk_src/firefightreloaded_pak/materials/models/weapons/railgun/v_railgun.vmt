@@ -1,13 +1,13 @@
 
 VertexLitGeneric
 {
-$baseTexture "models/weapons/Railgun/Railgun"
-$bumpmap "models/weapons/Railgun/railgun_normal"
-$surfaceprop metal
-$selfillum 1
-"$phong" "1"
-"$phongboost" "1"
-"$phongexponent" 10
-"$phongalbedotint" "1"								
-"$phongfresnelranges"	"[.1 5 1]"
+    $baseTexture "models/weapons/Railgun/Railgun"
+    $bumpmap "models/weapons/Railgun/railgun_normal"
+    $surfaceprop metal
+    $selfillum 1
+    "$phong" "1"
+    "$phongboost" "2"
+    "$phongexponent" 20
+    "$phongalbedotint" "1"								
+    "$phongfresnelranges"	"[.1 5 1]"
 }
