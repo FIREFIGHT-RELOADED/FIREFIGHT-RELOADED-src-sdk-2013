@@ -23,6 +23,7 @@ public:
 public:
 	bool loadedAttributes;
 	int presetNum;
+	bool wildcard;
 
 private:
 	KeyValues* data;

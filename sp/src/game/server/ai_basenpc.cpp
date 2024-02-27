@@ -7114,6 +7114,7 @@ void CAI_BaseNPC::LoadInitAttributes()
 			//we can't transfer Color objects through the server, so we use Vectors.
 			Vector outlineColor = m_pAttributes->GetVector("outline_color");
 			GiveOutline(outlineColor);
+			m_denyOutlines = true;
 		}
 	}
 }
@@ -7125,6 +7126,20 @@ void CAI_BaseNPC::GiveAttributes(int preset)
 	if (m_pAttributes == NULL)
 	{
 		Warning("Error: Cannot set NPC Attribute for %s.\n", GetClassname(), preset);
+	}
+	else
+	{
+		LoadInitAttributes();
+	}
+}
+
+void CAI_BaseNPC::GiveWildcardAttributes(int preset)
+{
+	m_pAttributes = LoadPresetFile("npc_any", preset);
+
+	if (m_pAttributes == NULL)
+	{
+		Warning("Error: Cannot set Wildcard NPC Attribute for %s.\n", GetClassname(), preset);
 	}
 	else
 	{

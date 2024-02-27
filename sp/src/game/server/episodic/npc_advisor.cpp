@@ -72,6 +72,9 @@ ConVar advisor_disablebulletresistance("advisor_disablebulletresistance", "0", F
 ConVar advisor_speed("advisor_speed", "250", FCVAR_ARCHIVE);
 ConVar advisor_bulletresistance_speed("advisor_bulletresistance_speed", "120", FCVAR_ARCHIVE);
 
+ConVar advisor_dronifychance("advisor_dronifychance", "20", FCVAR_ARCHIVE);
+ConVar advisor_bulletresistance_dronifychance("advisor_bulletresistance_dronifychance", "50", FCVAR_ARCHIVE);
+
 extern ConVar sk_combine_ace_shielddamage_normal;
 extern ConVar sk_combine_ace_shielddamage_hard;
 extern ConVar sk_combine_ace_shielddamage_explosive_multiplier;
@@ -100,7 +103,8 @@ enum
 {
 	SCHED_ADVISOR_COMBAT = LAST_SHARED_SCHEDULE,
 	SCHED_ADVISOR_IDLE_STAND,
-	SCHED_ADVISOR_TOSS_PLAYER
+	SCHED_ADVISOR_TOSS_PLAYER,
+	SCHED_ADVISOR_DRONIFY,
 };
 
 
@@ -115,6 +119,8 @@ enum
 	TASK_ADVISOR_BARRAGE_OBJECTS,
 
 	TASK_ADVISOR_PIN_PLAYER,
+
+	TASK_ADVISOR_DRONIFY,
 };
 
 //
@@ -216,8 +222,9 @@ public:
 	int					OnTakeDamage_Alive(const CTakeDamageInfo& info);
 	void				TraceAttack(const CTakeDamageInfo& inputInfo, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator);
 
-	void MovetoTarget(Vector vecTarget);
-	void		Touch(CBaseEntity* pOther);
+	void	MovetoTarget(Vector vecTarget);
+	void	Touch(CBaseEntity* pOther);
+	void	Dronify(CBaseEntity* pOther);
 
 private:
 	int					m_iSpriteTexture;
@@ -294,6 +301,7 @@ protected:
 #endif
 
 	CUtlVector<EHANDLE>	m_physicsObjects;
+	CUtlVector<EHANDLE>	m_droneObjects;
 	IPhysicsMotionController *m_pLevitateController;
 	CAdvisorLevitate m_levitateCallback;
 	
@@ -360,6 +368,7 @@ BEGIN_DATADESC( CNPC_Advisor )
 	DEFINE_PHYSPTR( m_pLevitateController ),
 	DEFINE_EMBEDDED( m_levitateCallback ),
 	DEFINE_UTLVECTOR( m_physicsObjects, FIELD_EHANDLE ),
+	DEFINE_UTLVECTOR( m_droneObjects, FIELD_EHANDLE),
 
 	DEFINE_FIELD( m_hLevitateGoal1, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hLevitateGoal2, FIELD_EHANDLE ),
@@ -506,7 +515,6 @@ void CNPC_Advisor::LoadInitAttributes()
 			if (showOutlines)
 			{
 				m_denyOutlines = true;
-				RemoveGlowEffect();
 			}
 
 			if (m_bBulletResistanceBroken)
@@ -1052,7 +1060,7 @@ void CNPC_Advisor::MovetoTarget(Vector vecTarget)
 	// Move up otherwise
 	if (tr.fraction < 1.0f)
 	{
-		m_velocity.z += (64 * (1.0f - tr.fraction));
+		m_velocity.z += (72 * (1.0f - tr.fraction));
 	}
 
 	// accelerate
@@ -1375,6 +1383,56 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 				GetEnemy()->SetAbsOrigin(nuPos);
 			}
 			break;
+		}
+
+		case TASK_ADVISOR_DRONIFY:
+		{
+			if (!IsInAScript())
+			{
+				CBaseEntity* pVolume = m_hLevitationArea;
+				AssertMsg(pVolume, "Combine advisor needs 'levitationarea' key pointing to a trigger volume.");
+
+				if (!pVolume)
+				{
+					TaskFail("No levitation area found!");
+					break;
+				}
+
+				m_droneObjects.RemoveAll();
+
+				touchlink_t* touchroot = (touchlink_t*)pVolume->GetDataObject(TOUCHLINK);
+				if (touchroot)
+				{
+					for (touchlink_t* link = touchroot->nextLink; link != touchroot; link = link->nextLink)
+					{
+						CBaseEntity* pTouch = link->entityTouched;
+						CAI_BaseNPC* pNPC = pTouch->MyNPCPointer();
+
+						if (pNPC)
+						{
+							if ((pNPC->Classify() == CLASS_COMBINE ||
+								pNPC->Classify() == CLASS_COMBINE_HUNTER ||
+								pNPC->Classify() == CLASS_COMBINE_GUNSHIP ||
+								pNPC->Classify() == CLASS_METROPOLICE) &&
+								pNPC->IRelationType(this) != D_HT)
+							{
+								m_droneObjects.AddToTail(pTouch);
+							}
+						}
+					}
+				}
+
+				if (m_droneObjects.Count() > 0)
+				{
+					int nRandomIndex = random->RandomInt(0, m_droneObjects.Count() - 1);
+					Dronify(m_droneObjects[nRandomIndex]);
+					TaskComplete();
+				}
+				else
+				{
+					TaskFail("No NPCs to dronify!");
+				}
+			}
 		}
 
 		default:
@@ -1786,9 +1844,6 @@ void CNPC_Advisor::PullObjectToStaging( CBaseEntity *pEnt, const Vector &staging
 	vel = (1.0f / gpGlobals->frametime)*(displacement * (1.0f - desiredDisplacementLen));
 	pPhys->SetVelocity(&vel,&angimp);
 }
-
-
-
 #endif
 
 int	CNPC_Advisor::OnTakeDamage( const CTakeDamageInfo &info )
@@ -1816,9 +1871,6 @@ int	CNPC_Advisor::OnTakeDamage( const CTakeDamageInfo &info )
 
 	return retval;
 }
-
-
-
 
 #if NPC_ADVISOR_HAS_BEHAVIOR
 
@@ -1868,8 +1920,13 @@ int CNPC_Advisor::SelectSchedule()
 			{
 				if (HasCondition(COND_HAVE_ENEMY_LOS) && HasCondition(COND_SEE_ENEMY))
 				{
+					int dronifyChance = (!m_bBulletResistanceBroken) ? advisor_bulletresistance_dronifychance.GetInt() : advisor_dronifychance.GetInt();
+					int nRandomIndex = random->RandomInt(0, dronifyChance);
+
 					if (m_hPlayerPinPos.IsValid())//false
 						return SCHED_ADVISOR_TOSS_PLAYER;
+					else if (nRandomIndex == dronifyChance)//false
+						return SCHED_ADVISOR_DRONIFY;
 					else
 						return SCHED_ADVISOR_COMBAT;
 				}
@@ -1884,8 +1941,6 @@ int CNPC_Advisor::SelectSchedule()
 
 void CNPC_Advisor::Touch(CBaseEntity* pOther)
 {
-	Write_BeamOn(pOther);
-	//Toss them back!
 	Vector forward2, up2;
 	AngleVectors(pOther->GetLocalAngles(), &forward2, NULL, &up2);
 	forward2 = forward2 * 200 * sk_advisor_melee_dmg.GetFloat();
@@ -1893,6 +1948,29 @@ void CNPC_Advisor::Touch(CBaseEntity* pOther)
 
 	pOther->VelocityPunch(-forward2);
 	pOther->VelocityPunch(up2);
+}
+
+void CNPC_Advisor::Dronify(CBaseEntity* pOther)
+{
+	CAI_BaseNPC* pNPC = pOther->MyNPCPointer();
+
+	if (pNPC)
+	{
+		if ((pNPC->Classify() == CLASS_COMBINE ||
+			pNPC->Classify() == CLASS_COMBINE_HUNTER ||
+			pNPC->Classify() == CLASS_COMBINE_GUNSHIP ||
+			pNPC->Classify() == CLASS_METROPOLICE) &&
+			pNPC->IRelationType(this) != D_HT)
+		{
+			// when we collide with allies, disable our solid flag.
+			Write_BeamOn(pOther);
+
+			//our beam will turn them into DRONES.
+			//we need the outline to determine who is a drone.
+			pNPC->m_denyOutlines = false;
+			pNPC->GiveWildcardAttributes(1);
+		}
+	}
 }
 
 void CNPC_Advisor::HandleAnimEvent(animevent_t *pEvent)
@@ -1928,6 +2006,7 @@ void CNPC_Advisor::HandleAnimEvent(animevent_t *pEvent)
 			}
 			// Play a attack hit sound
 			EmitSound("NPC_Stalker.Hit");
+			EmitSound("NPC_Advisor.Blast");
 		}
 		break;
 	}
@@ -1961,6 +2040,7 @@ void CNPC_Advisor::HandleAnimEvent(animevent_t *pEvent)
 			}
 			// Play a attack hit sound
 			EmitSound("NPC_Stalker.Hit");
+			EmitSound("NPC_Advisor.Blast");
 		}
 		break;
 	}
@@ -2493,6 +2573,8 @@ AI_BEGIN_CUSTOM_NPC( npc_advisor, CNPC_Advisor )
 	DECLARE_TASK( TASK_ADVISOR_BARRAGE_OBJECTS ) // hurl all the objects in sequence
 
 	DECLARE_TASK( TASK_ADVISOR_PIN_PLAYER ) // pinion the player to a point in space
+
+	DECLARE_TASK(TASK_ADVISOR_DRONIFY) // pinion the player to a point in space
 	
 	//=========================================================
 	DEFINE_SCHEDULE
@@ -2505,6 +2587,21 @@ AI_BEGIN_CUSTOM_NPC( npc_advisor, CNPC_Advisor )
 		"		TASK_ADVISOR_STAGE_OBJECTS			1"
 		"		TASK_FACE_ENEMY						0"
 		"		TASK_ADVISOR_BARRAGE_OBJECTS		0"
+		"	"
+		"	Interrupts"
+		"		COND_ADVISOR_PHASE_INTERRUPT"
+		"		COND_ENEMY_DEAD"
+		"		COND_CAN_MELEE_ATTACK1"
+	)
+
+	//=========================================================
+	DEFINE_SCHEDULE
+	(
+		SCHED_ADVISOR_DRONIFY,
+
+		"	Tasks"
+		"		TASK_ADVISOR_DRONIFY				0"
+		"		TASK_FACE_ENEMY						0"
 		"	"
 		"	Interrupts"
 		"		COND_ADVISOR_PHASE_INTERRUPT"

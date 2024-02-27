@@ -1,0 +1,16 @@
+//Advisor drones.
+"npc_any_preset1"
+{
+	"new_color"		"255 0 255 255"
+	"new_material_color"	"255 0 255 255"
+	"additional_health"	"250"
+	"additional_speed"	"250"
+	"use_shotgun_secondary"	"1"
+	"has_outlines"		"1"
+	"outline_color"		"255 0 255"
+	"new_projectile"	"1"
+	"disable_bullet_resistance_outline"	"1"
+	"volley_normal_delay"	"0.1"
+	"volley_size"		"8"
+	"persist"		"0"
+}

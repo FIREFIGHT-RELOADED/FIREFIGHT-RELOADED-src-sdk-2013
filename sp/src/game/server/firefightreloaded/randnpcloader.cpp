@@ -23,12 +23,13 @@ void dumpspawnlist_cb()
 	ConMsg("m_Settings.spawnTime: %f\n", g_npcLoader->m_Settings.spawnTime);
 	for ( auto& iter : g_npcLoader->m_Entries )
 	{
-		ConMsg( "[%p] name=\"%s\", %s minPlayerLevel=%d npcAttributePreset=%d grenades=[%d, %d] weight=%f, totalEquipWeight=%f\n",
+		ConMsg( "[%p] name=\"%s\", %s minPlayerLevel=%d npcAttributePreset=%d npcAttributeWildcard=%d grenades=[%d, %d] weight=%f, totalEquipWeight=%f\n",
 			&iter,
 			iter.classname,
 			iter.isRare ? "rare" : "notRare",
 			iter.minPlayerLevel,
 			iter.npcAttributePreset,
+			iter.npcAttributeWildcard,
 			iter.grenadesMin,
 			iter.grenadesMax,
 			iter.weight,
@@ -206,6 +207,7 @@ bool CRandNPCLoader::ParseEntry( SpawnEntry_t& entry, KeyValues *kv)
 	entry.weight = kv->GetFloat( "weight", 1 );
 	entry.minPlayerLevel = kv->GetInt( "min_level", 1 );
 	entry.npcAttributePreset = kv->GetInt( "preset", -1 );
+	entry.npcAttributeWildcard = kv->GetInt("wildcard", -1);
 	entry.spawnEquipment.RemoveAll();
 	entry.totalEquipWeight = 0;
 	entry.grenadesMin = entry.grenadesMax = -1;
@@ -288,6 +290,7 @@ CRandNPCLoader::SpawnEntry_t::SpawnEntry_t()
 {
 	classname = NULL;
 	npcAttributePreset = -1; // 0 = no attributes, random. -1 and below: no attributes at all.
+	npcAttributeWildcard = -1;
 	minPlayerLevel = 1;
 	isRare = false;
 	weight = 1;

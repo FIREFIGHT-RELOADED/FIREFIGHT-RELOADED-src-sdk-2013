@@ -267,7 +267,6 @@ void CNPC_CombineAce::LoadInitAttributes()
 			if (showOutlines)
 			{
 				m_denyOutlines = true;
-				RemoveGlowEffect();
 			}
 
 			if (m_bBulletResistanceBroken)
@@ -601,7 +600,10 @@ CTakeDamageInfo CNPC_CombineAce::BulletResistanceLogic(const CTakeDamageInfo& in
 		SpeakSentence("SHIELDDANGER", SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL);
 		EmitSound("Weapon_StriderBuster.Detonate");
 		SetBloodColor(BLOOD_COLOR_RED);
-		RemoveGlowEffect();
+		if (!m_bBulletResistanceOutlineDisabled)
+		{
+			RemoveGlowEffect();
+		}
 		m_bBulletResistanceBroken = true;
 	}
 

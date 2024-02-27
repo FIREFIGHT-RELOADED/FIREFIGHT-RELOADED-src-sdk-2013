@@ -535,6 +535,7 @@ public:
 	virtual void		NPCInit( void ); // derived calls after Spawn()
 	virtual void		LoadInitAttributes(void);
 	virtual void		GiveAttributes(int preset);
+	virtual void		GiveWildcardAttributes(int preset);
 	virtual void		GiveOutline(Vector& outlineColor);
 	virtual float		GetSequenceGroundSpeed(CStudioHdr* pStudioHdr, int iSequence);
 	inline float		GetSequenceGroundSpeed(int iSequence) { return GetSequenceGroundSpeed(GetModelPtr(), iSequence); }

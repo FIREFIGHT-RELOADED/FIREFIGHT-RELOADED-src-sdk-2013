@@ -577,6 +577,9 @@ CON_COMMAND_F_COMPLETION(npc_create_equipment, "Equipment for an NPC to be equip
 
 	npc_create_equipment_cvar.SetValue(pszClassName);
 }
+
+ConVar npc_create_attributewildcard("npc_create_attributewildcard", "0", FCVAR_NONE);
+
 //------------------------------------------------------------------------------
 // Purpose: Create an NPC of the given type
 //------------------------------------------------------------------------------
@@ -618,7 +621,14 @@ CON_COMMAND_F_COMPLETION(npc_create, "Creates an NPC of the given type where the
 
 		if (args.ArgC() >= 3)
 		{
-			baseNPC->GiveAttributes(atoi(args[2]));
+			if (npc_create_attributewildcard.GetBool())
+			{
+				baseNPC->GiveWildcardAttributes(atoi(args[2]));
+			}
+			else
+			{
+				baseNPC->GiveAttributes(atoi(args[2]));
+			}
 		}
 
 		// Now attempt to drop into the world

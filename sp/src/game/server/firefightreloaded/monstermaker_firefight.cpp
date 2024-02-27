@@ -603,8 +603,16 @@ void CNPCMakerFirefight::MakeNPC()
 
 	if (entry->npcAttributePreset > 0)
 	{
-		pent->m_pAttributes = LoadPresetFile(pent->GetClassname(), entry->npcAttributePreset);
-		pent->LoadInitAttributes();
+		if (entry->npcAttributeWildcard)
+		{
+			pent->m_pAttributes = LoadPresetFile("npc_any", entry->npcAttributePreset);
+			pent->LoadInitAttributes();
+		}
+		else
+		{
+			pent->m_pAttributes = LoadPresetFile(pent->GetClassname(), entry->npcAttributePreset);
+			pent->LoadInitAttributes();
+		}
 	}
 
 	ChildPostSpawn(pent);

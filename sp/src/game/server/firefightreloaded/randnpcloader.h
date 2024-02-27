@@ -69,6 +69,7 @@ public:
 		float weight;
 		int minPlayerLevel;
 		int npcAttributePreset;
+		int npcAttributeWildcard;
 		int grenadesMin;
 		int grenadesMax;
 		CCopyableUtlVector<EquipEntry_t> spawnEquipment;

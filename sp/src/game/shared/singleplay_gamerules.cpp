@@ -1286,6 +1286,11 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 			{
 				if (pNPC->m_pAttributes->presetNum > 0)
 				{
+					if (pNPC->m_pAttributes->wildcard)
+					{
+						entityClassname = "npc_any";
+					}
+
 					fullEntityClassname = CFmtStr("%s_%i", entityClassname, pNPC->m_pAttributes->presetNum);
 				}
 			}

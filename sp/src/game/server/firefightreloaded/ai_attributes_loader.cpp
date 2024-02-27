@@ -79,6 +79,11 @@ CAttributesLoader::CAttributesLoader(const char *className, int preset)
 		return;
 	}
 
+	if (FStrEq(className, "npc_any"))
+	{
+		wildcard = true;
+	}
+
 	char szFullName[512];
 	Q_snprintf(szFullName, sizeof(szFullName), "scripts/entity_attributes/%s/preset%i.txt", className, preset);
 
