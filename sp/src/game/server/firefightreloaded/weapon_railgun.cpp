@@ -11,6 +11,9 @@
 #include "weapon_railgun.h"
 #include "hl2_player.h"
 #include "ammodef.h"
+#include "explode.h"
+
+ConVar sk_weapon_railgun_overcharge_limit("sk_weapon_railgun_overcharge_limit", "500", FCVAR_ARCHIVE);
 
 IMPLEMENT_SERVERCLASS_ST(CWeaponRailgun, DT_WeaponRailgun)
 END_SEND_TABLE()
@@ -252,6 +255,17 @@ void CWeaponRailgun::Fire( void )
 
 	if (vm == NULL)
 		return;
+
+	//oh my fucking god
+	if (sk_weapon_railgun_overcharge_limit.GetInt() > 0 && pOwner->GetAmmoCount(m_iPrimaryAmmoType) > sk_weapon_railgun_overcharge_limit.GetInt())
+	{
+		ExplosionCreate(pOwner->EyePosition(), pOwner->GetAbsAngles(), pOwner, 50, 128, 0, false);
+		pOwner->Weapon_Detach(this);
+		engine->ClientCommand(pOwner->edict(), "lastinv");
+		engine->ClientCommand(pOwner->edict(), "-attack2");
+		UTIL_Remove(this);
+		return;
+	}
 
 	/*Vector	startPos = pOwner->Weapon_ShootPosition();
 	Vector	aimDir;

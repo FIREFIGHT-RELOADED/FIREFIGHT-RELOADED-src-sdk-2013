@@ -90,7 +90,7 @@
 
 				"min"			"1"
 				"max"			"999"
-				"step"			"1"
+				"step"			"5"
 
 				"textprecision" "2"
 			}
@@ -104,7 +104,7 @@
 
 				"min"			"1"
 				"max"			"999"
-				"step"			"1"
+				"step"			"5"
 
 				"textprecision" "2"
 			}
@@ -145,7 +145,7 @@
 
 				"min"			"0"
 				"max"			"9999"
-				"step"			"1"
+				"step"			"5"
 
 				"textprecision" "2"
 			}
@@ -255,7 +255,7 @@
 
 				"min"			"0"
 				"max"			"300"
-				"step"			"1"
+				"step"			"5"
 
 				"textprecision" "2"
 			}
@@ -283,7 +283,7 @@
 
 				"min"			"0"
 				"max"			"300"
-				"step"			"1"
+				"step"			"5"
 
 				"textprecision" "2"
 			}
@@ -505,6 +505,34 @@
 				"advanced"		"1"
 			}
             
+            "RailgunOverchargeLimit"
+			{
+				"text"			"#GameUI_RailgunOverchargeLimit"
+				"type"			"slideyslide"
+				"convar"		"sk_weapon_railgun_overcharge_limit"
+				"advanced"		"1"
+
+				"min"			"0"
+				"max"			"999"
+				"step"			"5"
+
+				"textprecision" "2"
+			}
+            
+            "InfiniteKnives"
+			{
+				"text"			"#GameUI_InfiniteKnives"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"sv_infinite_knives"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+            
             "ShootInZoom"
 			{
 				"text"			"#GameUI_ShootInZoom"
@@ -595,7 +623,7 @@
 
 				"min"			"5"
 				"max"			"30"
-				"step"			"1"
+				"step"			"5"
 
 				"textprecision" "2"
 			}
@@ -853,7 +881,7 @@
 
 				"min"			"0"
 				"max"			"15"
-				"step"			"1"
+				"step"			"5"
 
 				"textprecision" "2"
 			}
@@ -881,7 +909,7 @@
 
 				"min"			"0"
 				"max"			"15"
-				"step"			"1"
+				"step"			"5"
 
 				"textprecision" "2"
 			}
@@ -923,7 +951,7 @@
 
 				"min"			"100"
 				"max"			"1500"
-				"step"			"1"
+				"step"			"5"
 
 				"textprecision" "2"
 			}
@@ -937,7 +965,7 @@
 
 				"min"			"0"
 				"max"			"150"
-				"step"			"1"
+				"step"			"5"
 
 				"textprecision" "2"
 			}
@@ -951,7 +979,7 @@
 
 				"min"			"750"
 				"max"			"20000"
-				"step"			"1"
+				"step"			"5"
 
 				"textprecision" "2"
 			}
@@ -1021,7 +1049,7 @@
 
 				"min"			"750"
 				"max"			"20000"
-				"step"			"1"
+				"step"			"10"
 
 				"textprecision" "2"
 			}
@@ -1063,7 +1091,7 @@
 
 				"min"			"0"
 				"max"			"150"
-				"step"			"1"
+				"step"			"10"
 
 				"textprecision" "2"
 			}
@@ -1390,7 +1418,7 @@
 
 				"min"			"0"
 				"max"			"200"
-				"step"			"1"
+				"step"			"5"
 
 				"textprecision" "2"
 			}
@@ -2184,7 +2212,7 @@
 
 				"min"			"32"
 				"max"			"128"
-				"step"			"1"
+				"step"			"5"
 
 				"textprecision" "2"
 			}
@@ -2198,7 +2226,7 @@
 
 				"min"			"32"
 				"max"			"128"
-				"step"			"1"
+				"step"			"5"
 
 				"textprecision" "2"
 			}
@@ -2212,7 +2240,7 @@
 
 				"min"			"32"
 				"max"			"128"
-				"step"			"1"
+				"step"			"5"
 
 				"textprecision" "2"
 			}
@@ -2226,7 +2254,7 @@
 
 				"min"			"32"
 				"max"			"128"
-				"step"			"1"
+				"step"			"5"
 
 				"textprecision" "2"
 			}
@@ -2240,7 +2268,7 @@
 
 				"min"			"8"
 				"max"			"100"
-				"step"			"1"
+				"step"			"5"
 
 				"textprecision" "2"
 			}
@@ -2268,7 +2296,7 @@
 
 				"min"			"0"
 				"max"			"600"
-				"step"			"15"
+				"step"			"5"
 
 				"textprecision" "2"
 			}
@@ -2282,7 +2310,7 @@
 
 				"min"			"0"
 				"max"			"600"
-				"step"			"15"
+				"step"			"5"
 
 				"textprecision" "2"
 			}

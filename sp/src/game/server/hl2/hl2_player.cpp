@@ -1842,7 +1842,7 @@ void CHL2_Player::Spawn(void)
 				BaseClass::GiveAmmo(999, "slam");
 				BaseClass::GiveAmmo(999, "GaussEnergy");
 				BaseClass::GiveAmmo(999, "MP5Ammo");
-				BaseClass::GiveAmmo(999, "Railgun");
+				BaseClass::GiveAmmo(500, "Railgun");
 				//#ifdef HL2_EPISODIC
 						//GiveAmmo( 999, "Hopwire" );
 				//#endif		

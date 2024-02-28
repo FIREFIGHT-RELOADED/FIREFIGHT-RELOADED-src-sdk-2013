@@ -139,7 +139,7 @@ void CWeaponKnife::ThrowKnife(void)
 	m_flNextSecondaryAttack = gpGlobals->curtime + KNIFE_REFIRE_THROW;
 }
 
-ConVar sv_infinite_knives( "sv_infinite_knives", "0", FCVAR_CHEAT );
+ConVar sv_infinite_knives( "sv_infinite_knives", "0", FCVAR_ARCHIVE );
 void CWeaponKnife::SecondaryAttack(void)
 {
 	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
