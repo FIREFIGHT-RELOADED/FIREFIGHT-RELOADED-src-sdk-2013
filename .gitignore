@@ -104,3 +104,6 @@ sp/game/firefightreloaded/bin/gamepadui.dll
 
 //temporary so i can keep it from changing when adding the new menu.
 sp/game/firefightreloaded/cfg/user_default_sp.scr
+*.prt
+*.vmx
+*.bsp
