@@ -603,7 +603,7 @@ void CNPCMakerFirefight::MakeNPC()
 
 	if (entry->npcAttributePreset > 0)
 	{
-		if (entry->npcAttributeWildcard)
+		if (entry->npcAttributeWildcard > 0)
 		{
 			pent->m_pAttributes = LoadPresetFile("npc_any", entry->npcAttributePreset);
 			pent->LoadInitAttributes();
