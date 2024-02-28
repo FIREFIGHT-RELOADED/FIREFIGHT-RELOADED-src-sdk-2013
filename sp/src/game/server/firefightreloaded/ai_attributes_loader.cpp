@@ -83,6 +83,10 @@ CAttributesLoader::CAttributesLoader(const char *className, int preset)
 	{
 		wildcard = true;
 	}
+	else
+	{
+		wildcard = false;
+	}
 
 	char szFullName[512];
 	Q_snprintf(szFullName, sizeof(szFullName), "scripts/entity_attributes/%s/preset%i.txt", className, preset);

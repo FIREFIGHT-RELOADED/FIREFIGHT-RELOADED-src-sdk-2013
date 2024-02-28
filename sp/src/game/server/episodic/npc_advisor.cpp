@@ -72,8 +72,8 @@ ConVar advisor_disablebulletresistance("advisor_disablebulletresistance", "0", F
 ConVar advisor_speed("advisor_speed", "250", FCVAR_ARCHIVE);
 ConVar advisor_bulletresistance_speed("advisor_bulletresistance_speed", "120", FCVAR_ARCHIVE);
 
-ConVar advisor_dronifychance("advisor_dronifychance", "20", FCVAR_ARCHIVE);
-ConVar advisor_bulletresistance_dronifychance("advisor_bulletresistance_dronifychance", "50", FCVAR_ARCHIVE);
+ConVar advisor_enable_premature_droning("advisor_enable_premature_droning", "0", FCVAR_ARCHIVE);
+ConVar advisor_enable_droning("advisor_enable_droning", "1", FCVAR_ARCHIVE);
 
 extern ConVar sk_combine_ace_shielddamage_normal;
 extern ConVar sk_combine_ace_shielddamage_hard;
@@ -329,6 +329,8 @@ protected:
 	// keep track of up to four objects after we have thrown them, to prevent oscillation or levitation of recently thrown ammo.
 	EHANDLE m_haRecentlyThrownObjects[kMaxThrownObjectsTracked]; 
 	float   m_flaRecentlyThrownObjectTimes[kMaxThrownObjectsTracked];
+
+	float  m_fllastDronifiedTime;
 #endif
 
 	string_t m_iszLevitateGoal1;
@@ -390,6 +392,7 @@ BEGIN_DATADESC( CNPC_Advisor )
 	DEFINE_FIELD( m_flThrowPhysicsTime, FIELD_TIME ),
 	DEFINE_FIELD( m_flLastPlayerAttackTime, FIELD_TIME ),
 	DEFINE_FIELD( m_flStagingEnd, FIELD_TIME ),
+	DEFINE_FIELD(m_fllastDronifiedTime, FIELD_TIME),
 	DEFINE_FIELD( m_iStagingNum, FIELD_INTEGER ),
 	DEFINE_FIELD( m_bWasScripting, FIELD_BOOLEAN ),
 
@@ -1426,6 +1429,7 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 				{
 					int nRandomIndex = random->RandomInt(0, m_droneObjects.Count() - 1);
 					Dronify(m_droneObjects[nRandomIndex]);
+					m_fllastDronifiedTime = gpGlobals->curtime + 60.0f;
 					TaskComplete();
 				}
 				else
@@ -1920,12 +1924,11 @@ int CNPC_Advisor::SelectSchedule()
 			{
 				if (HasCondition(COND_HAVE_ENEMY_LOS) && HasCondition(COND_SEE_ENEMY))
 				{
-					int dronifyChance = (!m_bBulletResistanceBroken) ? advisor_bulletresistance_dronifychance.GetInt() : advisor_dronifychance.GetInt();
-					int nRandomIndex = random->RandomInt(0, dronifyChance);
-
-					if (m_hPlayerPinPos.IsValid())//false
-						return SCHED_ADVISOR_TOSS_PLAYER;
-					else if (nRandomIndex == dronifyChance)//false
+					//if (m_hPlayerPinPos.IsValid())//false
+						//return SCHED_ADVISOR_TOSS_PLAYER;
+					if (advisor_enable_droning.GetBool() && 
+						((m_fllastDronifiedTime < gpGlobals->curtime) && 
+							(advisor_enable_premature_droning.GetBool() || m_bBulletResistanceBroken)))
 						return SCHED_ADVISOR_DRONIFY;
 					else
 						return SCHED_ADVISOR_COMBAT;
@@ -1962,7 +1965,6 @@ void CNPC_Advisor::Dronify(CBaseEntity* pOther)
 			pNPC->Classify() == CLASS_METROPOLICE) &&
 			pNPC->IRelationType(this) != D_HT)
 		{
-			// when we collide with allies, disable our solid flag.
 			Write_BeamOn(pOther);
 
 			//our beam will turn them into DRONES.
