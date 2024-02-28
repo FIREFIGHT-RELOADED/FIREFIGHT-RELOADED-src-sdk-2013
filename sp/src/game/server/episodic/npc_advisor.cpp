@@ -1834,19 +1834,22 @@ void CNPC_Advisor::PullObjectToStaging( CBaseEntity *pEnt, const Vector &staging
 	IPhysicsObject *pPhys = pEnt->VPhysicsGetObject();
 	Assert(pPhys);
 
-	Vector curPos = pEnt->CollisionProp()->WorldSpaceCenter();
-	Vector displacement = stagingPos - curPos;
+	if (pPhys)
+	{
+		Vector curPos = pEnt->CollisionProp()->WorldSpaceCenter();
+		Vector displacement = stagingPos - curPos;
 
-	// quick and dirty -- use exponential decay to haul the object into place
-	// ( a better looking solution would be to use a spring system )
+		// quick and dirty -- use exponential decay to haul the object into place
+		// ( a better looking solution would be to use a spring system )
 
-	float desiredDisplacementLen = ExponentialDecay(STAGING_OBJECT_FALLOFF_TIME, gpGlobals->frametime);// * sqrt(displacementLen);
-	
-	Vector vel; AngularImpulse angimp;
-	pPhys->GetVelocity(&vel,&angimp);
+		float desiredDisplacementLen = ExponentialDecay(STAGING_OBJECT_FALLOFF_TIME, gpGlobals->frametime);// * sqrt(displacementLen);
 
-	vel = (1.0f / gpGlobals->frametime)*(displacement * (1.0f - desiredDisplacementLen));
-	pPhys->SetVelocity(&vel,&angimp);
+		Vector vel; AngularImpulse angimp;
+		pPhys->GetVelocity(&vel, &angimp);
+
+		vel = (1.0f / gpGlobals->frametime) * (displacement * (1.0f - desiredDisplacementLen));
+		pPhys->SetVelocity(&vel, &angimp);
+	}
 }
 #endif
 
