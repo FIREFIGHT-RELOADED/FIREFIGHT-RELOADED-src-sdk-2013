@@ -4,6 +4,7 @@
 #include "gamepadui_frame.h"
 #include "gamepadui_scroll.h"
 #include "gamepadui_genericconfirmation.h"
+#include "gamepadui_mainmenu.h"
 
 #include "ienginevgui.h"
 #include "vgui/ILocalize.h"
@@ -27,25 +28,25 @@ class GamepadUIStoreButton;
 
 class GamepadUIStore : public GamepadUIFrame
 {
-    DECLARE_CLASS_SIMPLE( GamepadUIStore, GamepadUIFrame );
+    DECLARE_CLASS_SIMPLE(GamepadUIStore, GamepadUIFrame);
 
 public:
-    GamepadUIStore( vgui::Panel *pParent, const char* pPanelName );
+    GamepadUIStore(vgui::Panel* pParent, const char* pPanelName);
 
     void UpdateGradients();
 
     void OnThink() OVERRIDE;
     void ApplySchemeSettings(vgui::IScheme* pScheme) OVERRIDE;
-    void OnCommand( char const* pCommand ) OVERRIDE;
+    void OnCommand(char const* pCommand) OVERRIDE;
     void LoadItemFile(const char* kvName, const char* scriptPath);
     void CreateItemList();
     void UpdateFrameTitle();
 
-    MESSAGE_FUNC_HANDLE( OnGamepadUIButtonNavigatedTo, "OnGamepadUIButtonNavigatedTo", button );
+    MESSAGE_FUNC_HANDLE(OnGamepadUIButtonNavigatedTo, "OnGamepadUIButtonNavigatedTo", button);
 
-    void LayoutMapButtons();
+    void LayoutStoreButtons();
 
-    void OnMouseWheeled( int delta ) OVERRIDE;
+    void OnMouseWheeled(int delta) OVERRIDE;
 
 private:
     CUtlVector<KeyValues*> m_pItems;
@@ -53,9 +54,9 @@ private:
 
     GamepadUIScrollState m_ScrollState;
 
-    GAMEPADUI_PANEL_PROPERTY( float, m_ChapterOffsetX, "Chapters.OffsetX", "0", SchemeValueTypes::ProportionalFloat );
-    GAMEPADUI_PANEL_PROPERTY( float, m_ChapterOffsetY, "Chapters.OffsetY", "0", SchemeValueTypes::ProportionalFloat );
-    GAMEPADUI_PANEL_PROPERTY( float, m_ChapterSpacing, "Chapters.Spacing", "0", SchemeValueTypes::ProportionalFloat );
+    GAMEPADUI_PANEL_PROPERTY(float, m_ChapterOffsetX, "Chapters.OffsetX", "0", SchemeValueTypes::ProportionalFloat);
+    GAMEPADUI_PANEL_PROPERTY(float, m_ChapterOffsetY, "Chapters.OffsetY", "0", SchemeValueTypes::ProportionalFloat);
+    GAMEPADUI_PANEL_PROPERTY(float, m_ChapterSpacing, "Chapters.Spacing", "0", SchemeValueTypes::ProportionalFloat);
 
     bool m_bCommentaryMode = false;
 };
@@ -63,22 +64,22 @@ private:
 class GamepadUIStoreButton : public GamepadUIButton
 {
 public:
-    DECLARE_CLASS_SIMPLE( GamepadUIStoreButton, GamepadUIButton );
+    DECLARE_CLASS_SIMPLE(GamepadUIStoreButton, GamepadUIButton);
 
-    GamepadUIStoreButton( vgui::Panel* pParent, vgui::Panel* pActionSignalTarget, const char* pSchemeFile, const char* pCommand, const char* pText, const char* pDescription, const char *pChapterImage, int pKashValue, bool bOnlyOne)
-        : BaseClass( pParent, pActionSignalTarget, pSchemeFile, pCommand, pText, pDescription )
-        , m_Image( pChapterImage )
+    GamepadUIStoreButton(vgui::Panel* pParent, vgui::Panel* pActionSignalTarget, const char* pSchemeFile, const char* pCommand, const char* pText, const char* pDescription, const char* pChapterImage, int pKashValue, int pItemLimit)
+        : BaseClass(pParent, pActionSignalTarget, pSchemeFile, pCommand, pText, pDescription)
+        , m_Image(pChapterImage)
         , m_iKashValue(pKashValue)
-        , m_bOnlyOne(bOnlyOne)
+        , m_iItemLimit(pItemLimit)
     {
         m_iItemPurchases = 0;
     }
 
-    GamepadUIStoreButton( vgui::Panel* pParent, vgui::Panel* pActionSignalTarget, const char* pSchemeFile, const char* pCommand, const wchar* pText, const wchar* pDescription, const char *pChapterImage, int pKashValue, bool bOnlyOne)
-        : BaseClass( pParent, pActionSignalTarget, pSchemeFile, pCommand, pText, pDescription )
-        , m_Image( pChapterImage )
+    GamepadUIStoreButton(vgui::Panel* pParent, vgui::Panel* pActionSignalTarget, const char* pSchemeFile, const char* pCommand, const wchar* pText, const wchar* pDescription, const char* pChapterImage, int pKashValue, int pItemLimit)
+        : BaseClass(pParent, pActionSignalTarget, pSchemeFile, pCommand, pText, pDescription)
+        , m_Image(pChapterImage)
         , m_iKashValue(pKashValue)
-        , m_bOnlyOne(bOnlyOne)
+        , m_iItemLimit(pItemLimit)
     {
         m_iItemPurchases = 0;
     }
@@ -96,7 +97,6 @@ public:
     {
         BaseClass::DoClick();
 
-        //todo, fix this state not updating when trying to buy 2 weapons.
         static ConVarRef player_cur_money("player_cur_money");
         int money = player_cur_money.GetInt();
 
@@ -106,9 +106,16 @@ public:
         {
             if (m_iItemPurchases == 1)
             {
-                SetButtonDescription(GamepadUIString("#FR_Store_Purchased"));
+                if (m_iItemLimit == 1)
+                {
+                    SetButtonDescription(GamepadUIString("#FR_Store_Purchased_LimitExceeded"));
+                }
+                else
+                {
+                    SetButtonDescription(GamepadUIString("#FR_Store_Purchased"));
+                }
             }
-            else if (!m_bOnlyOne)
+            else if (m_iItemPurchases < m_iItemLimit || m_iItemLimit <= 0)
             {
                 char szPurchases[1024];
                 itoa(m_iItemPurchases, szPurchases, 10);
@@ -123,40 +130,33 @@ public:
             }
             else
             {
-                SetButtonDescription(GamepadUIString("#FR_Store_Denied"));
+                SetButtonDescription(GamepadUIString("#FR_Store_AlreadyPurchased"));
             }
         }
         else
         {
             SetButtonDescription(GamepadUIString("#FR_Store_Denied"));
         }
-
-        GamepadUIStore* pParent = (GamepadUIStore*)GetParent();
-
-        if (pParent)
-        {
-            pParent->UpdateFrameTitle();
-        }
     }
 
     void Paint() OVERRIDE
     {
         int x, y, w, t;
-        GetBounds( x, y, w, t );
+        GetBounds(x, y, w, t);
 
         PaintButton();
 
-        vgui::surface()->DrawSetColor( Color( 255, 255, 255, 255 ) );
-        vgui::surface()->DrawSetTexture( m_Image );
-        int imgH = ( w * 9 ) / 16;
+        vgui::surface()->DrawSetColor(Color(255, 255, 255, 255));
+        vgui::surface()->DrawSetTexture(m_Image);
+        int imgH = (w * 9) / 16;
         //vgui::surface()->DrawTexturedRect( 0, 0, w, );
         float offset = m_flTextOffsetYAnimationValue[ButtonStates::Out] - m_flTextOffsetY;
-        vgui::surface()->DrawTexturedSubRect( 0, 0, w, imgH - offset, 0.0f, 0.0f, 1.0f, ( imgH - offset ) / imgH );
-        vgui::surface()->DrawSetTexture( 0 );
-        if ( !IsEnabled() )
+        vgui::surface()->DrawTexturedSubRect(0, 0, w, imgH - offset, 0.0f, 0.0f, 1.0f, (imgH - offset) / imgH);
+        vgui::surface()->DrawSetTexture(0);
+        if (!IsEnabled())
         {
-            vgui::surface()->DrawSetColor( Color( 255, 255, 255, 16 ) );
-            vgui::surface()->DrawFilledRect( 0, 0, w, imgH - offset );
+            vgui::surface()->DrawSetColor(Color(255, 255, 255, 16));
+            vgui::surface()->DrawFilledRect(0, 0, w, imgH - offset);
         }
 
         PaintText();
@@ -193,7 +193,7 @@ private:
     GamepadUIImage m_Image;
     int m_iKashValue;
     int m_iItemPurchases;
-    bool m_bOnlyOne;
+    int m_iItemLimit;
 };
 
 GamepadUIStore::GamepadUIStore( vgui::Panel *pParent, const char* PanelName ) : BaseClass( pParent, PanelName )
@@ -274,8 +274,9 @@ void GamepadUIStore::CreateItemList()
         KeyValues* pNode = m_pItems[i];
 
         const char* itemName = pNode->GetString("name", "");
-        const char* itemPrice = pNode->GetString("price", 0);
+        int itemPrice = pNode->GetInt("price", 0);
         const char* itemCMD = pNode->GetString("command", "");
+        int itemLimit = pNode->GetInt("limit", 0);
 
         char szNameString[2048];
         Q_snprintf(szNameString, sizeof(szNameString), "#GameUI_Store_Buy_%s", itemName);
@@ -288,13 +289,16 @@ void GamepadUIStore::CreateItemList()
         wchar_t text[32];
         wchar_t num[32];
         wchar_t* chapter = g_pVGuiLocalize->Find("#Valve_Hud_MONEY");
-        g_pVGuiLocalize->ConvertANSIToUnicode(itemPrice, num, sizeof(num));
+        char szPrice[1024];
+        itoa(itemPrice, szPrice, 10);
+
+        g_pVGuiLocalize->ConvertANSIToUnicode(szPrice, num, sizeof(num));
         _snwprintf(text, ARRAYSIZE(text), L"%ls %ls", num, chapter ? chapter : L"KASH");
 
         GamepadUIString strItemPrice(text);
 
         char szCommand[2048];
-        Q_snprintf(szCommand, sizeof(szCommand), "purchase_item %s \"%s\"", itemPrice, itemCMD);
+        Q_snprintf(szCommand, sizeof(szCommand), "purchase_item %i \"%s\" %i", itemPrice, itemCMD, itemLimit);
 
         GamepadUIString strChapterName(szNameString);
 
@@ -305,13 +309,10 @@ void GamepadUIStore::CreateItemList()
             Q_snprintf(chapterImage, sizeof(chapterImage), "vgui/hud/icon_locked.vmt");
         }
 
-        bool onlyOne = pNode->GetString("onlyone", 0);
-        int itemPriceInt = pNode->GetInt("price", 0);
-
         GamepadUIStoreButton* pChapterButton = new GamepadUIStoreButton(
             this, this,
             GAMEPADUI_MAP_SCHEME, szCommand,
-            strChapterName.String(), strItemPrice.String(), chapterImage, itemPriceInt, onlyOne);
+            strChapterName.String(), strItemPrice.String(), chapterImage, itemPrice, itemLimit);
         pChapterButton->SetEnabled(true);
         pChapterButton->SetPriority(i);
         pChapterButton->SetForwardToParent(true);
@@ -331,8 +332,8 @@ void GamepadUIStore::UpdateGradients()
 void GamepadUIStore::OnThink()
 {
     BaseClass::OnThink();
-
-    LayoutMapButtons();
+    UpdateFrameTitle();
+    LayoutStoreButtons();
 }
 
 void GamepadUIStore::ApplySchemeSettings(vgui::IScheme* pScheme)
@@ -379,7 +380,7 @@ void GamepadUIStore::OnGamepadUIButtonNavigatedTo( vgui::VPANEL button )
     }
 }
 
-void GamepadUIStore::LayoutMapButtons()
+void GamepadUIStore::LayoutStoreButtons()
 {
     int nParentW, nParentH;
 	GetParent()->GetSize( nParentW, nParentH );

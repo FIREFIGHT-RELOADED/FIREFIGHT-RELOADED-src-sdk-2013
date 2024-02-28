@@ -237,6 +237,9 @@ namespace FooterButtons
 using FooterButton = FooterButtons::FooterButton;
 using FooterButtonMask = FooterButtons::FooterButtonMask;
 
+#define DEFAULT_BTN_ARMED_SOUND "ui/buttonrollover.wav"
+#define DEFAULT_BTN_RELEASED_SOUND "ui/buttonclickrelease.wav"
+
 class GamepadUIButton : public vgui::Button, public SchemeValueMap
 {
     DECLARE_CLASS_SIMPLE( GamepadUIButton, vgui::Button );

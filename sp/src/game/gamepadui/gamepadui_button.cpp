@@ -8,9 +8,6 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-#define DEFAULT_BTN_ARMED_SOUND "ui/buttonrollover.wav"
-#define DEFAULT_BTN_RELEASED_SOUND "ui/buttonclickrelease.wav"
-
 GamepadUIButton::GamepadUIButton( vgui::Panel *pParent, vgui::Panel* pActionSignalTarget, const char *pSchemeFile, const char *pCommand, const char *pText, const char *pDescription )
     : BaseClass( pParent, "", "", pActionSignalTarget, pCommand )
     , m_strButtonText( pText )

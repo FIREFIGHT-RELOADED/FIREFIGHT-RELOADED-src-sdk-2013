@@ -16,6 +16,7 @@
 	{
 		"name"		"MaxHealth"
 		"price"		"150"
+        "limit"	    "15"
 		"command"	"upgrade 0"
 	}
 	"4"

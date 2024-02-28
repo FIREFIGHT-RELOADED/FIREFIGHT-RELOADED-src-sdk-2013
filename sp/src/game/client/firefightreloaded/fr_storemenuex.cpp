@@ -117,8 +117,9 @@ KeyValues* CFRStoreMenuEX::LoadItemFile(const char* kvName, const char* scriptPa
 			const char* itemName = pNode->GetString("name", "");
 			int itemPrice = pNode->GetInt("price", 0);
 			const char* itemCMD = pNode->GetString("command", "");
+			int itemLimit = pNode->GetInt("limit", 0);
 
-			Panel* item = CreateItemPanel(itemName, itemPrice, itemCMD);
+			Panel* item = CreateItemPanel(itemName, itemPrice, itemCMD, itemLimit);
 			m_pItemList->AddItem(item);
 
 			pNode = pNode->GetNextKey();
@@ -128,7 +129,7 @@ KeyValues* CFRStoreMenuEX::LoadItemFile(const char* kvName, const char* scriptPa
 	return pKV;
 }
 
-Panel* CFRStoreMenuEX::CreateItemPanel(const char* name, int price, const char* command)
+Panel* CFRStoreMenuEX::CreateItemPanel(const char* name, int price, const char* command, int limit)
 {
 	Panel* PanelTest = new Panel(this, "ItemPanel");
 	PanelTest->SetSize(50, 120);
@@ -152,7 +153,7 @@ Panel* CFRStoreMenuEX::CreateItemPanel(const char* name, int price, const char* 
 	pLabel2->SetWide(384);
 
 	char szCommand[2048];
-	Q_snprintf(szCommand, sizeof(szCommand), "purchase %i \"%s\"", price, command);
+	Q_snprintf(szCommand, sizeof(szCommand), "purchase %i \"%s\" %i", price, command, limit);
 
 	Button* pButton = new Button(PanelTest, "BuyButton", "#GameUI_Store_BuyItem", this, szCommand);
 	pButton->SetPos(10, 75);

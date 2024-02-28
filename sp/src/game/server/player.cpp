@@ -205,8 +205,6 @@ ConVar sv_decay_rate("sv_decay_rate", "8.5", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar sv_decay_increaserateminhealth("sv_decay_increaserateminhealth", "1000", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar sv_decay_increaseratemultiplier("sv_decay_increaseratemultiplier", "2", FCVAR_REPLICATED | FCVAR_CHEAT);
 
-ConVar sv_fr_maxhealthupgrades("sv_fr_maxhealthupgrades", "15", FCVAR_CHEAT);
-
 ConVar sk_player_weapons("sk_player_weapons", "1");
 
 ConVar sv_player_maxsuitpower("sv_player_maxsuitpower", "200", FCVAR_REPLICATED);
@@ -7824,11 +7822,14 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 	{
 		int upgradeID = atoi(args[1]);
 		int moneyAmount = atoi(args[2]);
+		// the only command that can read item limits :/
+		// This is only because "item" can detect if we already own an item.
+		int limit = atoi(args[3]);
 
 		//right now we only have the max health upgrade.
 		if (upgradeID == FIREFIGHT_UPGRADE_MAXHEALTH)
 		{
-			if (m_iHealthUpgrades < sv_fr_maxhealthupgrades.GetInt())
+			if (m_iHealthUpgrades < limit)
 			{
 				Market_SetMaxHealth();
 				engine->ClientCommand(edict(), "confirm_purchase %i", moneyAmount);
@@ -7857,6 +7858,7 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		{
 			int moneyAmount = atoi(args[1]);
 			const char *cmdi = args[2];
+			int limit = atoi(args[3]);
 			if (GetMoney() < moneyAmount)
 			{
 				if (sv_store_denynotifications.GetBool())
@@ -7872,7 +7874,7 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 			}
 			else
 			{
-				engine->ClientCommand(edict(), "%s %i", cmdi, moneyAmount);
+				engine->ClientCommand(edict(), "%s %i %i", cmdi, moneyAmount, limit);
 			}
 		}
 		else

@@ -4,7 +4,7 @@
     {
         "name"		"Knife"
         "price"		"450"
-        "onlyone"	"1"
+        "limit"	    "1"
         "command"	"item weapon_knife 0"
     }
 	"2"
@@ -23,70 +23,70 @@
 	{
 		"name"		"357Magnum"
 		"price"		"200"
-        "onlyone"	"1"
+        "limit"	    "1"
 		"command"	"item weapon_357 0"
 	}
 	"5"
 	{
 		"name"		"AR2"
 		"price"		"245"
-        "onlyone"	"1"
+        "limit"	    "1"
 		"command"	"item weapon_ar2 0"
 	}
 	"6"
 	{
 		"name"		"Crossbow"
 		"price"		"255"
-        "onlyone"	"1"
+        "limit"	    "1"
 		"command"	"item weapon_crossbow 0"
 	}
 	"7"
 	{
 		"name"		"Shotgun"
 		"price"		"250"
-        "onlyone"	"1"
+        "limit"	    "1"
 		"command"	"item weapon_shotgun 0"
 	}
 	"8"
 	{
 		"name"		"RPG"
 		"price"		"350"
-        "onlyone"	"1"
+        "limit"	    "1"
 		"command"	"item weapon_rpg 0" 
 	}
 	"9"
 	{
 		"name"		"SniperRifle"
 		"price"		"260"
-        "onlyone"	"1"
+        "limit"	    "1"
 		"command"	"item weapon_sniper_rifle 0" 
 	}
 	"10"
 	{
 		"name"		"M249Para"
 		"price"		"330"
-        "onlyone"	"1"
+        "limit"	    "1"
 		"command"	"item weapon_m249para 0" 
 	}
 	"11"
 	{
 		"name"		"Gauss"
 		"price"		"1500"
-        "onlyone"	"1"
+        "limit"	    "1"
 		"command"	"item weapon_gauss 0" 
 	}
 	"12"
 	{
 		"name"		"Katana"
 		"price"		"3000"
-        "onlyone"	"1"
+        "limit"	    "1"
 		"command"	"item weapon_katana 0" 
 	}
     "13"
 	{
 		"name"		"Railgun"
 		"price"		"3500"
-        "onlyone"	"1"
+        "limit"	    "1"
 		"command"	"item weapon_railgun 0" 
 	}
 }
