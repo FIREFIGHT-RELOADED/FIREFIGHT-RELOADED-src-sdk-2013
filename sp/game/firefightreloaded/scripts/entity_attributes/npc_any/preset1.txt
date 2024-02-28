@@ -12,5 +12,6 @@
 	"disable_bullet_resistance_outline"	"1"
 	"volley_normal_delay"	"0.1"
 	"volley_size"		"8"
+	"gibs"			"0"
 	"persist"		"0"
 }

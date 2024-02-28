@@ -1081,6 +1081,34 @@
 					"1"		"#gameui_enabled"
 				}
 			}
+            
+            "AdvisorPrematureDroning"
+			{
+				"text"			"#GameUI_AdvisorPrematureDroning"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"advisor_enable_premature_droning"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+            
+            "AdvisorDroning"
+			{
+				"text"			"#GameUI_AdvisorDroning"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"advisor_enable_droning"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
 			
 			"AdvancedHeader"
 			{
