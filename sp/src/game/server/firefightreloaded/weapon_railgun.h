@@ -39,6 +39,7 @@ public:
 	CWeaponRailgun( void );
 
 	void	Equip(CBaseCombatCharacter* pOwner);
+	void	Precache(void);
 	bool	Deploy(void);
 	bool	Holster(CBaseCombatWeapon* pSwitchingTo);
 	void	ItemPostFrame(void);
@@ -48,6 +49,7 @@ public:
 	void	SecondaryAttack(void);
 	void	Fire(void);
 	void	RechargeAmmo(bool bIsHolstered);
+	void	DechargeAmmo();
 	void	DrawBeam(const Vector& startPos, const Vector& endPos);
 	virtual const Vector& GetBulletSpread(void)
 	{
@@ -74,10 +76,12 @@ private:
 private:
 	CBeam* m_pBeam;
 	float m_flNextCharge;
+	float m_flNextWarningBeep;
 	bool m_bInZoom;
 	bool m_bJustOvercharged;
 	bool m_bIsLowBattery;
 	bool m_bOverchargeDamageBenefits;
+	bool m_bPlayedDechargingSound;
 	
 	CWeaponRailgun( const CWeaponRailgun & );
 };

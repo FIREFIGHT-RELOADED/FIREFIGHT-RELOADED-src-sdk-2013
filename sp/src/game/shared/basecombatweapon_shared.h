@@ -118,6 +118,12 @@ namespace vgui2
 #define VECTOR_CONE_15DEGREES		Vector( 0.13053, 0.13053, 0.13053 )
 #define VECTOR_CONE_20DEGREES		Vector( 0.17365, 0.17365, 0.17365 )
 
+// The minimum time a hud hint for a weapon should be on screen. If we switch away before
+// this, then teh hud hint counter will be deremented so the hint will be shown again, as
+// if it had never been seen. The total display time for a hud hint is specified in client
+// script HudAnimations.txt (which I can't read here). 
+#define MIN_HUDHINT_DISPLAY_TIME 7.0f
+
 //-----------------------------------------------------------------------------
 // Purpose: Base weapon class, shared on client and server
 //-----------------------------------------------------------------------------
@@ -640,10 +646,6 @@ public:
 
 	IPhysicsConstraint		*GetConstraint() { return m_pConstraint; }
 
-private:
-	WEAPON_FILE_INFO_HANDLE	m_hWeaponFileInfo;
-	IPhysicsConstraint		*m_pConstraint;
-
 	int						m_iAltFireHudHintCount;		// How many times has this weapon displayed its alt-fire HUD hint?
 	int						m_iReloadHudHintCount;		// How many times has this weapon displayed its reload HUD hint?
 	int						m_iStoreHudHintCount;		// How many times has this weapon displayed its store HUD hint?
@@ -654,6 +656,10 @@ private:
 	bool					m_bStandardHudHintDisplayed;	// Have we displayed a store HUD hint since this weapon was deployed?
 	float					m_flHudHintPollTime;	// When to poll the weapon again for whether it should display a hud hint.
 	float					m_flHudHintMinDisplayTime; // if the hint is squelched before this, reset my counter so we'll display it again.
+
+private:
+	WEAPON_FILE_INFO_HANDLE	m_hWeaponFileInfo;
+	IPhysicsConstraint		*m_pConstraint;
 
 	// Server only
 #if !defined( CLIENT_DLL )

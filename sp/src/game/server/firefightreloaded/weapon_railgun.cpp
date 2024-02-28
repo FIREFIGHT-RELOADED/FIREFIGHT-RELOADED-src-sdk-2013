@@ -14,16 +14,19 @@
 #include "explode.h"
 
 ConVar sk_weapon_railgun_overcharge_limit("sk_weapon_railgun_overcharge_limit", "500", FCVAR_ARCHIVE);
+ConVar sk_weapon_railgun_warning_beep_time("sk_weapon_railgun_warning_beep_time", "3.5", FCVAR_ARCHIVE);
 
 IMPLEMENT_SERVERCLASS_ST(CWeaponRailgun, DT_WeaponRailgun)
 END_SEND_TABLE()
 
 BEGIN_DATADESC(CWeaponRailgun)
-DEFINE_FIELD(m_flNextCharge, FIELD_FLOAT),
+DEFINE_FIELD(m_flNextCharge, FIELD_TIME),
 DEFINE_FIELD(m_bInZoom, FIELD_BOOLEAN),
 DEFINE_FIELD(m_bJustOvercharged, FIELD_BOOLEAN),
 DEFINE_FIELD(m_bIsLowBattery, FIELD_BOOLEAN),
 DEFINE_FIELD(m_bOverchargeDamageBenefits, FIELD_BOOLEAN),
+DEFINE_FIELD(m_flNextWarningBeep, FIELD_TIME),
+DEFINE_FIELD(m_bPlayedDechargingSound, FIELD_BOOLEAN),
 END_DATADESC()
 
 LINK_ENTITY_TO_CLASS( weapon_railgun, CWeaponRailgun );
@@ -50,15 +53,24 @@ CWeaponRailgun::CWeaponRailgun( void )
 	m_bReloadsSingly	= false;
 	m_bFiresUnderwater	= false;
 	m_flNextCharge = 0;
+	m_flNextWarningBeep = 0;
 	m_bInZoom = false;
 	m_bJustOvercharged = false;
 	m_bOverchargeDamageBenefits = false;
 	m_bIsLowBattery = false;
+	m_bPlayedDechargingSound = false;
 }
 
 void CWeaponRailgun::Equip(CBaseCombatCharacter* pOwner)
 {
 	return BaseClass::Equip(pOwner);
+}
+
+void CWeaponRailgun::Precache(void)
+{
+	BaseClass::Precache();
+
+	PrecacheScriptSound("SuitRecharge.ChargingLoop");
 }
 
 //-----------------------------------------------------------------------------
@@ -68,6 +80,7 @@ bool CWeaponRailgun::Deploy(void)
 {
 	return BaseClass::Deploy();
 }
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -195,6 +208,48 @@ void CWeaponRailgun::ItemPostFrame(void)
 		}
 	}
 
+	if (m_bOverchargeDamageBenefits && (m_flNextWarningBeep <= gpGlobals->curtime) && (sk_weapon_railgun_overcharge_limit.GetInt() > 0 && pOwner->GetAmmoCount(m_iPrimaryAmmoType) > sk_weapon_railgun_overcharge_limit.GetInt()))
+	{
+		if (sk_weapon_railgun_warning_beep_time.GetFloat() > 0)
+		{
+			WeaponSound(SPECIAL1);
+			m_flNextWarningBeep = gpGlobals->curtime + sk_weapon_railgun_warning_beep_time.GetFloat();
+		}
+		else
+		{
+			m_flNextWarningBeep = gpGlobals->curtime + 3.0f;
+		}
+
+		CFmtStr hint;
+		hint.sprintf("#valve_hint_warning_%s", GetClassname());
+		UTIL_HudHintText(GetOwner(), hint.Access());
+		m_iStandardHudHintCount++;
+		m_bStandardHudHintDisplayed = true;
+		m_flHudHintMinDisplayTime = gpGlobals->curtime + MIN_HUDHINT_DISPLAY_TIME;
+	}
+
+	if (m_bOverchargeDamageBenefits && (pOwner->m_nButtons & IN_RELOAD) && (sk_weapon_railgun_overcharge_limit.GetInt() > 0 && pOwner->GetAmmoCount(m_iPrimaryAmmoType) > sk_weapon_railgun_overcharge_limit.GetInt()))
+	{
+		DechargeAmmo();
+
+		if (!m_bPlayedDechargingSound)
+		{
+			CPASAttenuationFilter filter(this, "SuitRecharge.ChargingLoop");
+			filter.MakeReliable();
+			EmitSound(filter, entindex(), "SuitRecharge.ChargingLoop");
+			m_bPlayedDechargingSound = true;
+		}
+	}
+
+	if (m_bOverchargeDamageBenefits && pOwner->GetAmmoCount(m_iPrimaryAmmoType) < sk_weapon_railgun_overcharge_limit.GetInt())
+	{
+		if (m_bPlayedDechargingSound)
+		{
+			StopSound("SuitRecharge.ChargingLoop");
+			m_bPlayedDechargingSound = false;
+		}
+	}
+
 	// -----------------------
 	//  No buttons down
 	// -----------------------
@@ -204,6 +259,12 @@ void CWeaponRailgun::ItemPostFrame(void)
 		if (!ReloadOrSwitchWeapons() && (m_bInReload == false))
 		{
 			WeaponIdle();
+		}
+
+		if (m_bPlayedDechargingSound)
+		{
+			StopSound("SuitRecharge.ChargingLoop");
+			m_bPlayedDechargingSound = false;
 		}
 	}
 }
@@ -342,8 +403,6 @@ void CWeaponRailgun::Fire( void )
 //-----------------------------------------------------------------------------
 void CWeaponRailgun::DrawBeam(const Vector& startPos, const Vector& endPos)
 {
-#ifndef CLIENT_DLL
-
 	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
 
 	if (pOwner == NULL)
@@ -363,7 +422,6 @@ void CWeaponRailgun::DrawBeam(const Vector& startPos, const Vector& endPos)
 	m_pBeam->SetBrightness(m_bIsLowBattery ? 128 : 255);
 	m_pBeam->RelinkBeam();
 	m_pBeam->LiveForTime(0.1f);
-#endif
 }
 
 void CWeaponRailgun::RechargeAmmo(bool bIsHolstered)
@@ -380,9 +438,7 @@ void CWeaponRailgun::RechargeAmmo(bool bIsHolstered)
 	if (pPlayer == NULL)
 		return;
 
-#ifndef CLIENT_DLL
 	pPlayer->GiveAmmo(1, m_iPrimaryAmmoType, true);
-#endif // ! CLIENT_DLL
 
 	if (!bIsHolstered)
 	{
@@ -416,6 +472,31 @@ void CWeaponRailgun::RechargeAmmo(bool bIsHolstered)
 	if (m_bJustOvercharged && pPlayer->GetAmmoCount(m_iPrimaryAmmoType) == GetDefaultClip1())
 	{
 		m_bJustOvercharged = false;
+	}
+}
+
+void CWeaponRailgun::DechargeAmmo()
+{
+	//if (m_flNextPrimaryAttack >= gpGlobals->curtime)
+		//return;
+
+	// Time to recharge yet?
+	if (m_flNextCharge >= gpGlobals->curtime)
+		return;
+
+	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+
+	if (pPlayer == NULL)
+		return;
+
+	if (sk_weapon_railgun_overcharge_limit.GetInt() <= 0)
+		return;
+
+	if (pPlayer->GetAmmoCount(m_iPrimaryAmmoType) > sk_weapon_railgun_overcharge_limit.GetInt())
+	{
+		pPlayer->RemoveAmmo(25, m_iPrimaryAmmoType);
+		pPlayer->IncrementArmorValue(25);
+		m_flNextCharge = gpGlobals->curtime + RAIL_RECHARGE_BACKGROUND_TIME;
 	}
 }
 

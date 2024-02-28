@@ -1696,6 +1696,20 @@
 					"1"		"#gameui_enabled"
 				}
 			}
+            
+            "RailgunWarningBeepTime"
+			{
+                "text"			"#GameUI_RailgunWarningBeepTime"
+				"type"			"slideyslide"
+				"convar"		"sk_weapon_railgun_warning_beep_time"
+				"advanced"		"1"
+
+				"min"			"3"
+				"max"			"30"
+				"step"			"0.5"
+
+				"textprecision" "2"
+			}
 			
 			"ManOfAFewWordsArentYou"
 			{

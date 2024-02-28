@@ -404,7 +404,7 @@ void GamepadUIStore::LayoutStoreButtons()
         m_pChapterButtons[i]->SetVisible( true );
     }
 
-    m_ScrollState.UpdateScrolling( 2.0f, GamepadUI::GetInstance().GetTime() );
+    m_ScrollState.UpdateScrolling( 6.5f, GamepadUI::GetInstance().GetTime() );
 }
 
 void GamepadUIStore::OnCommand( char const* pCommand )
