@@ -37,7 +37,9 @@ public:
     void OnThink() OVERRIDE;
     void ApplySchemeSettings(vgui::IScheme* pScheme) OVERRIDE;
     void OnCommand( char const* pCommand ) OVERRIDE;
-    KeyValues* LoadItemFile(const char* kvName, const char* scriptPath);
+    void LoadItemFile(const char* kvName, const char* scriptPath);
+    void CreateItemList();
+    void UpdateFrameTitle();
 
     MESSAGE_FUNC_HANDLE( OnGamepadUIButtonNavigatedTo, "OnGamepadUIButtonNavigatedTo", button );
 
@@ -46,6 +48,7 @@ public:
     void OnMouseWheeled( int delta ) OVERRIDE;
 
 private:
+    CUtlVector<KeyValues*> m_pItems;
     CUtlVector< GamepadUIStoreButton* > m_pChapterButtons;
 
     GamepadUIScrollState m_ScrollState;
@@ -62,29 +65,78 @@ class GamepadUIStoreButton : public GamepadUIButton
 public:
     DECLARE_CLASS_SIMPLE( GamepadUIStoreButton, GamepadUIButton );
 
-    GamepadUIStoreButton( vgui::Panel* pParent, vgui::Panel* pActionSignalTarget, const char* pSchemeFile, const char* pCommand, const char* pText, const char* pDescription, const char *pChapterImage )
+    GamepadUIStoreButton( vgui::Panel* pParent, vgui::Panel* pActionSignalTarget, const char* pSchemeFile, const char* pCommand, const char* pText, const char* pDescription, const char *pChapterImage, int pKashValue, bool bOnlyOne)
         : BaseClass( pParent, pActionSignalTarget, pSchemeFile, pCommand, pText, pDescription )
         , m_Image( pChapterImage )
+        , m_iKashValue(pKashValue)
+        , m_bOnlyOne(bOnlyOne)
     {
+        m_iItemPurchases = 0;
     }
 
-    GamepadUIStoreButton( vgui::Panel* pParent, vgui::Panel* pActionSignalTarget, const char* pSchemeFile, const char* pCommand, const wchar* pText, const wchar* pDescription, const char *pChapterImage )
+    GamepadUIStoreButton( vgui::Panel* pParent, vgui::Panel* pActionSignalTarget, const char* pSchemeFile, const char* pCommand, const wchar* pText, const wchar* pDescription, const char *pChapterImage, int pKashValue, bool bOnlyOne)
         : BaseClass( pParent, pActionSignalTarget, pSchemeFile, pCommand, pText, pDescription )
         , m_Image( pChapterImage )
+        , m_iKashValue(pKashValue)
+        , m_bOnlyOne(bOnlyOne)
     {
+        m_iItemPurchases = 0;
     }
 
     ~GamepadUIStoreButton()
     {
-        if ( s_pLastNewGameButton == this )
-            s_pLastNewGameButton = NULL;
     }
 
     ButtonState GetCurrentButtonState() OVERRIDE
     {
-        if ( s_pLastNewGameButton == this )
-            return ButtonState::Over;
         return BaseClass::GetCurrentButtonState();
+    }
+
+    void DoClick() OVERRIDE
+    {
+        BaseClass::DoClick();
+
+        //todo, fix this state not updating when trying to buy 2 weapons.
+        static ConVarRef player_cur_money("player_cur_money");
+        int money = player_cur_money.GetInt();
+
+        m_iItemPurchases++;
+
+        if (money >= m_iKashValue)
+        {
+            if (m_iItemPurchases == 1)
+            {
+                SetButtonDescription(GamepadUIString("#FR_Store_Purchased"));
+            }
+            else if (!m_bOnlyOne)
+            {
+                char szPurchases[1024];
+                itoa(m_iItemPurchases, szPurchases, 10);
+
+                wchar_t wzPurchases[1024];
+                g_pVGuiLocalize->ConvertANSIToUnicode(szPurchases, wzPurchases, sizeof(wzPurchases));
+
+                wchar_t string1[1024];
+                g_pVGuiLocalize->ConstructString(string1, sizeof(string1), g_pVGuiLocalize->Find("#FR_Store_Purchased_Multiple"), 1, wzPurchases);
+
+                SetButtonDescription(GamepadUIString(string1));
+            }
+            else
+            {
+                SetButtonDescription(GamepadUIString("#FR_Store_Denied"));
+            }
+        }
+        else
+        {
+            SetButtonDescription(GamepadUIString("#FR_Store_Denied"));
+        }
+
+        GamepadUIStore* pParent = (GamepadUIStore*)GetParent();
+
+        if (pParent)
+        {
+            pParent->UpdateFrameTitle();
+        }
     }
 
     void Paint() OVERRIDE
@@ -135,25 +187,22 @@ public:
     void NavigateTo() OVERRIDE
     {
         BaseClass::NavigateTo();
-        s_pLastNewGameButton = this;
     }
-
-    static GamepadUIStoreButton* GetLastNewGameButton() { return s_pLastNewGameButton; }
 
 private:
     GamepadUIImage m_Image;
-
-    static GamepadUIStoreButton *s_pLastNewGameButton;
+    int m_iKashValue;
+    int m_iItemPurchases;
+    bool m_bOnlyOne;
 };
-
-GamepadUIStoreButton* GamepadUIStoreButton::s_pLastNewGameButton = NULL;
 
 GamepadUIStore::GamepadUIStore( vgui::Panel *pParent, const char* PanelName ) : BaseClass( pParent, PanelName )
 {
     vgui::HScheme hScheme = vgui::scheme()->LoadSchemeFromFile( GAMEPADUI_DEFAULT_PANEL_SCHEME, "SchemePanel" );
     SetScheme( hScheme );
 
-    GetFrameTitle() = GamepadUIString( "#FR_Store_Title" );
+    UpdateFrameTitle();
+    
     FooterButtonMask buttons = FooterButtons::Back | FooterButtons::Select;
     SetFooterButtons( buttons, FooterButtons::Select );
 
@@ -176,6 +225,8 @@ GamepadUIStore::GamepadUIStore( vgui::Panel *pParent, const char* PanelName ) : 
 		pFilename = g_pFullFileSystem->FindNext(findHandle);
 	}
 
+    CreateItemList();
+
     if ( m_pChapterButtons.Count() > 0 )
         m_pChapterButtons[0]->NavigateTo();
 
@@ -188,63 +239,85 @@ GamepadUIStore::GamepadUIStore( vgui::Panel *pParent, const char* PanelName ) : 
     UpdateGradients();
 }
 
-KeyValues* GamepadUIStore::LoadItemFile(const char* kvName, const char* scriptPath)
+void GamepadUIStore::UpdateFrameTitle()
 {
-    int mapIndex = 0;
+    static ConVarRef player_cur_money("player_cur_money");
+    const char* money = player_cur_money.GetString();
+
+    wchar_t wzmoney[1024];
+    g_pVGuiLocalize->ConvertANSIToUnicode(money, wzmoney, sizeof(wzmoney));
+
+    wchar_t string1[1024];
+    g_pVGuiLocalize->ConstructString(string1, sizeof(string1), g_pVGuiLocalize->Find("#FR_Store_Title_Expanded"), 1, wzmoney);
+
+    GetFrameTitle() = GamepadUIString(string1);
+}
+
+void GamepadUIStore::LoadItemFile(const char* kvName, const char* scriptPath)
+{
 	KeyValues* pKV = new KeyValues(kvName);
 	if (pKV->LoadFromFile(g_pFullFileSystem, scriptPath))
 	{
 		KeyValues* pNode = pKV->GetFirstSubKey();
 		while (pNode)
 		{
-			const char* itemName = pNode->GetString("name", "");
-            const char* itemPrice = pNode->GetString("price", 0);
-			const char* itemCMD = pNode->GetString("command", "");
-
-			char szNameString[2048];
-            Q_snprintf(szNameString, sizeof(szNameString), "#GameUI_Store_Buy_%s", itemName);
-            wchar_t* convertedText = g_pVGuiLocalize->Find(szNameString);
-            if (!convertedText)
-            {
-                Q_snprintf(szNameString, sizeof(szNameString), "%s", itemName);
-            }
-
-            wchar_t text[32];
-            wchar_t num[32];
-            wchar_t* chapter = g_pVGuiLocalize->Find("#Valve_Hud_MONEY");
-            g_pVGuiLocalize->ConvertANSIToUnicode(itemPrice, num, sizeof(num));
-            _snwprintf(text, ARRAYSIZE(text), L"%ls %ls", num, chapter ? chapter : L"KASH");
-
-            GamepadUIString strItemPrice(text);
-            
-            char szCommand[2048];
-            Q_snprintf(szCommand, sizeof(szCommand), "purchase_item %s \"%s\"", itemPrice, itemCMD);
-            
-            GamepadUIString strChapterName(szNameString);
-
-            char chapterImage[64];
-            Q_snprintf(chapterImage, sizeof(chapterImage), "gamepadui/store/%s.vmt", itemName);
-            if (!g_pFullFileSystem->FileExists(chapterImage))
-            {
-                Q_snprintf(chapterImage, sizeof(chapterImage), "vgui/hud/icon_locked.vmt");
-            }
-            
-            GamepadUIStoreButton* pChapterButton = new GamepadUIStoreButton(
-            this, this,
-            GAMEPADUI_MAP_SCHEME, szCommand,
-            strChapterName.String(), strItemPrice.String(), chapterImage);
-            pChapterButton->SetEnabled(true);
-            pChapterButton->SetPriority(mapIndex);
-            pChapterButton->SetForwardToParent(true);
-
-            m_pChapterButtons.AddToTail(pChapterButton);
-            mapIndex++;
-
+            m_pItems.AddToTail(pNode);
 			pNode = pNode->GetNextKey();
 		}
 	}
+}
 
-	return pKV;
+void GamepadUIStore::CreateItemList()
+{
+    for (int i = 0; i < m_pItems.Count(); i++)
+    {
+        KeyValues* pNode = m_pItems[i];
+
+        const char* itemName = pNode->GetString("name", "");
+        const char* itemPrice = pNode->GetString("price", 0);
+        const char* itemCMD = pNode->GetString("command", "");
+
+        char szNameString[2048];
+        Q_snprintf(szNameString, sizeof(szNameString), "#GameUI_Store_Buy_%s", itemName);
+        wchar_t* convertedText = g_pVGuiLocalize->Find(szNameString);
+        if (!convertedText)
+        {
+            Q_snprintf(szNameString, sizeof(szNameString), "%s", itemName);
+        }
+
+        wchar_t text[32];
+        wchar_t num[32];
+        wchar_t* chapter = g_pVGuiLocalize->Find("#Valve_Hud_MONEY");
+        g_pVGuiLocalize->ConvertANSIToUnicode(itemPrice, num, sizeof(num));
+        _snwprintf(text, ARRAYSIZE(text), L"%ls %ls", num, chapter ? chapter : L"KASH");
+
+        GamepadUIString strItemPrice(text);
+
+        char szCommand[2048];
+        Q_snprintf(szCommand, sizeof(szCommand), "purchase_item %s \"%s\"", itemPrice, itemCMD);
+
+        GamepadUIString strChapterName(szNameString);
+
+        char chapterImage[64];
+        Q_snprintf(chapterImage, sizeof(chapterImage), "gamepadui/store/%s.vmt", itemName);
+        if (!g_pFullFileSystem->FileExists(chapterImage))
+        {
+            Q_snprintf(chapterImage, sizeof(chapterImage), "vgui/hud/icon_locked.vmt");
+        }
+
+        bool onlyOne = pNode->GetString("onlyone", 0);
+        int itemPriceInt = pNode->GetInt("price", 0);
+
+        GamepadUIStoreButton* pChapterButton = new GamepadUIStoreButton(
+            this, this,
+            GAMEPADUI_MAP_SCHEME, szCommand,
+            strChapterName.String(), strItemPrice.String(), chapterImage, itemPriceInt, onlyOne);
+        pChapterButton->SetEnabled(true);
+        pChapterButton->SetPriority(i);
+        pChapterButton->SetForwardToParent(true);
+
+        m_pChapterButtons.AddToTail(pChapterButton);
+    }
 }
 
 void GamepadUIStore::UpdateGradients()
@@ -359,14 +432,14 @@ void GamepadUIStore::OnCommand( char const* pCommand )
 
             // exec
             GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted(szPurchaseCommand);
-            Close();
+            /*Close();
             if (GamepadUI::GetInstance().IsInLevel())
             {
                 GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted("gamemenucommand resumegame");
                 // I tried it and didn't like it.
                 // Oh well.
                 //vgui::surface()->PlaySound( "UI/buttonclickrelease.wav" );
-            }
+            }*/
         }
     }
     else

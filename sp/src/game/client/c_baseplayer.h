@@ -406,7 +406,7 @@ public:
 	bool IsAtMaxLevel();
 	int GetMaxLevel();
 	int	FragCount() const		{ return m_iFrags; }
-	int GetMoney()			{ return m_iMoney; }
+	int GetMoney();
 	
 protected:
 	fogparams_t				m_CurrentFog;

@@ -871,11 +871,17 @@ public:
 	void ResetXP() { m_iExp = 0; m_iLevel = 1; LevelUp(); } // calling LevelUp will reset max health, etc
 	void ResetXPAlt() { m_iExp = 0;}
 	void EXPLevelPenalty();
-
-	int GetMoney() { return m_iMoney; }
+	int GetMoney();
 	void SetMoney(int set = 1) 
 	{ 
 		m_iMoney = set; 
+		//i hate this i hate this i hate this i hate this i hate this i hate this i hate this i hate this 
+		//i hate this i hate this i hate this i hate this i hate this i hate this i hate this i hate this 
+		//i hate this i hate this i hate this i hate this i hate this i hate this i hate this i hate this 
+		//i hate this i hate this i hate this i hate this i hate this i hate this i hate this i hate this 
+		//i hate this i hate this i hate this i hate this i hate this i hate this i hate this i hate this 
+		static ConVarRef player_cur_money("player_cur_money");
+		player_cur_money.SetValue(m_iMoney);
 
 		if (m_iMoney <= 0)
 		{
@@ -885,6 +891,8 @@ public:
 	void AddMoney(int add = 1) 
 	{ 
 		m_iMoney += add; 
+		static ConVarRef player_cur_money("player_cur_money");
+		player_cur_money.SetValue(m_iMoney);
 
 		//probably not required but we need to handle negative amounts of money as well.
 		if (m_iMoney <= 0)
@@ -895,6 +903,8 @@ public:
 	void RemoveMoney(int remove = 1) 
 	{
 		m_iMoney -= remove;
+		static ConVarRef player_cur_money("player_cur_money");
+		player_cur_money.SetValue(m_iMoney);
 
 		if (m_iMoney <= 0)
 		{

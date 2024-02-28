@@ -276,6 +276,9 @@ public:
           GamepadUIString& GetButtonDescription()       { return m_strButtonDescription; }
     const GamepadUIString& GetButtonDescription() const { return m_strButtonDescription; }
 
+    void SetButtonText(GamepadUIString str) { m_strButtonText = str; }
+    void SetButtonDescription(GamepadUIString str) { m_strButtonDescription = str; }
+
     virtual ButtonState GetCurrentButtonState();
 
     bool IsFooterButton() const;

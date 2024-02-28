@@ -95,6 +95,9 @@ ConVar mp_usehwmmodels( "mp_usehwmmodels", "0", NULL, "Enable the use of the hw 
 
 ConVar player_defaulthealth("player_defaulthealth", "200", FCVAR_ARCHIVE, "");
 
+//extremely hacky solution for an extremely hacky problem
+ConVar player_cur_money("player_cur_money", "0", FCVAR_DEVELOPMENTONLY, "");
+
 bool UseHWMorphModels()
 {
 // #ifdef CLIENT_DLL 
@@ -185,6 +188,11 @@ bool CBasePlayer::IsAtMaxLevel()
 	}
 
 	return false;
+}
+
+int CBasePlayer::GetMoney()
+{ 
+	return m_iMoney; 
 }
 
 int CBasePlayer::GetMaxLevel()
