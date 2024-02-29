@@ -24,7 +24,7 @@
 
 class GamepadUIStoreButton;
 
-#define GAMEPADUI_MAP_SCHEME GAMEPADUI_RESOURCE_FOLDER "schemechapterbutton.res"
+#define GAMEPADUI_MAP_SCHEME GAMEPADUI_RESOURCE_FOLDER "schemestorebutton.res"//"schemesavebutton.res"
 
 class GamepadUIStore : public GamepadUIFrame
 {
@@ -36,6 +36,7 @@ public:
     void UpdateGradients();
 
     void OnThink() OVERRIDE;
+    void OnKeyCodeReleased(vgui::KeyCode code) OVERRIDE;
     void ApplySchemeSettings(vgui::IScheme* pScheme) OVERRIDE;
     void OnCommand(char const* pCommand) OVERRIDE;
     void LoadItemFile(const char* kvName, const char* scriptPath);
@@ -54,9 +55,10 @@ private:
 
     GamepadUIScrollState m_ScrollState;
 
-    GAMEPADUI_PANEL_PROPERTY(float, m_ChapterOffsetX, "Chapters.OffsetX", "0", SchemeValueTypes::ProportionalFloat);
-    GAMEPADUI_PANEL_PROPERTY(float, m_ChapterOffsetY, "Chapters.OffsetY", "0", SchemeValueTypes::ProportionalFloat);
-    GAMEPADUI_PANEL_PROPERTY(float, m_ChapterSpacing, "Chapters.Spacing", "0", SchemeValueTypes::ProportionalFloat);
+    GAMEPADUI_PANEL_PROPERTY(float, m_ChapterFade, "Saves.Fade", "0", SchemeValueTypes::ProportionalFloat);
+    GAMEPADUI_PANEL_PROPERTY(float, m_ChapterOffsetX, "Saves.OffsetX", "0", SchemeValueTypes::ProportionalFloat);
+    GAMEPADUI_PANEL_PROPERTY(float, m_ChapterOffsetY, "Saves.OffsetY", "0", SchemeValueTypes::ProportionalFloat);
+    GAMEPADUI_PANEL_PROPERTY(float, m_ChapterSpacing, "Saves.Spacing", "0", SchemeValueTypes::ProportionalFloat);
 
     bool m_bCommentaryMode = false;
 };
@@ -88,11 +90,6 @@ public:
     {
     }
 
-    ButtonState GetCurrentButtonState() OVERRIDE
-    {
-        return BaseClass::GetCurrentButtonState();
-    }
-
     void DoClick() OVERRIDE
     {
         BaseClass::DoClick();
@@ -108,11 +105,11 @@ public:
             {
                 if (m_iItemLimit == 1)
                 {
-                    SetButtonDescription(GamepadUIString("#FR_Store_Purchased_LimitExceeded"));
+                    SetButtonDescription(GamepadUIString("#FR_Store_GamepadUI_Purchased_LimitExceeded"));
                 }
                 else
                 {
-                    SetButtonDescription(GamepadUIString("#FR_Store_Purchased"));
+                    SetButtonDescription(GamepadUIString("#FR_Store_GamepadUI_Purchased"));
                 }
             }
             else if (m_iItemPurchases < m_iItemLimit || m_iItemLimit <= 0)
@@ -124,18 +121,18 @@ public:
                 g_pVGuiLocalize->ConvertANSIToUnicode(szPurchases, wzPurchases, sizeof(wzPurchases));
 
                 wchar_t string1[1024];
-                g_pVGuiLocalize->ConstructString(string1, sizeof(string1), g_pVGuiLocalize->Find("#FR_Store_Purchased_Multiple"), 1, wzPurchases);
+                g_pVGuiLocalize->ConstructString(string1, sizeof(string1), g_pVGuiLocalize->Find("#FR_Store_GamepadUI_Purchased_Multiple"), 1, wzPurchases);
 
                 SetButtonDescription(GamepadUIString(string1));
             }
             else
             {
-                SetButtonDescription(GamepadUIString("#FR_Store_AlreadyPurchased"));
+                SetButtonDescription(GamepadUIString("#FR_Store_GamepadUI_AlreadyPurchased"));
             }
         }
         else
         {
-            SetButtonDescription(GamepadUIString("#FR_Store_Denied"));
+            SetButtonDescription(GamepadUIString("#FR_Store_GamepadUI_Denied"));
         }
     }
 
@@ -148,45 +145,14 @@ public:
 
         vgui::surface()->DrawSetColor(Color(255, 255, 255, 255));
         vgui::surface()->DrawSetTexture(m_Image);
-        int imgH = (w * 9) / 16;
-        //vgui::surface()->DrawTexturedRect( 0, 0, w, );
-        float offset = m_flTextOffsetYAnimationValue[ButtonStates::Out] - m_flTextOffsetY;
-        vgui::surface()->DrawTexturedSubRect(0, 0, w, imgH - offset, 0.0f, 0.0f, 1.0f, (imgH - offset) / imgH);
+        int nImageSize = m_flHeight - m_flIconInset * 2;
+        vgui::surface()->DrawTexturedRect(m_flIconInset, m_flIconInset, m_flIconInset + nImageSize, m_flIconInset + nImageSize);
         vgui::surface()->DrawSetTexture(0);
-        if (!IsEnabled())
-        {
-            vgui::surface()->DrawSetColor(Color(255, 255, 255, 16));
-            vgui::surface()->DrawFilledRect(0, 0, w, imgH - offset);
-        }
+
+        vgui::surface()->DrawSetColor(m_colUnderlineColor);
+        vgui::surface()->DrawFilledRect(0, GetDrawHeight() - m_flUnderlineHeight, m_flWidth * 100, GetDrawHeight());
 
         PaintText();
-    }
-
-    void ApplySchemeSettings(vgui::IScheme* pScheme)
-    {
-        BaseClass::ApplySchemeSettings(pScheme);
-
-        if (GamepadUI::GetInstance().GetScreenRatio() != 1.0f)
-        {
-            float flScreenRatio = GamepadUI::GetInstance().GetScreenRatio();
-
-            m_flHeight *= flScreenRatio;
-            for (int i = 0; i < ButtonStates::Count; i++)
-                m_flHeightAnimationValue[i] *= flScreenRatio;
-
-            // Also change the text offset
-            m_flTextOffsetY *= flScreenRatio;
-            for (int i = 0; i < ButtonStates::Count; i++)
-                m_flTextOffsetYAnimationValue[i] *= flScreenRatio;
-
-            SetSize(m_flWidth, m_flHeight + m_flExtraHeight);
-            DoAnimations(true);
-        }
-    }
-
-    void NavigateTo() OVERRIDE
-    {
-        BaseClass::NavigateTo();
     }
 
 private:
@@ -194,6 +160,10 @@ private:
     int m_iKashValue;
     int m_iItemPurchases;
     int m_iItemLimit;
+
+    GAMEPADUI_PANEL_PROPERTY(Color, m_colUnderlineColor, "Button.Background.Underline", "255 0 0 255", SchemeValueTypes::Color);
+    GAMEPADUI_PANEL_PROPERTY(float, m_flUnderlineHeight, "Button.Underline.Height", "1", SchemeValueTypes::ProportionalFloat);
+    GAMEPADUI_PANEL_PROPERTY(float, m_flIconInset, "Button.Icon.Inset", "0", SchemeValueTypes::ProportionalFloat);
 };
 
 GamepadUIStore::GamepadUIStore( vgui::Panel *pParent, const char* PanelName ) : BaseClass( pParent, PanelName )
@@ -232,8 +202,8 @@ GamepadUIStore::GamepadUIStore( vgui::Panel *pParent, const char* PanelName ) : 
 
     for ( int i = 1; i < m_pChapterButtons.Count(); i++ )
     {
-        m_pChapterButtons[i]->SetNavLeft( m_pChapterButtons[i - 1] );
-        m_pChapterButtons[i - 1]->SetNavRight( m_pChapterButtons[i] );
+        m_pChapterButtons[i]->SetNavUp( m_pChapterButtons[i - 1] );
+        m_pChapterButtons[i - 1]->SetNavDown( m_pChapterButtons[i] );
     }
 
     UpdateGradients();
@@ -248,7 +218,7 @@ void GamepadUIStore::UpdateFrameTitle()
     g_pVGuiLocalize->ConvertANSIToUnicode(money, wzmoney, sizeof(wzmoney));
 
     wchar_t string1[1024];
-    g_pVGuiLocalize->ConstructString(string1, sizeof(string1), g_pVGuiLocalize->Find("#FR_Store_Title_Expanded"), 1, wzmoney);
+    g_pVGuiLocalize->ConstructString(string1, sizeof(string1), g_pVGuiLocalize->Find("#FR_Store_GamepadUI_Title_Expanded"), 1, wzmoney);
 
     GetFrameTitle() = GamepadUIString(string1);
 }
@@ -334,48 +304,62 @@ void GamepadUIStore::OnThink()
     BaseClass::OnThink();
     UpdateFrameTitle();
     LayoutStoreButtons();
+
+    if (!GamepadUI::GetInstance().IsInLevel())
+    {
+        Close();
+    }
+}
+
+void GamepadUIStore::OnKeyCodeReleased(vgui::KeyCode code)
+{
+    ButtonCode_t buttonCode = GetBaseButtonCode(code);
+    switch (buttonCode)
+    {
+    case KEY_ESCAPE:
+        Close();
+        break;
+    default:
+        BaseClass::OnKeyCodeReleased(code);
+        break;
+    }
 }
 
 void GamepadUIStore::ApplySchemeSettings(vgui::IScheme* pScheme)
 {
     BaseClass::ApplySchemeSettings(pScheme);
-
-    if (GamepadUI::GetInstance().GetScreenRatio() != 1.0f)
-    {
-        float flScreenRatio = GamepadUI::GetInstance().GetScreenRatio();
-        m_ChapterOffsetX *= (flScreenRatio * flScreenRatio);
-    }
 }
 
 void GamepadUIStore::OnGamepadUIButtonNavigatedTo( vgui::VPANEL button )
 {
-    GamepadUIButton *pButton = dynamic_cast< GamepadUIButton * >( vgui::ipanel()->GetPanel( button, GetModuleName() ) );
-    if ( pButton )
+    GamepadUIButton* pButton = dynamic_cast<GamepadUIButton*>(vgui::ipanel()->GetPanel(button, GetModuleName()));
+    if (pButton)
     {
-        int nParentW, nParentH;
-	    GetParent()->GetSize( nParentW, nParentH );
-
-        int nX, nY;
-        pButton->GetPos( nX, nY );
-        if ( nX + pButton->m_flWidth > nParentW || nX < 0 )
+        if (pButton->GetAlpha() != 255)
         {
-            int nTargetX = pButton->GetPriority() * (pButton->m_flWidth + m_ChapterSpacing);
+            int nParentW, nParentH;
+            GetParent()->GetSize(nParentW, nParentH);
 
-            if ( nX < nParentW / 2 )
+            int nX, nY;
+            pButton->GetPos(nX, nY);
+
+            int nTargetY = pButton->GetPriority() * (pButton->m_flHeightAnimationValue[ButtonStates::Out] + m_ChapterSpacing);
+
+            if (nY < nParentH / 2)
             {
-                nTargetX += nParentW - m_ChapterOffsetX;
+                nTargetY += nParentH - m_ChapterOffsetY;
                 // Add a bit of spacing to make this more visually appealing :)
-                nTargetX -= m_ChapterSpacing;
+                nTargetY -= m_ChapterSpacing;
             }
             else
             {
-                nTargetX += pButton->m_flWidth;
+                nTargetY += pButton->m_flHeightAnimationValue[ButtonStates::Over];
                 // Add a bit of spacing to make this more visually appealing :)
-                nTargetX += (pButton->m_flWidth / 2) + m_ChapterSpacing;
+                nTargetY += (pButton->m_flHeightAnimationValue[ButtonStates::Over] / 2) + m_ChapterSpacing;
             }
 
 
-            m_ScrollState.SetScrollTarget( nTargetX - ( nParentW - m_ChapterOffsetX ), GamepadUI::GetInstance().GetTime() );
+            m_ScrollState.SetScrollTarget(nTargetY - (nParentH - m_ChapterOffsetY), GamepadUI::GetInstance().GetTime());
         }
     }
 }
@@ -383,28 +367,40 @@ void GamepadUIStore::OnGamepadUIButtonNavigatedTo( vgui::VPANEL button )
 void GamepadUIStore::LayoutStoreButtons()
 {
     int nParentW, nParentH;
-	GetParent()->GetSize( nParentW, nParentH );
+    GetParent()->GetSize(nParentW, nParentH);
 
-    float flScrollClamp = 0.0f;
-    for ( int i = 0; i < m_pChapterButtons.Count(); i++ )
+    float scrollClamp = 0.0f;
+    for (int i = 0; i < (int)m_pChapterButtons.Count(); i++)
     {
-        int nSize = ( m_pChapterButtons[0]->GetWide() + m_ChapterSpacing );
+        int size = (m_pChapterButtons[i]->GetTall() + m_ChapterSpacing);
 
-        if ( i < m_pChapterButtons.Count() - 2 )
-            flScrollClamp += nSize;
+        if (i < ((int)m_pChapterButtons.Count()) - 3)
+            scrollClamp += size;
     }
 
-    m_ScrollState.UpdateScrollBounds( 0.0f, flScrollClamp );
+    m_ScrollState.UpdateScrollBounds(0.0f, scrollClamp);
 
-    for ( int i = 0; i < m_pChapterButtons.Count(); i++ )
+    int previousSizes = 0;
+    for (int i = 0; i < (int)m_pChapterButtons.Count(); i++)
     {
-        int size = ( m_pChapterButtons[0]->GetWide() + m_ChapterSpacing );
+        int tall = m_pChapterButtons[i]->GetTall();
+        int size = (tall + m_ChapterSpacing);
 
-        m_pChapterButtons[i]->SetPos( m_ChapterOffsetX + i * size - m_ScrollState.GetScrollProgress(), m_ChapterOffsetY );
-        m_pChapterButtons[i]->SetVisible( true );
+        int y = m_ChapterOffsetY + previousSizes - m_ScrollState.GetScrollProgress();
+        int fade = 255;
+        if (y < m_ChapterOffsetY)
+            fade = (1.0f - clamp(-(y - m_ChapterOffsetY) / m_ChapterFade, 0.0f, 1.0f)) * 255.0f;
+        if (y > nParentH - m_ChapterFade)
+            fade = (1.0f - clamp((y - (nParentH - m_ChapterFade - size)) / m_ChapterFade, 0.0f, 1.0f)) * 255.0f;
+        if (m_pChapterButtons[i]->HasFocus() && fade != 0)
+            fade = 255;
+        m_pChapterButtons[i]->SetAlpha(fade);
+        m_pChapterButtons[i]->SetPos(m_ChapterOffsetX, y);
+        m_pChapterButtons[i]->SetVisible(true);
+        previousSizes += size;
     }
 
-    m_ScrollState.UpdateScrolling( 6.5f, GamepadUI::GetInstance().GetTime() );
+    m_ScrollState.UpdateScrolling(2.0f, GamepadUI::GetInstance().GetTime());
 }
 
 void GamepadUIStore::OnCommand( char const* pCommand )
@@ -433,14 +429,6 @@ void GamepadUIStore::OnCommand( char const* pCommand )
 
             // exec
             GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted(szPurchaseCommand);
-            /*Close();
-            if (GamepadUI::GetInstance().IsInLevel())
-            {
-                GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted("gamemenucommand resumegame");
-                // I tried it and didn't like it.
-                // Oh well.
-                //vgui::surface()->PlaySound( "UI/buttonclickrelease.wav" );
-            }*/
         }
     }
     else
@@ -451,7 +439,7 @@ void GamepadUIStore::OnCommand( char const* pCommand )
 
 void GamepadUIStore::OnMouseWheeled( int nDelta )
 {
-    m_ScrollState.OnMouseWheeled( nDelta * m_ChapterSpacing * 20.0f, GamepadUI::GetInstance().GetTime() );
+    m_ScrollState.OnMouseWheeled(nDelta * 200.0f, GamepadUI::GetInstance().GetTime());
 }
 
 CON_COMMAND( gamepadui_openstore, "" )

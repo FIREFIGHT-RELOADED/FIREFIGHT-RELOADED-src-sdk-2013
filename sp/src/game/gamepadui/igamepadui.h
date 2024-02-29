@@ -25,10 +25,6 @@ public:
 #define GAMEPADUI_INTERFACE_VERSION "GamepadUI001"
 
 // Lil easter egg :-)
-#ifdef GAMEPADUI_GAME_PORTAL
 #define GamepadUI_Log(...) ConColorMsg( Color( 61, 189, 237, 255 ), "[GamepadUI] " __VA_ARGS__ )
-#else
-#define GamepadUI_Log(...) ConColorMsg( Color( 255, 134, 44, 255 ), "[GamepadUI] " __VA_ARGS__ )
-#endif
 
 #endif // IGAMEPADUI_H

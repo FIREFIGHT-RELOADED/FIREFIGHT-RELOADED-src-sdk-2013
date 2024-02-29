@@ -177,7 +177,6 @@ bool GamepadUI::IsGamepadUIVisible() const
     return !IsInLevel() || IsInBackgroundLevel();
 }
 
-
 void GamepadUI::ResetToMainMenuGradients()
 {
     GetMainMenu()->UpdateGradients();

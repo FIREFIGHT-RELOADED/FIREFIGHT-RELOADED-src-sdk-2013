@@ -6,16 +6,16 @@
 		"Button.Width.Over"						"550"
 		"Button.Width.Pressed"					"550"
 
-		"Button.Height.Out"						"30"
-		"Button.Height.Over"					"60"
-		"Button.Height.Pressed"					"60"
+		"Button.Height.Out"						"40"
+		"Button.Height.Over"					"70"
+		"Button.Height.Pressed"					"70"
 		"Button.Progress.Height"				"1"
 
-		"Button.Text.OffsetX.Out"					"34"
-		"Button.Text.OffsetX.Over"					"64"
-		"Button.Text.OffsetX.Pressed"				"64"
+		"Button.Text.OffsetX.Out"					"44"
+		"Button.Text.OffsetX.Over"					"74"
+		"Button.Text.OffsetX.Pressed"				"74"
 		"Button.Text.OffsetY.Out"					"0"
-		"Button.Text.OffsetY.Over"					"-8"
+		"Button.Text.OffsetY.Over"					"-1"
 		"Button.Text.OffsetY.Pressed"				"-8"
 
 		"Button.Description.OffsetX.Out"			"0"
