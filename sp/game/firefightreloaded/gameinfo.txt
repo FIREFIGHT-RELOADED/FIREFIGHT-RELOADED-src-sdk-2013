@@ -8,7 +8,7 @@
 	type		singleplayer_only
 	supportsvr	0
 	developer	"Bitl Development Studios"
-	developer_url	"https://bitl.carrd.co"
+	developer_url	"https://home.bitl.dev"
 	manual		""
 	GameData	"firefightreloaded.fgd"
 	icon		"resource/game"
