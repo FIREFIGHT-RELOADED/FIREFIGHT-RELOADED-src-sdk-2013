@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "6440"
-	"mapversion" "129"
+	"mapversion" "130"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,7 +20,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "129"
+	"mapversion" "130"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -13546,6 +13546,7 @@ entity
 		"OnDeath" "fade,Fade,,0,-1"
 		"OnDeath" "speedmod,ModifySpeed,0,0,-1"
 		"OnDeath" "bossmusic,StopSound,,0,-1"
+		"OnDeath" "bossach,FireEvent,,0,-1"
 	}
 	"origin" "-1 -936 711"
 	editor
@@ -18560,6 +18561,22 @@ entity
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 4000]"
+	}
+}
+entity
+{
+	"id" "20083"
+	"classname" "logic_achievement"
+	"AchievementEvent" "ACHIEVEMENT_EVENT_FIREFIGHTRELOADED_COMPLETEDBOSSFIGHT"
+	"StartDisabled" "0"
+	"targetname" "bossach"
+	"origin" "31.4042 554.334 129"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
 	}
 }
 cameras
