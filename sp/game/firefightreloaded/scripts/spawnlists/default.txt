@@ -37,6 +37,7 @@
 		"classname"		"npc_metropolice"
 		"preset"		"1"
 		"min_level"		"3"
+		"rare"			"1"
 	}
 	//LEVEL 4
 	"7"
@@ -48,6 +49,7 @@
 	{
 		"classname"		"npc_houndeye"
 		"min_level"		"4"
+		"rare"			"1"
 	}
 	//LEVEL 5
 	"9"
@@ -65,6 +67,7 @@
 	{
 		"classname"		"npc_bullsquid"
 		"min_level"		"6"
+		"rare"			"1"
 	}
 	"12"
 	{
@@ -86,6 +89,7 @@
 	{
 		"classname"		"npc_strider"
 		"min_level"		"7"
+		"rare"			"1"
 	}
 	"16"
 	{
@@ -103,11 +107,13 @@
 	{
 		"classname"		"npc_combine_e"
 		"min_level"		"8"
+		"rare"			"1"
 	}
 	"19"
 	{
 		"classname"		"npc_poisonzombie"
 		"min_level"		"8"
+		"rare"			"1"
 	}
 	"20"
 	{
@@ -124,28 +130,33 @@
 	{
 		"classname"		"npc_hunter"
 		"min_level"		"9"
+		"rare"			"1"
 	}
 	"23"
 	{
 		"classname"		"npc_zombine"
 		"min_level"		"9"
+		"rare"			"1"
 	}
 	//LEVEL 10
 	"24"
 	{
 		"classname"		"npc_antlionworker"
 		"min_level"		"10"
+		"rare"			"1"
 	}
 	"25"
 	{
 		"classname"		"npc_antlionguard"
 		"min_level"		"10"
+		"rare"			"1"
 	}
 	//LEVEL 11
 	"26"
 	{
 		"classname"		"npc_vortigaunt"
 		"min_level"		"11"
+		"rare"			"1"
 	}
 	"27"
 	{
@@ -158,17 +169,20 @@
 		"classname"		"npc_hunter"
 		"preset"		"4"
 		"min_level"		"11"
+		"rare"			"1"
 	}
 	//LEVEL 12
 	"29"
 	{
 		"classname"		"npc_antlionguardian"
 		"min_level"		"12"
+		"rare"			"1"
 	}
 	"30"
 	{
 		"classname"		"npc_stalker"
 		"min_level"		"12"
+		"rare"			"1"
 	}
 	"31"
 	{
@@ -176,12 +190,14 @@
 		"classname"		"npc_bullsquid"
 		"preset"		"1"
 		"min_level"		"12"
+		"rare"			"1"
 	}
 	//LEVEL 13
 	"32"
 	{
 		"classname"		"npc_combine_ace"
 		"min_level"		"13"
+		"rare"			"1"
 	}
 	"33"
 	{
@@ -200,6 +216,7 @@
 		"classname"		"npc_hunter"
 		"preset"		"3"
 		"min_level"		"14"
+		"rare"			"1"
 	}
 	//LEVEL 15
 	"36"
@@ -208,6 +225,7 @@
 		"classname"		"npc_headcrab_fast"
 		"preset"		"1"
 		"min_level"		"15"
+		"rare"			"1"
 	}
 	//LEVEL 16
 	"37"
@@ -216,6 +234,7 @@
 		"classname"		"npc_hunter"
 		"preset"		"2"
 		"min_level"		"16"
+		"rare"			"1"
 	}
 	//LEVEL 17
 	"38"
@@ -224,6 +243,7 @@
 		"classname"		"npc_hunter"
 		"preset"		"1"
 		"min_level"		"17"
+		"rare"			"1"
 	}
 	//LEVEL 18
 	"39"
@@ -232,5 +252,6 @@
 		"classname"		"npc_combine_ace"
 		"preset"		"1"
 		"min_level"		"18"
+		"rare"			"1"
 	}
 }
