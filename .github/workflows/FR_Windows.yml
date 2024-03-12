@@ -31,7 +31,7 @@ jobs:
         run: cd sp/src;devtools/bin/vpc.exe /fr +gameandtools /mksln firefight.sln
 
       - name: Build project
-        run: cd sp/src;"C:\Program Files (x86)\MSBuild\12.0\Bin\msbuild.exe" firefight.sln /p:PlatformToolset=v120_xp;Configuration=Release;Platform=Win32
+        run: cd sp/src;"C:\Program Files (x86)\MSBuild\12.0\Bin\msbuild.exe" /p:PlatformToolset=v120_xp;Configuration=Release;Platform=Win32 firefight.sln
 
       - name: Pack
         shell: bash
