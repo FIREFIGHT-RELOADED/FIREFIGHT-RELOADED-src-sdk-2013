@@ -26,17 +26,12 @@ jobs:
 
       - name: Install VS 2013 Build Tools
         run: choco install microsoft-build-tools-2013
-
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v2
-        with:
-          vs-version: '[12.0,12.1)'
         
       - name: Create project
         run: cd sp/src;devtools/bin/vpc.exe /fr +gameandtools /mksln firefight.sln
 
       - name: Build project
-        run: cd sp/src;set GYP_MSVS_VERSION=2013;msbuild -m firefight.sln -p:PlatformToolset=v120_xp -p:Configuration=Release -p:Platform=Win32
+        run: cd sp/src;"C:\Program Files (x86)\MSBuild\12.0\Bin\msbuild.exe" -m firefight.sln -p:PlatformToolset=v120_xp -p:Configuration=Release -p:Platform=Win32
 
       - name: Pack
         shell: bash
