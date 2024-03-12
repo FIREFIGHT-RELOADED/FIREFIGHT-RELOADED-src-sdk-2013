@@ -21,6 +21,12 @@ jobs:
       - name: Configure dependencies
         uses: ilammy/msvc-dev-cmd@v1
         
+      - name: Install Registry Key
+        run: REG ADD "HKLM\SOFTWARE\WOW6432Node\Microsoft\VisualStudio\10.0\Projects\{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}" /v DefaultProjectExtension /t REG_SZ /d vcproj /f
+
+      - name: Install VS 2013 Build Tools
+        run: choco install microsoft-build-tools-2013
+        
       - name: Create project
         run: cd sp/src;devtools/bin/vpc.exe /fr +gameandtools /mksln firefight.sln
 
