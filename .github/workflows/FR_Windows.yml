@@ -31,7 +31,7 @@ jobs:
         run: cd sp/src;devtools/bin/vpc.exe /fr +gameandtools /mksln firefight.sln
 
       - name: Build project
-        run: cd sp/src;devenv firefight.sln /Build Release
+        run: cd sp/src;set GYP_MSVS_VERSION=2013;devenv firefight.sln /Build Release
 
       - name: Pack
         shell: bash
