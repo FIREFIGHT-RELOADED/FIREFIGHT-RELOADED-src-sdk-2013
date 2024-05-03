@@ -68,7 +68,7 @@
 			game+mod+mod_write+default_write_path		|gameinfo_path|.
 			
 			//Call the VPK
-			game				|gameinfo_path|firefightreloaded_pak.vpk
+			game+mod			|gameinfo_path|firefightreloaded_pak.vpk
 
 			// We search VPK files before ordinary folders, because most files will be found in
 			// VPK and we can avoid making thousands of file system calls to attempt to open files
