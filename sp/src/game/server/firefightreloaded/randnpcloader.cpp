@@ -14,7 +14,6 @@
 #include "tier0/memdbgon.h"
 
 ConVar sk_spawner_defaultspawnlist("sk_spawner_defaultspawnlist", "scripts/spawnlists/default.txt", FCVAR_ARCHIVE);
-static ConCommand dumpspawnlist( "dumpspawnlist", dumpspawnlist_cb, "Dumps the spawn list." );
 
 void dumpspawnlist_cb()
 {
@@ -45,6 +44,8 @@ void dumpspawnlist_cb()
 		}
 	}
 }
+
+static ConCommand dumpspawnlist( "dumpspawnlist", dumpspawnlist_cb, "Dumps the spawn list." );
 
 CRandNPCLoader::CRandNPCLoader()
 {
