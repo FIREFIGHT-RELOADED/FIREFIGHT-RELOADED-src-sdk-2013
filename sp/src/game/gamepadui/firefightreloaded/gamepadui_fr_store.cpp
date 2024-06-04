@@ -115,7 +115,11 @@ public:
             else if (m_iItemPurchases < m_iItemLimit || m_iItemLimit <= 0)
             {
                 char szPurchases[1024];
+#ifdef _WIN32
                 itoa(m_iItemPurchases, szPurchases, 10);
+#else
+                Q_snprintf( szPurchases, sizeof(szPurchases), "%d", m_iItemPurchases );
+#endif
 
                 wchar_t wzPurchases[1024];
                 g_pVGuiLocalize->ConvertANSIToUnicode(szPurchases, wzPurchases, sizeof(wzPurchases));
@@ -260,7 +264,11 @@ void GamepadUIStore::CreateItemList()
         wchar_t num[32];
         wchar_t* chapter = g_pVGuiLocalize->Find("#Valve_Hud_MONEY");
         char szPrice[1024];
+#ifdef _WIN32
         itoa(itemPrice, szPrice, 10);
+#else
+        Q_snprintf( szPrice, sizeof(szPrice), "%d", itemPrice );
+#endif
 
         g_pVGuiLocalize->ConvertANSIToUnicode(szPrice, num, sizeof(num));
         _snwprintf(text, ARRAYSIZE(text), L"%ls %ls", num, chapter ? chapter : L"KASH");
