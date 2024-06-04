@@ -49,7 +49,9 @@ After it installs, it will start steam-runtime.
 3. Go back to this directory and run:\
 ```bash ./build_fr_linux.sh```\
 This will update the repo automatically. If you would like to update the repo without building it, run:\
-```bash ./update_fr_linux.sh```
+```bash ./update_fr_linux.sh```\
+If you would like to build the repo without updating it, run:\
+```bash ./build_fr_linux_noupdate.sh```
 
 Read [sp/game/firefightreloaded/scripts/credits.txt](https://github.com/FIREFIGHT-RELOADED/FIREFIGHT-RELOADED-src-sdk-2013/blob/endgame/sp/game/firefightreloaded/scripts/credits.txt) for credits and citations.
 
