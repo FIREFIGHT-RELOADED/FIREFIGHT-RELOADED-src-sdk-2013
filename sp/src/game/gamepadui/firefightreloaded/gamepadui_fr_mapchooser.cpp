@@ -167,12 +167,14 @@ void GamepadUIMapChooser::ScanMaps()
         if (creditsstr)
         {
             pszFilename = g_pFullFileSystem->FindNext(findHandle);
+            continue;
         }
 
-        creditsstr = Q_strstr(pszFilename, "firefight_advisor");
-        if (creditsstr)
+        const char* bossstr = Q_strstr(pszFilename, "firefight_advisor");
+        if (bossstr)
         {
             pszFilename = g_pFullFileSystem->FindNext(findHandle);
+            continue;
         }
 
         const char* str = Q_strstr(pszFilename, "maps");
