@@ -48,15 +48,9 @@
 			// folder.
 			//
 			// Note that this folder is scanned only when the game is booted.
-			//game+mod			ep2/custom/*
-			//game+mod			episodic/custom/*
-			//game+mod			hl2/custom/*
-
-			// Now search loose files.  We'll set the directory containing the gameinfo.txt file
-			// as the first "mod" search path (after any user customizations).  This is also the one
-			// that's used when writing to the "mod" path.
 			game+mod			|gameinfo_path|addons/*
 			game+mod			|gameinfo_path|custom/*
+
 			//mount Workshop stuff
 			game+mod			"|gameinfo_path|..\..\..\workshop\content\397680\*"
 			//Mount the DLC.
@@ -65,7 +59,14 @@
 			//We need this to load any shared files the DLCs need.
 			game+mod			|all_source_engine_paths|firefightreloaded_dlc/dlc_shared/cstrike_shared.vpk
 			game+mod			|all_source_engine_paths|firefightreloaded_dlc/dlc_shared/dod_shared.vpk
-			game+mod+mod_write+default_write_path		|gameinfo_path|.
+
+			// Now search loose files.  We'll set the directory containing the gameinfo.txt file
+			// as the first "mod" search path (after any user customizations).  This is also the one
+			// that's used when writing to the "mod" path.
+			game+game_write+mod+mod_write+default_write_path		|gameinfo_path|.
+
+			// Where the game's binaries are
+			gamebin				|gameinfo_path|bin
 			
 			//Call the VPK
 			game+mod			|gameinfo_path|firefightreloaded_pak.vpk
@@ -81,14 +82,8 @@
 			game				|all_source_engine_paths|base/main/hl2_sound_vo_english.vpk
 			game				|all_source_engine_paths|base/main/hl2_sound_misc.vpk
 			game				|all_source_engine_paths|base/main/hl2_misc.vpk
+
 			platform			|all_source_engine_paths|base/platform/platform_misc.vpk
-
-			// Add the HL2 directory as a game search path.  This is also where where writes
-			// to the "game" path go.
-			game+game_write                 |gameinfo_path|.
-
-			// Where the game's binaries are
-			gamebin				|gameinfo_path|bin
 			
 			// Last, mount in shared HL2 loose files
 			game				|all_source_engine_paths|base/episodic_shared
