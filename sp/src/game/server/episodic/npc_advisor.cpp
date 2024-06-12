@@ -1966,6 +1966,9 @@ void CNPC_Advisor::Dronify(CBaseEntity* pOther)
 			pNPC->Classify() == CLASS_COMBINE_HUNTER ||
 			pNPC->Classify() == CLASS_COMBINE_GUNSHIP ||
 			pNPC->Classify() == CLASS_METROPOLICE) &&
+			(!FClassnameIs(pNPC, "npc_turret_ceiling") || 
+			!FClassnameIs(pNPC, "npc_turret_floor") ||
+			!FClassnameIs(pNPC, "npc_turret_ground")) &&
 			pNPC->IRelationType(this) != D_HT)
 		{
 			Write_BeamOn(pOther);
