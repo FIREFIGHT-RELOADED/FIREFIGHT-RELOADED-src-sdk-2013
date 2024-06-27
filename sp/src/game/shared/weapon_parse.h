@@ -110,6 +110,7 @@ public:
 	bool					m_bUseMuzzleSmoke;
 	bool					m_bLowerWeapon;
 	bool					m_bUseIronsightCrosshair;
+	float						iDefaultIsFOV;
 
 	//SMMOD Custom Weapons!
 	//bool	m_sUsesShotgunStyleReloads;

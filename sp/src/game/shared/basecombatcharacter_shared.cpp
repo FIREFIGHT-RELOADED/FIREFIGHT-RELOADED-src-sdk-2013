@@ -61,6 +61,8 @@ bool CBaseCombatCharacter::Weapon_Switch( CBaseCombatWeapon *pWeapon, int viewmo
 
 	m_hActiveWeapon = pWeapon;
 
+	Msg("FOV: %i\n", GetActiveWeapon()->GetDefaultIsFOV());
+
 	return pWeapon->Deploy( );
 }
 

@@ -392,6 +392,7 @@ public:
 	float					GetIronsightFOVOffset(void) const;
 	Vector					GetAdjustPositionOffset(void) const;
 	QAngle					GetAdjustAngleOffset(void) const;
+	virtual int				GetDefaultIsFOV(void) const; // changeable FOV in a script
 	bool					IsMeleeWeapon() const;
 
 	// derive this function if you mod uses encrypted weapon info files

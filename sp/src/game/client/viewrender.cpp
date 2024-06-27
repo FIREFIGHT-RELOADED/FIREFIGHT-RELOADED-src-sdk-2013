@@ -163,6 +163,7 @@ static ConVar r_screenfademinsize( "r_screenfademinsize", "0" );
 static ConVar r_screenfademaxsize( "r_screenfademaxsize", "0" );
 static ConVar cl_drawmonitors( "cl_drawmonitors", "1" );
 static ConVar r_eyewaterepsilon( "r_eyewaterepsilon", "10.0f", FCVAR_CHEAT );
+static ConVar r_scopefov("r_scopefov", "0.0f", FCVAR_CHEAT);
 
 #ifdef TF_CLIENT_DLL
 static ConVar pyro_dof( "pyro_dof", "1", FCVAR_ARCHIVE );
@@ -3219,7 +3220,7 @@ void CViewRender::DrawScope(const CViewSetup &viewSet)
 	scopeView.x = 0;
 	scopeView.y = 0;
 	//scopeView.fov = localPlayer->GetActiveWeapon()->GetZoomFOV();
-	scopeView.fov = 5.0f;
+	scopeView.fov = (r_scopefov.GetFloat() > 0) ? r_scopefov.GetFloat() : localPlayer->GetActiveWeapon()->GetDefaultIsFOV(); // changeable FOV in a script
 	scopeView.m_bOrtho = false;
 
 	scopeView.m_flAspectRatio = 1.0f;

@@ -452,6 +452,7 @@ FileWeaponInfo_t::FileWeaponInfo_t()
 	bShowUsageHint = false;
 	m_bAllowFlipping = true;
 	m_bBuiltRightHanded = true;
+	iDefaultIsFOV = 0;
 }
 
 #ifdef CLIENT_DLL
@@ -522,6 +523,7 @@ void FileWeaponInfo_t::Parse( KeyValues *pKeyValuesData, const char *szWeaponNam
 	m_bUseIronsight = (pKeyValuesData->GetInt("useironsights", 1) != 0) ? true : false;
 	m_bLowerWeapon = (pKeyValuesData->GetInt("LowerWeapon", 1) != 0) ? true : false;
 	m_bUseIronsightCrosshair = (pKeyValuesData->GetInt("useironsightcrosshair", 1) != 0) ? true : false;
+	iDefaultIsFOV = pKeyValuesData->GetFloat("default_dynamic_fov", 45.0f);
 
 #if defined(_DEBUG) && defined(HL2_CLIENT_DLL)
 	// make sure two weapons aren't in the same slot & position

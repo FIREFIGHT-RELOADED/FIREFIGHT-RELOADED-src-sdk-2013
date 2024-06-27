@@ -512,6 +512,14 @@ QAngle CBaseCombatWeapon::GetAdjustAngleOffset(void) const
 }
 
 //-----------------------------------------------------------------------------
+// Purpose:  changing the FOV in a script
+//-----------------------------------------------------------------------------
+int CBaseCombatWeapon::GetDefaultIsFOV(void) const
+{
+	return GetWpnData().iDefaultIsFOV;
+}
+
+//-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
 int CBaseCombatWeapon::GetWeight( void ) const
