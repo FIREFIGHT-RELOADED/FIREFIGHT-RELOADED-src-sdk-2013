@@ -81,4 +81,10 @@
 		"preset"		"0"
 		"rare"			"1"
 	}
+	"15"
+	{
+		"classname"		"npc_zombine"
+		"preset"		"0"
+		"rare"			"1"
+	}
 }
