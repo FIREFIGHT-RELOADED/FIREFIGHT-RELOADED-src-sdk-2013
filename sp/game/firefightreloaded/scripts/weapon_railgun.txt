@@ -25,9 +25,18 @@ WeaponData
 	"BuiltRightHanded" 		"1" 
 	"AllowFlipping" 		"1"
 	"UseMuzzleSmoke"		"0"
-	"useironsights"			"0"
+	"useironsights"			"1"
 	"LowerWeapon"			"0"
-	"useironsightcrosshair" 	"0"
+	"useironsightcrosshair" 	"1"
+	"default_dynamic_fov"		"15"
+
+	IronSight
+	{
+		"right"		"-8.3"
+		"up"		"1.7"
+		"forward"	"-12"
+		//"fov"		"-25"
+	}
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
