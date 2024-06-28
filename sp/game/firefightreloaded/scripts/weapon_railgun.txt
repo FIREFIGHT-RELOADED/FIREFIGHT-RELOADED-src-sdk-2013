@@ -28,7 +28,7 @@ WeaponData
 	"useironsights"			"1"
 	"LowerWeapon"			"0"
 	"useironsightcrosshair" 	"1"
-	"default_dynamic_fov"		"15"
+	"default_dynamic_fov"		"5"
 
 	IronSight
 	{
