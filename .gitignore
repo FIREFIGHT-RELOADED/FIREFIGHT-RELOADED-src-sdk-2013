@@ -108,3 +108,8 @@ sp/game/firefightreloaded/cfg/user_default_sp.scr
 *.vmx
 *.bsp
 *.vpk
+sp/src/lib/public/fgdlib.pdb
+sp/src/lib/public/mathlib.pdb
+sp/src/lib/public/raytrace.pdb
+sp/src/lib/public/tier1.pdb
+sp/src/lib/public/vgui_controls.pdb
