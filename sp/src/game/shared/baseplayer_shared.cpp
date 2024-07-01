@@ -588,7 +588,7 @@ surfacedata_t *CBasePlayer::GetLadderSurface( const Vector &origin )
 void CBasePlayer::UpdateStepSound( surfacedata_t *psurface, const Vector &vecOrigin, const Vector &vecVelocity )
 {
 	bool bWalking;
-	float fvol;
+	float fvol = 0.0f;
 	Vector knee;
 	Vector feet;
 	float height;
@@ -640,7 +640,7 @@ void CBasePlayer::UpdateStepSound( surfacedata_t *psurface, const Vector &vecOri
 	// To hear step sounds you must be either on a ladder or moving along the ground AND
 	// You must be moving fast enough
 
-	if ( !moving_fast_enough || !(fLadder || ( onground && movingalongground )) )
+	if ( !moving_fast_enough || !(fLadder || ( onground && movingalongground ) || m_nWallRunState == WALLRUN_RUNNING) )
 			return;
 
 //	MoveHelper()->PlayerSetAnimation( PLAYER_WALK );
@@ -696,38 +696,47 @@ void CBasePlayer::UpdateStepSound( surfacedata_t *psurface, const Vector &vecOri
 		if ( !psurface )
 			return;
 
-		SetStepSoundTime( STEPSOUNDTIME_NORMAL, bWalking );
-
-		switch ( psurface->game.material )
+		if (m_nWallRunState == WALLRUN_RUNNING)
 		{
-		default:
-		case CHAR_TEX_CONCRETE:						
+			psurface = physprops->GetSurfaceData(physprops->GetSurfaceIndex("default"));
 			fvol = bWalking ? 0.2 : 0.5;
-			break;
+			SetStepSoundTime(STEPSOUNDTIME_NORMAL, bWalking);
+		}
+		else
+		{
+			SetStepSoundTime(STEPSOUNDTIME_NORMAL, bWalking);
 
-		case CHAR_TEX_METAL:	
-			fvol = bWalking ? 0.2 : 0.5;
-			break;
+			switch (psurface->game.material)
+			{
+			default:
+			case CHAR_TEX_CONCRETE:
+				fvol = bWalking ? 0.2 : 0.5;
+				break;
 
-		case CHAR_TEX_DIRT:
-			fvol = bWalking ? 0.25 : 0.55;
-			break;
+			case CHAR_TEX_METAL:
+				fvol = bWalking ? 0.2 : 0.5;
+				break;
 
-		case CHAR_TEX_VENT:	
-			fvol = bWalking ? 0.4 : 0.7;
-			break;
+			case CHAR_TEX_DIRT:
+				fvol = bWalking ? 0.25 : 0.55;
+				break;
 
-		case CHAR_TEX_GRATE:
-			fvol = bWalking ? 0.2 : 0.5;
-			break;
+			case CHAR_TEX_VENT:
+				fvol = bWalking ? 0.4 : 0.7;
+				break;
 
-		case CHAR_TEX_TILE:	
-			fvol = bWalking ? 0.2 : 0.5;
-			break;
+			case CHAR_TEX_GRATE:
+				fvol = bWalking ? 0.2 : 0.5;
+				break;
 
-		case CHAR_TEX_SLOSH:
-			fvol = bWalking ? 0.2 : 0.5;
-			break;
+			case CHAR_TEX_TILE:
+				fvol = bWalking ? 0.2 : 0.5;
+				break;
+
+			case CHAR_TEX_SLOSH:
+				fvol = bWalking ? 0.2 : 0.5;
+				break;
+			}
 		}
 	}
 	

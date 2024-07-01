@@ -20,9 +20,9 @@
 
 // Mobility
 #define DEFAULT_JUMP_HEIGHT_STRING "21.0"
-#define DEFAULT_SLIDE_TIME_STRING "600.0" 
+#define DEFAULT_SLIDE_TIME_STRING "1000.0" 
 #define DEFAULT_SLIDE_SPEED_BOOST_STRING "75.0"
-#define DEFAULT_WALLRUN_TIME_STRING "750.0"
+#define DEFAULT_WALLRUN_TIME_STRING "1500.0"
 #define DEFAULT_WALLRUN_SPEED_STRING "15.0"
 #define DEFAULT_WALLRUN_BOOST_STRING "20.0"
 
@@ -124,7 +124,7 @@ ConVar
  ConVar
 	 sv_wallrun_roll (
 		 "sv_wallrun_roll",
-		 "10.0",
+		 "14.0",
 		 FCVAR_NOTIFY | FCVAR_REPLICATED,
 		 "Wallrun view roll angle.");
 

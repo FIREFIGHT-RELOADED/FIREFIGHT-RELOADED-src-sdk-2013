@@ -519,10 +519,6 @@ void CHL2_Player::Precache( void )
 		pszFilename = g_pFullFileSystem->FindNext(findHandle);
 	}
 	g_pFullFileSystem->FindClose(findHandle);
-
-	PrecacheScriptSound("HL2Player.kick_fire");
-	PrecacheScriptSound("HL2Player.kick_body");
-	PrecacheScriptSound("HL2Player.kick_wall");
 	PrecacheScriptSound("d3_citadel.guards_bangdoor");
 	PrecacheScriptSound("HL2Player.bullettimeon");
 	PrecacheScriptSound("HL2Player.bullettimeoff");

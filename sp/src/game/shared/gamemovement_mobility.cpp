@@ -87,6 +87,7 @@ void CGameMovement::CheckPowerSlide( void )
 		mv->m_vecVelocity.z = 0.0f; // zero out z component of velocity
 		VectorScale( mv->m_vecVelocity, newspeed / speed, mv->m_vecVelocity );
 
+		player->EmitSound("HL2Player.kick_body");
 		player->PlayPowerSlideSound( (Vector &)mv->GetAbsOrigin() );
 
 		player->m_Local.m_vecPunchAngle.Set( PITCH, -2 ); // shake the view a bit

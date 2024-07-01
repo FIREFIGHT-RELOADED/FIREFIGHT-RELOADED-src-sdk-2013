@@ -6162,7 +6162,9 @@ void CBasePlayer::Precache( void )
 {
 	BaseClass::Precache();
 
-
+	PrecacheScriptSound("HL2Player.kick_fire");
+	PrecacheScriptSound("HL2Player.kick_body");
+	PrecacheScriptSound("HL2Player.kick_wall");
 	PrecacheScriptSound( "Player.FallGib" );
 	PrecacheScriptSound( "Player.Death" );
 	PrecacheScriptSound( "Player.PlasmaDamage" );
