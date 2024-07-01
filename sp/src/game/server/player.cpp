@@ -688,6 +688,9 @@ BEGIN_DATADESC( CBasePlayer )
 	DEFINE_FIELD(m_bGotPerkHealthRegen, FIELD_BOOLEAN),
 	DEFINE_FIELD(m_fRegenRate, FIELD_FLOAT),
 	DEFINE_FIELD(m_iMoney, FIELD_INTEGER),
+	DEFINE_FIELD( m_bIsPowerSliding, FIELD_BOOLEAN),
+	DEFINE_FIELD( m_nWallRunState, FIELD_INTEGER),
+	DEFINE_FIELD( m_vecWallNorm, FIELD_POSITION_VECTOR ),
 
 	// DEFINE_FIELD( m_nBodyPitchPoseParam, FIELD_INTEGER ),
 	// DEFINE_ARRAY( m_StepSoundCache, StepSoundCache_t,  2  ),
@@ -4679,6 +4682,13 @@ void CBasePlayer::PlayerRunCommand(CUserCmd *ucmd, IMoveHelper *moveHelper)
 	}
 	
 	PlayerMove()->RunCommand(this, ucmd, moveHelper);
+
+	// update the timer since the last mouse move
+	if (ucmd->mousedx || ucmd->mousedy)
+	{
+		m_flAutoViewTime = gpGlobals->curtime;
+	}
+	
 }
 
 //-----------------------------------------------------------------------------
@@ -5502,6 +5512,13 @@ void CBasePlayer::PostThink()
 {
 	m_vecSmoothedVelocity = m_vecSmoothedVelocity * SMOOTHING_FACTOR + GetAbsVelocity() * ( 1 - SMOOTHING_FACTOR );
 
+	// If the smoothed velocity becomes invalid somehow, it
+	// causes issues with the AI - enemy shoot direction vectors
+	// get messed up. Just reset to 0 if it becomes invalid
+	if ( !m_vecSmoothedVelocity.IsValid() )
+	{
+		m_vecSmoothedVelocity.Init();
+	}
 	if ( !g_fGameOver && !m_iPlayerLocked )
 	{
 		if ( IsAlive() )
@@ -6155,6 +6172,8 @@ void CBasePlayer::Precache( void )
 	PrecacheScriptSound( "Player.DrownContinue" );
 	PrecacheScriptSound( "Player.Wade" );
 	PrecacheScriptSound( "Player.AmbientUnderWater" );
+	m_hssPowerSlideSound = PrecacheScriptSound( "Player.PowerSlide" );
+	m_hssWallRunSound = PrecacheScriptSound( "Player.WallRun" );
 	//Voice
 	PrecacheScriptSound( "Player.VoiceKill" );
 	PrecacheScriptSound( "Player.VoiceHit" );

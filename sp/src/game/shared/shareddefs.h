@@ -106,8 +106,8 @@ public:
 	#define TIME_TO_DUCK		0.2
 	#define TIME_TO_DUCK_MS		200.0f
 #else
-	#define TIME_TO_DUCK		0.4
-	#define TIME_TO_DUCK_MS		400.0f
+    #define TIME_TO_DUCK		sv_duck_time.GetFloat()
+    #define TIME_TO_DUCK_MS		(TIME_TO_DUCK * 1000)
 #endif 
 #define TIME_TO_UNDUCK		0.2
 #define TIME_TO_UNDUCK_MS	200.0f
@@ -369,8 +369,8 @@ enum PLAYER_ANIM
 // HL2 has 600 gravity by default
 // NOTE: The discrete ticks can have quantization error, so these numbers are biased a little to
 // make the heights more exact
-#define PLAYER_FATAL_FALL_SPEED		922.5f // approx 60 feet sqrt( 2 * gravity * 60 * 12 )
-#define PLAYER_MAX_SAFE_FALL_SPEED	526.5f // approx 20 feet sqrt( 2 * gravity * 20 * 12 )
+#define PLAYER_FATAL_FALL_SPEED		1000.0f // mobility - upped a bit
+#define PLAYER_MAX_SAFE_FALL_SPEED	650.0f // mobility - upped a bit
 #define PLAYER_LAND_ON_FLOATING_OBJECT	173 // Can fall another 173 in/sec without getting hurt
 #define PLAYER_MIN_BOUNCE_SPEED		173
 #define PLAYER_FALL_PUNCH_THRESHOLD 303.0f // won't punch player's screen/make scrape noise unless player falling at least this fast - at least a 76" fall (sqrt( 2 * g * 76))

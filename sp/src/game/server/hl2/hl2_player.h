@@ -170,6 +170,7 @@ public:
 	void UpdateLocatorPosition( const Vector &vecPosition );
 
 	// Sprint Device
+	virtual void DeriveMaxSpeed( void );
 	void StartAutoSprint( void );
 	void StartSprinting( void );
 	void StopSprinting( void );

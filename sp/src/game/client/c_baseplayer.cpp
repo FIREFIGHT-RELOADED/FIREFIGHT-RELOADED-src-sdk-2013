@@ -168,6 +168,7 @@ BEGIN_RECV_TABLE_NOBASE( CPlayerLocalData, DT_Local )
 	RecvPropFloat	(RECVINFO_NAME( m_vecPunchAngleVel.m_Value[2], m_vecPunchAngleVel[2] )),
 #else
 	RecvPropVector	(RECVINFO(m_vecPunchAngle)),
+	RecvPropVector  (RECVINFO( m_vecTargetPunchAngle)),
 	RecvPropVector	(RECVINFO(m_vecPunchAngleVel)),
 #endif
 
@@ -955,10 +956,7 @@ void C_BasePlayer::OnRestore()
 
 	if ( IsLocalPlayer() )
 	{
-		// debounce the attack key, for if it was used for restore
-		input->ClearInputButton( IN_ATTACK | IN_ATTACK2 );
-		// GetButtonBits() has to be called for the above to take effect
-		input->GetButtonBits( 0 );
+		DebounceAttackKeys();
 	}
 
 	// For ammo history icons to current value so they don't flash on level transtions
@@ -967,6 +965,7 @@ void C_BasePlayer::OnRestore()
 		m_iOldAmmo[i] = GetAmmoCount(i);
 	}
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Process incoming data
@@ -1051,6 +1050,14 @@ bool C_BasePlayer::IsInViewModelVGuiInputMode() const
 	C_VGuiScreen *pVguiScreen = static_cast<C_VGuiScreen*>(pScreenEnt);
 
 	return ( pVguiScreen->IsAttachedToViewModel() && pVguiScreen->AcceptsInput() );
+}
+
+void C_BasePlayer::DebounceAttackKeys()
+{
+	// debounce the attack keys
+	input->ClearInputButton( IN_ATTACK | IN_ATTACK2 );
+	// GetButtonBits() has to be called for the above to take effect
+	input->GetButtonBits( 0 );
 }
 
 //-----------------------------------------------------------------------------
@@ -1809,6 +1816,8 @@ void C_BasePlayer::CalcDeathCamView(Vector& eyeOrigin, QAngle& eyeAngles, float&
 	fov = GetFOV();
 }
 
+
+
 //-----------------------------------------------------------------------------
 // Purpose: Return the weapon to have open the weapon selection on, based upon our currently active weapon
 //			Base class just uses the weapon that's currently active.
@@ -1956,6 +1965,8 @@ bool C_BasePlayer::ShouldDrawThisPlayer()
 	}
 	return false;
 }
+
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 

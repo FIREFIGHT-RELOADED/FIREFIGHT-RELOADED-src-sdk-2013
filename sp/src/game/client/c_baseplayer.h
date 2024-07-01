@@ -25,6 +25,7 @@
 #include "c_env_fog_controller.h"
 #include "igameevents.h"
 #include "GameEventListener.h"
+#include "player_mobility_defs.h"
 
 #if defined USES_ECON_ITEMS
 #include "econ_item.h"
@@ -62,7 +63,6 @@ public:
 #define CHASE_CAM_DISTANCE_MAX	96.0f
 #define CHASE_CAM_DISTANCE		96.0f
 #define WALL_OFFSET				6.0f
-
 
 bool IsInFreezeCam( void );
 
@@ -344,6 +344,16 @@ public:
 
 	virtual void UpdateStepSound( surfacedata_t *psurface, const Vector &vecOrigin, const Vector &vecVelocity  );
 	virtual void PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force );
+	// Mobility sound functions
+	virtual void PlayPowerSlideSound( Vector &vecOrigin );
+	virtual void StopPowerSlideSound( void ); 
+	virtual void PlayWallRunSound( Vector &vecOrigin );
+	virtual void StopWallRunSound( void );
+	virtual void DeriveMaxSpeed( void ) {};
+
+	Vector  GetEscapeVel() { return m_vecCornerEscapeVel; }
+	void    SetEscapeVel( Vector vecNewYaw ) { m_vecCornerEscapeVel = vecNewYaw; }
+
 	virtual surfacedata_t * GetFootstepSurface( const Vector &origin, const char *surfaceName );
 	virtual void GetStepSoundVelocities( float *velwalk, float *velrun );
 	virtual void SetStepSoundTime( stepsoundtimes_t iStepSoundTime, bool bWalking );
@@ -412,6 +422,8 @@ protected:
 	fogparams_t				m_CurrentFog;
 	EHANDLE					m_hOldFogController;
 
+	virtual void            DebounceAttackKeys();
+
 public:
 	int m_StuckLast;
 	
@@ -453,6 +465,26 @@ public:
 	float			m_flConstraintWidth;
 	float			m_flConstraintSpeedFactor;
 	int				m_iPerkInfiniteAmmo;
+	
+	// Mobility mod
+	bool m_bIsPowerSliding = false;
+	WallRunState m_nWallRunState = WALLRUN_NOT;
+	Vector m_vecWallNorm;
+	float m_flAutoViewTime; // if wallrunning, when should start adjusting the view 
+	bool m_bWallRunBumpAhead; // are we moving out from the wall anticipating a bump?
+	Vector m_vecLastWallRunPos; // Position when we ended the last wallrun
+	HSOUNDSCRIPTHANDLE m_hssPowerSlideSound;
+	HSOUNDSCRIPTHANDLE m_hssWallRunSound;
+
+	float m_flCoyoteTime; // When a wallrun ends or we go over a cliff, allow a window when
+	// jumping counts as a normal jump off the ground/wall, even though
+	// technically airborn. Compensating for player's perception/reflexes.
+	// This is the absolute time until which we allow the special jump
+
+	float m_flNextWallRunTime; // Sometimes we want to have a little cooldown for wallrunning - 
+	// mostly if a wallrun ended because it was above a doorway
+
+	Vector m_vecCornerEscapeVel;
 
 protected:
 
@@ -604,6 +636,7 @@ protected:
 
 	float m_flLaggedMovementValue;
 
+
 	// These are used to smooth out prediction corrections. They're most useful when colliding with
 	// vphysics objects. The server will be sending constant prediction corrections, and these can help
 	// the errors not be so jerky.
@@ -626,6 +659,7 @@ protected:
 	float			m_flNextAchievementAnnounceTime;
 
 	int				m_nForceVisionFilterFlags; // Force our vision filter to a specific setting
+
 
 #if defined USES_ECON_ITEMS
 	// Wearables

@@ -41,7 +41,7 @@
 
 #if defined( CSTRIKE_DLL )
 #include "weapon_c4.h"
-#endif // CSTRIKE_DLl
+#endif // CSTRIKE_DLL
 
 #include "in_buttons.h"
 #include "engine/IEngineSound.h"
@@ -738,7 +738,9 @@ void CBasePlayer::UpdateStepSound( surfacedata_t *psurface, const Vector &vecOri
 		fvol *= 0.65;
 	}
 
-	PlayStepSound( feet, psurface, fvol, false );
+	// Only play the step sound if not powersliding
+	if ( !m_bIsPowerSliding )
+		PlayStepSound( feet, psurface, fvol, false );
 }
 
 //-----------------------------------------------------------------------------
@@ -830,6 +832,77 @@ void CBasePlayer::PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, flo
 
 	// Kyle says: ugggh. This function may as well be called "PerformPileOfDesperateGameSpecificFootstepHacks".
 	OnEmitFootstepSound( params, vecOrigin, fvol );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Play powerslide sound (copy of PlayStepSound but simpler)
+// Input  : location - 
+//-----------------------------------------------------------------------------
+void CBasePlayer::PlayPowerSlideSound( Vector &vecOrigin )
+{
+#if defined( CLIENT_DLL )
+	// during prediction play footstep sounds only once
+	if (prediction->InPrediction() && !prediction->IsFirstTimePredicted())
+		return;
+#endif
+
+	CRecipientFilter filter;
+	filter.AddRecipientsByPAS( vecOrigin );
+
+#ifndef CLIENT_DLL
+	// in MP, server removes all players in the vecOrigin's PVS, these players generate the footsteps client side
+	if (gpGlobals->maxClients > 1)
+	{
+		filter.RemoveRecipientsByPVS( vecOrigin );
+	}
+#endif
+
+	EmitSound( 
+		filter, 
+		entindex(), 
+		"Player.PowerSlide",
+		m_hssPowerSlideSound);
+}
+
+void CBasePlayer::StopPowerSlideSound( void )
+{
+	StopSound( "Player.PowerSlide" , m_hssPowerSlideSound );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Play wallrun sound (copy of PlayStepSound but simpler)
+// Input  : location - 
+//-----------------------------------------------------------------------------
+void CBasePlayer::PlayWallRunSound( Vector &vecOrigin )
+{
+#if defined( CLIENT_DLL )
+	// during prediction play footstep sounds only once
+	if (prediction->InPrediction() && !prediction->IsFirstTimePredicted())
+		return;
+#endif
+
+	CRecipientFilter filter;
+	filter.AddRecipientsByPAS( vecOrigin );
+
+#ifndef CLIENT_DLL
+	// in MP, server removes all players in the vecOrigin's PVS, these players generate the footsteps client side
+	if (gpGlobals->maxClients > 1)
+	{
+		filter.RemoveRecipientsByPVS( vecOrigin );
+	}
+#endif
+
+	EmitSound(
+		filter,
+		entindex(),
+		"Player.WallRun",
+		m_hssWallRunSound );
+}
+
+
+void CBasePlayer::StopWallRunSound( void )
+{
+	StopSound( "Player.WallRun", m_hssWallRunSound );
 }
 
 void CBasePlayer::UpdateButtonState( int nUserCmdButtonMask )
@@ -1396,7 +1469,7 @@ void CBasePlayer::PlayerUse ( void )
 		EyeVectors( &forward, NULL, &up );
 
 		trace_t tr;
-		// Search for objects in a sphere (tests for entities that are not solid, yet still usable)
+		// Search for objects in a sphere (tests for entities that are not solid, yet still useable)
 		Vector searchCenter = EyePosition();
 
 		CUsePushFilter filter;
@@ -1663,6 +1736,12 @@ void CBasePlayer::CalcView( Vector &eyeOrigin, QAngle &eyeAngles, float &zNear, 
 	if(IsLocalPlayer() && haptics)
 		haptics->UpdatePlayerFOV(fov);
 #endif
+
+	// Little hack to reduce zNear when using wider FOV. (otherwise you can see through walls)
+	if (fov > 90)
+	{
+		zNear -= MIN((fov - 90) / 5, 5);
+	}
 }
 
 
@@ -2179,3 +2258,5 @@ bool fogparams_t::operator !=( const fogparams_t& other ) const
 
 	return false;
 }
+
+

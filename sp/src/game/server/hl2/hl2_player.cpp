@@ -55,6 +55,7 @@
 #include "firefightreloaded/fr_ragdoll.h"
 #include "func_break.h"
 #include "ammodef.h"
+#include "movevars_shared.h"
 
 #ifdef HL2_EPISODIC
 #include "npc_alyx_episodic.h"
@@ -88,8 +89,8 @@ extern int gEvilImpulse101;
 
 ConVar sv_autojump( "sv_autojump", "0" );
 
-ConVar hl2_walkspeed("hl2_walkspeed", "180", FCVAR_CHEAT);
-ConVar hl2_normspeed("hl2_normspeed", "210", FCVAR_CHEAT);
+ConVar hl2_walkspeed("hl2_walkspeed", "150", FCVAR_CHEAT);
+ConVar hl2_normspeed("hl2_normspeed", "190", FCVAR_CHEAT);
 ConVar hl2_sprintspeed("hl2_sprintspeed", "320", FCVAR_CHEAT);
 ConVar fr_new_normspeed("fr_new_normspeed", "320", FCVAR_CHEAT);
 ConVar fr_new_walkspeed("fr_new_walkspeed", "210", FCVAR_CHEAT);
@@ -1922,6 +1923,49 @@ void CHL2_Player::InitSprinting( void )
 	StopSprinting();
 }
 
+void CHL2_Player::DeriveMaxSpeed( void )
+{
+	float newMaxSpeed;
+	if ( m_nWallRunState >= WALLRUN_RUNNING )
+	{
+		newMaxSpeed = sv_wallrun_speed.GetFloat();
+	}
+	else if ( m_fIsSprinting )
+	{
+		newMaxSpeed = HL2_SPRINT_SPEED;
+	}
+	else if ( ( !IsSuitEquipped() ) || m_fIsWalking )
+	{
+        if (sv_leagcy_maxspeed.GetBool())
+		{
+			newMaxSpeed = HL2_WALK_SPEED;
+		}
+		else
+		{
+			newMaxSpeed = FR_WALK_SPEED;
+		}
+	}
+	else
+	{
+		if (sv_leagcy_maxspeed.GetBool())
+		{
+			newMaxSpeed = HL2_NORM_SPEED;
+		}
+		else
+		{
+			if (IsInBullettime())
+			{
+				newMaxSpeed = FR_BULLETTIME_SPEED;
+			}
+			else
+			{
+				newMaxSpeed = FR_NORM_SPEED;
+			}
+		}
+	}
+
+	SetMaxSpeed( newMaxSpeed );
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Returns whether or not we are allowed to sprint now.
@@ -1977,8 +2021,9 @@ void CHL2_Player::StartSprinting( void )
 	filter.UsePredictionRules();
 	EmitSound( filter, entindex(), "HL2Player.SprintStart" );
 	
-	SetMaxSpeed( HL2_SPRINT_SPEED );
+
 	m_fIsSprinting = true;
+	DeriveMaxSpeed();
 }
 
 
@@ -1991,37 +2036,9 @@ void CHL2_Player::StopSprinting( void )
 		SuitPower_RemoveDevice( SuitDeviceSprint );
 	}
 
-	if( IsSuitEquipped() )
-	{
-		if (sv_leagcy_maxspeed.GetBool())
-		{
-			SetMaxSpeed(HL2_NORM_SPEED);
-		}
-		else
-		{
-			if (IsInBullettime())
-			{
-				SetMaxSpeed(FR_BULLETTIME_SPEED);
-			}
-			else
-			{
-				SetMaxSpeed(FR_NORM_SPEED);
-			}
-		}
-	}
-	else
-	{
-		if (sv_leagcy_maxspeed.GetBool())
-		{
-			SetMaxSpeed(HL2_WALK_SPEED);
-		}
-		else
-		{
-			SetMaxSpeed(FR_WALK_SPEED);
-		}
-	}
-
 	m_fIsSprinting = false;
+
+	DeriveMaxSpeed();
 
 	if ( sv_stickysprint.GetBool() )
 	{
@@ -2049,46 +2066,16 @@ void CHL2_Player::EnableSprint( bool bEnable )
 //-----------------------------------------------------------------------------
 void CHL2_Player::StartWalking( void )
 {
-	if (sv_leagcy_maxspeed.GetBool())
-	{
-		SetMaxSpeed(HL2_WALK_SPEED);
-		m_fIsWalking = true;
-	}
-	else
-	{
-		if (IsInBullettime())
-		{
-			SetMaxSpeed(FR_NORM_SPEED);
-		}
-		else
-		{
-			SetMaxSpeed(FR_WALK_SPEED);
-		}
-		m_fIsWalking = true;
-	}
+	m_fIsWalking = true;
+	DeriveMaxSpeed();
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CHL2_Player::StopWalking( void )
 {
-	if (sv_leagcy_maxspeed.GetBool())
-	{
-		SetMaxSpeed(HL2_NORM_SPEED);
-		m_fIsWalking = false;
-	}
-	else
-	{
-		if (IsInBullettime())
-		{
-			SetMaxSpeed(FR_BULLETTIME_SPEED);
-		}
-		else
-		{
-			SetMaxSpeed(FR_NORM_SPEED);
-		}
-		m_fIsWalking = false;
-	}
+	m_fIsWalking = false;
+	DeriveMaxSpeed();
 }
 
 //-----------------------------------------------------------------------------
@@ -2743,7 +2730,8 @@ void CHL2_Player::SuitPower_Update( void )
 		{
 			if( SuitPower_IsDeviceActive(SuitDeviceSprint) )
 			{
-				if( !fabs(GetAbsVelocity().x) && !fabs(GetAbsVelocity().y) )
+				bool bMoving = (fabs( GetAbsVelocity().x ) || fabs( GetAbsVelocity().y ));
+				if (!bMoving || m_nWallRunState >= WALLRUN_RUNNING)
 				{
 					// If player's not moving, don't drain sprint juice.
 					flPowerLoad -= SuitDeviceSprint.GetDeviceDrainRate();

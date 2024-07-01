@@ -21,9 +21,12 @@
 
 #define GAMEMOVEMENT_DUCK_TIME				1000.0f		// ms
 #define GAMEMOVEMENT_JUMP_TIME				510.0f		// ms approx - based on the 21 unit height jump
-#define GAMEMOVEMENT_JUMP_HEIGHT			21.0f		// units
+// jump height now a ConVar, sv_jump_height
+
 #define GAMEMOVEMENT_TIME_TO_UNDUCK			( TIME_TO_UNDUCK * 1000.0f )		// ms
 #define GAMEMOVEMENT_TIME_TO_UNDUCK_INV		( GAMEMOVEMENT_DUCK_TIME - GAMEMOVEMENT_TIME_TO_UNDUCK )
+
+#define WALLRUN_MAX_Z 0.5
 
 enum
 {
@@ -97,6 +100,8 @@ protected:
 
 	// Handles both ground friction and water friction
 	void			Friction( void );
+	// Special friction for powersliding
+	void            PowerSlideFriction( void );
 
 	virtual void	AirAccelerate( Vector& wishdir, float wishspeed, float accel );
 
@@ -111,6 +116,9 @@ protected:
 
 	// Try to keep a walking player on the ground when running down slopes etc
 	void			StayOnGround( void );
+
+	// Check if only touching wall with head/upper body
+	void            CheckFeetCanReachWall( void );
 
 	// Handle MOVETYPE_WALK.
 	virtual void	FullWalkMove();
@@ -152,6 +160,46 @@ protected:
 
 	// Returns true if he started a jump (ie: should he play the jump animation)?
 	virtual bool	CheckJumpButton( void );	// Overridden by each game.
+
+	// Check if player should powerslide
+	// Called when we duck or land on the ground while ducked
+	virtual void    CheckPowerSlide( void );
+
+	// End powerslide - reset the vars, stop the sound
+	virtual void    EndPowerSlide( void );
+
+	virtual void    AnticipateWallRun( void );
+
+	virtual bool    CheckForSteps( const Vector& startpos, const Vector& vel );
+
+	// Get the yaw angle between the player and the wall normal
+	virtual float   GetWallRunYaw( void );
+
+	// Check if player should start wallrunning,
+	// i.e. hit a suitable wall while airborn.
+	virtual void    CheckWallRun( Vector &vecWallNormal, trace_t &pm );
+
+	// Check if player can scramble up on top of obstacle
+	virtual void    CheckWallRunScramble(bool& steps);
+
+	// Calculate the wallrun view roll angle based on the 
+	// yaw angle between the player and the wall
+	virtual float   GetWallRunRollAngle( void );
+
+	// Handle wallrun movement
+	virtual void    WallRunMove( void );
+
+	// Handle step-like bits of the wall when wallrunning
+	// (basically step move except wallnorm instead of up)
+	virtual void	WallRunAnticipateBump( void );
+
+	// Try not to get stuck moving in to a corner that is small
+	// and we could easily step around it.
+	virtual void    WallRunEscapeCorner( Vector& wishdir );
+	virtual bool    TryEscape( Vector& posD, float rotation, Vector move );
+
+	// Handle end of wallrun - set vars, stop sound
+	virtual void    EndWallRun( void );
 
 	// Dead player flying through air., e.g.
 	virtual void    FullTossMove( void );

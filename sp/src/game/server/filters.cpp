@@ -41,6 +41,9 @@ bool CBaseFilter::PassesFilterImpl( CBaseEntity *pCaller, CBaseEntity *pEntity )
 
 bool CBaseFilter::PassesFilter( CBaseEntity *pCaller, CBaseEntity *pEntity )
 {
+	if (!pCaller || !pEntity)
+		return false;
+
 	bool baseResult = PassesFilterImpl( pCaller, pEntity );
 	return (m_bNegated) ? !baseResult : baseResult;
 }
@@ -372,7 +375,7 @@ protected:
 
 	bool PassesDamageFilterImpl(const CTakeDamageInfo &info)
 	{
-	 	return info.GetDamageType() == m_iDamageType;
+		return ((info.GetDamageType() & m_iDamageType) ? true : false);
 	}
 
 	int m_iDamageType;

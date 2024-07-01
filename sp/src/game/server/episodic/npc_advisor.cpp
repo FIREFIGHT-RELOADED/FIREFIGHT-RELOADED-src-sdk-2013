@@ -64,6 +64,7 @@ ConVar advisor_throw_stage_distance("advisor_throw_stage_distance","180.0",FCVAR
 ConVar advisor_staging_num("advisor_staging_num","5", FCVAR_ARCHIVE,"Advisor will queue up this many objects to throw at Gordon.");
 ConVar advisor_throw_clearout_vel("advisor_throw_clearout_vel","200",FCVAR_NONE,"TEMP: velocity with which advisor clears things out of a throwable's way");
 ConVar advisor_max_damage("advisor_max_damage", "15", FCVAR_CHEAT);
+ConVar advisor_max_pin_damage("advisor_max_pin_damage", "50", FCVAR_CHEAT);
 ConVar advisor_bulletresistance_throw_velocity("advisor_bulletresistance_throw_velocity", "7500", FCVAR_ARCHIVE);
 ConVar advisor_bulletresistance_throw_rate("advisor_bulletresistance_throw_rate", "3", FCVAR_ARCHIVE);					// Throw an object every 4 seconds.
 ConVar advisor_bulletresistance_staging_num("advisor_bulletresistance_staging_num", "3", FCVAR_ARCHIVE, "Advisor will queue up this many objects to throw at Gordon.");
@@ -325,6 +326,8 @@ protected:
 	// for the pin-the-player-to-something behavior
 	EHANDLE m_hPlayerPinPos;
 	float  m_playerPinFailsafeTime;
+	int  m_playerPinDamage;
+	bool  m_playerPinnedBecauseWallRunning;
 
 	// keep track of up to four objects after we have thrown them, to prevent oscillation or levitation of recently thrown ammo.
 	EHANDLE m_haRecentlyThrownObjects[kMaxThrownObjectsTracked]; 
@@ -349,6 +352,7 @@ protected:
 
 	int   m_iStagingNum; ///< number of objects advisor stages at once
 	bool  m_bWasScripting;
+	bool  m_bStopMoving;
 
 	Vector m_velocity;
 
@@ -387,6 +391,8 @@ BEGIN_DATADESC( CNPC_Advisor )
 
 	DEFINE_FIELD( m_hPlayerPinPos, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_playerPinFailsafeTime, FIELD_TIME ),
+	DEFINE_FIELD( m_playerPinDamage, FIELD_INTEGER),
+	DEFINE_FIELD(m_playerPinnedBecauseWallRunning, FIELD_BOOLEAN),
 
 	// DEFINE_FIELD( m_hThrowEnt, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_flThrowPhysicsTime, FIELD_TIME ),
@@ -395,6 +401,7 @@ BEGIN_DATADESC( CNPC_Advisor )
 	DEFINE_FIELD(m_fllastDronifiedTime, FIELD_TIME),
 	DEFINE_FIELD( m_iStagingNum, FIELD_INTEGER ),
 	DEFINE_FIELD( m_bWasScripting, FIELD_BOOLEAN ),
+	DEFINE_FIELD(m_bStopMoving, FIELD_BOOLEAN),
 
 	DEFINE_FIELD( m_flLastThrowTime, FIELD_TIME ),
 	DEFINE_FIELD( m_vSavedLeadVel, FIELD_VECTOR ),
@@ -471,6 +478,8 @@ void CNPC_Advisor::Spawn()
 	m_NPCState = NPC_STATE_NONE;
 
 	m_bBoss = true;
+	m_bStopMoving = false;
+	m_playerPinDamage = 0;
 
 #if NPC_ADVISOR_HAS_BEHAVIOR
 	m_bBulletResistanceOutlineDisabled = true;
@@ -479,6 +488,7 @@ void CNPC_Advisor::Spawn()
 
 	//CapabilitiesClear();
 	CapabilitiesAdd(bits_CAP_INNATE_MELEE_ATTACK1);
+	CapabilitiesAdd(bits_CAP_FRIENDLY_DMG_IMMUNE);
 
 	NPCInit();
 
@@ -663,6 +673,11 @@ int CNPC_Advisor::OnTakeDamage_Alive(const CTakeDamageInfo& info)
 //-----------------------------------------------------------------------------
 bool CNPC_Advisor::PassesDamageFilter(const CTakeDamageInfo& info)
 {
+	if ((info.GetDamageType() & DMG_CRUSH))
+	{
+		return false;
+	}
+
 	if (UTIL_IsAR2CombineBall(info.GetInflictor()) && !m_bBulletResistanceBroken)
 	{
 		return false;
@@ -1041,7 +1056,8 @@ void CNPC_Advisor::StartTask( const Task_t *pTask )
 			// should never be here
 			
 			Assert( m_hPlayerPinPos.IsValid() );
-			m_playerPinFailsafeTime = gpGlobals->curtime + 10.0f;
+			m_playerPinFailsafeTime = gpGlobals->curtime + 3.5f;
+			m_playerPinDamage = 0;
 
 			break;
 			
@@ -1056,6 +1072,9 @@ void CNPC_Advisor::StartTask( const Task_t *pTask )
 
 void CNPC_Advisor::MovetoTarget(Vector vecTarget)
 {
+	if (m_bStopMoving)
+		return;
+
 	// Trace down and make sure we can fit here
 	trace_t	tr;
 	AI_TraceHull(m_velocity, m_velocity - Vector(0, 0, 64), GetHullMins(), GetHullMaxs(), MASK_NPCSOLID, this, COLLISION_GROUP_NONE, &tr);
@@ -1095,9 +1114,12 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 	{
 		//Needed for the npc face constantly at player
 		GetMotor()->SetIdealYawToTargetAndUpdate(GetEnemyLKP(), AI_KEEP_YAW_SPEED);
-		if (GetEnemy() && GetEnemy()->IsAlive())
+		if (!m_bStopMoving)
 		{
-			MovetoTarget(GetEnemy()->GetAbsOrigin());
+			if (GetEnemy() && GetEnemy()->IsAlive())
+			{
+				MovetoTarget(GetEnemy()->GetAbsOrigin());
+			}
 		}
 	}
 
@@ -1336,6 +1358,12 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 					GetEnemy()->SetMoveType(MOVETYPE_WALK);
 					Write_BeamOff(GetEnemy());
 					beamonce = 1;
+					m_bStopMoving = false;
+					m_playerPinDamage = 0;
+					if (m_playerPinnedBecauseWallRunning)
+					{
+						m_hPlayerPinPos.Set(NULL);
+					}
 					TaskComplete();
 					break;
 				}
@@ -1347,8 +1375,14 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 					GetEnemy()->SetMoveType(MOVETYPE_WALK);
 					Write_BeamOff(GetEnemy());
 					beamonce = 1;
-					Warning("Advisor did not leave PIN PLAYER mode. Aborting due to ten second failsafe!\n");
-					TaskFail("Advisor did not leave PIN PLAYER mode. Aborting due to ten second failsafe!\n");
+					m_bStopMoving = false;
+					m_playerPinDamage = 0;
+					if (m_playerPinnedBecauseWallRunning)
+					{
+						m_hPlayerPinPos.Set(NULL);
+					}
+					Warning("Advisor did not leave PIN PLAYER mode. Aborting due to failsafe!\n");
+					TaskFail("Advisor did not leave PIN PLAYER mode. Aborting due to failsafe!\n");
 					break;
 				}
 
@@ -1359,6 +1393,12 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 					GetEnemy()->SetMoveType(MOVETYPE_WALK);
 					Write_BeamOff(GetEnemy());
 					beamonce = 1;
+					m_bStopMoving = false;
+					m_playerPinDamage = 0;
+					if (m_playerPinnedBecauseWallRunning)
+					{
+						m_hPlayerPinPos.Set(NULL);
+					}
 					TaskFail("Player is not the enemy?!");
 					break;
 				}
@@ -1373,6 +1413,16 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 				GetEnemy()->SetMoveType(MOVETYPE_NONE); //MOVETYPE_FLY
 				GetEnemy()->SetGravity(0);
 
+				CBasePlayer* pPlayer = ToBasePlayer(GetEnemy());
+				if (pPlayer)
+				{
+					pPlayer->m_nWallRunState = WALLRUN_NOT;
+					pPlayer->StopWallRunSound();
+
+					pPlayer->SetGroundEntity(NULL);
+					pPlayer->DeriveMaxSpeed();
+				}
+
 				// use exponential falloff to peg the player to the pin point
 				const Vector& desiredPos = pPinEnt->GetAbsOrigin();
 				const Vector& playerPos = GetEnemy()->GetAbsOrigin();
@@ -1384,6 +1434,14 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 				Vector nuPos = playerPos + (displacement * (1.0f - desiredDisplacementLen));
 
 				GetEnemy()->SetAbsOrigin(nuPos);
+				GetEnemy()->SetAbsVelocity(Vector(0, 0, 0));
+
+				if (m_playerPinDamage <= advisor_max_pin_damage.GetFloat())
+				{
+					int dmg = sk_advisor_melee_dmg.GetInt();
+					GetEnemy()->TakeDamage(CTakeDamageInfo(this, this, dmg, DMG_BURN | DMG_SLOWBURN | DMG_DIRECT));
+					m_playerPinDamage += dmg;
+				}
 			}
 			break;
 		}
@@ -1457,6 +1515,7 @@ void CNPC_Advisor::Event_Killed(const CTakeDamageInfo &info)
 		info.GetAttacker()->SetGravity(1.0f);
 		info.GetAttacker()->SetMoveType(MOVETYPE_WALK);
 		Write_BeamOff(info.GetAttacker());
+		m_bStopMoving = false;
 		beamonce = 1;
 	}
 	BaseClass::Event_Killed(info);
@@ -1927,12 +1986,27 @@ int CNPC_Advisor::SelectSchedule()
 			{
 				if (HasCondition(COND_HAVE_ENEMY_LOS) && HasCondition(COND_SEE_ENEMY))
 				{
-					//if (m_hPlayerPinPos.IsValid())//false
-						//return SCHED_ADVISOR_TOSS_PLAYER;
-					if (advisor_enable_droning.GetBool() && 
+					CBasePlayer* pPlayer = ToBasePlayer(GetEnemy());
+					if (m_hPlayerPinPos.IsValid())//false
+					{
+						m_bStopMoving = true;
+						return SCHED_ADVISOR_TOSS_PLAYER;
+					}
+					else if (pPlayer && (pPlayer->m_nWallRunState == WALLRUN_RUNNING || pPlayer->m_nWallRunState == WALLRUN_STALL))
+					{
+						if (!m_hPlayerPinPos.IsValid())
+						{
+							m_hPlayerPinPos.Set(pPlayer);
+							m_playerPinnedBecauseWallRunning = true;
+						}
+
+						m_bStopMoving = true;
+						return SCHED_ADVISOR_TOSS_PLAYER;
+					}
+					else if (advisor_enable_droning.GetBool() && 
 						((m_fllastDronifiedTime < gpGlobals->curtime) && 
 							(advisor_enable_premature_droning.GetBool() || m_bBulletResistanceBroken)))
-						return SCHED_ADVISOR_DRONIFY;
+						return SCHED_ADVISOR_DRONIFY; 
 					else
 						return SCHED_ADVISOR_COMBAT;
 				}

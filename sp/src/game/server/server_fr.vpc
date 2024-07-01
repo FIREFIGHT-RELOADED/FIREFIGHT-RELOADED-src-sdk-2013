@@ -74,6 +74,13 @@ $Project "Server (FR)"
 				}
 			}
 		}
+        
+        $Folder	"MOBILITY MOD DLL"
+		{
+            $File	"$SRCDIR\game\shared\gamemovement_duck.cpp"
+			$File	"$SRCDIR\game\shared\gamemovement_mobility.cpp"
+			$File	"$SRCDIR\game\shared\player_mobility_defs.h"
+        }
 
 		$Folder	"HL2 DLL"
 		{

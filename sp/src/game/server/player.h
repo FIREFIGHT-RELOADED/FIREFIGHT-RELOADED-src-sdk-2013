@@ -18,6 +18,9 @@
 #include "hintsystem.h"
 #include "SoundEmitterSystem/isoundemittersystembase.h"
 #include "util_shared.h"
+#include "player_mobility_defs.h"
+
+
 
 #if defined USES_ECON_ITEMS
 #include "game_item_schema.h"
@@ -474,6 +477,12 @@ public:
 	void					UpdatePlayerSound ( void );
 	virtual void			UpdateStepSound( surfacedata_t *psurface, const Vector &vecOrigin, const Vector &vecVelocity );
 	virtual void			PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force );
+	// Mobility sound functions
+	virtual void            PlayPowerSlideSound( Vector &vecOrigin );
+	virtual void            StopPowerSlideSound( void );
+	virtual void            PlayWallRunSound( Vector &vecOrigin );
+	virtual void            StopWallRunSound( void );
+
 	virtual const char	   *GetOverrideStepSound( const char *pszBaseStepSoundName ) { return pszBaseStepSoundName; }
 	virtual void			GetStepSoundVelocities( float *velwalk, float *velrun );
 	virtual void			SetStepSoundTime( stepsoundtimes_t iStepSoundTime, bool bWalking );
@@ -611,6 +620,24 @@ public:
 
 	void					AvoidPhysicsProps( CUserCmd *pCmd );
 
+	// Mobility mod
+	bool m_bIsPowerSliding = false;
+	WallRunState m_nWallRunState = WALLRUN_NOT;
+	Vector m_vecWallNorm;
+	float m_flAutoViewTime; // if wallrunning, when should start adjusting the view 
+	bool m_bWallRunBumpAhead; // are we moving out from the wall anticipating a bump?
+	Vector m_vecLastWallRunPos; // Position when we ended the last wallrun
+	HSOUNDSCRIPTHANDLE m_hssPowerSlideSound;
+	HSOUNDSCRIPTHANDLE m_hssWallRunSound;
+
+	float m_flCoyoteTime; // When a wallrun ends or we go over a cliff, allow a window when
+	                      // jumping counts as a normal jump off the ground/wall, even though
+	                      // technically airborn. Compensating for player's perception/reflexes.
+	                      // This is the absolute time until which we allow the special jump
+
+	float m_flNextWallRunTime; // Some times we want to have a little cooldown for wallrunning - 
+	                           // mostly if a wallrun ended because it was above a doorway
+	                           
 	// Run a user command. The default implementation calls ::PlayerRunCommand. In TF, this controls a vehicle if
 	// the player is in one.
 	virtual void			PlayerRunCommand(CUserCmd *ucmd, IMoveHelper *moveHelper);
@@ -710,6 +737,11 @@ public:
 
 	int		GetObserverMode() const	{ return m_iObserverMode; }
 	CBaseEntity *GetObserverTarget() const	{ return m_hObserverTarget; }
+
+
+
+	Vector  GetEscapeVel() { return m_vecCornerEscapeVel; }
+	void    SetEscapeVel( Vector vecNewVel ) { m_vecCornerEscapeVel = vecNewVel; }
 
 	// Round gamerules
 	virtual bool	IsReadyToPlay( void ) { return true; }
@@ -816,6 +848,8 @@ public:
 
 	// Here so that derived classes can use the expresser
 	virtual CAI_Expresser *GetExpresser() { return NULL; };
+
+	virtual void DeriveMaxSpeed( void ) {};
 
 #if !defined(NO_STEAM)
 	//----------------------------
@@ -1139,6 +1173,10 @@ private:
 	float					m_flSwimTime;		// how long player has been underwater
 	float					m_flDuckTime;		// how long we've been ducking
 	float					m_flDuckJumpTime;	
+
+
+	Vector                  m_vecCornerEscapeVel; // Replace wishdir to escape
+	                                             // if we are stuck in a small corner 
 
 	float					m_flSuitUpdate;					// when to play next suit update
 	int						m_rgSuitPlayList[CSUITPLAYLIST];// next sentencenum to play for suit update

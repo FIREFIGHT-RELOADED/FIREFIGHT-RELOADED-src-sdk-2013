@@ -13,6 +13,39 @@
 #include "convar.h"
 
 float GetCurrentGravity( void );
+float GetJumpHeight( void );
+float GetSlideTime( void );
+float GetSlideSpeedBoost( void );
+float GetWallRunTime( void );
+float GetWallRunBoost( void );
+float GetWallRunSpeed( void );
+
+extern ConVar sv_wallrun_anticipation;
+extern ConVar sv_wallrun_time;
+extern ConVar sv_wallrun_speed;
+extern ConVar sv_wallrun_accel;
+extern ConVar sv_wallrun_boost;
+extern ConVar sv_wallrun_jump_boost;
+extern ConVar sv_wallrun_jump_push;
+extern ConVar sv_wallrun_feet_z;
+extern ConVar sv_wallrun_roll;
+extern ConVar sv_wallrun_min_rise;
+extern ConVar sv_wallrun_max_rise;
+extern ConVar sv_wallrun_scramble_z;
+extern ConVar sv_wallrun_lookahead;
+extern ConVar sv_wallrun_inness;
+extern ConVar sv_wallrun_outness;
+extern ConVar sv_wallrun_look_delay;
+extern ConVar sv_wallrun_lookness;
+extern ConVar sv_wallrun_stick_angle;
+extern ConVar sv_wallrun_corner_stick_angle;
+extern ConVar sv_duck_time;
+extern ConVar sv_slide_speed_boost;
+extern ConVar sv_coyote_time;
+extern ConVar sv_jump_height;
+extern ConVar sv_slide_time;
+extern ConVar sv_slide_lock;
+extern ConVar certain_restrictions;
 
 extern ConVar sv_gravity;
 extern ConVar sv_stopspeed;
