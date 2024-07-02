@@ -113,7 +113,7 @@ enum PathfindingVariant_T
 	PATHFINDING_VARIANT_DEFAULT = 0,
 };
 
-ConVar combine_spawnwithtacticalvariant("combine_spawnwithtacticalvariant", "1", FCVAR_ARCHIVE);
+ConVar combine_spawnwithtacticalvariant("combine_spawnwithtacticalvariant", "0", FCVAR_ARCHIVE);
 
 #define bits_MEMORY_PAIN_LIGHT_SOUND		bits_MEMORY_CUSTOM1
 #define bits_MEMORY_PAIN_HEAVY_SOUND		bits_MEMORY_CUSTOM2
@@ -353,15 +353,22 @@ void CNPC_Combine::Spawn( void )
 		variantoverride = m_pAttributes->GetBool("tactical_variant_override");
 		if (variantoverride && combine_spawnwithtacticalvariant.GetBool())
 		{
-			int grenades = m_pAttributes->GetInt("tactical_variant");
-			m_iTacticalVariant = grenades;
+			int variant = m_pAttributes->GetInt("tactical_variant");
+			m_iTacticalVariant = variant;
 		}
 	}
 
-	if (!variantoverride && combine_spawnwithtacticalvariant.GetBool())
+	if (!variantoverride)
 	{
-		int var = random->RandomInt(TACTICAL_VARIANT_DEFAULT, TACTICAL_VARIANT_PRESSURE_ENEMY_UNTIL_CLOSE);
-		m_iTacticalVariant = var;
+		if (combine_spawnwithtacticalvariant.GetBool())
+		{
+			int var = random->RandomInt(TACTICAL_VARIANT_DEFAULT, TACTICAL_VARIANT_PRESSURE_ENEMY_UNTIL_CLOSE);
+			m_iTacticalVariant = var;
+		}
+		else
+		{
+			m_iTacticalVariant = TACTICAL_VARIANT_PRESSURE_ENEMY;
+		}
 	}
 
 	NPCInit();
