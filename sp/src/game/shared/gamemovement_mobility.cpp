@@ -202,17 +202,20 @@ void CGameMovement::AnticipateWallRun( void )
 	if (player->m_nWallRunState >= WALLRUN_RUNNING)
 		return;
 
-	bool movementkeys = ((mv->m_nButtons & IN_BACK) ||
-		(mv->m_nButtons & IN_FORWARD) ||
-		(mv->m_nButtons & IN_MOVELEFT) ||
-		(mv->m_nButtons & IN_MOVERIGHT) ||
-		(mv->m_nButtons & IN_GRAPPLE));
-
-	// don't wallrun unless we are directly controlling it.
-	if (!(movementkeys))
+	if (sv_wallrun_requiredirectcontrol.GetBool())
 	{
-		EndWallRun();
-		return;
+		bool movementkeys = ((mv->m_nButtons & IN_BACK) ||
+			(mv->m_nButtons & IN_FORWARD) ||
+			(mv->m_nButtons & IN_MOVELEFT) ||
+			(mv->m_nButtons & IN_MOVERIGHT) ||
+			(mv->m_nButtons & IN_GRAPPLE));
+
+		// don't wallrun unless we are directly controlling it.
+		if (!(movementkeys))
+		{
+			EndWallRun();
+			return;
+		}
 	}
 
 	// Dead 
@@ -261,17 +264,20 @@ void CGameMovement::CheckWallRun( Vector &vecWallNormal, trace_t &pm )
 	if (!player->IsSuitEquipped())
 		return;
 
-	bool movementkeys = ((mv->m_nButtons & IN_BACK) ||
-		(mv->m_nButtons & IN_FORWARD) ||
-		(mv->m_nButtons & IN_MOVELEFT) ||
-		(mv->m_nButtons & IN_MOVERIGHT) ||
-		(mv->m_nButtons & IN_GRAPPLE));
-
-	// don't wallrun unless we are directly controlling it.
-	if (!(movementkeys))
+	if (sv_wallrun_requiredirectcontrol.GetBool())
 	{
-		EndWallRun();
-		return;
+		bool movementkeys = ((mv->m_nButtons & IN_BACK) ||
+			(mv->m_nButtons & IN_FORWARD) ||
+			(mv->m_nButtons & IN_MOVELEFT) ||
+			(mv->m_nButtons & IN_MOVERIGHT) ||
+			(mv->m_nButtons & IN_GRAPPLE));
+
+		// don't wallrun unless we are directly controlling it.
+		if (!(movementkeys))
+		{
+			EndWallRun();
+			return;
+		}
 	}
 
 	// Don't attach to wall if ducking - super annoying
@@ -383,17 +389,20 @@ void CGameMovement::WallRunMove( void )
 	if (player->m_nWallRunState < WALLRUN_RUNNING)
 		return;
 
-	bool movementkeys = ((mv->m_nButtons & IN_BACK) ||
-		(mv->m_nButtons & IN_FORWARD) ||
-		(mv->m_nButtons & IN_MOVELEFT) ||
-		(mv->m_nButtons & IN_MOVERIGHT) ||
-		(mv->m_nButtons & IN_GRAPPLE));
-
-	// don't wallrun unless we are directly controlling it.
-	if (!(movementkeys))
+	if (sv_wallrun_requiredirectcontrol.GetBool())
 	{
-		EndWallRun();
-		return;
+		bool movementkeys = ((mv->m_nButtons & IN_BACK) ||
+			(mv->m_nButtons & IN_FORWARD) ||
+			(mv->m_nButtons & IN_MOVELEFT) ||
+			(mv->m_nButtons & IN_MOVERIGHT) ||
+			(mv->m_nButtons & IN_GRAPPLE));
+
+		// don't wallrun unless we are directly controlling it.
+		if (!(movementkeys))
+		{
+			EndWallRun();
+			return;
+		}
 	}
 
 	if (mv->m_nButtons & IN_DUCK)
@@ -670,27 +679,42 @@ void CGameMovement::EndWallRun( void )
 	SetGroundEntity( NULL );
 	player->DeriveMaxSpeed();
 
-	bool movementkeys = ((mv->m_nButtons & IN_BACK) ||
-		(mv->m_nButtons & IN_FORWARD) ||
-		(mv->m_nButtons & IN_MOVELEFT) ||
-		(mv->m_nButtons & IN_MOVERIGHT) ||
-		(mv->m_nButtons & IN_GRAPPLE));
+	if (sv_wallrun_requiredirectcontrol.GetBool())
+	{
+		bool movementkeys = ((mv->m_nButtons & IN_BACK) ||
+			(mv->m_nButtons & IN_FORWARD) ||
+			(mv->m_nButtons & IN_MOVELEFT) ||
+			(mv->m_nButtons & IN_MOVERIGHT) ||
+			(mv->m_nButtons & IN_GRAPPLE));
 
-	player->SetEscapeVel(vec3_origin);
+		player->SetEscapeVel(vec3_origin);
+		player->m_Local.m_vecTargetPunchAngle.Set(ROLL, 0);
+		player->m_vecLastWallRunPos = mv->GetAbsOrigin();
 
-	//only coyote jump if we were controlling it.
-	if ((movementkeys))
+		//only coyote jump if we were controlling it.
+		if ((movementkeys))
+		{
+			Vector vecWallPush;
+			VectorScale(player->m_vecWallNorm, 16.0f, vecWallPush);
+			mv->m_vecVelocity += vecWallPush;
+			player->m_flCoyoteTime = gpGlobals->curtime + sv_coyote_time.GetFloat();
+		}
+		else
+		{
+			player->m_flCoyoteTime = 0;
+		}
+	}
+	else
 	{
 		Vector vecWallPush;
 		VectorScale(player->m_vecWallNorm, 16.0f, vecWallPush);
 		mv->m_vecVelocity += vecWallPush;
-		player->m_vecLastWallRunPos = mv->GetAbsOrigin();
+
+		player->SetEscapeVel(vec3_origin);
 		player->m_Local.m_vecTargetPunchAngle.Set(ROLL, 0);
+
+		player->m_vecLastWallRunPos = mv->GetAbsOrigin();
 		player->m_flCoyoteTime = gpGlobals->curtime + sv_coyote_time.GetFloat();
-	}
-	else
-	{
-		player->m_flCoyoteTime = 0;
 	}
 }
 

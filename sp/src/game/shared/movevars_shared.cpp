@@ -93,6 +93,13 @@ ConVar
 		"0 - none, 1 - Eye roll only, 2 - Full (bumps)." );
 
 ConVar
+	sv_wallrun_requiredirectcontrol(
+		"sv_wallrun_requiredirectcontrol",
+		"1",
+		FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
+		"Require a movement key to be pressed before attempting a wallrun.");
+
+ConVar
 	sv_wallrun_boost(
 		"sv_wallrun_boost",
 		DEFAULT_WALLRUN_BOOST_STRING,

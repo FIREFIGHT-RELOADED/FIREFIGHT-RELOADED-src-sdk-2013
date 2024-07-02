@@ -330,48 +330,6 @@
 				}
 			}
             
-            "ToggleBunnyhop"
-			{
-				"text"			"#GameUI_ToggleBunnyhop"
-				"type"			"wheelywheel"
-				"advanced"		"1"
-				"convar"		"fr_enable_bunnyhop"
-
-				"options"
-				{
-					"0"		"#gameui_disabled"
-					"1"		"#gameui_enabled"
-				}
-			}
-            
-            "BunnyhopBoost"
-			{
-				"text"			"#FR_Bunnyhop_Boost"
-				"type"			"wheelywheel"
-				"advanced"		"1"
-				"convar"		"fr_bunnyhop_boost"
-
-				"options"
-				{
-					"0"		"#gameui_disabled"
-					"1"		"#gameui_enabled"
-				}
-			}
-            
-            "ToggleAutojump"
-			{
-				"text"			"#GameUI_ToggleAutojump"
-				"type"			"wheelywheel"
-				"advanced"		"1"
-				"convar"		"fr_autojump"
-
-				"options"
-				{
-					"0"		"#gameui_disabled"
-					"1"		"#gameui_enabled"
-				}
-			}
-            
             "Perks"
 			{
 				"text"			"#GameUI_Perks"
@@ -1373,6 +1331,112 @@
 					"1"		"#gameui_enabled"
 				}
 			}
+            
+            "MobilityHeader"
+			{
+				"text"			"#GameUI_MobilityHeader"
+				"type"			"headeryheader"
+				"advanced"		"1"
+			}
+            
+            "ToggleBunnyhop"
+			{
+				"text"			"#GameUI_ToggleBunnyhop"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"fr_enable_bunnyhop"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+            
+            "BunnyhopBoost"
+			{
+				"text"			"#FR_Bunnyhop_Boost"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"fr_bunnyhop_boost"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+            
+            "TogglePowerslide"
+			{
+				"text"			"#GameUI_TogglePowerslide"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"sv_slide"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+            
+            "ToggleWallrun"
+			{
+				"text"			"#GameUI_ToggleWallrun"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"sv_wallrun"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+            
+            "ToggleWallrunAnticipation"
+			{
+				"text"			"#GameUI_ToggleWallrunAnticipation"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"sv_wallrun_anticipation"
+
+				"options"
+				{
+					"0"		"#GameUI_ToggleWallrunAnticipation_None"
+					"1"		"#GameUI_ToggleWallrunAnticipation_ViewRollOnly"
+                    "2"		"#GameUI_ToggleWallrunAnticipation_Full"
+				}
+			}
+            
+            "WallrunRollAngle"
+			{
+				"text"			"#GameUI_WallrunViewRollAngle"
+				"type"			"slideyslide"
+				"convar"		"sv_wallrun_roll"
+				"advanced"		"1"
+
+				"min"			"0.0"
+				"max"			"14.0"
+				"step"			"0.5"
+
+				"textprecision" "2"
+			}
+            
+            "WallrunDirectControl"
+			{
+				"text"			"#GameUI_WallrunDirectControl"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"sv_wallrun_requiredirectcontrol"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
 
 			"AdvancedHeader"
 			{
@@ -1404,7 +1468,7 @@
 
 				"min"			"0.0"
 				"max"			"14.0"
-				"step"			"0.1"
+				"step"			"0.5"
 
 				"textprecision" "2"
 			}

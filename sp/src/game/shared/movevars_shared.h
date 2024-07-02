@@ -46,6 +46,7 @@ extern ConVar sv_jump_height;
 extern ConVar sv_slide_time;
 extern ConVar sv_slide_lock;
 extern ConVar certain_restrictions;
+extern ConVar sv_wallrun_requiredirectcontrol;
 
 extern ConVar sv_slide;
 extern ConVar sv_wallrun;
