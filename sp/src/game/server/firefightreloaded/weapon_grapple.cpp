@@ -242,6 +242,7 @@ void CGrappleHook::HookedThink( void )
 	m_hPlayer->m_nWallRunState = WALLRUN_NOT;
 	m_hPlayer->StopWallRunSound();
 	m_hPlayer->DeriveMaxSpeed();
+	m_hPlayer->m_flCoyoteTime = 0;
 
 	float flDistance = (m_hPlayer->GetAbsOrigin() - GetAbsOrigin()).Length();
 

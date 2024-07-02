@@ -1705,19 +1705,9 @@ void CHL2_Player::Spawn(void)
 	if (sv_leagcy_maxspeed.GetBool())
 	{
 		InitSprinting();
-		SetMaxSpeed(HL2_NORM_SPEED);
 	}
-	else
-	{
-		if (IsInBullettime())
-		{
-			SetMaxSpeed(FR_BULLETTIME_SPEED);
-		}
-		else
-		{
-			SetMaxSpeed(FR_NORM_SPEED);
-		}
-	}
+
+	DeriveMaxSpeed();
 
 	InitBullettime();
 

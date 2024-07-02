@@ -68,8 +68,6 @@ ConVar player_limit_jump_speed( "player_limit_jump_speed", "1", FCVAR_REPLICATED
 ConVar fr_enable_bunnyhop("fr_enable_bunnyhop", "1", FCVAR_ARCHIVE);
 ConVar fr_bunnyhop_boost("fr_bunnyhop_boost", "0", FCVAR_ARCHIVE);
 
-ConVar fr_autojump("fr_autojump", "0", FCVAR_ARCHIVE);
-
 // option_duck_method is a carrier convar. Its sole purpose is to serve an easy-to-flip
 // convar which is ONLY set by the X360 controller menu to tell us which way to bind the
 // duck controls. Its value is meaningless anytime we don't have the options window open.
@@ -2531,7 +2529,7 @@ bool CGameMovement::CheckJumpButton( void )
 		return false;
 #endif
 
-	if (mv->m_nOldButtons & IN_JUMP && !fr_autojump.GetBool())
+	if (mv->m_nOldButtons & IN_JUMP)
 		return false;		// don't pogo stick
 
 
@@ -2627,35 +2625,12 @@ bool CGameMovement::CheckJumpButton( void )
 			}
 		}
 
+		VectorAdd(vecForward, mv->m_vecVelocity, mv->m_vecVelocity);
+		VectorAdd(vecRight, mv->m_vecVelocity, mv->m_vecVelocity);
+
 		float flSpeedBoostPerc = (!pMoveData->m_bIsSprinting && !player->m_Local.m_bDucked) ? 0.5f : 0.1f;
 		float flSpeedAddition = fabs(mv->m_flForwardMove * flSpeedBoostPerc);
-		float flMaxSpeed = mv->m_flMaxSpeed + (mv->m_flMaxSpeed * flSpeedBoostPerc);
 		float flNewSpeed = (flSpeedAddition + mv->m_vecVelocity.Length2D());
-
-		float oldspeed;
-		oldspeed = mv->m_vecVelocity.Length();
-
-		// certain_restrictions is just sensible speed limits for jump boosts and slide boosts.
-		// Should have been the default behaviour. 
-		if (certain_restrictions.GetBool() && (player->m_nWallRunState == WALLRUN_JUMPING || player->m_bIsPowerSliding))
-		{
-			// with restrictions on, don't add speed beyond the max
-			if (oldspeed > sv_maxspeed.GetFloat()) {
-				// already going too fast - no boost
-				flSpeedAddition = 0;
-			}
-			else if (flNewSpeed > sv_maxspeed.GetFloat()) {
-				// limit the boost to get us up to maxspeed but no faster
-				flSpeedAddition -= flNewSpeed - flMaxSpeed;
-			}
-		}
-		else
-		{
-			flSpeedAddition = 1;
-		}
-
-		VectorAdd(vecForward*flSpeedAddition, mv->m_vecVelocity, mv->m_vecVelocity);
-		VectorAdd(vecRight*flSpeedAddition, mv->m_vecVelocity, mv->m_vecVelocity);
 
 		if (player->m_nWallRunState == WALLRUN_JUMPING) {
 			// Jump out from the wall 

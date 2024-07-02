@@ -1421,6 +1421,7 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 
 					pPlayer->SetGroundEntity(NULL);
 					pPlayer->DeriveMaxSpeed();
+					pPlayer->m_flCoyoteTime = 0;
 				}
 
 				// use exponential falloff to peg the player to the pin point
