@@ -64,149 +64,151 @@ float GetWallRunBoost( void )
 	return sv_wallrun_boost.GetFloat();
 }
 
-ConVar	sv_gravity		( "sv_gravity", DEFAULT_GRAVITY_STRING, FCVAR_NOTIFY | FCVAR_REPLICATED, "World gravity." );
+ConVar	sv_gravity		( "sv_gravity", DEFAULT_GRAVITY_STRING, FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE, "World gravity." );
 
 // Mobility 
 
-ConVar  sv_jump_height  ( "sv_jump_height", DEFAULT_JUMP_HEIGHT_STRING, FCVAR_NOTIFY | FCVAR_REPLICATED, "Jump Height.");
-ConVar  sv_slide_time( "sv_slide_time", DEFAULT_SLIDE_TIME_STRING, FCVAR_NOTIFY | FCVAR_REPLICATED, "Powerslide time." );
+ConVar  sv_jump_height  ( "sv_jump_height", DEFAULT_JUMP_HEIGHT_STRING, FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE, "Jump Height.");
+ConVar  sv_slide("sv_slide", "1", FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE, "");
+ConVar  sv_wallrun("sv_wallrun", "1", FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE, "");
+ConVar  sv_slide_time( "sv_slide_time", DEFAULT_SLIDE_TIME_STRING, FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE, "Powerslide time." );
 ConVar  
     sv_slide_speed_boost(
 		"sv_slide_speed_boost",
 		DEFAULT_SLIDE_SPEED_BOOST_STRING,
-		FCVAR_NOTIFY | FCVAR_REPLICATED,
+		FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
 		"Speed boost for powerslide." );
 ConVar 
     sv_wallrun_time( 
 	    "sv_wallrun_time", 
 		DEFAULT_WALLRUN_TIME_STRING, 
-		FCVAR_NOTIFY | FCVAR_REPLICATED, 
+		FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
 		"Wallrun max duration.");
 
 ConVar
 	sv_wallrun_anticipation(
 		"sv_wallrun_anticipation",
 		"2",
-		FCVAR_NOTIFY | FCVAR_REPLICATED,
+		FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
 		"0 - none, 1 - Eye roll only, 2 - Full (bumps)." );
 
 ConVar
 	sv_wallrun_boost(
 		"sv_wallrun_boost",
 		DEFAULT_WALLRUN_BOOST_STRING,
-		FCVAR_NOTIFY | FCVAR_REPLICATED,
+		FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
 		"Wallrun speed boost." );
 ConVar
 	sv_wallrun_jump_boost(
 		"sv_wallrun_jump_boost",
 		"0.15",
-		FCVAR_NOTIFY | FCVAR_REPLICATED,
+		FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
 		"Fraction of wallrun speed to add to jump." );
 ConVar
 	sv_wallrun_jump_push(
 		"sv_wallrun_jump_push",
 		"0.25",
-		FCVAR_NOTIFY | FCVAR_REPLICATED,
+		FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
 		"Fraction of wall jump speed to go to pushing off wall." );
  ConVar 
 	 sv_wallrun_speed (
 		 "sv_wallrun_speed",
 		 DEFAULT_WALLRUN_SPEED_STRING,
-		 FCVAR_NOTIFY | FCVAR_REPLICATED, 
+		 FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
 		 "Wallrun speed.");
  ConVar
 	 sv_wallrun_accel(
 		 "sv_wallrun_accel",
 		 "4.25",
-		 FCVAR_NOTIFY | FCVAR_REPLICATED,
+		 FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
 		 "Wallrun acceleration." );
 
  ConVar
 	 sv_wallrun_roll (
 		 "sv_wallrun_roll",
 		 "14.0",
-		 FCVAR_NOTIFY | FCVAR_REPLICATED,
+		 FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
 		 "Wallrun view roll angle.");
 
  ConVar
 	 sv_wallrun_max_rise (
 		 "sv_wallrun_max_rise",
 		 "25.0",
-		 FCVAR_NOTIFY | FCVAR_REPLICATED,
+		 FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
 		 "Wallrun upward limit.");
 
  ConVar
 	 sv_wallrun_min_rise (
 		 "sv_wallrun_min_rise",
 		 "-50.0",
-		 FCVAR_NOTIFY | FCVAR_REPLICATED,
+		 FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
 		 "Wallrun downward limit.");
 
  ConVar
 	 sv_wallrun_scramble_z (
 		 "sv_wallrun_scramble_z",
 		 "28.0",
-		 FCVAR_NOTIFY | FCVAR_REPLICATED,
+		 FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
 		 "Height we can climb to.");
 
  ConVar
 	 sv_wallrun_lookahead(
 		 "sv_wallrun_lookahead",
 		 "0.22",
-		 FCVAR_NOTIFY | FCVAR_REPLICATED,
+		 FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
 		 "Amount of time (in seconds) to lookahead for bumps or corners when wallrunning." );
 
  ConVar
 	 sv_wallrun_inness(
 		 "sv_wallrun_inness",
 		 "360",
-		 FCVAR_NOTIFY | FCVAR_REPLICATED,
+		 FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
 		 "Scaling factor for how much to steer inward toward the wall when wallrunning" );
  ConVar
 	 sv_wallrun_outness(
 		 "sv_wallrun_outness",
 		 "300",
-		 FCVAR_NOTIFY | FCVAR_REPLICATED,
+		 FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
 		 "Scaling factor for how much to steer outward around obstacles when wallrunning" );
 
  ConVar
 	 sv_wallrun_lookness(
 		 "sv_wallrun_lookness",
 		 "1",
-		 FCVAR_NOTIFY | FCVAR_REPLICATED,
+		 FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
 		 "Scaling factor for how much to adjust view to look where you're going when wallrunning" );
  ConVar
 	 sv_wallrun_look_delay(
 		 "sv_wallrun_look_delay",
 		 "0.3",
-		 FCVAR_NOTIFY | FCVAR_REPLICATED,
+		 FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
 		 "How long to wait before aligning the view with the move direction when wallrunning." );
 
  ConVar
 	 sv_wallrun_feet_z(
 		 "sv_wallrun_feet_z",
 		 "10",
-		 FCVAR_NOTIFY | FCVAR_REPLICATED,
+		 FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
 		 "Fudge for starting a wallrun with your feet below the bottom edge of the wall" );
 
  ConVar 
 	 sv_wallrun_stick_angle(
 		 "sv_wallrun_stick_angle", 
 		 "45",
-		 FCVAR_NOTIFY | FCVAR_REPLICATED, 
+		 FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
 		 "Min angle away from wall norm for player to wallrun");
 
  ConVar 
 	 sv_wallrun_corner_stick_angle(
 		 "sv_wallrun_corner_stick_angle", 
 		 "80",
-		 FCVAR_NOTIFY | FCVAR_REPLICATED,
+		 FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
 		 "End wallrun at end of wall if facing within this angle of wall norm" );
  ConVar
 	 sv_duck_time(
 		 "sv_duck_time",
 		 "0.15",
-		 FCVAR_NOTIFY | FCVAR_REPLICATED,
+		 FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
 		 "Amount of time (in seconds) it takes to duck.",
 		 true, 0.001, true, 1);
 
@@ -214,13 +216,13 @@ ConVar
 	 sv_coyote_time(
 		 "sv_coyote_time",
 		 "0.2",
-		 FCVAR_NOTIFY | FCVAR_REPLICATED,
+		 FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
 		 "Time after leaving a surface that jumps are still allowed." );
 
  ConVar
 	 certain_restrictions(
 		 "certain_restrictions",
-		 "0",
+		 "1",
 		 FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
 		 "Limits the speed you can reach by jumping, sliding, or wallrunning" );
 

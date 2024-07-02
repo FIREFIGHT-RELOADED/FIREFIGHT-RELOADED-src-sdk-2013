@@ -699,7 +699,7 @@ void CBasePlayer::UpdateStepSound( surfacedata_t *psurface, const Vector &vecOri
 		if (m_nWallRunState == WALLRUN_RUNNING)
 		{
 			psurface = physprops->GetSurfaceData(physprops->GetSurfaceIndex("default"));
-			fvol = bWalking ? 0.2 : 0.5;
+			fvol = 0.65;
 			SetStepSoundTime(STEPSOUNDTIME_NORMAL, bWalking);
 		}
 		else

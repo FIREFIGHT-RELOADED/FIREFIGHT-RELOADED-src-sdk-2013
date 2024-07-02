@@ -47,6 +47,9 @@ extern ConVar sv_slide_time;
 extern ConVar sv_slide_lock;
 extern ConVar certain_restrictions;
 
+extern ConVar sv_slide;
+extern ConVar sv_wallrun;
+
 extern ConVar sv_gravity;
 extern ConVar sv_stopspeed;
 extern ConVar sv_noclipaccelerate;
