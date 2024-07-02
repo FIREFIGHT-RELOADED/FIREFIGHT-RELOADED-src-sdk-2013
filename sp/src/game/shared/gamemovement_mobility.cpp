@@ -205,7 +205,8 @@ void CGameMovement::AnticipateWallRun( void )
 	bool movementkeys = ((mv->m_nButtons & IN_BACK) ||
 		(mv->m_nButtons & IN_FORWARD) ||
 		(mv->m_nButtons & IN_MOVELEFT) ||
-		(mv->m_nButtons & IN_MOVERIGHT));
+		(mv->m_nButtons & IN_MOVERIGHT) ||
+		(mv->m_nButtons & IN_GRAPPLE));
 
 	// don't wallrun unless we are directly controlling it.
 	if (!(movementkeys))
@@ -263,7 +264,8 @@ void CGameMovement::CheckWallRun( Vector &vecWallNormal, trace_t &pm )
 	bool movementkeys = ((mv->m_nButtons & IN_BACK) ||
 		(mv->m_nButtons & IN_FORWARD) ||
 		(mv->m_nButtons & IN_MOVELEFT) ||
-		(mv->m_nButtons & IN_MOVERIGHT));
+		(mv->m_nButtons & IN_MOVERIGHT) ||
+		(mv->m_nButtons & IN_GRAPPLE));
 
 	// don't wallrun unless we are directly controlling it.
 	if (!(movementkeys))
@@ -384,7 +386,8 @@ void CGameMovement::WallRunMove( void )
 	bool movementkeys = ((mv->m_nButtons & IN_BACK) ||
 		(mv->m_nButtons & IN_FORWARD) ||
 		(mv->m_nButtons & IN_MOVELEFT) ||
-		(mv->m_nButtons & IN_MOVERIGHT));
+		(mv->m_nButtons & IN_MOVERIGHT) ||
+		(mv->m_nButtons & IN_GRAPPLE));
 
 	// don't wallrun unless we are directly controlling it.
 	if (!(movementkeys))
@@ -670,7 +673,8 @@ void CGameMovement::EndWallRun( void )
 	bool movementkeys = ((mv->m_nButtons & IN_BACK) ||
 		(mv->m_nButtons & IN_FORWARD) ||
 		(mv->m_nButtons & IN_MOVELEFT) ||
-		(mv->m_nButtons & IN_MOVERIGHT));
+		(mv->m_nButtons & IN_MOVERIGHT) ||
+		(mv->m_nButtons & IN_GRAPPLE));
 
 	player->SetEscapeVel(vec3_origin);
 

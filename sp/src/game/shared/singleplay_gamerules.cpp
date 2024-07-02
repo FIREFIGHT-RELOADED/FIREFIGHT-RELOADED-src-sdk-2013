@@ -184,7 +184,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 		RefreshSkillData( true );
 
 		char mapcfg[256];
-		Q_snprintf(mapcfg, sizeof(mapcfg), "cfg/%s.cfg", STRING(gpGlobals->mapname));
+		Q_snprintf(mapcfg, sizeof(mapcfg), "%s.cfg", STRING(gpGlobals->mapname));
 
 		Q_FixSlashes(mapcfg);
 		Q_strlower(mapcfg);
