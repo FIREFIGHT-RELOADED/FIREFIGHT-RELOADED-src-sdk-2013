@@ -56,6 +56,9 @@ float VectorYaw( Vector& v )
 //-----------------------------------------------------------------------------
 void CGameMovement::CheckPowerSlide( void )
 {
+	if (!sv_slide.GetBool())
+		return;
+
 	// Only check horizontal speed, don't want to 
 	// powerslide after a steep or vertical fall
 	float speed = mv->m_vecVelocity.Length2D();
@@ -192,6 +195,9 @@ float CGameMovement::GetWallRunRollAngle( void )
 //-----------------------------------------------------------------------------
 void CGameMovement::AnticipateWallRun( void )
 {
+	if (!sv_wallrun.GetBool())
+		return;
+
 	// No idea how this can be called when wallrunning, but it is
 	if (player->m_nWallRunState >= WALLRUN_RUNNING)
 		return;
@@ -235,6 +241,9 @@ void CGameMovement::AnticipateWallRun( void )
 //-----------------------------------------------------------------------------
 void CGameMovement::CheckWallRun( Vector &vecWallNormal, trace_t &pm )
 {
+	if (!sv_wallrun.GetBool())
+		return;
+
 	// Can't wallrun without the suit
 	if (!player->IsSuitEquipped())
 		return;
@@ -858,6 +867,8 @@ void CGameMovement::WallRunAnticipateBump( void )
 //-----------------------------------------------------------------------------
 void CGameMovement::CheckWallRunScramble( bool& steps )
 {
+	if (!sv_wallrun.GetBool())
+		return;
 
 	Vector	flatforward;
 	Vector forward;

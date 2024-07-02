@@ -1413,11 +1413,8 @@ void CGameMovement::WaterJump( void )
 	mv->m_vecVelocity[0] = player->m_vecWaterJumpVel[0];
 	mv->m_vecVelocity[1] = player->m_vecWaterJumpVel[1];
 
-	if (sv_wallrun.GetBool())
-	{
-		bool steps = false;
-		CheckWallRunScramble(steps);
-	}
+	bool steps = false;
+	CheckWallRunScramble(steps);
 }
 
 //-----------------------------------------------------------------------------
@@ -1861,7 +1858,7 @@ void CGameMovement::AirMove( void )
 	// Now pull the base velocity back out.   Base velocity is set if you are on a moving object, like a conveyor (or maybe another monster?)
 	VectorSubtract( mv->m_vecVelocity, player->GetBaseVelocity(), mv->m_vecVelocity );
 
-	if ( !( mv->m_nButtons & IN_DUCK ) && sv_wallrun.GetBool() &&
+	if ( !( mv->m_nButtons & IN_DUCK ) &&
 		( sv_wallrun_anticipation.GetInt() >= 1 ) &&
 		player->IsSuitEquipped() )
 	{
@@ -3120,10 +3117,7 @@ int CGameMovement::TryPlayerMove( Vector *pFirstDest, trace_t *pFirstTrace )
 		}
 		else
 		{   // Collided with a wall, not touching the ground - wallrun time
-			if (sv_wallrun.GetBool())
-			{
-				CheckWallRun(vecWallNormal, pm);
-			}
+			CheckWallRun(vecWallNormal, pm);
 		}
 	}
 
@@ -3957,10 +3951,7 @@ void CGameMovement::SetGroundEntity( trace_t *pm )
 
 		// mobility - check whether should powerslide
 		if (mv->m_nOldButtons & IN_DUCK) {
-			if (sv_slide.GetBool())
-			{
-				CheckPowerSlide();
-			}
+			CheckPowerSlide();
 		}
 	}
 	else if ( oldGround && !newGround )
