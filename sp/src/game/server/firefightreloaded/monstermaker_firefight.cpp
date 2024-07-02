@@ -501,6 +501,14 @@ void CNPCMakerFirefight::MakeNPC()
 			int randomChoicePolice = random->RandomInt(0, nWeaponsPolice - 1);
 			equip = g_MetropoliceWeapons[randomChoicePolice];
 			pent->AddSpawnFlags(SF_METROPOLICE_ALLOWED_TO_RESPOND);
+			pent->AddSpawnFlags(SF_METROPOLICE_MID_RANGE_ATTACK);
+			pent->AddSpawnFlags(SF_METROPOLICE_ALWAYS_STITCH);
+
+			int shouldSpawnManhacks = random->RandomInt(0, 5);
+			if (shouldSpawnManhacks < 5)
+			{
+				pent->AddSpawnFlags(SF_METROPOLICE_NO_MANHACK_DEPLOY);
+			}
 		}
 		else if (Q_stristr(pRandomName, "npc_combine_shot"))
 		{

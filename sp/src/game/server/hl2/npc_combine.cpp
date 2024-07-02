@@ -367,7 +367,7 @@ void CNPC_Combine::Spawn( void )
 		}
 		else
 		{
-			m_iTacticalVariant = TACTICAL_VARIANT_PRESSURE_ENEMY;
+			m_iTacticalVariant = TACTICAL_VARIANT_PRESSURE_ENEMY_UNTIL_CLOSE;
 		}
 	}
 
@@ -2379,7 +2379,8 @@ int CNPC_Combine::SelectFailSchedule( int failedSchedule, int failedTask, AI_Tas
 //-----------------------------------------------------------------------------
 bool CNPC_Combine::ShouldChargePlayer()
 {
-	return GetEnemy() && GetEnemy()->IsPlayer() && PlayerHasMegaPhysCannon() && !IsLimitingHintGroups();
+	//allow us to charge at all enemies.
+	return GetEnemy() /*&& GetEnemy()->IsPlayer()*/  && PlayerHasMegaPhysCannon() && !IsLimitingHintGroups();
 }
 
 

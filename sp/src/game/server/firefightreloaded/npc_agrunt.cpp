@@ -1067,6 +1067,12 @@ int CAGrunt::SelectSchedule( void )
 		return SCHED_TAKE_COVER_FROM_BEST_SOUND;
 	}
 
+	//If we are in idle, try to find the enemy by walking.
+	if (m_NPCState == NPC_STATE_IDLE || m_NPCState == NPC_STATE_ALERT)
+	{
+		return SCHED_PATROL_WALK;
+	}
+
 	switch	( m_NPCState )
 	{
 		case NPC_STATE_COMBAT:
@@ -1109,12 +1115,6 @@ int CAGrunt::SelectSchedule( void )
 				return SCHED_STANDOFF;
 			}
 		break;
-	}
-
-	//If we are in idle, try to find the enemy by walking.
-	if (m_NPCState == NPC_STATE_IDLE || m_NPCState == NPC_STATE_ALERT)
-	{
-		return SCHED_PATROL_WALK;
 	}
 
 	return BaseClass::SelectSchedule();

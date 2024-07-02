@@ -25,15 +25,6 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-//#define SF_METROPOLICE_					0x00010000
-#define SF_METROPOLICE_SIMPLE_VERSION		0x00020000
-#define SF_METROPOLICE_ALWAYS_STITCH		0x00080000
-#define SF_METROPOLICE_NOCHATTER			0x00100000
-#define SF_METROPOLICE_ARREST_ENEMY			0x00200000
-#define SF_METROPOLICE_NO_FAR_STITCH		0x00400000
-#define SF_METROPOLICE_NO_MANHACK_DEPLOY	0x00800000
-//2 other spawnflags are in the h file.
-
 #define METROPOLICE_MID_RANGE_ATTACK_RANGE	3500.0f
 
 #define METROPOLICE_SQUAD_STITCH_MIN_INTERVAL	1.0f
@@ -116,7 +107,7 @@ ConVar	sk_metropolice_health( "sk_metropolice_health","0");
 ConVar	sk_metropolice_simple_health( "sk_metropolice_simple_health","26");
 ConVar	sk_metropolice_stitch_distance( "sk_metropolice_stitch_distance","1000");
 
-ConVar	metropolice_chase_use_follow( "metropolice_chase_use_follow", "0" );
+ConVar	metropolice_chase_use_follow( "metropolice_chase_use_follow", "1" );
 ConVar  metropolice_move_and_melee("metropolice_move_and_melee", "1" );
 ConVar  metropolice_charge("metropolice_charge", "1" );
 
@@ -722,7 +713,7 @@ void CNPC_MetroPolice::Spawn( void )
 	{
 		if ( !Weapon_OwnsThisType( "weapon_smg1" ) )
 		{
-			Warning( "Warning! Metrocop is trying to use the stitch behavior but he has no smg1!\n" );
+			//Warning( "Warning! Metrocop is trying to use the stitch behavior but he has no smg1!\n" );
 			RemoveSpawnFlags( SF_METROPOLICE_ALWAYS_STITCH );
 		}
 	}
@@ -4391,8 +4382,19 @@ void CNPC_MetroPolice::AdministerJustice( void )
 //-----------------------------------------------------------------------------
 int CNPC_MetroPolice::SelectSchedule( void )
 {
-	CBasePlayer *pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
+	/*CBasePlayer* pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 	if (!GetEnemy() && HasCondition(COND_IN_PVS) && pPlayer && !pPlayer->IsAlive())
+	{
+		return SCHED_PATROL_WALK;
+	}*/
+
+	//If we are in idle, try to find the enemy by walking.
+	if (m_NPCState == NPC_STATE_IDLE || m_NPCState == NPC_STATE_ALERT)
+	{
+		return SCHED_PATROL_WALK;
+	}
+
+	if ((GetEnemy() && (HasCondition(COND_ENEMY_OCCLUDED) || HasCondition(COND_LOST_ENEMY))) || (!GetEnemy() && HasCondition(COND_IN_PVS)))
 	{
 		return SCHED_PATROL_WALK;
 	}
@@ -4511,17 +4513,17 @@ int CNPC_MetroPolice::SelectSchedule( void )
 	{
 		if ( GetActiveWeapon() && (GetActiveWeapon()->m_iClip1 <= 5) )
 		{
-			m_Sentences.Speak( "METROPOLICE_COVER_LOW_AMMO" );
+			m_Sentences.Speak("METROPOLICE_COVER_LOW_AMMO");
 			return SCHED_HIDE_AND_RELOAD;
 		}
 	}
 
 	if( HasCondition( COND_NO_PRIMARY_AMMO ) )
 	{
-		if ( bHighHealth )
+		if (bHighHealth)
 			return SCHED_RELOAD;
 
-		AnnounceOutOfAmmo( );
+		AnnounceOutOfAmmo();
 		return SCHED_HIDE_AND_RELOAD;
 	}
 
@@ -4576,12 +4578,6 @@ int CNPC_MetroPolice::SelectSchedule( void )
 		 ( m_flChasePlayerTime < gpGlobals->curtime ) )
 	{
 		return SCHED_METROPOLICE_RETURN_TO_PRECHASE;
-	}
-
-	//If we are in idle, try to find the enemy by walking.
-	if (m_NPCState == NPC_STATE_IDLE || m_NPCState == NPC_STATE_ALERT)
-	{
-		return SCHED_PATROL_WALK;
 	}
 
 	return BaseClass::SelectSchedule();
@@ -4704,8 +4700,8 @@ int CNPC_MetroPolice::TranslateSchedule( int scheduleType )
 	case SCHED_METROPOLICE_ADVANCE:
 		if ( m_NextChargeTimer.Expired() && metropolice_charge.GetBool() )
 		{	
-			if ( Weapon_OwnsThisType( "weapon_pistol" ) )
-			{
+			//if ( Weapon_OwnsThisType( "weapon_pistol" ) )
+			//{
 				if (  GetEnemy() && GetEnemy()->GetAbsOrigin().DistToSqr( GetAbsOrigin() ) > 300*300 )
 				{
 					if ( OccupyStrategySlot( SQUAD_SLOT_POLICE_CHARGE_ENEMY ) )
@@ -4714,11 +4710,11 @@ int CNPC_MetroPolice::TranslateSchedule( int scheduleType )
 						return SCHED_METROPOLICE_CHARGE;
 					}
 				}
-			}
-			else
-			{
-				m_NextChargeTimer.Set( 99999 );
-			}
+			//}
+			//else
+			//{
+				//m_NextChargeTimer.Set( 99999 );
+			//}
 		}
 		break;
 	}
