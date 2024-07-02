@@ -94,7 +94,7 @@ ConVar	sk_dmg_take_scale5("sk_dmg_take_scale5", "2.50", FCVAR_REPLICATED);
 
 ConVar	sk_allow_autoaim( "sk_allow_autoaim", "1", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
-ConVar	firefightrumble_enemyattack("firefightrumble_enemyattack", "1", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+ConVar	firefightrumble_enemyattack("firefightrumble_enemyattack", "0", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 
 // Autoaim scale
 ConVar	sk_autoaim_scale1( "sk_autoaim_scale1", "1.0", FCVAR_REPLICATED);
