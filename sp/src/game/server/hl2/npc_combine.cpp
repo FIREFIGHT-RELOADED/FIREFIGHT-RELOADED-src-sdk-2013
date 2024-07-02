@@ -3568,7 +3568,7 @@ int CNPC_Combine::MeleeAttack1Conditions ( float flDot, float flDist )
 	if (IsAce())
 		return COND_NONE;
 
-	if (flDist > 80)
+	if (flDist > 85)
 	{
 		return COND_NONE; // COND_TOO_FAR_TO_ATTACK;
 	}

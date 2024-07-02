@@ -59,6 +59,9 @@ void CGameMovement::CheckPowerSlide( void )
 	if (!sv_slide.GetBool())
 		return;
 
+	if (mv->m_nButtons & IN_GRAPPLE)
+		return;
+
 	// Only check horizontal speed, don't want to 
 	// powerslide after a steep or vertical fall
 	float speed = mv->m_vecVelocity.Length2D();
