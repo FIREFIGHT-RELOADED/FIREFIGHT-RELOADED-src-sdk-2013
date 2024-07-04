@@ -707,6 +707,7 @@ void CNPC_MetroPolice::Spawn( void )
 	m_flNextLedgeCheckTime = -1.0f;
 	m_nBurstReloadCount = METROPOLICE_BURST_RELOAD_COUNT;
 	SetBurstMode( false );
+	m_bIsAce = false;
 
 	// Clear out spawnflag if we're missing the smg1
 	if( HasSpawnFlags( SF_METROPOLICE_ALWAYS_STITCH ) )
@@ -762,6 +763,26 @@ void CNPC_MetroPolice::Spawn( void )
 	}
 }
 
+void CNPC_MetroPolice::LoadInitAttributes()
+{
+	if (m_pAttributes != NULL)
+	{
+		int isace = m_pAttributes->GetInt("is_ace", 0);
+
+		if (isace)
+		{
+			CapabilitiesAdd(bits_CAP_MOVE_JUMP);
+			//aces have a ton of manhacks
+			m_iManhacks = random->RandomInt(6, 10);
+			AddSpawnFlags(SF_NPC_LONG_RANGE);
+			RemoveSpawnFlags(SF_METROPOLICE_NO_MANHACK_DEPLOY);
+			SetBodygroup(METROPOLICE_BODYGROUP_MANHACK, true);
+			m_bIsAce = true;
+		}
+	}
+
+	BaseClass::LoadInitAttributes();
+}
 
 //-----------------------------------------------------------------------------
 // Update weapon ranges
@@ -1252,8 +1273,17 @@ void CNPC_MetroPolice::OnUpdateShotRegulator( )
 				float	flMinRestInterval	= MIN_MIN_PISTOL_REST_INTERVAL + ( MAX_MIN_PISTOL_REST_INTERVAL - MIN_MIN_PISTOL_REST_INTERVAL ) * factor;
 				float	flMaxRestInterval	= MIN_MAX_PISTOL_REST_INTERVAL + ( MAX_MAX_PISTOL_REST_INTERVAL - MIN_MAX_PISTOL_REST_INTERVAL ) * factor;
 				
-				GetShotRegulator()->SetRestInterval( flMinRestInterval, flMaxRestInterval );
-				GetShotRegulator()->SetBurstShotCountRange( nMinBurst, nMaxBurst );
+				if (m_bIsAce)
+				{
+					//THERE'S NO REST FOR THE WICKED!
+					GetShotRegulator()->SetRestInterval(0, 0.2);
+					GetShotRegulator()->SetBurstShotCountRange(5, 15);
+				}
+				else
+				{
+					GetShotRegulator()->SetRestInterval(flMinRestInterval, flMaxRestInterval);
+					GetShotRegulator()->SetBurstShotCountRange(nMinBurst, nMaxBurst);
+				}
 			}
 			else
 			{
@@ -1262,8 +1292,16 @@ void CNPC_MetroPolice::OnUpdateShotRegulator( )
 			}
 		}
 
-		// Add some noise into the pistol
-		GetShotRegulator()->SetBurstInterval( 0.2f, 0.5f );
+		if (m_bIsAce)
+		{
+			// Add some noise into the pistol
+			GetShotRegulator()->SetBurstInterval(0.1f, 0.3f);
+		}
+		else
+		{
+			// Add some noise into the pistol
+			GetShotRegulator()->SetBurstInterval(0.2f, 0.5f);
+		}
 	}
 }
 
@@ -1607,11 +1645,20 @@ float CNPC_MetroPolice::ComputeDistanceStitchModifier( float flDistanceToTarget 
 //-----------------------------------------------------------------------------
 int CNPC_MetroPolice::SetupBurstShotRegulator( float flReactionTime )
 {
-	// We want a certain amount of reaction time before the shots hit the boat
-	int nDesiredShotCount = CountShotsInTime( flReactionTime );
-	GetShotRegulator()->SetBurstShotCountRange( nDesiredShotCount, nDesiredShotCount );
-	GetShotRegulator()->SetRestInterval( 0.7f, 0.9f );
-	GetShotRegulator()->Reset( true );
+	if (m_bIsAce)
+	{
+		//THERE'S NO REST FOR THE WICKED!
+		GetShotRegulator()->SetRestInterval(0, 0.1);
+		GetShotRegulator()->SetBurstShotCountRange(10, 20);
+	}
+	else
+	{
+		// We want a certain amount of reaction time before the shots hit the boat
+		int nDesiredShotCount = CountShotsInTime(flReactionTime);
+		GetShotRegulator()->SetBurstShotCountRange(nDesiredShotCount, nDesiredShotCount);
+		GetShotRegulator()->SetRestInterval(0.7f, 0.9f);
+		GetShotRegulator()->Reset(true);
+	}
 	int nShots = GetShotRegulator()->GetBurstShotsRemaining();
 	OnRangeAttack1();
 	return nShots;
@@ -4449,6 +4496,21 @@ int CNPC_MetroPolice::SelectSchedule( void )
 		}
 	}
 
+	//aces will chase the enemy.
+	if (m_bIsAce && !HasBaton())
+	{
+		if (metropolice_chase_use_follow.GetBool())
+		{
+			if (GetEnemy())
+			{
+				AI_FollowParams_t params;
+				params.formation = AIF_TIGHT;
+				m_FollowBehavior.SetParameters(params);
+				m_FollowBehavior.SetFollowTarget(GetEnemy());
+			}
+		}
+	}
+
 	// See if the player is in our face (unless we're scripting)
 	if ( PlayerIsCriminal() == false )
 	{
@@ -4687,7 +4749,7 @@ int CNPC_MetroPolice::TranslateSchedule( int scheduleType )
 					return nSched;
 			}
 
-			if ( ShouldAttemptToStitch() )
+			if (ShouldAttemptToStitch())
 			{
 				return SCHED_METROPOLICE_SMG_BURST_ATTACK;
 			}
@@ -5363,7 +5425,14 @@ WeaponProficiency_t CNPC_MetroPolice::CalcWeaponProficiency( CBaseCombatWeapon *
 {
 	if( FClassnameIs( pWeapon, "weapon_pistol" ) )
 	{
-		return WEAPON_PROFICIENCY_POOR;
+		if (m_bIsAce)
+		{
+			return WEAPON_PROFICIENCY_VERY_GOOD;
+		}
+		else
+		{
+			return WEAPON_PROFICIENCY_POOR;
+		}
 	}
 
 	if( FClassnameIs( pWeapon, "weapon_smg1" ) )

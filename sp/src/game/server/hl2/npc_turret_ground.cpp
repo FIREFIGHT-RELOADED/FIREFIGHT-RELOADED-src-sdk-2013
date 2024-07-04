@@ -190,7 +190,7 @@ Class_T	CNPC_GroundTurret::Classify( void )
 	}
 	else
 	{
-		return CLASS_COMBINE;
+		return CLASS_COMBINE_TURRET;
 	}
 }
 

@@ -12,7 +12,7 @@
 	"pelvis_gib_model"	"models/gibs/soldier_shotgunner_pelvis.mdl"
 	"left_leg_gib_model"	"models/gibs/soldier_shotgunner_left_leg.mdl"
 	"right_leg_gib_model"	"models/gibs/soldier_shotgunner_right_leg.mdl"
-	"additional_health"	"150"
+	"health_multiplier"	"2"
 	"additional_speed"	"540"
 	"is_rare"		"1"
 	"use_shotgun_secondary"	"1"

@@ -7113,8 +7113,11 @@ void CAI_BaseNPC::LoadInitAttributes()
 		{
 			//we can't transfer Color objects through the server, so we use Vectors.
 			Vector outlineColor = m_pAttributes->GetVector("outline_color");
-			GiveOutline(outlineColor);
-			m_denyOutlines = true;
+			if (outlineColor != Vector(0, 0, 0))
+			{
+				GiveOutline(outlineColor);
+				m_denyOutlines = true;
+			}
 		}
 	}
 }

@@ -3,11 +3,14 @@
 {
 	"new_model"		"models/police_soldieranims.mdl"
 	"new_color"		"128 180 128 255"
-	"additional_health"	"5"
+	"health_multiplier"	"2.5"
 	"manhack_override"	"1"
 	"manhack_count_min"	"3"
 	"manhack_count_max"	"5"
-	"additional_speed"	"150"
+	"additional_speed"	"175"
+	"has_outlines"		"1"
 	"is_rare"		"1"
+	"is_ace"		"1"
+	"outline_color"		"0 255 0"
 	"persist"		"0"
 }

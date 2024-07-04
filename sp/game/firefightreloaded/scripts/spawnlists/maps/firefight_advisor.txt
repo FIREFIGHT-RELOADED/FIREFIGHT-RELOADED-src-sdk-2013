@@ -1,5 +1,10 @@
-"combine_firefight"
+"firefight_advisor"
 {
+	"settings"
+	{
+		"spawntime"		"12"
+		"spawntime_steamdeck"	"18"
+	}
 	//COMMON
 	"1"
 	{

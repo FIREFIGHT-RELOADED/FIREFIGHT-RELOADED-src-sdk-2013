@@ -48,6 +48,7 @@ public:
 	virtual bool CreateComponents();
 	bool CreateBehaviors();
 	void Spawn( void );
+	void LoadInitAttributes( void );
 	void Precache( void );
 
 	Class_T		Classify( void );
@@ -412,6 +413,8 @@ private:
 	CRandSimTimer	m_TimeYieldShootSlot;
 	CSimpleSimTimer m_BatonSwingTimer;
 	CSimpleSimTimer m_NextChargeTimer;
+
+	bool			m_bIsAce;
 
 	// All related to burst firing
 	Vector			m_vecBurstTargetPos;

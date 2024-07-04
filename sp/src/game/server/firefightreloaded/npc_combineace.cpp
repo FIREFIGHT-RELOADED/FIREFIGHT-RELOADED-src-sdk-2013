@@ -196,22 +196,24 @@ void CNPC_CombineAce::Spawn( void )
 
 	m_bBulletResistanceOutlineDisabled = false;
 
+	BaseClass::Spawn();
+
 	if (g_pGameRules->GetSkillLevel() > SKILL_EASY)
 	{
 		m_bBulletResistanceBroken = combine_ace_disablebulletresistance.GetBool();
-		if (!m_bBulletResistanceBroken)
-		{
-			m_denyOutlines = true;
-			Vector outline = Vector(0, 255, 0);
-			GiveOutline(outline);
-		}
 	}
 	else
 	{
 		m_bBulletResistanceBroken = true;
+		
 	}
 
-	BaseClass::Spawn();
+	if (!m_bBulletResistanceBroken && !m_bBulletResistanceOutlineDisabled)
+	{
+		m_denyOutlines = true;
+		Vector outline = Vector(0, 255, 0);
+		GiveOutline(outline);
+	}
 
 	/*
 #if HL2_EPISODIC
@@ -297,6 +299,17 @@ void CNPC_CombineAce::LoadInitAttributes()
 			if (m_denyOutlines)
 			{
 				m_denyOutlines = false;
+			}
+		}
+
+		if (disableBulletResistance == 0 && !disableBulletResistanceOutline)
+		{
+			Vector outlinecolor = m_pAttributes->GetVector("outline_color");
+			if (outlinecolor != Vector(0, 0, 0))
+			{
+				m_denyOutlines = true;
+				//we can't transfer Color objects through the server, so we use Vectors.
+				GiveOutline(outlinecolor);
 			}
 		}
 	}

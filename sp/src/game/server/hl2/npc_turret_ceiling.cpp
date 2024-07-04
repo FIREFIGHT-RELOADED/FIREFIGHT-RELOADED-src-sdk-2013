@@ -122,7 +122,7 @@ public:
 	Class_T	Classify( void ) 
 	{
 		if( m_bEnabled ) 
-			return CLASS_COMBINE;
+			return CLASS_COMBINE_TURRET;
 
 		return CLASS_NONE;
 	}

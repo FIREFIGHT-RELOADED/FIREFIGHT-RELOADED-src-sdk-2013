@@ -186,7 +186,7 @@ Class_T	CNPC_FloorTurret::Classify( void )
 		if( m_bHackedByAlyx || IsCitizenTurret() )
 			return CLASS_PLAYER_ALLY;
 
-		return CLASS_COMBINE;
+		return CLASS_COMBINE_TURRET;
 	}
 
 	return CLASS_NONE;

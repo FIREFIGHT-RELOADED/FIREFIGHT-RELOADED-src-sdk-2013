@@ -1477,6 +1477,8 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 							if ((pNPC->Classify() == CLASS_COMBINE ||
 								pNPC->Classify() == CLASS_COMBINE_HUNTER ||
 								pNPC->Classify() == CLASS_COMBINE_GUNSHIP ||
+								pNPC->Classify() == CLASS_MANHACK ||
+								pNPC->Classify() == CLASS_SCANNER ||
 								pNPC->Classify() == CLASS_METROPOLICE) &&
 								pNPC->IRelationType(this) != D_HT)
 							{
@@ -2042,10 +2044,9 @@ void CNPC_Advisor::Dronify(CBaseEntity* pOther)
 		if ((pNPC->Classify() == CLASS_COMBINE ||
 			pNPC->Classify() == CLASS_COMBINE_HUNTER ||
 			pNPC->Classify() == CLASS_COMBINE_GUNSHIP ||
+			pNPC->Classify() == CLASS_MANHACK ||
+			pNPC->Classify() == CLASS_SCANNER ||
 			pNPC->Classify() == CLASS_METROPOLICE) &&
-			(!FClassnameIs(pNPC, "npc_turret_ceiling") || 
-			!FClassnameIs(pNPC, "npc_turret_floor") ||
-			!FClassnameIs(pNPC, "npc_turret_ground")) &&
 			pNPC->IRelationType(this) != D_HT)
 		{
 			Write_BeamOn(pOther);
