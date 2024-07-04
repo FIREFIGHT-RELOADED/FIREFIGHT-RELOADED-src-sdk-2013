@@ -780,7 +780,7 @@ void CNPC_Advisor::OnRestore()
 //-----------------------------------------------------------------------------
 Class_T	CNPC_Advisor::Classify()
 {
-	return CLASS_COMBINE;
+	return CLASS_COMBINE_ADVISOR;
 }
 
 
