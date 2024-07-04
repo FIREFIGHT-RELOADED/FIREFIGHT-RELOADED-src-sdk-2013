@@ -523,7 +523,10 @@ void CWeaponRailgun::PrimaryAttack(void)
 
 	WeaponSound(SINGLE);
 
-	SendWeaponAnim(ACT_VM_PRIMARYATTACK);
+	if (!IsIronsighted())
+	{
+		SendWeaponAnim(ACT_VM_PRIMARYATTACK);
+	}
 
 	pOwner->DoMuzzleFlash();
 	pOwner->ViewPunch(QAngle(-4, random->RandomFloat(-2, 2), 0));
