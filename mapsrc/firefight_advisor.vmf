@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "6440"
-	"mapversion" "130"
+	"mapversion" "132"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,7 +20,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "130"
+	"mapversion" "132"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -15192,7 +15192,7 @@ entity
 	"pitch" "100"
 	"pitchstart" "100"
 	"preset" "0"
-	"radius" "1250"
+	"radius" "9999"
 	"spawnflags" "49"
 	"spindown" "0"
 	"spinup" "0"
@@ -15219,11 +15219,11 @@ entity
 	"lfomodvol" "0"
 	"lforate" "0"
 	"lfotype" "0"
-	"message" "ambient/music/country_rock_am_radio_loop.wav"
+	"message" "music/fr_boss_battle_loop.wav"
 	"pitch" "100"
 	"pitchstart" "100"
 	"preset" "0"
-	"radius" "1250"
+	"radius" "9999"
 	"spawnflags" "17"
 	"spindown" "0"
 	"spinup" "0"
