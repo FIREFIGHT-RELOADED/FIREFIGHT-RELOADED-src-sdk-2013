@@ -660,6 +660,8 @@ void CNPC_Citizen::Spawn()
 	if (HasSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI))
 	{
 		CapabilitiesAdd(bits_CAP_MOVE_JUMP);
+		AddSpawnFlags(SF_CITIZEN_AMMORESUPPLIER);
+		AddSpawnFlags(SF_CITIZEN_MEDIC);
 		Vector allyColor = Vector(26, 77, 153);
 		GiveOutline(allyColor);
 		GiveWeapons();
@@ -669,7 +671,7 @@ void CNPC_Citizen::Spawn()
 	if ( pRPG )
 	{
 		CapabilitiesRemove( bits_CAP_USE_SHOT_REGULATOR );
-		pRPG->StopGuiding();
+		pRPG->StartGuiding();
 	}
 
 	m_flTimePlayerStare = FLT_MAX;
@@ -1631,13 +1633,6 @@ int CNPC_Citizen::SelectSchedule()
 		// to something else, and now we need to figure out a better system.
 		Assert( GetMoveParent() && FClassnameIs( GetMoveParent(), "func_tracktrain" ) );
 		return SCHED_CITIZEN_SIT_ON_TRAIN;
-	}
-
-	CWeaponRPG *pRPG = dynamic_cast<CWeaponRPG*>(GetActiveWeapon());
-	if ( pRPG && pRPG->IsGuiding() )
-	{
-		DevMsg( "Citizen in select schedule but RPG is guiding?\n");
-		pRPG->StopGuiding();
 	}
 	
 	return BaseClass::SelectSchedule();
@@ -4133,6 +4128,16 @@ void CNPC_Citizen::InputStopPatrolling( inputdata_t &inputdata )
 void CNPC_Citizen::OnGivenWeapon( CBaseCombatWeapon *pNewWeapon )
 {
 	FixupMattWeapon();
+
+	if (FClassnameIs(pNewWeapon, "weapon_rpg"))
+	{
+		CWeaponRPG* pRPG = dynamic_cast<CWeaponRPG*>(GetActiveWeapon());
+		if (pRPG)
+		{
+			CapabilitiesRemove(bits_CAP_USE_SHOT_REGULATOR);
+			pRPG->StartGuiding();
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
