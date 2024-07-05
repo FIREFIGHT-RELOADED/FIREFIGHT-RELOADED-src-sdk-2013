@@ -4503,6 +4503,19 @@ int CNPC_MetroPolice::SelectSchedule( void )
 		{
 			if (GetEnemy())
 			{
+				if (!m_fWeaponDrawn)
+					return SCHED_METROPOLICE_DRAW_PISTOL;
+
+				// if we STILL haven't drawn it, force it to be drawn.
+				if (!m_fWeaponDrawn)
+				{
+					m_fWeaponDrawn = true;
+					if (GetActiveWeapon())
+					{
+						GetActiveWeapon()->RemoveEffects(EF_NODRAW);
+					}
+				}
+
 				AI_FollowParams_t params;
 				params.formation = AIF_TIGHT;
 				m_FollowBehavior.SetParameters(params);
