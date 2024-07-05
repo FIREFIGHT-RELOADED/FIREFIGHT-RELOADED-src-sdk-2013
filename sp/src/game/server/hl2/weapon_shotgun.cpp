@@ -978,7 +978,7 @@ CWeaponShotgun::CWeaponShotgun( void )
 	m_fMaxRange1		= 500;
 	m_fMinRange2		= 0.0;
 	m_fMaxRange2		= 200;
-	m_iFireMode			 = 0;
+	m_iFireMode			 = 1;
 }
 
 //-----------------------------------------------------------------------------

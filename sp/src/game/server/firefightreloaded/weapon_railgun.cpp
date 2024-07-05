@@ -538,6 +538,11 @@ void CWeaponRailgun::PrimaryAttack(void)
 
 	Fire();
 
+	if (IsIronsighted())
+	{
+		SendWeaponAnim(ACT_SHOTGUN_PUMP);
+	}
+
 	if (!m_iClip1 && pOwner->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
 	{
 		// HEV suit - indicate out of ammo condition

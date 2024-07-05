@@ -643,6 +643,7 @@ bool CNPC_Combine::CorpseGib(const CTakeDamageInfo& info)
 
 		Wake(false);
 		m_lifeState = LIFE_DYING;
+		m_bNoDeathSound = true;
 		CleanupOnDeath(info.GetAttacker());
 		StopLoopingSounds();
 		DeathSound(info);

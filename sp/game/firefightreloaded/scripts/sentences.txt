@@ -927,6 +927,13 @@ METROPOLICE_DIE5 npc/overwatch/radiovoice/(v80) die1 {Len 1.5 closecaption NPC_C
 METROPOLICE_DIE6 npc/overwatch/radiovoice/(v80) die2 {Len 1.5 closecaption NPC_Combine.Death}
 METROPOLICE_DIE7 npc/overwatch/radiovoice/(v80) die3 {Len 1.5 closecaption NPC_Combine.Death}
 METROPOLICE_DIE8 npc/overwatch/radiovoice/(v80) die1 {Len 1.5 closecaption NPC_Combine.Death}
+
+METROPOLICE_DIE_NOSCREAM0 npc/overwatch/radiovoice/(v80) on3 unitdownat V_G1_LOCATION_MAP__P V_G3_NUMBP allteamsrespondcode3 V_IDIEDP off2 {Len 1.5 closecaption NPC_Combine.Death}
+METROPOLICE_DIE_NOSCREAM1 npc/overwatch/radiovoice/(v80) on3 unitdownat V_G1_LOCATION_MAP__P V_G3_NUMBP V_IDIEDP off2 {Len 1.5 closecaption NPC_Combine.Death}
+METROPOLICE_DIE_NOSCREAM2 npc/overwatch/radiovoice/(v80) on3 lostbiosignalforunit V_MYNAMEP V_MYNUMP V_IDIEDP off2 {Len 1.5 closecaption NPC_Combine.Death}
+METROPOLICE_DIE_NOSCREAM3 npc/overwatch/radiovoice/(v80) on3 V_MYNAMEP V_MYNUMP unitdeserviced, remainingunitscontain V_IDIEDP off2 {Len 1.5 closecaption NPC_Combine.Death}
+METROPOLICE_DIE_NOSCREAM4 npc/overwatch/radiovoice/(v80) on3 V_MYNAMEP V_MYNUMP unitdownat V_G1_LOCATION_MAP__P V_G3_NUMBP V_IDIEDP off2 {Len 1.5 closecaption NPC_Combine.Death}
+
 //
 // Alert sounds (unused currently) - see monst_player
 //

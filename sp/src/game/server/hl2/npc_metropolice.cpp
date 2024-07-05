@@ -2580,7 +2580,10 @@ void CNPC_MetroPolice::AlertSound( void )
 void CNPC_MetroPolice::DeathSound( const CTakeDamageInfo &info )
 {
 	if (m_bNoDeathSound)
+	{
+		m_Sentences.Speak("METROPOLICE_DIE_NOSCREAM", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS);
 		return;
+	}
 
 	if ( IsOnFire() )
 		return;
@@ -4234,6 +4237,7 @@ bool CNPC_MetroPolice::CorpseGib(const CTakeDamageInfo& info)
 
 		Wake(false);
 		m_lifeState = LIFE_DYING;
+		m_bNoDeathSound = true;
 		CleanupOnDeath(info.GetAttacker());
 		StopLoopingSounds();
 		DeathSound(info);
