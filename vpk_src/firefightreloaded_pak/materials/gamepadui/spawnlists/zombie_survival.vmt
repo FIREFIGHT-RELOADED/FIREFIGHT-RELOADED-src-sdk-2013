@@ -1,0 +1,5 @@
+"UnlitGeneric"
+{
+	"$baseTexture" "gamepadui\spawnlists\zombie_survival"
+	"$vertexalpha" "1"
+}
