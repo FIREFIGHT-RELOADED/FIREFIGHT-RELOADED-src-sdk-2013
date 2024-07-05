@@ -2164,6 +2164,12 @@ int CNPC_Combine::SelectSchedule( void )
 		return BaseClass::SelectSchedule();
 	}
 
+	//If we are in idle, try to find the enemy by walking.
+	if (m_NPCState == NPC_STATE_IDLE || m_NPCState == NPC_STATE_ALERT)
+	{
+		return SCHED_PATROL_WALK_LOOP;
+	}
+
 	if (HasCondition(COND_COMBINE_ON_FIRE) && random->RandomInt(1, 5) == 3)
 		return SCHED_COMBINE_BURNING_STAND;
 

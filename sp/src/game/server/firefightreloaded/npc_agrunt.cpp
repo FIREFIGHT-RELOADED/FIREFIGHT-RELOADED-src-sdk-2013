@@ -1070,7 +1070,7 @@ int CAGrunt::SelectSchedule( void )
 	//If we are in idle, try to find the enemy by walking.
 	if (m_NPCState == NPC_STATE_IDLE || m_NPCState == NPC_STATE_ALERT)
 	{
-		return SCHED_PATROL_WALK;
+		return SCHED_PATROL_WALK_LOOP;
 	}
 
 	switch	( m_NPCState )

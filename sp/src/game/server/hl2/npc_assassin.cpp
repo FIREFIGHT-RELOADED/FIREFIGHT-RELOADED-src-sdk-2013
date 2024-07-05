@@ -498,7 +498,7 @@ int CNPC_Assassin::SelectSchedule ( void )
 	switch	( m_NPCState )
 	{
 	case NPC_STATE_IDLE:
-		return SCHED_PATROL_WALK;
+		return SCHED_PATROL_WALK_LOOP;
 		break;
 	case NPC_STATE_ALERT:
 		{

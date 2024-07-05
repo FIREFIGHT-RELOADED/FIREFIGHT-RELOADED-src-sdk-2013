@@ -4429,14 +4429,14 @@ void CNPC_MetroPolice::AdministerJustice( void )
 //-----------------------------------------------------------------------------
 int CNPC_MetroPolice::SelectSchedule( void )
 {
-	/*CBasePlayer* pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
-	if (!GetEnemy() && HasCondition(COND_IN_PVS) && pPlayer && !pPlayer->IsAlive())
-	{
-		return SCHED_PATROL_WALK;
-	}*/
-
 	//If we are in idle, try to find the enemy by walking.
 	if (m_NPCState == NPC_STATE_IDLE || m_NPCState == NPC_STATE_ALERT)
+	{
+		return SCHED_PATROL_WALK_LOOP;
+	}
+
+	CBasePlayer* pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
+	if (!GetEnemy() && HasCondition(COND_IN_PVS) && pPlayer && !pPlayer->IsAlive())
 	{
 		return SCHED_PATROL_WALK;
 	}
