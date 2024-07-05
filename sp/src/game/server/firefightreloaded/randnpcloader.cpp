@@ -71,7 +71,7 @@ bool CRandNPCLoader::Load()
 
 	char szScriptPath[512] = { 0 };
 	if (gamemodeMode)
-		Q_snprintf(szScriptPath, sizeof(szScriptPath), "scripts/spawnlists/gamemodes/%s.txt", gamemodeName);
+		Q_snprintf(szScriptPath, sizeof(szScriptPath), "scripts/spawnlists/%s.txt", gamemodeName);
 	else
 		Q_snprintf(szScriptPath, sizeof(szScriptPath), "scripts/spawnlists/maps/%s.txt", mapName);
 
