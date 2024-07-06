@@ -266,9 +266,6 @@ public:
 	bool bSkipFuncCheck;
 	int iGameMode;
 
-	int iHeadshotCount;
-	virtual int GetHeadshotCount() { return iHeadshotCount; }
-
 	bool isInBullettime;
 
 // Functions to verify the single/multiplayer status of a game

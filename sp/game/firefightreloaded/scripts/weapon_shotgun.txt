@@ -32,9 +32,9 @@ WeaponData
 	IronSight
 	{
 		"right"		"-7.5"
-		"up"		"4.4"
+		"up"		"4"
 		"forward"	"-15"
-		//"fov"		"-5"
+		"fov"		"-5"
 		"pitch"		"0.5"
 	}
 	

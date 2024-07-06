@@ -285,5 +285,10 @@
 				"font"		"WeaponIconsKillFeed2"
 				"character"	"!"
 		}
+		"headshot"
+		{
+				"font"		"WeaponIconsKillFeed3"
+				"character"	"D"
+		}
 	}	
 }

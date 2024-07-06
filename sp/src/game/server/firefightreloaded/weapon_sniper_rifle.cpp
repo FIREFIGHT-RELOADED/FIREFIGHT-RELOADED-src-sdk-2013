@@ -317,6 +317,9 @@ void CWeaponSniperRifle::ToggleZoom( void )
 	if ( pPlayer == NULL )
 		return;
 
+	if (IsIronsighted())
+		return;
+
 	if ( m_bInZoom )
 	{
 		if ( pPlayer->SetFOV( this, 0, 0.2f ) )

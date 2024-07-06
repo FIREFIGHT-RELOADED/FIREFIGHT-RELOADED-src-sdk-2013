@@ -284,6 +284,9 @@ void CWeaponRailgun::ToggleZoom(void)
 	if (vm == NULL)
 		return;
 
+	if (IsIronsighted())
+		return;
+
 	if (m_bInZoom)
 	{
 		if (pPlayer->SetFOV(this, 0, 0.2f))
@@ -310,11 +313,6 @@ void CWeaponRailgun::Fire( void )
 	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
 	
 	if ( pOwner == NULL )
-		return;
-
-	CBaseViewModel* vm = pOwner->GetViewModel();
-
-	if (vm == NULL)
 		return;
 
 	//oh my fucking god

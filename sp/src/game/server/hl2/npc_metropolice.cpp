@@ -4023,11 +4023,11 @@ bool CNPC_MetroPolice::CorpseDecapitate(const CTakeDamageInfo& info)
 			CGib::SpawnSpecificStickyGibs( this, 6, 150, 450, "models/gibs/pgib_p4.mdl", 6 );
 			EmitSound( "Gore.Headshot" );
 			EmitSound("Gore.Decap");
+			m_bDecapitated = true;
 			m_bNoDeathSound = true;
 		}
 		m_iHealth = 0;
 		Event_Killed(info);
-		g_pGameRules->iHeadshotCount += 1;
 		// Handle all clients
 		for (int i = 1; i <= gpGlobals->maxClients; i++)
 		{
@@ -4076,6 +4076,7 @@ bool CNPC_MetroPolice::CorpseDecapitate(const CTakeDamageInfo& info)
 			CGib::SpawnSpecificStickyGibs( this, 3, 150, 450, "models/gibs/pgib_p4.mdl", 6 );
 			EmitSound( "Gore.Headshot" );
 			EmitSound("Gore.Decap");
+			m_bDecapitated = true;
 			m_bNoDeathSound = true;
 		}
 		m_iHealth = 0;

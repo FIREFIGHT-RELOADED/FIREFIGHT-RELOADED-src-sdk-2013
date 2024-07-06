@@ -54,6 +54,8 @@ ConVar tf_weapon_criticals_bucket_bottom( "tf_weapon_criticals_bucket_bottom", "
 ConVar tf_weapon_criticals_bucket_default( "tf_weapon_criticals_bucket_default", "300.0", FCVAR_REPLICATED | FCVAR_CHEAT );
 #endif // TF
 
+ConVar viewmodel_fov_zoomtime("viewmodel_fov_zoomtime", "0.15", FCVAR_REPLICATED | FCVAR_ARCHIVE);
+
 //forward declarations of callbacks used by viewmodel_adjust_enable and viewmodel_adjust_fov
 void vm_adjust_enable_callback(IConVar *pConVar, char const *pOldString, float flOldValue);
 void vm_adjust_fov_callback(IConVar *pConVar, const char *pOldString, float flOldValue);
@@ -911,6 +913,10 @@ void CBaseCombatWeapon::ToggleIronsights()
 		EnableIronsights();
 }
 
+#ifdef CLIENT_DLL
+extern ConVar fov_desired;
+#endif
+
 void CBaseCombatWeapon::EnableIronsights()
 {
 
@@ -929,18 +935,30 @@ void CBaseCombatWeapon::EnableIronsights()
 	if (!pOwner)
 		return;
 
-	//if (pOwner->SetFOV(this, pOwner->GetFOV() + GetIronsightFOVOffset(), 0.4f)) //modify the last value to adjust how fast the fov is applied
-	//{
-		m_bIsIronsighted = true;
-		SetIronsightTime();
-	//}
+#ifdef CLIENT_DLL
+	const char* pszFov = fov_desired.GetString();
+#else
+	const char* pszFov = engine->GetClientConVarValue(pOwner->entindex(), "fov_desired");
+#endif
 
-	if (!CanIronsightUseCrosshair())
+	if (pszFov)
 	{
-		pOwner->m_Local.m_iHideHUD |= HIDEHUD_CROSSHAIR;
-	}
+		int iFov = atoi(pszFov);
+		if (pOwner->GetFOV() == iFov)
+		{
+			pOwner->SetFOV(this, pOwner->GetFOV() + GetIronsightFOVOffset(), viewmodel_fov_zoomtime.GetFloat());
 
-	pOwner->EmitSound("Player.IronSightIn");
+			m_bIsIronsighted = true;
+			SetIronsightTime();
+
+			if (!CanIronsightUseCrosshair())
+			{
+				pOwner->m_Local.m_iHideHUD |= HIDEHUD_CROSSHAIR;
+			}
+
+			pOwner->EmitSound("Player.IronSightIn");
+		}
+	}
 }
 
 void CBaseCombatWeapon::DisableIronsights()
@@ -960,18 +978,30 @@ void CBaseCombatWeapon::DisableIronsights()
 	if (!pOwner)
 		return;
 
-	//if (pOwner->SetFOV(this, 0, 0.4f)) //modify the last value to adjust how fast the fov is applied
-	//{
-		m_bIsIronsighted = false;
-		SetIronsightTime();
-	//}
+#ifdef CLIENT_DLL
+	const char* pszFov = fov_desired.GetString();
+#else
+	const char* pszFov = engine->GetClientConVarValue(pOwner->entindex(), "fov_desired");
+#endif
 
-	if (!CanIronsightUseCrosshair())
+	if (pszFov)
 	{
-		pOwner->m_Local.m_iHideHUD &= ~HIDEHUD_CROSSHAIR;
-	}
+		int iFov = atoi(pszFov);
+		if (pOwner->GetFOV() < iFov)
+		{
+			pOwner->SetFOV(this, 0, viewmodel_fov_zoomtime.GetFloat());
 
-	pOwner->EmitSound("Player.IronSightOut");
+			m_bIsIronsighted = false;
+			SetIronsightTime();
+
+			if (!CanIronsightUseCrosshair())
+			{
+				pOwner->m_Local.m_iHideHUD &= ~HIDEHUD_CROSSHAIR;
+			}
+
+			pOwner->EmitSound("Player.IronSightOut");
+		}
+	}
 }
 
 void CBaseCombatWeapon::SetIronsightTime()

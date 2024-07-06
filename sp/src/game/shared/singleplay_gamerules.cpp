@@ -1225,9 +1225,15 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 						if (pInflictor == pScorer)
 						{
 							CHL2_Player* pScorerHL2 = ToHL2Player(pScorer);
+							CAI_BaseNPC* pNPC = pVictim->MyNPCPointer();
 
 							// If the inflictor is the killer,  then it must be their current weapon doing the damage
-							if (pScorerHL2->m_bIsKicking)
+							if (pNPC->m_bDecapitated)
+							{
+								// fake it
+								killer_weapon_name = "headshot";
+							}
+							else if (pScorerHL2->m_bIsKicking)
 							{
 								// fake it
 								killer_weapon_name = "kick";

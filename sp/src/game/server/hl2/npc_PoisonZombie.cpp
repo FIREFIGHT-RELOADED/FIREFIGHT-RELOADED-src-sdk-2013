@@ -342,7 +342,7 @@ float CNPC_PoisonZombie::GetHitgroupDamageMultiplier(int iHitGroup, const CTakeD
 				CGib::SpawnSpecificStickyGibs(this, 3, 750, 1500, "models/gibs/agib_p3.mdl", 6);
 				CGib::SpawnSpecificStickyGibs(this, 3, 750, 1500, "models/gibs/agib_p4.mdl", 6);
 				EmitSound("Gore.Headshot");
-				g_pGameRules->iHeadshotCount += 1;
+				m_bDecapitated = true;
 				RemoveHead( info.GetAttacker() );
 			}
 			else

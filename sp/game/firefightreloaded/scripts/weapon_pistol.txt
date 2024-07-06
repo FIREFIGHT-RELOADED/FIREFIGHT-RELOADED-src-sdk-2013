@@ -34,7 +34,7 @@ WeaponData
 		"right"		"-3" //-4.80
 		"up"		"1" //was 2.3, then 0.8
 		"forward"	"-0.8" //-9
-		//"fov"		"-5"
+		"fov"		"-5"
 		"pitch"		"-0.3" //was 0.5
 		"yaw"		"-2.032" //was just -2
 	}

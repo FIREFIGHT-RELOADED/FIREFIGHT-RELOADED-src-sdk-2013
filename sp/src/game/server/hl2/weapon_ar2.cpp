@@ -389,6 +389,9 @@ void CWeaponAR2::Zoom(void)
 	if (pPlayer == NULL)
 		return;
 
+	if (IsIronsighted())
+		return;
+
 	color32 lightBlue = { 55, 157, 230, 32 };
 
 	if (m_bZoomed)

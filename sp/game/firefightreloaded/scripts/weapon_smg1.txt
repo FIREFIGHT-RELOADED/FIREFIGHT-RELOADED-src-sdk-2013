@@ -39,7 +39,7 @@ WeaponData
 		"right"		"-6.42"
 		"up"		"2.55"
 		"forward"	"-13"
-		//"fov"		"-14"
+		"fov"		"-14"
 	}
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)

@@ -1908,6 +1908,8 @@ public:
 
 	bool					m_bDidDeathCleanup;
 
+	//only really for combine/zombie ememies.....
+	bool					m_bDecapitated;
 
 	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_lifeState );
 

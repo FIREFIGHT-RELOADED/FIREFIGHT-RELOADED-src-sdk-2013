@@ -419,10 +419,10 @@ bool CNPC_Combine::CorpseDecapitate(const CTakeDamageInfo& info)
 			EmitSound( "Gore.Headshot" );
 			EmitSound("Gore.Decap");
 			m_bNoDeathSound = true;
+			m_bDecapitated = true;
 		}
 		m_iHealth = 0;
 		Event_Killed(info);
-		g_pGameRules->iHeadshotCount += 1;
 		// Handle all clients
 		for (int i = 1; i <= gpGlobals->maxClients; i++)
 		{
@@ -472,6 +472,7 @@ bool CNPC_Combine::CorpseDecapitate(const CTakeDamageInfo& info)
 			EmitSound( "Gore.Headshot" );
 			EmitSound("Gore.Decap");
 			m_bNoDeathSound = true;
+			m_bDecapitated = true;
 		}
 		m_iHealth = 0;
 		Event_Killed(info);
