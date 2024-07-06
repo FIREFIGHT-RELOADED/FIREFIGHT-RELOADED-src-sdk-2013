@@ -6177,13 +6177,39 @@ void CBasePlayer::Precache( void )
 	m_hssPowerSlideSound = PrecacheScriptSound( "Player.PowerSlide" );
 	m_hssWallRunSound = PrecacheScriptSound( "Player.WallRun" );
 	//Voice
-	PrecacheScriptSound( "Player.VoiceKill" );
-	PrecacheScriptSound( "Player.VoiceHit" );
-	PrecacheScriptSound( "Player.VoiceDeath" );
-	PrecacheScriptSound( "Player.VoicePerk" );
+	if (sv_player_voice.GetBool())
+	{
+		if (sv_player_voice_kill.GetBool())
+		{
+			PrecacheScriptSound("Player.VoiceKill");
+		}
+
+		if (sv_player_voice_hit.GetBool())
+		{
+			PrecacheScriptSound("Player.VoiceHit");
+		}
+
+		if (sv_player_voice_death.GetBool())
+		{
+			PrecacheScriptSound("Player.VoiceDeath");
+		}
+
+		if (sv_player_voice_perk.GetBool())
+		{
+			PrecacheScriptSound("Player.VoicePerk");
+		}
+	}
 	//store
-	PrecacheScriptSound("Store.Buy");
-	PrecacheScriptSound("Store.InsufficientFunds");
+	if (sv_store_buysounds.GetBool())
+	{
+		PrecacheScriptSound("Store.Buy");
+	}
+
+	if (sv_store_denysounds.GetBool())
+	{
+		PrecacheScriptSound("Store.InsufficientFunds");
+	}
+
 	enginesound->PrecacheSentenceGroup( "HEV" );
 
 	// These are always needed

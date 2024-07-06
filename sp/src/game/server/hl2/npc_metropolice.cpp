@@ -4442,12 +4442,12 @@ int CNPC_MetroPolice::SelectSchedule( void )
 	CBasePlayer* pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 	if (!GetEnemy() && HasCondition(COND_IN_PVS) && pPlayer && !pPlayer->IsAlive())
 	{
-		return SCHED_PATROL_WALK;
+		return SCHED_PATROL_WALK_LOOP;
 	}
 
 	if ((GetEnemy() && (HasCondition(COND_ENEMY_OCCLUDED) || HasCondition(COND_LOST_ENEMY))) || (!GetEnemy() && HasCondition(COND_IN_PVS)))
 	{
-		return SCHED_PATROL_WALK;
+		return SCHED_PATROL_WALK_LOOP;
 	}
 
 	if ( HasCondition(COND_METROPOLICE_ON_FIRE) )
