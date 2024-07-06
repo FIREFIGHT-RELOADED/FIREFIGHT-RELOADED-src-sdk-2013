@@ -240,7 +240,7 @@
 
 "Player.FallDamage"
 {
-	"channel"	"CHAN_AUTO"
+	"channel"	"CHAN_BODY"
 	"volume"	"0.75"
 	"pitch"		"90,110"
 	"soundlevel"	"SNDLVL_NORM"
@@ -351,7 +351,7 @@
 
 "Player.PowerSlide"
 {
-	"channel"	"CHAN_AUTO"
+	"channel"	"CHAN_BODY"
 	"volume"	"0.25"
 	"soundlevel"  "SNDLVL_75dB"
     	"pitch"     "60"
@@ -360,7 +360,7 @@
 
 "Player.WallRun"
 {
-	"channel"	"CHAN_AUTO"
+	"channel"	"CHAN_BODY"
 	"volume"	"0.25"
 	"soundlevel"  "SNDLVL_75dB"
     	"pitch"     "100"
