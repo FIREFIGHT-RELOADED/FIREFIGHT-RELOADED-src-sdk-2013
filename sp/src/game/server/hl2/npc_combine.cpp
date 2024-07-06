@@ -2160,15 +2160,26 @@ int CNPC_Combine::SelectCombatSchedule()
 //-----------------------------------------------------------------------------
 int CNPC_Combine::SelectSchedule( void )
 {
-	if ( IsWaitingToRappel() && BehaviorSelectSchedule() )
-	{
-		return BaseClass::SelectSchedule();
-	}
-
 	//If we are in idle, try to find the enemy by walking.
 	if (m_NPCState == NPC_STATE_IDLE || m_NPCState == NPC_STATE_ALERT)
 	{
 		return SCHED_PATROL_WALK_LOOP;
+	}
+
+	CBasePlayer* pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
+	if (!GetEnemy() && HasCondition(COND_IN_PVS) && pPlayer && !pPlayer->IsAlive())
+	{
+		return SCHED_PATROL_WALK_LOOP;
+	}
+
+	if ((GetEnemy() && (HasCondition(COND_ENEMY_OCCLUDED) || HasCondition(COND_LOST_ENEMY))) || (!GetEnemy() && HasCondition(COND_IN_PVS)))
+	{
+		return SCHED_PATROL_WALK_LOOP;
+	}
+
+	if ( IsWaitingToRappel() && BehaviorSelectSchedule() )
+	{
+		return BaseClass::SelectSchedule();
 	}
 
 	if (HasCondition(COND_COMBINE_ON_FIRE) && random->RandomInt(1, 5) == 3)

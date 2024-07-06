@@ -42,6 +42,7 @@ class CNPC_CombineAce : public CNPC_Combine
 
 public: 
 	void		Spawn( void );
+	void		CreateShieldOutline(void);
 	void		LoadInitAttributes(void);
 	void		Precache( void );
 	int			RangeAttack1Conditions(float flDot, float flDist);
