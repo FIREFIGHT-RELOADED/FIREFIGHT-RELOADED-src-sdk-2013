@@ -694,6 +694,7 @@ void CNPC_MetroPolice::Spawn( void )
 		if( !m_fWeaponDrawn ) 
 		{
 			GetActiveWeapon()->AddEffects( EF_NODRAW );
+			m_IgnoreWeaponActivities = true;
 		}
 	}
 
@@ -3141,7 +3142,7 @@ Activity CNPC_MetroPolice::NPC_TranslateActivity( Activity newActivity )
 
 	// This will put him into an angry idle, which will then be translated
 	// by the weapon to the appropriate type. 
-	if ( m_fWeaponDrawn && newActivity == ACT_IDLE && ( GetState() == NPC_STATE_COMBAT || BatonActive() ) )
+	if (m_fWeaponDrawn && newActivity == ACT_IDLE && (GetState() == NPC_STATE_COMBAT || BatonActive()))
 	{
 		newActivity = ACT_IDLE_ANGRY;
 	}
@@ -3310,8 +3311,11 @@ int CNPC_MetroPolice::SelectScheduleArrestEnemy()
 	if ( !HasCondition( COND_SEE_ENEMY ) )
 		return SCHED_NONE;
 
-	if ( !m_fWeaponDrawn )
+	if (!m_fWeaponDrawn)
+	{
+		m_IgnoreWeaponActivities = false;
 		return SCHED_METROPOLICE_DRAW_PISTOL;
+	}
 
 	// First guy that sees the enemy will tell him to freeze
 	if ( OccupyStrategySlot( SQUAD_SLOT_POLICE_ARREST_ENEMY ) )
@@ -3339,8 +3343,11 @@ int CNPC_MetroPolice::SelectScheduleNewEnemy()
 			return SCHED_METROPOLICE_DEPLOY_MANHACK;
 	}
 
-	if ( !m_fWeaponDrawn )
+	if (!m_fWeaponDrawn)
+	{
+		m_IgnoreWeaponActivities = false;
 		return SCHED_METROPOLICE_DRAW_PISTOL;
+	}
 
 	// Switch our baton on, if it's not already
 	if ( HasBaton() && BatonActive() == false && IsCurSchedule( SCHED_METROPOLICE_ACTIVATE_BATON ) == false )
@@ -3437,6 +3444,7 @@ int CNPC_MetroPolice::SelectCombatSchedule()
 
 	if( !m_fWeaponDrawn )
 	{
+		m_IgnoreWeaponActivities = false;
 		return SCHED_METROPOLICE_DRAW_PISTOL;
 	}
 
@@ -4014,6 +4022,7 @@ bool CNPC_MetroPolice::CorpseDecapitate(const CTakeDamageInfo& info)
 			CGib::SpawnSpecificStickyGibs( this, 6, 150, 450, "models/gibs/pgib_p3.mdl", 6 );
 			CGib::SpawnSpecificStickyGibs( this, 6, 150, 450, "models/gibs/pgib_p4.mdl", 6 );
 			EmitSound( "Gore.Headshot" );
+			EmitSound("Gore.Decap");
 			m_bNoDeathSound = true;
 		}
 		m_iHealth = 0;
@@ -4066,6 +4075,7 @@ bool CNPC_MetroPolice::CorpseDecapitate(const CTakeDamageInfo& info)
 
 			CGib::SpawnSpecificStickyGibs( this, 3, 150, 450, "models/gibs/pgib_p4.mdl", 6 );
 			EmitSound( "Gore.Headshot" );
+			EmitSound("Gore.Decap");
 			m_bNoDeathSound = true;
 		}
 		m_iHealth = 0;
@@ -4508,11 +4518,15 @@ int CNPC_MetroPolice::SelectSchedule( void )
 			if (GetEnemy())
 			{
 				if (!m_fWeaponDrawn)
+				{
+					m_IgnoreWeaponActivities = false;
 					return SCHED_METROPOLICE_DRAW_PISTOL;
+				}
 
 				// if we STILL haven't drawn it, force it to be drawn.
 				if (!m_fWeaponDrawn)
 				{
+					m_IgnoreWeaponActivities = false;
 					m_fWeaponDrawn = true;
 					if (GetActiveWeapon())
 					{
@@ -4754,6 +4768,7 @@ int CNPC_MetroPolice::TranslateSchedule( int scheduleType )
 
 		if( !m_fWeaponDrawn )
 		{
+			m_IgnoreWeaponActivities = false;
 			return SCHED_METROPOLICE_DRAW_PISTOL;
 		}
 

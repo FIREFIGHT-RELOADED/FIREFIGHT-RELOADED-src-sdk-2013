@@ -6103,7 +6103,15 @@ Activity CAI_BaseNPC::TranslateActivity( Activity idealActivity, Activity *pIdea
 	Activity last;
 	Activity current;
 
-	idealWeaponActivity = Weapon_TranslateActivity( idealActivity, &bIdealWeaponRequired );
+	if (m_IgnoreWeaponActivities)
+	{
+		idealWeaponActivity = idealActivity;
+	}
+	else
+	{
+		idealWeaponActivity = Weapon_TranslateActivity(idealActivity, &bIdealWeaponRequired);
+	}
+
 	if ( pIdealWeaponActivity )
 		*pIdealWeaponActivity = idealWeaponActivity;
 
@@ -6116,7 +6124,14 @@ Activity CAI_BaseNPC::TranslateActivity( Activity idealActivity, Activity *pIdea
 		if ( current != last )
 			baseTranslation = current;
 
-		weaponTranslation = Weapon_TranslateActivity( current, &bWeaponRequired );
+		if (m_IgnoreWeaponActivities)
+		{
+			weaponTranslation = current;
+		}
+		else
+		{
+			weaponTranslation = Weapon_TranslateActivity(current, &bWeaponRequired);
+		}
 
 		if ( weaponTranslation == last )
 			break;
@@ -8809,6 +8824,9 @@ void CAI_BaseNPC::HandleAnimEvent( animevent_t *pEvent )
 			}
 			else if ( pEvent->event == AE_NPC_WEAPON_SET_ACTIVITY )
 			{
+				if (m_IgnoreWeaponActivities)
+					return;
+
 				CBaseCombatWeapon *pWeapon = GetActiveWeapon();
 				if ((pWeapon) && (pEvent->options))
 				{
@@ -9363,7 +9381,13 @@ int CAI_BaseNPC::DrawDebugTextOverlays(void)
 		{
 			Activity iActivity		= TranslateActivity( m_Activity );
 
-			Activity iIdealActivity	= Weapon_TranslateActivity( m_IdealActivity );
+			Activity iIdealActivity = Weapon_TranslateActivity(m_IdealActivity);
+
+			if (m_IgnoreWeaponActivities)
+			{
+				iIdealActivity = m_IdealActivity;
+			}
+
 			iIdealActivity			= NPC_TranslateActivity( iIdealActivity );
 
 			const char *pszActivity = GetActivityName( iActivity );

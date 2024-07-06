@@ -143,6 +143,7 @@ void ClientGamePrecache( void )
 	CBaseEntity::PrecacheScriptSound( "Player.IronSightOut" );
 
 	CBaseEntity::PrecacheScriptSound("Gore.Headshot");
+	CBaseEntity::PrecacheScriptSound("Gore.Decap");
 	
 	CBaseEntity::PrecacheScriptSound( "Geiger.BeepHigh" );
 	CBaseEntity::PrecacheScriptSound( "Geiger.BeepLow" );

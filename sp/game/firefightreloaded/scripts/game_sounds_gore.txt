@@ -9,3 +9,15 @@
 		"wave"	"gore/headshot.wav"
 	}
 }
+
+"Gore.Decap"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"0.5"
+	"soundlevel"  "SNDLVL_75dB"
+
+	"rndwave"
+	{
+		"wave"	"gore/flow.wav"
+	}
+}

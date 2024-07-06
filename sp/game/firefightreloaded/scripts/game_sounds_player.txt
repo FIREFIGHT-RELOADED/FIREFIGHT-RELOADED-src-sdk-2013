@@ -352,19 +352,10 @@
 "Player.PowerSlide"
 {
 	"channel"	"CHAN_BODY"
-	"volume"	"0.25"
+	"volume"	"0.35"
 	"soundlevel"  "SNDLVL_75dB"
     	"pitch"     "60"
-	"wave"	"player/powerslide.wav"
-}
-
-"Player.WallRun"
-{
-	"channel"	"CHAN_BODY"
-	"volume"	"0.25"
-	"soundlevel"  "SNDLVL_75dB"
-    	"pitch"     "100"
-	"wave"	"player/wallrun.wav"
+	"wave"	"player/player_slide.wav"
 }
 
 "Geiger.BeepLow"

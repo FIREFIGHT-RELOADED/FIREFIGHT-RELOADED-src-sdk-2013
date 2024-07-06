@@ -1418,6 +1418,7 @@ public:
 	CAttributesLoader* m_pAttributes;
 	bool			m_bDisableInitAttributes;
 	bool			m_denyOutlines;
+	bool			m_IgnoreWeaponActivities;
 	//-----------------------------------------------------
 	//
 	// Eye position, view offset, head direction, eye direction

@@ -417,6 +417,7 @@ bool CNPC_Combine::CorpseDecapitate(const CTakeDamageInfo& info)
 			CGib::SpawnSpecificStickyGibs( this, 6, 150, 450, "models/gibs/pgib_p3.mdl", 6 );
 			CGib::SpawnSpecificStickyGibs( this, 6, 150, 450, "models/gibs/pgib_p4.mdl", 6 );
 			EmitSound( "Gore.Headshot" );
+			EmitSound("Gore.Decap");
 			m_bNoDeathSound = true;
 		}
 		m_iHealth = 0;
@@ -469,6 +470,7 @@ bool CNPC_Combine::CorpseDecapitate(const CTakeDamageInfo& info)
 
 			CGib::SpawnSpecificStickyGibs( this, 3, 150, 450, "models/gibs/pgib_p4.mdl", 6 );
 			EmitSound( "Gore.Headshot" );
+			EmitSound("Gore.Decap");
 			m_bNoDeathSound = true;
 		}
 		m_iHealth = 0;
