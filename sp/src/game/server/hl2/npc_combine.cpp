@@ -3322,6 +3322,23 @@ int CNPC_Combine::SpeakSentence(const char* szSentenceName, SentencePriority_t n
 	return GetSentences()->Speak(fullSentenceString, nSoundPriority, nCriteria);
 }
 
+//=========================================================
+// RangeAttack1Conditions
+//=========================================================
+int CNPC_Combine::RangeAttack1Conditions(float flDot, float flDist)
+{
+	if (flDist < 32)
+	{
+		return COND_NONE;
+	}
+	else if (flDot < 0.5)
+	{
+		return COND_NONE;
+	}
+
+	return COND_CAN_RANGE_ATTACK1;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //
@@ -3575,7 +3592,7 @@ int CNPC_Combine::MeleeAttack1Conditions ( float flDot, float flDist )
 	if (IsAce())
 		return COND_NONE;
 
-	if (flDist > 85)
+	if (flDist > 100)
 	{
 		return COND_NONE; // COND_TOO_FAR_TO_ATTACK;
 	}

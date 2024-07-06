@@ -60,6 +60,7 @@ public:
 	virtual	bool	CanGrenadeEnemy( bool bUseFreeKnowledge = true );
 	virtual bool	CanAltFireEnemy( bool bUseFreeKnowledge );
 	int				GetGrenadeConditions( float flDot, float flDist );
+	int				RangeAttack1Conditions(float flDot, float flDist);
 	int				RangeAttack2Conditions( float flDot, float flDist ); // For innate grenade attack
 	int				MeleeAttack1Conditions( float flDot, float flDist ); // For kick/punch
 	bool			FVisible( CBaseEntity *pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = NULL );
