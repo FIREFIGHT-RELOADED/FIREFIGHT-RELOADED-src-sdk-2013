@@ -1191,6 +1191,49 @@
 					"1"		"#gameui_enabled"
 				}
 			}
+            
+            "FasterSwitch"
+			{
+				"text"			"#GameUI_FasterWeaponSwitch"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"weapon_quickswitch"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+            
+            "AutoaimMode"
+			{
+				"text"			"#GameUI_Autoaim"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"sk_autoaim_mode"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+                    "2"		"#gameui_enabled_controller"
+				}
+			}
+            
+            "AutoaimCrosshair"
+			{
+				"text"			"#GameUI_AutoaimController"
+				"type"			"wheelywheel"
+				"convar"		"sv_player_autoaimcrosshair"
+				"advanced"		"1"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
 			
 			"AutoswitchOnReward"
 			{
