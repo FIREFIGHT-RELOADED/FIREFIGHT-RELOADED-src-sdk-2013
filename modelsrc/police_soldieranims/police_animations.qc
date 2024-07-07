@@ -2568,6 +2568,42 @@ $sequence "WalkN_pistol_Aim_all" {
 	iklock "lfoot" 1 0
 }
 
+$sequence "Crouch_all" {
+	"a_Crouch_walkS"
+	"a_Crouch_walkSE"
+	"a_Crouch_walkE"
+	"a_Crouch_walkNE"
+	"a_Crouch_walkN"
+	"a_Crouch_walkNW"
+	"a_Crouch_walkW"
+	"a_Crouch_walkSW"
+	"a_Crouch_walkS"
+	activity "ACT_WALK_CROUCH" 1
+	blend "move_yaw" -180 180
+	blendwidth 9
+	fadein 0.2
+	fadeout 0.2
+}
+
+$sequence "walk_all" {
+	"a_WalkS"
+	"a_WalkSE"
+	"a_WalkE"
+	"a_WalkNE"
+	"a_WalkN"
+	"a_WalkNW"
+	"a_WalkW"
+	"a_WalkSW"
+	"a_WalkS"
+	activity "ACT_WALK" 1
+	blend "move_yaw" -180 180
+	blendwidth 9
+	{ event 6004 9 "NPC_MetroPolice" }
+	{ event 6005 25 "NPC_MetroPolice" }
+	fadein 0.2
+	fadeout 0.2
+}
+
 $sequence "layer_walk_hold_baton_angry" {
 	"police_animations_anims\layer_walk_hold_baton_angry.smd"
 	fadein 0.2
@@ -2685,6 +2721,25 @@ $sequence "walk_hold_pistol" {
 	fadeout 0.2
 	addlayer "layer_walk_hold_pistol"
 	node "standing_pistol"
+}
+
+$sequence "run_all" {
+	"a_RunS"
+	"a_RunSE"
+	"a_RunE"
+	"a_RunNE"
+	"a_RunN"
+	"a_RunNW"
+	"a_RunW"
+	"a_RunSW"
+	"a_RunS"
+	activity "ACT_RUN" 1
+	blend "move_yaw" -180 180
+	blendwidth 9
+	{ event 6004 7 "NPC_MetroPolice" }
+	{ event 6005 16 "NPC_MetroPolice" }
+	fadein 0.2
+	fadeout 0.2
 }
 
 $sequence "Pistol_aim_run_all_delta" {
