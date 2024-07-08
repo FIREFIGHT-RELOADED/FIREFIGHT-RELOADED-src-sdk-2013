@@ -62,6 +62,8 @@ ConVar advisor_bulletresistance_speed("advisor_bulletresistance_speed", "120", F
 ConVar advisor_enable_premature_droning("advisor_enable_premature_droning", "0", FCVAR_ARCHIVE);
 ConVar advisor_enable_droning("advisor_enable_droning", "1", FCVAR_ARCHIVE);
 
+ConVar advisor_droning_wait_time("advisor_droning_wait_time", "30", FCVAR_ARCHIVE);
+
 extern ConVar sk_combine_ace_shielddamage_normal;
 extern ConVar sk_combine_ace_shielddamage_hard;
 extern ConVar sk_combine_ace_shielddamage_explosive_multiplier;
@@ -1211,7 +1213,7 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 				{
 					int nRandomIndex = random->RandomInt(0, m_droneObjects.Count() - 1);
 					Dronify(m_droneObjects[nRandomIndex]);
-					m_fllastDronifiedTime = gpGlobals->curtime + 60.0f;
+					m_fllastDronifiedTime = gpGlobals->curtime + advisor_droning_wait_time.GetFloat();
 					TaskComplete();
 				}
 				else

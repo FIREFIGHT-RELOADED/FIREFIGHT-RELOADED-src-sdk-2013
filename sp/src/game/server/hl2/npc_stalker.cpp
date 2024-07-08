@@ -434,6 +434,12 @@ void CNPC_Stalker::DeathSound( const CTakeDamageInfo &info )
 	if (IsOnFire())
 		return;
 
+	if (m_pBeam)
+	{
+		StopSound(m_pBeam->entindex(), "NPC_Stalker.BurnWall");
+		StopSound(m_pBeam->entindex(), "NPC_Stalker.BurnFlesh");
+	}
+
 	EmitSound( "NPC_Stalker.Die" );
 };
 
