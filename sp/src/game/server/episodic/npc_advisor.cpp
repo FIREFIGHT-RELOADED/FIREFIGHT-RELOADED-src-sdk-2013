@@ -112,6 +112,7 @@ BEGIN_DATADESC( CNPC_Advisor )
 	DEFINE_FIELD( m_flLastPlayerAttackTime, FIELD_TIME ),
 	DEFINE_FIELD( m_flStagingEnd, FIELD_TIME ),
 	DEFINE_FIELD(m_fllastDronifiedTime, FIELD_TIME),
+	DEFINE_FIELD(m_fllastPinnedTime, FIELD_TIME),
 	DEFINE_FIELD( m_iStagingNum, FIELD_INTEGER ),
 	DEFINE_FIELD( m_bWasScripting, FIELD_BOOLEAN ),
 	DEFINE_FIELD(m_bStopMoving, FIELD_BOOLEAN),
@@ -765,7 +766,6 @@ void CNPC_Advisor::StartTask( const Task_t *pTask )
 		{
 
 			// should never be here
-			
 			Assert( m_hPlayerPinPos.IsValid() );
 			m_playerPinFailsafeTime = gpGlobals->curtime + 3.5f;
 			m_playerPinDamage = 0;
@@ -1167,6 +1167,8 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 					GetEnemy()->TakeDamage(CTakeDamageInfo(this, this, dmg, DMG_BURN | DMG_SLOWBURN | DMG_DIRECT));
 					m_playerPinDamage += dmg;
 				}
+
+				m_fllastPinnedTime = gpGlobals->curtime + 60.0f;
 			}
 			break;
 		}
@@ -1749,7 +1751,8 @@ int CNPC_Advisor::SelectSchedule()
 						m_bStopMoving = true;
 						return SCHED_ADVISOR_TOSS_PLAYER;
 					}
-					else if (pPlayer && (pPlayer->m_nWallRunState == WALLRUN_RUNNING || pPlayer->m_nWallRunState == WALLRUN_STALL))
+					else if ((pPlayer && (pPlayer->m_nWallRunState == WALLRUN_RUNNING || pPlayer->m_nWallRunState == WALLRUN_STALL)) || 
+						(m_bBulletResistanceBroken && m_fllastPinnedTime < gpGlobals->curtime))
 					{
 						if (!m_hPlayerPinPos.IsValid())
 						{
