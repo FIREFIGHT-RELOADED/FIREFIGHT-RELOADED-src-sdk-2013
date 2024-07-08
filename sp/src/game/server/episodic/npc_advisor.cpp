@@ -6,16 +6,9 @@
 
 #include "cbase.h"
 #include "game.h"
-#include "ai_basenpc.h"
-#include "ai_schedule.h"
-#include "ai_hull.h"
-#include "ai_hint.h"
-#include "ai_motor.h"
-#include "ai_navigator.h"
-#include "beam_shared.h"
+#include "npc_advisor.h"
 #include "hl2_shareddefs.h"
 #include "ai_route.h"
-#include "npcevent.h"
 #include "gib.h"
 #include "ai_interactions.h"
 #include "ndebugoverlay.h"
@@ -28,17 +21,6 @@
 #include "particle_parse.h"
 #include "weapon_physcannon.h"
 #include "hl2/prop_combine_ball.h"
-// #include "mathlib/noise.h"
-#include	"ai_baseactor.h"
-#include	"ai_moveprobe.h"
-
-// this file contains the definitions for the message ID constants (eg ADVISOR_MSG_START_BEAM etc)
-#include "npc_advisor_shared.h"
-
-#include "ai_default.h"
-#include "ai_task.h"
-#include "npcevent.h"
-#include "activitylist.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -70,8 +52,12 @@ ConVar advisor_bulletresistance_throw_rate("advisor_bulletresistance_throw_rate"
 ConVar advisor_bulletresistance_staging_num("advisor_bulletresistance_staging_num", "3", FCVAR_ARCHIVE, "Advisor will queue up this many objects to throw at Gordon.");
 ConVar advisor_disablebulletresistance("advisor_disablebulletresistance", "0", FCVAR_ARCHIVE);
 
-ConVar advisor_speed("advisor_speed", "250", FCVAR_ARCHIVE);
-ConVar advisor_bulletresistance_speed("advisor_bulletresistance_speed", "120", FCVAR_ARCHIVE);
+ConVar advisor_flingentity_force_touch("advisor_flingentity_force_touch", "100", FCVAR_ARCHIVE);
+ConVar advisor_flingentity_force_melee("advisor_flingentity_force_melee", "100", FCVAR_ARCHIVE);
+ConVar advisor_flingentity_force_pin("advisor_flingentity_force_pin", "75", FCVAR_ARCHIVE);
+
+ConVar advisor_speed("advisor_speed", "420", FCVAR_ARCHIVE);
+ConVar advisor_bulletresistance_speed("advisor_bulletresistance_speed", "250", FCVAR_ARCHIVE);
 
 ConVar advisor_enable_premature_droning("advisor_enable_premature_droning", "0", FCVAR_ARCHIVE);
 ConVar advisor_enable_droning("advisor_enable_droning", "1", FCVAR_ARCHIVE);
@@ -81,84 +67,7 @@ extern ConVar sk_combine_ace_shielddamage_hard;
 extern ConVar sk_combine_ace_shielddamage_explosive_multiplier;
 extern ConVar sk_combine_ace_shielddamage_shock_multiplier;
 // ConVar advisor_staging_duration("
-
-// how long it will take an object to get hauled to the staging point
-#define STAGING_OBJECT_FALLOFF_TIME 0.15f
 #endif
-
-//
-// Spawnflags.
-//
-
-//
-// Animation events.
-//
-#define ADVISOR_MELEE_LEFT					( 3 )
-#define ADVISOR_MELEE_RIGHT					( 4 )
-
-#if NPC_ADVISOR_HAS_BEHAVIOR
-//
-// Custom schedules.
-//
-enum
-{
-	SCHED_ADVISOR_COMBAT = LAST_SHARED_SCHEDULE,
-	SCHED_ADVISOR_IDLE_STAND,
-	SCHED_ADVISOR_TOSS_PLAYER,
-	SCHED_ADVISOR_DRONIFY,
-};
-
-
-//
-// Custom tasks.
-//
-enum 
-{
-	TASK_ADVISOR_FIND_OBJECTS = LAST_SHARED_TASK,
-	TASK_ADVISOR_LEVITATE_OBJECTS,
-	TASK_ADVISOR_STAGE_OBJECTS,
-	TASK_ADVISOR_BARRAGE_OBJECTS,
-
-	TASK_ADVISOR_PIN_PLAYER,
-
-	TASK_ADVISOR_DRONIFY,
-};
-
-//
-// Custom conditions.
-//
-enum
-{
-	COND_ADVISOR_PHASE_INTERRUPT = LAST_SHARED_CONDITION,
-};
-#endif
-
-class CNPC_Advisor;
-
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-class CAdvisorLevitate : public IMotionEvent
-{
-	DECLARE_SIMPLE_DATADESC();
-
-public:
-
-	// in the absence of goal entities, we float up before throwing and down after
-	inline bool OldStyle( void )
-	{
-		return !(m_vecGoalPos1.IsValid() && m_vecGoalPos2.IsValid());
-	}
-
-	virtual simresult_e	Simulate( IPhysicsMotionController *pController, IPhysicsObject *pObject, float deltaTime, Vector &linear, AngularImpulse &angular );
-
-	EHANDLE m_Advisor; ///< handle to the advisor.
-
-	Vector m_vecGoalPos1;
-	Vector m_vecGoalPos2;
-
-	float m_flFloat;
-};
 
 BEGIN_SIMPLE_DATADESC( CAdvisorLevitate )
 	DEFINE_FIELD( m_flFloat, FIELD_FLOAT ),
@@ -166,202 +75,6 @@ BEGIN_SIMPLE_DATADESC( CAdvisorLevitate )
 	DEFINE_FIELD( m_vecGoalPos2, FIELD_POSITION_VECTOR ),
 	DEFINE_FIELD( m_Advisor, FIELD_EHANDLE ),
 END_DATADESC()
-
-
-
-//-----------------------------------------------------------------------------
-// The advisor class.
-//-----------------------------------------------------------------------------
-class CNPC_Advisor : public CAI_BaseActor
-{
-	DECLARE_CLASS( CNPC_Advisor, CAI_BaseActor);
-
-#if NPC_ADVISOR_HAS_BEHAVIOR
-	DECLARE_SERVERCLASS();
-#endif
-
-public:
-
-	//
-	// CBaseEntity:
-	//
-	virtual void Activate();
-	virtual void Spawn();
-	virtual void Precache();
-	virtual void OnRestore();
-	virtual void UpdateOnRemove();
-
-	virtual int DrawDebugTextOverlays();
-
-	//
-	// CAI_BaseNPC:
-	//
-	virtual float MaxYawSpeed() { return (!m_bBulletResistanceBroken ? advisor_bulletresistance_speed.GetFloat() : advisor_speed.GetFloat()); } //120.0f 90.0f
-
-	virtual void LoadInitAttributes(void);
-	
-	virtual Class_T Classify();
-
-#if NPC_ADVISOR_HAS_BEHAVIOR
-	virtual int GetSoundInterests();
-	virtual int SelectSchedule();
-	virtual void StartTask( const Task_t *pTask );
-	virtual void RunTask( const Task_t *pTask );
-	virtual void OnScheduleChange( void );
-
-	void HandleAnimEvent(animevent_t *pEvent);
-	int MeleeAttack1Conditions(float flDot, float flDist);
-
-	void Event_Killed(const CTakeDamageInfo &info);
-
-	//bullet resistance
-	void				EnableBulletResistanceOutline(void);
-	CTakeDamageInfo		BulletResistanceLogic(const CTakeDamageInfo& info, trace_t* ptr);
-	virtual bool		PassesDamageFilter(const CTakeDamageInfo& info);
-	bool				m_bBulletResistanceBroken;
-	bool				m_bBulletResistanceOutlineDisabled;
-	int					OnTakeDamage_Alive(const CTakeDamageInfo& info);
-	void				TraceAttack(const CTakeDamageInfo& inputInfo, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator);
-
-	void	MovetoTarget(Vector vecTarget);
-	void	Touch(CBaseEntity* pOther);
-	void	Dronify(CBaseEntity* pOther);
-
-private:
-	int					m_iSpriteTexture;
-
-public:
-#endif
-
-	virtual void PainSound( const CTakeDamageInfo &info );
-	virtual void DeathSound( const CTakeDamageInfo &info );
-	virtual void IdleSound();
-	virtual void AlertSound();
-
-#if NPC_ADVISOR_HAS_BEHAVIOR
-	virtual bool QueryHearSound( CSound *pSound );
-	virtual void GatherConditions( void );
-
-	/// true iff I recently threw the given object (not so fast)
-	bool DidThrow(const CBaseEntity *pEnt);
-#else
-	inline bool DidThrow(const CBaseEntity *pEnt) { return false; }
-#endif
-
-	virtual bool IsHeavyDamage( const CTakeDamageInfo &info );
-	virtual int	 OnTakeDamage( const CTakeDamageInfo &info );
-
-	virtual const impactdamagetable_t &GetPhysicsImpactDamageTable( void );
-	COutputInt   m_OnHealthIsNow;
-
-#if NPC_ADVISOR_HAS_BEHAVIOR
-
-	DEFINE_CUSTOM_AI;
-
-	void InputSetThrowRate( inputdata_t &inputdata );
-	void InputWrenchImmediate( inputdata_t &inputdata ); ///< immediately wrench an object into the air
-	void InputSetStagingNum( inputdata_t &inputdata );
-	void InputPinPlayer( inputdata_t &inputdata );
-	void InputTurnBeamOn( inputdata_t &inputdata );
-	void InputTurnBeamOff( inputdata_t &inputdata );
-	void InputElightOn( inputdata_t &inputdata );
-	void InputElightOff( inputdata_t &inputdata );
-	void InputSetTurnOnBulletResistanceOutline(inputdata_t& inputdata);
-
-	void StopPinPlayer(inputdata_t &inputdata);
-
-	COutputEvent m_OnPickingThrowable, m_OnThrowWarn, m_OnThrow;
-
-	enum { kMaxThrownObjectsTracked = 4 };
-#endif
-
-	DECLARE_DATADESC();
-
-protected:
-
-#if NPC_ADVISOR_HAS_BEHAVIOR
-	Vector GetThrowFromPos( CBaseEntity *pEnt ); ///< Get the position in which we shall hold an object prior to throwing it
-#endif
-
-	bool CanLevitateEntity( CBaseEntity *pEntity, int minMass, int maxMass );
-	void StartLevitatingObjects( void );
-
-
-#if NPC_ADVISOR_HAS_BEHAVIOR
-	// void PurgeThrownObjects(); ///< clean out the recently thrown objects array
-	void AddToThrownObjects(CBaseEntity *pEnt); ///< add to the recently thrown objects array
-
-	void HurlObjectAtPlayer( CBaseEntity *pEnt, const Vector &leadVel );
-	void PullObjectToStaging( CBaseEntity *pEnt, const Vector &stagingPos );
-	CBaseEntity *ThrowObjectPrepare( void );
-
-	CBaseEntity *PickThrowable( bool bRequireInView ); ///< choose an object to throw at the player (so it can get stuffed in the handle array)
-
-	/// push everything out of the way between an object I'm about to throw and the player.
-	void PreHurlClearTheWay( CBaseEntity *pThrowable, const Vector &toPos );
-#endif
-
-	CUtlVector<EHANDLE>	m_physicsObjects;
-	CUtlVector<EHANDLE>	m_droneObjects;
-	IPhysicsMotionController *m_pLevitateController;
-	CAdvisorLevitate m_levitateCallback;
-	
-	EHANDLE m_hLevitateGoal1;
-	EHANDLE m_hLevitateGoal2;
-	EHANDLE m_hLevitationArea;
-
-#if NPC_ADVISOR_HAS_BEHAVIOR
-	// EHANDLE m_hThrowEnt;
-	CUtlVector<EHANDLE>	m_hvStagedEnts;
-	CUtlVector<EHANDLE>	m_hvStagingPositions; 
-	// todo: write accessor functions for m_hvStagedEnts so that it doesn't have members added and removed willy nilly throughout
-	// code (will make the networking below more reliable)
-
-	void Write_BeamOn(  CBaseEntity *pEnt ); 	///< write a message turning a beam on
-	void Write_BeamOff( CBaseEntity *pEnt );   	///< write a message turning a beam off
-	void Write_AllBeamsOff( void );				///< tell client to kill all beams
-
-	int beamonce = 1; //Makes sure it only plays once the beam
-
-	// for the pin-the-player-to-something behavior
-	EHANDLE m_hPlayerPinPos;
-	float  m_playerPinFailsafeTime;
-	int  m_playerPinDamage;
-	bool  m_playerPinnedBecauseWallRunning;
-
-	// keep track of up to four objects after we have thrown them, to prevent oscillation or levitation of recently thrown ammo.
-	EHANDLE m_haRecentlyThrownObjects[kMaxThrownObjectsTracked]; 
-	float   m_flaRecentlyThrownObjectTimes[kMaxThrownObjectsTracked];
-
-	float  m_fllastDronifiedTime;
-#endif
-
-	string_t m_iszLevitateGoal1;
-	string_t m_iszLevitateGoal2;
-	string_t m_iszLevitationArea;
-
-
-#if NPC_ADVISOR_HAS_BEHAVIOR
-	string_t m_iszStagingEntities;
-	string_t m_iszPriorityEntityGroupName;
-
-	float m_flStagingEnd; 
-	float m_flThrowPhysicsTime;
-	float m_flLastThrowTime;
-	float m_flLastPlayerAttackTime; ///< last time the player attacked something. 
-
-	int   m_iStagingNum; ///< number of objects advisor stages at once
-	bool  m_bWasScripting;
-	bool  m_bStopMoving;
-
-	Vector m_velocity;
-
-	// unsigned char m_pickFailures; // the number of times we have tried to pick a throwable and failed 
-
-	Vector m_vSavedLeadVel; ///< save off player velocity for leading a bit before actually pelting them. 
-#endif
-};
-
 
 LINK_ENTITY_TO_CLASS( npc_advisor, CNPC_Advisor );
 
@@ -431,8 +144,6 @@ BEGIN_DATADESC( CNPC_Advisor )
 #endif
 
 END_DATADESC()
-
-
 
 #if NPC_ADVISOR_HAS_BEHAVIOR
 IMPLEMENT_SERVERCLASS_ST(CNPC_Advisor, DT_NPC_Advisor)
@@ -678,7 +389,7 @@ bool CNPC_Advisor::PassesDamageFilter(const CTakeDamageInfo& info)
 		return false;
 	}
 
-	if (UTIL_IsAR2CombineBall(info.GetInflictor()) && !m_bBulletResistanceBroken)
+	if (UTIL_IsAR2CombineBall(info.GetInflictor()))
 	{
 		return false;
 	}
@@ -1063,11 +774,21 @@ void CNPC_Advisor::StartTask( const Task_t *pTask )
 			
 		}
 
+		case TASK_ADVISOR_DRONIFY:
+		{
+			break;
+		}
+
 		default:
 		{
 			BaseClass::StartTask( pTask );
 		}
 	}
+}
+
+float CNPC_Advisor::MaxYawSpeed()
+{ 
+	return (!m_bBulletResistanceBroken ? advisor_bulletresistance_speed.GetFloat() : advisor_speed.GetFloat());
 }
 
 void CNPC_Advisor::MovetoTarget(Vector vecTarget)
@@ -1383,6 +1104,7 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 					}
 					Warning("Advisor did not leave PIN PLAYER mode. Aborting due to failsafe!\n");
 					TaskFail("Advisor did not leave PIN PLAYER mode. Aborting due to failsafe!\n");
+					FlingPlayer(pPinEnt, advisor_flingentity_force_pin.GetFloat(), true);
 					break;
 				}
 
@@ -1500,6 +1222,7 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 					TaskFail("No NPCs to dronify!");
 				}
 			}
+			break;
 		}
 
 		default:
@@ -1524,6 +1247,35 @@ void CNPC_Advisor::Event_Killed(const CTakeDamageInfo &info)
 		beamonce = 1;
 	}
 	BaseClass::Event_Killed(info);
+}
+
+//----------------------------------------------------------------------------------------------
+// WEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE-*BZZT*
+//----------------------------------------------------------------------------------------------
+void CNPC_Advisor::FlingPlayer(CBaseEntity* pEnt, float force, bool upVector)
+{
+	if (pEnt)
+	{
+		StopSound("NPC_Advisor.Blast");
+		EmitSound("NPC_Advisor.Blast");
+
+		if (upVector)
+		{
+			Vector forward2, up2;
+			AngleVectors(pEnt->GetLocalAngles(), &forward2, NULL, &up2);
+			forward2 = forward2 * force * sk_advisor_melee_dmg.GetFloat();
+			up2 = up2 * force * sk_advisor_melee_dmg.GetFloat();
+			pEnt->VelocityPunch(-forward2);
+			pEnt->VelocityPunch(up2);
+		}
+		else
+		{
+			Vector forward2;
+			AngleVectors(pEnt->GetLocalAngles(), &forward2, NULL, NULL);
+			forward2 = forward2 * force * sk_advisor_melee_dmg.GetFloat();
+			pEnt->VelocityPunch(-forward2);
+		}
+	}
 }
 
 #endif
@@ -2011,7 +1763,7 @@ int CNPC_Advisor::SelectSchedule()
 					else if (advisor_enable_droning.GetBool() && 
 						((m_fllastDronifiedTime < gpGlobals->curtime) && 
 							(advisor_enable_premature_droning.GetBool() || m_bBulletResistanceBroken)))
-						return SCHED_ADVISOR_DRONIFY; 
+						return SCHED_ADVISOR_DRONIFY;
 					else
 						return SCHED_ADVISOR_COMBAT;
 				}
@@ -2026,13 +1778,8 @@ int CNPC_Advisor::SelectSchedule()
 
 void CNPC_Advisor::Touch(CBaseEntity* pOther)
 {
-	Vector forward2, up2;
-	AngleVectors(pOther->GetLocalAngles(), &forward2, NULL, &up2);
-	forward2 = forward2 * 200 * sk_advisor_melee_dmg.GetFloat();
-	up2 = up2 * 200 * sk_advisor_melee_dmg.GetFloat();
-
-	pOther->VelocityPunch(-forward2);
-	pOther->VelocityPunch(up2);
+	if (pOther->IsPlayer() || pOther->IsNPC())
+		FlingPlayer(pOther, advisor_flingentity_force_touch.GetFloat());
 }
 
 void CNPC_Advisor::Dronify(CBaseEntity* pOther)
@@ -2068,17 +1815,8 @@ void CNPC_Advisor::HandleAnimEvent(animevent_t *pEvent)
 		CBaseEntity *pHurt = CheckTraceHullAttack(70, -Vector(128, 128, 128), Vector(128, 128, 128), sk_advisor_melee_dmg.GetFloat(), DMG_SLASH);
 		if (pHurt)
 		{
-			Vector forward, up;
-			AngleVectors(GetLocalAngles(), &forward, NULL, &up);
-
 			//Toss them back!
-			Vector forward2, up2;
-			AngleVectors(pHurt->GetLocalAngles(), &forward2, NULL, &up2);
-			forward2 = forward2 * 100 * sk_advisor_melee_dmg.GetFloat();
-			up2 = up2 * 100 * sk_advisor_melee_dmg.GetFloat();
-
-			pHurt->VelocityPunch(-forward2);
-			pHurt->VelocityPunch(up2);
+			FlingPlayer(pHurt, advisor_flingentity_force_melee.GetFloat());
 
 			if (pHurt->GetFlags() & (FL_NPC | FL_CLIENT))
 			{
@@ -2102,17 +1840,8 @@ void CNPC_Advisor::HandleAnimEvent(animevent_t *pEvent)
 		CBaseEntity *pHurt = CheckTraceHullAttack(70, -Vector(128, 128, 128), Vector(128, 128, 128), sk_advisor_melee_dmg.GetFloat(), DMG_SLASH);
 		if (pHurt)
 		{
-			Vector forward, up;
-			AngleVectors(GetLocalAngles(), &forward, NULL, &up);
-
 			//Toss them back!
-			Vector forward2, up2;
-			AngleVectors(pHurt->GetLocalAngles(), &forward2, NULL, &up2);
-			forward2 = forward2 * 100 * sk_advisor_melee_dmg.GetFloat();
-			up2 = up2 * 100 * sk_advisor_melee_dmg.GetFloat();
-
-			pHurt->VelocityPunch(-forward2);
-			pHurt->VelocityPunch(up2);
+			FlingPlayer(pHurt, advisor_flingentity_force_melee.GetFloat());
 
 			if (pHurt->GetFlags() & (FL_NPC | FL_CLIENT))
 			{
@@ -2698,7 +2427,7 @@ AI_BEGIN_CUSTOM_NPC( npc_advisor, CNPC_Advisor )
 	//=========================================================
 	DEFINE_SCHEDULE
 	(
-	SCHED_ADVISOR_IDLE_STAND,
+		SCHED_ADVISOR_IDLE_STAND,
 
 		"	Tasks"
 		"		TASK_SET_ACTIVITY		ACTIVITY:ACT_IDLE"

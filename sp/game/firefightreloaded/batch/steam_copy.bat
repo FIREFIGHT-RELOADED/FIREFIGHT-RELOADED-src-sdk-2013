@@ -11,6 +11,7 @@ SET basedir=%CD%\move
 SET gamescriptdir=%basedir%\scripts
 SET gamecfgdir=%basedir%\cfg
 SET gamesresourcedir=%basedir%\resource
+SET gamemapdir=%basedir%\maps
 SET gamemapadddir=%basedir%\mapadd
 SET gamepaduidir=%basedir%\gamepadui
 SET gamebindir=%basedir%\bin
@@ -21,6 +22,7 @@ if not exist "%gamesounddir%" mkdir "%gamesounddir%"
 if not exist "%gamescriptdir%" mkdir "%gamescriptdir%"
 if not exist "%gamecfgdir%" mkdir "%gamecfgdir%"
 if not exist "%gamesresourcedir%" mkdir "%gamesresourcedir%"
+if not exist "%gamemapdir%" mkdir "%gamemapdir%"
 if not exist "%gamemapadddir%" mkdir "%gamemapadddir%"
 if not exist "%gamepaduidir%" mkdir "%gamepaduidir%"
 if not exist "%gamebindir%" mkdir "%gamebindir%"
@@ -32,6 +34,7 @@ XCOPY /E "%CD%\resource" "%gamesresourcedir%" /sy
 XCOPY /E "%CD%\scripts" "%gamescriptdir%" /sy
 XCOPY /E "%CD%\sound" "%gamesounddir%" /sy
 XCOPY /E "%CD%\cfg" "%gamecfgdir%" /sy
+XCOPY /E "%CD%\maps" "%gamemapdir%" /sy
 XCOPY /E "%CD%\mapadd" "%gamemapadddir%" /sy
 XCOPY /E "%CD%\gamepadui" "%gamepaduidir%" /sy
 XCOPY /E "%CD%\bin" "%gamebindir%" /sy
