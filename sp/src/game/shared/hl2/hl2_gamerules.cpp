@@ -663,9 +663,11 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 		//grunts shouldn't attack hornets
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_ALIEN_MILITARY, CLASS_ALIEN_BIOWEAPON, D_LI, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_ALIEN_BIOWEAPON, CLASS_ALIEN_MILITARY, D_LI, 0);
-		//the advisor should only attack players and no one else.
+
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_ADVISOR, CLASS_PLAYER, D_HT, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_COMBINE_ADVISOR, D_HT, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_ALLY, CLASS_COMBINE_ADVISOR, D_HT, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_NPC, CLASS_COMBINE_ADVISOR, D_HT, 0);
 
 		//in the boss battle, combine should attack zombies and zombies should be friendly to the player regardless if enemyattack is on.
 		if (GlobalEntity_GetState("player_inbossbattle") == GLOBAL_ON)
