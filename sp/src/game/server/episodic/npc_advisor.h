@@ -266,7 +266,6 @@ protected:
 	float   m_flaRecentlyThrownObjectTimes[kMaxThrownObjectsTracked];
 
 	float  m_fllastDronifiedTime;
-	float  m_fllastPinnedTime;
 #endif
 
 	string_t m_iszLevitateGoal1;

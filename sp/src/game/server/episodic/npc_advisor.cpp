@@ -112,7 +112,6 @@ BEGIN_DATADESC( CNPC_Advisor )
 	DEFINE_FIELD( m_flLastPlayerAttackTime, FIELD_TIME ),
 	DEFINE_FIELD( m_flStagingEnd, FIELD_TIME ),
 	DEFINE_FIELD(m_fllastDronifiedTime, FIELD_TIME),
-	DEFINE_FIELD(m_fllastPinnedTime, FIELD_TIME),
 	DEFINE_FIELD( m_iStagingNum, FIELD_INTEGER ),
 	DEFINE_FIELD( m_bWasScripting, FIELD_BOOLEAN ),
 	DEFINE_FIELD(m_bStopMoving, FIELD_BOOLEAN),
@@ -764,14 +763,12 @@ void CNPC_Advisor::StartTask( const Task_t *pTask )
 		
 		case TASK_ADVISOR_PIN_PLAYER:
 		{
-
 			// should never be here
 			Assert( m_hPlayerPinPos.IsValid() );
 			m_playerPinFailsafeTime = gpGlobals->curtime + 3.5f;
 			m_playerPinDamage = 0;
 
 			break;
-			
 		}
 
 		case TASK_ADVISOR_DRONIFY:
@@ -1167,8 +1164,6 @@ void CNPC_Advisor::RunTask( const Task_t *pTask )
 					GetEnemy()->TakeDamage(CTakeDamageInfo(this, this, dmg, DMG_BURN | DMG_SLOWBURN | DMG_DIRECT));
 					m_playerPinDamage += dmg;
 				}
-
-				m_fllastPinnedTime = gpGlobals->curtime + 60.0f;
 			}
 			break;
 		}
@@ -1751,8 +1746,7 @@ int CNPC_Advisor::SelectSchedule()
 						m_bStopMoving = true;
 						return SCHED_ADVISOR_TOSS_PLAYER;
 					}
-					else if ((pPlayer && (pPlayer->m_nWallRunState == WALLRUN_RUNNING || pPlayer->m_nWallRunState == WALLRUN_STALL)) || 
-						(m_bBulletResistanceBroken && m_fllastPinnedTime < gpGlobals->curtime))
+					else if (pPlayer && (pPlayer->m_nWallRunState == WALLRUN_RUNNING || pPlayer->m_nWallRunState == WALLRUN_STALL))
 					{
 						if (!m_hPlayerPinPos.IsValid())
 						{
@@ -1763,12 +1757,16 @@ int CNPC_Advisor::SelectSchedule()
 						m_bStopMoving = true;
 						return SCHED_ADVISOR_TOSS_PLAYER;
 					}
-					else if (advisor_enable_droning.GetBool() && 
-						((m_fllastDronifiedTime < gpGlobals->curtime) && 
+					else if (advisor_enable_droning.GetBool() &&
+						((m_fllastDronifiedTime < gpGlobals->curtime) &&
 							(advisor_enable_premature_droning.GetBool() || m_bBulletResistanceBroken)))
+					{
 						return SCHED_ADVISOR_DRONIFY;
+					}
 					else
+					{
 						return SCHED_ADVISOR_COMBAT;
+					}
 				}
 			}
 			
@@ -1912,6 +1910,7 @@ void CNPC_Advisor::Precache()
 	PrecacheScriptSound("Weapon_StriderBuster.Detonate");
 	PrecacheParticleSystem( "Advisor_Psychic_Beam" );
 	PrecacheParticleSystem( "Advisor_Psychic_Shield_Idle" );
+	PrecacheParticleSystem( "Advisor_Psychic_Shield_Angry_Idle" );
 	PrecacheParticleSystem( "advisor_object_charge" );
 	PrecacheModel("sprites/greenglow1.vmt");
 
@@ -2154,7 +2153,15 @@ void CNPC_Advisor::InputWrenchImmediate( inputdata_t &inputdata )
 void CNPC_Advisor::Write_BeamOn(  CBaseEntity *pEnt )
 {
 	Assert( pEnt );
-	DispatchParticleEffect("Advisor_Psychic_Shield_Idle", PATTACH_ABSORIGIN_FOLLOW, this, 0, false);
+	
+	if (m_bBulletResistanceBroken)
+	{
+		DispatchParticleEffect("Advisor_Psychic_Shield_Angry_Idle", PATTACH_ABSORIGIN_FOLLOW, this, 0, false);
+	}
+	else
+	{
+		DispatchParticleEffect("Advisor_Psychic_Shield_Idle", PATTACH_ABSORIGIN_FOLLOW, this, 0, false);
+	}
 
 	EntityMessageBegin( this, true );
 		WRITE_BYTE( ADVISOR_MSG_START_BEAM );
