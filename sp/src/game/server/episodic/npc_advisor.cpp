@@ -38,26 +38,26 @@ ConVar advisor_use_impact_table("advisor_use_impact_table","1",FCVAR_NONE,"If tr
 ConVar sk_advisor_melee_dmg("sk_advisor_melee_dmg", "0");
 
 #if NPC_ADVISOR_HAS_BEHAVIOR
-ConVar advisor_throw_velocity( "advisor_throw_velocity", "10500", FCVAR_ARCHIVE);
-ConVar advisor_throw_rate( "advisor_throw_rate", "1", FCVAR_ARCHIVE);					// Throw an object every 4 seconds.
+ConVar advisor_throw_velocity( "advisor_throw_velocity", "15000", FCVAR_ARCHIVE);
+ConVar advisor_throw_rate( "advisor_throw_rate", "0.5", FCVAR_ARCHIVE);					// Throw an object every 4 seconds.
 ConVar advisor_throw_warn_time( "advisor_throw_warn_time", "0.5", FCVAR_ARCHIVE);		// Warn players one second before throwing an object.
 ConVar advisor_throw_lead_prefetch_time ( "advisor_throw_lead_prefetch_time", "0.3", FCVAR_ARCHIVE, "Save off the player's velocity this many seconds before throwing.");
 ConVar advisor_throw_stage_distance("advisor_throw_stage_distance","180.0",FCVAR_NONE,"Advisor will try to hold an object this far in front of him just before throwing it at you. Small values will clobber the shield and be very bad.");
-ConVar advisor_staging_num("advisor_staging_num","5", FCVAR_ARCHIVE,"Advisor will queue up this many objects to throw at Gordon.");
+ConVar advisor_staging_num("advisor_staging_num","7", FCVAR_ARCHIVE,"Advisor will queue up this many objects to throw at Gordon.");
 ConVar advisor_throw_clearout_vel("advisor_throw_clearout_vel","200",FCVAR_NONE,"TEMP: velocity with which advisor clears things out of a throwable's way");
 ConVar advisor_max_damage("advisor_max_damage", "15", FCVAR_CHEAT);
 ConVar advisor_max_pin_damage("advisor_max_pin_damage", "50", FCVAR_CHEAT);
-ConVar advisor_bulletresistance_throw_velocity("advisor_bulletresistance_throw_velocity", "7500", FCVAR_ARCHIVE);
-ConVar advisor_bulletresistance_throw_rate("advisor_bulletresistance_throw_rate", "3", FCVAR_ARCHIVE);					// Throw an object every 4 seconds.
-ConVar advisor_bulletresistance_staging_num("advisor_bulletresistance_staging_num", "3", FCVAR_ARCHIVE, "Advisor will queue up this many objects to throw at Gordon.");
+ConVar advisor_bulletresistance_throw_velocity("advisor_bulletresistance_throw_velocity", "10500", FCVAR_ARCHIVE);
+ConVar advisor_bulletresistance_throw_rate("advisor_bulletresistance_throw_rate", "1", FCVAR_ARCHIVE);					// Throw an object every 4 seconds.
+ConVar advisor_bulletresistance_staging_num("advisor_bulletresistance_staging_num", "5", FCVAR_ARCHIVE, "Advisor will queue up this many objects to throw at Gordon.");
 ConVar advisor_disablebulletresistance("advisor_disablebulletresistance", "0", FCVAR_ARCHIVE);
 
 ConVar advisor_flingentity_force_touch("advisor_flingentity_force_touch", "100", FCVAR_ARCHIVE);
 ConVar advisor_flingentity_force_melee("advisor_flingentity_force_melee", "100", FCVAR_ARCHIVE);
 ConVar advisor_flingentity_force_pin("advisor_flingentity_force_pin", "75", FCVAR_ARCHIVE);
 
-ConVar advisor_speed("advisor_speed", "420", FCVAR_ARCHIVE);
-ConVar advisor_bulletresistance_speed("advisor_bulletresistance_speed", "250", FCVAR_ARCHIVE);
+ConVar advisor_speed("advisor_speed", "250", FCVAR_ARCHIVE);
+ConVar advisor_bulletresistance_speed("advisor_bulletresistance_speed", "120", FCVAR_ARCHIVE);
 
 ConVar advisor_enable_premature_droning("advisor_enable_premature_droning", "0", FCVAR_ARCHIVE);
 ConVar advisor_enable_droning("advisor_enable_droning", "1", FCVAR_ARCHIVE);
@@ -1908,6 +1908,7 @@ void CNPC_Advisor::Precache()
 	PrecacheScriptSound( "NPC_Advisor.ObjectChargeUp" );
 	PrecacheScriptSound("Weapon_StriderBuster.Detonate");
 	PrecacheParticleSystem( "Advisor_Psychic_Beam" );
+	PrecacheParticleSystem( "Advisor_Psychic_Shield_Idle" );
 	PrecacheParticleSystem( "advisor_object_charge" );
 	PrecacheModel("sprites/greenglow1.vmt");
 
@@ -2150,6 +2151,8 @@ void CNPC_Advisor::InputWrenchImmediate( inputdata_t &inputdata )
 void CNPC_Advisor::Write_BeamOn(  CBaseEntity *pEnt )
 {
 	Assert( pEnt );
+	DispatchParticleEffect("Advisor_Psychic_Shield_Idle", PATTACH_ABSORIGIN_FOLLOW, this, 0, false);
+
 	EntityMessageBegin( this, true );
 		WRITE_BYTE( ADVISOR_MSG_START_BEAM );
 		WRITE_LONG( pEnt->entindex() );
@@ -2162,6 +2165,8 @@ void CNPC_Advisor::Write_BeamOn(  CBaseEntity *pEnt )
 void CNPC_Advisor::Write_BeamOff( CBaseEntity *pEnt )
 {
 	Assert( pEnt );
+	StopParticleEffects(this);
+
 	EntityMessageBegin( this, true );
 		WRITE_BYTE( ADVISOR_MSG_STOP_BEAM );
 		WRITE_LONG( pEnt->entindex() );
