@@ -15044,7 +15044,7 @@ entity
 	"lfomodvol" "0"
 	"lforate" "0"
 	"lfotype" "0"
-	"message" "ambient/levels/citadel/advisor_lift.wav"
+	"message" "ambient/levels/citadel/advisor_awaken.wav"
 	"pitch" "100"
 	"pitchstart" "100"
 	"preset" "0"
