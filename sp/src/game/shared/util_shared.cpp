@@ -1177,13 +1177,10 @@ const char* UTIL_GetActiveHolidayString()
 
 const bool UTIL_IsGamepadUIEnabled()
 {
-	if (CommandLine()->FindParm("-gamepadui"))
-		return true;
-
 	if (CommandLine()->FindParm("-nogamepadui"))
 		return false;
 
-	return UTIL_IsSteamDeck();
+	return true;
 }
 
 const bool UTIL_IsSteamDeck()
