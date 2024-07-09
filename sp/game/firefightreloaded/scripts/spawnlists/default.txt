@@ -33,16 +33,13 @@
 	//LEVEL 3
 	"6"
 	{
-		//elite metrocops
-		"classname"		"npc_metropolice"
-		"preset"		"1"
+		"classname"		"npc_combine_s"
 		"min_level"		"3"
-		"rare"			"1"
 	}
 	//LEVEL 4
 	"7"
 	{
-		"classname"		"npc_combine_s"
+		"classname"		"npc_combine_p"
 		"min_level"		"4"
 	}
 	"8"
@@ -54,8 +51,11 @@
 	//LEVEL 5
 	"9"
 	{
-		"classname"		"npc_combine_p"
+		//elite metrocops
+		"classname"		"npc_metropolice"
+		"preset"		"1"
 		"min_level"		"5"
+		"rare"			"1"
 	}
 	"10"
 	{
@@ -227,31 +227,28 @@
 		"min_level"		"15"
 		"rare"			"1"
 	}
-	//LEVEL 16
 	"37"
 	{
 		//Demolitions Hunter
 		"classname"		"npc_hunter"
 		"preset"		"2"
-		"min_level"		"16"
+		"min_level"		"15"
 		"rare"			"1"
 	}
-	//LEVEL 17
 	"38"
 	{
 		//Anti-Aircraft Hunter
 		"classname"		"npc_hunter"
 		"preset"		"1"
-		"min_level"		"17"
+		"min_level"		"15"
 		"rare"			"1"
 	}
-	//LEVEL 18
 	"39"
 	{
 		//super ace
 		"classname"		"npc_combine_ace"
 		"preset"		"1"
-		"min_level"		"18"
+		"min_level"		"15"
 		"rare"			"1"
 	}
 }
