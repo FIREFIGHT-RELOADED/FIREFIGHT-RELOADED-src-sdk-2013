@@ -30,7 +30,8 @@ namespace ButtonLabels
         Xbox,
         PlayStation,
         Switch,
-        Generic
+        Generic,
+        Keyboard
     };
 
     enum ButtonType
@@ -116,6 +117,24 @@ namespace ButtonLabels
                     return L"4";
                 case RB:
                     return L"5";
+                default:
+                    break;
+                }
+            case Keyboard:
+                switch (button)
+                {
+                case A:
+                    return L"SP";
+                case B:
+                    return L"CTL";
+                case X:
+                    return L"R";
+                case Y:
+                    return L"Q";
+                case LB:
+                    return L"G";
+                case RB:
+                    return L"V";
                 default:
                     break;
                 }

@@ -243,8 +243,8 @@ public:
                 StartCapture();
             break;
         case KEY_DELETE:
-        case KEY_LCONTROL:
-        case KEY_RCONTROL:
+        //case KEY_LCONTROL:
+        //case KEY_RCONTROL:
             if ( !s_bBeingBound )
                 ClearKey();
             break;

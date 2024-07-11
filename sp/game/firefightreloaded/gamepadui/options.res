@@ -936,7 +936,7 @@
 				"advanced"		"1"
 
 				"min"			"0"
-				"max"			"150"
+				"max"			"250"
 				"step"			"5"
 
 				"textprecision" "2"
@@ -2015,6 +2015,7 @@
                     "2"		"#Deck_Glyphs_PS"
                     "3"		"#Deck_Glyphs_Switch"
                     "4"		"#Deck_Glyphs_Generic"
+                    "5"		"#Deck_Glyphs_Keyboard"
 				}
 			}
 
