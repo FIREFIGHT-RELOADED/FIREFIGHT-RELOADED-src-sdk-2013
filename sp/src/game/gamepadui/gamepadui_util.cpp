@@ -104,12 +104,3 @@ int NextPowerOfTwo( int v )
     v |= v >> 16;
     return ++v;
 }
-
-const bool IsSteamDeck()
-{
-    const char* pszSteamDeckEnv = getenv("SteamDeck");
-    if (pszSteamDeckEnv && *pszSteamDeckEnv)
-        return atoi(pszSteamDeckEnv) != 0;
-
-    return false;
-}

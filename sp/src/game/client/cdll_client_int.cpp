@@ -359,6 +359,8 @@ static ConVar cl_discord_devbuild("cl_discord_devbuild", "0", FCVAR_DEVELOPMENTO
 
 ConVar cl_glyphtype("cl_glyphtype", "0", FCVAR_ARCHIVE);
 
+ConVar cl_deck_override_client_settings("cl_deck_override_client_settings", "1", FCVAR_ARCHIVE);
+
 #ifdef HL1MP_CLIENT_DLL
 static ConVar s_cl_load_hl1_content("cl_load_hl1_content", "0", FCVAR_ARCHIVE, "Mount the content from Half-Life: Source if possible");
 #endif
@@ -1303,6 +1305,11 @@ void CHLClient::PostInit()
 		}
 	}
 #endif // GAMEPADUI
+
+	if (UTIL_IsSteamDeck() && cl_deck_override_client_settings.GetBool())
+	{
+		engine->ClientCmd_Unrestricted("exec steamdeck.cfg");
+	}
 }
 
 //-----------------------------------------------------------------------------
