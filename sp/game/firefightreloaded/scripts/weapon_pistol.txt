@@ -31,18 +31,16 @@ WeaponData
 	
 	IronSight
 	{
-		"right"		"-3" //-4.80
-		"up"		"1" //was 2.3, then 0.8
-		"forward"	"-0.8" //-9
+		"right"		"-5.5"
+		"up"		"4.2"
+		"forward"	"-10"
 		"fov"		"-5"
-		"pitch"		"-0.3" //was 0.5
-		"yaw"		"-2.032" //was just -2
 	}
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
 	{
-		"reload_npc"		"WP_HGUN_RLOAD_c"
+		"reload_npc"		"Weapon_Pistol.NPC_Reload"
 		"empty"			"Weapon_Pistol.Empty"
 		"single_shot"		"Weapon_Pistol.Single"
 		"single_shot_npc"	"Weapon_Pistol.NPC_Single"

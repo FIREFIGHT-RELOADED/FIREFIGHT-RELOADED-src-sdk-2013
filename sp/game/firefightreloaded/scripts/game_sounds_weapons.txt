@@ -2021,42 +2021,6 @@
  	"wave"       "weapons/katana/katana_hitworld.wav"
 }
 
-"WP_HGUN_READY"
-{
- 	"channel"    "CHAN_ITEM"
- 	"volume"     "0.48"
- 	"soundlevel" "SNDLVL_NORM"
- 	"pitch"      "100"
- 	"wave"       "weapons/pistol/WP_HGUN_READY.wav"
-}
-
-"WP_HGUN_RLOAD_a"
-{
- 	"channel"    "CHAN_ITEM"
- 	"volume"     "0.51"
- 	"soundlevel" "SNDLVL_NORM"
- 	"pitch"      "100"
- 	"wave"       "weapons/pistol/WP_HGUN_RLOAD_a.wav"
-}
-
-"WP_HGUN_RLOAD_b"
-{
- 	"channel"    "CHAN_ITEM"
- 	"volume"     "0.51"
- 	"soundlevel" "SNDLVL_NORM"
- 	"pitch"      "100"
- 	"wave"       "weapons/pistol/WP_HGUN_RLOAD_b.wav"
-}
-
-"WP_HGUN_RLOAD_c"
-{
- 	"channel"    "CHAN_ITEM"
- 	"volume"     "0.51"
- 	"soundlevel" "SNDLVL_NORM"
- 	"pitch"      "100"
- 	"wave"       "weapons/pistol/WP_HGUN_RLOAD_c.wav"
-}
-
 "Weapon_grapple.Single"
 {
 	"channel"		"CHAN_WEAPON"
