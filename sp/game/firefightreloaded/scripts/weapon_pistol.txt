@@ -32,7 +32,7 @@ WeaponData
 	IronSight
 	{
 		"right"		"-5.5"
-		"up"		"4.2"
+		"up"		"3.1"
 		"forward"	"-10"
 		"fov"		"-5"
 	}
@@ -40,6 +40,7 @@ WeaponData
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
 	{
+		"reload"		"Weapon_Pistol.Reload"
 		"reload_npc"		"Weapon_Pistol.NPC_Reload"
 		"empty"			"Weapon_Pistol.Empty"
 		"single_shot"		"Weapon_Pistol.Single"
