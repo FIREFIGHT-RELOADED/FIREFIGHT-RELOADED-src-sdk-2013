@@ -12,4 +12,6 @@ int DrawPrintWrappedText(vgui::HFont font, int pX, int pY, const wchar_t* pszTex
 
 int NextPowerOfTwo( int v );
 
+const bool IsSteamDeck();
+
 #endif // GAMEPADUI_UTIL_H

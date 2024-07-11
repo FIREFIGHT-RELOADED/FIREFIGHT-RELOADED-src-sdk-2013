@@ -18,6 +18,7 @@
 #include "tier0/memdbgon.h"
 
 ConVar gamepadui_background_music_duck( "gamepadui_background_music_duck", "0.35", FCVAR_ARCHIVE );
+ConVar cl_deck_override_client_settings("cl_deck_override_client_settings", "1", FCVAR_ARCHIVE);
 
 GamepadUIBasePanel::GamepadUIBasePanel( vgui::VPANEL parent ) : BaseClass( NULL, "GamepadUIBasePanel" )
 {
@@ -55,10 +56,19 @@ GamepadUIMainMenu* GamepadUIBasePanel::GetMainMenuPanel() const
 
 void GamepadUIBasePanel::OnMenuStateChanged()
 {
-    if ( m_bBackgroundMusicEnabled && GamepadUI::GetInstance().IsGamepadUIVisible() )
+    if (GamepadUI::GetInstance().IsGamepadUIVisible())
     {
-        if ( !IsBackgroundMusicPlaying() )
-            ActivateBackgroundEffects();
+        if (m_bBackgroundMusicEnabled)
+        {
+            if (!IsBackgroundMusicPlaying())
+                ActivateBackgroundEffects();
+        }
+
+        if (IsSteamDeck() && cl_deck_override_client_settings.GetBool())
+        {
+            GamepadUI_Log("Executing Steam Deck config.\n");
+            GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted("exec steamdeck.cfg");
+        }
     }
     else if (GamepadUI::GetInstance().IsInLevel())
     {

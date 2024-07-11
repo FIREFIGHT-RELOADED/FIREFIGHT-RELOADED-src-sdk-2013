@@ -359,8 +359,6 @@ static ConVar cl_discord_devbuild("cl_discord_devbuild", "0", FCVAR_DEVELOPMENTO
 
 ConVar cl_glyphtype("cl_glyphtype", "0", FCVAR_ARCHIVE);
 
-ConVar cl_deck_override_client_settings("cl_deck_override_client_settings", "1", FCVAR_ARCHIVE);
-
 #ifdef HL1MP_CLIENT_DLL
 static ConVar s_cl_load_hl1_content("cl_load_hl1_content", "0", FCVAR_ARCHIVE, "Mount the content from Half-Life: Source if possible");
 #endif
@@ -931,12 +929,6 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 	g_pCVar->FindVar("violence_agibs")->AddFlags(FCVAR_ARCHIVE);
 	g_pCVar->FindVar("violence_hblood")->AddFlags(FCVAR_ARCHIVE);
 	g_pCVar->FindVar("violence_hgibs")->AddFlags(FCVAR_ARCHIVE);
-
-	if (UTIL_IsSteamDeck() && cl_deck_override_client_settings.GetBool())
-	{
-		DevMsg("Executing Steam Deck config.");
-		engine->ClientCmd_Unrestricted("exec steamdeck.cfg");
-	}
 
 #ifndef NO_STEAM
 	ClientSteamContext().Activate();

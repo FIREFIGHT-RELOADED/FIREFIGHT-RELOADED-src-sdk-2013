@@ -462,7 +462,7 @@ void CInput::Joystick_Advanced(void)
 
 	const bool bController = (g_pInputSystem->GetJoystickCount() >= 1);
 
-	if ( IsX360() || UTIL_IsGamepadUIEnabled() || bController)
+	if ( IsX360() || bController)
 	{
 		// Xbox always uses a joystick
 		in_joystick.SetValue( 1 );
