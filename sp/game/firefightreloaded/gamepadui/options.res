@@ -73,6 +73,20 @@
 					"1"		"#gameui_enabled"
 				}
 			}
+            
+            "DeckOverride"
+			{
+				"text"			"#GameUI_DeckOverride"
+				"type"			"wheelywheel"
+				"convar"		"cl_deck_override_client_settings"
+				"advanced"		"1"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
 			
 			"CustomPlayerOptions"
 			{

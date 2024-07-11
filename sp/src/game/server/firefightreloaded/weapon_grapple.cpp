@@ -148,14 +148,6 @@ void CGrappleHook::HookTouch( CBaseEntity *pOther )
 {
 	if (!pOther || pOther->IsSolidFlagSet(FSOLID_NOT_SOLID | FSOLID_VOLUME_CONTENTS) || pOther->IsEffectActive(EF_NODRAW))
 		return;
-
-	for (int i = 0; i < ARRAYSIZE(ppszIgnoredClasses); i++)
-	{
-		if (pOther->ClassMatches(ppszIgnoredClasses[i]))
-		{
-			return;
-		}
-	}
  
 	EmitSound("Weapon_AR2.Reload_Push");
 
@@ -403,13 +395,25 @@ void CWeaponGrapple::PrimaryAttack( void )
 		return;
 	}
 
+	bool foundIgnoredProp = false;
+
 	for (int i = 0; i < ARRAYSIZE(ppszIgnoredClasses); i++)
 	{
-		if (pOther->ClassMatches(ppszIgnoredClasses[i]))
+		if (!pOther->ClassMatches(ppszIgnoredClasses[i]))
 		{
-			WeaponSound(EMPTY);
-			return;
+			continue;
 		}
+		else
+		{
+			foundIgnoredProp = true;
+			break;
+		}
+	}
+
+	if (foundIgnoredProp)
+	{
+		WeaponSound(EMPTY);
+		return;
 	}
 
 	if (tr.surface.flags & SURF_SKY)
