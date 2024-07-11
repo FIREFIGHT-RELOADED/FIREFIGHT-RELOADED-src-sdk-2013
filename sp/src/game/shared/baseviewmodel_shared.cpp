@@ -457,18 +457,18 @@ void CBaseViewModel::CalcViewModelView( CBasePlayer *owner, const Vector& eyePos
 		{
 			// add weapon-specific bob 
 			pWeapon->AddViewmodelBob(this, vmorigin, vmangles);
-//#if defined ( CSTRIKE_DLL )
-			//CalcViewModelLag( vmorigin, vmangles, vmangoriginal );
-//#endif
+#if defined ( CSTRIKE_DLL ) || defined(FR_DLL)
+			CalcViewModelLag(vmorigin, vmangles, vmangoriginal);
+#endif
 		}
 	}
 	// Add model-specific bob even if no weapon associated (for head bob for off hand models)
 	AddViewModelBob(owner, vmorigin, vmangles);
-//#if !defined ( CSTRIKE_DLL )
+#if !defined ( CSTRIKE_DLL ) && !defined(FR_DLL)
 	// This was causing weapon jitter when rotating in updated CS:S; original Source had this in above InPrediction block  07/14/10
 	// Add lag
-	//CalcViewModelLag(vmorigin, vmangles, vmangoriginal);
-//#endif
+	CalcViewModelLag(vmorigin, vmangles, vmangoriginal);
+#endif
 
 #if defined( CLIENT_DLL )
 	if (!prediction->InPrediction())
@@ -522,8 +522,6 @@ void CBaseViewModel::CalcViewModelView( CBasePlayer *owner, const Vector& eyePos
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-float g_fMaxViewModelLag = 1.5f;
-
 void CBaseViewModel::CalcViewModelLag( Vector& origin, QAngle& angles, QAngle& original_angles )
 {
 	Vector vOriginalOrigin = origin;
@@ -533,12 +531,21 @@ void CBaseViewModel::CalcViewModelLag( Vector& origin, QAngle& angles, QAngle& o
 	Vector	forward;
 	AngleVectors( angles, &forward, NULL, NULL );
 
+	float g_fMaxViewModelLag = 1.5f;
+
 	if ( gpGlobals->frametime != 0.0f )
 	{
 		Vector vDifference;
 		VectorSubtract( forward, m_vecLastFacing, vDifference );
 
+		CBaseCombatWeapon* pWeapon = GetOwningWeapon();
+
 		float flSpeed = 5.0f;
+
+		if (pWeapon != NULL && pWeapon->IsIronsighted())
+		{
+			flSpeed = 2.5f;
+		}
 
 		// If we start to lag too far behind, we'll increase the "catch up" speed.  Solves the problem with fast cl_yawspeed, m_yaw or joysticks
 		//  rotating quickly.  The old code would slam lastfacing with origin causing the viewmodel to pop to a new position
