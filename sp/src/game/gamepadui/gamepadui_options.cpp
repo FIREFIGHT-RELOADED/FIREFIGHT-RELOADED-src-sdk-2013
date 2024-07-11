@@ -1508,7 +1508,7 @@ void GamepadUIOptionsPanel::OnCommand( char const* pCommand )
     {
         new GamepadUIGenericConfirmationPanel( GamepadUIOptionsPanel::GetInstance(), "UseDefaultsConfirm", GamepadUIString( "#GameUI_KeyboardSettings" ).String(), GamepadUIString("#GameUI_KeyboardSettingsText").String(),
 		[](){
-                GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted( "exec config_default.cfg\n_gamepadui_resetkeys\n" );
+                GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted( "exec bindings_default.cfg\n_gamepadui_resetkeys\n" );
             }, false, true);
     }
     else if ( StringHasPrefixCaseSensitive( pCommand, "tab " ) )
