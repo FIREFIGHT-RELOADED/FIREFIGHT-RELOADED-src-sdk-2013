@@ -408,11 +408,11 @@ void CHudDeathNotice::FireGameEvent(IGameEvent* event)
 		// Record the death notice in the console
 		if (deathMsg.iSuicide)
 		{
-			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s suicided.\n", prunedVictName);
+			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s suicided.", prunedVictName);
 		}
 		else
 		{
-			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s killed %s with %s", prunedKillName, prunedVictName, killedwith);
+			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s killed %s with %s.", prunedKillName, prunedVictName, killedwith);
 		}
 
 		Msg("%s\n", sDeathMsg);
@@ -476,14 +476,32 @@ void CHudDeathNotice::FireGameEvent(IGameEvent* event)
 
 		char sDeathMsg[512];
 
+		int xpreward = event->GetInt("xpreward");
+		int moneyreward = event->GetInt("moneyreward");
+
 		// Record the death notice in the console
 		if (deathMsg.iSuicide)
 		{
-			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s suicided.\n", prunedVictName);
+			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s suicided.", prunedVictName);
 		}
 		else
 		{
-			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s killed %s with %s", prunedKillName, prunedVictName, killedwith);
+			if (g_fr_economy.GetBool() && !g_fr_classic.GetBool() && xpreward > 0 && moneyreward > 0)
+			{
+				Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s killed %s with %s. Reward: +%d XP and $%d Kash.", prunedKillName, prunedVictName, killedwith, xpreward, moneyreward);
+			}
+			else if (g_fr_economy.GetBool() && moneyreward > 0)
+			{
+				Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s killed %s with %s. Reward: $%d Kash.", prunedKillName, prunedVictName, killedwith, moneyreward);
+			}
+			else if (!g_fr_classic.GetBool() && xpreward > 0)
+			{
+				Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s killed %s with %s. Reward: +%d XP.", prunedKillName, prunedVictName, killedwith, xpreward);
+			}
+			else
+			{
+				Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s killed %s with %s.", prunedKillName, prunedVictName, killedwith);
+			}
 		}
 
 		Msg("%s\n", sDeathMsg);
@@ -549,11 +567,11 @@ void CHudDeathNotice::FireGameEvent(IGameEvent* event)
 		// Record the death notice in the console
 		if (deathMsg.iSuicide)
 		{
-			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s suicided.\n", prunedVictName);
+			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s suicided.", prunedVictName);
 		}
 		else
 		{
-			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s killed %s with %s", prunedKillName, prunedVictName, killedwith);
+			Q_snprintf(sDeathMsg, sizeof(sDeathMsg), "%s killed %s with %s.", prunedKillName, prunedVictName, killedwith);
 		}
 
 		Msg("%s\n", sDeathMsg);

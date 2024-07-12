@@ -4028,23 +4028,6 @@ bool CNPC_MetroPolice::CorpseDecapitate(const CTakeDamageInfo& info)
 		}
 		m_iHealth = 0;
 		Event_Killed(info);
-		// Handle all clients
-		for (int i = 1; i <= gpGlobals->maxClients; i++)
-		{
-			CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
-
-			if (pPlayer != NULL)
-			{
-				if (g_fr_economy.GetBool())
-				{
-					pPlayer->AddMoney(7);
-				}
-				if (!g_fr_classic.GetBool())
-				{
-					pPlayer->AddXP(9);
-				}
-			}
-		}
 
 		return true;
 	}

@@ -609,6 +609,8 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 #define INVINCIBLE_AMOUNT	35
 #define GODLIKE_AMOUNT	40
 
+#define CLASSICLEVELUP_AMOUNT	15
+
 	//=========================================================
 	// PlayerKilled - someone/something killed this player
 	//=========================================================
@@ -632,15 +634,6 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 		{
 			if (!pScorer->IsNPC())
 			{
-				if (g_fr_economy.GetBool())
-				{
-					pScorer->AddMoney(10);
-				}
-				if (!g_fr_classic.GetBool())
-				{
-					pScorer->AddXP(15);
-				}
-
 				// if a player dies in a deathmatch game and the killer is a client, award the killer some points
 				pScorer->IncrementFragCount(IPointsForKill(pScorer, pVictim));
 
@@ -655,140 +648,6 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 						}
 					}
 				}
-
-				//make it so the katana hit multiplier shows up.
-				if (sv_killingspree.GetBool() && !isInBullettime)
-				{
-					int m_iKillsInSpree = pScorer->FragCount();
-
-					if (m_iKillsInSpree == KILLING_SPREE_AMOUNT)
-					{
-						CFmtStr hint;
-						hint.sprintf("#Valve_Hud_KILLINGSPREE");
-						pScorer->ShowLevelMessage(hint.Access());
-						if (g_fr_economy.GetBool())
-						{
-							pScorer->AddMoney(2);
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pScorer->AddXP(3);
-						}
-					}
-					if (m_iKillsInSpree == KILLING_FRENZY_AMOUNT)
-					{
-						CFmtStr hint;
-						hint.sprintf("#Valve_Hud_KILLINGFRENZY");
-						pScorer->ShowLevelMessage(hint.Access());
-						if (g_fr_economy.GetBool())
-						{
-							pScorer->AddMoney(4);
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pScorer->AddXP(6);
-						}
-					}
-					if (m_iKillsInSpree == OVERKILL_AMOUNT)
-					{
-						CFmtStr hint;
-						hint.sprintf("#Valve_Hud_OVERKILL");
-						pScorer->ShowLevelMessage(hint.Access());
-						if (g_fr_economy.GetBool())
-						{
-							pScorer->AddMoney(6);
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pScorer->AddXP(9);
-						}
-					}
-					if (m_iKillsInSpree == RAMPAGE_AMOUNT)
-					{
-						CFmtStr hint;
-						hint.sprintf("#Valve_Hud_RAMPAGE");
-						pScorer->ShowLevelMessage(hint.Access());
-						if (g_fr_economy.GetBool())
-						{
-							pScorer->AddMoney(8);
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pScorer->AddXP(12);
-						}
-					}
-					if (m_iKillsInSpree == UNSTOPPABLE_AMOUNT)
-					{
-						CFmtStr hint;
-						hint.sprintf("#Valve_Hud_UNSTOPPABLE");
-						pScorer->ShowLevelMessage(hint.Access());
-						if (g_fr_economy.GetBool())
-						{
-							pScorer->AddMoney(10);
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pScorer->AddXP(15);
-						}
-					}
-					if (m_iKillsInSpree == INCONCEIVABLE_AMOUNT)
-					{
-						CFmtStr hint;
-						hint.sprintf("#Valve_Hud_INCONCEIVABLE");
-						pScorer->ShowLevelMessage(hint.Access());
-						if (g_fr_economy.GetBool())
-						{
-							pScorer->AddMoney(12);
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pScorer->AddXP(18);
-						}
-					}
-					if (m_iKillsInSpree == INVINCIBLE_AMOUNT)
-					{
-						CFmtStr hint;
-						hint.sprintf("#Valve_Hud_INVINCIBLE");
-						pScorer->ShowLevelMessage(hint.Access());
-						if (g_fr_economy.GetBool())
-						{
-							pScorer->AddMoney(14);
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pScorer->AddXP(21);
-						}
-					}
-					if (m_iKillsInSpree == GODLIKE_AMOUNT)
-					{
-						CFmtStr hint;
-						hint.sprintf("#Valve_Hud_GODLIKE");
-						pScorer->ShowLevelMessage(hint.Access());
-						if (g_fr_economy.GetBool())
-						{
-							pScorer->AddMoney(16);
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pScorer->AddXP(24);
-						}
-					}
-
-#define CLASSICLEVELUP_AMOUNT	15
-
-					if (g_fr_classic.GetBool())
-					{
-						int m_iKillsInClassicMode = 0;
-
-						m_iKillsInClassicMode++;
-
-						if (m_iKillsInClassicMode == CLASSICLEVELUP_AMOUNT)
-						{
-							pScorer->LevelUpClassic();
-							m_iKillsInClassicMode = 0;
-						}
-					}
-				}
 			}
 
 			// dvsents2: uncomment when removing all FireTargets
@@ -800,12 +659,13 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 
 	void CSingleplayRules::NPCKilled(CBaseEntity *pVictim, const CTakeDamageInfo &info)
 	{
-		DeathNoticeNPC(pVictim, info);
-
 		// Find the killer & the scorer
 		CBaseEntity *pInflictor = info.GetInflictor();
 		CBaseEntity *pKiller = info.GetAttacker();
 		CBasePlayer *pEntity = GetDeathScorer(pKiller, pInflictor, pVictim);
+
+		int moneyReward = 0;
+		int xpReward = 0;
 		
 		if (pEntity)
 		{
@@ -816,58 +676,28 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 					switch (GetSkillLevel())
 					{
 					case SKILL_EASY:
-						if (g_fr_economy.GetBool())
-						{
-							pEntity->AddMoney(6 * sk_money_multiplier1.GetInt());
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pEntity->AddXP(10 * sk_exp_multiplier1.GetInt());
-						}
+						moneyReward += 6 * sk_money_multiplier1.GetInt();
+						xpReward += 10 * sk_exp_multiplier1.GetInt();
 						break;
 
 					case SKILL_MEDIUM:
-						if (g_fr_economy.GetBool())
-						{
-							pEntity->AddMoney(6 * sk_money_multiplier2.GetInt());
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pEntity->AddXP(10 * sk_exp_multiplier2.GetInt());
-						}
+						moneyReward += 6 * sk_money_multiplier2.GetInt();
+						xpReward += 10 * sk_exp_multiplier2.GetInt();
 						break;
 
 					case SKILL_HARD:
-						if (g_fr_economy.GetBool())
-						{
-							pEntity->AddMoney(6 * sk_money_multiplier3.GetInt());
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pEntity->AddXP(10 * sk_exp_multiplier3.GetInt());
-						}
+						moneyReward += 6 * sk_money_multiplier3.GetInt();
+						xpReward += 10 * sk_exp_multiplier3.GetInt();
 						break;
 
 					case SKILL_VERYHARD:
-						if (g_fr_economy.GetBool())
-						{
-							pEntity->AddMoney(6 * sk_money_multiplier4.GetInt());
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pEntity->AddXP(10 * sk_exp_multiplier4.GetInt());
-						}
+						moneyReward += 6 * sk_money_multiplier4.GetInt();
+						xpReward += 10 * sk_exp_multiplier4.GetInt();
 						break;
 
 					case SKILL_NIGHTMARE:
-						if (g_fr_economy.GetBool())
-						{
-							pEntity->AddMoney(6 * sk_money_multiplier5.GetInt());
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pEntity->AddXP(10 * sk_exp_multiplier5.GetInt());
-						}
+						moneyReward += 6 * sk_money_multiplier5.GetInt();
+						xpReward += 10 * sk_exp_multiplier5.GetInt();
 						break;
 					}
 				}
@@ -876,58 +706,28 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 					switch (GetSkillLevel())
 					{
 					case SKILL_EASY:
-						if (g_fr_economy.GetBool())
-						{
-							pEntity->AddMoney(4 * sk_money_multiplier1.GetInt());
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pEntity->AddXP(6 * sk_exp_multiplier1.GetInt());
-						}
+						moneyReward += 4 * sk_money_multiplier1.GetInt();
+						xpReward += 6 * sk_exp_multiplier1.GetInt();
 						break;
 
 					case SKILL_MEDIUM:
-						if (g_fr_economy.GetBool())
-						{
-							pEntity->AddMoney(4 * sk_money_multiplier2.GetInt());
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pEntity->AddXP(6 * sk_exp_multiplier2.GetInt());
-						}
+						moneyReward += 4 * sk_money_multiplier2.GetInt();
+						xpReward += 6 * sk_exp_multiplier2.GetInt();
 						break;
 
 					case SKILL_HARD:
-						if (g_fr_economy.GetBool())
-						{
-							pEntity->AddMoney(4 * sk_money_multiplier3.GetInt());
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pEntity->AddXP(6 * sk_exp_multiplier3.GetInt());
-						}
+						moneyReward += 4 * sk_money_multiplier3.GetInt();
+						xpReward += 6 * sk_exp_multiplier3.GetInt();
 						break;
 
 					case SKILL_VERYHARD:
-						if (g_fr_economy.GetBool())
-						{
-							pEntity->AddMoney(4 * sk_money_multiplier4.GetInt());
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pEntity->AddXP(6 * sk_exp_multiplier4.GetInt());
-						}
+						moneyReward += 4 * sk_money_multiplier4.GetInt();
+						xpReward += 6 * sk_exp_multiplier4.GetInt();
 						break;
 
 					case SKILL_NIGHTMARE:
-						if (g_fr_economy.GetBool())
-						{
-							pEntity->AddMoney(4 * sk_money_multiplier5.GetInt());
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pEntity->AddXP(6 * sk_exp_multiplier5.GetInt());
-						}
+						moneyReward += 4 * sk_money_multiplier5.GetInt();
+						xpReward += 6 * sk_exp_multiplier5.GetInt();
 						break;
 					}
 				}
@@ -959,149 +759,111 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 						CFmtStr hint;
 						hint.sprintf("#Valve_Hud_KILLINGSPREE");
 						pEntity->ShowLevelMessage(hint.Access());
-						if (g_fr_economy.GetBool())
-						{
-							pEntity->AddMoney(2);
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pEntity->AddXP(3);
-						}
+						moneyReward += 2;
+						xpReward += 3;
 					}
 					if (m_iKillsInSpree == KILLING_FRENZY_AMOUNT)
 					{
 						CFmtStr hint;
 						hint.sprintf("#Valve_Hud_KILLINGFRENZY");
 						pEntity->ShowLevelMessage(hint.Access());
-						if (g_fr_economy.GetBool())
-						{
-							pEntity->AddMoney(4);
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pEntity->AddXP(6);
-						}
+						moneyReward += 4;
+						xpReward += 6;
 					}
 					if (m_iKillsInSpree == OVERKILL_AMOUNT)
 					{
 						CFmtStr hint;
 						hint.sprintf("#Valve_Hud_OVERKILL");
 						pEntity->ShowLevelMessage(hint.Access());
-						if (g_fr_economy.GetBool())
-						{
-							pEntity->AddMoney(6);
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pEntity->AddXP(9);
-						}
+						moneyReward += 6;
+						xpReward += 9;
 					}
 					if (m_iKillsInSpree == RAMPAGE_AMOUNT)
 					{
 						CFmtStr hint;
 						hint.sprintf("#Valve_Hud_RAMPAGE");
 						pEntity->ShowLevelMessage(hint.Access());
-						if (g_fr_economy.GetBool())
-						{
-							pEntity->AddMoney(8);
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pEntity->AddXP(12);
-						}
+						moneyReward += 8;
+						xpReward += 12;
 					}
 					if (m_iKillsInSpree == UNSTOPPABLE_AMOUNT)
 					{
 						CFmtStr hint;
 						hint.sprintf("#Valve_Hud_UNSTOPPABLE");
 						pEntity->ShowLevelMessage(hint.Access());
-						if (g_fr_economy.GetBool())
-						{
-							pEntity->AddMoney(10);
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pEntity->AddXP(15);
-						}
+						moneyReward += 10;
+						xpReward += 15;
 					}
 					if (m_iKillsInSpree == INCONCEIVABLE_AMOUNT)
 					{
 						CFmtStr hint;
 						hint.sprintf("#Valve_Hud_INCONCEIVABLE");
 						pEntity->ShowLevelMessage(hint.Access());
-						if (g_fr_economy.GetBool())
-						{
-							pEntity->AddMoney(12);
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pEntity->AddXP(18);
-						}
+						moneyReward += 12;
+						xpReward += 18;
 					}
 					if (m_iKillsInSpree == INVINCIBLE_AMOUNT)
 					{
 						CFmtStr hint;
 						hint.sprintf("#Valve_Hud_INVINCIBLE");
 						pEntity->ShowLevelMessage(hint.Access());
-						if (g_fr_economy.GetBool())
-						{
-							pEntity->AddMoney(14);
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pEntity->AddXP(21);
-						}
+						moneyReward += 14;
+						xpReward += 21;
 					}
 					if (m_iKillsInSpree == GODLIKE_AMOUNT)
 					{
 						CFmtStr hint;
 						hint.sprintf("#Valve_Hud_GODLIKE");
 						pEntity->ShowLevelMessage(hint.Access());
-						if (g_fr_economy.GetBool())
-						{
-							pEntity->AddMoney(16);
-						}
-						if (!g_fr_classic.GetBool())
-						{
-							pEntity->AddXP(24);
-						}
+						moneyReward += 16;
+						xpReward += 24;
 					}
 				}
 
-				if (g_fr_economy.GetBool())
+				if (pVictim->m_iExtraMoney > 0)
 				{
-					if (pVictim->m_iExtraMoney > 0)
-					{
-						pEntity->AddMoney(pVictim->m_iExtraMoney);
-					}
+					moneyReward += pVictim->m_iExtraMoney;
 				}
 
-				if (!g_fr_classic.GetBool())
+				if (pVictim->m_iExtraExp > 0)
 				{
-					if (pVictim->m_iExtraExp > 0)
-					{
-						pEntity->AddXP(pVictim->m_iExtraExp);
-					}
+					xpReward += pVictim->m_iExtraExp;
 				}
-
-				CAI_BaseNPC* pNPC = (CAI_BaseNPC*)pEntity;
 
 				if ((info.GetDamageType() & DMG_BLAST) ||
 					(info.GetDamageType() & DMG_SHOCK) ||
 					(info.GetDamageType() & DMG_SNIPER) ||
 					(info.GetDamageType() & DMG_BUCKSHOT) ||
-					(info.GetDamageType() & DMG_ALWAYSGIB) ||
-					(pNPC && pNPC->m_bDecapitated))
+					(info.GetDamageType() & DMG_ALWAYSGIB))
 				{
-					if (g_fr_economy.GetBool())
-					{
-						pEntity->AddMoney(50);
-					}
+					moneyReward += 50;
+					xpReward += 50;
+				}
 
-					if (!g_fr_classic.GetBool())
-					{
-						pEntity->AddXP(50);
-					}
+				CAI_BaseNPC* pNPC = (CAI_BaseNPC*)pEntity;
+
+				if (pNPC && pNPC->m_bDecapitated)
+				{
+					moneyReward += 50;
+					xpReward += 50;
+				}
+
+				CHL2_Player* pEntityHL2 = ToHL2Player(pEntity);
+
+				if (pEntityHL2 && pEntityHL2->m_bIsKicking)
+				{
+					moneyReward += 50;
+					xpReward += 50;
+				}
+
+				if (g_fr_economy.GetBool())
+				{
+					pEntity->AddMoney(moneyReward);
+				}
+
+				if (!g_fr_classic.GetBool())
+				{
+					pEntity->AddXP(xpReward);
 				}
 
 				if (pVictim->m_isRareEntity)
@@ -1113,6 +875,8 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 				}
 			}
 		}
+
+		DeathNoticeNPC(pVictim, info, xpReward, moneyReward);
 	}
 
 	//=========================================================
@@ -1155,14 +919,14 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 							CHL2_Player* pScorerHL2 = ToHL2Player(pScorer);
 
 							// If the inflictor is the killer,  then it must be their current weapon doing the damage
-							if (pScorerHL2->m_bIsKicking)
+							if (pScorerHL2 && pScorerHL2->m_bIsKicking)
 							{
 								// fake it
 								killer_weapon_name = "kick";
 							}
-							else if (pScorerHL2->GetActiveWeapon())
+							else if (pScorer->GetActiveWeapon())
 							{
-								killer_weapon_name = pScorerHL2->GetActiveWeapon()->GetClassname();
+								killer_weapon_name = pScorer->GetActiveWeapon()->GetClassname();
 							}
 						}
 						else
@@ -1228,7 +992,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 		}
 	}
 
-	void CSingleplayRules::DeathNoticeNPC(CBaseEntity* pVictim, const CTakeDamageInfo& info)
+	void CSingleplayRules::DeathNoticeNPC(CBaseEntity* pVictim, const CTakeDamageInfo& info, int xpReward, int moneyReward)
 	{
 		// Work out what killed the player, and send a message to all clients about it
 		const char* killer_weapon_name = "world";		// by default, the player is killed by the world
@@ -1270,14 +1034,14 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 								// fake it
 								killer_weapon_name = "headshot";
 							}
-							else if (pScorerHL2->m_bIsKicking)
+							else if (pScorerHL2 && pScorerHL2->m_bIsKicking)
 							{
 								// fake it
 								killer_weapon_name = "kick";
 							}
-							else if (pScorerHL2->GetActiveWeapon())
+							else if (pScorer->GetActiveWeapon())
 							{
-								killer_weapon_name = pScorerHL2->GetActiveWeapon()->GetClassname();
+								killer_weapon_name = pScorer->GetActiveWeapon()->GetClassname();
 							}
 						}
 						else
@@ -1301,6 +1065,8 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 				event->SetInt("attacker", killer_ID);
 				event->SetString("victimname", vic_name);
 				event->SetInt("customkill", info.GetDamageCustom());
+				event->SetInt("xpreward", xpReward);
+				event->SetInt("moneyreward", moneyReward);
 				event->SetInt("priority", 7);	// HLTV event priority, not transmitted
 				event->SetString("weapon", killer_weapon_name);
 				gameeventmanager->FireEvent(event);
