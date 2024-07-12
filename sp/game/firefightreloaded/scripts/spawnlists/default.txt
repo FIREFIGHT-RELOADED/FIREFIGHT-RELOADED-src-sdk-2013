@@ -15,6 +15,7 @@
 	{
 		"classname"		"npc_headcrab"
 		"exp"	"15"
+		"rare"			"1"
 	}
 	//LEVEL 2
 	"3"
@@ -34,6 +35,7 @@
 		"classname"		"npc_headcrab_fast"
 		"min_level"		"2"
 		"exp"	"15"
+		"rare"			"1"
 	}
 	//LEVEL 3
 	"6"
@@ -78,6 +80,7 @@
 		"classname"		"npc_headcrab_poison"
 		"min_level"		"5"
 		"exp"	"20"
+		"rare"			"1"
 	}
 	//LEVEL 6
 	"11"

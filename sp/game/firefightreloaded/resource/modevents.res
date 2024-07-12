@@ -44,6 +44,8 @@
 		"victimname" "string"   	// user ID who died				
 		"attacker"	"short"	 	// user ID who killed
 		"weapon"	"string" 	// weapon name killed used 
+        "xpreward"	"short"
+		"moneyreward"	"short"
 	}
 	
 	"player_death_npc"				// a game event, name may be 32 charaters long

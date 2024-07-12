@@ -74,6 +74,7 @@ public:
 		int grenadesMax;
 		int extraExp;
 		int extraMoney;
+		bool subsituteValues;
 		CCopyableUtlVector<EquipEntry_t> spawnEquipment;
 		float totalEquipWeight;
 	};
