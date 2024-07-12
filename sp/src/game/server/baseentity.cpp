@@ -417,6 +417,8 @@ CBaseEntity::CBaseEntity( bool bServerOnly )
 
 	m_isRareEntity = false;
 	m_isLargeEntity = false;
+	m_iExtraExp = 0;
+	m_iExtraMoney = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -1843,6 +1845,11 @@ BEGIN_DATADESC_NO_BASE( CBaseEntity )
 
 	DEFINE_INPUT( m_iInitialTeamNum, FIELD_INTEGER, "TeamNum" ),
 	DEFINE_FIELD( m_iTeamNum, FIELD_INTEGER ),
+
+	DEFINE_FIELD(m_isRareEntity, FIELD_BOOLEAN),
+	DEFINE_FIELD(m_isLargeEntity, FIELD_BOOLEAN),
+	DEFINE_FIELD(m_iExtraExp, FIELD_INTEGER),
+	DEFINE_FIELD(m_iExtraMoney, FIELD_INTEGER),
 
 //	DEFINE_FIELD( m_bSentLastFrame, FIELD_INTEGER ),
 

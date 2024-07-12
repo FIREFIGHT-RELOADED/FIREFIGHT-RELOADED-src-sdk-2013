@@ -570,6 +570,8 @@ void CNPCMakerFirefight::MakeNPC()
 		pent->m_bDisableInitAttributes = true;
 
 	pent->m_isRareEntity = entry->isRare;
+	pent->m_iExtraExp = entry->extraExp;
+	pent->m_iExtraMoney = entry->extraMoney;
 	pent->SetSquadName(m_SquadName);
 	pent->SetHintGroup(m_strHintGroup);
 

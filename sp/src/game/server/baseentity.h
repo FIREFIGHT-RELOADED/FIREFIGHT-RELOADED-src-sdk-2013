@@ -1736,6 +1736,8 @@ public:
 
 	bool m_isRareEntity;
 	bool m_isLargeEntity;
+	int m_iExtraExp;
+	int m_iExtraMoney;
 
 	virtual float GetColorRed(void) { return m_iColorRed; }
 	virtual float GetColorGreen(void) { return m_iColorGreen; }

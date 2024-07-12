@@ -13,7 +13,7 @@
 "Gore.Decap"
 {
 	"channel"	"CHAN_STATIC"
-	"volume"	"0.25"
+	"volume"	"0.5"
 	"soundlevel"  "SNDLVL_75dB"
 
 	"rndwave"

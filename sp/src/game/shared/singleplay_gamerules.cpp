@@ -1067,6 +1067,21 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 					}
 				}
 
+				if (g_fr_economy.GetBool())
+				{
+					if (pVictim->m_iExtraMoney > 0)
+					{
+						pEntity->AddMoney(pVictim->m_iExtraMoney);
+					}
+				}
+				if (!g_fr_classic.GetBool())
+				{
+					if (pVictim->m_iExtraExp > 0)
+					{
+						pEntity->AddXP(pVictim->m_iExtraExp);
+					}
+				}
+
 				if (pVictim->m_isRareEntity)
 				{
 					if (g_fr_classic.GetBool())

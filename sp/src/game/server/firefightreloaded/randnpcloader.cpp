@@ -19,10 +19,13 @@ void dumpspawnlist_cb()
 {
 	extern CRandNPCLoader* g_npcLoader;
 
+	if (!g_npcLoader)
+		return;
+
 	ConMsg("m_Settings.spawnTime: %f\n", g_npcLoader->m_Settings.spawnTime);
 	for ( auto& iter : g_npcLoader->m_Entries )
 	{
-		ConMsg( "[%p] name=\"%s\", %s minPlayerLevel=%d npcAttributePreset=%d npcAttributeWildcard=%d grenades=[%d, %d] weight=%f, totalEquipWeight=%f\n",
+		ConMsg( "[%p] name=\"%s\", %s minPlayerLevel=%d npcAttributePreset=%d npcAttributeWildcard=%d grenades=[%d, %d] weight=%f, totalEquipWeight=%f, extraExp=%d, extraMoney=%d\n",
 			&iter,
 			iter.classname,
 			iter.isRare ? "rare" : "notRare",
@@ -32,7 +35,9 @@ void dumpspawnlist_cb()
 			iter.grenadesMin,
 			iter.grenadesMax,
 			iter.weight,
-			iter.totalEquipWeight
+			iter.totalEquipWeight,
+			iter.extraExp,
+			iter.extraMoney
 		);
 		for ( auto& iter2 : iter.spawnEquipment )
 		{
@@ -209,6 +214,18 @@ bool CRandNPCLoader::ParseEntry( SpawnEntry_t& entry, KeyValues *kv)
 	entry.minPlayerLevel = kv->GetInt( "min_level", 1 );
 	entry.npcAttributePreset = kv->GetInt( "preset", -1 );
 	entry.npcAttributeWildcard = kv->GetInt("wildcard", -1);
+	entry.extraExp = kv->GetInt("exp", -1);
+	entry.extraMoney = kv->GetInt("kash", -1);
+
+	if (entry.extraExp <= 0 && entry.extraMoney > 0)
+	{
+		entry.extraExp = entry.extraMoney;
+	}
+	else if (entry.extraMoney <= 0 && entry.extraExp > 0)
+	{
+		entry.extraMoney = entry.extraExp;
+	}
+
 	entry.spawnEquipment.RemoveAll();
 	entry.totalEquipWeight = 0;
 	entry.grenadesMin = entry.grenadesMax = -1;
@@ -293,6 +310,8 @@ CRandNPCLoader::SpawnEntry_t::SpawnEntry_t()
 	npcAttributePreset = -1; // 0 = no attributes, random. -1 and below: no attributes at all.
 	npcAttributeWildcard = -1;
 	minPlayerLevel = 1;
+	extraExp = -1;
+	extraMoney = -1;
 	isRare = false;
 	weight = 1;
 	grenadesMin = grenadesMax = -1;

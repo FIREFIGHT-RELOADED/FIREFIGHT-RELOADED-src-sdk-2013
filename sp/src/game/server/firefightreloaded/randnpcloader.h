@@ -72,6 +72,8 @@ public:
 		int npcAttributeWildcard;
 		int grenadesMin;
 		int grenadesMax;
+		int extraExp;
+		int extraMoney;
 		CCopyableUtlVector<EquipEntry_t> spawnEquipment;
 		float totalEquipWeight;
 	};
