@@ -1347,7 +1347,9 @@ bool GiveKashBonus(CBasePlayer* pPlayer)
 
 	if (g_fr_economy.GetBool())
 	{
-		pPlayer->AddMoney(pPlayer->GetLevel() * 10);
+		int KashReward = pPlayer->GetLevel() * 10;
+		pPlayer->AddMoney(KashReward);
+		Msg("Kash Bonus: %d\n", KashReward);
 		givenKashBonus = true;
 	}
 

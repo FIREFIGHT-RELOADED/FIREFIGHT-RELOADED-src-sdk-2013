@@ -754,69 +754,60 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 				{
 					int m_iKillsInSpree = pEntity->FragCount();
 
-					if (m_iKillsInSpree == KILLING_SPREE_AMOUNT)
+					CFmtStr hint;
+
+					switch (m_iKillsInSpree)
 					{
-						CFmtStr hint;
-						hint.sprintf("#Valve_Hud_KILLINGSPREE");
-						pEntity->ShowLevelMessage(hint.Access());
-						moneyReward += 2;
-						xpReward += 3;
-					}
-					if (m_iKillsInSpree == KILLING_FRENZY_AMOUNT)
-					{
-						CFmtStr hint;
-						hint.sprintf("#Valve_Hud_KILLINGFRENZY");
-						pEntity->ShowLevelMessage(hint.Access());
-						moneyReward += 4;
-						xpReward += 6;
-					}
-					if (m_iKillsInSpree == OVERKILL_AMOUNT)
-					{
-						CFmtStr hint;
-						hint.sprintf("#Valve_Hud_OVERKILL");
-						pEntity->ShowLevelMessage(hint.Access());
-						moneyReward += 6;
-						xpReward += 9;
-					}
-					if (m_iKillsInSpree == RAMPAGE_AMOUNT)
-					{
-						CFmtStr hint;
-						hint.sprintf("#Valve_Hud_RAMPAGE");
-						pEntity->ShowLevelMessage(hint.Access());
-						moneyReward += 8;
-						xpReward += 12;
-					}
-					if (m_iKillsInSpree == UNSTOPPABLE_AMOUNT)
-					{
-						CFmtStr hint;
-						hint.sprintf("#Valve_Hud_UNSTOPPABLE");
-						pEntity->ShowLevelMessage(hint.Access());
-						moneyReward += 10;
-						xpReward += 15;
-					}
-					if (m_iKillsInSpree == INCONCEIVABLE_AMOUNT)
-					{
-						CFmtStr hint;
-						hint.sprintf("#Valve_Hud_INCONCEIVABLE");
-						pEntity->ShowLevelMessage(hint.Access());
-						moneyReward += 12;
-						xpReward += 18;
-					}
-					if (m_iKillsInSpree == INVINCIBLE_AMOUNT)
-					{
-						CFmtStr hint;
-						hint.sprintf("#Valve_Hud_INVINCIBLE");
-						pEntity->ShowLevelMessage(hint.Access());
-						moneyReward += 14;
-						xpReward += 21;
-					}
-					if (m_iKillsInSpree == GODLIKE_AMOUNT)
-					{
-						CFmtStr hint;
-						hint.sprintf("#Valve_Hud_GODLIKE");
-						pEntity->ShowLevelMessage(hint.Access());
-						moneyReward += 16;
-						xpReward += 24;
+						case KILLING_SPREE_AMOUNT:
+							hint.sprintf("#Valve_Hud_KILLINGSPREE");
+							pEntity->ShowLevelMessage(hint.Access());
+							moneyReward += 2;
+							xpReward += 3;
+							break;
+						case KILLING_FRENZY_AMOUNT:
+							hint.sprintf("#Valve_Hud_KILLINGFRENZY");
+							pEntity->ShowLevelMessage(hint.Access());
+							moneyReward += 4;
+							xpReward += 6;
+							break;
+						case OVERKILL_AMOUNT:
+							hint.sprintf("#Valve_Hud_OVERKILL");
+							pEntity->ShowLevelMessage(hint.Access());
+							moneyReward += 6;
+							xpReward += 9;
+							break;
+						case RAMPAGE_AMOUNT:
+							hint.sprintf("#Valve_Hud_RAMPAGE");
+							pEntity->ShowLevelMessage(hint.Access());
+							moneyReward += 8;
+							xpReward += 12;
+							break;
+						case UNSTOPPABLE_AMOUNT:
+							hint.sprintf("#Valve_Hud_UNSTOPPABLE");
+							pEntity->ShowLevelMessage(hint.Access());
+							moneyReward += 10;
+							xpReward += 15;
+							break;
+						case INCONCEIVABLE_AMOUNT:
+							hint.sprintf("#Valve_Hud_INCONCEIVABLE");
+							pEntity->ShowLevelMessage(hint.Access());
+							moneyReward += 12;
+							xpReward += 18;
+							break;
+						case INVINCIBLE_AMOUNT:
+							hint.sprintf("#Valve_Hud_INVINCIBLE");
+							pEntity->ShowLevelMessage(hint.Access());
+							moneyReward += 14;
+							xpReward += 21;
+							break;
+						case GODLIKE_AMOUNT:
+							hint.sprintf("#Valve_Hud_GODLIKE");
+							pEntity->ShowLevelMessage(hint.Access());
+							moneyReward += 16;
+							xpReward += 24;
+							break;
+						default:
+							break;
 					}
 				}
 
@@ -852,8 +843,14 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 
 				if (pEntityHL2 && pEntityHL2->m_bIsKicking)
 				{
-					moneyReward += 50;
-					xpReward += 50;
+					moneyReward += 30;
+					xpReward += 30;
+				}
+
+				if (FClassnameIs(pInflictor, "knife_bolt") || FClassnameIs(pInflictor, "crossbow_bolt"))
+				{
+					moneyReward += 30;
+					xpReward += 30;
 				}
 
 				if (g_fr_economy.GetBool())
