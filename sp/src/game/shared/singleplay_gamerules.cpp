@@ -7,6 +7,7 @@
 #include "cbase.h"
 #include "singleplay_gamerules.h"
 #include "fmtstr.h"
+#include "hl2_shareddefs.h"
 
 #ifdef CLIENT_DLL
 
@@ -1074,11 +1075,31 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 						pEntity->AddMoney(pVictim->m_iExtraMoney);
 					}
 				}
+
 				if (!g_fr_classic.GetBool())
 				{
 					if (pVictim->m_iExtraExp > 0)
 					{
 						pEntity->AddXP(pVictim->m_iExtraExp);
+					}
+				}
+
+				CAI_BaseNPC* pNPC = (CAI_BaseNPC*)pEntity;
+
+				if ((info.GetDamageType() & DMG_BLAST) ||
+					(info.GetDamageType() & DMG_SHOCK) ||
+					(info.GetDamageType() & DMG_SNIPER) ||
+					(info.GetDamageType() & DMG_BUCKSHOT) ||
+					(pNPC && pNPC->m_bDecapitated))
+				{
+					if (g_fr_economy.GetBool())
+					{
+						pEntity->AddMoney(50);
+					}
+
+					if (!g_fr_classic.GetBool())
+					{
+						pEntity->AddXP(50);
 					}
 				}
 
