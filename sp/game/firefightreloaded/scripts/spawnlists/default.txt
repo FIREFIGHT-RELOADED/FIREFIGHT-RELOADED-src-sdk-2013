@@ -9,58 +9,75 @@
 	"1"
 	{
 		"classname"		"npc_metropolice"
+		"exp"	"15"
 	}
 	"2"
 	{
 		"classname"		"npc_headcrab"
+		"exp"	"15"
 	}
 	//LEVEL 2
 	"3"
 	{
 		"classname"		"npc_zombie"
 		"min_level"		"2"
+		"exp"	"20"
 	}
 	"4"
 	{
 		"classname"		"npc_zombie_torso"
 		"min_level"		"2"
+		"exp"	"20"
 	}
 	"5"
 	{
 		"classname"		"npc_headcrab_fast"
 		"min_level"		"2"
+		"exp"	"15"
 	}
 	//LEVEL 3
 	"6"
 	{
 		"classname"		"npc_combine_s"
 		"min_level"		"3"
+		"exp"	"25"
 	}
 	//LEVEL 4
 	"7"
 	{
 		"classname"		"npc_combine_p"
 		"min_level"		"4"
+		"exp"	"25"
 	}
 	"8"
 	{
 		"classname"		"npc_houndeye"
 		"min_level"		"4"
 		"rare"			"1"
+		"exp"	"35"
 	}
 	//LEVEL 5
 	"9"
 	{
-		//elite metrocops
+		//ace metrocops
 		"classname"		"npc_metropolice"
 		"preset"		"1"
 		"min_level"		"5"
 		"rare"			"1"
+		"equipment"	
+		{
+			"weapon_stunstick" "3"
+			"weapon_pistol" "5"
+			"weapon_smg1" "5"
+			"weapon_shotgun" "3"
+		}
+		"exp"	"45"
 	}
 	"10"
 	{
 		"classname"		"npc_headcrab_poison"
 		"min_level"		"5"
+		"exp"	"20"
 	}
 	//LEVEL 6
 	"11"
@@ -68,21 +85,25 @@
 		"classname"		"npc_bullsquid"
 		"min_level"		"6"
 		"rare"			"1"
+		"exp"	"40"
 	}
 	"12"
 	{
 		"classname"		"npc_fastzombie"
 		"min_level"		"6"
+		"exp"	"35"
 	}
 	"13"
 	{
 		"classname"		"npc_fastzombie_torso"
 		"min_level"		"6"
+		"exp"	"30"
 	}
 	"14"
 	{
 		"classname"		"npc_combine_shot"
 		"min_level"		"6"
+		"exp"	"35"
 	}
 	//LEVEL 7
 	"15"
@@ -90,11 +111,13 @@
 		"classname"		"npc_strider"
 		"min_level"		"7"
 		"rare"			"1"
+		"exp"	"250"
 	}
 	"16"
 	{
 		"classname"		"npc_antlion"
 		"min_level"		"7"
+		"exp"	"35"
 	}
 	"17"
 	{
@@ -108,35 +131,41 @@
 		"classname"		"npc_combine_e"
 		"min_level"		"8"
 		"rare"			"1"
+		"exp"	"45"
 	}
 	"19"
 	{
 		"classname"		"npc_poisonzombie"
 		"min_level"		"8"
 		"rare"			"1"
+		"exp"	"45"
 	}
 	"20"
 	{
 		"classname"		"npc_agrunt"
 		"min_level"		"8"
+		"exp"	"45"
 	}
 	//LEVEL 9
 	"21"
 	{
 		"classname"		"npc_acontroller"
 		"min_level"		"9"
+		"exp"	"45"
 	}
 	"22"
 	{
 		"classname"		"npc_hunter"
 		"min_level"		"9"
 		"rare"			"1"
+		"exp"	"45"
 	}
 	"23"
 	{
 		"classname"		"npc_zombine"
 		"min_level"		"9"
 		"rare"			"1"
+		"exp"	"45"
 	}
 	//LEVEL 10
 	"24"
@@ -144,12 +173,14 @@
 		"classname"		"npc_antlionworker"
 		"min_level"		"10"
 		"rare"			"1"
+		"exp"	"45"
 	}
 	"25"
 	{
 		"classname"		"npc_antlionguard"
 		"min_level"		"10"
 		"rare"			"1"
+		"exp"	"55"
 	}
 	//LEVEL 11
 	"26"
@@ -157,11 +188,13 @@
 		"classname"		"npc_vortigaunt"
 		"min_level"		"11"
 		"rare"			"1"
+		"exp"	"60"
 	}
 	"27"
 	{
 		"classname"		"npc_assassin"
 		"min_level"		"11"
+		"exp"	"35"
 	}
 	"28"
 	{
@@ -170,6 +203,7 @@
 		"preset"		"4"
 		"min_level"		"11"
 		"rare"			"1"
+		"exp"	"50"
 	}
 	//LEVEL 12
 	"29"
@@ -177,12 +211,14 @@
 		"classname"		"npc_antlionguardian"
 		"min_level"		"12"
 		"rare"			"1"
+		"exp"	"65"
 	}
 	"30"
 	{
 		"classname"		"npc_stalker"
 		"min_level"		"12"
 		"rare"			"1"
+		"exp"	"60"
 	}
 	"31"
 	{
@@ -191,6 +227,7 @@
 		"preset"		"1"
 		"min_level"		"12"
 		"rare"			"1"
+		"exp"	"50"
 	}
 	//LEVEL 13
 	"32"
@@ -198,16 +235,19 @@
 		"classname"		"npc_combine_ace"
 		"min_level"		"13"
 		"rare"			"1"
+		"exp"	"60"
 	}
 	"33"
 	{
 		"classname"		"npc_rollermine"
 		"min_level"		"13"
+		"exp"	"65"
 	}
 	"34"
 	{
 		"classname"		"npc_cscanner"
 		"min_level"		"13"
+		"exp"	"25"	
 	}
 	//LEVEl 14
 	"35"
@@ -217,6 +257,7 @@
 		"preset"		"3"
 		"min_level"		"14"
 		"rare"			"1"
+		"exp"	"55"
 	}
 	//LEVEL 15
 	"36"
@@ -226,6 +267,7 @@
 		"preset"		"1"
 		"min_level"		"15"
 		"rare"			"1"
+		"exp"	"45"
 	}
 	"37"
 	{
@@ -234,6 +276,7 @@
 		"preset"		"2"
 		"min_level"		"15"
 		"rare"			"1"
+		"exp"	"65"
 	}
 	"38"
 	{
@@ -242,6 +285,7 @@
 		"preset"		"1"
 		"min_level"		"15"
 		"rare"			"1"
+		"exp"	"70"
 	}
 	"39"
 	{
@@ -250,5 +294,44 @@
 		"preset"		"1"
 		"min_level"		"15"
 		"rare"			"1"
+		"exp"	"100"
+	}
+	//LEVEL 16
+	//advisor drones of various combine units.
+	"40"
+	{
+		"classname"		"npc_combine_s"
+		"wildcard"		"1"
+		"preset"		"1"
+		"min_level"		"16"
+		"rare"			"1"
+		"exp"	"60"
+	}
+	"41"
+	{
+		"classname"		"npc_metropolice"
+		"wildcard"		"1"
+		"preset"		"1"
+		"min_level"		"16"
+		"rare"			"1"
+		"exp"	"60"
+	}
+	"42"
+	{
+		"classname"		"npc_hunter"
+		"wildcard"		"1"
+		"preset"		"1"
+		"min_level"		"16"
+		"rare"			"1"
+		"exp"	"75"
+	}
+	"43"
+	{
+		"classname"		"npc_combine_ace"
+		"wildcard"		"1"
+		"preset"		"1"
+		"min_level"		"16"
+		"rare"			"1"
+		"exp"	"100"
 	}
 }
