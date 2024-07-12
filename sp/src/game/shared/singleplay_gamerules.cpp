@@ -1090,6 +1090,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 					(info.GetDamageType() & DMG_SHOCK) ||
 					(info.GetDamageType() & DMG_SNIPER) ||
 					(info.GetDamageType() & DMG_BUCKSHOT) ||
+					(info.GetDamageType() & DMG_ALWAYSGIB) ||
 					(pNPC && pNPC->m_bDecapitated))
 				{
 					if (g_fr_economy.GetBool())
