@@ -25,7 +25,7 @@
 
 
 ConVar	sk_zombie_health( "sk_zombie_health","0");
-ConVar	sk_zombie_raremoans("sk_zombie_raremoans", "15", FCVAR_CHEAT);
+ConVar	sk_zombie_raremoans("sk_zombie_raremoans", "5", FCVAR_CHEAT);
 
 envelopePoint_t envZombieMoanVolumeFast[] =
 {

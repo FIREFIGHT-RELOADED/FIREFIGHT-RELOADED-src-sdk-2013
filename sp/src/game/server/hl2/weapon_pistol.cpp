@@ -371,23 +371,30 @@ void CWeaponPistol::ItemPostFrame( void )
 
 	if (pOwner->m_afButtonPressed & IN_ATTACK3)
 	{
-		if (m_iFireMode == 0)
+		if (!IsIronsighted())
 		{
-			CFmtStr hint;
-			hint.sprintf("#Valve_Pistol_Flares");
-			pOwner->ShowLevelMessage(hint.Access());
-			m_iFireMode = 1;
-			SendWeaponAnim(ACT_VM_RELOAD);
-			WeaponSound(RELOAD);
+			if (m_iFireMode == 0)
+			{
+				CFmtStr hint;
+				hint.sprintf("#Valve_Pistol_Flares");
+				pOwner->ShowLevelMessage(hint.Access());
+				m_iFireMode = 1;
+				SendWeaponAnim(ACT_VM_RELOAD);
+				WeaponSound(RELOAD);
+			}
+			else if (m_iFireMode == 1)
+			{
+				CFmtStr hint;
+				hint.sprintf("#Valve_Pistol_Round");
+				pOwner->ShowLevelMessage(hint.Access());
+				m_iFireMode = 0;
+				SendWeaponAnim(ACT_VM_RELOAD);
+				WeaponSound(RELOAD);
+			}
 		}
-		else if (m_iFireMode == 1)
+		else
 		{
-			CFmtStr hint;
-			hint.sprintf("#Valve_Pistol_Round");
-			pOwner->ShowLevelMessage(hint.Access());
-			m_iFireMode = 0;
-			SendWeaponAnim(ACT_VM_RELOAD);
-			WeaponSound(RELOAD);
+			WeaponSound(EMPTY);
 		}
 	}
 

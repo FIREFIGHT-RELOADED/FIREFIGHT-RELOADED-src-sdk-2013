@@ -17,13 +17,13 @@
 		"exp"	"15"
 		"rare"			"1"
 	}
-	//LEVEL 2
 	"3"
 	{
 		"classname"		"npc_zombie"
-		"min_level"		"2"
+		"min_level"		"1"
 		"exp"	"20"
 	}
+	//LEVEL 2
 	"4"
 	{
 		"classname"		"npc_zombie_torso"
