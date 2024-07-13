@@ -12,6 +12,7 @@
 	"pelvis_gib_model"	"models/gibs/soldier_shotgunner_pelvis.mdl"
 	"left_leg_gib_model"	"models/gibs/soldier_shotgunner_left_leg.mdl"
 	"right_leg_gib_model"	"models/gibs/soldier_shotgunner_right_leg.mdl"
+	"use_railgun_overcharge" "1"
 	"health_multiplier"	"3.5"
 	"additional_speed"	"540"
 	"is_rare"		"1"

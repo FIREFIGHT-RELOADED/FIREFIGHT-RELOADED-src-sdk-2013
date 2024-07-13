@@ -40,6 +40,10 @@ public:
 
 	void	Equip(CBaseCombatCharacter* pOwner);
 	void	Precache(void);
+	int		CapabilitiesGet(void) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
+	void	FireNPCPrimaryAttack(CBaseCombatCharacter* pOperator, bool bUseWeaponAngles);
+	void	Operator_ForceNPCFire(CBaseCombatCharacter* pOperator, bool bSecondary);
+	void	Operator_HandleAnimEvent(animevent_t* pEvent, CBaseCombatCharacter* pOperator);
 	bool	Deploy(void);
 	bool	Holster(CBaseCombatWeapon* pSwitchingTo);
 	void	ItemPostFrame(void);
@@ -65,6 +69,8 @@ public:
 	{
 		return m_bJustOvercharged;
 	}
+
+	const WeaponProficiencyInfo_t* GetProficiencyValues();
 
 protected:
 	DECLARE_DATADESC();

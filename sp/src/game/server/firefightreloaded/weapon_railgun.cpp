@@ -5,6 +5,9 @@
 //=============================================================================//
 
 #include "cbase.h"
+#include "basecombatcharacter.h"
+#include "ai_basenpc.h"
+#include "ai_memory.h"
 #include "npcevent.h"
 #include "in_buttons.h"
 #include "takedamageinfo.h"
@@ -34,6 +37,55 @@ PRECACHE_WEAPON_REGISTER( weapon_railgun );
 
 acttable_t CWeaponRailgun::m_acttable[] =
 {
+	{ ACT_RANGE_ATTACK1,			ACT_RANGE_ATTACK_AR2,			true },
+	{ ACT_RELOAD,					ACT_RELOAD_SMG1,				true },		// FIXME: hook to AR2 unique
+	{ ACT_IDLE,						ACT_IDLE_SMG1,					true },		// FIXME: hook to AR2 unique
+	{ ACT_IDLE_ANGRY,				ACT_IDLE_ANGRY_SMG1,			true },		// FIXME: hook to AR2 unique
+
+	{ ACT_WALK,						ACT_WALK_RIFLE,					true },
+
+// Readiness activities (not aiming)
+	{ ACT_IDLE_RELAXED,				ACT_IDLE_SMG1_RELAXED,			false },//never aims
+	{ ACT_IDLE_STIMULATED,			ACT_IDLE_SMG1_STIMULATED,		false },
+	{ ACT_IDLE_AGITATED,			ACT_IDLE_ANGRY_SMG1,			false },//always aims
+
+	{ ACT_WALK_RELAXED,				ACT_WALK_RIFLE_RELAXED,			false },//never aims
+	{ ACT_WALK_STIMULATED,			ACT_WALK_RIFLE_STIMULATED,		false },
+	{ ACT_WALK_AGITATED,			ACT_WALK_AIM_RIFLE,				false },//always aims
+
+	{ ACT_RUN_RELAXED,				ACT_RUN_RIFLE_RELAXED,			false },//never aims
+	{ ACT_RUN_STIMULATED,			ACT_RUN_RIFLE_STIMULATED,		false },
+	{ ACT_RUN_AGITATED,				ACT_RUN_AIM_RIFLE,				false },//always aims
+
+	// Readiness activities (aiming)
+	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_SMG1_RELAXED,			false },//never aims	
+	{ ACT_IDLE_AIM_STIMULATED,		ACT_IDLE_AIM_RIFLE_STIMULATED,	false },
+	{ ACT_IDLE_AIM_AGITATED,		ACT_IDLE_ANGRY_SMG1,			false },//always aims
+
+	{ ACT_WALK_AIM_RELAXED,			ACT_WALK_RIFLE_RELAXED,			false },//never aims
+	{ ACT_WALK_AIM_STIMULATED,		ACT_WALK_AIM_RIFLE_STIMULATED,	false },
+	{ ACT_WALK_AIM_AGITATED,		ACT_WALK_AIM_RIFLE,				false },//always aims
+
+	{ ACT_RUN_AIM_RELAXED,			ACT_RUN_RIFLE_RELAXED,			false },//never aims
+	{ ACT_RUN_AIM_STIMULATED,		ACT_RUN_AIM_RIFLE_STIMULATED,	false },
+	{ ACT_RUN_AIM_AGITATED,			ACT_RUN_AIM_RIFLE,				false },//always aims
+	//End readiness activities
+
+	{ ACT_WALK_AIM,					ACT_WALK_AIM_RIFLE,				true },
+	{ ACT_WALK_CROUCH,				ACT_WALK_CROUCH_RIFLE,			true },
+	{ ACT_WALK_CROUCH_AIM,			ACT_WALK_CROUCH_AIM_RIFLE,		true },
+	{ ACT_RUN,						ACT_RUN_RIFLE,					true },
+	{ ACT_RUN_AIM,					ACT_RUN_AIM_RIFLE,				true },
+	{ ACT_RUN_CROUCH,				ACT_RUN_CROUCH_RIFLE,			true },
+	{ ACT_RUN_CROUCH_AIM,			ACT_RUN_CROUCH_AIM_RIFLE,		true },
+	{ ACT_GESTURE_RANGE_ATTACK1,	ACT_GESTURE_RANGE_ATTACK_AR2,	false },
+	{ ACT_COVER_LOW,				ACT_COVER_SMG1_LOW,				false },		// FIXME: hook to AR2 unique
+	{ ACT_RANGE_AIM_LOW,			ACT_RANGE_AIM_AR2_LOW,			false },
+	{ ACT_RANGE_ATTACK1_LOW,		ACT_RANGE_ATTACK_SMG1_LOW,		true },		// FIXME: hook to AR2 unique
+	{ ACT_RELOAD_LOW,				ACT_RELOAD_SMG1_LOW,			false },
+	{ ACT_GESTURE_RELOAD,			ACT_GESTURE_RELOAD_SMG1,		true },
+	//	{ ACT_RANGE_ATTACK2, ACT_RANGE_ATTACK_AR2_GRENADE, true },
+
 	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_CROSSBOW,					false },
 	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_CROSSBOW,						false },
 	{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_CROSSBOW,				false },
@@ -41,6 +93,7 @@ acttable_t CWeaponRailgun::m_acttable[] =
 	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_CROSSBOW,	false },
 	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_CROSSBOW,			false },
 	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_CROSSBOW,					false },
+	{ ACT_RANGE_ATTACK1,			ACT_RANGE_ATTACK_AR2,			false },
 };
 
 IMPLEMENT_ACTTABLE(CWeaponRailgun);
@@ -59,11 +112,107 @@ CWeaponRailgun::CWeaponRailgun( void )
 	m_bOverchargeDamageBenefits = false;
 	m_bIsLowBattery = false;
 	m_bPlayedDechargingSound = false;
+
+	m_fMinRange1 = 0;
+	m_fMaxRange1 = 9999;
 }
 
 void CWeaponRailgun::Equip(CBaseCombatCharacter* pOwner)
 {
 	return BaseClass::Equip(pOwner);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : *pOperator - 
+//-----------------------------------------------------------------------------
+void CWeaponRailgun::FireNPCPrimaryAttack(CBaseCombatCharacter* pOperator, bool bUseWeaponAngles)
+{
+	Vector vecShootOrigin, vecShootDir;
+
+	CAI_BaseNPC* npc = pOperator->MyNPCPointer();
+	ASSERT(npc != NULL);
+
+	if (bUseWeaponAngles)
+	{
+		QAngle	angShootDir;
+		GetAttachment(LookupAttachment("muzzle"), vecShootOrigin, angShootDir);
+		AngleVectors(angShootDir, &vecShootDir);
+	}
+	else
+	{
+		vecShootOrigin = pOperator->Weapon_ShootPosition();
+		vecShootDir = npc->GetActualShootTrajectory(vecShootOrigin);
+	}
+
+	Vector	endPos = vecShootOrigin + (vecShootDir * MAX_TRACE_LENGTH);
+
+	//Shoot a shot straight out
+	trace_t	tr;
+	UTIL_TraceLine(vecShootOrigin, endPos, MASK_SHOT, npc, COLLISION_GROUP_NONE, &tr);
+
+	CAmmoDef* def = GetAmmoDef();
+	int definedDamage = def->NPCDamage(m_iPrimaryAmmoType);
+	bool bUsesOvercharge = (npc && npc->m_pAttributes != NULL && npc->m_pAttributes->GetBool("use_railgun_overcharge"));
+	int iDamage = (bUsesOvercharge ? (int)(definedDamage * 2) : definedDamage);
+
+	FireBulletsInfo_t info(1, vecShootOrigin, vecShootDir, vec3_origin, MAX_TRACE_LENGTH, m_iPrimaryAmmoType);
+	info.m_pAttacker = npc;
+	info.m_flDamage = iDamage;
+	info.m_flDamageForceScale = 0.2f;
+
+	WeaponSound(SINGLE);
+	CSoundEnt::InsertSound(SOUND_COMBAT | SOUND_CONTEXT_GUNFIRE, pOperator->GetAbsOrigin(), SOUNDENT_VOLUME_MACHINEGUN, 0.2, pOperator, SOUNDENT_CHANNEL_WEAPON, pOperator->GetEnemy());
+
+	// Fire the bullets, and force the first shot to be perfectly accurate
+	npc->FireBullets(info);
+
+	float hitAngle = -DotProduct(tr.plane.normal, vecShootDir);
+
+	Vector vReflection;
+
+	vReflection = 2.0 * tr.plane.normal * hitAngle + vecShootDir;
+
+	vecShootOrigin = tr.endpos;
+	endPos = vecShootOrigin + (vReflection * MAX_TRACE_LENGTH);
+
+	//Kick up an effect
+	if (!(tr.surface.flags & SURF_SKY))
+	{
+		UTIL_ImpactTrace(&tr, m_iPrimaryAmmoType, "ImpactJeep");
+
+		//Do a gauss explosion
+		CPVSFilter filter(tr.endpos);
+		te->GaussExplosion(filter, 0.0f, tr.endpos, tr.plane.normal, 0);
+	}
+
+	//Draw beam to reflection point
+	DrawBeam(tr.startpos, tr.endpos);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CWeaponRailgun::Operator_ForceNPCFire(CBaseCombatCharacter* pOperator, bool bSecondary)
+{
+	FireNPCPrimaryAttack(pOperator, false);
+}
+
+//-----------------------------------------------------------------------------
+void CWeaponRailgun::Operator_HandleAnimEvent(animevent_t* pEvent, CBaseCombatCharacter* pOperator)
+{
+	switch (pEvent->event)
+	{
+	case EVENT_WEAPON_AR2:
+	{
+		FireNPCPrimaryAttack(pOperator, false);
+		break;
+	}
+
+	default:
+		BaseClass::Operator_HandleAnimEvent(pEvent, pOperator);
+		break;
+	}
 }
 
 void CWeaponRailgun::Precache(void)
@@ -318,10 +467,11 @@ void CWeaponRailgun::Fire( void )
 	//oh my fucking god
 	if (sk_weapon_railgun_overcharge_limit.GetInt() > 0 && pOwner->GetAmmoCount(m_iPrimaryAmmoType) > sk_weapon_railgun_overcharge_limit.GetInt())
 	{
-		ExplosionCreate(pOwner->EyePosition(), pOwner->GetAbsAngles(), pOwner, 50, 128, 0, false);
+		ExplosionCreate(pOwner->EyePosition(), pOwner->GetAbsAngles(), pOwner, 150, 128, 0, true);
 		pOwner->Weapon_Detach(this);
 		engine->ClientCommand(pOwner->edict(), "lastinv");
 		engine->ClientCommand(pOwner->edict(), "-attack2");
+		pOwner->SetAmmoCount(sk_weapon_railgun_overcharge_limit.GetInt(), m_iPrimaryAmmoType);
 		UTIL_Remove(this);
 		return;
 	}
@@ -401,11 +551,6 @@ void CWeaponRailgun::Fire( void )
 //-----------------------------------------------------------------------------
 void CWeaponRailgun::DrawBeam(const Vector& startPos, const Vector& endPos)
 {
-	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
-
-	if (pOwner == NULL)
-		return;
-
 	float flWidth = (m_bOverchargeDamageBenefits ? 4.5f : 2.0f);
 
 	//Draw the main beam shaft
@@ -553,4 +698,21 @@ void CWeaponRailgun::PrimaryAttack(void)
 void CWeaponRailgun::SecondaryAttack(void)
 {
 	//NOTENOTE: The zooming is handled by the post/busy frames
+}
+
+//-----------------------------------------------------------------------------
+const WeaponProficiencyInfo_t* CWeaponRailgun::GetProficiencyValues()
+{
+	static WeaponProficiencyInfo_t proficiencyTable[] =
+	{
+		{ 7.0,		0.75	},
+		{ 5.00,		0.75	},
+		{ 3.0,		0.85	},
+		{ 5.0 / 3.0,	0.75	},
+		{ 1.00,		1.0		},
+	};
+
+	COMPILE_TIME_ASSERT(ARRAYSIZE(proficiencyTable) == WEAPON_PROFICIENCY_PERFECT + 1);
+
+	return proficiencyTable;
 }

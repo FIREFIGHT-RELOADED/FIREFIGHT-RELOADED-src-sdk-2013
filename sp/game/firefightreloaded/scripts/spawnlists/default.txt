@@ -239,6 +239,13 @@
 		"min_level"		"13"
 		"rare"			"1"
 		"exp"	"60"
+		"equipment"	
+		{
+			"weapon_ar2" "5"
+			"weapon_smg1" "3"
+			"weapon_shotgun" "4"
+			"weapon_railgun" "3"
+		}
 	}
 	"33"
 	{
@@ -298,6 +305,13 @@
 		"min_level"		"15"
 		"rare"			"1"
 		"exp"	"100"
+		"equipment"	
+		{
+			"weapon_ar2" "5"
+			"weapon_smg1" "2"
+			"weapon_shotgun" "3"
+			"weapon_railgun" "4"
+		}
 	}
 	//LEVEL 16
 	//advisor drones of various combine units.
@@ -336,5 +350,12 @@
 		"min_level"		"16"
 		"rare"			"1"
 		"exp"	"100"
+		"equipment"	
+		{
+			"weapon_ar2" "5"
+			"weapon_smg1" "3"
+			"weapon_shotgun" "4"
+			"weapon_railgun" "3"
+		}
 	}
 }
