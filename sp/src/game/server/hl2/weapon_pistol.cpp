@@ -17,6 +17,7 @@
 #include "game.h"
 #include "vstdlib/random.h"
 #include "gamestats.h"
+#include "weapon_flaregun.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -60,6 +61,8 @@ public:
 
 	virtual bool Reload( void );
 
+	virtual float GetFireRate(void);
+
 	virtual const Vector& GetBulletSpread( void )
 	{		
 		// Handle NPCs first
@@ -99,11 +102,6 @@ public:
 		return 3; 
 	}
 
-	virtual float GetFireRate( void ) 
-	{
-		return 0.5f; 
-	}
-
 	DECLARE_ACTTABLE();
 
 private:
@@ -111,6 +109,9 @@ private:
 	float	m_flLastAttackTime;
 	float	m_flAccuracyPenalty;
 	int		m_nNumShotsFired;
+
+protected:
+	int				m_iFireMode;
 };
 
 
@@ -126,6 +127,7 @@ BEGIN_DATADESC( CWeaponPistol )
 	DEFINE_FIELD( m_flLastAttackTime,		FIELD_TIME ),
 	DEFINE_FIELD( m_flAccuracyPenalty,		FIELD_FLOAT ), //NOTENOTE: This is NOT tracking game time
 	DEFINE_FIELD( m_nNumShotsFired,			FIELD_INTEGER ),
+	DEFINE_FIELD(m_iFireMode, FIELD_INTEGER)
 
 END_DATADESC()
 
@@ -187,6 +189,9 @@ CWeaponPistol::CWeaponPistol( void )
 void CWeaponPistol::Precache( void )
 {
 	BaseClass::Precache();
+
+	PrecacheScriptSound("Flare.Touch");
+	UTIL_PrecacheOther("env_flare");
 }
 
 //-----------------------------------------------------------------------------
@@ -222,6 +227,11 @@ void CWeaponPistol::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCh
 	}
 }
 
+float CWeaponPistol::GetFireRate(void)
+{
+	return 0.5f;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
@@ -249,10 +259,15 @@ void CWeaponPistol::PrimaryAttack( void )
 	}
 
 	m_flLastAttackTime = gpGlobals->curtime;
+
 	m_flSoonestPrimaryAttack = gpGlobals->curtime + PISTOL_FASTEST_REFIRE_TIME;
+
 	CSoundEnt::InsertSound( SOUND_COMBAT, GetAbsOrigin(), SOUNDENT_VOLUME_PISTOL, 0.2, GetOwner() );
 
 	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+
+	if (pOwner == NULL)
+		return;
 
 	if( pOwner )
 	{
@@ -263,7 +278,36 @@ void CWeaponPistol::PrimaryAttack( void )
 		pOwner->ViewPunchReset();
 	}
 
-	BaseClass::PrimaryAttack();
+	if (m_iFireMode == 1)
+	{
+		if (m_iClip1 <= 0)
+		{
+			SendWeaponAnim(ACT_VM_DRYFIRE);
+			pOwner->m_flNextAttack = gpGlobals->curtime + SequenceDuration();
+			return;
+		}
+
+		m_iClip1--;
+
+		SendWeaponAnim(ACT_VM_PRIMARYATTACK);
+		pOwner->m_flNextAttack = gpGlobals->curtime + GetFireRate();
+
+		CFlare* pFlare = CFlare::Create(pOwner->Weapon_ShootPosition(), pOwner->EyeAngles(), pOwner, FLARE_DURATION);
+
+		if (pFlare == NULL)
+			return;
+
+		Vector forward;
+		pOwner->EyeVectors(&forward);
+
+		pFlare->SetAbsVelocity(forward * 1500);
+
+		WeaponSound(SPECIAL3);
+	}
+	else
+	{
+		BaseClass::PrimaryAttack();
+	}
 
 	// Add an accuracy penalty which can move past our maximum penalty time if we're really spastic
 	m_flAccuracyPenalty += PISTOL_ACCURACY_SHOT_PENALTY_TIME;
@@ -324,6 +368,28 @@ void CWeaponPistol::ItemPostFrame( void )
 
 	if ( pOwner == NULL )
 		return;
+
+	if (pOwner->m_afButtonPressed & IN_ATTACK3)
+	{
+		if (m_iFireMode == 0)
+		{
+			CFmtStr hint;
+			hint.sprintf("#Valve_Pistol_Flares");
+			pOwner->ShowLevelMessage(hint.Access());
+			m_iFireMode = 1;
+			SendWeaponAnim(ACT_VM_RELOAD);
+			WeaponSound(RELOAD);
+		}
+		else if (m_iFireMode == 1)
+		{
+			CFmtStr hint;
+			hint.sprintf("#Valve_Pistol_Round");
+			pOwner->ShowLevelMessage(hint.Access());
+			m_iFireMode = 0;
+			SendWeaponAnim(ACT_VM_RELOAD);
+			WeaponSound(RELOAD);
+		}
+	}
 
 	//Allow a refire as fast as the player can click
 	if ( ( ( pOwner->m_nButtons & IN_ATTACK ) == false ) && ( m_flSoonestPrimaryAttack < gpGlobals->curtime ) )

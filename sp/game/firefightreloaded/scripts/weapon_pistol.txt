@@ -47,6 +47,7 @@ WeaponData
 		"single_shot_npc"	"Weapon_Pistol.NPC_Single"
 		"special1"		"Weapon_Pistol.Special1"
 		"special2"		"Weapon_Pistol.Special2"
+		"special3"		"Weapon_FlareGun.Single"
 		"burst"			"Weapon_Pistol.Burst"
 	}
 

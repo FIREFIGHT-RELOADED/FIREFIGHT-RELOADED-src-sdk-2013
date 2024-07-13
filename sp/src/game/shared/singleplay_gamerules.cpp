@@ -847,7 +847,9 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 					xpReward += 30;
 				}
 
-				if (FClassnameIs(pInflictor, "knife_bolt") || FClassnameIs(pInflictor, "crossbow_bolt"))
+				if (FClassnameIs(pInflictor, "knife_bolt") || 
+					FClassnameIs(pInflictor, "crossbow_bolt") || 
+					FClassnameIs(pInflictor, "env_flare"))
 				{
 					moneyReward += 30;
 					xpReward += 30;

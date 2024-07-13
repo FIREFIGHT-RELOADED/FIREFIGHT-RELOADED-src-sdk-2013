@@ -147,7 +147,7 @@
 
 	"soundlevel"	"SNDLVL_NORM"
 
-	"wave"			"weapons/flaregun/impact.wav"
+	"wave"			"weapons/pistol/flare_impact.wav"
 }
 
 "Item.Materialize"
