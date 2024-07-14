@@ -414,6 +414,12 @@ $Project "Server (FR)"
 				$File	"firefightreloaded\npc_acontroller.cpp"
 			}
 		}
+        
+        $Folder	"InSource DLL"
+		{
+			$File	"in\nodes_generation.cpp"
+			$File	"in\nodes_generation.h"
+		}
 		
 		$Folder	"SMMOD DLL"
 		{
