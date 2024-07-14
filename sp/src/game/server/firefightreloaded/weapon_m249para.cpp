@@ -161,7 +161,7 @@ void CWeaponM249Para::Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatC
 		vecShootOrigin = pOperator->Weapon_ShootPosition();
 		vecShootDir = npc->GetActualShootTrajectory(vecShootOrigin);
 
-		WeaponSoundRealtime(SINGLE_NPC);
+		WeaponSoundRealtime(SINGLE);
 
 		CSoundEnt::InsertSound(SOUND_COMBAT | SOUND_CONTEXT_GUNFIRE, pOperator->GetAbsOrigin(), SOUNDENT_VOLUME_MACHINEGUN, 0.2, pOperator, SOUNDENT_CHANNEL_WEAPON, pOperator->GetEnemy());
 

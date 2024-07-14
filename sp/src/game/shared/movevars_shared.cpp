@@ -88,7 +88,7 @@ ConVar
 ConVar
 	sv_wallrun_anticipation(
 		"sv_wallrun_anticipation",
-		"2",
+		"0",
 		FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_ARCHIVE,
 		"0 - none, 1 - Eye roll only, 2 - Full (bumps)." );
 
