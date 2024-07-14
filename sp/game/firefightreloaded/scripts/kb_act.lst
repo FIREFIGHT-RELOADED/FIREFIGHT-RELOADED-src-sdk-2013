@@ -12,6 +12,8 @@
 "blank"			"#FIREFIGHTRELOADED_Modding_Title"
 "blank"			"=========================="
 "moddingmenu"			"#FIREFIGHTRELOADED_Modding_Menu"
+"ai_nodes_start"        "#FIREFIGHTRELOADED_ModNoding_Begin"
+"ai_nodes_save"         "#FIREFIGHTRELOADED_ModNoding_End"
 "ai_nodes_add"			"#FIREFIGHTRELOADED_Modding_AddNode"
 "ai_nodes_undo"			"#FIREFIGHTRELOADED_Modding_UndoNode"
 "showposition"          "#FIREFIGHTRELOADED_Modding_PrintPos"

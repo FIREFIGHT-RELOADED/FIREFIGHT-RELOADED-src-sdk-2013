@@ -24,7 +24,7 @@
 #include "tier0/memdbgon.h"
 
 CNodesGeneration g_NodesGeneration;
-CNodesGeneration *TheNodeGenerator = &g_NodesGeneration;
+CNodesGeneration* TheNodeGenerator = &g_NodesGeneration;
 
 static bool bInNodePlacement = false;
 static CUtlVector<CBaseEntity*> pNodes;
@@ -37,9 +37,9 @@ ConVar ai_generate_nodes_underwater("ai_generate_nodes_underwater", "0");
 ConVar ai_generate_nodes_walkable("ai_generate_nodes_walkable", "1");
 ConVar ai_generate_nodes_walkable_distance(" ai_generate_nodes_walkable_distance", "300");
 
-CBaseEntity *CreateNode(Vector origin)
+CBaseEntity* CreateGeneratedNode(Vector origin)
 {
-	CBaseEntity *pEnt = CSprite::SpriteCreate("sprites/glow01.vmt", origin, false);
+	CBaseEntity* pEnt = CSprite::SpriteCreate("sprites/glow01.vmt", origin, false);
 	pNodes.AddToTail(pEnt);
 	return pEnt;
 }
@@ -50,10 +50,10 @@ void CNodesGeneration::Start()
 {
 	m_iNavAreaCount = TheNavMesh->GetNavAreaCount();
 
-    if ( m_iNavAreaCount == 0 ) 
+	if (m_iNavAreaCount == 0)
 	{
-		const char *classname = "";
-		CBaseEntity *pSpotFinder;
+		const char* classname = "";
+		CBaseEntity* pSpotFinder;
 		pSpotFinder = NULL;
 
 		pSpotFinder = gEntList.FindEntityByClassname(NULL, "info_player_terrorist");
@@ -99,98 +99,98 @@ void CNodesGeneration::Start()
 
 		TheNavMesh->SetPlayerSpawnName(classname);
 		TheNavMesh->BeginGeneration();
-        return;
-    }
+		return;
+	}
 
-    m_iWalkableNodesCount = 0;
-    m_WalkLocations.Purge();
+	m_iWalkableNodesCount = 0;
+	m_WalkLocations.Purge();
 
-    Msg( "Examining %i navigation areas...\n", m_iNavAreaCount );
+	Msg("Examining %i navigation areas...\n", m_iNavAreaCount);
 
-    GenerateWalkableNodes();
+	GenerateWalkableNodes();
 
-    Msg( "Process finished. %i nodes have been generated.\n\n", g_pAINetworkManager->GetNetwork()->NumNodes() );
+	Msg("Process finished. %i nodes have been generated.\n\n", m_iWalkableNodesCount);
 }
 
 //================================================================================
 //================================================================================
 void CNodesGeneration::GenerateWalkableNodes()
 {
-    if (bInNodePlacement)
+	if (!bInNodePlacement)
 		return;
-	
-	if ( !ai_generate_nodes_walkable.GetBool() )
-        return;
 
-    Msg( "Generating walkable nodes...\n" );
+	if (!ai_generate_nodes_walkable.GetBool())
+		return;
 
-    int nodesGenerated = m_iWalkableNodesCount;
+	Msg("Generating nodes...\n");
 
-    FOR_EACH_VEC( TheNavAreas, it )
-    {
-        CNavArea *pArea = TheNavAreas[it];
+	int nodesGenerated = m_iWalkableNodesCount;
 
-        if ( !pArea )
-            continue;
+	FOR_EACH_VEC(TheNavAreas, it)
+	{
+		CNavArea* pArea = TheNavAreas[it];
 
-        if ( pArea->IsUnderwater() && !ai_generate_nodes_underwater.GetBool() )
-            continue;
+		if (!pArea)
+			continue;
 
-        if ( pArea->IsBlocked( TEAM_ANY ) || pArea->HasAvoidanceObstacle() )
-            continue;
+		if (pArea->IsUnderwater() && !ai_generate_nodes_underwater.GetBool())
+			continue;
 
-        for ( int e = 0; e <= MAX_NODES_PER_AREA; ++e ) {
-            // Obtenemos una posición al azar
-            Vector vecPosition = pArea->GetRandomPoint();
-            vecPosition.z += 10;
+		if (pArea->IsBlocked(TEAM_ANY) || pArea->HasAvoidanceObstacle())
+			continue;
 
-            bool tooClose = false;
+		for (int e = 0; e <= MAX_NODES_PER_AREA; ++e) {
+			// Obtenemos una posición al azar
+			Vector vecPosition = pArea->GetRandomPoint();
+			vecPosition.z += 10;
 
-            // Ya hemos generado un nodo aquí
-            if ( m_WalkLocations.HasElement( vecPosition ) )
-                continue;
+			bool tooClose = false;
 
-            // Revisamos todos los nodos que hemos generado
-            FOR_EACH_VEC( m_WalkLocations, it )
-            {
-                Vector vecTmp = m_WalkLocations[it];
+			// Ya hemos generado un nodo aquí
+			if (m_WalkLocations.HasElement(vecPosition))
+				continue;
 
-                if ( !vecTmp.IsValid() )
-                    continue;
+			// Revisamos todos los nodos que hemos generado
+			FOR_EACH_VEC(m_WalkLocations, it)
+			{
+				Vector vecTmp = m_WalkLocations[it];
 
-                // Esta muy cerca de otro nodo
-                if ( vecTmp.DistTo( vecPosition ) <= ai_generate_nodes_walkable_distance.GetFloat() ) {
-                    if ( vecPosition.z == vecTmp.z || (vecPosition.z < (vecTmp.z + 15.0f) && vecPosition.z >( vecTmp.z - 15.0f )) ) {
-                        tooClose = true;
-                        break;
-                    }
-                }
-            }
+				if (!vecTmp.IsValid())
+					continue;
 
-            // Esta muy cerca de otro nodo
-            if ( tooClose )
-                continue;
+				// Esta muy cerca de otro nodo
+				if (vecTmp.DistTo(vecPosition) <= ai_generate_nodes_walkable_distance.GetFloat()) {
+					if (vecPosition.z == vecTmp.z || (vecPosition.z < (vecTmp.z + 15.0f) && vecPosition.z >(vecTmp.z - 15.0f))) {
+						tooClose = true;
+						break;
+					}
+				}
+			}
+
+			// Esta muy cerca de otro nodo
+			if (tooClose)
+				continue;
 
 			Vector vecOrigin = Vector(vecPosition.x, vecPosition.y, vecPosition.z);
-			CreateNode(vecOrigin);
+			CreateGeneratedNode(vecOrigin);
 
 			m_WalkLocations.AddToTail(vecPosition);
 			++m_iWalkableNodesCount;
-        }
+		}
 
-        int max = MAX_NODES;
+		int max = MAX_NODES;
 
-        // No se han generado todos los nodos que tenemos disponibles, para generar
-        // un movimiento más fluido repetimos el proceso hasta completar o que no haya
-        // lugares donde crear más
-        if ( m_iWalkableNodesCount < max && nodesGenerated < m_iWalkableNodesCount ) {
-            Msg( "%i / %i...\n", m_iWalkableNodesCount, max );
-            GenerateWalkableNodes();
-            return;
-        }
-    }
+		// No se han generado todos los nodos que tenemos disponibles, para generar
+		// un movimiento más fluido repetimos el proceso hasta completar o que no haya
+		// lugares donde crear más
+		if (m_iWalkableNodesCount < max && nodesGenerated < m_iWalkableNodesCount) {
+			Msg("%i / %i...\n", m_iWalkableNodesCount, max);
+			GenerateWalkableNodes();
+			return;
+		}
+	}
 
-    Msg( "%i walkable nodes have been created...\n\n", m_iWalkableNodesCount );
+	Msg("%i nodes have been generated...\n\n", m_iWalkableNodesCount);
 }
 
 void C_GenerateNodes(void)
@@ -199,51 +199,19 @@ void C_GenerateNodes(void)
 	char szNodeTextFilename[MAX_PATH];
 	Q_snprintf(szNodeTextFilename, sizeof(szNodeTextFilename), "maps/graphs/%s%s.txt", STRING(gpGlobals->mapname), GetPlatformExt());
 	CUtlBuffer buf(0, 0, CUtlBuffer::TEXT_BUFFER);
-	if (filesystem->ReadFile(szNodeTextFilename, "game", buf))
-	{
-		if (!buf.Size())
-			return;
-
-		const int maxLen = 64;
-		char line[maxLen];
-		CUtlVector<char*> floats;
-		int num = 0;
-
-		// loop through every line of the file, read it in
-		while (true)
-		{
-			buf.GetLine(line, maxLen);
-			if (Q_strlen(line) <= 0)
-				break; // reached the end of the file
-
-			// we've read in a string containing 3 tab separated floats
-			// we need to split this into 3 floats, which we put in a vector
-			V_SplitString(line, "	", floats);
-			Vector origin(atof(floats[0]), atof(floats[1]), atof(floats[2]));
-
-			floats.PurgeAndDeleteElements();
-			
-			CreateNode(origin);
-			num++;
-
-			if (!buf.IsValid())
-				break;
-		}
-	}
 
 	bInNodePlacement = true;
 	Msg("Generating Nodegraph...\n");
 	TheNodeGenerator->Start();
 	Msg("Saving Nodegraph...\n");
 	// save the nodes
-	CUtlBuffer buf2(0, 0, CUtlBuffer::TEXT_BUFFER);
-	for (int i = 0; i<pNodes.Size(); i++)
+	for (int i = 0; i < pNodes.Size(); i++)
 	{
-		buf2.PutString(UTIL_VarArgs("%f	%f	%f\n", pNodes[i]->GetAbsOrigin().x,
+		buf.PutString(UTIL_VarArgs("%f	%f	%f\n", pNodes[i]->GetAbsOrigin().x,
 			pNodes[i]->GetAbsOrigin().y,
 			pNodes[i]->GetAbsOrigin().z));
 	}
-	filesystem->WriteFile(szNodeTextFilename, "game", buf2);
+	filesystem->WriteFile(szNodeTextFilename, "game", buf);
 
 	// clean up & exit node mode
 	pNodes.PurgeAndDeleteElements();
