@@ -1644,39 +1644,13 @@ const char *CHalfLife2::GetChatFormat(bool bTeamOnly, CBasePlayer *pPlayer)
 	CHL2_Player *pHL2MPPlayer = ToHL2Player(pPlayer);
 	const char *pszFormat = NULL;
 
-	// team only
-	if (pHL2MPPlayer->m_bIsPlayerADev)
+	if (pHL2MPPlayer->IsDead())
 	{
-		if (pHL2MPPlayer->IsDead())
-		{
-			pszFormat = "FR_Chat_DevDead";
-		}
-		else
-		{
-			pszFormat = "FR_Chat_Dev";
-		}
-	}
-	else if (pHL2MPPlayer->m_bIsPlayerAVIP)
-	{
-		if (pHL2MPPlayer->IsDead())
-		{
-			pszFormat = "FR_Chat_VIPDead";
-		}
-		else
-		{
-			pszFormat = "FR_Chat_VIP";
-		}
+		pszFormat = "FR_Chat_AllDead";
 	}
 	else
 	{
-		if (pHL2MPPlayer->IsDead())
-		{
-			pszFormat = "FR_Chat_AllDead";
-		}
-		else
-		{
-			pszFormat = "FR_Chat_All";
-		}
+		pszFormat = "FR_Chat_All";
 	}
 
 	return pszFormat;

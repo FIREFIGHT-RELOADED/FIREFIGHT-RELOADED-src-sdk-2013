@@ -1,0 +1,39 @@
+"default"
+{
+	"1"
+	{
+		"weapon"	"weapon_pistol"
+		"ammotype"	"Pistol"
+		"ammonum"	"120"
+	}
+	"2"
+	{
+		"weapon"	"weapon_smg1"
+		"ammotype"	"SMG1"
+		"ammonum"	"220"
+	}
+	"3"
+	{
+		"weapon"	"weapon_mp5"
+		"ammotype"	"MP5Ammo"
+		"ammonum"	"120"
+	}
+	"4"
+	{
+		"weapon"	"weapon_physcannon"
+	}
+	"5"
+	{
+		// don't make the grapple the last weapon or else the game won't switch
+		// to the gravity gun.
+		"weapon"	"weapon_grapple"
+	}
+	"6"
+	{
+		"weapon"	"weapon_crowbar"
+	}
+	"7"
+	{
+		"weapon"	"weapon_knife"
+	}
+}

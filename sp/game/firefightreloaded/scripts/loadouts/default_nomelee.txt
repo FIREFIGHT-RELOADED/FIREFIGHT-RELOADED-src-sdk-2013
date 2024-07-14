@@ -1,0 +1,31 @@
+"default_nomelee"
+{
+	"1"
+	{
+		"weapon"	"weapon_pistol"
+		"ammotype"	"Pistol"
+		"ammonum"	"120"
+	}
+	"2"
+	{
+		"weapon"	"weapon_smg1"
+		"ammotype"	"SMG1"
+		"ammonum"	"220"
+	}
+	"3"
+	{
+		"weapon"	"weapon_mp5"
+		"ammotype"	"MP5Ammo"
+		"ammonum"	"120"
+	}
+	"4"
+	{ 
+		// don't make the grapple the last weapon or else the game won't switch
+		// to the gravity gun.
+		"weapon"	"weapon_grapple"
+	}
+	"5"
+	{
+		"weapon"	"weapon_physcannon"
+	}
+}

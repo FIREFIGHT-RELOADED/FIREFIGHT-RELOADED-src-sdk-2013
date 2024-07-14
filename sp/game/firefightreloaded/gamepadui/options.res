@@ -22,6 +22,22 @@
 				}
 			}
             
+            "LoadoutSelection"
+			{
+				"text"			"#GameUI_SelectLoadout"
+				"type"			"wheelywheel"
+				"convar"		"sv_player_defaultloadout"
+                "usesstring"    "1"
+
+				"options"
+				{
+					"default"		        "#GameUI_LoadoutDefault"
+					"default_nomelee"		"#GameUI_LoadoutDefaultNoMelee"
+                    "ironkick"		        "#GameUI_IronKickMode"
+                    "hardcore"		        "#GameUI_HardcoreMode"
+				}
+			}
+            
             "ClassicModifier"
 			{
 				"text"			"#GameUI_ClassicMode"
@@ -35,37 +51,11 @@
 				}
 			}
 
-			"HardcoreModifier"
-			{
-				"text"			"#GameUI_HardcoreMode"
-				"type"			"wheelywheel"
-				"convar"		"g_fr_hardcore"
-
-				"options"
-				{
-					"0"		"#gameui_disabled"
-					"1"		"#gameui_enabled"
-				}
-			}
-
 			"LoneWolfModifier"
 			{
 				"text"			"#GameUI_LoneWolfMode"
 				"type"			"wheelywheel"
 				"convar"		"g_fr_lonewolf"
-
-				"options"
-				{
-					"0"		"#gameui_disabled"
-					"1"		"#gameui_enabled"
-				}
-			}
-
-			"IronKickModifier"
-			{
-				"text"			"#GameUI_IronKickMode"
-				"type"			"wheelywheel"
-				"convar"		"g_fr_ironkick"
 
 				"options"
 				{

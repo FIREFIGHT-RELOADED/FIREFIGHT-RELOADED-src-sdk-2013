@@ -170,7 +170,7 @@ void respawn( CBaseEntity *pEdict, bool fCopyCorpse )
 				pPlayer->Spawn();
 			}
 		}
-		else if (g_fr_hardcore.GetBool() && !g_pGameRules->IsMultiplayer())
+		else if (pPlayer->m_bHardcore && !g_pGameRules->IsMultiplayer())
 		{
 			char szMapCommand[1024];
 			// create the command to execute

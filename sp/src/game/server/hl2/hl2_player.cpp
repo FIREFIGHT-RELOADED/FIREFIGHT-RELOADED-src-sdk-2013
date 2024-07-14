@@ -142,6 +142,8 @@ ConVar sv_player_bullettime_shop_timescale("sv_player_bullettime_shop_timescale"
 
 ConVar sv_player_grapple("sv_player_grapple", "1", FCVAR_ARCHIVE, "");
 
+ConVar sv_player_defaultloadout("sv_player_defaultloadout", "default", FCVAR_ARCHIVE, "");
+
 #define	FLASH_DRAIN_TIME	 1.1111	// 100 units / 90 secs
 #define	FLASH_CHARGE_TIME	 50.0f	// 100 units / 2 secs
 //const char *szModelName = NULL;
@@ -472,8 +474,6 @@ CHL2_Player::CHL2_Player()
 
 	m_flArmorReductionTime = 0.0f;
 	m_iArmorReductionFrom = 0;
-	m_bIsPlayerADev = false;
-	m_bIsPlayerAVIP = false;
 }
 
 //
@@ -1290,7 +1290,7 @@ void CHL2_Player::KickAttack(void)
 			// did I hit someone?
 			float KickThrowForceMult = sk_kick_throwforce.GetFloat() + (sk_kick_throwforce_mult.GetFloat() * ((fabs(GetAbsVelocity().x) + fabs(GetAbsVelocity().y) + fabs(GetAbsVelocity().z)) / sk_kick_throwforce_div.GetFloat()));
 			float KickDamageMult = KickThrowForceMult / sk_kick_dmg_div.GetFloat();
-			float KickDamageFlightBoost = g_fr_ironkick.GetBool() ? 9999999.0f : (m_bInGrapple ? KickDamageMult * 3 : KickDamageMult);
+			float KickDamageFlightBoost = m_bIronKick ? 9999999.0f : (m_bInGrapple ? KickDamageMult * 3 : KickDamageMult);
 			float KickDamageProps = KickThrowForceMult / sk_kick_propdmg_div.GetFloat();
 
 			if (tr.m_pEnt)
@@ -1662,12 +1662,7 @@ void CHL2_Player::PlayerRunCommand(CUserCmd *ucmd, IMoveHelper *moveHelper)
 void CHL2_Player::InitialSpawn(void)
 {
 	BaseClass::InitialSpawn();
-
-	m_bIsPlayerADev = CheckIfDev();
-	m_bIsPlayerAVIP = CheckIfVIP();
 }
-
-extern ConVar sk_player_weapons;
 
 //-----------------------------------------------------------------------------
 // Purpose: Sets HL2 specific defaults.
@@ -1777,108 +1772,24 @@ void CHL2_Player::Spawn(void)
 
 	SetPreventWeaponPickup(false);
 
-	if (sk_player_weapons.GetBool() && gpGlobals->eLoadType != MapLoad_Background && !V_stristr(mapname, "credits"))
+	if (gpGlobals->eLoadType != MapLoad_Background && !V_stristr(mapname, "credits"))
 	{
-		if (g_fr_hardcore.GetBool())
-		{
-			EquipSuit();
-			GiveNamedItem("weapon_physcannon");
-			GiveNamedItem("weapon_knife");
-			GiveNamedItem("weapon_crowbar");
-			if (sv_player_grapple.GetBool())
-			{
-				GiveNamedItem("weapon_grapple");
-			}
-
-			Weapon_Switch(Weapon_OwnsThisType("weapon_physcannon"));
-		}
-		else if (g_fr_ironkick.GetBool())
-		{
-			EquipSuit();
-			SetPreventWeaponPickup(true);
-		}
-		else if (IsAtMaxLevel())
+		if (IsAtMaxLevel())
 		{
 			EquipSuit();
 
 			if (GlobalEntity_GetState("player_inbossbattle") == GLOBAL_OFF)
 			{
-				GiveNamedItem("weapon_physcannon");
-				if (sv_player_grapple.GetBool())
-				{
-					GiveNamedItem("weapon_grapple");
-				}
-
-				Weapon_Switch(Weapon_OwnsThisType("weapon_physcannon"));
+				LoadLoadoutFile("maxlevel");
 			}
 			else
 			{
-				IncrementArmorValue(200);
-
-				// Give the player everything!
-				BaseClass::GiveAmmo(999, "Pistol");
-				BaseClass::GiveAmmo(999, "AR2");
-				BaseClass::GiveAmmo(999, "AR2AltFire");
-				BaseClass::GiveAmmo(999, "SMG1");
-				BaseClass::GiveAmmo(999, "Buckshot");
-				BaseClass::GiveAmmo(999, "smg1_grenade");
-				BaseClass::GiveAmmo(999, "rpg_round");
-				BaseClass::GiveAmmo(999, "grenade");
-				BaseClass::GiveAmmo(999, "357");
-				BaseClass::GiveAmmo(999, "XBowBolt");
-				BaseClass::GiveAmmo(999, "Sniper");
-				BaseClass::GiveAmmo(999, "M249");
-				BaseClass::GiveAmmo(999, "slam");
-				BaseClass::GiveAmmo(999, "GaussEnergy");
-				BaseClass::GiveAmmo(999, "MP5Ammo");
-				BaseClass::GiveAmmo(400, "Railgun");
-				//#ifdef HL2_EPISODIC
-						//GiveAmmo( 999, "Hopwire" );
-				//#endif		
-				GiveNamedItem("weapon_smg1");
-				GiveNamedItem("weapon_frag");
-				GiveNamedItem("weapon_crowbar");
-				GiveNamedItem("weapon_pistol");
-				GiveNamedItem("weapon_ar2");
-				GiveNamedItem("weapon_shotgun");
-				GiveNamedItem("weapon_physcannon");
-				GiveNamedItem("weapon_bugbait");
-				GiveNamedItem("weapon_rpg");
-				GiveNamedItem("weapon_357");
-				GiveNamedItem("weapon_crossbow");
-				GiveNamedItem("weapon_sniper_rifle");
-				GiveNamedItem("weapon_m249para");
-				GiveNamedItem("weapon_slam");
-				GiveNamedItem("weapon_knife");
-				GiveNamedItem("weapon_gauss");
-				GiveNamedItem("weapon_mp5");
-				GiveNamedItem("weapon_grapple");
-				GiveNamedItem("weapon_katana");
-				GiveNamedItem("weapon_railgun");
-#ifdef HL2_EPISODIC
-				// GiveNamedItem( "weapon_magnade" );
-#endif
+				CheatImpulseCommands(101);
 			}
 		}
 		else
 		{
-			EquipSuit();
-			BaseClass::GiveAmmo(120, "Pistol");
-			BaseClass::GiveAmmo(220, "SMG1");
-			BaseClass::GiveAmmo(60, "MP5Ammo");
-			BaseClass::GiveAmmo(5, "smg1_grenade");
-			GiveNamedItem("weapon_smg1");
-			GiveNamedItem("weapon_mp5");
-			GiveNamedItem("weapon_crowbar");
-			GiveNamedItem("weapon_pistol");
-			GiveNamedItem("weapon_physcannon");
-			GiveNamedItem("weapon_knife");
-			if (sv_player_grapple.GetBool())
-			{
-				GiveNamedItem("weapon_grapple");
-			}
-
-			Weapon_Switch(Weapon_OwnsThisType("weapon_physcannon"));
+			LoadLoadoutFile(sv_player_defaultloadout.GetString());
 		}
 	}
 }
@@ -5050,68 +4961,6 @@ bool CHL2_Player::CanHearAndReadChatFrom(CBasePlayer *pPlayer)
 		return false;
 
 	return true;
-}
-
-uint64 devmask = 0xFAB2423BFFA352AF;
-uint64 dev_ids[] =
-{
-	76561198029641087 ^ devmask, // Bitl
-	76561199088292414 ^ devmask, // Bitl Development Studios
-};
-
-uint64 vip_ids[] =
-{
-	76561197997923705 ^ devmask, // Theuaredead'
-	76561198009315760 ^ devmask, // LeonelC
-	76561198092604516 ^ devmask, // Slartibarty
-	76561198090680426 ^ devmask, // Tytygigas
-	76561198214768344 ^ devmask, // herbj54
-	76561198249408984 ^ devmask, // bfbc2143
-	76561197998159285 ^ devmask, // DeviantXS
-};
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-bool CHL2_Player::CheckIfDev(void)
-{
-	if (!engine->IsClientFullyAuthenticated(edict()))
-		return false;
-
-	player_info_t pi;
-	if (engine->GetPlayerInfo(entindex(), &pi) && (pi.friendsID))
-	{
-		CSteamID steamIDForPlayer(pi.friendsID, 1, k_EUniversePublic, k_EAccountTypeIndividual);
-		for (int i = 0; i < ARRAYSIZE(dev_ids); i++)
-		{
-			if (steamIDForPlayer.ConvertToUint64() == (dev_ids[i] ^ devmask))
-				return true;
-		}
-	}
-
-	return false;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-bool CHL2_Player::CheckIfVIP(void)
-{
-	if (!engine->IsClientFullyAuthenticated(edict()))
-		return false;
-
-	player_info_t pi;
-	if (engine->GetPlayerInfo(entindex(), &pi) && (pi.friendsID))
-	{
-		CSteamID steamIDForPlayer(pi.friendsID, 1, k_EUniversePublic, k_EAccountTypeIndividual);
-		for (int i = 0; i < ARRAYSIZE(vip_ids); i++)
-		{
-			if (steamIDForPlayer.ConvertToUint64() == (vip_ids[i] ^ devmask))
-				return true;
-		}
-	}
-
-	return false;
 }
 
 //-----------------------------------------------------------------------------

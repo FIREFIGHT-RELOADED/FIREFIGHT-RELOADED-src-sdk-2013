@@ -436,7 +436,7 @@ void CWallHealth::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE u
 
 	if (pPlayer)
 	{
-		if (pPlayer->GetHealth() >= pPlayer->GetMaxMaxHealthRegenValue())
+		if (pPlayer->GetHealth() >= pPlayer->GetMaxHealthValue())
 		{
 			pPlayer->m_afButtonPressed &= ~IN_USE;
 			m_iCaps = FCAP_IMPULSE_USE;
@@ -772,7 +772,7 @@ void CNewWallHealth::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 
 	if (pPlayer)
 	{
-		if (pPlayer->GetHealth() >= pPlayer->GetMaxMaxHealthRegenValue())
+		if (pPlayer->GetHealth() >= pPlayer->GetMaxHealthValue())
 		{
 			pPlayer->m_afButtonPressed &= ~IN_USE;
 			m_iCaps = FCAP_IMPULSE_USE;

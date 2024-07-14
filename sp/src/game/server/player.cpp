@@ -205,8 +205,6 @@ ConVar sv_decay_rate("sv_decay_rate", "8.5", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar sv_decay_increaserateminhealth("sv_decay_increaserateminhealth", "1000", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar sv_decay_increaseratemultiplier("sv_decay_increaseratemultiplier", "2", FCVAR_REPLICATED | FCVAR_CHEAT);
 
-ConVar sk_player_weapons("sk_player_weapons", "1");
-
 ConVar sv_player_maxsuitpower("sv_player_maxsuitpower", "200", FCVAR_REPLICATED);
 
 ConVar sv_player_voice("sv_player_voice", "0", FCVAR_ARCHIVE);
@@ -779,22 +777,6 @@ CBasePlayer *CBasePlayer::CreatePlayer( const char *className, edict_t *ed )
 	return player;
 }
 
-bool GiveHealthRegenPerkOnSpawn()
-{
-	if (sv_fr_perks_healthregeneration_perkmode_inmutators.GetBool())
-	{
-		return !sv_fr_perks_healthregeneration_perkmode.GetBool() && 
-			(!g_fr_classic.GetBool() && 
-			!g_fr_hardcore.GetBool() && 
-			!g_fr_ironkick.GetBool() &&
-			g_pGameRules->GetSkillLevel() < SKILL_VERYHARD);
-	}
-	else
-	{
-		return !sv_fr_perks_healthregeneration_perkmode.GetBool();
-	}
-}
-
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : 
@@ -1085,7 +1067,7 @@ void CBasePlayer::CheckLevel()
 			gameeventmanager->FireEvent(event);
 		}
 
-		if (sk_player_weapons.GetBool() && !g_fr_ironkick.GetBool())
+		if (!m_bIronKick)
 		{
 			RemoveAllItems(false);
 
@@ -1099,13 +1081,7 @@ void CBasePlayer::CheckLevel()
 			}*/
 
 			HL2GameRules()->SetMegaPhyscannonActive();
-
-			if (sv_player_grapple.GetBool())
-			{
-				GiveNamedItem("weapon_grapple");
-			}
-
-			GiveNamedItem("weapon_physcannon");
+			LoadLoadoutFile("maxlevel");
 		}
 
 		CFmtStr hint;
@@ -1501,7 +1477,7 @@ bool CBasePlayer::ProcessItemData(KeyValues* pData, int count, int itemID)
 			unlockInClassic = pNode->GetBool("unlocks_in_classic", 1);
 		}
 
-		if (g_fr_hardcore.GetBool())
+		if (m_bHardcore)
 		{
 			unlockInHardcore = pNode->GetBool("unlocks_in_hardcore", 1);
 		}
@@ -1511,7 +1487,7 @@ bool CBasePlayer::ProcessItemData(KeyValues* pData, int count, int itemID)
 			unlockInLoneWolf = pNode->GetBool("unlocks_in_lone_wolf", 1);
 		}
 
-		if (g_fr_ironkick.GetBool())
+		if (m_bIronKick)
 		{
 			// no weapons are allowed in iron kick.
 			unlockInIronKick = pNode->GetBool("unlocks_in_iron_kick", 0);
@@ -3132,7 +3108,7 @@ void CBasePlayer::PlayerDeathThink(void)
 		StartObserverMode( m_iObserverLastMode );
 	}
 
-	if (g_fr_hardcore.GetBool() && !g_pGameRules->IsMultiplayer())
+	if (m_bHardcore && !g_pGameRules->IsMultiplayer())
 	{
 		if ((gpGlobals->curtime > (m_flDeathTime + DEATH_MESSAGE_TIME)))
 		{
@@ -3145,7 +3121,7 @@ void CBasePlayer::PlayerDeathThink(void)
 	}
 	
 // wait for any button down,  or mp_forcerespawn is set and the respawn time is up
-	if (g_fr_hardcore.GetBool() && !g_pGameRules->IsMultiplayer())
+	if (m_bHardcore && !g_pGameRules->IsMultiplayer())
 	{
 		if (!(gpGlobals->curtime > (m_flDeathTime + DEATH_WAIT_TIME) && m_bDeathMessage))
 			return;
@@ -5634,7 +5610,7 @@ void CBasePlayer::PostThink()
 	//DevMsg("Health: %i\nMaxHealth: %i\nMaxHealthVal: %i\nMaxHealthValExtra: %i\n", GetHealth(), GetMaxHealth(), m_MaxHealthVal, m_MaxHealthValExtra);
 
 	//update the maxhealthvalue before regen so we can't override health
-	int spawnHealth = player_defaulthealth.GetInt() + m_MaxHealthValExtra;
+	int spawnHealth = m_MaxHealthVal + m_MaxHealthValExtra;
 	if (m_MaxHealthVal != spawnHealth)
 	{
 		m_MaxHealthVal = spawnHealth;
@@ -5951,6 +5927,79 @@ CBaseEntity *CBasePlayer::EntSelectSpawnPoint()
 	return pSpot;
 }
 
+KeyValues* CBasePlayer::LoadLoadoutFile(const char* kvName)
+{
+	EquipSuit();
+
+	char szFullFileName[_MAX_PATH];
+	Q_snprintf(szFullFileName, sizeof(szFullFileName), "scripts/loadouts/%s.txt", kvName);
+
+	KeyValues* pKV = new KeyValues(kvName);
+	if (pKV->LoadFromFile(filesystem, szFullFileName))
+	{
+		KeyValues* pNode = pKV->GetFirstSubKey();
+		while (pNode)
+		{
+			m_bHardcore = pNode->GetBool("hardcore", false);
+			m_bIronKick = pNode->GetBool("ironkick", false);
+
+			if (m_bIronKick)
+			{
+				SetPreventWeaponPickup(true);
+				return pKV;
+			}
+
+			const char* itemName = pNode->GetString("weapon", "");
+
+			if (itemName)
+			{
+				if (Q_stristr(itemName, "weapon_grapple") && !sv_player_grapple.GetBool())
+					continue;
+
+				GiveNamedItem(itemName);
+			}
+
+			const char* itemAmmoType = pNode->GetString("ammotype", "");
+			int itemAmmoNum = pNode->GetInt("ammonum", 0);
+
+			if (itemAmmoType && itemAmmoNum)
+			{
+				BaseClass::GiveAmmo(itemAmmoNum, itemAmmoType);
+			}
+
+			int healthNum = pNode->GetInt("health", 0);
+			bool setMaxHealth = pNode->GetBool("setmaxhealth", false);
+
+			if (healthNum)
+			{
+				IncrementHealthValue(healthNum, healthNum);
+				if (setMaxHealth)
+				{
+					IncrementMaxHealthValue(healthNum, healthNum);
+				}
+			}
+
+			int armorNum = pNode->GetInt("armor", 0);
+			bool setMaxArmor = pNode->GetBool("setmaxarmor", false);
+
+			if (armorNum)
+			{
+				IncrementArmorValue(armorNum, armorNum);
+				if (setMaxArmor)
+				{
+					IncrementMaxArmorValue(armorNum, armorNum);
+				}
+			}
+
+			pNode = pNode->GetNextKey();
+		}
+	}
+
+	Weapon_Switch(Weapon_OwnsThisType("weapon_physcannon"));
+
+	return pKV;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Called the first time the player's created
 //-----------------------------------------------------------------------------
@@ -6050,7 +6099,22 @@ void CBasePlayer::Spawn( void )
 	m_bitsHUDDamage = -1;
 	SetPlayerUnderwater( false );
 
-	if (GiveHealthRegenPerkOnSpawn())
+	bool giveHealthRegenonSpawn = false;
+
+	if (sv_fr_perks_healthregeneration_perkmode_inmutators.GetBool())
+	{
+		giveHealthRegenonSpawn = !sv_fr_perks_healthregeneration_perkmode.GetBool() &&
+			(!g_fr_classic.GetBool() &&
+				!m_bHardcore &&
+				!m_bIronKick &&
+				g_pGameRules->GetSkillLevel() < SKILL_VERYHARD);
+	}
+	else
+	{
+		giveHealthRegenonSpawn = !sv_fr_perks_healthregeneration_perkmode.GetBool();
+	}
+
+	if (giveHealthRegenonSpawn)
 	{
 		m_iPerkHealthRegen = 1;
 	}
@@ -6394,6 +6458,7 @@ void CBasePlayer::SetMaxArmorValue(int value)
 void CBasePlayer::IncrementArmorValue( int nCount, int nMaxValue )
 { 
 	m_ArmorValue += nCount;
+
 	if (nMaxValue > 0)
 	{
 		if (m_ArmorValue > nMaxValue)
@@ -6401,30 +6466,50 @@ void CBasePlayer::IncrementArmorValue( int nCount, int nMaxValue )
 	}
 }
 
-void CBasePlayer::IncrementMaxArmorValue(int nCount)
+void CBasePlayer::IncrementMaxArmorValue(int nCount, int nMaxValue)
 {
 	m_MaxArmorValue += nCount;
+
+	if (nMaxValue > 0)
+	{
+		if (m_MaxArmorValue > nMaxValue)
+			m_MaxArmorValue = nMaxValue;
+	}
 }
 
-void CBasePlayer::IncrementArmorValueNoMax(int nCount)
-{
-	m_ArmorValue += nCount;
-}
-
-void CBasePlayer::IncrementMaxHealthValue(int nCount)
+void CBasePlayer::IncrementMaxHealthValue(int nCount, int nMaxValue)
 {
 	m_MaxHealthVal += nCount;
+
+	if (nMaxValue > 0)
+	{
+		if (m_MaxHealthVal > nMaxValue)
+			m_MaxHealthVal = nMaxValue;
+	}
 }
 
-void CBasePlayer::IncrementMaxHealthRegenValue(int nCount)
+void CBasePlayer::IncrementMaxHealthRegenValue(int nCount, int nMaxValue)
 {
 	m_MaxHealthValExtra += nCount;
-	m_MaxHealthVal += m_MaxHealthValExtra;
+
+	if (nMaxValue > 0)
+	{
+		if (m_MaxHealthValExtra > nMaxValue)
+			m_MaxHealthValExtra = nMaxValue;
+	}
+
+	IncrementMaxHealthValue(m_MaxHealthValExtra);
 }
 
-void CBasePlayer::IncrementHealthValue(int nCount)
+void CBasePlayer::IncrementHealthValue(int nCount, int nMaxValue)
 {
 	m_iHealth += nCount;
+
+	if (nMaxValue > 0)
+	{
+		if (m_iHealth > nMaxValue)
+			m_iHealth = nMaxValue;
+	}
 }
 
 // used by the physics gun and game physics... is there a better interface?
@@ -7386,7 +7471,10 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 			TakeHealth( player_defaulthealth.GetInt(), DMG_GENERIC);
 		}
 
-		IncrementArmorValue(200, GetMaxArmorValue());
+		IncrementHealthValue(GetMaxHealthValue());
+		IncrementMaxHealthValue(GetMaxHealthValue());
+		IncrementArmorValue(GetMaxArmorValue());
+		IncrementMaxArmorValue(GetMaxArmorValue());
 		
 		gEvilImpulse101		= false;
 

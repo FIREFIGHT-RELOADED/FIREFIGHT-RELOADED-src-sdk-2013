@@ -321,6 +321,7 @@ public:
 	virtual void			ForceRespawn( void );
 
 	virtual void			InitialSpawn( void );
+	KeyValues*				LoadLoadoutFile(const char* kvName);
 	virtual void			InitHUD( void ) {}
 	virtual void			ShowViewPortPanel( const char * name, bool bShow = true, KeyValues *data = NULL );
 
@@ -762,12 +763,11 @@ public:
 	virtual int	GetMaxArmorValue(void) { return m_MaxArmorValue; }
 	void	IncrementArmorValue( int nCount, int nMaxValue = -1 );
 
-	void	IncrementMaxArmorValue(int nCount);
-	void	IncrementArmorValueNoMax(int nCount);
-	void	IncrementMaxHealthValue(int nCount);
-	void	IncrementMaxHealthRegenValue(int nCount);
-	virtual int	GetMaxMaxHealthRegenValue(void) { return m_MaxHealthVal; }
-	void	IncrementHealthValue(int nCount);
+	void	IncrementMaxArmorValue(int nCount, int nMaxValue = -1);
+	void	IncrementMaxHealthValue(int nCount, int nMaxValue = -1);
+	void	IncrementMaxHealthRegenValue(int nCount, int nMaxValue = -1);
+	virtual int	GetMaxHealthValue(void) { return m_MaxHealthVal; }
+	void	IncrementHealthValue(int nCount, int nMaxValue = -1);
 
 	void	SetConnected( PlayerConnectedState iConnected ) { m_iConnected = iConnected; }
 	virtual void EquipSuit( bool bPlayEffects = true );
@@ -979,8 +979,6 @@ private:
 	CNetworkVar(int, m_iMoney);
 
 public:
-	
-
 
 	// Used by gamemovement to check if the entity is stuck.
 	int m_StuckLast;
@@ -1059,6 +1057,9 @@ public:
 	int m_iPerkHealthRegen;
 	bool m_bGotPerkHealthRegen;
 	float m_fRegenRate;
+
+	bool m_bIronKick;
+	bool m_bHardcore;
 
 private:
 

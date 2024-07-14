@@ -257,11 +257,6 @@ public:
 	void		DeterminePlayerModel();
 	void		SetPlayerModelCustom(const char* szModel);
 
-	bool	m_bIsPlayerADev;
-	bool	CheckIfDev(void);
-	bool	m_bIsPlayerAVIP;
-	bool	CheckIfVIP(void);
-
 	CNetworkVar(float, m_flNextKickAttack);
 	CNetworkVar(bool, m_bIsKicking);
 
@@ -381,7 +376,6 @@ private:
 	float				m_flFlashlightPowerDrainScale;
 
 	bool				m_bInGrapple;
-
 
 	// Aiming heuristics code
 	float				m_flIdleTime;		//Amount of time we've been motionless

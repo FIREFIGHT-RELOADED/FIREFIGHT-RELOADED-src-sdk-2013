@@ -444,9 +444,7 @@ private:
 extern ConVar g_Language;
 extern ConVar g_gamemode;
 extern ConVar g_fr_classic;
-extern ConVar g_fr_hardcore;
 extern ConVar g_fr_lonewolf;
-extern ConVar g_fr_ironkick;
 extern ConVar g_fr_headshotgore;
 extern ConVar g_fr_economy;
 extern ConVar g_fr_entitytolerance;

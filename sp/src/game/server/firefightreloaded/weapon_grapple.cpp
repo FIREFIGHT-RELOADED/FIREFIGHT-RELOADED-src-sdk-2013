@@ -330,17 +330,18 @@ void CWeaponGrapple::Precache( void )
 	BaseClass::Precache();
 }
 
+bool CWeaponGrapple::Deploy(void)
+{
+	return BaseClass::Deploy();
+}
+
 bool CWeaponGrapple::CanDeploy(void)
 {
 	if (m_flNextPrimaryAttack < gpGlobals->curtime)
-	{
 		return true;
-	}
-	else
-	{
-		EmitSound("Weapon_SMG1.Empty");
-		return false;
-	}
+
+	EmitSound("Weapon_SMG1.Empty");
+	return false;
 }
  
 //-----------------------------------------------------------------------------
@@ -540,7 +541,6 @@ bool CWeaponGrapple::Holster( CBaseCombatWeapon *pSwitchingTo )
  
 		NotifyHookDied();
 	}
-
  
 	return BaseClass::Holster( pSwitchingTo );
 }
@@ -581,8 +581,8 @@ bool CWeaponGrapple::HasAnyAmmo( void )
 bool CWeaponGrapple::CanHolster( void )
 {
 	//Can't have an active hook out
-	if ( m_hHook != NULL )
-		return false;
+	//if ( m_hHook != NULL )
+		//return false;
  
 	return BaseClass::CanHolster();
 }

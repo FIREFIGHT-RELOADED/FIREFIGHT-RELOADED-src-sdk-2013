@@ -1,0 +1,25 @@
+"hardcore"
+{
+	"1"
+	{
+		"hardcore" 	"1"
+	}
+	"2"
+	{
+		"weapon"	"weapon_physcannon"
+	}
+	"3"
+	{
+		"weapon"	"weapon_crowbar"
+	}
+	"4"
+	{
+		// don't make the grapple the last weapon or else the game won't switch
+		// to the gravity gun.
+		"weapon"	"weapon_grapple"
+	}
+	"5"
+	{
+		"weapon"	"weapon_knife"
+	}
+}
