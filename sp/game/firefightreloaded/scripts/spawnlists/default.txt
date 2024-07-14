@@ -135,6 +135,14 @@
 		"min_level"		"8"
 		"rare"			"1"
 		"exp"	"45"
+		"equipment"	
+		{
+			"weapon_ar2" "5"
+			"weapon_smg1" "3"
+			"weapon_shotgun" "2"
+			"weapon_m249para" "3"
+			"weapon_sniper_rifle" "3"
+		}
 	}
 	"19"
 	{
@@ -245,6 +253,8 @@
 			"weapon_smg1" "3"
 			"weapon_shotgun" "4"
 			"weapon_railgun" "3"
+			"weapon_m249para" "4"
+			"weapon_sniper_rifle" "3"
 		}
 	}
 	"33"
@@ -311,6 +321,7 @@
 			"weapon_smg1" "2"
 			"weapon_shotgun" "3"
 			"weapon_railgun" "4"
+			"weapon_sniper_rifle" "3"
 		}
 	}
 	//LEVEL 16
@@ -356,6 +367,8 @@
 			"weapon_smg1" "3"
 			"weapon_shotgun" "4"
 			"weapon_railgun" "3"
+			"weapon_m249para" "4"
+			"weapon_sniper_rifle" "3"
 		}
 	}
 }

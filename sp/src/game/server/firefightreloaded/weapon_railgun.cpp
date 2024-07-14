@@ -114,7 +114,7 @@ CWeaponRailgun::CWeaponRailgun( void )
 	m_bPlayedDechargingSound = false;
 
 	m_fMinRange1 = 0;
-	m_fMaxRange1 = 9999;
+	m_fMaxRange1 = 99999;
 }
 
 void CWeaponRailgun::Equip(CBaseCombatCharacter* pOwner)

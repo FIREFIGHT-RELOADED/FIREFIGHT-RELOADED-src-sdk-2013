@@ -61,6 +61,7 @@ public:
 	void		OnChangeActivity( Activity eNewActivity );
 	void		Event_Killed( const CTakeDamageInfo &info );
 	void		OnListened();
+	bool		AllowedToIgnite(void);
 
 	void		ClearAttackConditions( void );
 

@@ -140,6 +140,7 @@ public:
 	virtual void RunTask( const Task_t *pTask );
 	virtual void OnScheduleChange( void );
 	void FlingPlayer(CBaseEntity *pEnt, float force, bool upVector = false);
+	virtual	bool		AllowedToIgnite(void) { return true; }
 
 	void HandleAnimEvent(animevent_t *pEvent);
 	int MeleeAttack1Conditions(float flDot, float flDist);

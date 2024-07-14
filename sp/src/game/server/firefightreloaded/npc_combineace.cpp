@@ -220,6 +220,11 @@ void CNPC_CombineAce::Spawn( void )
 	*/
 }
 
+bool CNPC_CombineAce::AllowedToIgnite(void)
+{
+	return m_bBulletResistanceBroken;
+}
+
 void CNPC_CombineAce::CreateShieldOutline()
 {
 	if (IsGlowEffectActive())
