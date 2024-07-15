@@ -1,0 +1,124 @@
+"boss"
+{
+	"1"
+	{
+		"hardcore"	"1"
+		"nodisconnect"	"1"
+		"health"	"350"
+		"setmaxhealth"	"1"
+		"armor"		"350"
+		"setmaxarmor"	"1"
+		"level"		"20"
+		"kash"		"6500"
+	}
+	"2"
+	{
+		"weapon"	"weapon_pistol"
+		"ammotype"	"Pistol"
+		"ammonum"	"200"
+	}
+	"3"
+	{
+		"weapon"	"weapon_smg1"
+		"ammotype"	"SMG1"
+		"ammonum"	"300"
+		"ammo2type"	"SMG1_Grenade"
+		"ammo2num"	"8"
+	}
+	"4"
+	{
+		"weapon"	"weapon_mp5"
+		"ammotype"	"MP5Ammo"
+		"ammonum"	"150"
+	}
+	"5"
+	{
+		"weapon"	"weapon_physcannon"
+	}
+	"6"
+	{
+		// don't make the grapple the last weapon or else the game won't switch
+		// to the gravity gun.
+		"weapon"	"weapon_grapple"
+	}
+	"7"
+	{
+		"weapon"	"weapon_crowbar"
+	}
+	"8"
+	{
+		"weapon"	"weapon_knife"
+	}
+	"9"
+	{
+		"weapon"	"weapon_ar2"
+		"ammotype"	"AR2"
+		"ammonum"	"300"
+		"ammo2type"	"AR2AltFire"
+		"ammo2num"	"8"
+	}
+	"10"
+	{
+		"weapon"	"weapon_rpg"
+		"ammotype"	"rpg_round"
+		"ammonum"	"50"
+	}
+	"11"
+	{
+		"weapon"	"weapon_frag"
+		"ammotype"	"grenade"
+		"ammonum"	"50"
+	}
+	"12"
+	{
+		"weapon"	"weapon_railgun"
+		"ammotype"	"Railgun"
+		"ammonum"	"150"
+	}
+	"13"
+	{
+		"weapon"	"weapon_gauss"
+		"ammotype"	"GaussEnergy"
+		"ammonum"	"150"
+	}
+	"14"
+	{
+		"weapon"	"weapon_shotgun"
+		"ammotype"	"Buckshot"
+		"ammonum"	"50"
+	}
+	"15"
+	{
+		"weapon"	"weapon_crossbow"
+		"ammotype"	"XBowBolt"
+		"ammonum"	"50"
+	}
+	"16"
+	{
+		"weapon"	"weapon_sniper_rifle"
+		"ammotype"	"Sniper"
+		"ammonum"	"50"
+	}
+	"17"
+	{
+		"weapon"	"weapon_slam"
+		"ammotype"	"slam"
+		"ammonum"	"50"
+	}
+	"18"
+	{
+		"weapon"	"weapon_m249para"
+		"ammotype"	"M249"
+		"ammonum"	"100"
+	}
+	"19"
+	{
+		"weapon"	"weapon_357"
+		"ammotype"	"357"
+		"ammonum"	"100"
+	}
+	"20"
+	{
+		"weapon"	"weapon_katana"
+	}
+}

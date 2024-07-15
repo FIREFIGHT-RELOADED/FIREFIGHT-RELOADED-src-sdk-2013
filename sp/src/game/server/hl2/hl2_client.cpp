@@ -174,7 +174,15 @@ void respawn( CBaseEntity *pEdict, bool fCopyCorpse )
 		{
 			char szMapCommand[1024];
 			// create the command to execute
-			Q_snprintf(szMapCommand, sizeof(szMapCommand), "disconnect\n");
+			if (!pPlayer->m_bHardcoreNoDisconnect)
+			{
+				Q_snprintf(szMapCommand, sizeof(szMapCommand), "disconnect\n");
+			}
+			else
+			{
+				Q_snprintf(szMapCommand, sizeof(szMapCommand), "reload\n");
+			}
+
 			engine->ClientCommand(pPlayer->edict(), szMapCommand);
 		}
 		else

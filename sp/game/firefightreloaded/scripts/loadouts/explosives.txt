@@ -1,0 +1,35 @@
+"explosives"
+{
+	"1"
+	{
+		// don't make the grapple the last weapon or else the game won't switch
+		// to the gravity gun.
+		"weapon"	"weapon_grapple"
+	}
+	"2"
+	{
+		"weapon"	"weapon_smg1"
+		"ammotype"	"SMG1"
+		"ammonum"	"220"
+		"ammo2type"	"SMG1_Grenade"
+		"ammo2num"	"100"
+	}
+	"3"
+	{
+		"weapon"	"weapon_rpg"
+		"ammotype"	"rpg_round"
+		"ammonum"	"100"
+	}
+	"4"
+	{
+		"weapon"	"weapon_frag"
+		"ammotype"	"grenade"
+		"ammonum"	"100"
+	}
+	"5"
+	{
+		"weapon"	"weapon_slam"
+		"ammotype"	"slam"
+		"ammonum"	"100"
+	}
+}

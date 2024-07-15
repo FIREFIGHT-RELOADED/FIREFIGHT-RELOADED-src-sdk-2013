@@ -881,6 +881,7 @@ public:
 	}
 
 	int GetXP() { return m_iExp; }
+	void SetXP(int add = 1) { m_iExp = add; }
 	int GetMaxXP() { return m_iMaxExp; }
 	void SetMaxXP(int add = 1) { m_iMaxExp = add; }
 	void AddXP(int add = 1) 
@@ -1061,6 +1062,7 @@ public:
 	bool m_bIronKick;
 	bool m_bIronKickNoWeaponPickupOnly;
 	bool m_bHardcore;
+	bool m_bHardcoreNoDisconnect;
 
 private:
 

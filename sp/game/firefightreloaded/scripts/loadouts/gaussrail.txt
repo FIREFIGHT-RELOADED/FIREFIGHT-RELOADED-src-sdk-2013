@@ -1,0 +1,21 @@
+"gaussrail"
+{
+	"1"
+	{
+		// don't make the grapple the last weapon or else the game won't switch
+		// to the gravity gun.
+		"weapon"	"weapon_grapple"
+	}
+	"2"
+	{
+		"weapon"	"weapon_railgun"
+		"ammotype"	"Railgun"
+		"ammonum"	"100"
+	}
+	"3"
+	{
+		"weapon"	"weapon_gauss"
+		"ammotype"	"GaussEnergy"
+		"ammonum"	"100"
+	}
+}

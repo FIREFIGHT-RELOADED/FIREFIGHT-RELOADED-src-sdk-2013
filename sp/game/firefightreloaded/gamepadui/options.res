@@ -35,6 +35,11 @@
 					"default_nomelee"		"#GameUI_LoadoutDefaultNoMelee"
                     "ironkick"		        "#GameUI_IronKickMode"
                     "hardcore"		        "#GameUI_HardcoreMode"
+                    "default_hardcore"		        "#GameUI_LoadoutDefaultHardcore"
+                    "default_nomelee_hardcore"		        "#GameUI_LoadoutDefaultNoMeleeHardcore"
+                    "gaussrail"		        "#GameUI_LoadoutRailgun"
+                    "explosives"		        "#GameUI_LoadoutExplosives"
+                    "snipers"		        "#GameUI_LoadoutSnipers"
 				}
 			}
             

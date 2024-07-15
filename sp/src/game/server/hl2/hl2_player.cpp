@@ -1774,6 +1774,12 @@ void CHL2_Player::Spawn(void)
 
 	if (gpGlobals->eLoadType != MapLoad_Background && !V_stristr(mapname, "credits"))
 	{
+		if (GlobalEntity_GetState("player_inbossbattle") == GLOBAL_ON)
+		{
+			LoadLoadoutFile("boss");
+			return;
+		}
+
 		if (IsAtMaxLevel())
 		{
 			EquipSuit();

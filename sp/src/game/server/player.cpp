@@ -5949,6 +5949,11 @@ KeyValues* CBasePlayer::LoadLoadoutFile(const char* kvName)
 				{
 					m_bHardcore = pNode->GetBool("permadeath", false);
 				}
+
+				if (m_bHardcore)
+				{
+					m_bHardcoreNoDisconnect = pNode->GetBool("nodisconnect", false);
+				}
 			}
 
 			const char* itemName = pNode->GetString("weapon", "");
@@ -5964,7 +5969,7 @@ KeyValues* CBasePlayer::LoadLoadoutFile(const char* kvName)
 			const char* itemAmmoType = pNode->GetString("ammotype", "");
 			int itemAmmoNum = pNode->GetInt("ammonum", 0);
 
-			if (itemAmmoType && itemAmmoNum)
+			if (itemAmmoType && itemAmmoNum > 0)
 			{
 				BaseClass::GiveAmmo(itemAmmoNum, itemAmmoType);
 
@@ -5972,7 +5977,7 @@ KeyValues* CBasePlayer::LoadLoadoutFile(const char* kvName)
 				const char* itemAmmo2Type = pNode->GetString("ammo2type", "");
 				int itemAmmo2Num = pNode->GetInt("ammo2num", 0);
 
-				if (itemAmmo2Type && itemAmmo2Num)
+				if (itemAmmo2Type && itemAmmo2Num > 0)
 				{
 					BaseClass::GiveAmmo(itemAmmo2Num, itemAmmo2Type);
 				}
@@ -5981,7 +5986,7 @@ KeyValues* CBasePlayer::LoadLoadoutFile(const char* kvName)
 			int healthNum = pNode->GetInt("health", 0);
 			bool setMaxHealth = pNode->GetBool("setmaxhealth", false);
 
-			if (healthNum)
+			if (healthNum > 0)
 			{
 				IncrementHealthValue(healthNum, healthNum);
 				if (setMaxHealth)
@@ -5993,12 +5998,29 @@ KeyValues* CBasePlayer::LoadLoadoutFile(const char* kvName)
 			int armorNum = pNode->GetInt("armor", 0);
 			bool setMaxArmor = pNode->GetBool("setmaxarmor", false);
 
-			if (armorNum)
+			if (armorNum > 0)
 			{
 				IncrementArmorValue(armorNum, armorNum);
 				if (setMaxArmor)
 				{
 					IncrementMaxArmorValue(armorNum, armorNum);
+				}
+			}
+
+			int level = pNode->GetInt("level", 0);
+
+			if (level > 0)
+			{
+				SetLevel(level);
+			}
+
+			int money = pNode->GetInt("kash", 0);
+
+			if (money > 0)
+			{
+				if (GetMoney() <= 0)
+				{
+					SetMoney(money);
 				}
 			}
 

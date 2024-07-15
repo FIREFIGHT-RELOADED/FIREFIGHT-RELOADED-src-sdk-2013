@@ -11,6 +11,8 @@
 		"weapon"	"weapon_smg1"
 		"ammotype"	"SMG1"
 		"ammonum"	"220"
+		"ammo2type"	"SMG1_Grenade"
+		"ammo2num"	"5"
 	}
 	"3"
 	{
