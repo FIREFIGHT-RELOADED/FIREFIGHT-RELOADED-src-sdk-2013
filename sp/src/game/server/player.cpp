@@ -238,6 +238,8 @@ ConVar sv_player_autoswitch("sv_player_autoswitch", "1", FCVAR_ARCHIVE);
 ConVar sv_fr_perks_healthregeneration_perkmode("sv_fr_perks_healthregeneration_perkmode", "0", FCVAR_ARCHIVE);
 ConVar sv_fr_perks_healthregeneration_perkmode_inmutators("sv_fr_perks_healthregeneration_perkmode_inmutators", "1", FCVAR_ARCHIVE);
 
+ConVar sv_player_defaultloadout("sv_player_defaultloadout", "default", FCVAR_ARCHIVE, "");
+
 static void GiveAmmo( CBasePlayer* player, CBaseCombatWeapon* weap )
 {
 	if ( weap->UsesPrimaryAmmo() )
@@ -6054,6 +6056,36 @@ KeyValues* CBasePlayer::LoadLoadoutFile(const char* kvName)
 	return pKV;
 }
 
+void CBasePlayer::WeaponSpawnLogic(void)
+{
+	char mapname[256];
+	Q_snprintf(mapname, sizeof(mapname), "maps/%s", STRING(gpGlobals->mapname));
+
+	Q_FixSlashes(mapname);
+	Q_strlower(mapname);
+
+	SetPreventWeaponPickup(false);
+
+	if (gpGlobals->eLoadType != MapLoad_Background && !V_stristr(mapname, "credits"))
+	{
+		if (!m_bForcedLoadout)
+		{
+			if (!m_bIronKick && IsAtMaxLevel())
+			{
+				LoadLoadoutFile("maxlevel");
+			}
+			else
+			{
+				LoadLoadoutFile(sv_player_defaultloadout.GetString());
+			}
+		}
+		else
+		{
+			LoadLoadoutFile(m_szForcedLoadoutName);
+		}
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Called the first time the player's created
 //-----------------------------------------------------------------------------
@@ -9168,29 +9200,46 @@ class CLoadoutChanger : public CPointEntity
 	DECLARE_CLASS(CLoadoutChanger, CPointEntity);
 public:
 	void InputSetLoadout(inputdata_t& data);
+	void InputUnsetLoadout(inputdata_t& data);
+	void ResetLoadout(CBasePlayer* pPlayer);
 	DECLARE_DATADESC();
 };
 
 LINK_ENTITY_TO_CLASS(player_loadoutchanger, CLoadoutChanger);
 
 BEGIN_DATADESC(CLoadoutChanger)
-DEFINE_INPUTFUNC(FIELD_STRING, "SetLoadout", InputSetLoadout)
+DEFINE_INPUTFUNC(FIELD_STRING, "SetLoadout", InputSetLoadout),
+DEFINE_INPUTFUNC(FIELD_VOID, "UnsetLoadout", InputUnsetLoadout)
 END_DATADESC()
 
 void CLoadoutChanger::InputSetLoadout(inputdata_t& data)
 {
-	CBasePlayer* pPlayer = NULL;
-
-	if (data.pActivator && data.pActivator->IsPlayer())
-	{
-		pPlayer = (CBasePlayer*)data.pActivator;
-	}
+	CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
 
 	if (pPlayer)
 	{
 		pPlayer->m_bForcedLoadout = true;
-		pPlayer->LoadLoadoutFile(data.value.String());
+		pPlayer->m_szForcedLoadoutName = data.value.String();
+		ResetLoadout(pPlayer);
 	}
+}
+
+void CLoadoutChanger::InputUnsetLoadout(inputdata_t& data)
+{
+	CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
+
+	if (pPlayer)
+	{
+		pPlayer->m_bForcedLoadout = false;
+		pPlayer->m_szForcedLoadoutName = "";
+		ResetLoadout(pPlayer);
+	}
+}
+
+void CLoadoutChanger::ResetLoadout(CBasePlayer* pPlayer)
+{
+	pPlayer->RemoveAllItems(true);
+	pPlayer->WeaponSpawnLogic();
 }
 
 class CStripWeapons : public CPointEntity

@@ -164,26 +164,27 @@ void respawn( CBaseEntity *pEdict, bool fCopyCorpse )
 				// create the command to execute
 				Q_snprintf(szMapCommand, sizeof(szMapCommand), "map firefight_advisor\nprogress_enable\n");
 				engine->ClientCommand(pPlayer->edict(), szMapCommand);
-			}
-			else
-			{
-				pPlayer->Spawn();
+
+				if (pPlayer->m_bHardcore)
+					return;
 			}
 		}
-		else if (pPlayer->m_bHardcore && !g_pGameRules->IsMultiplayer())
+
+		if (pPlayer->m_bHardcore && !g_pGameRules->IsMultiplayer())
 		{
-			char szMapCommand[1024];
 			// create the command to execute
 			if (!pPlayer->m_bHardcoreNoDisconnect)
 			{
+				char szMapCommand[1024];
 				Q_snprintf(szMapCommand, sizeof(szMapCommand), "disconnect\n");
+				engine->ClientCommand(pPlayer->edict(), szMapCommand);
 			}
 			else
 			{
+				char szMapCommand[1024];
 				Q_snprintf(szMapCommand, sizeof(szMapCommand), "reload\n");
+				engine->ClientCommand(pPlayer->edict(), szMapCommand);
 			}
-
-			engine->ClientCommand(pPlayer->edict(), szMapCommand);
 		}
 		else
 		{

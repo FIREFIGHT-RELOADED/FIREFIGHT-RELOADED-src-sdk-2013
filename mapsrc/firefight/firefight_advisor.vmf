@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "6440"
-	"mapversion" "133"
+	"mapversion" "137"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,7 +20,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "133"
+	"mapversion" "137"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -18439,6 +18439,7 @@ entity
 	{
 		"OnMapSpawn" "BOSS,StartScripting,,0,-1"
 		"OnMapSpawn" "pod_open1,Trigger,,0,-1"
+		"OnMapSpawn" "loadout,SetLoadout,boss,0,-1"
 	}
 	"origin" "-3.74633 598.088 129"
 	editor
@@ -18570,6 +18571,20 @@ entity
 	"StartDisabled" "0"
 	"targetname" "bossach"
 	"origin" "31.4042 554.334 129"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "20266"
+	"classname" "player_loadoutchanger"
+	"targetname" "loadout"
+	"origin" "71.3678 592.021 129"
 	editor
 	{
 		"color" "220 30 220"

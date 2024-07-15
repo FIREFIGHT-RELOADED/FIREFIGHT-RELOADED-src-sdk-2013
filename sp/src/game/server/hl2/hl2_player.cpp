@@ -142,8 +142,6 @@ ConVar sv_player_bullettime_shop_timescale("sv_player_bullettime_shop_timescale"
 
 ConVar sv_player_grapple("sv_player_grapple", "1", FCVAR_ARCHIVE, "");
 
-ConVar sv_player_defaultloadout("sv_player_defaultloadout", "default", FCVAR_ARCHIVE, "");
-
 #define	FLASH_DRAIN_TIME	 1.1111	// 100 units / 90 secs
 #define	FLASH_CHARGE_TIME	 50.0f	// 100 units / 2 secs
 //const char *szModelName = NULL;
@@ -1764,25 +1762,7 @@ void CHL2_Player::Spawn(void)
 
 	DeterminePlayerModel();
 
-	char mapname[256];
-	Q_snprintf(mapname, sizeof(mapname), "maps/%s", STRING(gpGlobals->mapname));
-
-	Q_FixSlashes(mapname);
-	Q_strlower(mapname);
-
-	SetPreventWeaponPickup(false);
-
-	if (gpGlobals->eLoadType != MapLoad_Background && !V_stristr(mapname, "credits") && !m_bForcedLoadout)
-	{
-		if (!m_bIronKick && IsAtMaxLevel())
-		{
-			LoadLoadoutFile("maxlevel");
-		}
-		else
-		{
-			LoadLoadoutFile(sv_player_defaultloadout.GetString());
-		}
-	}
+	WeaponSpawnLogic();
 }
 
 void CHL2_Player::DeterminePlayerModel()

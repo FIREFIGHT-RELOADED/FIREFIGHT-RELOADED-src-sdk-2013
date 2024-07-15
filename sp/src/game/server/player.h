@@ -322,6 +322,7 @@ public:
 
 	virtual void			InitialSpawn( void );
 	KeyValues*				LoadLoadoutFile(const char* kvName);
+	virtual void			WeaponSpawnLogic(void);
 	virtual void			InitHUD( void ) {}
 	virtual void			ShowViewPortPanel( const char * name, bool bShow = true, KeyValues *data = NULL );
 
@@ -1064,6 +1065,7 @@ public:
 	bool m_bHardcore;
 	bool m_bHardcoreNoDisconnect;
 	bool m_bForcedLoadout;
+	const char* m_szForcedLoadoutName;
 
 private:
 

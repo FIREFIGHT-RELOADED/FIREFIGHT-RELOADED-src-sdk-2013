@@ -6,7 +6,7 @@
 		"nodisconnect"	"1"
 		"health"	"350"
 		"setmaxhealth"	"1"
-		"armor"		"350"
+		"armor"		"150"
 		"setmaxarmor"	"1"
 		"level"		"20"
 		"kash"		"6500"
