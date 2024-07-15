@@ -41,6 +41,9 @@ static ConVar sv_climb_props_size( "sv_climb_props_size", "50.0" );
 // By default disable climbing/wallrunning on npcs.
 static ConVar sv_climb_npcs( "sv_climb_npcs", "0" );
 
+// By default disable climbing/wallrunning on props.
+static ConVar sv_climb_props("sv_climb_props", "0");
+
 float VectorYaw( Vector& v )
 {
 	QAngle ang;
@@ -254,6 +257,8 @@ void CGameMovement::AnticipateWallRun( void )
 	}
 }
 
+extern ConVar fr_enable_bunnyhop;
+
 //-----------------------------------------------------------------------------
 // Purpose: Check whether we should start wallrunning. Called when we hit 
 //          a wall while airborn
@@ -269,9 +274,7 @@ void CGameMovement::CheckWallRun( Vector &vecWallNormal, trace_t &pm )
 
 	if (sv_wallrun_requiredirectcontrol.GetBool())
 	{
-		bool movementkeys = ((mv->m_nButtons & IN_BACK) ||
-			(mv->m_nButtons & IN_FORWARD) ||
-			(mv->m_nButtons & IN_MOVELEFT) ||
+		bool movementkeys = ((mv->m_nButtons & IN_MOVELEFT) ||
 			(mv->m_nButtons & IN_MOVERIGHT) ||
 			(mv->m_nButtons & IN_GRAPPLE));
 
@@ -319,11 +322,19 @@ void CGameMovement::CheckWallRun( Vector &vecWallNormal, trace_t &pm )
 		}
 	}
 
-	// Don't climb/wallrun props smaller than specified min size
-	if (pObject && pObject->ClassMatches( "prop*" )) {
-		float objectHeight = 2 * pObject->BoundingRadius();
-		if (objectHeight < sv_climb_props_size.GetFloat())
-		{
+	if (sv_climb_props.GetBool()) {
+		// Don't climb/wallrun props smaller than specified min size
+		if (pObject && pObject->ClassMatches("prop*")) {
+			float objectHeight = 2 * pObject->BoundingRadius();
+			if (objectHeight < sv_climb_props_size.GetFloat())
+			{
+				return;
+			}
+		}
+	}
+	else
+	{
+		if (pObject && pObject->ClassMatches("prop*")) {
 			return;
 		}
 	}
@@ -939,8 +950,6 @@ void CGameMovement::WallRunAnticipateBump( void )
 	return;
 }
 
-
-
 //-----------------------------------------------------------------------------
 // Purpose: Check if the wall in front is something we can climb on top of
 //-----------------------------------------------------------------------------
@@ -990,10 +999,19 @@ void CGameMovement::CheckWallRunScramble( bool& steps )
 			return;
 		}
 
-		if (tr.m_pEnt && tr.m_pEnt->ClassMatches( "prop*" ) &&
-			tr.m_pEnt->BoundingRadius() * 2 < sv_climb_props_size.GetFloat())
+		if (sv_climb_props.GetBool()) {
+			if (tr.m_pEnt && tr.m_pEnt->ClassMatches("prop*") &&
+				tr.m_pEnt->BoundingRadius() * 2 < sv_climb_props_size.GetFloat())
+			{
+				return;
+			}
+		}
+		else
 		{
-			return;
+			if (tr.m_pEnt && tr.m_pEnt->ClassMatches("prop*"))
+			{
+				return;
+			}
 		}
 #endif
 
@@ -1003,7 +1021,6 @@ void CGameMovement::CheckWallRunScramble( bool& steps )
 			if (pPhysObj->GetGameFlags() & FVPHYSICS_PLAYER_HELD)
 				return;
 		}
-
 
 		// Make sure we have room to move up
 		vecUp.z = mv->GetAbsOrigin().z +

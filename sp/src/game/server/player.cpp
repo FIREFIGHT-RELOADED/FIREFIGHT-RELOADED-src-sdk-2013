@@ -2679,9 +2679,18 @@ void CBasePlayer::Event_Killed( const CTakeDamageInfo &info )
 
 	ClearLastKnownArea();
 
-	// Clear any screenfade
-	color32 nothing = { 0, 0, 0, 255 };
-	UTIL_ScreenFade(this, nothing, 0, 0, FFADE_IN | FFADE_PURGE);
+	if (m_bHardcore && !g_pGameRules->IsMultiplayer())
+	{
+		// Clear any screenfade
+		color32 black = { 0, 0, 0, 255 };
+		UTIL_ScreenFade(this, black, 1, 9999, FFADE_OUT | FFADE_PURGE | FFADE_STAYOUT);
+	}
+	else
+	{
+		// Clear any screenfade
+		color32 nothing = { 0, 0, 0, 255 };
+		UTIL_ScreenFade(this, nothing, 0, 0, FFADE_IN | FFADE_PURGE);
+	}
 
 	BaseClass::Event_Killed( info );
 }
@@ -3110,6 +3119,7 @@ void CBasePlayer::PlayerDeathThink(void)
 
 	if (m_bHardcore && !g_pGameRules->IsMultiplayer())
 	{
+
 		if ((gpGlobals->curtime > (m_flDeathTime + DEATH_MESSAGE_TIME)))
 		{
 			if (!m_bDeathMessage)
@@ -5607,15 +5617,6 @@ void CBasePlayer::PostThink()
 	SimulatePlayerSimulatedEntities();
 #endif
 
-	//DevMsg("Health: %i\nMaxHealth: %i\nMaxHealthVal: %i\nMaxHealthValExtra: %i\n", GetHealth(), GetMaxHealth(), m_MaxHealthVal, m_MaxHealthValExtra);
-
-	//update the maxhealthvalue before regen so we can't override health
-	int spawnHealth = m_MaxHealthVal + m_MaxHealthValExtra;
-	if (m_MaxHealthVal != spawnHealth)
-	{
-		m_MaxHealthVal = spawnHealth;
-	}
-
 	// Regenerate heath
 	if (IsAlive() && GetHealth() < m_MaxHealthVal && (sv_regeneration.GetInt() == 1) && m_iPerkHealthRegen == 1)
 	{
@@ -5940,13 +5941,20 @@ KeyValues* CBasePlayer::LoadLoadoutFile(const char* kvName)
 		KeyValues* pNode = pKV->GetFirstSubKey();
 		while (pNode)
 		{
-			m_bHardcore = pNode->GetBool("hardcore", false);
-			m_bIronKick = pNode->GetBool("ironkick", false);
-
-			if (m_bIronKick)
+			if (m_bHardcore == false)
 			{
-				SetPreventWeaponPickup(true);
-				return pKV;
+				m_bHardcore = pNode->GetBool("hardcore", false);
+			}
+			
+			if (m_bIronKick == false)
+			{
+				m_bIronKick = pNode->GetBool("ironkick", false);
+
+				if (m_bIronKick)
+				{
+					SetPreventWeaponPickup(true);
+					return pKV;
+				}
 			}
 
 			const char* itemName = pNode->GetString("weapon", "");
@@ -5965,6 +5973,15 @@ KeyValues* CBasePlayer::LoadLoadoutFile(const char* kvName)
 			if (itemAmmoType && itemAmmoNum)
 			{
 				BaseClass::GiveAmmo(itemAmmoNum, itemAmmoType);
+
+				//only read ammo2 if ammo 1 is available lol.
+				const char* itemAmmo2Type = pNode->GetString("ammo2type", "");
+				int itemAmmo2Num = pNode->GetInt("ammo2num", 0);
+
+				if (itemAmmo2Type && itemAmmo2Num)
+				{
+					BaseClass::GiveAmmo(itemAmmo2Num, itemAmmo2Type);
+				}
 			}
 
 			int healthNum = pNode->GetInt("health", 0);
@@ -6172,6 +6189,7 @@ void CBasePlayer::Spawn( void )
 	}
 
 	StopReplayMode();
+
 
 	// Clear any screenfade
 	color32 nothing = {0,0,0,255};

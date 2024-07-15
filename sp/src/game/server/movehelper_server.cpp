@@ -392,7 +392,7 @@ bool CMoveHelperServer::PlayerFallingDamage( void )
 		if ( g_pGameRules->FlPlayerFallDeathDoesScreenFade( m_pHostPlayer ) )
 		{
 			color32 black = {0, 0, 0, 255};
-			UTIL_ScreenFade( m_pHostPlayer, black, 0, 9999, FFADE_OUT | FFADE_STAYOUT );
+			UTIL_ScreenFade( m_pHostPlayer, black, 0, 9999, FFADE_OUT | FFADE_PURGE | FFADE_STAYOUT );
 		}
 		return(false);
 	}
