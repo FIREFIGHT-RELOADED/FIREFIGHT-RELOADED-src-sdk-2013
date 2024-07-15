@@ -1290,7 +1290,7 @@ void CHL2_Player::KickAttack(void)
 			// did I hit someone?
 			float KickThrowForceMult = sk_kick_throwforce.GetFloat() + (sk_kick_throwforce_mult.GetFloat() * ((fabs(GetAbsVelocity().x) + fabs(GetAbsVelocity().y) + fabs(GetAbsVelocity().z)) / sk_kick_throwforce_div.GetFloat()));
 			float KickDamageMult = KickThrowForceMult / sk_kick_dmg_div.GetFloat();
-			float KickDamageFlightBoost = m_bIronKick ? 9999999.0f : (m_bInGrapple ? KickDamageMult * 3 : KickDamageMult);
+			float KickDamageFlightBoost = (m_bIronKick && !m_bIronKickNoWeaponPickupOnly) ? 9999999.0f : (m_bInGrapple ? KickDamageMult * 3 : KickDamageMult);
 			float KickDamageProps = KickThrowForceMult / sk_kick_propdmg_div.GetFloat();
 
 			if (tr.m_pEnt)
@@ -1781,10 +1781,6 @@ void CHL2_Player::Spawn(void)
 			if (GlobalEntity_GetState("player_inbossbattle") == GLOBAL_OFF)
 			{
 				LoadLoadoutFile("maxlevel");
-			}
-			else
-			{
-				CheatImpulseCommands(101);
 			}
 		}
 		else

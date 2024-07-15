@@ -13631,7 +13631,7 @@ entity
 	"targetname" "trig2"
 	connections
 	{
-		"OnTrigger" "cmd,Command,sv_cheats 1;givemoney 6500;givelevel 20;impulse 101,0,-1"
+		"OnTrigger" "cmd,Command,sv_cheats 1;givelevel 20;impulse 101,0,-1"
 		"OnTrigger" "fade_intro,Fade,,0,-1"
 	}
 	solid

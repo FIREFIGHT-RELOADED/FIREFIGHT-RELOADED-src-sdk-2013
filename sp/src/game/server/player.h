@@ -1059,6 +1059,7 @@ public:
 	float m_fRegenRate;
 
 	bool m_bIronKick;
+	bool m_bIronKickNoWeaponPickupOnly;
 	bool m_bHardcore;
 
 private:

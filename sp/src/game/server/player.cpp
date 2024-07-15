@@ -5944,16 +5944,10 @@ KeyValues* CBasePlayer::LoadLoadoutFile(const char* kvName)
 			if (m_bHardcore == false)
 			{
 				m_bHardcore = pNode->GetBool("hardcore", false);
-			}
-			
-			if (m_bIronKick == false)
-			{
-				m_bIronKick = pNode->GetBool("ironkick", false);
 
-				if (m_bIronKick)
+				if (m_bHardcore == false)
 				{
-					SetPreventWeaponPickup(true);
-					return pKV;
+					m_bHardcore = pNode->GetBool("permadeath", false);
 				}
 			}
 
@@ -6008,11 +6002,32 @@ KeyValues* CBasePlayer::LoadLoadoutFile(const char* kvName)
 				}
 			}
 
+			if (m_bIronKick == false)
+			{
+				m_bIronKick = pNode->GetBool("ironkick", false);
+
+				if (m_bIronKick == false)
+				{
+					m_bIronKick = pNode->GetBool("preventweaponpickup", false);
+
+					//if enabled here, only disable weapon pickups.
+					if (m_bIronKick)
+					{
+						m_bIronKickNoWeaponPickupOnly = true;
+					}
+				}
+			}
+
 			pNode = pNode->GetNextKey();
 		}
 	}
 
 	Weapon_Switch(Weapon_OwnsThisType("weapon_physcannon"));
+
+	if (m_bIronKick)
+	{
+		SetPreventWeaponPickup(true);
+	}
 
 	return pKV;
 }
@@ -7493,6 +7508,8 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		IncrementMaxHealthValue(GetMaxHealthValue());
 		IncrementArmorValue(GetMaxArmorValue());
 		IncrementMaxArmorValue(GetMaxArmorValue());
+
+		AddMoney(9999);
 		
 		gEvilImpulse101		= false;
 
