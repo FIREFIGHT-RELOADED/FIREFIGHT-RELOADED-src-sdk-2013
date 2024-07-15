@@ -9163,6 +9163,36 @@ void CBasePlayer::HideViewModels( void )
 	}
 }
 
+class CLoadoutChanger : public CPointEntity
+{
+	DECLARE_CLASS(CLoadoutChanger, CPointEntity);
+public:
+	void InputSetLoadout(inputdata_t& data);
+	DECLARE_DATADESC();
+};
+
+LINK_ENTITY_TO_CLASS(player_loadoutchanger, CLoadoutChanger);
+
+BEGIN_DATADESC(CLoadoutChanger)
+DEFINE_INPUTFUNC(FIELD_STRING, "SetLoadout", InputSetLoadout)
+END_DATADESC()
+
+void CLoadoutChanger::InputSetLoadout(inputdata_t& data)
+{
+	CBasePlayer* pPlayer = NULL;
+
+	if (data.pActivator && data.pActivator->IsPlayer())
+	{
+		pPlayer = (CBasePlayer*)data.pActivator;
+	}
+
+	if (pPlayer)
+	{
+		pPlayer->m_bForcedLoadout = true;
+		pPlayer->LoadLoadoutFile(data.value.String());
+	}
+}
+
 class CStripWeapons : public CPointEntity
 {
 	DECLARE_CLASS( CStripWeapons, CPointEntity );

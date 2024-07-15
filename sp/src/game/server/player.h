@@ -1063,6 +1063,7 @@ public:
 	bool m_bIronKickNoWeaponPickupOnly;
 	bool m_bHardcore;
 	bool m_bHardcoreNoDisconnect;
+	bool m_bForcedLoadout;
 
 private:
 

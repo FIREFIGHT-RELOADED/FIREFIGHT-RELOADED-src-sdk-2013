@@ -1772,22 +1772,11 @@ void CHL2_Player::Spawn(void)
 
 	SetPreventWeaponPickup(false);
 
-	if (gpGlobals->eLoadType != MapLoad_Background && !V_stristr(mapname, "credits"))
+	if (gpGlobals->eLoadType != MapLoad_Background && !V_stristr(mapname, "credits") && !m_bForcedLoadout)
 	{
-		if (GlobalEntity_GetState("player_inbossbattle") == GLOBAL_ON)
+		if (!m_bIronKick && IsAtMaxLevel())
 		{
-			LoadLoadoutFile("boss");
-			return;
-		}
-
-		if (IsAtMaxLevel())
-		{
-			EquipSuit();
-
-			if (GlobalEntity_GetState("player_inbossbattle") == GLOBAL_OFF)
-			{
-				LoadLoadoutFile("maxlevel");
-			}
+			LoadLoadoutFile("maxlevel");
 		}
 		else
 		{
