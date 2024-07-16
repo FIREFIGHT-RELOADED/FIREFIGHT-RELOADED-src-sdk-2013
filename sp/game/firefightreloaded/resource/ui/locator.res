@@ -2,9 +2,9 @@
 {
 	"LocatorPanel"
 	{
-		"WrapStaticLocators"	"1"
+		"WrapStaticLocators"	"1"		[ ( $X360LODEF || $X360HIDEF ) ]
 	}
-	
+
 	"LocatorBG"
 	{
 		"ControlName"		"ImagePanel"

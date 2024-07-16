@@ -115,7 +115,7 @@
 	"The Open Fortress Team for the color proxy code."	"CreditsOutroText"
 	" "	"CreditsOutroText"
 	"This mod uses code from Mobility Mod for Half-Life 2 by Rob Cruickshank." "CreditsOutroText"
-	"Iván Bravo Bravo for the node generation code." 	"CreditsOutroText"
+	"Iván Bravo Bravo for the node generation code and the Game Instructor." 	"CreditsOutroText"
 	" "	"CreditsOutroText"
 	"Thank you to the following for your GitHub contributions:"	"CreditsOutroText"
 	"DeciusMagnus"	"CreditsOutroText"

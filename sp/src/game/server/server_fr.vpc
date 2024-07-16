@@ -348,6 +348,7 @@ $Project "Server (FR)"
 			$File	"$SRCDIR\game\shared\firefightreloaded\singleplayer_animstate.cpp"
 			$File	"$SRCDIR\game\shared\firefightreloaded\singleplayer_animstate.h"
 			$File	"firefightreloaded\node_placement.cpp"
+            $File	"firefightreloaded\env_instructor_hint.cpp"
 
 			$Folder	"NPCs"
 			{
