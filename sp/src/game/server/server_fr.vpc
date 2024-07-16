@@ -82,6 +82,11 @@ $Project "Server (FR)"
 			$File	"$SRCDIR\game\shared\gamemovement_mobility.cpp"
 			$File	"$SRCDIR\game\shared\player_mobility_defs.h"
         }
+        
+        $Folder	"MAPBASE DLL"
+		{
+            $File	"mapbase\logic_eventlistener.cpp"
+        }
 
 		$Folder	"HL2 DLL"
 		{
@@ -348,7 +353,6 @@ $Project "Server (FR)"
 			$File	"$SRCDIR\game\shared\firefightreloaded\singleplayer_animstate.cpp"
 			$File	"$SRCDIR\game\shared\firefightreloaded\singleplayer_animstate.h"
 			$File	"firefightreloaded\node_placement.cpp"
-            $File	"firefightreloaded\env_instructor_hint.cpp"
 
 			$Folder	"NPCs"
 			{

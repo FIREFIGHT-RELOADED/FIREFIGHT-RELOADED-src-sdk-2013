@@ -87,15 +87,4 @@
 	{
 		"hint_name"					"string"	// The hint to stop. Will stop ALL hints with this name
 	}
-	
-	// Events for the sample lesson, you can edit or delete them.
-	// See: scripts/instructor_lessons.txt
-	"instructor_primaryattack"
-	{
-		"userid" 	"short"
-	}
-	"use_primaryattack"
-	{
-		"userid" 	"short"
-	}
 }
