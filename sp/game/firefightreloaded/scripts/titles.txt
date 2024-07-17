@@ -117,6 +117,11 @@ FR_HARDCOREENDING
 #FR_HardcoreEnding
 }
 
+FR_TUTORIALENDING
+{
+#FR_TutorialEnding
+}
+
 $fadein 0.03
 $holdtime 9
 

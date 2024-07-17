@@ -14590,7 +14590,7 @@ entity
 {
 	"id" "1963"
 	"classname" "env_message"
-	"message" "#FR_Ending"
+	"message" "FR_Ending"
 	"messageattenuation" "0"
 	"messagevolume" "10"
 	"spawnflags" "0"

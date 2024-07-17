@@ -70,6 +70,7 @@
 #include "vote_controller.h"
 #include "ai_speech.h"
 #include "viewport_panel_names.h"
+#include "GameEventListener.h"
 
 #if defined USES_ECON_ITEMS
 #include "econ_wearable.h"
@@ -3129,12 +3130,11 @@ void CBasePlayer::PlayerDeathThink(void)
 
 	if (m_bHardcore && !g_pGameRules->IsMultiplayer())
 	{
-
 		if ((gpGlobals->curtime > (m_flDeathTime + DEATH_MESSAGE_TIME)))
 		{
 			if (!m_bDeathMessage)
 			{
-				UTIL_ShowMessage("FR_HardcoreEnding", this);
+				UTIL_ShowMessage("#FR_HardcoreEnding", this);
 				m_bDeathMessage = true;
 			}
 		}
@@ -6072,7 +6072,12 @@ void CBasePlayer::WeaponSpawnLogic(void)
 	Q_FixSlashes(mapname);
 	Q_strlower(mapname);
 
+	//disable the loadout values so the values don't persist upon loadout change.
 	SetPreventWeaponPickup(false);
+	m_bHardcore = false;
+	m_bHardcoreNoDisconnect = false;
+	m_bIronKick = false;
+	m_bIronKickNoWeaponPickupOnly = false;
 
 	if (gpGlobals->eLoadType != MapLoad_Background && !V_stristr(mapname, "credits"))
 	{
@@ -9248,6 +9253,62 @@ void CLoadoutChanger::ResetLoadout(CBasePlayer* pPlayer)
 {
 	pPlayer->RemoveAllItems(true);
 	pPlayer->WeaponSpawnLogic();
+}
+
+class CLevelChecker : public CPointEntity,
+					  public CGameEventListener
+{
+	DECLARE_CLASS(CLevelChecker, CPointEntity);
+public:
+	void Activate();
+	virtual void ListenForEvents();
+	virtual void FireGameEvent(IGameEvent* event);
+
+	int m_iLevel;
+	COutputEvent m_IfAtLevel;
+
+	DECLARE_DATADESC();
+};
+
+LINK_ENTITY_TO_CLASS(player_levelchecker, CLevelChecker);
+
+BEGIN_DATADESC(CLevelChecker)
+DEFINE_KEYFIELD(m_iLevel, FIELD_INTEGER, "Level"),
+DEFINE_OUTPUT(m_IfAtLevel, "IfAtLevel")
+END_DATADESC()
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CLevelChecker::Activate()
+{
+	BaseClass::Activate();
+	ListenForEvents();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CLevelChecker::ListenForEvents()
+{
+	ListenForGameEvent("player_levelup");
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: called when a game event is fired
+//-----------------------------------------------------------------------------
+void CLevelChecker::FireGameEvent(IGameEvent* event)
+{
+	const char* eventname = event->GetName();
+
+	if (Q_strcmp("player_levelup", eventname) == 0)
+	{
+		int grabbedLevel = event->GetInt("level");
+		if (m_iLevel == grabbedLevel)
+		{
+			m_IfAtLevel.FireOutput(this, this);
+		}
+	}
 }
 
 class CStripWeapons : public CPointEntity
