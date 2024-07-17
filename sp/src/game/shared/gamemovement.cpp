@@ -3087,7 +3087,22 @@ int CGameMovement::TryPlayerMove( Vector *pFirstDest, trace_t *pFirstTrace )
 		}
 		else
 		{   // Collided with a wall, not touching the ground - wallrun time
-			CheckWallRun(vecWallNormal, pm);
+			if (sv_wallrun_requiredirectcontrol.GetBool())
+			{
+				bool movementkeys = ((mv->m_nButtons & IN_MOVELEFT) ||
+					(mv->m_nButtons & IN_MOVERIGHT) ||
+					(mv->m_nButtons & IN_GRAPPLE));
+
+				// don't wallrun unless we are directly controlling it.
+				if ((movementkeys))
+				{
+					CheckWallRun(vecWallNormal, pm);
+				}
+			}
+			else
+			{
+				CheckWallRun(vecWallNormal, pm);
+			}
 		}
 	}
 

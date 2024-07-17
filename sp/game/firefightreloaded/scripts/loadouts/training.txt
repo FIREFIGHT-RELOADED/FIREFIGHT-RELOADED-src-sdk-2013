@@ -1,0 +1,8 @@
+"training"
+{
+	"1"
+	{
+		"hardcore" 	"1"
+		"nodisconnect"	"1"
+	}
+}

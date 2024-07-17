@@ -1136,6 +1136,14 @@ void CBasePlayer::LevelUp()
 		}
 
 		DetermineReward();
+
+		IGameEvent* event = gameeventmanager->CreateEvent("player_levelup");
+		if (event)
+		{
+			event->SetInt("userid", GetUserID());
+			event->SetInt("level", GetLevel());
+			gameeventmanager->FireEvent(event);
+		}
 	}
 }
 
