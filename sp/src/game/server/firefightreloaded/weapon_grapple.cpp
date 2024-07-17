@@ -243,7 +243,7 @@ void CGrappleHook::HookedThink( void )
 
 	float flDistance = (m_hPlayer->GetAbsOrigin() - GetAbsOrigin()).Length();
 
-	if (flDistance < 32.0f)
+	if (flDistance < 128.0f)
 	{
 		SetTouch(NULL);
 		SetThink(NULL);
@@ -581,8 +581,8 @@ bool CWeaponGrapple::HasAnyAmmo( void )
 bool CWeaponGrapple::CanHolster( void )
 {
 	//Can't have an active hook out
-	//if ( m_hHook != NULL )
-		//return false;
+	if ( m_hHook != NULL )
+		return false;
  
 	return BaseClass::CanHolster();
 }
