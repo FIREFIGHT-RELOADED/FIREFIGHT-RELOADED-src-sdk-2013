@@ -177,6 +177,13 @@ void GamepadUIMapChooser::ScanMaps()
             continue;
         }
 
+        const char* tutstr = Q_strstr(pszFilename, "firefight_tutorial");
+        if (tutstr)
+        {
+            pszFilename = g_pFullFileSystem->FindNext(findHandle);
+            continue;
+        }
+
         const char* str = Q_strstr(pszFilename, "maps");
         if (str)
         {
@@ -349,4 +356,12 @@ void GamepadUIMapChooser::OnMouseWheeled( int delta )
 CON_COMMAND( gamepadui_openmapchooser, "" )
 {
     new GamepadUIMapChooser( GamepadUI::GetInstance().GetBasePanel(), "" );
+}
+
+CON_COMMAND(gamepadui_starttutorial, "")
+{
+    char command[256];
+    Q_snprintf(command, sizeof(command), "cmd disconnect;maxplayers 1;map firefight_tutorial;progress_enable");
+
+    GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted(command);
 }

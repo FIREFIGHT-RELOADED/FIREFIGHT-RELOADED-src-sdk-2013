@@ -69,24 +69,34 @@ public:
 		static Vector npcCone = VECTOR_CONE_5DEGREES;
 		if ( GetOwner() && GetOwner()->IsNPC() )
 			return npcCone;
-			
+		
 		static Vector cone;
 
-		if ( pistol_use_new_accuracy.GetBool() )
+		if (GetOwner() && GetOwner()->IsPlayer())
 		{
-			float ramp = RemapValClamped(	m_flAccuracyPenalty, 
-											0.0f, 
-											PISTOL_ACCURACY_MAXIMUM_PENALTY_TIME, 
-											0.0f, 
-											1.0f ); 
-
-			// We lerp from very accurate to inaccurate over time
-			VectorLerp( VECTOR_CONE_1DEGREES, VECTOR_CONE_6DEGREES, ramp, cone );
+			if (IsIronsighted())
+			{
+				cone = VECTOR_CONE_2DEGREES;
+			}
 		}
 		else
 		{
-			// Old value
-			cone = VECTOR_CONE_4DEGREES;
+			if (pistol_use_new_accuracy.GetBool())
+			{
+				float ramp = RemapValClamped(m_flAccuracyPenalty,
+					0.0f,
+					PISTOL_ACCURACY_MAXIMUM_PENALTY_TIME,
+					0.0f,
+					1.0f);
+
+				// We lerp from very accurate to inaccurate over time
+				VectorLerp(VECTOR_CONE_1DEGREES, VECTOR_CONE_6DEGREES, ramp, cone);
+			}
+			else
+			{
+				// Old value
+				cone = VECTOR_CONE_4DEGREES;
+			}
 		}
 
 		return cone;

@@ -32,7 +32,9 @@ private:
 
 	void InputShowHudHint( inputdata_t &inputdata );
 	void InputHideHudHint( inputdata_t &inputdata );
+	void InputSwitchHudMessage(inputdata_t& inputdata);
 	string_t m_iszMessage;
+	bool m_bActive;
 	DECLARE_DATADESC();
 };
 
@@ -43,6 +45,7 @@ BEGIN_DATADESC( CEnvHudHint )
 	DEFINE_KEYFIELD( m_iszMessage, FIELD_STRING, "message" ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "ShowHudHint", InputShowHudHint ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "HideHudHint", InputHideHudHint ),
+	DEFINE_INPUTFUNC(FIELD_STRING, "SwitchHudMessage", InputSwitchHudMessage),
 
 END_DATADESC()
 
@@ -79,6 +82,7 @@ void CEnvHudHint::InputShowHudHint( inputdata_t &inputdata )
 		WRITE_BYTE( 1 );	// one message
 		WRITE_STRING( STRING(m_iszMessage) );
 		MessageEnd();
+		m_bActive = true;
 	}
 	else
 	{
@@ -101,6 +105,7 @@ void CEnvHudHint::InputShowHudHint( inputdata_t &inputdata )
 			WRITE_BYTE( 1 );	// one message
 			WRITE_STRING( STRING(m_iszMessage) );
 		MessageEnd();
+		m_bActive = true;
 	}
 }
 
@@ -115,6 +120,7 @@ void CEnvHudHint::InputHideHudHint( inputdata_t &inputdata )
 		WRITE_BYTE( 1 );	// one message
 		WRITE_STRING( STRING(NULL_STRING) );
 		MessageEnd();
+		m_bActive = false;
 	}
 	else
 	{
@@ -137,6 +143,49 @@ void CEnvHudHint::InputHideHudHint( inputdata_t &inputdata )
 		UserMessageBegin( user, "KeyHintText" );
 		WRITE_BYTE( 1 );	// one message
 		WRITE_STRING( STRING(NULL_STRING) );
+		MessageEnd();
+		m_bActive = false;
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Input handler for showing the message and/or playing the sound.
+//-----------------------------------------------------------------------------
+void CEnvHudHint::InputSwitchHudMessage(inputdata_t& inputdata)
+{
+	if (m_bActive == false)
+		return;
+
+	if (AllPlayers())
+	{
+		CReliableBroadcastRecipientFilter user;
+
+		UserMessageBegin(user, "KeyHintText");
+		WRITE_BYTE(1);	// one message
+		WRITE_STRING(inputdata.value.String());
+		MessageEnd();
+	}
+	else
+	{
+		CBaseEntity* pPlayer = NULL;
+		if (inputdata.pActivator && inputdata.pActivator->IsPlayer())
+		{
+			pPlayer = inputdata.pActivator;
+		}
+		else
+		{
+			pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
+		}
+
+		if (!pPlayer || !pPlayer->IsNetClient())
+			return;
+
+		CSingleUserRecipientFilter user((CBasePlayer*)pPlayer);
+		user.MakeReliable();
+
+		UserMessageBegin(user, "KeyHintText");
+		WRITE_BYTE(1);	// one message
+		WRITE_STRING(inputdata.value.String());
 		MessageEnd();
 	}
 }

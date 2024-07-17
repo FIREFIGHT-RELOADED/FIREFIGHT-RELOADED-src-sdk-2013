@@ -16,6 +16,7 @@
 	{
 		"credits"		1
 		"firefight_advisor"		1
+		"firefight_tutorial"		1
 	}
 
 	FileSystem

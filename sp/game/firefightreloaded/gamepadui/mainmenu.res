@@ -4,7 +4,7 @@
 	{
 		"text"			"#GameUI_GameMenu_ResumeGame"
 		"command"		"cmd gamemenucommand resumegame"
-		"priority"		"10"
+		"priority"		"11"
 		"family"		"ingame"
 	}
 	
@@ -12,6 +12,14 @@
 	{
 		"text"			"#GameUI_GameMenu_NewGame"
 		"command"		"cmd gamepadui_openmapchooser"
+		"priority"		"10"
+		"family"		"all"
+	}
+    
+    "NewTutorial"
+	{
+		"text"			"#Tutorial_Menu"
+		"command"		"cmd gamepadui_starttutorial"
 		"priority"		"9"
 		"family"		"all"
 	}

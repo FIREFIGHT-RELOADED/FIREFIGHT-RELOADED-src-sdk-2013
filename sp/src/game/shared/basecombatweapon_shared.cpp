@@ -31,6 +31,7 @@
 #include "eventqueue.h"
 #include "fmtstr.h"
 #include "gameweaponmanager.h"
+#include "globalstate.h"
 
 #ifdef HL2MP
 	#include "hl2mp_gamerules.h"
@@ -1840,21 +1841,26 @@ bool CBaseCombatWeapon::Holster( CBaseCombatWeapon *pSwitchingTo )
 		SetContextThink( &CBaseCombatWeapon::HideThink, gpGlobals->curtime + flSequenceDuration, HIDEWEAPON_THINK_CONTEXT );
 	}
 
-	// if we were displaying a hud hint, squelch it.
-	if (m_flHudHintMinDisplayTime && gpGlobals->curtime < m_flHudHintMinDisplayTime)
+#if !defined( CLIENT_DLL )
+	if (GlobalEntity_GetState("weapon_hidehints") == GLOBAL_OFF)
 	{
-		if( m_bAltFireHudHintDisplayed )
-			RescindAltFireHudHint();
+		// if we were displaying a hud hint, squelch it.
+		if (m_flHudHintMinDisplayTime && gpGlobals->curtime < m_flHudHintMinDisplayTime)
+		{
+			if (m_bAltFireHudHintDisplayed)
+				RescindAltFireHudHint();
 
-		if( m_bReloadHudHintDisplayed )
-			RescindReloadHudHint();
+			if (m_bReloadHudHintDisplayed)
+				RescindReloadHudHint();
 
-		if (m_bStoreHudHintDisplayed)
-			RescindStoreHudHint();
+			if (m_bStoreHudHintDisplayed)
+				RescindStoreHudHint();
 
-		if (m_bStandardHudHintDisplayed)
-			RescindStandardHudHint();
+			if (m_bStandardHudHintDisplayed)
+				RescindStandardHudHint();
+		}
 	}
+#endif
 
 	DisableIronsights();
 
@@ -1974,38 +1980,41 @@ void CBaseCombatWeapon::ItemPreFrame( void )
 	if ( IsX360() )
 #endif
 	{
-		// If we haven't displayed the hint enough times yet, it's time to try to 
-		// display the hint, and the player is not standing still, try to show a hud hint.
-		// If the player IS standing still, assume they could change away from this weapon at
-		// any second.
-		if( (!m_bAltFireHudHintDisplayed || !m_bReloadHudHintDisplayed || !m_bStoreHudHintDisplayed || !m_bStandardHudHintDisplayed) && gpGlobals->curtime > m_flHudHintMinDisplayTime && gpGlobals->curtime > m_flHudHintPollTime && GetOwner() && GetOwner()->IsPlayer() )
+		if (GlobalEntity_GetState("weapon_hidehints") == GLOBAL_OFF)
 		{
-			CBasePlayer *pPlayer = (CBasePlayer*)(GetOwner());
-
-			if( pPlayer && pPlayer->GetStickDist() > 0.0f )
+			// If we haven't displayed the hint enough times yet, it's time to try to 
+			// display the hint, and the player is not standing still, try to show a hud hint.
+			// If the player IS standing still, assume they could change away from this weapon at
+			// any second.
+			if ((!m_bAltFireHudHintDisplayed || !m_bReloadHudHintDisplayed || !m_bStoreHudHintDisplayed || !m_bStandardHudHintDisplayed) && gpGlobals->curtime > m_flHudHintMinDisplayTime && gpGlobals->curtime > m_flHudHintPollTime && GetOwner() && GetOwner()->IsPlayer())
 			{
-				// If the player is moving, they're unlikely to switch away from the current weapon
-				// the moment this weapon displays its HUD hint.
-				if( ShouldDisplayReloadHUDHint() )
+				CBasePlayer* pPlayer = (CBasePlayer*)(GetOwner());
+
+				if (pPlayer && pPlayer->GetStickDist() > 0.0f)
 				{
-					DisplayReloadHudHint();
-				}
-				else if( ShouldDisplayAltFireHUDHint() )
-				{
-					DisplayAltFireHudHint();
-				}
-				else if (ShouldDisplayStoreHUDHint())
-				{
-					DisplayStoreHudHint();
+					// If the player is moving, they're unlikely to switch away from the current weapon
+					// the moment this weapon displays its HUD hint.
+					if (ShouldDisplayReloadHUDHint())
+					{
+						DisplayReloadHudHint();
+					}
+					else if (ShouldDisplayAltFireHUDHint())
+					{
+						DisplayAltFireHudHint();
+					}
+					else if (ShouldDisplayStoreHUDHint())
+					{
+						DisplayStoreHudHint();
+					}
+					else
+					{
+						DisplayStandardHudHint();
+					}
 				}
 				else
 				{
-					DisplayStandardHudHint();
+					m_flHudHintPollTime = gpGlobals->curtime + 2.0f;
 				}
-			}
-			else
-			{
-				m_flHudHintPollTime = gpGlobals->curtime + 2.0f;
 			}
 		}
 	}

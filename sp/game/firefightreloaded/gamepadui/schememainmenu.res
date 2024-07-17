@@ -3,13 +3,13 @@
 	"BaseSettings"
 	{
 		"Logo.OffsetX"							"85"
-		"Logo.OffsetY.MainMenu"					"340"
-		"Logo.OffsetY.InGame"					"340"
+		"Logo.OffsetY.MainMenu"					"350"
+		"Logo.OffsetY.InGame"					"350"
 	
 		"Buttons.OffsetX"						"85"
-		"Buttons.OffsetY.MainMenu"				"120"
-		"Buttons.OffsetY.InGame"				"70"
-		"Buttons.Space"							"6"
+		"Buttons.OffsetY.MainMenu"				"100"
+		"Buttons.OffsetY.InGame"				"50"
+		"Buttons.Space"							"7"
 	
 		"Button.Width.Out"						"260"
 		"Button.Width.Over"					"260"

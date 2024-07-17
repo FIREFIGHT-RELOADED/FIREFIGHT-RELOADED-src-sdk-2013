@@ -208,20 +208,6 @@ void CGameMovement::AnticipateWallRun( void )
 	if (player->m_nWallRunState >= WALLRUN_RUNNING)
 		return;
 
-	if (sv_wallrun_requiredirectcontrol.GetBool())
-	{
-		bool movementkeys = ((mv->m_nButtons & IN_MOVELEFT) ||
-			(mv->m_nButtons & IN_MOVERIGHT) ||
-			(mv->m_nButtons & IN_GRAPPLE));
-
-		// don't wallrun unless we are directly controlling it.
-		if (!(movementkeys))
-		{
-			EndWallRun();
-			return;
-		}
-	}
-
 	// Dead 
 	if (player->pl.deadflag)
 		return;
@@ -269,20 +255,6 @@ void CGameMovement::CheckWallRun( Vector &vecWallNormal, trace_t &pm )
 	// Can't wallrun without the suit
 	if (!player->IsSuitEquipped())
 		return;
-
-	if (sv_wallrun_requiredirectcontrol.GetBool())
-	{
-		bool movementkeys = ((mv->m_nButtons & IN_MOVELEFT) ||
-			(mv->m_nButtons & IN_MOVERIGHT) ||
-			(mv->m_nButtons & IN_GRAPPLE));
-
-		// don't wallrun unless we are directly controlling it.
-		if (!(movementkeys))
-		{
-			EndWallRun();
-			return;
-		}
-	}
 
 	// Don't attach to wall if ducking - super annoying
 	if (mv->m_nButtons & IN_DUCK)
@@ -396,22 +368,6 @@ void CGameMovement::WallRunMove( void )
 		//Msg( "*\nEndWallRun because times up\n*\n" );
 		EndWallRun();
 		return;
-	}
-
-	if (sv_wallrun_requiredirectcontrol.GetBool())
-	{
-		bool movementkeys = ((mv->m_nButtons & IN_BACK) ||
-			(mv->m_nButtons & IN_FORWARD) ||
-			(mv->m_nButtons & IN_MOVELEFT) ||
-			(mv->m_nButtons & IN_MOVERIGHT) ||
-			(mv->m_nButtons & IN_GRAPPLE));
-
-		// don't wallrun unless we are directly controlling it.
-		if (!(movementkeys))
-		{
-			EndWallRun();
-			return;
-		}
 	}
 
 	if (player->m_nWallRunState < WALLRUN_RUNNING)
@@ -955,20 +911,6 @@ void CGameMovement::CheckWallRunScramble( bool& steps )
 {
 	if (!sv_wallrun.GetBool())
 		return;
-
-	if (sv_wallrun_requiredirectcontrol.GetBool())
-	{
-		bool movementkeys = ((mv->m_nButtons & IN_MOVELEFT) ||
-			(mv->m_nButtons & IN_MOVERIGHT) ||
-			(mv->m_nButtons & IN_GRAPPLE));
-
-		// don't wallrun unless we are directly controlling it.
-		if (!(movementkeys))
-		{
-			EndWallRun();
-			return;
-		}
-	}
 
 	Vector	flatforward;
 	Vector forward;
