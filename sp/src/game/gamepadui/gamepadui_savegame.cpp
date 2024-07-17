@@ -300,7 +300,7 @@ void GamepadUISaveGamePanel::ScanSavedGames()
 	}
 	else
 	{
-		SetFooterButtons( FooterButtons::Back | FooterButtons::Select /*, FooterButtons::Select*/);
+		SetFooterButtons( FooterButtons::Back | FooterButtons::Select , FooterButtons::Select);
 	}
 
 	SetControlEnabled( "loadsave", false );

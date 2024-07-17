@@ -252,7 +252,7 @@ GamepadUINewGamePanel::GamepadUINewGamePanel( vgui::Panel *pParent, const char* 
         buttons |= FooterButtons::Commentary;
     if ( GameHasBonusMaps() )
         buttons |= FooterButtons::BonusMaps;
-    SetFooterButtons( buttons/*, FooterButtons::Select*/);
+    SetFooterButtons( buttons, FooterButtons::Select);
 
     Activate();
 

@@ -246,7 +246,7 @@ void GamepadUISpawnlistChooser::ScanSpawnlists()
 	}
 	g_pFullFileSystem->FindClose(findHandle);
     
-    SetFooterButtons( FooterButtons::Back | FooterButtons::Select /*, FooterButtons::Select*/);
+    SetFooterButtons( FooterButtons::Back | FooterButtons::Select , FooterButtons::Select);
     
 	SetControlEnabled( "loadsave", false );
 	SetControlEnabled( "delete", false );
