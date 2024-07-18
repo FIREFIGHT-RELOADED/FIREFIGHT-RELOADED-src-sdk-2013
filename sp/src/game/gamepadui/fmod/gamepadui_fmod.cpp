@@ -146,11 +146,27 @@ void CGamepadUIFMODManager::Unmute()
 		m_pChannelGroups[i]->setMute(false);
 }
 
+void CGamepadUIFMODManager::Pause()
+{
+	for (unsigned int i = 0; i < NUM_CHANNELGROUPS; i++)
+		m_pChannelGroups[i]->setPaused(true);
+}
+
+void CGamepadUIFMODManager::Unpause()
+{
+	for (unsigned int i = 0; i < NUM_CHANNELGROUPS; i++)
+		m_pChannelGroups[i]->setPaused(false);
+}
+
 void CGamepadUIFMODManager::OnThink()
 {
 	// Update the FMOD system
 	m_pSystem->update();
 
+	//pause the music specifically if we're not the active app
+	m_pChannelGroups[CHANNELGROUP_MUSIC]->setPaused(!GamepadUI::GetInstance().GetEngineClient()->IsActiveApp());
+
+	// Mute or Unmute everything depending on if we're the active app
 	m_pMasterChannelGroup->setMute(!GamepadUI::GetInstance().GetEngineClient()->IsActiveApp());
 
 	// Link the volume of our channel groups to the appropriate volume ConVar

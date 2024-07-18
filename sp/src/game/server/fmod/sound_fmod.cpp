@@ -28,11 +28,13 @@ BEGIN_DATADESC( CAmbientFMOD )
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "DecreasePitch", InputDecreasePitch ),
 
 	// Fields
-	DEFINE_KEYFIELD( m_iszSound, FIELD_SOUNDNAME, "message" ),
+	DEFINE_KEYFIELD( m_iszSound, FIELD_SOUNDNAME, "fmodsound" ),
 	DEFINE_KEYFIELD( m_flMaxDistance,	FIELD_FLOAT, "maxdistance" ),
 	DEFINE_KEYFIELD( m_flVolume, FIELD_FLOAT, "volume" ),
 	DEFINE_KEYFIELD( m_flPitch, FIELD_FLOAT, "pitch" ),
 	DEFINE_KEYFIELD( m_sSourceEntName,	FIELD_STRING, "SourceEntityName" ),
+
+	//save field
 	DEFINE_FIELD( m_bLooping, FIELD_BOOLEAN ),
 
 END_DATADESC()

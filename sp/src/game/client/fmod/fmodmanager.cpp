@@ -135,22 +135,47 @@ void CFMODManager::Shutdown()
 	}
 }
 
+void CFMODManager::Mute()
+{
+	for (unsigned int i = 0; i < NUM_CHANNELGROUPS; i++)
+		m_pChannelGroups[i]->setMute(true);
+}
+
+void CFMODManager::Unmute()
+{
+	for (unsigned int i = 0; i < NUM_CHANNELGROUPS; i++)
+		m_pChannelGroups[i]->setMute(false);
+}
+
+void CFMODManager::Pause()
+{
+	for (unsigned int i = 0; i < NUM_CHANNELGROUPS; i++)
+		m_pChannelGroups[i]->setPaused(true);
+}
+
+void CFMODManager::Unpause()
+{
+	for (unsigned int i = 0; i < NUM_CHANNELGROUPS; i++)
+		m_pChannelGroups[i]->setPaused(false);
+}
+
 void CFMODManager::LevelInitPreEntity()
 {
-	for ( unsigned int i = 0; i < NUM_CHANNELGROUPS; i++ )
-		m_pChannelGroups[i]->setMute( false );
+	Unmute();
 }
 
 void CFMODManager::LevelShutdownPreEntity()
 {
-	for ( unsigned int i = 0; i < NUM_CHANNELGROUPS; i++ )
-		m_pChannelGroups[i]->setMute( true );
+	Mute();
 }
 
 void CFMODManager::Update( float frametime )
 {
 	// Update the FMOD system
 	m_pSystem->update();
+
+	//pause the music specifically if we're not the active app or if the engine is paused.
+	m_pChannelGroups[CHANNELGROUP_MUSIC]->setPaused(!engine->IsActiveApp() || !engine->IsPaused());
 
 	// Mute or Unmute everything depending on if we're the active app
 	m_pMasterChannelGroup->setMute( !engine->IsActiveApp() );

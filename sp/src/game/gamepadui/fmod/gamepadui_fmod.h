@@ -36,6 +36,8 @@ public:
 
 	virtual void Mute();
 	virtual void Unmute();
+	virtual void Pause();
+	virtual void Unpause();
 
 	// Per frame update function
 	virtual void OnThink();

@@ -33,6 +33,11 @@ public:
 	virtual bool Init();
 	virtual void Shutdown();
 
+	virtual void Mute();
+	virtual void Unmute();
+	virtual void Pause();
+	virtual void Unpause();
+
 	// Called on Level Init before entities are created
 	virtual void LevelInitPreEntity();
 

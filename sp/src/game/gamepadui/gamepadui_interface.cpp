@@ -98,6 +98,11 @@ void GamepadUI::Shutdown()
     if ( m_pBasePanel )
         m_pBasePanel->DeletePanel();
 
+    if (GetFMODManager())
+    {
+        GetFMODManager()->OnClose();
+    }
+
 #ifdef HL2_RETAIL // not necessary on SDK2013 (Madi)
     m_SteamAPIContext.Clear();
 #endif
@@ -111,6 +116,11 @@ void GamepadUI::Shutdown()
 
 void GamepadUI::OnUpdate( float flFrametime )
 {
+    if (GetFMODManager())
+    {
+        GetFMODManager()->OnThink();
+    }
+
     if ( m_pAnimationController )
         m_pAnimationController->UpdateAnimations( GetTime() );
 }
