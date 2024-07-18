@@ -1,6 +1,7 @@
 #include "gamepadui_interface.h"
 #include "gamepadui_basepanel.h"
 #include "gamepadui_mainmenu.h"
+#include "fmod/gamepadui_fmod.h"
 
 #include "vgui/ILocalize.h"
 
@@ -67,6 +68,11 @@ void GamepadUI::Initialize( CreateInterfaceFn factory )
     SteamAPI_SetTryCatchCallbacks( false );
     m_SteamAPIContext.Init();
 #endif // HL2_RETAIL
+
+    if (GetFMODManager()->Init())
+    {
+        GamepadUI_Log("FMOD Initalized.\n");
+    }
 
     m_pBasePanel = new GamepadUIBasePanel( GetRootVPanel() );
     if ( !m_pBasePanel )

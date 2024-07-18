@@ -75,6 +75,12 @@ $Project
 
     $Folder "Source Files"
     {
+        $Folder "FMOD"
+    	{
+            $File "fmod/gamepadui_fmod.cpp"
+            $File "fmod/gamepadui_fmod.h"
+        }
+    
         $Folder "Common"
         {
             $File "$SRCDIR\public\vgui_controls\vgui_controls.cpp"
@@ -110,6 +116,9 @@ $Project
         $ImpLib  steam_api [$HL2_RETAIl]
         $Lib "$LIBCOMMON/libjpeg" [$HL2_RETAIl]
 		$Lib libpng [$HL2_RETAIl]
+        
+        $ImpLib		"$SRCDIR\lib\thirdparty\fmod\fmod_vc" [$WIN32]
+        $ImpLib		"$SRCDIR\lib\thirdparty\fmod\linux32\libfmod" [$LINUXALL]
 
         $Lib $LIBCOMMON/libcrypto [$POSIX]
 

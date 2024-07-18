@@ -87,6 +87,12 @@ $Project "Server (FR)"
 		{
             $File	"mapbase\logic_eventlistener.cpp"
         }
+        
+        $Folder "FMOD"
+        {
+            $File "fmod\sound_fmod.cpp"
+            $File "fmod\sound_fmod.h"
+        }
 
 		$Folder	"HL2 DLL"
 		{
