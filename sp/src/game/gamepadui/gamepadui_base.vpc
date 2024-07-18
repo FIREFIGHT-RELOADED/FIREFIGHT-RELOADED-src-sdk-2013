@@ -35,7 +35,7 @@ $Configuration
 
     $Compiler
     {
-        $AdditionalIncludeDirectories "$BASE;.\;$SRCDIR\vgui2\include;$SRCDIR\vgui2\controls;$SRCDIR\game\gamepadui;..\..\public"
+        $AdditionalIncludeDirectories "$BASE;.\;$SRCDIR\vgui2\include;$SRCDIR\vgui2\controls;$SRCDIR\game\gamepadui;$SRCDIR\thirdparty\fmod\inc;..\..\public"
         $PreprocessorDefinitions      "$BASE;GAMEPADUI_DLL;VERSION_SAFE_STEAM_API_INTERFACES;strncpy=use_Q_strncpy_instead;_snprintf=use_Q_snprintf_instead"
     }
 
@@ -117,8 +117,8 @@ $Project
         $Lib "$LIBCOMMON/libjpeg" [$HL2_RETAIl]
 		$Lib libpng [$HL2_RETAIl]
         
-        $Lib		"$LIBTHIRDPARTY\fmod_vc" [$WIN32]
-        $Libexternal		"$LIBTHIRDPARTY\libfmod" [$LINUXALL]
+        $ImpLib		"$LIBTHIRDPARTY\fmod_vc" [$WIN32]
+        $ImpLib		"$LIBTHIRDPARTY\fmod" [$LINUXALL]
 
         $Lib $LIBCOMMON/libcrypto [$POSIX]
 

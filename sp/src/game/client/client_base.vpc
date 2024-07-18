@@ -1253,8 +1253,8 @@ $Project
 		$Lib		vtf
 		$ImpLib		steam_api
         
-        $Lib		"$LIBTHIRDPARTY\fmod_vc" [$WIN32]
-        $Libexternal		"$LIBTHIRDPARTY\libfmod" [$LINUXALL]
+        $ImpLib		"$LIBTHIRDPARTY\fmod_vc" [$WIN32]
+        $ImpLib		"$LIBTHIRDPARTY\fmod" [$LINUXALL]
 		
 		$Lib $LIBCOMMON/libcrypto [$POSIX]
 
