@@ -1537,11 +1537,12 @@ void GamepadUIOptionsPanel::OnCommand( char const* pCommand )
         GamepadUIString bink = "#GameUI_Bink";
         GamepadUIString miles = "#GameUI_Miles_Audio";
         GamepadUIString voice = "#GameUI_Miles_Voice";
+        GamepadUIString fmod = "#GameUI_FMOD_Credit";
         wchar_t wszBuf[4096];
 #ifdef WIN32
-        V_snwprintf( wszBuf, 4096, L"%s\n\n%s\n\n%s", bink.String(), miles.String(), voice.String() );
+        V_snwprintf( wszBuf, 4096, L"%s\n\n%s\n\n%s\n\n%s", bink.String(), miles.String(), voice.String(), fmod.String() );
 #else
-        V_snwprintf( wszBuf, 4096, L"%S\n\n%S\n\n%S", bink.String(), miles.String(), voice.String() );
+        V_snwprintf( wszBuf, 4096, L"%S\n\n%S\n\n%S\n\n%S", bink.String(), miles.String(), voice.String(), fmod.String() );
 #endif
 		new GamepadUIGenericConfirmationPanel( GamepadUIOptionsPanel::GetInstance(), "TechCredits", title.String(), wszBuf,
 		[](){}, true, false);

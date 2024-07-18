@@ -9,10 +9,16 @@
 #include "tier0/memdbgon.h"
 
 // This is the global volume ConVar, this is a bit of a hack so we don't have to use ConVarRef
-ConVar volume( "volume", "1.0", FCVAR_ARCHIVE );
+ConVar volume("volume", "1.0", FCVAR_ARCHIVE);
 
 // This is the global music volume ConVar, this is a bit of a hack so we don't have to use ConVarRef
-ConVar snd_musicvolume( "snd_musicvolume", "1.0", FCVAR_ARCHIVE );
+ConVar snd_musicvolume("snd_musicvolume", "1.0", FCVAR_ARCHIVE);
+
+// This is the global music volume ConVar, this is a bit of a hack so we don't have to use ConVarRef
+ConVar snd_mute_losefocus("snd_mute_losefocus", "1", FCVAR_ARCHIVE);
+
+ConVar snd_fmod_pause_losefocus("snd_fmod_pause_losefocus", "1", FCVAR_ARCHIVE);
+ConVar snd_fmod_pause_gamepaused("snd_fmod_pause_gamepaused", "1", FCVAR_ARCHIVE);
 
 FMOD_RESULT F_CALLBACK USER_FMOD_FILE_OPEN_CALLBACK(const char* name, unsigned int* filesize, void** handle, void* userdata)
 {
@@ -175,10 +181,15 @@ void CFMODManager::Update( float frametime )
 	m_pSystem->update();
 
 	//pause the music specifically if we're not the active app or if the engine is paused.
-	m_pChannelGroups[CHANNELGROUP_MUSIC]->setPaused(!engine->IsActiveApp() || !engine->IsPaused());
+	m_pChannelGroups[CHANNELGROUP_MUSIC]->setPaused(
+		(snd_fmod_pause_losefocus.GetBool() ? !engine->IsActiveApp() : false) ||
+		(snd_fmod_pause_gamepaused.GetBool() ? !engine->IsPaused() : false));
 
-	// Mute or Unmute everything depending on if we're the active app
-	m_pMasterChannelGroup->setMute( !engine->IsActiveApp() );
+	if (snd_mute_losefocus.GetBool())
+	{
+		// Mute or Unmute everything depending on if we're the active app
+		m_pMasterChannelGroup->setMute(!engine->IsActiveApp());
+	}
 
 	// Link the volume of our channel groups to the appropriate volume ConVar
 	m_pChannelGroups[CHANNELGROUP_STANDARD]->setVolume( volume.GetFloat() );

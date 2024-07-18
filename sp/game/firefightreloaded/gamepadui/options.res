@@ -1798,6 +1798,32 @@
 					"1"		"#gameui_enabled"
 				}
 			}
+            
+            "LoseFocus2"
+			{
+				"text"			"#GameUI_SndPauseLoseFocus"
+				"type"			"wheelywheel"
+				"convar"		"snd_fmod_pause_losefocus"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+            
+            "PauseOnPause"
+			{
+				"text"			"#GameUI_SndPauseGamePaused"
+				"type"			"wheelywheel"
+				"convar"		"snd_fmod_pause_gamepaused"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
 			
 			"ExplosionRinging"
 			{
@@ -1915,6 +1941,20 @@
 				"text"			"#GameUI_PlayerDamageSounds"
 				"type"			"wheelywheel"
 				"convar"		"sv_player_dmgsounds"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+            
+            "StoreMusic"
+			{
+				"text"			"#GameUI_StoreMusic"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"gamepadui_store_music"
 
 				"options"
 				{

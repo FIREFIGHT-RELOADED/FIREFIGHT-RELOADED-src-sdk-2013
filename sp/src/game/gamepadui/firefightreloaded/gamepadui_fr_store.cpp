@@ -24,6 +24,8 @@
 
 extern ConVar gamepadui_background_music_duck;
 
+ConVar gamepadui_store_music("gamepadui_store_music", "1", FCVAR_ARCHIVE);
+
 class GamepadUIStoreButton;
 
 #define GAMEPADUI_MAP_SCHEME GAMEPADUI_RESOURCE_FOLDER "schemestorebutton.res"//"schemesavebutton.res"

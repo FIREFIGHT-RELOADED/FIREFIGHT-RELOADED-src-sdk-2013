@@ -55,4 +55,6 @@ If you would like to build the repo without updating it, run:\
 
 Read [sp/game/firefightreloaded/scripts/credits.txt](https://github.com/FIREFIGHT-RELOADED/FIREFIGHT-RELOADED-src-sdk-2013/blob/endgame/sp/game/firefightreloaded/scripts/credits.txt) for credits and citations.
 
+This mod uses FMOD. FMOD created by Firelight Technologies Pty Ltd.
+
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/made-with-c-plus-plus.svg)](https://forthebadge.com)

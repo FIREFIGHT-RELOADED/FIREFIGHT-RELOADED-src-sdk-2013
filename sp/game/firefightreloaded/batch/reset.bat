@@ -12,6 +12,8 @@ del console.log
 del singleplayerconfig.vdf
 del stats.txt
 del gamestate.txt
+del videoconfig_linux.cfg
+del glshaders.cfg
 del ep1_gamestats.dat
 del cfg\config.cfg
 del cfg\settings.scr
