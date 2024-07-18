@@ -24,6 +24,7 @@
 #include "view_shared.h"
 #include "IGameUIFuncs.h"
 #include "steam/steam_api.h"
+#include "fmod/gamepadui_fmod.h"
 
 class GamepadUIBasePanel;
 class GamepadUIMainMenu;

@@ -134,30 +134,24 @@ void CGamepadUIFMODManager::OnClose()
 	}
 }
 
+void CGamepadUIFMODManager::Mute()
+{
+	for (unsigned int i = 0; i < NUM_CHANNELGROUPS; i++)
+		m_pChannelGroups[i]->setMute(true);
+}
+
+void CGamepadUIFMODManager::Unmute()
+{
+	for (unsigned int i = 0; i < NUM_CHANNELGROUPS; i++)
+		m_pChannelGroups[i]->setMute(false);
+}
 
 void CGamepadUIFMODManager::OnThink()
 {
 	// Update the FMOD system
 	m_pSystem->update();
 
-	// Mute or Unmute everything depending on if we're the active app
-    if (GamepadUI::GetInstance().GetEngineClient()->IsActiveApp())
-    {
-        if (GamepadUI::GetInstance().IsGamepadUIVisible())
-        {
-            for ( unsigned int i = 0; i < NUM_CHANNELGROUPS; i++ )
-                m_pChannelGroups[i]->setMute( false );
-        }
-        else if (GamepadUI::GetInstance().IsInLevel())
-        {
-            for ( unsigned int i = 0; i < NUM_CHANNELGROUPS; i++ )
-                m_pChannelGroups[i]->setMute( true );
-        }
-    }
-    else
-    {
-        m_pMasterChannelGroup->setMute( true );
-    }
+	m_pMasterChannelGroup->setMute(!GamepadUI::GetInstance().GetEngineClient()->IsActiveApp());
 
 	// Link the volume of our channel groups to the appropriate volume ConVar
 	m_pChannelGroups[CHANNELGROUP_STANDARD]->setVolume( volume.GetFloat() );

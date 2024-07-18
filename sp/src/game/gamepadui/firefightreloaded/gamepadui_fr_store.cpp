@@ -22,6 +22,8 @@
 
 #include "tier0/memdbgon.h"
 
+extern ConVar gamepadui_background_music_duck;
+
 class GamepadUIStoreButton;
 
 #define GAMEPADUI_MAP_SCHEME GAMEPADUI_RESOURCE_FOLDER "schemestorebutton.res"//"schemesavebutton.res"
@@ -49,6 +51,11 @@ public:
 
     void OnMouseWheeled(int delta) OVERRIDE;
 
+    void ActivateBackgroundEffects();
+    bool IsBackgroundMusicPlaying();
+    bool StartBackgroundMusic(float flVolume);
+    void ReleaseBackgroundMusic();
+
 private:
     CUtlVector<KeyValues*> m_pItems;
     CUtlVector< GamepadUIStoreButton* > m_pChapterButtons;
@@ -61,6 +68,9 @@ private:
     GAMEPADUI_PANEL_PROPERTY(float, m_ChapterSpacing, "Saves.Spacing", "0", SchemeValueTypes::ProportionalFloat);
 
     bool m_bCommentaryMode = false;
+
+    FMOD::Channel* m_pChannel;
+    FMOD::Sound* m_pSound;
 };
 
 class GamepadUIStoreButton : public GamepadUIButton
@@ -211,6 +221,64 @@ GamepadUIStore::GamepadUIStore( vgui::Panel *pParent, const char* PanelName ) : 
     }
 
     UpdateGradients();
+
+    if (!IsBackgroundMusicPlaying())
+        ActivateBackgroundEffects();
+}
+
+void GamepadUIStore::ActivateBackgroundEffects()
+{
+    StartBackgroundMusic(1.0f);
+}
+
+bool GamepadUIStore::IsBackgroundMusicPlaying()
+{
+    bool bIsPlaying = false;
+
+    if (m_pChannel != nullptr)
+        m_pChannel->isPlaying(&bIsPlaying);
+
+    return bIsPlaying;
+}
+
+bool GamepadUIStore::StartBackgroundMusic(float flVolume)
+{
+    if (IsBackgroundMusicPlaying())
+        return true;
+
+    const char* szSound = GetFMODManager()->GetFullPathToSound("music/fr_store_loop.wav");
+
+    CGamepadUIFMODManager::CheckError(GetFMODManager()->GetSystem()->createSound(szSound, FMOD_DEFAULT | FMOD_LOOP_NORMAL, 0, &m_pSound));
+    eChannelGroupType channelgroupType = CHANNELGROUP_MUSIC;
+    CGamepadUIFMODManager::CheckError(GetFMODManager()->GetSystem()->playSound(m_pSound, GetFMODManager()->GetChannelGroup(channelgroupType), true, &m_pChannel));
+
+    if (m_pChannel)
+    {
+        CGamepadUIFMODManager::CheckError(m_pChannel->setPitch(1.0f));
+        CGamepadUIFMODManager::CheckError(m_pChannel->setVolume(flVolume * gamepadui_background_music_duck.GetFloat()));
+
+        m_pChannel->setPaused(false);
+        GetFMODManager()->Unmute();
+    }
+
+    return (m_pChannel != NULL && m_pSound != NULL);
+}
+
+void GamepadUIStore::ReleaseBackgroundMusic()
+{
+    GetFMODManager()->Mute();
+
+    if (m_pChannel != nullptr)
+    {
+        m_pChannel->stop();
+        m_pChannel = nullptr;
+    }
+
+    if (m_pSound != nullptr)
+    {
+        m_pSound->release();
+        m_pSound = nullptr;
+    }
 }
 
 void GamepadUIStore::UpdateFrameTitle()
@@ -418,6 +486,7 @@ void GamepadUIStore::OnCommand( char const* pCommand )
         Close();
         if (GamepadUI::GetInstance().IsInLevel())
         {
+            ReleaseBackgroundMusic();
             GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted("gamemenucommand resumegame");
             // I tried it and didn't like it.
             // Oh well.

@@ -28,9 +28,10 @@ public:
 private:
     GamepadUIMainMenu *m_pMainMenu = NULL;
 
-    int m_nBackgroundMusicGUID;
     bool m_bBackgroundMusicEnabled;
 
+    FMOD::Channel* m_pChannel;
+    FMOD::Sound* m_pSound;
 };
 
 #endif // GAMEPADUI_BASEPANEL_H

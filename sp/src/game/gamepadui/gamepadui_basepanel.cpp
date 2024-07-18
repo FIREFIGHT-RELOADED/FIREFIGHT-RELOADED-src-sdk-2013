@@ -17,15 +17,16 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar gamepadui_background_music_duck( "gamepadui_background_music_duck", "0.35", FCVAR_ARCHIVE );
+ConVar gamepadui_background_music_duck( "gamepadui_background_music_duck", "0.65", FCVAR_ARCHIVE );
 
 GamepadUIBasePanel::GamepadUIBasePanel( vgui::VPANEL parent ) : BaseClass( NULL, "GamepadUIBasePanel" )
 {
     SetParent( parent );
     MakePopup( false );
 
-    m_nBackgroundMusicGUID = 0;
-    m_bBackgroundMusicEnabled = !CommandLine()->FindParm( "-nostartupsound" );
+    m_pChannel = nullptr;
+    m_pSound = nullptr;
+    m_bBackgroundMusicEnabled = !CommandLine()->FindParm("-nostartupsound");
 
     m_pMainMenu = new GamepadUIMainMenu( this );
     OnMenuStateChanged();
@@ -52,7 +53,6 @@ GamepadUIMainMenu* GamepadUIBasePanel::GetMainMenuPanel() const
     return m_pMainMenu;
 }
 
-
 void GamepadUIBasePanel::OnMenuStateChanged()
 {
     if (GamepadUI::GetInstance().IsGamepadUIVisible())
@@ -76,10 +76,12 @@ void GamepadUIBasePanel::ActivateBackgroundEffects()
 
 bool GamepadUIBasePanel::IsBackgroundMusicPlaying()
 {
-    if ( !m_nBackgroundMusicGUID )
-        return false;
+    bool bIsPlaying = false;
 
-    return GamepadUI::GetInstance().GetEngineSound()->IsSoundStillPlaying( m_nBackgroundMusicGUID );
+    if (m_pChannel != nullptr)
+        m_pChannel->isPlaying(&bIsPlaying);
+
+    return bIsPlaying;
 }
 
 bool GamepadUIBasePanel::StartBackgroundMusic( float flVolume )
@@ -144,35 +146,39 @@ bool GamepadUIBasePanel::StartBackgroundMusic( float flVolume )
     if ( !pSoundFile )
         return false;
     
-    // check and see if we have a background map loaded.
-    // if not, this code path won't properly play the music.
-    const bool bInGame = GamepadUI::GetInstance().GetEngineClient()->IsLevelMainMenuBackground();
-    if ( bInGame )
+    const char* szSound = GetFMODManager()->GetFullPathToSound(pSoundFile);
+
+    CGamepadUIFMODManager::CheckError(GetFMODManager()->GetSystem()->createSound(szSound, FMOD_DEFAULT | FMOD_LOOP_NORMAL, 0, &m_pSound));
+    eChannelGroupType channelgroupType = CHANNELGROUP_MUSIC;
+    CGamepadUIFMODManager::CheckError(GetFMODManager()->GetSystem()->playSound(m_pSound, GetFMODManager()->GetChannelGroup(channelgroupType), true, &m_pChannel));
+
+    if (m_pChannel)
     {
-        // mixes too loud against soft ui sounds
-        GamepadUI::GetInstance().GetEngineSound()->EmitAmbientSound( pSoundFile, gamepadui_background_music_duck.GetFloat() * flVolume );
-        m_nBackgroundMusicGUID = GamepadUI::GetInstance().GetEngineSound()->GetGuidForLastSoundEmitted();
-    }
-    else
-    {
-        // old way, failsafe in case we don't have a background level.
-        char found[ 512 ];
-        Q_snprintf( found, sizeof( found ), "play %s", pSoundFile );
-        GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted( found );
+        CGamepadUIFMODManager::CheckError(m_pChannel->setPitch(1.0f));
+        CGamepadUIFMODManager::CheckError(m_pChannel->setVolume(flVolume * gamepadui_background_music_duck.GetFloat()));
+
+        m_pChannel->setPaused(false);
+        GetFMODManager()->Unmute();
     }
 
     fileNames.PurgeAndDeleteElements();
 
-    return m_nBackgroundMusicGUID != 0;
+    return (m_pChannel != NULL && m_pSound != NULL);
 }
 
 void GamepadUIBasePanel::ReleaseBackgroundMusic()
 {
-    if ( !m_nBackgroundMusicGUID )
-        return;
+    GetFMODManager()->Mute();
 
-    // need to stop the sound now, do not queue the stop
-    // we must release the 2-5MB held by this resource
-    GamepadUI::GetInstance().GetEngineSound()->StopSoundByGuid( m_nBackgroundMusicGUID );
-    m_nBackgroundMusicGUID = 0;
+    if (m_pChannel != nullptr)
+    {
+        m_pChannel->stop();
+        m_pChannel = nullptr;
+    }
+
+    if (m_pSound != nullptr)
+    {
+        m_pSound->release();
+        m_pSound = nullptr;
+    }
 }

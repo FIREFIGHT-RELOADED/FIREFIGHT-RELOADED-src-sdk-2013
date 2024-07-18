@@ -34,6 +34,9 @@ public:
 	virtual bool Init();
 	virtual void OnClose();
 
+	virtual void Mute();
+	virtual void Unmute();
+
 	// Per frame update function
 	virtual void OnThink();
 
