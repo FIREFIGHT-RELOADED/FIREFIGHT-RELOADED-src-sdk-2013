@@ -91,4 +91,19 @@
 		"rare"			"1"
 		"exp"	"35"
 	}
+	"12"
+	{
+		"classname"		"npc_combine_ace"
+		"rare"			"1"
+		"min_level"		"3"
+		"equipment"	
+		{
+			"weapon_ar2" "5"
+			"weapon_smg1" "3"
+			"weapon_shotgun" "4"
+			"weapon_railgun" "3"
+			"weapon_m249para" "4"
+			"weapon_sniper_rifle" "3"
+		}
+	}
 }

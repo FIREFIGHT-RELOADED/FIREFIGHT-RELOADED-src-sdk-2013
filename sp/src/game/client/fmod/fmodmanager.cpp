@@ -183,7 +183,7 @@ void CFMODManager::Update( float frametime )
 	//pause the music specifically if we're not the active app or if the engine is paused.
 	m_pChannelGroups[CHANNELGROUP_MUSIC]->setPaused(
 		(snd_fmod_pause_losefocus.GetBool() ? !engine->IsActiveApp() : false) ||
-		(snd_fmod_pause_gamepaused.GetBool() ? !engine->IsPaused() : false));
+		(snd_fmod_pause_gamepaused.GetBool() ? engine->IsPaused() : false));
 
 	if (snd_mute_losefocus.GetBool())
 	{

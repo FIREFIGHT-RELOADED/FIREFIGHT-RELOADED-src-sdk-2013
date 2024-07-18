@@ -15,6 +15,7 @@
 #include "hl2_player.h"
 #include "ammodef.h"
 #include "explode.h"
+#include "globalstate.h"
 
 ConVar sk_weapon_railgun_overcharge_limit("sk_weapon_railgun_overcharge_limit", "500", FCVAR_ARCHIVE);
 ConVar sk_weapon_railgun_warning_beep_time("sk_weapon_railgun_warning_beep_time", "3.5", FCVAR_ARCHIVE);
@@ -30,6 +31,8 @@ DEFINE_FIELD(m_bIsLowBattery, FIELD_BOOLEAN),
 DEFINE_FIELD(m_bOverchargeDamageBenefits, FIELD_BOOLEAN),
 DEFINE_FIELD(m_flNextWarningBeep, FIELD_TIME),
 DEFINE_FIELD(m_bPlayedDechargingSound, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bPlayedChargingSound, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bFirstEquip, FIELD_BOOLEAN),
 END_DATADESC()
 
 LINK_ENTITY_TO_CLASS( weapon_railgun, CWeaponRailgun );
@@ -112,14 +115,11 @@ CWeaponRailgun::CWeaponRailgun( void )
 	m_bOverchargeDamageBenefits = false;
 	m_bIsLowBattery = false;
 	m_bPlayedDechargingSound = false;
+	m_bPlayedChargingSound = true;
+	m_bFirstEquip = true;
 
 	m_fMinRange1 = 0;
 	m_fMaxRange1 = 99999;
-}
-
-void CWeaponRailgun::Equip(CBaseCombatCharacter* pOwner)
-{
-	return BaseClass::Equip(pOwner);
 }
 
 //-----------------------------------------------------------------------------
@@ -305,6 +305,12 @@ void CWeaponRailgun::ItemPostFrame(void)
 	if (!pOwner)
 		return;
 
+	if (m_bFirstEquip)
+	{
+		pOwner->SetAmmoCount(GetDefaultClip1(), m_iPrimaryAmmoType);
+		m_bFirstEquip = false;
+	}
+
 	if (pOwner->GetAmmoCount(m_iPrimaryAmmoType) < GetDefaultClip1())
 	{
 		if ((pOwner->GetAmmoCount(m_iPrimaryAmmoType) < RAIL_AMMO_OVERCHARGE))
@@ -369,25 +375,28 @@ void CWeaponRailgun::ItemPostFrame(void)
 			m_flNextWarningBeep = gpGlobals->curtime + 3.0f;
 		}
 
-		CFmtStr hint;
-		hint.sprintf("#valve_hint_warning_%s", GetClassname());
-		UTIL_HudHintText(GetOwner(), hint.Access());
-		m_iStandardHudHintCount++;
-		m_bStandardHudHintDisplayed = true;
-		m_flHudHintMinDisplayTime = gpGlobals->curtime + MIN_HUDHINT_DISPLAY_TIME;
+		if (GlobalEntity_GetState("weapon_hidehints") == GLOBAL_OFF)
+		{
+			CFmtStr hint;
+			hint.sprintf("#valve_hint_warning_%s", GetClassname());
+			UTIL_HudHintText(GetOwner(), hint.Access());
+			m_iStandardHudHintCount++;
+			m_bStandardHudHintDisplayed = true;
+			m_flHudHintMinDisplayTime = gpGlobals->curtime + MIN_HUDHINT_DISPLAY_TIME;
+		}
 	}
 
-	if (m_bOverchargeDamageBenefits && (pOwner->m_nButtons & IN_RELOAD) && (sk_weapon_railgun_overcharge_limit.GetInt() > 0 && pOwner->GetAmmoCount(m_iPrimaryAmmoType) > sk_weapon_railgun_overcharge_limit.GetInt()))
+	if (pOwner->m_nButtons & IN_RELOAD)
 	{
-		DechargeAmmo();
-
-		if (!m_bPlayedDechargingSound)
+		if (m_bOverchargeDamageBenefits && (sk_weapon_railgun_overcharge_limit.GetInt() > 0 && pOwner->GetAmmoCount(m_iPrimaryAmmoType) > sk_weapon_railgun_overcharge_limit.GetInt()))
 		{
-			CPASAttenuationFilter filter(this, "SuitRecharge.ChargingLoop");
-			filter.MakeReliable();
-			EmitSound(filter, entindex(), "SuitRecharge.ChargingLoop");
-			m_bPlayedDechargingSound = true;
+			DechargeAmmo();
 		}
+	}
+
+	if (pOwner->m_nButtons & IN_ATTACK3)
+	{
+		ChargeAmmo();
 	}
 
 	if (m_bOverchargeDamageBenefits && pOwner->GetAmmoCount(m_iPrimaryAmmoType) < sk_weapon_railgun_overcharge_limit.GetInt())
@@ -402,7 +411,10 @@ void CWeaponRailgun::ItemPostFrame(void)
 	// -----------------------
 	//  No buttons down
 	// -----------------------
-	if (!((pOwner->m_nButtons & IN_ATTACK) || (pOwner->m_nButtons & IN_ATTACK2) || (CanReload() && pOwner->m_nButtons & IN_RELOAD)))
+	if (!((pOwner->m_nButtons & IN_ATTACK) || 
+		(pOwner->m_nButtons & IN_ATTACK2) || 
+		(pOwner->m_nButtons & IN_RELOAD) || 
+		(pOwner->m_nButtons & IN_ATTACK3)))
 	{
 		// no fire buttons down or reloading
 		if (!ReloadOrSwitchWeapons() && (m_bInReload == false))
@@ -414,6 +426,12 @@ void CWeaponRailgun::ItemPostFrame(void)
 		{
 			StopSound("SuitRecharge.ChargingLoop");
 			m_bPlayedDechargingSound = false;
+		}
+
+		if (m_bPlayedChargingSound)
+		{
+			StopSound("SuitRecharge.ChargingLoop");
+			m_bPlayedChargingSound = false;
 		}
 	}
 }
@@ -637,10 +655,50 @@ void CWeaponRailgun::DechargeAmmo()
 
 	if (pPlayer->GetAmmoCount(m_iPrimaryAmmoType) > sk_weapon_railgun_overcharge_limit.GetInt())
 	{
+		if (!m_bPlayedDechargingSound)
+		{
+			CPASAttenuationFilter filter(this, "SuitRecharge.ChargingLoop");
+			filter.MakeReliable();
+			EmitSound(filter, entindex(), "SuitRecharge.ChargingLoop");
+			m_bPlayedDechargingSound = true;
+		}
+
 		pPlayer->RemoveAmmo(25, m_iPrimaryAmmoType);
 		pPlayer->IncrementArmorValue(25);
 		m_flNextCharge = gpGlobals->curtime + RAIL_RECHARGE_BACKGROUND_TIME;
 	}
+	else
+	{
+		m_flNextCharge = gpGlobals->curtime + RAIL_RECHARGE_OVERCHARGE_TIME;
+		if (m_bPlayedDechargingSound)
+		{
+			StopSound("SuitRecharge.ChargingLoop");
+			m_bPlayedDechargingSound = false;
+		}
+	}
+}
+
+void CWeaponRailgun::ChargeAmmo()
+{
+	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+
+	if (pPlayer == NULL)
+		return;
+
+	if (pPlayer->ArmorValue() <= 0)
+		return;
+
+	if (!m_bPlayedChargingSound)
+	{
+		CPASAttenuationFilter filter(this, "SuitRecharge.ChargingLoop");
+		filter.MakeReliable();
+		EmitSound(filter, entindex(), "SuitRecharge.ChargingLoop");
+		m_bPlayedChargingSound = true;
+	}
+
+	// allow us to overcharge with as much battery as we have. WHO NEEDS SAFETY?
+	pPlayer->GiveAmmo(5, m_iPrimaryAmmoType, true);
+	pPlayer->IncrementArmorValue(-5);
 }
 
 //-----------------------------------------------------------------------------

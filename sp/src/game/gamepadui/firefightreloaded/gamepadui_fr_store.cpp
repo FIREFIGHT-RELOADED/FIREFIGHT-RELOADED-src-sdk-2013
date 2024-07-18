@@ -245,6 +245,9 @@ bool GamepadUIStore::IsBackgroundMusicPlaying()
 
 bool GamepadUIStore::StartBackgroundMusic(float flVolume)
 {
+    if (!gamepadui_store_music.GetBool())
+        return false;
+
     if (IsBackgroundMusicPlaying())
         return true;
 
@@ -268,6 +271,9 @@ bool GamepadUIStore::StartBackgroundMusic(float flVolume)
 
 void GamepadUIStore::ReleaseBackgroundMusic()
 {
+    if (!gamepadui_store_music.GetBool())
+        return;
+
     GetFMODManager()->Mute();
 
     if (m_pChannel != nullptr)

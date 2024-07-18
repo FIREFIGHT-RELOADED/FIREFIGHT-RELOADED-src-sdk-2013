@@ -38,7 +38,6 @@ public:
 
 	CWeaponRailgun( void );
 
-	void	Equip(CBaseCombatCharacter* pOwner);
 	void	Precache(void);
 	int		CapabilitiesGet(void) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
 	void	FireNPCPrimaryAttack(CBaseCombatCharacter* pOperator, bool bUseWeaponAngles);
@@ -54,6 +53,7 @@ public:
 	void	Fire(void);
 	void	RechargeAmmo(bool bIsHolstered);
 	void	DechargeAmmo();
+	void	ChargeAmmo();
 	void	DrawBeam(const Vector& startPos, const Vector& endPos);
 	virtual const Vector& GetBulletSpread(void)
 	{
@@ -88,6 +88,8 @@ private:
 	bool m_bIsLowBattery;
 	bool m_bOverchargeDamageBenefits;
 	bool m_bPlayedDechargingSound;
+	bool m_bPlayedChargingSound;
+	bool m_bFirstEquip;
 	
 	CWeaponRailgun( const CWeaponRailgun & );
 };

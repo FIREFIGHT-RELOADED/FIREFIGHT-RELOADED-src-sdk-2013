@@ -847,12 +847,26 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 					xpReward += 30;
 				}
 
-				if (FClassnameIs(pInflictor, "knife_bolt") || 
-					FClassnameIs(pInflictor, "crossbow_bolt") || 
-					FClassnameIs(pInflictor, "env_flare"))
+				if (pInflictor)
 				{
-					moneyReward += 30;
-					xpReward += 30;
+					if (FClassnameIs(pInflictor, "knife_bolt") ||
+						FClassnameIs(pInflictor, "crossbow_bolt") ||
+						FClassnameIs(pInflictor, "env_flare"))
+					{
+						moneyReward += 30;
+						xpReward += 30;
+					}
+				}
+
+				CBaseCombatWeapon* pWeapon = pEntity->GetActiveWeapon();
+
+				if (pWeapon)
+				{
+					if (FClassnameIs(pWeapon, "weapon_katana"))
+					{
+						moneyReward += 50;
+						xpReward += 50;
+					}
 				}
 
 				moneyReward += pEntity->GetLevel() * 10;

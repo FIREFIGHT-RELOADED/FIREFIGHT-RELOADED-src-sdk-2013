@@ -98,12 +98,8 @@ void C_AmbientFMOD::OnDataChanged( DataUpdateType_t updateType )
 	if ( m_bActive != m_bOldActive )
 	{
 		m_bOldActive = m_bActive;
-		if ( m_bInit )
-			ToggleSound();
+		ToggleSound();
 	}
-
-	if ( m_iszSound != NULL_STRING && !m_bInit && m_hSoundSource )
-		m_bInit = SetSound();
 }
 
 void C_AmbientFMOD::ClientThink( void )
@@ -122,38 +118,33 @@ void C_AmbientFMOD::ToggleSound()
 {
 	bool bIsPlaying = false;
 
-	if ( m_pChannel != nullptr )
-		m_pChannel->isPlaying( &bIsPlaying );
+	if (m_pChannel != nullptr)
+	{
+		m_pChannel->isPlaying(&bIsPlaying);
+	}
 
 	if ( m_bActive && !bIsPlaying )
 	{
-		if ( !bIsPlaying )
+		if (m_iszSound != NULL_STRING && !m_bInit && m_hSoundSource)
 		{
-			eChannelGroupType channelgroupType = m_bMusic ? CHANNELGROUP_MUSIC : CHANNELGROUP_STANDARD;
-			CFMODManager::CheckError( GetFMODManager()->GetSystem()->playSound( m_pSound, GetFMODManager()->GetChannelGroup( channelgroupType ), true, &m_pChannel ) );
-
-			if ( m_pChannel )
-			{
-				SetPitch();
-				SetVolume();
-
-				if ( !m_bGlobal )
-				{
-					CFMODManager::CheckError( m_pChannel->set3DMinMaxDistance( 1, m_flMaxDistance ) );
-
-					Vector entPos = m_hSoundSource->GetAbsOrigin();
-					FMOD_VECTOR sourcePos = { entPos.x, entPos.z, entPos.y };
-
-					m_pChannel->set3DAttributes( &sourcePos, nullptr );
-					m_pChannel->setPaused( false );
-				}
-			}
+			m_bInit = SetSound();
 		}
 	}
-	if ( !m_bActive && bIsPlaying && m_pChannel != nullptr )
+	else if ( !m_bActive && bIsPlaying)
 	{
-		CFMODManager::CheckError( m_pChannel->stop() );
-		m_pChannel = nullptr;
+		m_bInit = false;
+
+		if (m_pChannel)
+		{
+			CFMODManager::CheckError(m_pChannel->stop());
+			m_pChannel = NULL;
+		}
+
+		if (m_pSound)
+		{
+			CFMODManager::CheckError(m_pSound->release());
+			m_pChannel = NULL;
+		}
 	}
 }
 

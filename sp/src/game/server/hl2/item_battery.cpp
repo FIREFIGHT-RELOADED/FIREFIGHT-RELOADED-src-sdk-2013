@@ -12,6 +12,7 @@
 #include "items.h"
 #include "engine/IEngineSound.h"
 #include "time.h"
+#include "globalstate.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -55,38 +56,41 @@ bool CItemBattery::CheckBlueheart(void)
 		m_bInBlueheartMode = true;
 	}
 
-	if (!m_bInBlueheartMode)
+	if (GlobalEntity_GetState("blueheart_disable") == GLOBAL_ON)
 	{
-		time_t ltime = time(0);
-		const time_t* ptime = &ltime;
-		struct tm* today = localtime(ptime);
-		bool isCorrectTiming = false;
-		if (today)
+		if (!m_bInBlueheartMode)
 		{
-			//HACK
-			int iExactMonth = today->tm_mon + 1;
-
-			DevMsg("CItemBattery::CheckBlueheart: Day is %i-%i. Checking if it's valid to turn into a blueheart\n", iExactMonth, today->tm_mday);
-
-			if (iExactMonth == 4 && today->tm_mday == 14)
+			time_t ltime = time(0);
+			const time_t* ptime = &ltime;
+			struct tm* today = localtime(ptime);
+			bool isCorrectTiming = false;
+			if (today)
 			{
-				m_bInBlueheartMode = true;
-				isCorrectTiming = true;
+				//HACK
+				int iExactMonth = today->tm_mon + 1;
+
+				DevMsg("CItemBattery::CheckBlueheart: Day is %i-%i. Checking if it's valid to turn into a blueheart\n", iExactMonth, today->tm_mday);
+
+				if (iExactMonth == 4 && today->tm_mday == 14)
+				{
+					m_bInBlueheartMode = true;
+					isCorrectTiming = true;
+				}
+				else if (iExactMonth == 11 && today->tm_mday == 29)
+				{
+					m_bInBlueheartMode = true;
+					isCorrectTiming = true;
+				}
 			}
-			else if (iExactMonth == 11 && today->tm_mday == 29)
-			{
-				m_bInBlueheartMode = true;
-				isCorrectTiming = true;
-			}
-		}
 
-		if (isCorrectTiming == false)
-		{
-			DevMsg("CItemBattery::CheckBlueheart: Not the correct day, using randomization instead.\n");
-
-			if (random->RandomInt(1, 30) == 30)
+			if (isCorrectTiming == false)
 			{
-				m_bInBlueheartMode = true;
+				DevMsg("CItemBattery::CheckBlueheart: Not the correct day, using randomization instead.\n");
+
+				if (random->RandomInt(1, 30) == 30)
+				{
+					m_bInBlueheartMode = true;
+				}
 			}
 		}
 	}
