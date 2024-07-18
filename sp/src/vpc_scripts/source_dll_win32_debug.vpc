@@ -11,6 +11,7 @@ $MacroRequired				"OUTBINNAME"
 $MacroRequired				"OUTBINDIR"
 $MacroRequired				"LIBPUBLIC"
 $MacroRequired				"LIBCOMMON"
+$MacroRequired				"LIBTHIRDPARTY"
 $MacroRequired				"PLATSUBDIR"
 $MacroRequired				"OUTDLLEXT"
 $MacroRequiredAllowEmpty	"GAMENAME"
@@ -145,7 +146,7 @@ $Configuration "Debug"
 		$SuppressStartupBanner				"Yes (/NOLOGO)"
 		$IgnoreImportLibrary
 		$RegisterOutput
-		$AdditionalLibraryDirectories		"$LIBCOMMON;$LIBPUBLIC"
+		$AdditionalLibraryDirectories		"$LIBCOMMON;$LIBPUBLIC;LIBTHIRDPARTY"
 		$LinkLibraryDependencies
 		$UseLibraryDependencyInputs
 		$UseUNICODEResponseFiles			"No"

@@ -4,6 +4,7 @@ $Macro PLATSUBDIR	"\linux32"	[$LINUX32]
 
 $Macro LIBPUBLIC	"$SRCDIR\lib\public$PLATSUBDIR"
 $Macro LIBCOMMON	"$SRCDIR\lib\common$PLATSUBDIR"
+$Macro LIBTHIRDPARTY	"$SRCDIR\lib\thirdparty$PLATSUBDIR"
 
 $MacroRequired				"SRCDIR"
 

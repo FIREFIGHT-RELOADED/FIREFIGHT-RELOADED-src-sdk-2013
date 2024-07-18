@@ -118,6 +118,7 @@
 	" "	"CreditsOutroText"
 	"The Mapbase Team for logic_eventlistener." 	"CreditsOutroText"
 	" "	"CreditsOutroText"
+	"Spirrwell for their FMOD implementation."	"CreditsOutroText"
 	"This mod uses code from Mobility Mod for Half-Life 2 by Rob Cruickshank." "CreditsOutroText"
 	" "	"CreditsOutroText"
 	"Thank you to the following for your GitHub contributions:"	"CreditsOutroText"

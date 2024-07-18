@@ -3,6 +3,7 @@ $Include "$SRCDIR\vpc_scripts\version.vpc"
 
 $Macro LIBPUBLIC	"$SRCDIR\lib\public$PLATSUBDIR"
 $Macro LIBCOMMON	"$SRCDIR\lib\common$PLATSUBDIR"
+$Macro LIBTHIRDPARTY	"$SRCDIR\lib\thirdparty$PLATSUBDIR"
 
 $MacroRequired				"SRCDIR"
 
@@ -35,7 +36,7 @@ $Configuration
 	$Compiler
 	{
 		$AdditionalIncludeDirectories		"$SRCDIR\common;$SRCDIR\public;$SRCDIR\public\tier0;$SRCDIR\public\tier1"
-		$AdditionalLibraryDirectories		"$LIBCOMMON;$LIBPUBLIC" [$OSXALL]
+		$AdditionalLibraryDirectories		"$LIBCOMMON;$LIBPUBLIC;LIBTHIRDPARTY" [$OSXALL]
 		$PreprocessorDefinitions		"$BASE;GNUC;POSIX;COMPILER_GCC;_DLL_EXT=$_DLL_EXT"
 		$PreprocessorDefinitions		"$BASE;DEDICATED" [$DEDICATED]
 		// the 10240 in the following line is the output of `sysctl -n kern.maxfilesperproc`

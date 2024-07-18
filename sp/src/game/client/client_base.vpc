@@ -1252,8 +1252,9 @@ $Project
 		$Lib		vgui_controls
 		$Lib		vtf
 		$ImpLib		steam_api
-        $ImpLib		"$SRCDIR\lib\thirdparty\fmod\fmod_vc" [$WIN32]
-        $ImpLib		"$SRCDIR\lib\thirdparty\fmod\linux32\libfmod" [$LINUXALL]
+        
+        $Lib		"$LIBTHIRDPARTY\fmod_vc" [$WIN32]
+        $Libexternal		"$LIBTHIRDPARTY\libfmod" [$LINUXALL]
 		
 		$Lib $LIBCOMMON/libcrypto [$POSIX]
 
