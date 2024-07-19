@@ -543,7 +543,7 @@ void CWeaponRailgun::Fire( void )
 	// rgettman - https://stackoverflow.com/questions/18407634/rounding-up-to-the-nearest-hundred
 	int rounded = ((pOwner->GetAmmoCount(m_iPrimaryAmmoType) + 99) / 100 ) * 100;
 	int iDamage = (m_bOverchargeDamageBenefits ? (int)(definedDamage * (rounded / 100)) : definedDamage);
-	DevMsg("%i\n", iDamage);
+	//DevMsg("%i\n", iDamage);
 
 	FireBulletsInfo_t info(1, startPos, aimDir, vec3_origin, MAX_TRACE_LENGTH, m_iPrimaryAmmoType);
 	info.m_pAttacker = pOwner;
