@@ -6561,7 +6561,7 @@ void CBasePlayer::RemoveArmor(int value)
 
 	if (m_ArmorValue <= 0)
 	{
-		m_ArmorValue -= value;
+		m_ArmorValue = 0;
 	}
 }
 

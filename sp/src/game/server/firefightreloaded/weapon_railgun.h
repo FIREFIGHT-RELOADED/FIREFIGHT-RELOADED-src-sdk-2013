@@ -21,6 +21,9 @@
 #define RAIL_RECHARGE_TIME 0.0897f
 #define RAIL_RECHARGE_BACKGROUND_TIME 0.055f
 #define RAIL_RECHARGE_OVERCHARGE_TIME 0.16f
+#define RAIL_DECHARGE_TIME 0.055f
+#define RAIL_RECHARGE_SUIT_TIME 0.2f
+#define RAIL_RECHARGE_RECOVERY_TIME 1.0f
 #define RAIL_AMMO 25
 #define RAIL_AMMO_OVERCHARGE 50
 
@@ -82,6 +85,8 @@ private:
 private:
 	CBeam* m_pBeam;
 	float m_flNextCharge;
+	float m_flNextDecharge;
+	float m_flNextSuitCharge;
 	float m_flNextWarningBeep;
 	bool m_bInZoom;
 	bool m_bJustOvercharged;
@@ -90,6 +95,7 @@ private:
 	bool m_bPlayedDechargingSound;
 	bool m_bPlayedChargingSound;
 	bool m_bFirstEquip;
+	bool m_bJustRecovered;
 	
 	CWeaponRailgun( const CWeaponRailgun & );
 };

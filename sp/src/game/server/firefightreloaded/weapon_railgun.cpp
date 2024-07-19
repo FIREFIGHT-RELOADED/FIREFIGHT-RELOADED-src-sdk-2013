@@ -25,6 +25,8 @@ END_SEND_TABLE()
 
 BEGIN_DATADESC(CWeaponRailgun)
 DEFINE_FIELD(m_flNextCharge, FIELD_TIME),
+DEFINE_FIELD(m_flNextSuitCharge, FIELD_TIME),
+DEFINE_FIELD(m_flNextDecharge, FIELD_TIME),
 DEFINE_FIELD(m_bInZoom, FIELD_BOOLEAN),
 DEFINE_FIELD(m_bJustOvercharged, FIELD_BOOLEAN),
 DEFINE_FIELD(m_bIsLowBattery, FIELD_BOOLEAN),
@@ -33,6 +35,7 @@ DEFINE_FIELD(m_flNextWarningBeep, FIELD_TIME),
 DEFINE_FIELD(m_bPlayedDechargingSound, FIELD_BOOLEAN),
 DEFINE_FIELD(m_bPlayedChargingSound, FIELD_BOOLEAN),
 DEFINE_FIELD(m_bFirstEquip, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bJustRecovered, FIELD_BOOLEAN),
 END_DATADESC()
 
 LINK_ENTITY_TO_CLASS( weapon_railgun, CWeaponRailgun );
@@ -109,6 +112,8 @@ CWeaponRailgun::CWeaponRailgun( void )
 	m_bReloadsSingly	= false;
 	m_bFiresUnderwater	= false;
 	m_flNextCharge = 0;
+	m_flNextSuitCharge = 0;
+	m_flNextDecharge = 0;
 	m_flNextWarningBeep = 0;
 	m_bInZoom = false;
 	m_bJustOvercharged = false;
@@ -117,6 +122,7 @@ CWeaponRailgun::CWeaponRailgun( void )
 	m_bPlayedDechargingSound = false;
 	m_bPlayedChargingSound = true;
 	m_bFirstEquip = true;
+	m_bJustRecovered = false;
 
 	m_fMinRange1 = 0;
 	m_fMaxRange1 = 99999;
@@ -401,6 +407,12 @@ void CWeaponRailgun::ItemPostFrame(void)
 
 	if (m_bOverchargeDamageBenefits && pOwner->GetAmmoCount(m_iPrimaryAmmoType) < sk_weapon_railgun_overcharge_limit.GetInt())
 	{
+		if (m_bJustRecovered)
+		{
+			m_flNextSuitCharge = gpGlobals->curtime + RAIL_RECHARGE_RECOVERY_TIME;
+			m_bJustRecovered = false;
+		}
+
 		if (m_bPlayedDechargingSound)
 		{
 			StopSound("SuitRecharge.ChargingLoop");
@@ -528,7 +540,10 @@ void CWeaponRailgun::Fire( void )
 
 	CAmmoDef *def = GetAmmoDef();
 	int definedDamage = def->PlrDamage(m_iPrimaryAmmoType);
-	int iDamage = (m_bOverchargeDamageBenefits ? (int)(definedDamage * 2) : definedDamage);
+	// rgettman - https://stackoverflow.com/questions/18407634/rounding-up-to-the-nearest-hundred
+	int rounded = ((pOwner->GetAmmoCount(m_iPrimaryAmmoType) + 99) / 100 ) * 100;
+	int iDamage = (m_bOverchargeDamageBenefits ? (int)(definedDamage * (rounded / 100)) : definedDamage);
+	DevMsg("%i\n", iDamage);
 
 	FireBulletsInfo_t info(1, startPos, aimDir, vec3_origin, MAX_TRACE_LENGTH, m_iPrimaryAmmoType);
 	info.m_pAttacker = pOwner;
@@ -642,7 +657,7 @@ void CWeaponRailgun::DechargeAmmo()
 		//return;
 
 	// Time to recharge yet?
-	if (m_flNextCharge >= gpGlobals->curtime)
+	if (m_flNextDecharge >= gpGlobals->curtime)
 		return;
 
 	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
@@ -665,28 +680,30 @@ void CWeaponRailgun::DechargeAmmo()
 
 		pPlayer->RemoveAmmo(25, m_iPrimaryAmmoType);
 		pPlayer->IncrementArmorValue(25);
-		m_flNextCharge = gpGlobals->curtime + RAIL_RECHARGE_BACKGROUND_TIME;
-	}
-	else
-	{
-		m_flNextCharge = gpGlobals->curtime + RAIL_RECHARGE_OVERCHARGE_TIME;
-		if (m_bPlayedDechargingSound)
-		{
-			StopSound("SuitRecharge.ChargingLoop");
-			m_bPlayedDechargingSound = false;
-		}
+		m_flNextDecharge = gpGlobals->curtime + RAIL_DECHARGE_TIME;
+		m_bJustRecovered = true;
 	}
 }
 
 void CWeaponRailgun::ChargeAmmo()
 {
+	if (m_flNextSuitCharge >= gpGlobals->curtime)
+		return;
+
 	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
 
 	if (pPlayer == NULL)
 		return;
 
-	if (pPlayer->ArmorValue() <= 0)
+	if (pPlayer->ArmorValue() <= 0 || pPlayer->GetAmmoCount(m_iPrimaryAmmoType) >= GetAmmoDef()->MaxCarry(m_iPrimaryAmmoType))
+	{
+		if (m_bPlayedChargingSound)
+		{
+			StopSound("SuitRecharge.ChargingLoop");
+			m_bPlayedChargingSound = false;
+		}
 		return;
+	}
 
 	if (!m_bPlayedChargingSound)
 	{
@@ -697,8 +714,10 @@ void CWeaponRailgun::ChargeAmmo()
 	}
 
 	// allow us to overcharge with as much battery as we have. WHO NEEDS SAFETY?
-	pPlayer->GiveAmmo(25, m_iPrimaryAmmoType, true);
-	pPlayer->RemoveArmor(25);
+	pPlayer->GiveAmmo(5, m_iPrimaryAmmoType, true);
+	pPlayer->RemoveArmor(5);
+
+	m_flNextSuitCharge = gpGlobals->curtime + RAIL_RECHARGE_SUIT_TIME;
 }
 
 //-----------------------------------------------------------------------------
