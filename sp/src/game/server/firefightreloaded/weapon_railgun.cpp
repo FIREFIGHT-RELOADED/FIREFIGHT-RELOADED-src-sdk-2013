@@ -405,16 +405,23 @@ void CWeaponRailgun::ItemPostFrame(void)
 		ChargeAmmo();
 	}
 
-	if (m_bOverchargeDamageBenefits && pOwner->GetAmmoCount(m_iPrimaryAmmoType) < sk_weapon_railgun_overcharge_limit.GetInt())
+	if (sk_weapon_railgun_overcharge_limit.GetInt() > 0 && 
+		m_bOverchargeDamageBenefits && pOwner->GetAmmoCount(m_iPrimaryAmmoType) <= sk_weapon_railgun_overcharge_limit.GetInt())
 	{
 		if (m_bJustRecovered)
 		{
+			// so we get 500 instead of 499.
+			if (pOwner->GetAmmoCount(m_iPrimaryAmmoType) < sk_weapon_railgun_overcharge_limit.GetInt())
+			{
+				pOwner->SetAmmoCount(sk_weapon_railgun_overcharge_limit.GetInt(), m_iPrimaryAmmoType);
+			}
 			m_flNextSuitCharge = gpGlobals->curtime + RAIL_RECHARGE_RECOVERY_TIME;
 			m_bJustRecovered = false;
 		}
 
 		if (m_bPlayedDechargingSound)
 		{
+			WeaponSound(EMPTY);
 			StopSound("SuitRecharge.ChargingLoop");
 			m_bPlayedDechargingSound = false;
 		}
@@ -543,7 +550,7 @@ void CWeaponRailgun::Fire( void )
 	// rgettman - https://stackoverflow.com/questions/18407634/rounding-up-to-the-nearest-hundred
 	int rounded = ((pOwner->GetAmmoCount(m_iPrimaryAmmoType) + 99) / 100 ) * 100;
 	int iDamage = (m_bOverchargeDamageBenefits ? (int)(definedDamage * (rounded / 100)) : definedDamage);
-	//DevMsg("%i\n", iDamage);
+	DevMsg("RAILGUN DAMAGE: %i\n", iDamage);
 
 	FireBulletsInfo_t info(1, startPos, aimDir, vec3_origin, MAX_TRACE_LENGTH, m_iPrimaryAmmoType);
 	info.m_pAttacker = pOwner;
@@ -668,6 +675,18 @@ void CWeaponRailgun::DechargeAmmo()
 	if (sk_weapon_railgun_overcharge_limit.GetInt() <= 0)
 		return;
 
+	if (pPlayer->ArmorValue() >= pPlayer->GetMaxArmorValue())
+	{
+		//we'll have to deal with it
+		if (m_bPlayedDechargingSound)
+		{
+			WeaponSound(EMPTY);
+			StopSound("SuitRecharge.ChargingLoop");
+			m_bPlayedDechargingSound = false;
+		}
+		return;
+	}
+
 	if (pPlayer->GetAmmoCount(m_iPrimaryAmmoType) > sk_weapon_railgun_overcharge_limit.GetInt())
 	{
 		if (!m_bPlayedDechargingSound)
@@ -679,7 +698,7 @@ void CWeaponRailgun::DechargeAmmo()
 		}
 
 		pPlayer->RemoveAmmo(25, m_iPrimaryAmmoType);
-		pPlayer->IncrementArmorValue(25);
+		pPlayer->IncrementArmorValue(25, pPlayer->GetMaxArmorValue());
 		m_flNextDecharge = gpGlobals->curtime + RAIL_DECHARGE_TIME;
 		m_bJustRecovered = true;
 	}
@@ -699,6 +718,7 @@ void CWeaponRailgun::ChargeAmmo()
 	{
 		if (m_bPlayedChargingSound)
 		{
+			WeaponSound(EMPTY);
 			StopSound("SuitRecharge.ChargingLoop");
 			m_bPlayedChargingSound = false;
 		}
