@@ -40,12 +40,13 @@ public:
     void UpdateGradients();
 
     void OnThink() OVERRIDE;
-    void OnKeyCodeReleased(vgui::KeyCode code) OVERRIDE;
+    void OnKeyCodeTyped(vgui::KeyCode code) OVERRIDE;
     void ApplySchemeSettings(vgui::IScheme* pScheme) OVERRIDE;
     void OnCommand(char const* pCommand) OVERRIDE;
     void LoadItemFile(const char* kvName, const char* scriptPath);
     void CreateItemList();
     void UpdateFrameTitle();
+    void OutOfBusiness();
 
     MESSAGE_FUNC_HANDLE(OnGamepadUIButtonNavigatedTo, "OnGamepadUIButtonNavigatedTo", button);
 
@@ -391,21 +392,54 @@ void GamepadUIStore::OnThink()
 
     if (!GamepadUI::GetInstance().IsInLevel())
     {
-        Close();
+        OutOfBusiness();
     }
 }
 
-void GamepadUIStore::OnKeyCodeReleased(vgui::KeyCode code)
+void GamepadUIStore::OnKeyCodeTyped(vgui::KeyCode code)
 {
     ButtonCode_t buttonCode = GetBaseButtonCode(code);
     switch (buttonCode)
     {
+#ifdef HL2_RETAIL
+    case STEAMCONTROLLER_B:
+#endif
+    case KEY_XBUTTON_B:
     case KEY_ESCAPE:
-        Close();
+    case KEY_LCONTROL:
+    case KEY_RCONTROL:
+        for (int i = 0; i < FooterButtons::MaxFooterButtons; i++)
+        {
+            if (FooterButtons::GetButtonByIdx(i) & FooterButtons::DeclineMask)
+            {
+                if (m_pFooterButtons[i])
+                {
+                    m_pFooterButtons[i]->ForceDepressed(true);
+                    if (m_pFooterButtons[i]->IsDepressed())
+                    {
+                        m_pFooterButtons[i]->ForceDepressed(false);
+                        m_pFooterButtons[i]->DoClick();
+                    }
+                }
+            }
+        }
         break;
     default:
-        BaseClass::OnKeyCodeReleased(code);
+        BaseClass::OnKeyCodeTyped(code);
         break;
+    }
+}
+
+void GamepadUIStore::OutOfBusiness()
+{
+    Close();
+    if (GamepadUI::GetInstance().IsInLevel())
+    {
+        ReleaseBackgroundMusic();
+        GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted("gamemenucommand resumegame");
+        // I tried it and didn't like it.
+        // Oh well.
+        //vgui::surface()->PlaySound( "UI/buttonclickrelease.wav" );
     }
 }
 
@@ -491,15 +525,7 @@ void GamepadUIStore::OnCommand( char const* pCommand )
 {
     if ( !V_strcmp( pCommand, "action_back" ) )
     {
-        Close();
-        if (GamepadUI::GetInstance().IsInLevel())
-        {
-            ReleaseBackgroundMusic();
-            GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted("gamemenucommand resumegame");
-            // I tried it and didn't like it.
-            // Oh well.
-            //vgui::surface()->PlaySound( "UI/buttonclickrelease.wav" );
-        }
+        OutOfBusiness();
     }
     else if (StringHasPrefixCaseSensitive(pCommand, "purchase_item "))
     {

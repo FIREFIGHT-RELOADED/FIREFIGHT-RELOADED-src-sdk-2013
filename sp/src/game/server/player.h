@@ -759,6 +759,7 @@ public:
 	void	ResetDeathCount();
 	void	IncrementDeathCount( int nCount );
 
+	void	RemoveArmor(int value);
 	void	SetArmorValue( int value );
 	void	SetMaxArmorValue(int MaxArmorValue);
 	virtual int	GetMaxArmorValue(void) { return m_MaxArmorValue; }

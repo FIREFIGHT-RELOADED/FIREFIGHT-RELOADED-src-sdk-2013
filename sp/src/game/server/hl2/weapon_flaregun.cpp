@@ -732,3 +732,18 @@ void CFlaregun::PrimaryAttack( void )
 	WeaponSound( SINGLE );
 }
 #endif
+
+//-----------------------------------------------------------------------------
+// Purpose: Determines whether a physics object is a flare or not
+// Input  : *pEntity - 
+// Output : Returns true on success, false on failure.
+//-----------------------------------------------------------------------------
+bool UTIL_IsFlare(CBaseEntity* pEntity)
+{
+	CFlare* pFlare = dynamic_cast<CFlare*>(pEntity);
+
+	if (pFlare && pFlare->m_bInActiveList)
+		return true;
+
+	return false;
+}

@@ -84,6 +84,7 @@ public:
 	void			SelectExpressionType();
 	void			Activate();
 	virtual void	OnGivenWeapon( CBaseCombatWeapon *pNewWeapon );
+	bool			AllowedToIgnite(void);
 	void			FixupMattWeapon();
 
 	//player ports
@@ -325,6 +326,8 @@ private:
 	CitizenExpressionTypes_t	m_ExpressionType;
 
 	int				m_iHead;
+
+	bool 			m_bCanSpeak;
 
 	static CSimpleSimTimer gm_PlayerSquadEvaluateTimer;
 

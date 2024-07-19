@@ -105,5 +105,6 @@ public:
 };
 #endif
 
-#endif // WEAPON_FLAREGUN_H
+bool UTIL_IsFlare(CBaseEntity* pEntity);
 
+#endif // WEAPON_FLAREGUN_H

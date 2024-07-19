@@ -697,8 +697,8 @@ void CWeaponRailgun::ChargeAmmo()
 	}
 
 	// allow us to overcharge with as much battery as we have. WHO NEEDS SAFETY?
-	pPlayer->GiveAmmo(5, m_iPrimaryAmmoType, true);
-	pPlayer->IncrementArmorValue(-5);
+	pPlayer->GiveAmmo(25, m_iPrimaryAmmoType, true);
+	pPlayer->RemoveArmor(25);
 }
 
 //-----------------------------------------------------------------------------

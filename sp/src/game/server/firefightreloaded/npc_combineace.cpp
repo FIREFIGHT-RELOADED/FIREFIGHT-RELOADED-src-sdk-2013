@@ -27,6 +27,7 @@
 #include "gib.h"
 #include "IEffects.h"
 #include "hl2/prop_combine_ball.h"
+#include "weapon_flaregun.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -692,7 +693,22 @@ int CNPC_CombineAce::OnTakeDamage_Alive(const CTakeDamageInfo& info)
 //-----------------------------------------------------------------------------
 bool CNPC_CombineAce::PassesDamageFilter(const CTakeDamageInfo& info)
 {
+	if ((info.GetDamageType() & DMG_CRUSH) && !m_bBulletResistanceBroken)
+	{
+		return false;
+	}
+
+	if ((info.GetDamageType() & DMG_BURN) && !m_bBulletResistanceBroken)
+	{
+		return false;
+	}
+
 	if (UTIL_IsAR2CombineBall(info.GetInflictor()) && !m_bBulletResistanceBroken)
+	{
+		return false;
+	}
+
+	if (UTIL_IsFlare(info.GetInflictor()) && !m_bBulletResistanceBroken)
 	{
 		return false;
 	}

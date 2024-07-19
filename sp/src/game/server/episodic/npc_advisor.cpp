@@ -21,6 +21,7 @@
 #include "particle_parse.h"
 #include "weapon_physcannon.h"
 #include "hl2/prop_combine_ball.h"
+#include "weapon_flaregun.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -391,7 +392,17 @@ bool CNPC_Advisor::PassesDamageFilter(const CTakeDamageInfo& info)
 		return false;
 	}
 
+	if ((info.GetDamageType() & DMG_BURN))
+	{
+		return false;
+	}
+
 	if (UTIL_IsAR2CombineBall(info.GetInflictor()))
+	{
+		return false;
+	}
+
+	if (UTIL_IsFlare(info.GetInflictor()))
 	{
 		return false;
 	}

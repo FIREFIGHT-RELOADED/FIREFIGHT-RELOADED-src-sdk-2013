@@ -124,6 +124,7 @@ extern ConVar fr_new_btspeed;
 ConVar	ai_follow_move_commands( "ai_follow_move_commands", "1" );
 ConVar	ai_citizen_debug_commander( "ai_citizen_debug_commander", "1" );
 static ConVar npc_playerbot_useplayersmodel("npc_playerbot_useplayersmodel", "1", FCVAR_ARCHIVE);
+static ConVar npc_playerbot_talk("npc_playerbot_talk", "1", FCVAR_ARCHIVE);
 #define DebuggingCommanderMode() (ai_citizen_debug_commander.GetBool() && (m_debugOverlays & OVERLAY_NPC_SELECTED_BIT))
 
 //-----------------------------------------------------------------------------
@@ -660,11 +661,23 @@ void CNPC_Citizen::Spawn()
 	if (HasSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI))
 	{
 		CapabilitiesAdd(bits_CAP_MOVE_JUMP);
-		AddSpawnFlags(SF_CITIZEN_AMMORESUPPLIER);
 		AddSpawnFlags(SF_CITIZEN_MEDIC);
 		Vector allyColor = Vector(26, 77, 153);
 		GiveOutline(allyColor);
 		GiveWeapons();
+
+		if (npc_playerbot_talk.GetBool())
+		{
+			m_bCanSpeak = true;
+		}
+		else
+		{
+			m_bCanSpeak = false;
+		}
+	}
+	else
+	{
+		m_bCanSpeak = true;
 	}
 
 	CWeaponRPG *pRPG = dynamic_cast<CWeaponRPG*>(GetActiveWeapon());
@@ -675,6 +688,8 @@ void CNPC_Citizen::Spawn()
 	}
 
 	m_flTimePlayerStare = FLT_MAX;
+
+	AddEFlags( EFL_NO_DISSOLVE | EFL_NO_MEGAPHYSCANNON_RAGDOLL | EFL_NO_PHYSCANNON_INTERACTION );
 
 	NPCInit();
 
@@ -1362,7 +1377,7 @@ void CNPC_Citizen::GatherConditions()
 		}
 	}
 
-	if (!HasSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI))
+	if (m_bCanSpeak)
 	{
 		if (!SpokeConcept(TLK_JOINPLAYER) && IsRunningScriptedSceneWithSpeech(this, true))
 		{
@@ -1390,7 +1405,6 @@ void CNPC_Citizen::GatherConditions()
 
 	// If the player is standing near a medic and can see the medic, 
 	// assume the player is 'staring' and wants health.
-#if HL2_LEGACY_CITIZENS
 	if( CanHeal() )
 	{
 		CBasePlayer *pPlayer = UTIL_GetNearestVisiblePlayer(this);
@@ -1440,7 +1454,6 @@ void CNPC_Citizen::GatherConditions()
 			m_flTimePlayerStare = FLT_MAX;
 		}
 	}
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -1893,15 +1906,12 @@ bool CNPC_Citizen::ShouldDeferToFollowBehavior()
 //-----------------------------------------------------------------------------
 int CNPC_Citizen::TranslateSchedule( int scheduleType ) 
 {
-#if HL2_LEGACY_CITIZENS
 	CBasePlayer *pLocalPlayer = UTIL_GetNearestVisiblePlayer(this);
-#endif
 
 	switch( scheduleType )
 	{
 	case SCHED_IDLE_STAND:
 	case SCHED_ALERT_STAND:
-#if HL2_LEGACY_CITIZENS
 		if( m_NPCState != NPC_STATE_COMBAT && pLocalPlayer && !pLocalPlayer->IsAlive() && CanJoinPlayerSquad() )
 		{
 			// Player is dead! 
@@ -1910,12 +1920,11 @@ int CNPC_Citizen::TranslateSchedule( int scheduleType )
 
 			if( flDist < 50 * 12 )
 			{
-				//AddSpawnFlags( SF_CITIZEN_NOT_COMMANDABLE );
+				AddSpawnFlags( SF_CITIZEN_NOT_COMMANDABLE );
 				return SCHED_CITIZEN_MOURN_PLAYER;
 			}
 		}
 		break;
-#endif
 
 	case SCHED_ESTABLISH_LINE_OF_FIRE:
 	case SCHED_MOVE_TO_WEAPON_RANGE:
@@ -2017,12 +2026,12 @@ void CNPC_Citizen::StartTask( const Task_t *pTask )
 				break;
 			}
 
-			if (!HasSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI))
+			if (m_bCanSpeak)
 				Speak( TLK_HEAL );
 		}
 		else if ( IsAmmoResupplier() )
 		{
-			if (!HasSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI))
+			if (m_bCanSpeak)
 				Speak( TLK_GIVEAMMO );
 		}
 		SetIdealActivity( (Activity)ACT_CIT_HEAL );
@@ -2035,7 +2044,7 @@ void CNPC_Citizen::StartTask( const Task_t *pTask )
 
 			//if ( pSpeechManager-> )
 
-			if (!HasSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI))
+			if (m_bCanSpeak)
 				Speak(TLK_PLDEAD);
 		}
 		TaskComplete();
@@ -2870,7 +2879,7 @@ bool CNPC_Citizen::TargetOrder( CBaseEntity *pTarget, CAI_BaseNPC **Allies, int 
 			m_AssaultBehavior.Disable();
 			m_FollowBehavior.SetFollowTarget( pTarget );
 			m_FollowBehavior.SetParameters( AIF_SIMPLE );	
-			if (!HasSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI))
+			if (m_bCanSpeak)
 				SpeakCommandResponse( TLK_STARTFOLLOW );
 
 			m_OnFollowOrder.FireOutput( this, this );
@@ -2879,7 +2888,7 @@ bool CNPC_Citizen::TargetOrder( CBaseEntity *pTarget, CAI_BaseNPC **Allies, int 
 		{
 			// Stop following.
 			m_FollowBehavior.SetFollowTarget( NULL );
-			if (!HasSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI))
+			if (m_bCanSpeak)
 				SpeakCommandResponse( TLK_STOPFOLLOW );
 		}
 	}
@@ -2958,7 +2967,7 @@ void CNPC_Citizen::MoveOrder( const Vector &vecDest, CAI_BaseNPC **Allies, int n
 						   destDistToPlayer,
 						   destDistToClosest );
 
-		if (!HasSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI))
+		if (m_bCanSpeak)
 			SpeakCommandResponse( TLK_COMMANDED, modifiers );
 	}
 
@@ -2991,7 +3000,7 @@ void CNPC_Citizen::CommanderUse( CBaseEntity *pActivator, CBaseEntity *pCaller, 
 	
 	if (pActivator == UTIL_GetNearestPlayer(GetAbsOrigin()))
 	{
-		if (!HasSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI))
+		if (m_bCanSpeak)
 		{
 			// Don't say hi after you've been addressed by the player
 			SetSpokeConcept(TLK_HELLO, NULL);
@@ -3006,7 +3015,7 @@ void CNPC_Citizen::CommanderUse( CBaseEntity *pActivator, CBaseEntity *pCaller, 
 		}
 		else if ( GetCurSchedule() && ConditionInterruptsCurSchedule( COND_IDLE_INTERRUPT ) )
 		{
-			if (!HasSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI))
+			if (m_bCanSpeak)
 			{
 				if (SpeakIfAllowed(TLK_QUESTION, NULL, true))
 				{
@@ -3052,7 +3061,7 @@ void CNPC_Citizen::OnMoveToCommandGoalFailed()
 	// Clear the goal.
 	SetCommandGoal( vec3_invalid );
 
-	if (!HasSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI))
+	if (m_bCanSpeak)
 	{
 		// Announce failure.
 		SpeakCommandResponse(TLK_COMMAND_FAILED);
@@ -3105,7 +3114,7 @@ void CNPC_Citizen::TogglePlayerSquadState()
 	{
 		AddToPlayerSquad();
 
-		if (!HasSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI))
+		if (m_bCanSpeak)
 		{
 			if (HaveCommandGoal())
 			{
@@ -3119,7 +3128,7 @@ void CNPC_Citizen::TogglePlayerSquadState()
 	}
 	else
 	{
-		if (!HasSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI))
+		if (m_bCanSpeak)
 		{
 			SpeakCommandResponse(TLK_STOPFOLLOW);
 		}
@@ -3354,7 +3363,7 @@ void CNPC_Citizen::UpdatePlayerSquad()
 					}
 				}
 
-				if (!HasSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI))
+				if (m_bCanSpeak)
 				{
 					if (pClosest)
 					{
@@ -3708,7 +3717,7 @@ bool CNPC_Citizen::HandleInteraction(int interactionType, void *data, CBaseComba
 	{
 		if ( IsOkToSpeakInResponseToPlayer() )
 		{
-			if (!HasSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI))
+			if (m_bCanSpeak)
 			{
 				Speak(TLK_PLYR_PHYSATK);
 			}
@@ -3820,6 +3829,10 @@ bool CNPC_Citizen::ShouldHealTarget( CBaseEntity *pTarget, bool bActiveUse )
 						return true;
 				}
 			}
+			else
+			{
+				DevMsg("Hello?\nAnyone who happens to be nearby!\nThe person at this computer is dead!\nThey have fallen prey to any number of your countless human physiological vulnerabilities.\nIt's indicative of the long-term sustainability of your species!\nPlease remove their corpse from the area and instruct another human to take their place making sure they understand basic first-person video game mechanics and filling them in on the history of narrative tropes in video gaming so that the irony and insightful commentary of this game is not lost on them.");
+			}
 		}
 	}
 
@@ -3829,22 +3842,30 @@ bool CNPC_Citizen::ShouldHealTarget( CBaseEntity *pTarget, bool bActiveUse )
 		if ( m_flPlayerGiveAmmoTime <= gpGlobals->curtime )
 		{
 			int iAmmoType = GetAmmoDef()->Index( STRING(m_iszAmmoSupply) );
-			if ( iAmmoType == -1 )
+
+
+			CBasePlayer* pPlayer = ((CBasePlayer*)pTarget);
+
+			if (pPlayer)
 			{
-				DevMsg("ERROR: Citizen attempting to give unknown ammo type (%s)\n", STRING(m_iszAmmoSupply) );
-			}
-			else
-			{
-				// Does the player need the ammo we can give him?
-				int iMax = GetAmmoDef()->MaxCarry(iAmmoType);
-				int iCount = ((CBasePlayer*)pTarget)->GetAmmoCount(iAmmoType);
-				if ( !iCount || ((iMax - iCount) >= m_iAmmoAmount) )
+				if (iAmmoType == -1)
 				{
-					// Only give the player ammo if he has a weapon that uses it
-					if ( ((CBasePlayer*)pTarget)->Weapon_GetWpnForAmmo( iAmmoType ) )
-						return true;
+					DevMsg("ERROR: Citizen attempting to give unknown ammo type (%s)\n", STRING(m_iszAmmoSupply));
+				}
+				else
+				{
+					// Does the player need the ammo we can give him?
+					int iMax = GetAmmoDef()->MaxCarry(iAmmoType);
+					int iCount = pPlayer->GetAmmoCount(iAmmoType);
+					if (!iCount || ((iMax - iCount) >= m_iAmmoAmount))
+					{
+						// Only give the player ammo if he has a weapon that uses it
+						if (pPlayer->Weapon_GetWpnForAmmo(iAmmoType))
+							return true;
+					}
 				}
 			}
+			
 		}
 	}
 	return false;
@@ -4140,6 +4161,11 @@ void CNPC_Citizen::OnGivenWeapon( CBaseCombatWeapon *pNewWeapon )
 	}
 }
 
+bool CNPC_Citizen::AllowedToIgnite(void)
+{
+	return !HasSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI);
+}
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 void CNPC_Citizen::InputSetCommandable( inputdata_t &inputdata )
@@ -4188,7 +4214,7 @@ void CNPC_Citizen::InputSetAmmoResupplierOff( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 void CNPC_Citizen::InputSpeakIdleResponse( inputdata_t &inputdata )
 {
-	if (!HasSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI))
+	if (m_bCanSpeak)
 		SpeakIfAllowed( TLK_ANSWER, NULL, true );
 }
 
@@ -4202,7 +4228,7 @@ void CNPC_Citizen::DeathSound( const CTakeDamageInfo &info )
 	// Sentences don't play on dead NPCs
 	SentenceStop();
 
-	if (!HasSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI))
+	if (m_bCanSpeak)
 		EmitSound( "NPC_Citizen.Die" );
 }
 

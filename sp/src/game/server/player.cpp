@@ -6555,6 +6555,16 @@ void CBasePlayer::SetMaxArmorValue(int value)
 	m_MaxArmorValue = value;
 }
 
+void CBasePlayer::RemoveArmor(int value)
+{
+	m_ArmorValue -= value;
+
+	if (m_ArmorValue <= 0)
+	{
+		m_ArmorValue -= value;
+	}
+}
+
 void CBasePlayer::IncrementArmorValue( int nCount, int nMaxValue )
 { 
 	m_ArmorValue += nCount;
