@@ -538,7 +538,7 @@ void CNPCMakerFirefight::MakeNPC()
 
 	if (Q_stristr(pRandomName, "npc_citizen"))
 	{
-		AddSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI);
+		pent->AddSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI);
 		if (!g_fr_lonewolf.GetBool())
 		{
 			//alert all players.
@@ -554,7 +554,7 @@ void CNPCMakerFirefight::MakeNPC()
 	else if (Q_stristr(pRandomName, "npc_playerbot"))
 	{
 		pRandomName = "npc_citizen";
-		AddSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI);
+		pent->AddSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI);
 		if (!g_fr_lonewolf.GetBool())
 		{
 			//alert all players.

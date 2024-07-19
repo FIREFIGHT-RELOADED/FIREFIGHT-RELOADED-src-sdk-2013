@@ -81,6 +81,7 @@
 	{
 		"classname"		"npc_hunter"
 		"min_level"		"3"
+		"preset"		"0"
 		"rare"			"1"
 		"exp"	"35"
 	}

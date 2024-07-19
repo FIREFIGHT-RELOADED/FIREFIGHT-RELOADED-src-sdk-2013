@@ -200,7 +200,7 @@ CON_COMMAND_F(npc_create_playerbot, "Creates an npc_playerbot/citizen of the giv
 			if (tr.startsolid || (tr.fraction < 1.0))
 			{
 				baseNPC->SUB_Remove();
-				DevMsg("Can't create playerbot.  Bad Position!\n");
+				DevMsg("Can't create playerbot. Bad Position!\n");
 				NDebugOverlay::Box(baseNPC->GetAbsOrigin(), baseNPC->GetHullMins(), baseNPC->GetHullMaxs(), 255, 0, 0, 0, 0);
 			}
 		}
