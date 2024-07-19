@@ -25,6 +25,7 @@
 #include "KeyValues.h"
 #include "randnpcloader.h"
 #include "firefightreloaded/npc_combineace.h"
+#include "npc_citizen17.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -535,8 +536,25 @@ void CNPCMakerFirefight::MakeNPC()
 
 	pent->m_spawnEquipment = MAKE_STRING(equip);
 
-	if (Q_stristr(pRandomName, "npc_playerbot"))
+	if (Q_stristr(pRandomName, "npc_citizen"))
 	{
+		AddSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI);
+		if (!g_fr_lonewolf.GetBool())
+		{
+			//alert all players.
+			AllyAlert();
+		}
+		else
+		{
+			UTIL_Remove(pent);
+			return;
+		}
+	}
+	//make legacy entries work
+	else if (Q_stristr(pRandomName, "npc_playerbot"))
+	{
+		pRandomName = "npc_citizen";
+		AddSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI);
 		if (!g_fr_lonewolf.GetBool())
 		{
 			//alert all players.

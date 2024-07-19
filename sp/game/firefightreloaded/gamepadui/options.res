@@ -1299,6 +1299,20 @@
 					"1"		"#gameui_enabled"
 				}
 			}
+            
+            "AllyTalk"
+			{
+				"text"			"#GameUI_AlliesTalk"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"npc_playerbot_talk"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
 			
 			"LowerVMOnSprint"
 			{

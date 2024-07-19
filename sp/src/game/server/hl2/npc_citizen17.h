@@ -327,8 +327,6 @@ private:
 
 	int				m_iHead;
 
-	bool 			m_bCanSpeak;
-
 	static CSimpleSimTimer gm_PlayerSquadEvaluateTimer;
 
 	float			m_flTimePlayerStare;	// The game time at which the player started staring at me.

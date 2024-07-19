@@ -19,6 +19,7 @@
 #include "vstdlib/random.h"
 #include "gamestats.h"
 #include "npc_combine.h"
+#include "npc_citizen17.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -153,7 +154,7 @@ acttable_t	CWeaponShotgun::m_acttable[] =
 
 	{ ACT_WALK_AIM,					ACT_WALK_AIM_SHOTGUN,				true },
 	{ ACT_WALK_CROUCH,				ACT_WALK_CROUCH_RIFLE,				true },
-	{ ACT_WALK_CROUCH_AIM,			ACT_WALK_CROUCH_AIM_RIFLE,			true },
+	{ ACT_WALK_CROUCH_AIM, ACT_WALK_CROUCH_AIM_RIFLE, true },
 	{ ACT_RUN,						ACT_RUN_RIFLE,						true },
 	{ ACT_RUN_AIM,					ACT_RUN_AIM_SHOTGUN,				true },
 	{ ACT_RUN_CROUCH,				ACT_RUN_CROUCH_RIFLE,				true },
@@ -174,7 +175,7 @@ acttable_t	CWeaponShotgun::m_acttable[] =
 
 IMPLEMENT_ACTTABLE(CWeaponShotgun);
 
-void CWeaponShotgun::Precache( void )
+void CWeaponShotgun::Precache(void)
 {
 	CBaseCombatWeapon::Precache();
 }
@@ -183,11 +184,11 @@ void CWeaponShotgun::Precache( void )
 // Purpose: 
 // Input  : *pOperator - 
 //-----------------------------------------------------------------------------
-void CWeaponShotgun::FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, bool bUseWeaponAngles, bool bSecondary)
+void CWeaponShotgun::FireNPCPrimaryAttack(CBaseCombatCharacter* pOperator, bool bUseWeaponAngles, bool bSecondary)
 {
 	Vector vecShootOrigin, vecShootDir;
-	CAI_BaseNPC *npc = pOperator->MyNPCPointer();
-	ASSERT( npc != NULL );
+	CAI_BaseNPC* npc = pOperator->MyNPCPointer();
+	ASSERT(npc != NULL);
 	if (bSecondary)
 	{
 		WeaponSound(DOUBLE_NPC);
@@ -208,16 +209,16 @@ void CWeaponShotgun::FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, bool
 		m_iClip1 = m_iClip1 - 1;
 	}
 
-	if ( bUseWeaponAngles )
+	if (bUseWeaponAngles)
 	{
 		QAngle	angShootDir;
-		GetAttachment( LookupAttachment( "muzzle" ), vecShootOrigin, angShootDir );
-		AngleVectors( angShootDir, &vecShootDir );
+		GetAttachment(LookupAttachment("muzzle"), vecShootOrigin, angShootDir);
+		AngleVectors(angShootDir, &vecShootDir);
 	}
-	else 
+	else
 	{
 		vecShootOrigin = pOperator->Weapon_ShootPosition();
-		vecShootDir = npc->GetActualShootTrajectory( vecShootOrigin );
+		vecShootDir = npc->GetActualShootTrajectory(vecShootOrigin);
 	}
 
 	if (bSecondary)
@@ -233,18 +234,31 @@ void CWeaponShotgun::FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, bool
 bool CanUseSecondaryFire(CBaseCombatCharacter* pOperator)
 {
 	CAI_BaseNPC* npc = pOperator->MyNPCPointer();
+
+	//npc attribute
+	if (npc && npc->m_pAttributes != NULL && npc->m_pAttributes->GetBool("use_shotgun_secondary"))
+		return true;
+
+	// combine
 	CNPC_Combine* combinePointer = dynamic_cast<CNPC_Combine*>(npc);
-	// hate hacks.
-	// npc gets an attribute to do so
-	return (npc && npc->m_pAttributes != NULL &&
-		npc->m_pAttributes->GetBool("use_shotgun_secondary")) 
-		//enemies get advantage on higher difficuties.
-		|| (sv_combine_shotgunner_secondaryfire.GetBool() &&
+
+	if ((sv_combine_shotgunner_secondaryfire.GetBool() &&
 		(g_pGameRules->GetSkillLevel() >= SKILL_HARD &&
-		combinePointer && combinePointer->m_nSkin == COMBINE_SKIN_SHOTGUNNER) ||
-		//playerbot gets advantage on lower difficuties.
-		(g_pGameRules->GetSkillLevel() <= SKILL_HARD &&
-		FClassnameIs(pOperator, "npc_playerbot")));
+			combinePointer && combinePointer->m_nSkin == COMBINE_SKIN_SHOTGUNNER)))
+	{
+		return true;
+	}
+
+	//citizen as playerbot
+	CNPC_Citizen* citizenPointer = dynamic_cast<CNPC_Citizen*>(npc);
+
+	if (g_pGameRules->GetSkillLevel() <= SKILL_HARD &&
+		citizenPointer && citizenPointer->HasSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI))
+	{
+		return true;
+	}
+
+	return false;
 }
 
 bool ShouldUseSecondaryFire(CBaseCombatCharacter* pOperator)

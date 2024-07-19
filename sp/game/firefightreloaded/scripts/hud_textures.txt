@@ -280,6 +280,11 @@
 				"font"		"WeaponIconsKillFeed3"
 				"character"	"H"
 		}
+                "npc_citizen"
+		{
+				"font"		"WeaponIconsKillFeed3"
+				"character"	"H"
+		}
                 "weapon_physgun"
 		{
 				"font"		"WeaponIconsKillFeed2"

@@ -552,6 +552,9 @@ float CAI_Expresser::GetResponseDuration( AI_Response *result )
 //-----------------------------------------------------------------------------
 bool CAI_Expresser::Speak( AIConcept_t concept, const char *modifiers /*= NULL*/, char *pszOutResponseChosen /* = NULL*/, size_t bufsize /* = 0 */, IRecipientFilter *filter /* = NULL */ )
 {
+	if (GetOuter()->HasSpawnFlags(SF_NPC_GAG))
+		return false;
+
 	AI_Response *result = SpeakFindResponse( concept, modifiers );
 	if ( !result )
 	{
@@ -721,6 +724,9 @@ bool CAI_Expresser::IsSpeaking( void )
 
 bool CAI_Expresser::CanSpeak()
 {
+	if (GetOuter()->HasSpawnFlags(SF_NPC_GAG))
+		return false;
+
 	if ( m_flLastTimeAcceptedSpeak == gpGlobals->curtime ) // only one speak accepted per think
 		return false;
 

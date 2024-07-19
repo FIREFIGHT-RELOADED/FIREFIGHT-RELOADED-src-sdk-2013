@@ -702,7 +702,27 @@ CON_COMMAND_F_COMPLETION(npc_create_aimed, "Creates an NPC aimed away from the p
 	{
 		baseNPC->KeyValue("additionalequipment", npc_create_equipment_cvar.GetString());
 		baseNPC->Precache();
-		DispatchSpawn( baseNPC );
+
+		if (args.ArgC() == 4)
+		{
+			baseNPC->SetName(AllocPooledString(args[3]));
+		}
+
+		baseNPC->m_bDisableInitAttributes = true;
+
+		DispatchSpawn(baseNPC);
+
+		if (args.ArgC() >= 3)
+		{
+			if (npc_create_attributewildcard.GetBool())
+			{
+				baseNPC->GiveWildcardAttributes(atoi(args[2]));
+			}
+			else
+			{
+				baseNPC->GiveAttributes(atoi(args[2]));
+			}
+		}
 
 		// Now attempt to drop into the world
 		QAngle angles;

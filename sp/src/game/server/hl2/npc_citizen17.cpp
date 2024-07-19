@@ -88,7 +88,7 @@ ConVar	sk_citizen_heal_toss_player_delay("sk_citizen_heal_toss_player_delay", "2
 
 
 #define MEDIC_THROW_SPEED npc_citizen_medic_throw_speed.GetFloat()
-#define USE_EXPERIMENTAL_MEDIC_CODE() (npc_citizen_heal_chuck_medkit.GetBool() && NameMatches("griggs"))
+#define USE_EXPERIMENTAL_MEDIC_CODE() (npc_citizen_heal_chuck_medkit.GetBool() /*&& NameMatches("griggs")*/)
 #endif
 
 ConVar player_squad_autosummon_time( "player_squad_autosummon_time", "5" );
@@ -126,6 +126,89 @@ ConVar	ai_citizen_debug_commander( "ai_citizen_debug_commander", "1" );
 static ConVar npc_playerbot_useplayersmodel("npc_playerbot_useplayersmodel", "1", FCVAR_ARCHIVE);
 static ConVar npc_playerbot_talk("npc_playerbot_talk", "1", FCVAR_ARCHIVE);
 #define DebuggingCommanderMode() (ai_citizen_debug_commander.GetBool() && (m_debugOverlays & OVERLAY_NPC_SELECTED_BIT))
+
+extern ConVar npc_create_attributewildcard;
+
+//------------------------------------------------------------------------------
+// Purpose: Create an NPC of the given type
+//------------------------------------------------------------------------------
+CON_COMMAND_F(npc_create_playerbot, "Creates an npc_playerbot/citizen of the given type where the player is looking (if the given NPC can actually stand at that location).\n\tArguments: {npc_class_name} {npc_attribute_preset} {entity_name}", FCVAR_CHEAT)
+{
+	MDLCACHE_CRITICAL_SECTION();
+
+	bool allowPrecache = CBaseEntity::IsPrecacheAllowed();
+	CBaseEntity::SetAllowPrecache(true);
+
+	// Try to create entity
+	CNPC_Citizen* baseNPC = dynamic_cast<CNPC_Citizen*>(CreateEntityByName("npc_citizen"));
+	if (baseNPC)
+	{
+		baseNPC->AddSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI);
+
+		baseNPC->Precache();
+
+		if (args.ArgC() == 3)
+		{
+			baseNPC->SetName(AllocPooledString(args[2]));
+		}
+
+		baseNPC->m_bDisableInitAttributes = true;
+
+		DispatchSpawn(baseNPC);
+
+		if (args.ArgC() >= 2)
+		{
+			if (npc_create_attributewildcard.GetBool())
+			{
+				baseNPC->GiveWildcardAttributes(atoi(args[1]));
+			}
+			else
+			{
+				baseNPC->GiveAttributes(atoi(args[1]));
+			}
+		}
+
+		// Now attempt to drop into the world
+		CBasePlayer* pPlayer = UTIL_GetCommandClient();
+		trace_t tr;
+		Vector forward;
+		pPlayer->EyeVectors(&forward);
+		AI_TraceLine(pPlayer->EyePosition(),
+			pPlayer->EyePosition() + forward * MAX_TRACE_LENGTH, MASK_NPCSOLID,
+			pPlayer, COLLISION_GROUP_NONE, &tr);
+		if (tr.fraction != 1.0)
+		{
+			if (baseNPC->CapabilitiesGet() & bits_CAP_MOVE_FLY)
+			{
+				Vector pos = tr.endpos - forward * 36;
+				baseNPC->Teleport(&pos, NULL, NULL);
+			}
+			else
+			{
+				// Raise the end position a little up off the floor, place the npc and drop him down
+				tr.endpos.z += 12;
+				baseNPC->Teleport(&tr.endpos, NULL, NULL);
+				UTIL_DropToFloor(baseNPC, MASK_NPCSOLID);
+			}
+
+			// Now check that this is a valid location for the new npc to be
+			Vector	vUpBit = baseNPC->GetAbsOrigin();
+			vUpBit.z += 1;
+
+			AI_TraceHull(baseNPC->GetAbsOrigin(), vUpBit, baseNPC->GetHullMins(), baseNPC->GetHullMaxs(),
+				MASK_NPCSOLID, baseNPC, COLLISION_GROUP_NONE, &tr);
+			if (tr.startsolid || (tr.fraction < 1.0))
+			{
+				baseNPC->SUB_Remove();
+				DevMsg("Can't create playerbot.  Bad Position!\n");
+				NDebugOverlay::Box(baseNPC->GetAbsOrigin(), baseNPC->GetHullMins(), baseNPC->GetHullMaxs(), 255, 0, 0, 0, 0);
+			}
+		}
+
+		baseNPC->Activate();
+	}
+	CBaseEntity::SetAllowPrecache(allowPrecache);
+}
 
 //-----------------------------------------------------------------------------
 // Citizen expressions for the citizen expression types
@@ -592,11 +675,6 @@ void CNPC_Citizen::PrecacheAllOfType( CitizenType_t type )
 //-----------------------------------------------------------------------------
 void CNPC_Citizen::Spawn()
 {
-	if (FClassnameIs(this, "npc_playerbot"))
-	{
-		AddSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI);
-	}
-
 	BaseClass::Spawn();
 
 #ifdef _XBOX
@@ -666,18 +744,10 @@ void CNPC_Citizen::Spawn()
 		GiveOutline(allyColor);
 		GiveWeapons();
 
-		if (npc_playerbot_talk.GetBool())
+		if (!npc_playerbot_talk.GetBool())
 		{
-			m_bCanSpeak = true;
+			AddSpawnFlags(SF_NPC_GAG);
 		}
-		else
-		{
-			m_bCanSpeak = false;
-		}
-	}
-	else
-	{
-		m_bCanSpeak = true;
 	}
 
 	CWeaponRPG *pRPG = dynamic_cast<CWeaponRPG*>(GetActiveWeapon());
@@ -1377,18 +1447,15 @@ void CNPC_Citizen::GatherConditions()
 		}
 	}
 
-	if (m_bCanSpeak)
+	if (!SpokeConcept(TLK_JOINPLAYER) && IsRunningScriptedSceneWithSpeech(this, true))
 	{
-		if (!SpokeConcept(TLK_JOINPLAYER) && IsRunningScriptedSceneWithSpeech(this, true))
+		SetSpokeConcept(TLK_JOINPLAYER, NULL);
+		for (int i = 0; i < g_AI_Manager.NumAIs(); i++)
 		{
-			SetSpokeConcept(TLK_JOINPLAYER, NULL);
-			for (int i = 0; i < g_AI_Manager.NumAIs(); i++)
+			CAI_BaseNPC* pNpc = g_AI_Manager.AccessAIs()[i];
+			if (pNpc != this && pNpc->GetClassname() == GetClassname() && pNpc->GetAbsOrigin().DistToSqr(GetAbsOrigin()) < Square(15 * 12) && FVisible(pNpc))
 			{
-				CAI_BaseNPC* pNpc = g_AI_Manager.AccessAIs()[i];
-				if (pNpc != this && pNpc->GetClassname() == GetClassname() && pNpc->GetAbsOrigin().DistToSqr(GetAbsOrigin()) < Square(15 * 12) && FVisible(pNpc))
-				{
-					(assert_cast<CNPC_Citizen*>(pNpc))->SetSpokeConcept(TLK_JOINPLAYER, NULL);
-				}
+				(assert_cast<CNPC_Citizen*>(pNpc))->SetSpokeConcept(TLK_JOINPLAYER, NULL);
 			}
 		}
 	}
@@ -2026,13 +2093,11 @@ void CNPC_Citizen::StartTask( const Task_t *pTask )
 				break;
 			}
 
-			if (m_bCanSpeak)
-				Speak( TLK_HEAL );
+			Speak( TLK_HEAL );
 		}
 		else if ( IsAmmoResupplier() )
 		{
-			if (m_bCanSpeak)
-				Speak( TLK_GIVEAMMO );
+			Speak( TLK_GIVEAMMO );
 		}
 		SetIdealActivity( (Activity)ACT_CIT_HEAL );
 		break;
@@ -2044,8 +2109,7 @@ void CNPC_Citizen::StartTask( const Task_t *pTask )
 
 			//if ( pSpeechManager-> )
 
-			if (m_bCanSpeak)
-				Speak(TLK_PLDEAD);
+			Speak(TLK_PLDEAD);
 		}
 		TaskComplete();
 		break;
@@ -2879,8 +2943,7 @@ bool CNPC_Citizen::TargetOrder( CBaseEntity *pTarget, CAI_BaseNPC **Allies, int 
 			m_AssaultBehavior.Disable();
 			m_FollowBehavior.SetFollowTarget( pTarget );
 			m_FollowBehavior.SetParameters( AIF_SIMPLE );	
-			if (m_bCanSpeak)
-				SpeakCommandResponse( TLK_STARTFOLLOW );
+			SpeakCommandResponse( TLK_STARTFOLLOW );
 
 			m_OnFollowOrder.FireOutput( this, this );
 		}
@@ -2888,8 +2951,7 @@ bool CNPC_Citizen::TargetOrder( CBaseEntity *pTarget, CAI_BaseNPC **Allies, int 
 		{
 			// Stop following.
 			m_FollowBehavior.SetFollowTarget( NULL );
-			if (m_bCanSpeak)
-				SpeakCommandResponse( TLK_STOPFOLLOW );
+			SpeakCommandResponse( TLK_STOPFOLLOW );
 		}
 	}
 
@@ -2967,8 +3029,7 @@ void CNPC_Citizen::MoveOrder( const Vector &vecDest, CAI_BaseNPC **Allies, int n
 						   destDistToPlayer,
 						   destDistToClosest );
 
-		if (m_bCanSpeak)
-			SpeakCommandResponse( TLK_COMMANDED, modifiers );
+		SpeakCommandResponse( TLK_COMMANDED, modifiers );
 	}
 
 	m_OnStationOrder.FireOutput( this, this );
@@ -3000,11 +3061,7 @@ void CNPC_Citizen::CommanderUse( CBaseEntity *pActivator, CBaseEntity *pCaller, 
 	
 	if (pActivator == UTIL_GetNearestPlayer(GetAbsOrigin()))
 	{
-		if (m_bCanSpeak)
-		{
-			// Don't say hi after you've been addressed by the player
-			SetSpokeConcept(TLK_HELLO, NULL);
-		}
+		SetSpokeConcept(TLK_HELLO, NULL);
 
 		if ( npc_citizen_auto_player_squad_allow_use.GetBool() )
 		{
@@ -3015,17 +3072,14 @@ void CNPC_Citizen::CommanderUse( CBaseEntity *pActivator, CBaseEntity *pCaller, 
 		}
 		else if ( GetCurSchedule() && ConditionInterruptsCurSchedule( COND_IDLE_INTERRUPT ) )
 		{
-			if (m_bCanSpeak)
+			if (SpeakIfAllowed(TLK_QUESTION, NULL, true))
 			{
-				if (SpeakIfAllowed(TLK_QUESTION, NULL, true))
+				if (random->RandomInt(1, 4) < 4)
 				{
-					if (random->RandomInt(1, 4) < 4)
+					CBaseEntity* pRespondant = FindSpeechTarget(AIST_NPCS);
+					if (pRespondant)
 					{
-						CBaseEntity* pRespondant = FindSpeechTarget(AIST_NPCS);
-						if (pRespondant)
-						{
-							g_EventQueue.AddEvent(pRespondant, "SpeakIdleResponse", (GetTimeSpeechComplete() - gpGlobals->curtime) + .2, this, this);
-						}
+						g_EventQueue.AddEvent(pRespondant, "SpeakIdleResponse", (GetTimeSpeechComplete() - gpGlobals->curtime) + .2, this, this);
 					}
 				}
 			}
@@ -3061,11 +3115,8 @@ void CNPC_Citizen::OnMoveToCommandGoalFailed()
 	// Clear the goal.
 	SetCommandGoal( vec3_invalid );
 
-	if (m_bCanSpeak)
-	{
-		// Announce failure.
-		SpeakCommandResponse(TLK_COMMAND_FAILED);
-	}
+	// Announce failure.
+	SpeakCommandResponse(TLK_COMMAND_FAILED);
 }
 
 
@@ -3114,24 +3165,18 @@ void CNPC_Citizen::TogglePlayerSquadState()
 	{
 		AddToPlayerSquad();
 
-		if (m_bCanSpeak)
+		if (HaveCommandGoal())
 		{
-			if (HaveCommandGoal())
-			{
-				SpeakCommandResponse(TLK_COMMANDED);
-			}
-			else if (m_FollowBehavior.GetFollowTarget() == UTIL_GetNearestPlayer(GetAbsOrigin()))
-			{
-				SpeakCommandResponse(TLK_STARTFOLLOW);
-			}
+			SpeakCommandResponse(TLK_COMMANDED);
+		}
+		else if (m_FollowBehavior.GetFollowTarget() == UTIL_GetNearestPlayer(GetAbsOrigin()))
+		{
+			SpeakCommandResponse(TLK_STARTFOLLOW);
 		}
 	}
 	else
 	{
-		if (m_bCanSpeak)
-		{
-			SpeakCommandResponse(TLK_STOPFOLLOW);
-		}
+		SpeakCommandResponse(TLK_STOPFOLLOW);
 		RemoveFromPlayerSquad();
 	}
 }
@@ -3363,23 +3408,20 @@ void CNPC_Citizen::UpdatePlayerSquad()
 					}
 				}
 
-				if (m_bCanSpeak)
+				if (pClosest)
 				{
-					if (pClosest)
+					if (!pClosest->SpokeConcept(TLK_JOINPLAYER))
 					{
-						if (!pClosest->SpokeConcept(TLK_JOINPLAYER))
-						{
-							pClosest->SpeakCommandResponse(TLK_JOINPLAYER, CFmtStr("numjoining:%d", nJoined));
-						}
-						else
-						{
-							pClosest->SpeakCommandResponse(TLK_STARTFOLLOW);
-						}
+						pClosest->SpeakCommandResponse(TLK_JOINPLAYER, CFmtStr("numjoining:%d", nJoined));
+					}
+					else
+					{
+						pClosest->SpeakCommandResponse(TLK_STARTFOLLOW);
+					}
 
-						for (i = 0; i < candidates.Count() && i < MAX_PLAYER_SQUAD; i++)
-						{
-							candidates[i].pCitizen->SetSpokeConcept(TLK_JOINPLAYER, NULL);
-						}
+					for (i = 0; i < candidates.Count() && i < MAX_PLAYER_SQUAD; i++)
+					{
+						candidates[i].pCitizen->SetSpokeConcept(TLK_JOINPLAYER, NULL);
 					}
 				}
 			}
@@ -3717,10 +3759,7 @@ bool CNPC_Citizen::HandleInteraction(int interactionType, void *data, CBaseComba
 	{
 		if ( IsOkToSpeakInResponseToPlayer() )
 		{
-			if (m_bCanSpeak)
-			{
-				Speak(TLK_PLYR_PHYSATK);
-			}
+			Speak(TLK_PLYR_PHYSATK);
 		}
 		return true;
 	}
@@ -4214,8 +4253,7 @@ void CNPC_Citizen::InputSetAmmoResupplierOff( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 void CNPC_Citizen::InputSpeakIdleResponse( inputdata_t &inputdata )
 {
-	if (m_bCanSpeak)
-		SpeakIfAllowed( TLK_ANSWER, NULL, true );
+	SpeakIfAllowed(TLK_ANSWER, NULL, true);
 }
 
 //-----------------------------------------------------------------------------
@@ -4228,8 +4266,7 @@ void CNPC_Citizen::DeathSound( const CTakeDamageInfo &info )
 	// Sentences don't play on dead NPCs
 	SentenceStop();
 
-	if (m_bCanSpeak)
-		EmitSound( "NPC_Citizen.Die" );
+	EmitSound("NPC_Citizen.Die");
 }
 
 //------------------------------------------------------------------------------
