@@ -2,8 +2,8 @@
 {
 	"settings"
 	{
-		"spawntime"		"10"
-		"spawntime_steamdeck"	"15"
+		"spawntime"		"15"
+		"spawntime_steamdeck"	"18"
 	}
 	//LEVEL 1
 	"1"
