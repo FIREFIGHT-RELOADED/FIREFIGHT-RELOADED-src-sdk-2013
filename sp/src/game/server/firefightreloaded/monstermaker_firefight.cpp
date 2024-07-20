@@ -98,6 +98,7 @@ BEGIN_DATADESC(CNPCMakerFirefight)
 	DEFINE_INPUTFUNC( FIELD_VOID,	"SpawnRare", InputSpawnRareNPC ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"Enable",	InputEnable ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"Disable",	InputDisable ),
+	DEFINE_INPUTFUNC(FIELD_VOID, "DisableAndDestroyAll", InputDisableAndDestroyAll),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"Toggle",	InputToggle ),
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetMaxLiveChildren", InputSetMaxLiveChildren ),
 	DEFINE_INPUTFUNC( FIELD_FLOAT,	 "SetSpawnFrequency", InputSetSpawnFrequency ),
@@ -775,6 +776,19 @@ void CNPCMakerFirefight::InputDisable(inputdata_t &inputdata)
 	Disable();
 }
 
+void CNPCMakerFirefight::InputDisableAndDestroyAll(inputdata_t& inputdata)
+{
+	for (int i = 0; i < g_AI_Manager.NumAIs(); i++)
+	{
+		CAI_BaseNPC* pNpc = g_AI_Manager.AccessAIs()[i];
+		if (pNpc && pNpc->GetOwnerEntity() == this)
+		{
+			UTIL_Remove(pNpc);
+		}
+	}
+
+	Disable();
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Input hander that toggles the spawner

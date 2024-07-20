@@ -48,6 +48,7 @@ public:
 	void InputSpawnRareNPC(inputdata_t &inputdata);
 	void InputEnable( inputdata_t &inputdata );
 	void InputDisable( inputdata_t &inputdata );
+	void InputDisableAndDestroyAll(inputdata_t& inputdata);
 	void InputToggle( inputdata_t &inputdata );
 	void InputSetMaxLiveChildren( inputdata_t &inputdata );
 	void InputSetMaxLiveRareNPCS( inputdata_t &inputdata );

@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "6440"
-	"mapversion" "149"
+	"mapversion" "150"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,7 +20,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "149"
+	"mapversion" "150"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -13539,9 +13539,8 @@ entity
 	"wakesquad" "0"
 	connections
 	{
-		"OnDeath" "Spawner1,Disable,,0,-1"
-		"OnDeath" "Spawner2,Disable,,0,-1"
-		"OnDeath" "cmd,Command,npc_destroy_unselected,0,-1"
+		"OnDeath" "Spawner1,DisableAndDestroyAll,,0,-1"
+		"OnDeath" "Spawner2,DisableAndDestroyAll,,0,-1"
 		"OnDeath" "msg,ShowMessage,,0,-1"
 		"OnDeath" "fade,Fade,,0,-1"
 		"OnDeath" "speedmod,ModifySpeed,0,0,-1"
