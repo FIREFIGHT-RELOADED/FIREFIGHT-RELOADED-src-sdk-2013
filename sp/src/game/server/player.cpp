@@ -6111,6 +6111,13 @@ void CBasePlayer::InitialSpawn( void )
 	{
 		SetMoney(sv_player_startingmoney_amount.GetInt());
 	}
+	else
+	{
+		SetMoney(0);
+	}
+
+	SetXP(0);
+	SetLevel();
 }
 
 //-----------------------------------------------------------------------------

@@ -20,8 +20,6 @@ public:
 
     void OnMenuStateChanged();
 
-    void ActivateBackgroundEffects();
-    bool IsBackgroundMusicPlaying();
     bool StartBackgroundMusic( float flVolume );
     void ReleaseBackgroundMusic();
 

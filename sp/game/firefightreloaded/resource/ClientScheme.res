@@ -870,8 +870,8 @@ Scheme
 			{
 				"name"		"Verdana" [!$OSX]
 				"name"		"Helvetica" [$OSX]
-				"tall"		"11"
-				"weight"	"0"
+				"tall"		"11.5"
+				"weight"	"700"
 				"scanlines" "0"
 				"antialias" "1"
 			}

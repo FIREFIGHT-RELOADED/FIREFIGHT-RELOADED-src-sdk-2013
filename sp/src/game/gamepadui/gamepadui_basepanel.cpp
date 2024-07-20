@@ -59,8 +59,7 @@ void GamepadUIBasePanel::OnMenuStateChanged()
     {
         if (m_bBackgroundMusicEnabled)
         {
-            if (!IsBackgroundMusicPlaying())
-                ActivateBackgroundEffects();
+           StartBackgroundMusic(1.0f);
         }
     }
     else if (GamepadUI::GetInstance().IsInLevel())
@@ -69,26 +68,8 @@ void GamepadUIBasePanel::OnMenuStateChanged()
     }
 }
 
-void GamepadUIBasePanel::ActivateBackgroundEffects()
-{
-    StartBackgroundMusic( 1.0f );
-}
-
-bool GamepadUIBasePanel::IsBackgroundMusicPlaying()
-{
-    bool bIsPlaying = false;
-
-    if (m_pChannel != nullptr)
-        m_pChannel->isPlaying(&bIsPlaying);
-
-    return bIsPlaying;
-}
-
 bool GamepadUIBasePanel::StartBackgroundMusic( float flVolume )
 {
-    if ( IsBackgroundMusicPlaying() )
-        return true;
-
     /* mostly from GameUI */
     char path[ 512 ];
     Q_snprintf( path, sizeof( path ), "sound/ui/gamestartup*.mp3" );

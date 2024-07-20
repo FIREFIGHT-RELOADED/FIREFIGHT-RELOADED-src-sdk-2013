@@ -54,8 +54,6 @@ public:
 
     void OnMouseWheeled(int delta) OVERRIDE;
 
-    void ActivateBackgroundEffects();
-    bool IsBackgroundMusicPlaying();
     bool StartBackgroundMusic(float flVolume);
     void ReleaseBackgroundMusic();
 
@@ -70,7 +68,7 @@ private:
     GAMEPADUI_PANEL_PROPERTY(float, m_ChapterOffsetY, "Saves.OffsetY", "0", SchemeValueTypes::ProportionalFloat);
     GAMEPADUI_PANEL_PROPERTY(float, m_ChapterSpacing, "Saves.Spacing", "0", SchemeValueTypes::ProportionalFloat);
 
-    bool m_bCommentaryMode = false;
+    bool m_bPlayingMusic;
 
     FMOD::Channel* m_pChannel;
     FMOD::Sound* m_pSound;
@@ -225,32 +223,13 @@ GamepadUIStore::GamepadUIStore( vgui::Panel *pParent, const char* PanelName ) : 
 
     UpdateGradients();
 
-    if (!IsBackgroundMusicPlaying())
-        ActivateBackgroundEffects();
-}
-
-void GamepadUIStore::ActivateBackgroundEffects()
-{
-    StartBackgroundMusic(1.0f);
-}
-
-bool GamepadUIStore::IsBackgroundMusicPlaying()
-{
-    bool bIsPlaying = false;
-
-    if (m_pChannel != nullptr)
-        m_pChannel->isPlaying(&bIsPlaying);
-
-    return bIsPlaying;
+    m_bPlayingMusic = false;
 }
 
 bool GamepadUIStore::StartBackgroundMusic(float flVolume)
 {
     if (!gamepadui_store_music.GetBool())
         return false;
-
-    if (IsBackgroundMusicPlaying())
-        return true;
 
     const char* szSound = GetFMODManager()->GetFullPathToSound("music/fr_store_loop.wav");
 
@@ -393,6 +372,14 @@ void GamepadUIStore::OnThink()
     if (!GamepadUI::GetInstance().IsInLevel())
     {
         OutOfBusiness();
+    }
+    else
+    {
+        if (!m_bPlayingMusic)
+        {
+            StartBackgroundMusic(1.0f);
+            m_bPlayingMusic = true;
+        }
     }
 }
 
