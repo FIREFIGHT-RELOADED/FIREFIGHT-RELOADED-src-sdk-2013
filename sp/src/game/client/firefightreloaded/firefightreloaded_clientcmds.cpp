@@ -3,6 +3,8 @@
 #include "tier3/tier3.h"
 #include "vgui/ILocalize.h"
 #include "fmtstr.h"
+#include "filesystem.h"
+#include "animation.h"
 #if !defined(MOD_VER) && !defined( _X360 ) && !defined( NO_STEAM )
 #include "steam/steam_api.h"
 #endif
@@ -33,21 +35,6 @@ CON_COMMAND( report_centities, "Report all client entities." )
 	sorted_classnames.Sort(CUtlString::SortCaseSensitive);
 	for ( auto iter : sorted_classnames )
 		ConMsg( "Class: %s (%d)\n", (const char*)iter, classnames_count[iter] );
-}
-
-CON_COMMAND(toggle_ironsight, "")
-{
-	CBasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();
-	if (pPlayer == NULL)
-		return;
-
-	CBaseCombatWeapon* pWeapon = pPlayer->GetActiveWeapon();
-	if (pWeapon == NULL)
-		return;
-
-	pWeapon->ToggleIronsights();
-
-	engine->ServerCmd("toggle_ironsight"); //forward to server
 }
 
 CON_COMMAND(showworkshop, "")

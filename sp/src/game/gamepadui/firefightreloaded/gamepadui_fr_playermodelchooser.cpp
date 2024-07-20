@@ -197,14 +197,14 @@ void GamepadUIPlayerModelChooser::ScanModels()
             Q_strncpy(modelname, pszFilename, sizeof(modelname) - 1);
         }
         
+        char command[256];
+        Q_snprintf(command, sizeof(command), "load_model %s", modelname);
+
         char* ext = Q_strstr(modelname, ".mdl");
         if (ext)
         {
             *ext = 0;
         }
-        
-        char command[256];
-        Q_snprintf(command, sizeof(command), "load_model %s.mdl", modelname);
         
         char chapterName[256];
         Q_snprintf(chapterName, sizeof(chapterName), "%s", modelname);
@@ -325,6 +325,54 @@ void GamepadUIPlayerModelChooser::LayoutModelButtons()
     m_ScrollState.UpdateScrolling( 2.0f, GamepadUI::GetInstance().GetTime() );
 }
 
+bool CheckIfActorInstalled(const char *pName)
+{
+    const char* pszModelCopy = pName;
+
+    char* ext = Q_strstr(pszModelCopy, ".mdl");
+    if (ext)
+    {
+        *ext = 0;
+    }
+
+    KeyValues* m_pActor = new KeyValues("globalactors");
+    const char* path = "scripts/global_actors.txt";
+
+    if (m_pActor->LoadFromFile(g_pFullFileSystem, path))
+    {
+        const char* actorName = m_pActor->GetString(pszModelCopy, "");
+        if (!actorName[0])
+        {
+            const char* gender = "";
+            if (Q_strnicmp(pszModelCopy, "female", 6) == 0)
+            {
+                gender = "female";
+            }
+            else if (Q_strnicmp(pszModelCopy, "male", 4) == 0)
+            {
+                gender = "male";
+            }
+            else
+            {
+                int iRandomGender = RandomInt(0, 1);
+                gender = (iRandomGender == 1) ? "female" : "male";
+            }
+
+            if (gender)
+            {
+                m_pActor->SetString(pszModelCopy, gender);
+                if (m_pActor->SaveToFile(g_pFullFileSystem, path))
+                {
+                    Msg("%s saved as a %s actor. Look in 'scripts/global_actors.txt' if you wish to change it.\n", pszModelCopy, gender);
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
 void GamepadUIPlayerModelChooser::OnCommand( char const* pCommand )
 {
     if ( !V_strcmp( pCommand, "action_back" ) )
@@ -344,6 +392,9 @@ void GamepadUIPlayerModelChooser::OnCommand( char const* pCommand )
 
             // exec
             GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted(szModelCommand);
+
+            CheckIfActorInstalled(pszModel);
+
             Close();
         }
     }

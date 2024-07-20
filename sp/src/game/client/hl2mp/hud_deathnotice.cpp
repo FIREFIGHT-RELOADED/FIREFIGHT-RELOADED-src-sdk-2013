@@ -200,7 +200,7 @@ void CHudDeathNotice::Paint()
 			else
 			{
 				const char* prunedName = m_DeathNotices[i].Victim.szName;
-				if (strncmp(prunedName, "#fr_npc_", 8) == 0)
+				if (strnicmp(prunedName, "#fr_npc_", 8) == 0)
 				{
 					prunedName += 8;
 				}
@@ -211,7 +211,7 @@ void CHudDeathNotice::Paint()
 		else
 		{
 			const char* prunedName = m_DeathNotices[i].Victim.szName;
-			if (strncmp(prunedName, "#fr_npc_", 8) == 0)
+			if (strnicmp(prunedName, "#fr_npc_", 8) == 0)
 			{
 				prunedName += 8;
 			}
@@ -230,7 +230,7 @@ void CHudDeathNotice::Paint()
 			else
 			{
 				const char* prunedName = m_DeathNotices[i].Killer.szName;
-				if (strncmp(prunedName, "#fr_npc_", 8) == 0)
+				if (strnicmp(prunedName, "#fr_npc_", 8) == 0)
 				{
 					prunedName += 8;
 				}
@@ -241,7 +241,7 @@ void CHudDeathNotice::Paint()
 		else
 		{
 			const char* prunedName = m_DeathNotices[i].Killer.szName;
-			if (strncmp(prunedName, "#fr_npc_", 8) == 0)
+			if (strnicmp(prunedName, "#fr_npc_", 8) == 0)
 			{
 				prunedName += 8;
 			}

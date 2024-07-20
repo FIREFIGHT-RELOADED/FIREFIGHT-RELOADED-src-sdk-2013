@@ -9,7 +9,7 @@
 	"2"
 	{
 		"name"		"SuitBattery"
-		"price"		"20"
+		"price"		"50"
 		"command"	"battery"
 	}
 	"3"
@@ -106,7 +106,7 @@
     "18"
 	{
 		"name"		"RailgunOvercharge"
-		"price"		"6400"
-		"command"	"ammo Railgun 200" 
+		"price"		"500"
+		"command"	"ammo Railgun 300" 
 	}
 }

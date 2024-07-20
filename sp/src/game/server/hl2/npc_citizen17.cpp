@@ -478,8 +478,104 @@ void CC_Compatibility(void)
 	}
 	g_pFullFileSystem->FindClose(findHandle);
 }
-static ConCommand debug_check_incompatible_models("debug_check_incompatible_models", CC_Compatibility, "", FCVAR_NONE);
+static ConCommand debug_playerbot_check_incompatible_models("debug_playerbot_check_incompatible_models", CC_Compatibility,
+	"Checks if any playermodels have NPC animations/sequences. Use to test if your models will work properly with npc_citizen/playerbots!",
+	FCVAR_NONE);
 
+//------------------------------------------------------------------------------
+// Purpose: 
+//------------------------------------------------------------------------------
+void CC_MissingActors(void)
+{
+	FileFindHandle_t findHandle = NULL;
+
+	bool bNoAdditionsNeeded = true;
+
+	const char* pszFilename = g_pFullFileSystem->FindFirst("models/player/playermodels/*.mdl", &findHandle);
+	while (pszFilename)
+	{
+		char szModelName[2048];
+		Q_snprintf(szModelName, sizeof(szModelName), "models/player/playermodels/%s", pszFilename);
+
+		const char* str = Q_strstr(pszFilename, "models/player/playermodels/");
+		if (str)
+		{
+			Q_strncpy(szModelName, str + 31, sizeof(szModelName) - 1);	// models/player/playermodels/ + // = 31
+		}
+		else
+		{
+			Q_strncpy(szModelName, pszFilename, sizeof(szModelName) - 1);
+		}
+
+		char* ext = Q_strstr(szModelName, ".mdl");
+		if (ext)
+		{
+			*ext = 0;
+		}
+
+		KeyValues* m_pActor = new KeyValues("globalactors");
+		const char* path = "scripts/global_actors.txt";
+
+		if (m_pActor->LoadFromFile(g_pFullFileSystem, path))
+		{
+			const char* actorName = m_pActor->GetString(szModelName, "");
+			if (!actorName[0])
+			{
+				bNoAdditionsNeeded = false;
+				const char* gender = "";
+				bool genderChosen = false;
+				Msg("Checking if %s is female...\n", szModelName);
+				if (Q_strnicmp(szModelName, "female", 6) == 0)
+				{
+					gender = "female";
+					genderChosen = true;
+				}
+				else
+				{
+					Msg("Checking if %s is male...\n", szModelName);
+					if (Q_strnicmp(szModelName, "male", 4) == 0)
+					{
+						gender = "male";
+						genderChosen = true;
+					}
+				}
+
+				if (!genderChosen)
+				{
+					Msg("No gender defined. Choosing one.\n");
+					int iRandomGender = RandomInt(0, 1);
+					gender = (iRandomGender == 1) ? "female" : "male";
+					Msg("%s chosen.\n", gender);
+				}
+
+				if (gender)
+				{
+					m_pActor->SetString(szModelName, gender);
+					if (m_pActor->SaveToFile(g_pFullFileSystem, path))
+					{
+						Msg("%s saved as a %s actor.\n", szModelName, gender);
+					}
+				}
+			}
+		}
+
+		pszFilename = g_pFullFileSystem->FindNext(findHandle);
+	}
+
+	if (bNoAdditionsNeeded)
+	{
+		Msg("All playermodels are already added to the global_actors.txt!\n");
+	}
+	else
+	{
+		Msg("Missing playermodels have been added to the global_actors.txt! If you wish to change any of the genders, look in 'scripts/global_actors.txt'.\n");
+	}
+
+	g_pFullFileSystem->FindClose(findHandle);
+}
+static ConCommand debug_playerbot_add_missing_actors("debug_playerbot_add_missing_actors", CC_MissingActors,
+	"Checks if any installed playermodels are in 'scripts/global_actors.txt'. If not, it'll add them automatically.",
+	FCVAR_NONE);
 
 //---------------------------------------------------------
 // Citizen activities
