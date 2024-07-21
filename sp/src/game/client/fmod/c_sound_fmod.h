@@ -28,6 +28,7 @@ private:
 	void SetPitch();
 
 	bool SetSound();
+	void PlaySound();
 
 	float ConvertVolume();
 

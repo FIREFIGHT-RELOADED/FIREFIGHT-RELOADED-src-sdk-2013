@@ -205,7 +205,7 @@ void CHudDeathNotice::Paint()
 					prunedName += 8;
 				}
 
-				g_pVGuiLocalize->ConvertANSIToUnicode(m_DeathNotices[i].Victim.szName, victim, sizeof(victim));
+				g_pVGuiLocalize->ConvertANSIToUnicode(prunedName, victim, sizeof(victim));
 			}
 		}
 		else
@@ -216,7 +216,7 @@ void CHudDeathNotice::Paint()
 				prunedName += 8;
 			}
 
-			g_pVGuiLocalize->ConvertANSIToUnicode(m_DeathNotices[i].Victim.szName, victim, sizeof(victim));
+			g_pVGuiLocalize->ConvertANSIToUnicode(prunedName, victim, sizeof(victim));
 		}
 
 		if (m_DeathNotices[i].Killer.szName[0] == '#')

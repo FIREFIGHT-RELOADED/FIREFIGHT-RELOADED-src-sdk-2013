@@ -1,0 +1,21 @@
+//Railgun Hunter
+"npc_hunter_preset5"
+{
+	"additional_health"	"50"
+	"new_model"		"models/hunter_colorable.mdl"
+	"is_rare"		"1"
+	"new_projectile"	"6"
+	"volley_normal_delay"	"0.3"
+	"railgun_overcharge_perfect_shots" "1"
+	"railgun_overcharge_use_ministrider_sounds" "1"
+	// random spread cone
+	"spread_cone"		"0"
+	//can go up to VECTOR_CONE_3DEGREES
+	"spread_cone_random_max"	"3"
+	"spread_bias"		"0.5"
+	"new_material_color"	"204 118 160"
+	"has_outlines"		"1"
+	"outline_color"		"204 118 160"
+	"volley_size"		"4"
+	"persist"		"0"
+}

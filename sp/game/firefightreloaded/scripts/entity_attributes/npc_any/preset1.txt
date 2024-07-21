@@ -1,8 +1,7 @@
 //Advisor drones.
 "npc_any_preset1"
 {
-	"new_color"		"255 0 255 255"
-	"new_material_color"	"255 0 255 255"
+	"new_color"		"173 0 173 255"
 	"health_multiplier"	"2"
 	"additional_speed"	"250"
 	"use_shotgun_secondary"	"1"

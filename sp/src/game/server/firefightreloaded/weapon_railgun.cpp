@@ -160,7 +160,16 @@ void CWeaponRailgun::FireNPCPrimaryAttack(CBaseCombatCharacter* pOperator, bool 
 	CAmmoDef* def = GetAmmoDef();
 	int definedDamage = def->NPCDamage(m_iPrimaryAmmoType);
 	bool bUsesOvercharge = (npc && npc->m_pAttributes != NULL && npc->m_pAttributes->GetBool("use_railgun_overcharge"));
+	if (!bUsesOvercharge)
+	{
+		m_bIsLowBattery = false;
+	}
+	else
+	{
+		m_bOverchargeDamageBenefits = true;
+	}
 	int iDamage = (bUsesOvercharge ? (int)(definedDamage * 2) : definedDamage);
+	DevMsg("RAILGUN DAMAGE: %i\n", iDamage);
 
 	FireBulletsInfo_t info(1, vecShootOrigin, vecShootDir, vec3_origin, MAX_TRACE_LENGTH, m_iPrimaryAmmoType);
 	info.m_pAttacker = npc;
@@ -224,7 +233,7 @@ void CWeaponRailgun::Operator_HandleAnimEvent(animevent_t* pEvent, CBaseCombatCh
 void CWeaponRailgun::Precache(void)
 {
 	BaseClass::Precache();
-
+	PrecacheModel(GAUSS_BEAM_SPRITE);
 	PrecacheScriptSound("SuitRecharge.ChargingLoop");
 }
 
@@ -625,7 +634,7 @@ void CWeaponRailgun::RechargeAmmo(bool bIsHolstered)
 
 	if (!bIsHolstered)
 	{
-		m_flNextCharge = gpGlobals->curtime + (m_bJustOvercharged ? RAIL_RECHARGE_OVERCHARGE_TIME : RAIL_RECHARGE_TIME);
+		m_flNextCharge = gpGlobals->curtime + RAIL_RECHARGE_TIME;
 
 		if ((pPlayer->GetAmmoCount(m_iPrimaryAmmoType) % 25) == 0 || pPlayer->GetAmmoCount(m_iPrimaryAmmoType) == 99)
 		{
@@ -634,7 +643,7 @@ void CWeaponRailgun::RechargeAmmo(bool bIsHolstered)
 	}
 	else
 	{
-		m_flNextCharge = gpGlobals->curtime + (m_bJustOvercharged ? RAIL_RECHARGE_OVERCHARGE_TIME : RAIL_RECHARGE_BACKGROUND_TIME);
+		m_flNextCharge = gpGlobals->curtime + RAIL_RECHARGE_BACKGROUND_TIME;
 
 		if (pPlayer->GetAmmoCount(m_iPrimaryAmmoType) == 99)
 		{

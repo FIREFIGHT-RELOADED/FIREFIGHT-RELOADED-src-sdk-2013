@@ -2,8 +2,8 @@
 {
 	"settings"
 	{
-		"spawntime"		"3"
-		"spawntime_steamdeck"	"5"
+		"spawntime"		"5"
+		"spawntime_steamdeck"	"8"
 	}
 	"1"
 	{
@@ -27,9 +27,16 @@
 	}
 	"6"
 	{
-		//elite metrocops
+		//ace metrocops
 		"classname"		"npc_metropolice"
 		"preset"		"1"
+		"equipment"	
+		{
+			"weapon_stunstick" "3"
+			"weapon_pistol" "5"
+			"weapon_smg1" "5"
+			"weapon_shotgun" "3"
+		}
 	}
 	"7"
 	{
@@ -79,6 +86,14 @@
 	"18"
 	{
 		"classname"		"npc_combine_e"
+		"equipment"	
+		{
+			"weapon_ar2" "5"
+			"weapon_smg1" "3"
+			"weapon_shotgun" "2"
+			"weapon_m249para" "3"
+			"weapon_sniper_rifle" "3"
+		}
 	}
 	"19"
 	{
@@ -139,6 +154,15 @@
 	"32"
 	{
 		"classname"		"npc_combine_ace"
+		"equipment"	
+		{
+			"weapon_ar2" "5"
+			"weapon_smg1" "3"
+			"weapon_shotgun" "4"
+			"weapon_railgun" "3"
+			"weapon_m249para" "4"
+			"weapon_sniper_rifle" "3"
+		}
 	}
 	"33"
 	{
@@ -177,5 +201,56 @@
 		//super ace
 		"classname"		"npc_combine_ace"
 		"preset"		"1"
+		"equipment"	
+		{
+			"weapon_ar2" "5"
+			"weapon_smg1" "3"
+			"weapon_shotgun" "4"
+			"weapon_railgun" "3"
+			"weapon_m249para" "4"
+			"weapon_sniper_rifle" "3"
+		}
+	}
+	//advisor drones of various combine units.
+	"40"
+	{
+		"classname"		"npc_combine_s"
+		"wildcard"		"1"
+		"preset"		"1"
+	}
+	"41"
+	{
+		"classname"		"npc_metropolice"
+		"wildcard"		"1"
+		"preset"		"1"
+	}
+	"42"
+	{
+		"classname"		"npc_hunter"
+		"wildcard"		"1"
+		"preset"		"1"
+	}
+	"43"
+	{
+		"classname"		"npc_combine_ace"
+		"wildcard"		"1"
+		"preset"		"1"
+		"rare"			"1"
+		"equipment"	
+		{
+			"weapon_ar2" "5"
+			"weapon_smg1" "3"
+			"weapon_shotgun" "4"
+			"weapon_railgun" "3"
+			"weapon_m249para" "4"
+			"weapon_sniper_rifle" "3"
+		}
+	}
+	"44"
+	{
+		//railgun hunters
+		"classname"		"npc_hunter"
+		"preset"		"5"
+		"rare"			"1"
 	}
 }

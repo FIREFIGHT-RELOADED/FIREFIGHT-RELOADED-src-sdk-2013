@@ -189,6 +189,8 @@ ConVar hunter_laugh_healthvalue("hunter_laugh_healthvalue", "20", FCVAR_NONE, "S
 #define HUNTER_SKIN_DEFAULT		0
 #define HUNTER_SKIN_DEAD		1
 
+#define GAUSS_BEAM_SPRITE "sprites/laserbeam.vmt"
+
 //-----------------------------------------------------------------------------
 // Animation events
 //-----------------------------------------------------------------------------
@@ -1335,6 +1337,8 @@ private:
 
 	void BeginVolley( int nNum, float flStartTime );
 	void CreateRPGRocketProjectile(const Vector& vecSrc, Vector& vecShoot, QAngle& angShoot);
+	void CreateRailgunProjectile(const Vector& vecSrc, Vector& vecShoot, bool bOvercharged = false);
+	void RailgunDrawBeam(const Vector& startPos, const Vector& endPos, bool overcharged);
 	void CreateFragGrenadeProjectile(const Vector& vecSrc, QAngle& angShoot);
 	void CreateSpitProjectile(const Vector& vecSrc, Vector& vecShoot, QAngle& angShoot, int nShotNum);
 	void CreateCombineBallProjectile(const Vector& vecSrc, Vector& vecShoot, QAngle& angShoot);
@@ -1694,6 +1698,7 @@ void CNPC_Hunter::Precache()
 {
 	PrecacheModel( "models/hunter.mdl" );
 	PropBreakablePrecacheAll( MAKE_STRING("models/hunter.mdl") );
+	PrecacheModel(GAUSS_BEAM_SPRITE);
 
 	PrecacheScriptSound( "NPC_Hunter.Idle" );
 	PrecacheScriptSound( "NPC_Hunter.Scan" );
@@ -6399,6 +6404,86 @@ void CNPC_Hunter::CreateSpitProjectile(const Vector& vecSrc, Vector& vecShoot, Q
 		random->RandomFloat(-250, -500)));
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CNPC_Hunter::RailgunDrawBeam(const Vector& startPos, const Vector& endPos, bool overcharged)
+{
+	float flWidth = (overcharged ? 4.5f : 2.0f);
+
+	//Draw the main beam shaft
+	CBeam *m_pBeam = CBeam::BeamCreate(GAUSS_BEAM_SPRITE, flWidth);
+
+	m_pBeam->SetStartPos(startPos);
+	m_pBeam->PointEntInit(endPos, this);
+
+	int attachment = m_bTopMuzzle ? gm_nBottomGunAttachment : gm_nTopGunAttachment;
+
+	m_pBeam->SetEndAttachment(attachment);
+
+	m_pBeam->SetColor(196, 47 + random->RandomInt(-16, 16), 250);
+	m_pBeam->SetScrollRate(25.6);
+	m_pBeam->SetBrightness(!overcharged ? 128 : 255);
+	m_pBeam->RelinkBeam();
+	m_pBeam->LiveForTime(0.1f);
+}
+
+void CNPC_Hunter::CreateRailgunProjectile(const Vector& vecSrc, Vector& vecShoot, bool bOvercharged)
+{
+	Vector vecShootDir = vecShoot;
+	Vector VecShootOrigin = vecSrc;
+
+	Vector	endPos = VecShootOrigin + (vecShootDir * MAX_TRACE_LENGTH);
+
+	//Shoot a shot straight out
+	trace_t	tr;
+	UTIL_TraceLine(VecShootOrigin, endPos, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr);
+
+	CAmmoDef* def = GetAmmoDef();
+	int m_iPrimaryAmmoType = GetAmmoDef()->Index("Railgun");
+	int definedDamage = def->NPCDamage(m_iPrimaryAmmoType);
+	if (!bOvercharged)
+	{
+		bOvercharged = (m_pAttributes != NULL && m_pAttributes->GetBool("use_railgun_overcharge"));
+	}
+	int iDamage = (bOvercharged ? (int)(definedDamage * 2) : definedDamage);
+	DevMsg("RAILGUN DAMAGE: %i\n", iDamage);
+
+	FireBulletsInfo_t info(1, VecShootOrigin, vecShootDir, vec3_origin, MAX_TRACE_LENGTH, m_iPrimaryAmmoType);
+	info.m_pAttacker = this;
+	info.m_flDamage = iDamage;
+	info.m_flDamageForceScale = 0.2f;
+	info.m_iTracerFreq = 0;
+
+	EmitSound("Weapon_Railgun.Single");
+	CSoundEnt::InsertSound(SOUND_COMBAT | SOUND_CONTEXT_GUNFIRE, GetAbsOrigin(), SOUNDENT_VOLUME_MACHINEGUN, 0.2, this, SOUNDENT_CHANNEL_WEAPON, GetEnemy());
+
+	// Fire the bullets, and force the first shot to be perfectly accurate
+	FireBullets(info);
+
+	float hitAngle = -DotProduct(tr.plane.normal, vecShootDir);
+
+	Vector vReflection;
+
+	vReflection = 2.0 * tr.plane.normal * hitAngle + vecShootDir;
+
+	VecShootOrigin = tr.endpos;
+	endPos = VecShootOrigin + (vReflection * MAX_TRACE_LENGTH);
+
+	//Kick up an effect
+	if (!(tr.surface.flags & SURF_SKY))
+	{
+		UTIL_ImpactTrace(&tr, m_iPrimaryAmmoType, "ImpactJeep");
+
+		//Do a gauss explosion
+		CPVSFilter filter(tr.endpos);
+		te->GaussExplosion(filter, 0.0f, tr.endpos, tr.plane.normal, 0);
+	}
+
+	//Draw beam to reflection point
+	RailgunDrawBeam(tr.startpos, tr.endpos, !bOvercharged);
+}
+
 void CNPC_Hunter::CreateFragGrenadeProjectile(const Vector& vecSrc, QAngle& angShoot)
 {
 	Vector vecSpin;
@@ -6447,6 +6532,64 @@ void CNPC_Hunter::CreateAR2Round(const Vector& vecSrc, const Vector& vecDir)
 	}
 }
 
+Vector IntToCone(int val)
+{
+	Vector cone;
+
+	switch (val)
+	{
+	case 0:
+	case 1:
+		cone = VECTOR_CONE_1DEGREES;
+		break;
+	case 2:
+		cone = VECTOR_CONE_2DEGREES;
+		break;
+	case 3:
+		cone = VECTOR_CONE_3DEGREES;
+		break;
+	case 4:
+		cone = VECTOR_CONE_4DEGREES;
+		break;
+	case 5:
+		cone = VECTOR_CONE_5DEGREES;
+		break;
+	case 6:
+		cone = VECTOR_CONE_6DEGREES;
+		break;
+	case 7:
+		cone = VECTOR_CONE_7DEGREES;
+		break;
+	case 8:
+		cone = VECTOR_CONE_8DEGREES;
+		break;
+	case 9:
+		cone = VECTOR_CONE_9DEGREES;
+		break;
+	case 10:
+	case 11:
+	case 12:
+	case 13:
+	case 14:
+		cone = VECTOR_CONE_10DEGREES;
+		break;
+	case 15:
+	case 16:
+	case 17:
+	case 18:
+	case 19:
+		cone = VECTOR_CONE_15DEGREES;
+		break;
+	case 20:
+		cone = VECTOR_CONE_20DEGREES;
+		break;
+	default:
+		break;
+	}
+
+	return cone;
+}
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 bool CNPC_Hunter::ShootFlechette( CBaseEntity *pTargetEntity, bool bSingleShot )
@@ -6487,20 +6630,71 @@ bool CNPC_Hunter::ShootFlechette( CBaseEntity *pTargetEntity, bool bSingleShot )
 		bClamped = ClampShootDir( vecDir );
 	}
 
+	bool spread = true;
+	bool bOvercharge = false;
+
 	CShotManipulator manipulator( vecDir );
 	Vector vecShoot;
 
-	if( IsUsingSiegeTargets() && nShotNum >= 2 && (nShotNum % 2) == 0 )
+	if (m_pAttributes)
 	{
-		// Near perfect accuracy for these three shots, so they are likely to fly right into the windows.
-		// NOTE! In siege behavior in the map that this behavior was designed for (ep2_outland_10), the
-		// Hunters will only ever shoot at siege targets in siege mode. If you allow Hunters in siege mode
-		// to attack players or other NPCs, this accuracy bonus will apply unless we apply a bit more logic to it.
-		vecShoot = manipulator.ApplySpread( VECTOR_CONE_1DEGREES * 0.5, 1.0f );
+		spread = m_pAttributes->GetBool("spread_enable", true);
+	}
+
+	if (spread)
+	{
+		if (IsUsingSiegeTargets() && nShotNum >= 2 && (nShotNum % 2) == 0)
+		{
+			// Near perfect accuracy for these three shots, so they are likely to fly right into the windows.
+			// NOTE! In siege behavior in the map that this behavior was designed for (ep2_outland_10), the
+			// Hunters will only ever shoot at siege targets in siege mode. If you allow Hunters in siege mode
+			// to attack players or other NPCs, this accuracy bonus will apply unless we apply a bit more logic to it.
+			vecShoot = manipulator.ApplySpread(VECTOR_CONE_1DEGREES * 0.5, 1.0f);
+		}
+		else
+		{
+			int conespread = 4;
+			Vector cone;
+			float spreadbias = 1.0f;
+
+			if (m_pAttributes)
+			{
+				conespread = m_pAttributes->GetInt("spread_cone", 4);
+
+				if (conespread == 0)
+				{
+					//see basecombatweapon_shared.h
+					int conemin = m_pAttributes->GetInt("spread_cone_random_min", 1);
+					int conemax = m_pAttributes->GetInt("spread_cone_random_max", 20);
+					int conerand = RandomInt(conemin, conemax);
+					conespread = conerand;
+					DevMsg("Hunter using random spread VECTOR_CONE_%iDEGREES\n", conerand);
+				}
+				
+				if (conespread == 1)
+				{
+					bOvercharge = m_pAttributes->GetBool("railgun_overcharge_perfect_shots");
+				}
+
+				cone = IntToCone(conespread);
+				spreadbias = m_pAttributes->GetFloat("spread_bias", 1.0f);
+			}
+			else
+			{
+				cone = IntToCone(conespread);
+			}
+
+			vecShoot = manipulator.ApplySpread(cone, spreadbias);
+		}
 	}
 	else
 	{
-		vecShoot = manipulator.ApplySpread( VECTOR_CONE_4DEGREES, 1.0f );
+		//if our spread is disabled, our shots are absolutely perfect.
+		vecShoot = manipulator.ApplySpread(VECTOR_CONE_1DEGREES, 0.0f);
+		if (m_pAttributes)
+		{
+			bOvercharge = m_pAttributes->GetBool("railgun_overcharge_perfect_shots");
+		}
 	}
 
 	QAngle angShoot;
@@ -6508,7 +6702,17 @@ bool CNPC_Hunter::ShootFlechette( CBaseEntity *pTargetEntity, bool bSingleShot )
 
 	if (m_pAttributes)
 	{
-		int projInt = m_pAttributes->GetInt("new_projectile");
+		int projInt = 0;
+		bool projIntSaveMyFuckingSanity = m_pAttributes->GetBool("new_projectile_random");
+
+		if (projIntSaveMyFuckingSanity)
+		{
+			projInt = RandomInt(0, 6);
+		}
+		else
+		{
+			projInt = m_pAttributes->GetInt("new_projectile");
+		}
 
 		switch (projInt)
 		{
@@ -6527,6 +6731,9 @@ bool CNPC_Hunter::ShootFlechette( CBaseEntity *pTargetEntity, bool bSingleShot )
 			case 5:
 				CreateAR2Round(vecSrc, vecDir);
 				break;
+			case 6:
+				CreateRailgunProjectile(vecSrc, vecShoot, bOvercharge);
+				break;
 			default:
 				CreateDefaultProjectile(pTargetEntity, vecSrc, vecShoot, angShoot);
 				break;
@@ -6535,6 +6742,11 @@ bool CNPC_Hunter::ShootFlechette( CBaseEntity *pTargetEntity, bool bSingleShot )
 	else
 	{
 		CreateDefaultProjectile(pTargetEntity, vecSrc, vecShoot, angShoot);
+	}
+
+	if (bOvercharge)
+	{
+		bOvercharge = false;
 	}
 
 	if( nShotNum == 1 && pTargetEntity->Classify() == CLASS_PLAYER_ALLY_VITAL )

@@ -2,7 +2,7 @@
 "npc_hunter_preset3"
 {
 	"new_model"		"models/hunter_colorable.mdl"
-	"new_material_color"	"160 160 160"
+	"new_material_color"	"128 128 128"
 	"additional_health"	"20"
 	"is_rare"		"1"
 	"has_outlines"		"1"

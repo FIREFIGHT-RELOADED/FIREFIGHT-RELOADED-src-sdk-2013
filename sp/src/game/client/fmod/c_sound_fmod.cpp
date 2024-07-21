@@ -27,11 +27,11 @@ C_AmbientFMOD::C_AmbientFMOD()
 	m_flPitch = 100.0f;
 	m_flMusicSpeed = 1.0f;
 
+	m_bInit = false;
 	m_bGlobal = false;
 	m_bActive = false;
 	m_bLooping = false;
 	m_bMusic = false;
-	m_bInit = false;
 
 	// This is being a bit over-explicit, but meh.
 	m_bOldActive = m_bActive;
@@ -72,6 +72,11 @@ void C_AmbientFMOD::OnDataChanged( DataUpdateType_t updateType )
 	{
 		// Start thinking (Baseclass stops it)
 		SetNextClientThink( CLIENT_THINK_ALWAYS );
+	}
+
+	if (m_iszSound != NULL_STRING && !m_bInit && m_hSoundSource)
+	{
+		m_bInit = SetSound();
 	}
 
 	if ( m_flVolume > 1.0f )
@@ -125,25 +130,13 @@ void C_AmbientFMOD::ToggleSound()
 
 	if ( m_bActive && !bIsPlaying )
 	{
-		if (m_iszSound != NULL_STRING && !m_bInit && m_hSoundSource)
-		{
-			m_bInit = SetSound();
-		}
+		PlaySound();
 	}
 	else if ( !m_bActive && bIsPlaying)
 	{
-		m_bInit = false;
-
 		if (m_pChannel)
 		{
-			CFMODManager::CheckError(m_pChannel->stop());
-			m_pChannel = NULL;
-		}
-
-		if (m_pSound)
-		{
-			CFMODManager::CheckError(m_pSound->release());
-			m_pChannel = NULL;
+			m_pChannel->setPaused(true);
 		}
 	}
 }
@@ -211,31 +204,39 @@ bool C_AmbientFMOD::SetSound()
 			CFMODManager::CheckError( GetFMODManager()->GetSystem()->createSound( szSound, FMOD_DEFAULT, 0, &m_pSound ) );
 	}
 
+	// Play sound right away if true
+	PlaySound();
+
+	return true;
+}
+
+void C_AmbientFMOD::PlaySound()
+{
+	if (!m_bInit)
+		return;
+
 	eChannelGroupType channelgroupType = m_bMusic ? CHANNELGROUP_MUSIC : CHANNELGROUP_STANDARD;
 
-	// Play sound right away if true
-	if ( m_bActive )
-		CFMODManager::CheckError( GetFMODManager()->GetSystem()->playSound( m_pSound, GetFMODManager()->GetChannelGroup( channelgroupType ), true, &m_pChannel ) );
+	if (m_bActive)
+		CFMODManager::CheckError(GetFMODManager()->GetSystem()->playSound(m_pSound, GetFMODManager()->GetChannelGroup(channelgroupType), true, &m_pChannel));
 
-	if ( m_pChannel ) 
+	if (m_pChannel)
 	{
 		SetPitch();
 		SetVolume();
 
-		if ( !m_bGlobal )
+		if (!m_bGlobal)
 		{
-			CFMODManager::CheckError( m_pChannel->set3DMinMaxDistance( 1, m_flMaxDistance ) );
+			CFMODManager::CheckError(m_pChannel->set3DMinMaxDistance(1, m_flMaxDistance));
 
 			Vector entPos = m_hSoundSource->GetAbsOrigin();
 
 			FMOD_VECTOR sourcePos = { entPos.x, entPos.z, entPos.y };
-			m_pChannel->set3DAttributes( &sourcePos, nullptr );
+			m_pChannel->set3DAttributes(&sourcePos, nullptr);
 		}
 
-		m_pChannel->setPaused( false );
+		m_pChannel->setPaused(false);
 	}
-
-	return true;
 }
 
 float C_AmbientFMOD::ConvertVolume()

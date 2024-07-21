@@ -3,7 +3,7 @@
 {
 	"new_model"		"models/hunter_colorable.mdl"
 	"new_material_color"	"156 80 20"
-	"additional_health"	"20"
+	"additional_health"	"30"
 	"is_rare"		"1"
 	"has_outlines"		"1"
 	"new_projectile"	"2"
