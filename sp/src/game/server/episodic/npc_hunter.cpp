@@ -260,6 +260,20 @@ enum SquadSlot_t
 	SQUAD_SLOT_RUN_SHOOT,
 };
 
+enum HunterProjectileTypes
+{
+	PROJ_FLECHETTE,
+	PROJ_RPG_ROCKET,
+	PROJ_FRAG_GRENADE,
+	PROJ_SPIT,
+	PROJ_COMBINE_BALL,
+	PROJ_AR2_ROUND,
+	PROJ_RAILGUN,
+	PROJ_SMG_GRENADE,
+
+	PROJ_LAST
+};
+
 #define	HUNTER_FOLLOW_DISTANCE	2000.0f
 #define	HUNTER_FOLLOW_DISTANCE_SQR	(HUNTER_FOLLOW_DISTANCE * HUNTER_FOLLOW_DISTANCE)
 
@@ -1341,6 +1355,7 @@ private:
 	void RailgunDrawBeam(const Vector& startPos, const Vector& endPos, bool overcharged);
 	void CreateFragGrenadeProjectile(const Vector& vecSrc, QAngle& angShoot);
 	void CreateSpitProjectile(const Vector& vecSrc, Vector& vecShoot, QAngle& angShoot, int nShotNum);
+	void CreateSMGGrenade(const Vector& vecSrc, Vector& vecShoot, QAngle& angShoot, int nShotNum);
 	void CreateCombineBallProjectile(const Vector& vecSrc, Vector& vecShoot, QAngle& angShoot);
 	void CreateDefaultProjectile(CBaseEntity* pTargetEntity, const Vector &vecSrc, Vector& vecShoot, QAngle& angShoot);
 	void CreateAR2Round(const Vector& vecSrc, const Vector& vecDir);
@@ -6404,6 +6419,30 @@ void CNPC_Hunter::CreateSpitProjectile(const Vector& vecSrc, Vector& vecShoot, Q
 		random->RandomFloat(-250, -500)));
 }
 
+void CNPC_Hunter::CreateSMGGrenade(const Vector& vecSrc, Vector& vecShoot, QAngle& angShoot, int nShotNum)
+{
+	CGrenadeAR2* pGrenade = (CGrenadeAR2*)CreateEntityByName("grenade_ar2");
+	pGrenade->SetAbsOrigin(vecSrc);
+	pGrenade->SetAbsAngles(angShoot);
+	DispatchSpawn(pGrenade);
+	pGrenade->SetThrower(this);
+	pGrenade->SetOwnerEntity(this);
+
+	if (nShotNum == 0)
+	{
+		pGrenade->SetAbsVelocity(vecShoot * hunter_flechette_speed.GetFloat());
+	}
+	else
+	{
+		pGrenade->SetAbsVelocity((vecShoot + RandomVector(-0.035f, 0.035f)) * hunter_flechette_speed.GetFloat());
+	}
+
+	// Tumble through the air
+	pGrenade->SetLocalAngularVelocity(QAngle(random->RandomFloat(-250, -500),
+		random->RandomFloat(-250, -500),
+		random->RandomFloat(-250, -500)));
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -6707,7 +6746,7 @@ bool CNPC_Hunter::ShootFlechette( CBaseEntity *pTargetEntity, bool bSingleShot )
 
 		if (projIntSaveMyFuckingSanity)
 		{
-			projInt = RandomInt(0, 6);
+			projInt = RandomInt(PROJ_FLECHETTE, PROJ_LAST - 1);
 		}
 		else
 		{
@@ -6716,24 +6755,28 @@ bool CNPC_Hunter::ShootFlechette( CBaseEntity *pTargetEntity, bool bSingleShot )
 
 		switch (projInt)
 		{
-			case 1:
+			case PROJ_RPG_ROCKET:
 				CreateRPGRocketProjectile(vecSrc, vecShoot, angShoot);
 				break;
-			case 2:
+			case PROJ_FRAG_GRENADE:
 				CreateFragGrenadeProjectile(vecSrc, angShoot);
 				break;
-			case 3:
+			case PROJ_SPIT:
 				CreateSpitProjectile(vecSrc, vecShoot, angShoot, nShotNum);
 				break;
-			case 4:
+			case PROJ_COMBINE_BALL:
 				CreateCombineBallProjectile(vecSrc, vecShoot, angShoot);
 				break;
-			case 5:
+			case PROJ_AR2_ROUND:
 				CreateAR2Round(vecSrc, vecDir);
 				break;
-			case 6:
+			case PROJ_RAILGUN:
 				CreateRailgunProjectile(vecSrc, vecShoot, bOvercharge);
 				break;
+			case PROJ_SMG_GRENADE:
+				CreateSMGGrenade(vecSrc, vecShoot, angShoot, nShotNum);
+				break;
+			case PROJ_FLECHETTE:
 			default:
 				CreateDefaultProjectile(pTargetEntity, vecSrc, vecShoot, angShoot);
 				break;

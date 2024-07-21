@@ -75,6 +75,14 @@ enum
 	COND_SQUID_SMELL_FOOD	= LAST_SHARED_CONDITION + 1,
 };
 
+enum BullsquidProjectileTypes
+{
+	PROJ_SPIT,
+	PROJ_FRAG_GRENADE,
+	PROJ_SMG_GRENADE,
+
+	PROJ_LAST
+};
 
 //=========================================================
 // Interactions
@@ -539,16 +547,28 @@ void CNPC_Bullsquid::HandleAnimEvent( animevent_t *pEvent )
 				{
 					if (m_pAttributes)
 					{
-						int projInt = m_pAttributes->GetInt("new_projectile");
+						int projInt = 0;
+
+						bool projIntSaveMyFuckingSanity = m_pAttributes->GetBool("new_projectile_random");
+
+						if (projIntSaveMyFuckingSanity)
+						{
+							projInt = RandomInt(PROJ_SPIT, PROJ_LAST - 1);
+						}
+						else
+						{
+							projInt = m_pAttributes->GetInt("new_projectile");
+						}
 
 						switch (projInt)
 						{
-						case 1:
+						case PROJ_FRAG_GRENADE:
 							CreateFragGrenadeProjectile(vSpitPos, vecToss, flVelocity);
 							break;
-						case 2:
+						case PROJ_SMG_GRENADE:
 							CreateSMGGrenadeProjectile(vSpitPos, vecToss, flVelocity, i);
 							break;
+						case PROJ_SPIT:
 						default:
 							CreateDefaultProjectile(vSpitPos, vecToss, flVelocity, i);
 							break;
