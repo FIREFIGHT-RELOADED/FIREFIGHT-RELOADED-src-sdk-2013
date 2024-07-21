@@ -9,6 +9,7 @@
 #include "filesystem.h"
 #include "KeyValues.h"
 #include "randnpcloader.h"
+#include "firefightreloaded/mapinfo.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -75,21 +76,56 @@ bool CRandNPCLoader::Load()
 		gamemodeMode = false;
 	}
 
+	KeyValues* pKV = NULL;
+	bool failed = false;
+
 	char szScriptPath[_MAX_PATH] = { 0 };
 	if (gamemodeMode)
+	{
 		Q_snprintf(szScriptPath, sizeof(szScriptPath), "scripts/spawnlists/%s.txt", gamemodeName);
-	else
-		Q_snprintf(szScriptPath, sizeof(szScriptPath), "scripts/spawnlists/maps/%s.txt", mapName);
 
-	const char* name = gamemodeMode ? gamemodeName : mapName;
-	KeyValues* pKV = new KeyValues(name);
-	if (pKV->LoadFromFile(filesystem, szScriptPath))
-		DevMsg("CRandNPCLoader: Spawnlist for %s loaded.\n", name);
+		pKV = new KeyValues(gamemodeName);
+		if (pKV->LoadFromFile(filesystem, szScriptPath))
+		{
+			DevMsg("CRandNPCLoader: Spawnlist for %s loaded.\n", gamemodeName);
+		}
+		else
+		{
+			failed = true;
+		}
+	}
 	else
 	{
-		DevWarning("CRandNPCLoader: Failed to load %s spawnlist! File may not exist. Using default spawn list...\n", name);
+		KeyValues* pInfo = CMapInfo::GetMapInfoData();
+
+		if (pInfo != NULL)
+		{
+			KeyValues *pSpawnerSettings = pInfo->FindKey("Spawnlist");
+			if (pSpawnerSettings)
+			{
+				pKV = pSpawnerSettings->MakeCopy();
+				//KeyValuesDumpAsDevMsg(pKV, 1);
+				DevMsg("CRandNPCLoader: Spawnlist for %s loaded.\n", mapName);
+			}
+			else
+			{
+				failed = true;
+			}
+		}
+		else
+		{
+			failed = true;
+		}
+	}
+
+	if (failed)
+	{
+		pKV = new KeyValues(mapName);
+		DevWarning("CRandNPCLoader: Failed to load %s spawnlist! File may not exist. Using default spawn list...\n", gamemodeName);
 		if (pKV->LoadFromFile(filesystem, sk_spawner_defaultspawnlist.GetString()))
+		{
 			DevMsg("CRandNPCLoader: User-specified default spawnlist loaded.\n");
+		}
 		else
 		{
 			DevWarning("CRandNPCLoader: Failed to load default spawnlist! File may not exist. Spawners will not function properly.\n");

@@ -4,6 +4,8 @@
 #pragma once
 #endif
 
+#include "KeyValues.h"
+
 class CMapInfo
 {
 public:
