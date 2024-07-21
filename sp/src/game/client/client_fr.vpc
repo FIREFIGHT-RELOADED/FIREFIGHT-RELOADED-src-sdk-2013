@@ -29,6 +29,8 @@ $Project "Client (FR)"
 		$File	"$SRCDIR\game\shared\predicted_viewmodel.h"
 		$File	"worldlight.cpp"
 		$File	"worldlight.h"
+        $File	"$SRCDIR\game\shared\func_ladder.cpp"
+		$File	"$SRCDIR\game\shared\func_ladder.h"
 		
 		$Folder	"MOMENTUM MOD DLL"
 		{
