@@ -54,13 +54,12 @@ bool CMapAdd::RunLabel( const char *szLabel)
 	if(!szLabel || AllocPooledString(szLabel) == AllocPooledString(""))
 		return false; //Failed to load!
 
-	CMapInfo* info = new CMapInfo();
+	KeyValues* pInfo = CMapInfo::GetMapInfoData();
 
-	if (info)
+	if (pInfo != NULL)
 	{
-		KeyValues* pMapAdd = info->data->FindKey("MapAdd");
-
-		if (pMapAdd)
+		KeyValues* pMapAdd = pInfo->FindKey("MapAdd");
+		if (pMapAdd != NULL)
 		{
 			KeyValues* pMapAdd2 = pMapAdd->FindKey(szLabel);
 			if (pMapAdd2)
@@ -124,11 +123,9 @@ bool CMapAdd::RunLabel( const char *szLabel)
 				}
 			}
 		}
-
-		//info->Die();
-		return true;
 	}
-	return false;
+
+	return true;
 }
 
 bool CMapAdd::HandlePlayerEntity( KeyValues *playerEntityKV, bool initLevel)

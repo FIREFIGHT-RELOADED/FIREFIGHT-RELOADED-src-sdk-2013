@@ -351,11 +351,11 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 				break;
 			}
 
-			CMapInfo* info = new CMapInfo();
+			KeyValues* pInfo = CMapInfo::GetMapInfoData();
 
-			if (info)
+			if (pInfo != NULL)
 			{
-				const char* customMapCFGFile = info->GetString("additional_cfg","");
+				const char* customMapCFGFile = pInfo->GetString("additional_cfg","");
 
 				if (customMapCFGFile[0])
 				{

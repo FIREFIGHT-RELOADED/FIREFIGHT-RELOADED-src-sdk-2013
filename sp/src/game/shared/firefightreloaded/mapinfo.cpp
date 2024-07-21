@@ -5,7 +5,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
 
-CMapInfo::CMapInfo()
+KeyValues* CMapInfo::GetMapInfoData()
 {
 	char mapname[256];
 #if !defined( CLIENT_DLL )
@@ -23,38 +23,8 @@ CMapInfo::CMapInfo()
 	KeyValues* pKV = new KeyValues(mapname);
 	if (pKV->LoadFromFile(filesystem, szFullName))
 	{
-		data = pKV->MakeCopy();
+		return pKV;
 	}
 
-	pKV->deleteThis();
-}
-
-const char* CMapInfo::GetString(const char* szString, const char* defaultValue)
-{
-	return data->GetString(szString, defaultValue);
-}
-
-int CMapInfo::GetInt(const char* szString, int defaultValue)
-{
-	return data->GetInt(szString, defaultValue);
-}
-
-float CMapInfo::GetFloat(const char* szString, float defaultValue)
-{
-	return data->GetFloat(szString, defaultValue);
-}
-
-bool CMapInfo::GetBool(const char* szString, bool defaultValue)
-{
-	return data->GetBool(szString, defaultValue);
-}
-
-Color CMapInfo::GetColor(const char* szString)
-{
-	return data->GetColor(szString);
-}
-
-Vector CMapInfo::GetVector(const char* szString, Vector defaultValue)
-{
-	return data->GetVector(szString, defaultValue);
+	return NULL;
 }

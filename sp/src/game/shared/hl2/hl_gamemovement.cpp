@@ -1136,10 +1136,10 @@ bool CHL2GameMovement::LevelSupportsHL2Ladders()
 {
 	bool HasHL2Ladders = true;
 
-	CMapInfo* info = new CMapInfo();
-	if (info)
+	KeyValues* pInfo = CMapInfo::GetMapInfoData();
+	if (pInfo != NULL)
 	{
-		HasHL2Ladders = info->GetBool("UsesHL2Ladders", true);
+		HasHL2Ladders = pInfo->GetBool("UsesHL2Ladders", true);
 	}
 
 	return HasHL2Ladders;
