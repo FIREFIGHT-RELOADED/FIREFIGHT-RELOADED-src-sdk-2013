@@ -1,0 +1,113 @@
+"firefight_tutorial"
+{
+    "Spawnlist"
+    {
+        "settings"
+        {
+            "spawntime"		"13"
+            "spawntime_steamdeck"	"17"
+        }
+        //LEVEL 1
+        "1"
+        {
+            "classname"		"npc_metropolice"
+            "exp"	"15"
+        }
+        "2"
+        {
+            "classname"		"npc_zombie"
+            "exp"	"15"
+        }
+        "3"
+        {
+            "classname"		"npc_combine_s"
+            "exp"	"15"
+        }
+        "4"
+        {
+            "classname"		"npc_combine_p"
+            "exp"	"15"
+        }
+        "5"
+        {
+            "classname"		"npc_playerbot"
+            "rare"			"1"
+        }
+        //LEVEL 2
+        "6"
+        {
+            "classname"		"npc_houndeye"
+            "min_level"		"2"
+            "rare"			"1"
+            "exp"	"25"
+        }
+        "7"
+        {
+            "classname"		"npc_antlion"
+            "min_level"		"2"
+            "exp"	"25"
+        }
+        "8"
+        {
+            //ace metrocops
+            "classname"		"npc_metropolice"
+            "preset"		"1"
+            "min_level"		"2"
+            "rare"			"1"
+            "equipment"	
+            {
+                "weapon_stunstick" "3"
+                "weapon_pistol" "5"
+                "weapon_smg1" "5"
+                "weapon_shotgun" "3"
+            }
+            "exp"	"25"
+        }
+        //LEVEL 3
+        "9"
+        {
+            "classname"		"npc_combine_e"
+            "min_level"		"3"
+            "rare"			"1"
+            "exp"	"35"
+            "equipment"	
+            {
+                "weapon_ar2" "5"
+                "weapon_smg1" "3"
+                "weapon_shotgun" "2"
+                "weapon_m249para" "3"
+                "weapon_sniper_rifle" "3"
+            }
+        }
+        "10"
+        {
+            "classname"		"npc_hunter"
+            "min_level"		"3"
+            "preset"		"0"
+            "rare"			"1"
+            "exp"	"35"
+        }
+        "11"
+        {
+            "classname"		"npc_zombine"
+            "min_level"		"3"
+            "rare"			"1"
+            "exp"	"35"
+        }
+        "12"
+        {
+            "classname"		"npc_combine_ace"
+            "rare"			"1"
+            "min_level"		"3"
+            "equipment"	
+            {
+                "weapon_ar2" "5"
+                "weapon_smg1" "3"
+                "weapon_shotgun" "4"
+                "weapon_railgun" "3"
+                "weapon_m249para" "4"
+                "weapon_sniper_rifle" "3"
+            }
+        }
+    }
+}
