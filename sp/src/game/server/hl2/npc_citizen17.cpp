@@ -375,7 +375,9 @@ const char* g_charPlayerbotMidRangeWeapons[] =
 {
 	"weapon_smg1",
 	"weapon_ar2",
-	"weapon_railgun"
+	"weapon_railgun",
+	"weapon_m249para",
+	"weapon_sniper_rifle"
 };
 
 const char* g_charPlayerbotShortRangeWeapons[] =
