@@ -1,0 +1,10 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" 	"models\player\resistance\ranger\resis_no_m_hair2"
+	"$translucent" 1
+//	"$alphatest" 1
+	"$nocull" 1
+	"$halflambert" 1
+	"$clamps" 1
+	"$clampt" 1
+}

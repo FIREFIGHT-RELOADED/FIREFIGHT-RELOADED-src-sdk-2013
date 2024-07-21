@@ -1,0 +1,12 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\player\combine\engineer\combinesoldier_woman"
+        "$envmap" "env_cubemap"	
+	"$envmapmask" "models\player\combine\engineer\combinesoldier_woman_mask"
+	"$envmapcontrast" 1
+	"$surfaceprop" "flesh"
+	"$selfillum" 1
+	"$model" 1
+	"$halflambert" 1
+}
+

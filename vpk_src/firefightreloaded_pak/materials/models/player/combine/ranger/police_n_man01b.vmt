@@ -1,0 +1,13 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\player\combine\ranger\police_n_man01b"
+	"$envmap" "env_cubemap"	
+	"$envmapmask" "models\player\combine\ranger\police_n_m_mask"
+	"$envmapcontrast" 1
+	"$surfaceprop" "flesh"
+	"$selfillum" 1
+	"$model" 1
+	"$halflambert" 1
+}
+
+

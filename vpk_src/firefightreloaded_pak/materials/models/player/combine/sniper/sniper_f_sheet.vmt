@@ -1,0 +1,14 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\player\combine\sniper\sniper_f_sheet"
+	"$bumpmap" "models\player\combine\sniper\sniper_f_sheet_normal"
+	"$model" 1
+	"$selfillum" 1
+	"$halflambert" 1
+	
+	"$phong" 1
+	"$phongboost" "10"
+	"$phongexponent" "25"
+	"$phongalbedotint" "1"										
+	"$phongfresnelranges"	"[.1 .5 1.0]"
+}

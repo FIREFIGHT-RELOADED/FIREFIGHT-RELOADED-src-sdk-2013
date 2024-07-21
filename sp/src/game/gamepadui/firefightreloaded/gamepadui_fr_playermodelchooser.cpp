@@ -344,11 +344,11 @@ bool CheckIfActorInstalled(const char *pName)
         if (!actorName[0])
         {
             const char* gender = "";
-            if (Q_strnicmp(pszModelCopy, "female", 6) == 0)
+            if (Q_stristr(pszModelCopy, "female"))
             {
                 gender = "female";
             }
-            else if (Q_strnicmp(pszModelCopy, "male", 4) == 0)
+            else if (Q_stristr(pszModelCopy, "male"))
             {
                 gender = "male";
             }

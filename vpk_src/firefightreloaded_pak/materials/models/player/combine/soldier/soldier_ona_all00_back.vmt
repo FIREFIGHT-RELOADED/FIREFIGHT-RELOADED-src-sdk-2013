@@ -1,0 +1,18 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" 	"models\player\combine\soldier\soldier_ona_all00"
+	"$bumpmap" "models\player\combine\soldier\soldier_ona_all00_normal"
+	"$model" 1
+	"$selfillum" 1
+	"$halflambert" 1
+	
+	"$phong" 1
+	"$phongboost" "2"
+	"$phongexponent" "60"
+	"$phongalbedotint" "1"										
+	"$phongfresnelranges"	"[.1 .5 1.0]"
+}
+
+
+
+

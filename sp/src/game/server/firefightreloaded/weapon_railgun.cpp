@@ -171,16 +171,12 @@ void CWeaponRailgun::FireNPCPrimaryAttack(CBaseCombatCharacter* pOperator, bool 
 	int iDamage = (bUsesOvercharge ? (int)(definedDamage * 2) : definedDamage);
 	DevMsg("RAILGUN DAMAGE: %i\n", iDamage);
 
-	FireBulletsInfo_t info(1, vecShootOrigin, vecShootDir, vec3_origin, MAX_TRACE_LENGTH, m_iPrimaryAmmoType);
-	info.m_pAttacker = npc;
-	info.m_flDamage = iDamage;
-	info.m_flDamageForceScale = 0.2f;
+	npc->FireBullets(1, vecShootOrigin, vecShootDir, vec3_origin, MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 0, -1, -1, iDamage, npc);
 
 	WeaponSound(SINGLE);
 	CSoundEnt::InsertSound(SOUND_COMBAT | SOUND_CONTEXT_GUNFIRE, pOperator->GetAbsOrigin(), SOUNDENT_VOLUME_MACHINEGUN, 0.2, pOperator, SOUNDENT_CHANNEL_WEAPON, pOperator->GetEnemy());
 
 	// Fire the bullets, and force the first shot to be perfectly accurate
-	npc->FireBullets(info);
 
 	float hitAngle = -DotProduct(tr.plane.normal, vecShootDir);
 

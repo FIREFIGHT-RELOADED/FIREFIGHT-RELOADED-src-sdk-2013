@@ -1,0 +1,15 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\player\combine\medic\com_med_m_r_00"
+	"$bumpmap" "models\player\combine\medic\com_med_m_00_normal"
+	"$surfaceprop" "flesh"
+	"$model" 1
+	"$selfillum" 1
+	"$halflambert" 1
+	
+	"$phong" 1
+	"$phongboost" "5"
+	"$phongexponent" "25"
+	"$phongalbedotint" "1"										
+	"$phongfresnelranges"	"[.1 .5 1.0]"
+}

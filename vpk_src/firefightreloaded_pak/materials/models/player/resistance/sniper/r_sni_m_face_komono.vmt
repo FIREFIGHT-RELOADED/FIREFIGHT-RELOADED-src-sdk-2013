@@ -1,0 +1,11 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\player\resistance\sniper\r_sni_m_face_komono"
+	"$envmap" "env_cubemap"	
+	"$bumpmap" "models\player\resistance\sniper\r_sni_m_face_komono_normal"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$surfaceprop" "flesh"
+	"$model" 1
+	"$selfillum" 1
+}

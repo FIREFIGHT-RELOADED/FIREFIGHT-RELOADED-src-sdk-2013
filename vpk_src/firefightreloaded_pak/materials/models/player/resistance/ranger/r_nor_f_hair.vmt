@@ -1,0 +1,11 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" 	"models\player\resistance\ranger\r_nor_f_hair"
+	"$translucent" 1
+	"$model" 1
+//	"$alphatest" 1
+	"$alpha" 1
+	"$nocull" 1
+//	"$selfillum" 1
+	"$halflambert" 1
+}

@@ -1,0 +1,10 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" 	"models\player\resistance\ranger\r_nor_f_sheet_r"
+	"$envmap" "env_cubemap"	
+	"$envmapmask" "models\player\resistance\ranger\r_nor_f_sheet_mask"
+	"$envmapcontrast" "1"
+	"$surfaceprop" "flesh"
+	"$selfillum" 1
+	"$model" 1
+}

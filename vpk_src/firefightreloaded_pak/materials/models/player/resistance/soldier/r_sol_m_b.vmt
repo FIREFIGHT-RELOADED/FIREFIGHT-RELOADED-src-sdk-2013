@@ -1,0 +1,14 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\player\resistance\soldier\r_sol_m_b"
+	"$bumpmap" "models\player\resistance\soldier\r_sol_m_normal"
+	"$surfaceprop" "flesh"
+	"$model" 1
+	"$selfillum" 1
+	"$halflambert" 1
+	
+	"$phong" "1"
+	"$phongexponent" "25"
+	"$phongboost"	"1"
+	"$phongfresnelranges"	"[.2 0.4 1]"
+}

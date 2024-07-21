@@ -6488,17 +6488,10 @@ void CNPC_Hunter::CreateRailgunProjectile(const Vector& vecSrc, Vector& vecShoot
 	int iDamage = (bOvercharged ? (int)(definedDamage * 2) : definedDamage);
 	DevMsg("RAILGUN DAMAGE: %i\n", iDamage);
 
-	FireBulletsInfo_t info(1, VecShootOrigin, vecShootDir, vec3_origin, MAX_TRACE_LENGTH, m_iPrimaryAmmoType);
-	info.m_pAttacker = this;
-	info.m_flDamage = iDamage;
-	info.m_flDamageForceScale = 0.2f;
-	info.m_iTracerFreq = 0;
+	FireBullets(1, VecShootOrigin, vecShootDir, vec3_origin, MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 0, -1, -1, iDamage, this);
 
 	EmitSound("Weapon_Railgun.Single");
 	CSoundEnt::InsertSound(SOUND_COMBAT | SOUND_CONTEXT_GUNFIRE, GetAbsOrigin(), SOUNDENT_VOLUME_MACHINEGUN, 0.2, this, SOUNDENT_CHANNEL_WEAPON, GetEnemy());
-
-	// Fire the bullets, and force the first shot to be perfectly accurate
-	FireBullets(info);
 
 	float hitAngle = -DotProduct(tr.plane.normal, vecShootDir);
 

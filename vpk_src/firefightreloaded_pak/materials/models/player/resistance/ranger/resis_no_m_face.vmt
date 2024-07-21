@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" 	"models\player\resistance\ranger\resis_no_m_face"
+	"$halflambert" 1
+}

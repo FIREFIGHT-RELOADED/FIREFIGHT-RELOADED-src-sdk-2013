@@ -418,7 +418,17 @@ const char* g_charAvailablePlayerbotModels[] =
 	"models/player/playermodels/t_arctic.mdl",
 	"models/player/playermodels/t_guerilla.mdl",
 	"models/player/playermodels/t_leet.mdl",
-	"models/player/playermodels/t_phoenix.mdl"
+	"models/player/playermodels/t_phoenix.mdl",
+	"models/player/playermodels/resis_engineer_female.mdl",
+	"models/player/playermodels/resis_engineer_male.mdl",
+	"models/player/playermodels/resis_medic_female.mdl",
+	"models/player/playermodels/resis_medic_male.mdl",
+	"models/player/playermodels/resis_normal_female.mdl",
+	"models/player/playermodels/resis_normal_male.mdl",
+	"models/player/playermodels/resis_sniper_female.mdl",
+	"models/player/playermodels/resis_sniper_male.mdl",
+	"models/player/playermodels/resis_soldier_female.mdl",
+	"models/player/playermodels/resis_soldier_male.mdl"
 };
 
 
@@ -525,7 +535,7 @@ void CC_MissingActors(void)
 				const char* gender = "";
 				bool genderChosen = false;
 				Msg("Checking if %s is female...\n", szModelName);
-				if (Q_strnicmp(szModelName, "female", 6) == 0)
+				if (Q_stristr(szModelName, "female"))
 				{
 					gender = "female";
 					genderChosen = true;
@@ -533,7 +543,7 @@ void CC_MissingActors(void)
 				else
 				{
 					Msg("Checking if %s is male...\n", szModelName);
-					if (Q_strnicmp(szModelName, "male", 4) == 0)
+					if (Q_stristr(szModelName, "male"))
 					{
 						gender = "male";
 						genderChosen = true;

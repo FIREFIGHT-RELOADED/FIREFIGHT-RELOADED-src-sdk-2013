@@ -1,0 +1,13 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\player\resistance\sniper\body_sheet_b_ver2"
+	"$bumpmap" "models\player\resistance\sniper\body_sheet_r_sni_m_ver2_normal"
+	"$surfaceprop" "flesh"
+	"$model" 1
+	"$selfillum" 1
+	
+	"$phong" "1"
+	"$phongexponent" "25"
+	"$phongboost"	"1"
+	"$phongfresnelranges"	"[.2 0.4 1]"
+}

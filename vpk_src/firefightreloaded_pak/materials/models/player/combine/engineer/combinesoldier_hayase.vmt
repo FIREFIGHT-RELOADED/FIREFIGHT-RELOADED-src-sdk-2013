@@ -1,0 +1,14 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\player\combine\engineer\combinesoldier_hayase"
+	"$envmap" "env_cubemap"	
+	"$envmapmask" "models\player\combine\engineer\combinesoldier_hayase_mask"
+	"$envmapcontrast" 1
+	"$surfaceprop" "flesh"
+	"$selfillum" 1
+	"$model" 1
+	"$halflambert" 1
+}
+
+
+

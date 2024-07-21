@@ -147,7 +147,7 @@ $includemodel "humans/male_shared.mdl"
 $includemodel "humans/male_ss.mdl"
 $includemodel "humans/male_gestures.mdl"
 $includemodel "humans/male_postures.mdl"
-$includemodel "elitepolice_animations.mdl"
+$includemodel "Police_animations_noconflicts.mdl"
 $includemodel "player/combine_soldier_anims.mdl"
 
 $collisionjoints "combine_ace_physics.smd"

@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\player\resistance\medic\r_med_m_facemap"
+	"$halflambert" 1
+}

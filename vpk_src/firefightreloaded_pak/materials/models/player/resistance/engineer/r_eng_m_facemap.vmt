@@ -1,0 +1,10 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\player\resistance\engineer\r_eng_m_facemap"
+//	"$envmap" "env_cubemap"	
+//	"$envmapmask" "models\player\resistance\engineer\combinesoldier_hayase_mask"
+	"$envmapcontrast" 1
+	"$surfaceprop" "flesh"
+	"$selfillum" 1
+	"$model" 1
+}
