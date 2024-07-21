@@ -8,6 +8,8 @@
 #include "in_buttons.h"
 #include "utlrbtree.h"
 #include "hl2_shareddefs.h"
+#include "filesystem.h"
+#include "firefightreloaded/mapinfo.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -34,7 +36,7 @@ CHL2GameMovement::CHL2GameMovement()
 int CHL2GameMovement::GetCheckInterval( IntervalType_t type )
 {
 	// HL2 ladders need to check every frame!!!
-	if ( type == LADDER )
+	if ( type == LADDER && LevelSupportsHL2Ladders())
 		return 1;
 
 	return BaseClass::GetCheckInterval( type );
@@ -283,6 +285,11 @@ bool CHL2GameMovement::ContinueForcedMove()
 //-----------------------------------------------------------------------------
 bool CHL2GameMovement::OnLadder( trace_t &trace )
 {
+	if (!LevelSupportsHL2Ladders())
+	{
+		return BaseClass::OnLadder(trace);
+	}
+
 	return ( GetLadder() != NULL ) ? true : false;
 }
 
@@ -522,6 +529,12 @@ bool CHL2GameMovement::ExitLadderViaDismountNode( CFuncLadder *ladder, bool stri
 //-----------------------------------------------------------------------------
 void CHL2GameMovement::FullLadderMove()
 {
+	if (!LevelSupportsHL2Ladders())
+	{
+		BaseClass::FullLadderMove();
+		return;
+	}
+
 #if !defined( CLIENT_DLL )
 	CFuncLadder *ladder = GetLadder();
 	Assert( ladder );
@@ -883,6 +896,10 @@ bool CHL2GameMovement::CheckLadderAutoMount( CFuncLadder *ladder, const Vector& 
 //-----------------------------------------------------------------------------
 bool CHL2GameMovement::LadderMove( void )
 {
+	if (!LevelSupportsHL2Ladders())
+	{
+		return BaseClass::LadderMove();
+	}
 
 	if ( player->GetMoveType() == MOVETYPE_NOCLIP )
 	{
@@ -1113,6 +1130,19 @@ bool CHL2GameMovement::LadderMove( void )
 	}
 
 	return true;
+}
+
+bool CHL2GameMovement::LevelSupportsHL2Ladders()
+{
+	bool HasHL2Ladders = true;
+
+	CMapInfo* info = new CMapInfo();
+	if (info)
+	{
+		HasHL2Ladders = info->GetBool("UsesHL2Ladders", true);
+	}
+
+	return HasHL2Ladders;
 }
 
 void CHL2GameMovement::SetGroundEntity( trace_t *pm )

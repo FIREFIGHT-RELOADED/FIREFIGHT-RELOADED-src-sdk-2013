@@ -8,6 +8,7 @@
 #include "singleplay_gamerules.h"
 #include "fmtstr.h"
 #include "hl2_shareddefs.h"
+#include "firefightreloaded/mapinfo.h"
 
 #ifdef CLIENT_DLL
 
@@ -194,7 +195,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 		{
 			char szCommandMap[256];
 
-			Log("Executing map config file %s\n", mapcfg);
+			DevMsg("Executing map config file %s\n", mapcfg);
 			Q_snprintf(szCommandMap, sizeof(szCommandMap), "exec %s\n", mapcfg);
 			engine->ServerCommand(szCommandMap);
 		}
@@ -212,7 +213,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 		if (g_fr_spawneroldfunctionality.GetBool())
 		{
 			SetGamemode(g_gamemode.GetInt());
-			Log("Setting the gamemode to %i.\n", GetGamemode());
+			DevMsg("Setting the gamemode to %i.\n", GetGamemode());
 		}
 
 		if (V_stristr(mapname, "cf_"))
@@ -222,7 +223,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 				bSkipFuncCheck = true;
 			}
 			SetGamemode(FIREFIGHT_PRIMARY_COMBINEFIREFIGHT);
-			Log("Automatically setting the gamemode to COMBINE FIREFIGHT due to mapname.\n");
+			DevMsg("Automatically setting the gamemode to COMBINE FIREFIGHT due to mapname.\n");
 		}
 		else if (V_stristr(mapname, "xi_"))
 		{
@@ -231,7 +232,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 				bSkipFuncCheck = true;
 			}
 			SetGamemode(FIREFIGHT_PRIMARY_XENINVASION);
-			Log("Automatically setting the gamemode to XEN INVASION due to mapname.\n");
+			DevMsg("Automatically setting the gamemode to XEN INVASION due to mapname.\n");
 		}
 		else if (V_stristr(mapname, "aa_"))
 		{
@@ -240,7 +241,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 				bSkipFuncCheck = true;
 			}
 			SetGamemode(FIREFIGHT_PRIMARY_ANTLIONASSAULT);
-			Log("Automatically setting the gamemode to ANTLION ASSAULT due to mapname.\n");
+			DevMsg("Automatically setting the gamemode to ANTLION ASSAULT due to mapname.\n");
 		}
 		else if (V_stristr(mapname, "zs_"))
 		{
@@ -249,7 +250,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 				bSkipFuncCheck = true;
 			}
 			SetGamemode(FIREFIGHT_PRIMARY_ZOMBIESURVIVAL);
-			Log("Automatically setting the gamemode to ZOMBIE SURVIVAL due to mapname.\n");
+			DevMsg("Automatically setting the gamemode to ZOMBIE SURVIVAL due to mapname.\n");
 		}
 		else if (V_stristr(mapname, "fr_"))
 		{
@@ -258,7 +259,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 				bSkipFuncCheck = true;
 			}
 			SetGamemode(FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE);
-			Log("Automatically setting the gamemode to FIREFIGHT RUMBLE due to mapname.\n");
+			DevMsg("Automatically setting the gamemode to FIREFIGHT RUMBLE due to mapname.\n");
 		}
 		else
 		{
@@ -267,14 +268,14 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 
 		if (bSkipFuncCheck)
 		{
-			Log("Overriding g_fr_spawneroldfunctionality...\n");
+			DevMsg("Overriding g_fr_spawneroldfunctionality...\n");
 		}
 
 		if (bSkipFuncCheck || g_fr_spawneroldfunctionality.GetBool())
 		{
 			if (GetGamemode() == FIREFIGHT_PRIMARY_DEFAULT)
 			{
-				Log("No gamemode defined! Randomizing gamemodes.\n");
+				DevMsg("No gamemode defined! Randomizing gamemodes.\n");
 				SetGamemodeRandom(FIREFIGHT_PRIMARY_COMBINEFIREFIGHT, FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE);
 			}
 
@@ -283,6 +284,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 			const char* cfgfileaa = antlionassaultcfgfile.GetString();
 			const char* cfgfilezs = zombiesurvivalcfgfile.GetString();
 			const char* cfgfilefr = firefightrumblecfgfile.GetString();
+			const char* cfgfilemain = defaultcfgfile.GetString();
 
 			switch (g_pGameRules->GetGamemode())
 			{
@@ -291,7 +293,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 				{
 					char szCommand[256];
 
-					Log("Executing COMBINE FIREFIGHT gamemode config file %s\n", cfgfilecf);
+					DevMsg("Executing COMBINE FIREFIGHT gamemode config file %s\n", cfgfilecf);
 					Q_snprintf(szCommand, sizeof(szCommand), "exec %s\n", cfgfilecf);
 					engine->ServerCommand(szCommand);
 				}
@@ -301,7 +303,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 				{
 					char szCommand[256];
 
-					Log("Executing XEN INVASION gamemode config file %s\n", cfgfilexi);
+					DevMsg("Executing XEN INVASION gamemode config file %s\n", cfgfilexi);
 					Q_snprintf(szCommand, sizeof(szCommand), "exec %s\n", cfgfilexi);
 					engine->ServerCommand(szCommand);
 				}
@@ -311,7 +313,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 				{
 					char szCommand[256];
 
-					Log("Executing ANTLION ASSAULT gamemode config file %s\n", cfgfileaa);
+					DevMsg("Executing ANTLION ASSAULT gamemode config file %s\n", cfgfileaa);
 					Q_snprintf(szCommand, sizeof(szCommand), "exec %s\n", cfgfileaa);
 					engine->ServerCommand(szCommand);
 				}
@@ -321,7 +323,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 				{
 					char szCommand[256];
 
-					Log("Executing ZOMBIE SURVIVAL gamemode config file %s\n", cfgfilezs);
+					DevMsg("Executing ZOMBIE SURVIVAL gamemode config file %s\n", cfgfilezs);
 					Q_snprintf(szCommand, sizeof(szCommand), "exec %s\n", cfgfilezs);
 					engine->ServerCommand(szCommand);
 				}
@@ -331,14 +333,37 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 				{
 					char szCommand[256];
 
-					Log("Executing FIREFIGHT RUMBLE gamemode config file %s\n", cfgfilefr);
+					DevMsg("Executing FIREFIGHT RUMBLE gamemode config file %s\n", cfgfilefr);
 					Q_snprintf(szCommand, sizeof(szCommand), "exec %s\n", cfgfilefr);
 					engine->ServerCommand(szCommand);
 				}
 				break;
 			default:
-				Log("No gamemode? What did you do?\n");
+			case FIREFIGHT_PRIMARY_DEFAULT:
+				if (cfgfilemain && cfgfilemain[0])
+				{
+					char szCommand[256];
+
+					DevMsg("Executing default gamemode config file %s\n", cfgfilemain);
+					Q_snprintf(szCommand, sizeof(szCommand), "exec %s\n", cfgfilemain);
+					engine->ServerCommand(szCommand);
+				}
 				break;
+			}
+
+			CMapInfo* info = new CMapInfo();
+
+			if (info)
+			{
+				const char* customMapCFGFile = info->GetString("additional_cfg","");
+
+				if (customMapCFGFile[0])
+				{
+					char szCommand[256];
+					DevMsg("Executing custom map config file %s\n", customMapCFGFile);
+					Q_snprintf(szCommand, sizeof(szCommand), "exec %s\n", customMapCFGFile);
+					engine->ServerCommand(szCommand);
+				}
 			}
 		}
 	}

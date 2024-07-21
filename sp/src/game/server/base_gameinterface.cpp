@@ -30,76 +30,60 @@ void CServerGameDLL::LevelInit_ParseAllEntities( const char *pMapEntities )
 {
 	//after that, spawn all custom entities - Bitl
 	CMapAdd *pMapadd = GetMapAddEntity();
-	char szMapadd[128];
-	Q_snprintf(szMapadd, sizeof(szMapadd), "mapadd/%s.txt", STRING( gpGlobals->mapname ));
+
 	if (!pMapadd)
 	{
 		pMapadd = CreateMapAddEntity();
-		pMapadd->RunLabel(szMapadd, "Init");
+		pMapadd->RunLabel("Init");
 	}
 	else
 	{
-		pMapadd->RunLabel(szMapadd, "Init");
+		pMapadd->RunLabel("Init");
 	}
 
-	if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_COMBINEFIREFIGHT)
+	//rewrote this because i hated how it worked.
+	switch (g_pGameRules->GetGamemode())
 	{
-		if (!pMapadd)
-		{
-			pMapadd = CreateMapAddEntity();
-			pMapadd->RunLabel(szMapadd, "CombineFirefight");
-		}
-		else
-		{
-			pMapadd->RunLabel(szMapadd, "CombineFirefight");
-		}
-	}
-	else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_XENINVASION)
-	{
-		if (!pMapadd)
-		{
-			pMapadd = CreateMapAddEntity();
-			pMapadd->RunLabel(szMapadd, "XenInvasion");
-		}
-		else
-		{
-			pMapadd->RunLabel(szMapadd, "XenInvasion");
-		}
-	}
-	else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_ANTLIONASSAULT)
-	{
-		if (!pMapadd)
-		{
-			pMapadd = CreateMapAddEntity();
-			pMapadd->RunLabel(szMapadd, "AntlionAssault");
-		}
-		else
-		{
-			pMapadd->RunLabel(szMapadd, "AntlionAssault");
-		}
-	}
-	else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_ZOMBIESURVIVAL)
-	{
-		if (!pMapadd)
-		{
-			pMapadd = CreateMapAddEntity();
-			pMapadd->RunLabel(szMapadd, "ZombieSurvival");
-		}
-		else
-		{
-			pMapadd->RunLabel(szMapadd, "ZombieSurvival");
-		}
-	}
-	else if (g_pGameRules->GetGamemode() == FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE)
-	{
-		if (!pMapadd)
-		{
-			pMapadd = CreateMapAddEntity();
-			pMapadd->RunLabel(szMapadd, "FirefightRumble");
-		}
-		else
-		{
-			pMapadd->RunLabel(szMapadd, "FirefightRumble");
-		}
+		case FIREFIGHT_PRIMARY_COMBINEFIREFIGHT:
+				if (pMapadd)
+				{
+					pMapadd->RunLabel("CombineFirefight");
+				}
+				break;
+
+		case FIREFIGHT_PRIMARY_XENINVASION:
+				if (pMapadd)
+				{
+					pMapadd->RunLabel("XenInvasion");
+				}
+				break;
+
+		case FIREFIGHT_PRIMARY_ANTLIONASSAULT:
+				if (pMapadd)
+				{
+					pMapadd->RunLabel("AntlionAssault");
+				}
+				break;
+
+		case FIREFIGHT_PRIMARY_ZOMBIESURVIVAL:
+				if (pMapadd)
+				{
+					pMapadd->RunLabel("ZombieSurvival");
+				}
+				break;
+
+		case FIREFIGHT_PRIMARY_FIREFIGHTRUMBLE:
+				if (pMapadd)
+				{
+					pMapadd->RunLabel("FirefightRumble");
+				}
+				break;
+		default:
+		case FIREFIGHT_PRIMARY_DEFAULT:
+				if (pMapadd)
+				{
+					pMapadd->RunLabel("Default");
+				}
+				break;
 	}
 }

@@ -49,9 +49,6 @@ $Project "Server (FR)"
 		$File	"$SRCDIR\game\shared\weapon_parse_default.cpp"
 		$File	"$SRCDIR\game\shared\predicted_viewmodel.cpp"
 		$File	"$SRCDIR\game\shared\predicted_viewmodel.h"
-        $File	"$SRCDIR\game\shared\func_ladder.cpp"
-		$File	"$SRCDIR\game\shared\func_ladder.h"
-        $File   "func_ladder_endpoint.cpp"
 		
 		$Folder	"MOMENTUM MOD DLL"
 		{
@@ -362,6 +359,8 @@ $Project "Server (FR)"
 			$File	"$SRCDIR\game\shared\firefightreloaded\singleplayer_animstate.cpp"
 			$File	"$SRCDIR\game\shared\firefightreloaded\singleplayer_animstate.h"
 			$File	"firefightreloaded\node_placement.cpp"
+            $File	"$SRCDIR\game\shared\firefightreloaded\mapinfo.cpp"
+			$File	"$SRCDIR\game\shared\firefightreloaded\mapinfo.h"
 
 			$Folder	"NPCs"
 			{
