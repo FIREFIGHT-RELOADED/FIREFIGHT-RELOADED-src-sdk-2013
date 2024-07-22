@@ -464,6 +464,12 @@ void CNPCMakerFirefight::MakeNPC()
 		return; // Eep. Couldn't choose anything.
 
 	const char* pRandomName = entry->classname;
+
+	if (Q_stristr(pRandomName, "npc_playerbot"))
+	{
+		pRandomName = "npc_citizen";
+	}
+
 	CAI_BaseNPC* pent = (CAI_BaseNPC*)CreateEntityByName(pRandomName);
 
 	if (!pent)
@@ -537,24 +543,9 @@ void CNPCMakerFirefight::MakeNPC()
 
 	pent->m_spawnEquipment = MAKE_STRING(equip);
 
-	if (Q_stristr(pRandomName, "npc_citizen"))
+	if (Q_stristr(pRandomName, "npc_citizen") || 
+		Q_stristr(pRandomName, "npc_playerbot"))
 	{
-		pent->AddSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI);
-		if (!g_fr_lonewolf.GetBool())
-		{
-			//alert all players.
-			AllyAlert();
-		}
-		else
-		{
-			UTIL_Remove(pent);
-			return;
-		}
-	}
-	//make legacy entries work
-	else if (Q_stristr(pRandomName, "npc_playerbot"))
-	{
-		pRandomName = "npc_citizen";
 		pent->AddSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI);
 		if (!g_fr_lonewolf.GetBool())
 		{

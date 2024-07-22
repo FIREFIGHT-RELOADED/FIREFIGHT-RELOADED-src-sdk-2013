@@ -693,7 +693,8 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 		int xpReward = 0;
 
 		//starting to not like allies getting reported on the kill log since it gives the player free exp without doing anything.
-		if (!Q_stricmp(pInflictor->GetClassname(), "npc_citizen") || !Q_stricmp(pKiller->GetClassname(), "npc_citizen"))
+		if (!Q_stricmp(pInflictor->GetClassname(), "npc_citizen") || 
+			!Q_stricmp(pKiller->GetClassname(), "npc_citizen"))
 		{
 			return;
 		}

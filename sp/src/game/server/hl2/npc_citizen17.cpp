@@ -602,7 +602,6 @@ int	ACT_CIT_STARTLED;		// Startled by sneaky scanner
 //---------------------------------------------------------
 
 LINK_ENTITY_TO_CLASS( npc_citizen, CNPC_Citizen );
-LINK_ENTITY_TO_CLASS(npc_playerbot, CNPC_Citizen);
 
 //---------------------------------------------------------
 
