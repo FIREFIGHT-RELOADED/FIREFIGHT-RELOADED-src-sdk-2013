@@ -1419,20 +1419,6 @@
 				}
 			}
             
-            "BunnyhopBoost"
-			{
-				"text"			"#FR_Bunnyhop_Boost"
-				"type"			"wheelywheel"
-				"advanced"		"1"
-				"convar"		"fr_bunnyhop_boost"
-
-				"options"
-				{
-					"0"		"#gameui_disabled"
-					"1"		"#gameui_enabled"
-				}
-			}
-            
             "TogglePowerslide"
 			{
 				"text"			"#GameUI_TogglePowerslide"
@@ -2067,12 +2053,95 @@
                     "5"		"#Deck_Glyphs_Keyboard"
 				}
 			}
+            
+            "FOV"
+			{
+				"text"			"#GameUI_FOV"
+				"type"			"slideyslide"
+				"convar"		"fov_desired"
+				"advanced"		"1"
+
+				"min"			"54"
+				"max"			"150"
+				"step"			"1"
+
+				"textprecision" "2"
+			}
+
+			"ViewmodelFOV"
+			{
+				"text"			"#GameUI_FOVViewmodel"
+				"type"			"slideyslide"
+				"convar"		"viewmodel_fov"
+				"advanced"		"1"
+
+				"min"			"54"
+				"max"			"90"
+				"step"			"1"
+
+				"textprecision" "2"
+			}
+
+			"FlipViewModels"
+			{
+				"text"			"#GameUI_FlipViewModels"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"cl_righthand"
+
+				"options"
+				{
+					"0"		"#GameUI_FlipLeft"
+					"1"		"#GameUI_FlipRight"
+				}
+			}
+            
+            "DeathcamView"
+			{
+				"text"			"#GameUI_DeathcamMode"
+				"type"			"wheelywheel"
+				"convar"		"cl_deathcam_mode"
+
+				"options"
+				{
+					"0"		"#GameUI_DeathcamMode_HL2"
+					"1"		"#GameUI_DeathcamMode_HL2MP"
+                    "2"		"#GameUI_DeathcamMode_FP"
+				}
+			}
 
 			"AdvancedHeader"
 			{
 				"text"			"#GameUI_AdvancedNoEllipsis"
 				"type"			"headeryheader"
 				"advanced"		"1"
+			}
+            
+            "DeathcamViewFPSwitch"
+			{
+				"text"			"#GameUI_DeathcamMode_FP_Switch"
+				"type"			"wheelywheel"
+				"convar"		"cl_deathcam_fp_autoswitch"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#GameUI_DeathcamMode_HL2"
+                    "2"		"#GameUI_DeathcamMode_HL2MP"
+				}
+			}
+            
+            "DeathcamViewFPSwitchMinDistance"
+			{
+				"text"			"#GameUI_DeathcamMode_FP_Switch_MinDist"
+				"type"			"slideyslide"
+				"convar"		"cl_deathcam_fp_autoswitch_mindistance"
+
+				"min"			"1"
+				"max"			"25"
+				"step"			"0.5"
+
+				"textprecision" "2"
 			}
 
 			"DrawHUD"
@@ -2329,48 +2398,6 @@
 				{
 					"0"		"#gameui_disabled"
 					"1"		"#gameui_enabled"
-				}
-			}
-
-			"FOV"
-			{
-				"text"			"#GameUI_FOV"
-				"type"			"slideyslide"
-				"convar"		"fov_desired"
-				"advanced"		"1"
-
-				"min"			"54"
-				"max"			"150"
-				"step"			"1"
-
-				"textprecision" "2"
-			}
-
-			"ViewmodelFOV"
-			{
-				"text"			"#GameUI_FOVViewmodel"
-				"type"			"slideyslide"
-				"convar"		"viewmodel_fov"
-				"advanced"		"1"
-
-				"min"			"54"
-				"max"			"90"
-				"step"			"1"
-
-				"textprecision" "2"
-			}
-
-			"FlipViewModels"
-			{
-				"text"			"#GameUI_FlipViewModels"
-				"type"			"wheelywheel"
-				"advanced"		"1"
-				"convar"		"cl_righthand"
-
-				"options"
-				{
-					"0"		"#GameUI_FlipLeft"
-					"1"		"#GameUI_FlipRight"
 				}
 			}
 
