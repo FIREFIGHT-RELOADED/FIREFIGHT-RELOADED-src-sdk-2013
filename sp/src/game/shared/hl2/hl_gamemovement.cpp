@@ -36,7 +36,7 @@ CHL2GameMovement::CHL2GameMovement()
 int CHL2GameMovement::GetCheckInterval( IntervalType_t type )
 {
 	// HL2 ladders need to check every frame!!!
-	if ( type == LADDER && LevelSupportsHL2Ladders())
+	if ( type == LADDER && GetLadder() != nullptr)
 		return 1;
 
 	return BaseClass::GetCheckInterval( type );
@@ -285,7 +285,7 @@ bool CHL2GameMovement::ContinueForcedMove()
 //-----------------------------------------------------------------------------
 bool CHL2GameMovement::OnLadder( trace_t &trace )
 {
-	if (!LevelSupportsHL2Ladders())
+	if (GetLadder() == nullptr)
 	{
 		return BaseClass::OnLadder(trace);
 	}
@@ -529,7 +529,7 @@ bool CHL2GameMovement::ExitLadderViaDismountNode( CFuncLadder *ladder, bool stri
 //-----------------------------------------------------------------------------
 void CHL2GameMovement::FullLadderMove()
 {
-	if (!LevelSupportsHL2Ladders())
+	if (GetLadder() == nullptr)
 	{
 		BaseClass::FullLadderMove();
 		return;
@@ -896,7 +896,7 @@ bool CHL2GameMovement::CheckLadderAutoMount( CFuncLadder *ladder, const Vector& 
 //-----------------------------------------------------------------------------
 bool CHL2GameMovement::LadderMove( void )
 {
-	if (!LevelSupportsHL2Ladders())
+	if (GetLadder() == nullptr)
 	{
 		return BaseClass::LadderMove();
 	}
@@ -1130,19 +1130,6 @@ bool CHL2GameMovement::LadderMove( void )
 	}
 
 	return true;
-}
-
-bool CHL2GameMovement::LevelSupportsHL2Ladders()
-{
-	bool HasHL2Ladders = true;
-
-	KeyValues* pInfo = CMapInfo::GetMapInfoData();
-	if (pInfo != NULL)
-	{
-		HasHL2Ladders = pInfo->GetBool("UsesHL2Ladders", true);
-	}
-
-	return HasHL2Ladders;
 }
 
 void CHL2GameMovement::SetGroundEntity( trace_t *pm )

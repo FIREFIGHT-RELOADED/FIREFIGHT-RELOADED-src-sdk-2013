@@ -241,8 +241,6 @@ void CGameMovement::AnticipateWallRun( void )
 	}
 }
 
-extern ConVar fr_enable_bunnyhop;
-
 //-----------------------------------------------------------------------------
 // Purpose: Check whether we should start wallrunning. Called when we hit 
 //          a wall while airborn
@@ -255,6 +253,20 @@ void CGameMovement::CheckWallRun( Vector &vecWallNormal, trace_t &pm )
 	// Can't wallrun without the suit
 	if (!player->IsSuitEquipped())
 		return;
+
+	if (sv_wallrun_requiredirectcontrol.GetBool())
+	{
+		bool movementkeys = ((mv->m_nButtons & IN_MOVELEFT) ||
+			(mv->m_nButtons & IN_MOVERIGHT) ||
+			(mv->m_nButtons & IN_GRAPPLE));
+
+		// don't wallrun unless we are directly controlling it.
+		if (!(movementkeys))
+		{
+			EndWallRun(); // seriously, don't wallrun if ducking
+			return;
+		}
+	}
 
 	// Don't attach to wall if ducking - super annoying
 	if (mv->m_nButtons & IN_DUCK)
@@ -353,10 +365,13 @@ void CGameMovement::CheckWallRun( Vector &vecWallNormal, trace_t &pm )
 
 	// give speed boost
 	float speed = mv->m_vecVelocity.Length2D();
-	float newspeed = speed + sv_wallrun_boost.GetFloat();
-	mv->m_vecVelocity.z = 0.0f; // might be better to lerp down to zero instead of slamming
-	VectorScale( mv->m_vecVelocity, newspeed / speed, mv->m_vecVelocity );
-	player->PlayWallRunSound( (Vector &)mv->GetAbsOrigin() );
+	if (speed > 0.0f)
+	{
+		float newspeed = speed + sv_wallrun_boost.GetFloat();
+		mv->m_vecVelocity.z = 0.0f; // might be better to lerp down to zero instead of slamming
+		VectorScale(mv->m_vecVelocity, newspeed / speed, mv->m_vecVelocity);
+		player->PlayWallRunSound((Vector&)mv->GetAbsOrigin());
+	}
 }
 
 // Handle wallrun movement
@@ -372,6 +387,20 @@ void CGameMovement::WallRunMove( void )
 
 	if (player->m_nWallRunState < WALLRUN_RUNNING)
 		return;
+
+	if (sv_wallrun_requiredirectcontrol.GetBool())
+	{
+		bool movementkeys = ((mv->m_nButtons & IN_MOVELEFT) ||
+			(mv->m_nButtons & IN_MOVERIGHT) ||
+			(mv->m_nButtons & IN_GRAPPLE));
+
+		// don't wallrun unless we are directly controlling it.
+		if (!(movementkeys))
+		{
+			EndWallRun(); // seriously, don't wallrun if ducking
+			return;
+		}
+	}
 
 	if (mv->m_nButtons & IN_DUCK)
 	{
@@ -406,7 +435,8 @@ void CGameMovement::WallRunMove( void )
 
 	float rollangle = GetWallRunRollAngle();
 	// Decay the roll angle as we approach the end, as a cue that time's up
-	if (player->m_Local.m_flWallRunTime < GAMEMOVEMENT_WALLRUN_OUT_TIME ) {
+	if (player->m_Local.m_flWallRunTime < GAMEMOVEMENT_WALLRUN_OUT_TIME ) 
+	{
 		rollangle *= player->m_Local.m_flWallRunTime / GAMEMOVEMENT_WALLRUN_OUT_TIME;
 	}
 	player->m_Local.m_vecTargetPunchAngle.Set( ROLL, rollangle );
@@ -445,36 +475,25 @@ void CGameMovement::WallRunMove( void )
 		MAX( mv->m_vecVelocity.Length2D() + sv_wallrun_boost.GetFloat(),
 		     end_speed);
 	
-	float delta_speed = fabs(start_speed - end_speed);
+	float delta_speed = fabsf(start_speed - end_speed);
 	float newmaxspeed = end_speed + (delta_speed * fraction);
 
 	player->SetMaxSpeed( newmaxspeed );
 	wishspeed = newmaxspeed;
 
 	// Set pmove velocity
-	mv->m_vecVelocity.z = 
-		clamp( mv->m_vecVelocity.z, 
-		       sv_wallrun_min_rise.GetFloat(), 
-			   sv_wallrun_max_rise.GetFloat() );
+	mv->m_vecVelocity.z = 0.0f;
 
-	player->m_surfaceFriction = 1.0;
+	player->m_surfaceFriction = 1.0f;
 
-	Accelerate( wishdir, wishspeed, sv_wallrun_accel.GetFloat() );
+	float angle = DotProduct(forward, player->m_vecWallNorm);
+	Vector direction = forward - angle * player->m_vecWallNorm;
+	Accelerate(direction, sv_wallrun_speed.GetFloat(), sv_wallrun_accel.GetFloat());
 
-    // Derive max climb - this is in the range -5 to sv_wallrun_max_rise, based on 
-	// wallrun yaw angle. The idea here is that you can wallrun upwards if you're 
-	// running along the wall, but if you're facing into the wall you'll drop slowly.
-	max_climb = fabs( sin( DEG2RAD( GetWallRunYaw() ) ) ) *  // 
-		        (sv_wallrun_max_rise.GetFloat() + 5) - 5; 
+	max_climb = fabsf(sinf(DEG2RAD(GetWallRunYaw()))) * (sv_wallrun_max_rise.GetFloat() + 5.0f) - 5.0f;
 
 	if (player->m_nWallRunState == WALLRUN_STALL)
 		max_climb = -5;
-
-	mv->m_vecVelocity.z =
-		clamp( mv->m_vecVelocity.z,
-		       sv_wallrun_min_rise.GetFloat(),
-			   max_climb );
-
 
 	if (mv->m_vecVelocity.Length2D() < 2.5f)
 	{
@@ -496,7 +515,7 @@ void CGameMovement::WallRunMove( void )
 	//=============================================================================
 	VectorAdd( mv->m_vecVelocity, player->GetBaseVelocity(), mv->m_vecVelocity );
 
-	if ( fabs( wallrun_yaw ) > 165 && fabs( wallrun_yaw ) < 195 )
+	if (fabsf(wallrun_yaw) > 165.0f && fabsf(wallrun_yaw) < 195.0f)
 	{
 		CheckWallRunScramble( steps ); // Re-using water jump for scrambling/mantling
 		
@@ -524,12 +543,12 @@ void CGameMovement::WallRunMove( void )
 		}
 	}
 	if ( // facing out from wall 
-		    ((fabs( wallrun_yaw ) < sv_wallrun_stick_angle.GetFloat() ||
-		    fabs( wallrun_yaw ) > 360 - sv_wallrun_stick_angle.GetFloat()) &&
-		    fmove > 0.0) ||
-			// backing out from wall
-			((fabs( wallrun_yaw ) > 180 - sv_wallrun_stick_angle.GetFloat() &&
-			fabs( wallrun_yaw ) < 180 + sv_wallrun_stick_angle.GetFloat()) &&
+		((fabsf(wallrun_yaw) < sv_wallrun_stick_angle.GetFloat() ||
+			fabsf(wallrun_yaw) > 360.0f - sv_wallrun_stick_angle.GetFloat()) &&
+			fmove > 0.0) ||
+		// backing out from wall
+		((fabsf(wallrun_yaw) > 180.0f - sv_wallrun_stick_angle.GetFloat() &&
+			fabsf(wallrun_yaw) < 180.0f + sv_wallrun_stick_angle.GetFloat()) &&
 			fmove < 0.0)
 		)
 	{   // Trying to move outward from wall
@@ -647,43 +666,15 @@ void CGameMovement::EndWallRun( void )
 	SetGroundEntity( NULL );
 	player->DeriveMaxSpeed();
 
-	if (sv_wallrun_requiredirectcontrol.GetBool())
-	{
-		bool movementkeys = ((mv->m_nButtons & IN_BACK) ||
-			(mv->m_nButtons & IN_FORWARD) ||
-			(mv->m_nButtons & IN_MOVELEFT) ||
-			(mv->m_nButtons & IN_MOVERIGHT) ||
-			(mv->m_nButtons & IN_GRAPPLE));
+	Vector vecWallPush;
+	VectorScale(player->m_vecWallNorm, 16.0f, vecWallPush);
+	mv->m_vecVelocity += vecWallPush;
 
-		player->SetEscapeVel(vec3_origin);
-		player->m_Local.m_vecTargetPunchAngle.Set(ROLL, 0);
-		player->m_vecLastWallRunPos = mv->GetAbsOrigin();
+	player->SetEscapeVel(vec3_origin);
+	player->m_Local.m_vecTargetPunchAngle.Set(ROLL, 0);
 
-		//only coyote jump if we were controlling it.
-		if ((movementkeys))
-		{
-			Vector vecWallPush;
-			VectorScale(player->m_vecWallNorm, 16.0f, vecWallPush);
-			mv->m_vecVelocity += vecWallPush;
-			player->m_flCoyoteTime = gpGlobals->curtime + sv_coyote_time.GetFloat();
-		}
-		else
-		{
-			player->m_flCoyoteTime = 0;
-		}
-	}
-	else
-	{
-		Vector vecWallPush;
-		VectorScale(player->m_vecWallNorm, 16.0f, vecWallPush);
-		mv->m_vecVelocity += vecWallPush;
-
-		player->SetEscapeVel(vec3_origin);
-		player->m_Local.m_vecTargetPunchAngle.Set(ROLL, 0);
-
-		player->m_vecLastWallRunPos = mv->GetAbsOrigin();
-		player->m_flCoyoteTime = gpGlobals->curtime + sv_coyote_time.GetFloat();
-	}
+	player->m_vecLastWallRunPos = mv->GetAbsOrigin();
+	player->m_flCoyoteTime = gpGlobals->curtime + sv_coyote_time.GetFloat();
 }
 
 
@@ -1068,7 +1059,7 @@ void CGameMovement::CheckFeetCanReachWall( void )
 	end = start + move;
 	
 	float wallrun_yaw = GetWallRunYaw();
-	if (fabs( wallrun_yaw ) > 165 && fabs( wallrun_yaw ) < 195)
+	if (fabsf( wallrun_yaw ) > 165.0f && fabsf( wallrun_yaw ) < 195.0f)
 	{
 		CheckWallRunScramble( steps );
 		if (player->GetFlags() & FL_WATERJUMP) {
@@ -1189,8 +1180,7 @@ CGameMovement::TryEscape( Vector& behind, float rotation, Vector move )
 
 }
 
-void
-CGameMovement::WallRunEscapeCorner( Vector& wishdir )
+void CGameMovement::WallRunEscapeCorner( Vector& wishdir )
 {
 	// Try to escape a small corner 
 
@@ -1275,5 +1265,4 @@ CGameMovement::WallRunEscapeCorner( Vector& wishdir )
 		VectorScale( escape, GAMEMOVEMENT_CORNER_ESC_SPEED, escape );
 		player->SetEscapeVel( escape );
 	}
-	return;
 }

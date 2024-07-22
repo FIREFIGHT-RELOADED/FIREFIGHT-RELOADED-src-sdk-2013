@@ -66,7 +66,6 @@ ConVar player_limit_jump_speed( "player_limit_jump_speed", "1", FCVAR_REPLICATED
 
 //Used for bunnyhopping
 ConVar fr_enable_bunnyhop("fr_enable_bunnyhop", "1", FCVAR_ARCHIVE);
-ConVar fr_bunnyhop_boost("fr_bunnyhop_boost", "0", FCVAR_ARCHIVE);
 
 // option_duck_method is a carrier convar. Its sole purpose is to serve an easy-to-flip
 // convar which is ONLY set by the X360 controller menu to tell us which way to bind the
@@ -1462,7 +1461,7 @@ void CGameMovement::WaterMove( void )
 	VectorCopy (wishvel, wishdir);
 	wishspeed = VectorNormalize(wishdir);
 
-	if (fr_enable_bunnyhop.GetInt() == 0 && !fr_bunnyhop_boost.GetBool())
+	if (fr_enable_bunnyhop.GetInt() == 0)
 	{
 		// Cap speed.
 		if (wishspeed > mv->m_flMaxSpeed)
@@ -1829,7 +1828,7 @@ void CGameMovement::AirMove( void )
 	VectorCopy (wishvel, wishdir);   // Determine maginitude of speed of move
 	wishspeed = VectorNormalize(wishdir);
 
-	if (fr_enable_bunnyhop.GetInt() == 0 && !fr_bunnyhop_boost.GetBool())
+	if (fr_enable_bunnyhop.GetInt() == 0)
 	{
 		//
 		// Clamp to server defined max speed
@@ -2030,7 +2029,7 @@ void CGameMovement::WalkMove( void )
 	}
 	wishspeed = VectorNormalize(wishdir);
 
-	if (fr_enable_bunnyhop.GetInt() == 0 && !fr_bunnyhop_boost.GetBool())
+	if (fr_enable_bunnyhop.GetInt() == 0)
 	{
 		//
 		// Clamp to server defined max speed
@@ -2468,10 +2467,6 @@ bool CGameMovement::CheckJumpButton( void )
 	Vector vecWallPush = vec3_origin; // if jumping off a wall, add some velocity from the
 	                                  // wall normal
 
-	bool just_jumped = ((mv->m_nButtons & IN_JUMP) && !(mv->m_nOldButtons & IN_JUMP));
-
-	bool coyote_jump = (gpGlobals->curtime <= player->m_flCoyoteTime);
-
 	if (player->pl.deadflag)
 	{
 		mv->m_nOldButtons |= IN_JUMP ;	// don't jump again until released
@@ -2510,6 +2505,10 @@ bool CGameMovement::CheckJumpButton( void )
 		return false;
 	}
 
+	bool just_jumped = ((mv->m_nButtons & IN_JUMP) && !(mv->m_nOldButtons & IN_JUMP));
+
+	bool coyote_jump = (gpGlobals->curtime <= player->m_flCoyoteTime);
+
 	if (player->GetGroundEntity() == NULL)
 	{
 		if ( (player->m_nWallRunState >= WALLRUN_RUNNING) &&
@@ -2517,7 +2516,7 @@ bool CGameMovement::CheckJumpButton( void )
 		{
 			player->m_nWallRunState = WALLRUN_JUMPING;
 		}
-		else if (gpGlobals->curtime > player->m_flCoyoteTime)
+		else if (!coyote_jump)
 		{
 			mv->m_nOldButtons |= IN_JUMP;
 		}
@@ -2563,13 +2562,13 @@ bool CGameMovement::CheckJumpButton( void )
 	float flMul;
 	if ( g_bMovementOptimizations )
 	{
-//#if defined(HL2_DLL) || defined(HL2_CLIENT_DLL)
-		//Assert( GetCurrentGravity() == 600.0f );
-		//flMul = 160.0f;	// approx. 21 units.
-//#else
+#if defined(HL2_DLL) || defined(HL2_CLIENT_DLL)
+		Assert( GetCurrentGravity() == 600.0f );
+		flMul = 160.0f;	// approx. 21 units.
+#else
 		Assert( GetCurrentGravity() == 800.0f );
 		flMul = 268.3281572999747f;
-//#endif
+#endif
 
 	}
 	else
@@ -3017,12 +3016,12 @@ int CGameMovement::TryPlayerMove( Vector *pFirstDest, trace_t *pFirstTrace )
 			{	// go along the crease
 				if (numplanes != 2)
 				{
-					if (player->m_nWallRunState >= WALLRUN_RUNNING )
+					VectorCopy (vec3_origin, mv->m_vecVelocity);
+					if (player->m_nWallRunState >= WALLRUN_RUNNING)
 					{
 						//Msg( "EndWallRun because weirdly blocked" );
 						EndWallRun();
 					}
-					VectorCopy (vec3_origin, mv->m_vecVelocity);
 					break;
 				}
 				CrossProduct (planes[0], planes[1], dir);

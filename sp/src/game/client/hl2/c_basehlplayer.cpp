@@ -28,6 +28,9 @@ extern ConVar sensitivity;
 ConVar cl_npc_speedmod_intime( "cl_npc_speedmod_intime", "0.25", FCVAR_CLIENTDLL | FCVAR_ARCHIVE );
 ConVar cl_npc_speedmod_outtime( "cl_npc_speedmod_outtime", "1.5", FCVAR_CLIENTDLL | FCVAR_ARCHIVE );
 static ConVar cl_playermodel("cl_playermodel", "models/player/playermodels/gordon.mdl", FCVAR_USERINFO | FCVAR_ARCHIVE | FCVAR_SERVER_CAN_EXECUTE, "Default Player Model");
+ConVar cl_deathcam_mode("cl_deathcam_mode", "1", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
+ConVar cl_deathcam_fp_autoswitch("cl_deathcam_fp_autoswitch", "2", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
+ConVar cl_deathcam_fp_autoswitch_mindistance("cl_deathcam_fp_autoswitch_mindistance", "25", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
 
 IMPLEMENT_CLIENTCLASS_DT(C_BaseHLPlayer, DT_HL2_Player, CHL2_Player)
 	RecvPropDataTable( RECVINFO_DT(m_HL2Local),0, &REFERENCE_RECV_TABLE(DT_HL2Local) ),
@@ -688,48 +691,97 @@ bool C_BaseHLPlayer::ShouldDraw(void)
 
 void C_BaseHLPlayer::CalcView(Vector &eyeOrigin, QAngle &eyeAngles, float &zNear, float &zFar, float &fov)
 {
-	if (m_lifeState != LIFE_ALIVE && !IsObserver())
+	if (m_lifeState != LIFE_ALIVE && !IsObserver() && cl_deathcam_mode.GetInt() > 0)
 	{
-		Vector origin = EyePosition();
-
-		IRagdoll *pRagdoll = GetRepresentativeRagdoll();
-
-		if (pRagdoll)
+		if (cl_deathcam_mode.GetInt() == 1)
 		{
-			origin = pRagdoll->GetRagdollOrigin();
-			origin.z += VEC_DEAD_VIEWHEIGHT_SCALED(this).z; // look over ragdoll, not through
+			VIEW_HL2MP:
+			Vector origin = EyePosition();
+
+			IRagdoll* pRagdoll = GetRepresentativeRagdoll();
+
+			if (pRagdoll)
+			{
+				origin = pRagdoll->GetRagdollOrigin();
+				origin.z += VEC_DEAD_VIEWHEIGHT_SCALED(this).z; // look over ragdoll, not through
+			}
+
+			BaseClass::CalcView(eyeOrigin, eyeAngles, zNear, zFar, fov);
+
+			eyeOrigin = origin;
+
+			Vector vForward;
+			AngleVectors(eyeAngles, &vForward);
+
+			VectorNormalize(vForward);
+			VectorMA(origin, -CHASE_CAM_DISTANCE_MAX, vForward, eyeOrigin);
+
+			Vector WALL_MIN(-WALL_OFFSET, -WALL_OFFSET, -WALL_OFFSET);
+			Vector WALL_MAX(WALL_OFFSET, WALL_OFFSET, WALL_OFFSET);
+
+			trace_t trace; // clip against world
+			C_BaseEntity::PushEnableAbsRecomputations(false); // HACK don't recompute positions while doing RayTrace
+			UTIL_TraceHull(origin, eyeOrigin, WALL_MIN, WALL_MAX, MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &trace);
+			C_BaseEntity::PopEnableAbsRecomputations();
+
+			if (trace.fraction < 1.0)
+			{
+				eyeOrigin = trace.endpos;
+			}
+
+			fov = GetFOV();
+			return;
 		}
-
-		BaseClass::CalcView(eyeOrigin, eyeAngles, zNear, zFar, fov);
-
-		eyeOrigin = origin;
-
-		Vector vForward;
-		AngleVectors(eyeAngles, &vForward);
-
-		VectorNormalize(vForward);
-		VectorMA(origin, -CHASE_CAM_DISTANCE_MAX, vForward, eyeOrigin);
-
-		Vector WALL_MIN(-WALL_OFFSET, -WALL_OFFSET, -WALL_OFFSET);
-		Vector WALL_MAX(WALL_OFFSET, WALL_OFFSET, WALL_OFFSET);
-
-		trace_t trace; // clip against world
-		C_BaseEntity::PushEnableAbsRecomputations(false); // HACK don't recompute positions while doing RayTrace
-		UTIL_TraceHull(origin, eyeOrigin, WALL_MIN, WALL_MAX, MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &trace);
-		C_BaseEntity::PopEnableAbsRecomputations();
-
-		if (trace.fraction < 1.0)
+		else
 		{
-			eyeOrigin = trace.endpos;
+			// We get the location of the model's eyes.
+			C_FRRagdoll* pRagdoll = dynamic_cast<C_FRRagdoll*>(m_hRagdoll.Get());
+			if (pRagdoll)
+			{
+				pRagdoll->GetAttachment(pRagdoll->LookupAttachment("eyes"), eyeOrigin, eyeAngles);
+
+				// We adjust the camera in the eyes of the model.
+				Vector vForward;
+				AngleVectors(eyeAngles, &vForward);
+
+				trace_t tr;
+				UTIL_TraceLine(eyeOrigin, eyeOrigin + (vForward * 10000), MASK_ALL, pRagdoll, COLLISION_GROUP_NONE, &tr);
+
+				if ((!(tr.fraction < 1.0f) || (tr.endpos.DistTo(eyeOrigin) > cl_deathcam_fp_autoswitch_mindistance.GetFloat())))
+				{
+					return;
+				}
+				else
+				{
+					if (cl_deathcam_fp_autoswitch.GetInt() == 1)
+					{
+						goto VIEW_DEFAULT;
+					}
+					else if (cl_deathcam_fp_autoswitch.GetInt() == 2)
+					{
+						goto VIEW_HL2MP;
+					}
+				}
+			}
+			else
+			{
+				if (cl_deathcam_fp_autoswitch.GetInt() == 2)
+				{
+					goto VIEW_HL2MP;
+				}
+				else // so our view doesn't just float if we're vaporized and in first person
+				{
+					goto VIEW_DEFAULT;
+				}
+			}
 		}
-
-		fov = GetFOV();
-
-		return;
 	}
-
-	BaseClass::CalcView(eyeOrigin, eyeAngles, zNear, zFar, fov);
-	fov = GetFOV();
+	else
+	{
+		VIEW_DEFAULT:
+		BaseClass::CalcView(eyeOrigin, eyeAngles, zNear, zFar, fov);
+		fov = GetFOV();
+	}
 }
 
 //-----------------------------------------------------------------------------

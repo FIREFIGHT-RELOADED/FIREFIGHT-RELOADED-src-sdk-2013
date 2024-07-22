@@ -45,9 +45,6 @@ public:
 	virtual bool CanAccelerate( void );
 
 private:
-
-	bool		LevelSupportsHL2Ladders();
-
 	// See if we are pressing use near a ladder "mount" point and if so, latch us onto the ladder
 	bool		CheckLadderAutoMount( CFuncLadder *ladder, const Vector& bestOrigin );
 

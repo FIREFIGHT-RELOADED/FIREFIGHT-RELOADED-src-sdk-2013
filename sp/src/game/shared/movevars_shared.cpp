@@ -16,10 +16,14 @@
 #include "tier0/memdbgon.h"
 
 // some cvars used by player movement system
+#if defined( HL2_DLL ) || defined( HL2_CLIENT_DLL )
+#define DEFAULT_GRAVITY_STRING	"600"
+#else
 #define DEFAULT_GRAVITY_STRING	"800"
+#endif
 
 // Mobility
-#define DEFAULT_JUMP_HEIGHT_STRING "16.0"
+#define DEFAULT_JUMP_HEIGHT_STRING "21.0"
 #define DEFAULT_SLIDE_TIME_STRING "1000.0" 
 #define DEFAULT_SLIDE_SPEED_BOOST_STRING "40.0"
 #define DEFAULT_WALLRUN_TIME_STRING "1500.0"
