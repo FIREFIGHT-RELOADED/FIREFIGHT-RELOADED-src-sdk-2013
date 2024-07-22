@@ -738,28 +738,42 @@ void C_BaseHLPlayer::CalcView(Vector &eyeOrigin, QAngle &eyeAngles, float &zNear
 			C_FRRagdoll* pRagdoll = dynamic_cast<C_FRRagdoll*>(m_hRagdoll.Get());
 			if (pRagdoll)
 			{
-				pRagdoll->GetAttachment(pRagdoll->LookupAttachment("eyes"), eyeOrigin, eyeAngles);
+				bool eyes = pRagdoll->GetAttachment(pRagdoll->LookupAttachment("eyes"), eyeOrigin, eyeAngles);
 
-				// We adjust the camera in the eyes of the model.
-				Vector vForward;
-				AngleVectors(eyeAngles, &vForward);
-
-				trace_t tr;
-				UTIL_TraceLine(eyeOrigin, eyeOrigin + (vForward * 10000), MASK_ALL, pRagdoll, COLLISION_GROUP_NONE, &tr);
-
-				if ((!(tr.fraction < 1.0f) || (tr.endpos.DistTo(eyeOrigin) > cl_deathcam_fp_autoswitch_mindistance.GetFloat())))
+				if (eyes)
 				{
-					return;
+					// We adjust the camera in the eyes of the model.
+					Vector vForward;
+					AngleVectors(eyeAngles, &vForward);
+
+					trace_t tr;
+					UTIL_TraceLine(eyeOrigin, eyeOrigin + (vForward * 10000), MASK_ALL, pRagdoll, COLLISION_GROUP_NONE, &tr);
+
+					if ((!(tr.fraction < 1.0f) || (tr.endpos.DistTo(eyeOrigin) > cl_deathcam_fp_autoswitch_mindistance.GetFloat())))
+					{
+						return;
+					}
+					else
+					{
+						if (cl_deathcam_fp_autoswitch.GetInt() == 1)
+						{
+							goto VIEW_DEFAULT;
+						}
+						else if (cl_deathcam_fp_autoswitch.GetInt() == 2)
+						{
+							goto VIEW_HL2MP;
+						}
+					}
 				}
 				else
 				{
-					if (cl_deathcam_fp_autoswitch.GetInt() == 1)
-					{
-						goto VIEW_DEFAULT;
-					}
-					else if (cl_deathcam_fp_autoswitch.GetInt() == 2)
+					if (cl_deathcam_fp_autoswitch.GetInt() == 2)
 					{
 						goto VIEW_HL2MP;
+					}
+					else // so our view doesn't just float if we're vaporized and in first person
+					{
+						goto VIEW_DEFAULT;
 					}
 				}
 			}
