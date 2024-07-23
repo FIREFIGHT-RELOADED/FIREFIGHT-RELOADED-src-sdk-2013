@@ -63,7 +63,7 @@ protected:
 
 	void	StopChargeSound( void );
 
-	void	DrawBeam( const Vector &startPos, const Vector &endPos, float width, bool useMuzzle = false );
+	void	DrawBeam( const Vector &startPos, const Vector &endPos, float width);
 	void	IncreaseCharge( void );
 
 	EHANDLE			m_hViewModel;

@@ -578,6 +578,7 @@ void CWeaponRailgun::Fire( void )
 	if (!(tr.surface.flags & SURF_SKY))
 	{
 		UTIL_ImpactTrace(&tr, m_iPrimaryAmmoType, "ImpactJeep");
+		UTIL_DecalTrace(&tr, "RedGlowFade");
 
 		//Do a gauss explosion
 		CPVSFilter filter(tr.endpos);

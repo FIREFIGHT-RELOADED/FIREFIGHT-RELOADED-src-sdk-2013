@@ -168,7 +168,7 @@ void CWeaponGaussGun::Fire( void )
 			endPos		= startPos + ( vReflection * MAX_TRACE_LENGTH );
 			
 			//Draw beam to reflection point
-			DrawBeam( tr.startpos, tr.endpos, 1.6, true );
+			DrawBeam( tr.startpos, tr.endpos, 1.6);
 
 			CPVSFilter filter( tr.endpos );
 			te->GaussExplosion( filter, 0.0f, tr.endpos, tr.plane.normal, 0 );
@@ -190,12 +190,12 @@ void CWeaponGaussGun::Fire( void )
 		}
 		else
 		{
-			DrawBeam( tr.startpos, tr.endpos, 1.6, true );
+			DrawBeam( tr.startpos, tr.endpos, 1.6);
 		}
 	}
 	else
 	{
-		DrawBeam( tr.startpos, tr.endpos, 1.6, true );
+		DrawBeam( tr.startpos, tr.endpos, 1.6);
 	}
 	
 	ApplyMultiDamage();
@@ -302,7 +302,7 @@ void CWeaponGaussGun::ChargedFire( void )
 
 	pOwner->ViewPunch( viewPunch );
 
-	DrawBeam( startPos, tr.endpos, 9.6, true );
+	DrawBeam( startPos, tr.endpos, 9.6);
 
 	Vector	recoilForce = pOwner->BodyDirection2D() * -( flDamage * 10.0f );
 	recoilForce[2] += 128.0f;
@@ -324,41 +324,14 @@ void CWeaponGaussGun::ChargedFire( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CWeaponGaussGun::DrawBeam( const Vector &startPos, const Vector &endPos, float width, bool useMuzzle )
+void CWeaponGaussGun::DrawBeam( const Vector &startPos, const Vector &endPos, float width)
 {
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
-	
-	if ( pOwner == NULL )
-		return;
-
-	//Check to store off our view model index
-	if ( m_hViewModel == NULL )
-	{
-		CBaseViewModel *vm = pOwner->GetViewModel();
-
-		if ( vm )
-		{
-			m_hViewModel.Set( vm );
-		}
-	}
-
 	//Draw the main beam shaft
 	CBeam *pBeam = CBeam::BeamCreate( GAUSS_BEAM_SPRITE, width );
 	
-	if ( useMuzzle )
-	{
-		pBeam->PointEntInit( endPos, m_hViewModel );
-		pBeam->SetEndAttachment( 1 );
-		pBeam->SetWidth( width / 4.0f );
-		pBeam->SetEndWidth( width );
-	}
-	else
-	{
-		pBeam->SetStartPos( startPos );
-		pBeam->SetEndPos( endPos );
-		pBeam->SetWidth( width );
-		pBeam->SetEndWidth( width / 4.0f );
-	}
+	pBeam->SetStartPos(startPos);
+	pBeam->PointEntInit(endPos, this);
+	pBeam->SetEndAttachment(LookupAttachment("muzzle"));
 
 	pBeam->SetBrightness( 255 );
 	pBeam->SetColor( 255, 145+random->RandomInt( -16, 16 ), 0 );
@@ -370,16 +343,9 @@ void CWeaponGaussGun::DrawBeam( const Vector &startPos, const Vector &endPos, fl
 	{
 		pBeam = CBeam::BeamCreate( GAUSS_BEAM_SPRITE, (width/2.0f) + i );
 		
-		if ( useMuzzle )
-		{
-			pBeam->PointEntInit( endPos, m_hViewModel );
-			pBeam->SetEndAttachment( 1 );
-		}
-		else
-		{
-			pBeam->SetStartPos( startPos );
-			pBeam->SetEndPos( endPos );
-		}
+		pBeam->SetStartPos(startPos);
+		pBeam->PointEntInit(endPos, this);
+		pBeam->SetEndAttachment(LookupAttachment("muzzle"));
 		
 		pBeam->SetBrightness( random->RandomInt( 64, 255 ) );
 		pBeam->SetColor( 255, 255, 150+random->RandomInt( 0, 64 ) );
