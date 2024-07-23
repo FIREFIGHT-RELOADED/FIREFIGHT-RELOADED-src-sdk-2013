@@ -770,12 +770,12 @@ public:
 	void Spawn(void)
 	{
 		Precache();
-		SetModel("models/items/boxmrounds.mdl");
+		SetModel("models/weapons/w_gaussammo.mdl");
 		BaseClass::Spawn();
 	}
 	void Precache(void)
 	{
-		PrecacheModel("models/items/boxmrounds.mdl");
+		PrecacheModel("models/weapons/w_gaussammo.mdl");
 	}
 	bool MyTouch(CBasePlayer *pPlayer)
 	{
