@@ -26,13 +26,21 @@ WeaponData
 	"rumble"			"5"
 	"item_flags"			"0"
 	
-	"BuiltRightHanded" 		"0" 
+	"BuiltRightHanded" 		"1" 
 	"AllowFlipping" 		"1"
 	"MagazineStyledReloads"		"1"
 	"UseMuzzleSmoke"		"1"
-	"useironsights"			"0"
+	"useironsights"			"1"
 	"LowerWeapon"			"0"
-	"useironsightcrosshair" "0"
+	"useironsightcrosshair" 	"1"
+
+	IronSight
+	{
+		"right"		"-2.2"
+		"up"		"2.4"
+		"forward"	"-6"
+		"fov"		"-5"
+	}
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData

@@ -1526,82 +1526,6 @@
 	"wave"		"weapons/sniper_rifle/rifle_shot.wav"
 }
 
-//deagle
-"Weapon_DEagle.Single"
-{
-	"channel"		"CHAN_WEAPON"
-	"volume"		"1.0"
-	"CompatibilityAttenuation"	"0.6"
-	"pitch"		"PITCH_NORM"
-	
-	"rndwave"
-	{
-		"wave"			"weapons/DEagle/deagle_01.wav"
-		"wave"			"weapons/DEagle/deagle_02.wav"
-	}
-	
-}
-
-"Weapon_DEagle.NPC_Single"
-{
-	"channel"		"CHAN_WEAPON"
-	"volume"		"0.9"
-	"soundlevel"	"SNDLVL_GUNFIRE"
-	"pitch"			"98,105"
-
-	"wave"			"^weapons/DEagle/deagle-npc.wav"
-}
-
-"Weapon_DEagle.Clipout"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"1.0"
-	"CompatibilityAttenuation"	"1.0"
-	"pitch"		"PITCH_NORM"
-
-	"wave"			"weapons/DEagle/de_clipout.wav"
-}
-
-"Weapon_DEagle.Clipin"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"1.0"
-	"CompatibilityAttenuation"	"1.0"
-	"pitch"		"PITCH_NORM"
-
-	"wave"			"weapons/DEagle/de_clipin.wav"
-}
-
-"Weapon_DEagle.Deploy"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"1.0"
-	"CompatibilityAttenuation"	"1.0"
-	"pitch"		"PITCH_NORM"
-
-	"wave"			"weapons/DEagle/de_deploy.wav"
-}
-
-"Weapon_DEagle.Slideback"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"1.0"
-	"CompatibilityAttenuation"	"1.0"
-	"pitch"		"PITCH_NORM"
-
-	"wave"			"weapons/DEagle/de_slideback.wav"
-}
-
-"Weapon_DEagle.Forward"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"1.0"
-	"CompatibilityAttenuation"	"1.0"
-	"pitch"		"PITCH_NORM"
-
-	"wave"			"weapons/DEagle/de_slideforward.wav"
-}
-
 // m249para
 "Weapon_M249.Single"
 {
@@ -1840,43 +1764,6 @@
 	"wave"			"weapons/sniper/sniper_zoomout.wav"
 }
 
-"Weapon_OICW.Double"
-{
-	"channel"		"CHAN_WEAPON"
-	"volume"		"1.0"
-	"soundlevel"	"SNDLVL_GUNFIRE"
-
-	"wave"			"weapons/OICW/ar2_altfire.wav"
-}
-
-"Weapon_OICW.NPC_Reload"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"1.0"
-	"soundlevel"	"SNDLVL_NORM"
-
-	"wave"			"weapons/OICW/npc_ar2_reload.wav"
-}
-
-"Weapon_OICW.NPC_Double"
-{
-	"channel"		"CHAN_WEAPON"
-	"volume"		"1.0"
-	"soundlevel"	"SNDLVL_GUNFIRE"
-
-	"wave"			"weapons/OICW/npc_ar2_altfire.wav"
-}
-
-"Weapon_OICW.NPC_Single"
-{
-	"channel"		"CHAN_WEAPON"
-	"volume"		"1.0"
-	"soundlevel"	"SNDLVL_GUNFIRE"
-	"pitch"			"95,105"
-
-	"wave"			"^weapons/OICW/npc_ar2_fire1.wav"
-}
-
 // weapon_gluon
 "Weapon_Gluon.Start"
 {
@@ -1964,7 +1851,7 @@
 	"volume"		"1.0"
 	"soundlevel"	"SNDLVL_NORM"
 
-	"wave"			"weapons/mp5/mp5_01.wav"
+	"wave"			"weapons/mp5/mp5-1.wav"
 }
 
 "Weapon_MP5.Clipout"
@@ -1983,6 +1870,15 @@
 	"soundlevel"	"SNDLVL_NORM"
 
 	"wave"			"weapons/mp5/mp5_clipin.wav" 
+}
+
+"Weapon_MP5.Slideback"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons/mp5/mp5_slideback.wav" 
 }
 
 "Katana.Equip"
