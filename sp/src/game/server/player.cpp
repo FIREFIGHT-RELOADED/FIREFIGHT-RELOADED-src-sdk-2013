@@ -2214,8 +2214,8 @@ int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 		{
 			if (m_lastDamageAmount > 5)
 				SetSuitUpdate("!HEV_DMG6", false, SUIT_NEXT_IN_30SEC);	// blood loss detected
-			//else
-			//	SetSuitUpdate("!HEV_DMG0", false, SUIT_NEXT_IN_30SEC);	// minor laceration
+			else
+				SetSuitUpdate("!HEV_DMG0", false, SUIT_NEXT_IN_30SEC);	// minor laceration
 			
 			bitsDamage &= ~DMG_BULLET;
 			ffound = true;
@@ -2276,7 +2276,15 @@ int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 		}
 		if (bitsDamage & DMG_SHOCK)
 		{
+			SetSuitUpdate("!HEV_SHOCK", false, SUIT_NEXT_IN_1MIN);
 			bitsDamage &= ~DMG_SHOCK;
+			ffound = true;
+		}
+
+		if (bitsDamage & DMG_BURN)
+		{
+			SetSuitUpdate("!HEV_FIRE", false, SUIT_NEXT_IN_1MIN);
+			bitsDamage &= ~DMG_BURN;
 			ffound = true;
 		}
 	}
@@ -5630,6 +5638,8 @@ void CBasePlayer::PostThink()
 	// Regenerate heath
 	if (IsAlive() && GetHealth() < m_MaxHealthVal && (sv_regeneration.GetInt() == 1) && m_iPerkHealthRegen == 1)
 	{
+		SetSuitUpdate("!HEV_MED2", false, SUIT_NEXT_IN_30SEC);
+		SetSuitUpdate("!HEV_HEAL6", false, SUIT_NEXT_IN_30SEC);
 		// Color to overlay on the screen while the player is taking damage
 
 		if (m_fTimeLastHurt < gpGlobals->curtime)
@@ -7537,64 +7547,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 
 	case 101:
 		gEvilImpulse101 = true;
-
-		EquipSuit();
-
-		// Give the player everything!
-		GiveAmmo( 999, "Pistol");
-		GiveAmmo( 999, "AR2" );
-		GiveAmmo( 999, "AR2AltFire" );
-		GiveAmmo( 999, "SMG1" );
-		GiveAmmo( 999, "Buckshot" );
-		GiveAmmo( 999, "smg1_grenade" );
-		GiveAmmo( 999, "rpg_round" );
-		GiveAmmo( 999, "grenade" );
-		GiveAmmo( 999, "357" );
-		GiveAmmo( 999, "XBowBolt" );
-		GiveAmmo( 999, "Sniper" );
-		GiveAmmo( 999, "M249" );
-		GiveAmmo(999, "slam");
-		GiveAmmo(999, "GaussEnergy");
-		GiveAmmo(999, "MP5Ammo");
-		GiveAmmo(400, "Railgun");
-//#ifdef HL2_EPISODIC
-		//GiveAmmo( 999, "Hopwire" );
-//#endif		
-		GiveNamedItem( "weapon_smg1" );
-		GiveNamedItem( "weapon_frag" );
-		GiveNamedItem( "weapon_crowbar" );
-		GiveNamedItem( "weapon_pistol" );
-		GiveNamedItem( "weapon_ar2" );
-		GiveNamedItem( "weapon_shotgun" );
-		GiveNamedItem( "weapon_physcannon" );
-		GiveNamedItem( "weapon_bugbait" );
-		GiveNamedItem( "weapon_rpg" );
-		GiveNamedItem( "weapon_357" );
-		GiveNamedItem( "weapon_crossbow" );
-		GiveNamedItem( "weapon_sniper_rifle" );
-		GiveNamedItem( "weapon_m249para" );
-		GiveNamedItem("weapon_slam");
-		GiveNamedItem("weapon_knife");
-		GiveNamedItem("weapon_gauss");
-		GiveNamedItem("weapon_mp5");
-		GiveNamedItem("weapon_grapple");
-		GiveNamedItem("weapon_katana");
-		GiveNamedItem("weapon_railgun");
-#ifdef HL2_EPISODIC
-		// GiveNamedItem( "weapon_magnade" );
-#endif
-		if (GetHealth() < GetMaxHealth())
-		{
-			TakeHealth( player_defaulthealth.GetInt(), DMG_GENERIC);
-		}
-
-		IncrementHealthValue(GetMaxHealthValue());
-		IncrementMaxHealthValue(GetMaxHealthValue());
-		IncrementArmorValue(GetMaxArmorValue());
-		IncrementMaxArmorValue(GetMaxArmorValue());
-
-		AddMoney(9999);
-		
+		LoadLoadoutFile("impulse101");
 		gEvilImpulse101		= false;
 
 		break;

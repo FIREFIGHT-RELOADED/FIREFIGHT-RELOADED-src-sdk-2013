@@ -29,6 +29,7 @@ XCOPY /E "%CD%\scripts" "%gamescriptdir%" /sy
 XCOPY /E "%CD%\cfg" "%gamecfgdir%" /sy
 XCOPY /E "%CD%\mapadd" "%gamemapadddir%" /sy
 XCOPY /E "%CD%\gamepadui" "%gamepaduidir%" /sy
+XCOPY "%CD%\credits.txt" "%basedir%" /y
 XCOPY "%CD%\gameinfo.txt" "%basedir%" /y
 XCOPY "%CD%\steam.inf" "%basedir%" /y
 XCOPY "%CD%\version.txt" "%basedir%" /y

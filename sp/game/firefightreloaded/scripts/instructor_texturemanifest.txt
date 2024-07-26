@@ -1,4 +1,0 @@
-GAME
-{	
-	"material" "vgui/hud/iconsheet"
-}

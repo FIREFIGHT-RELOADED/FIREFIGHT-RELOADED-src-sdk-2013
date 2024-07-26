@@ -27,7 +27,9 @@
                 "weapon_smg1" "3"
                 "weapon_shotgun" "2"
                 "weapon_m249para" "3"
+                "weapon_mp5" "3"
                 "weapon_sniper_rifle" "3"
+		"weapon_oicw" "5"
             }
         }
         "4"
@@ -57,6 +59,9 @@
                 "weapon_pistol" "5"
                 "weapon_smg1" "5"
                 "weapon_shotgun" "3"
+                "weapon_mp5" "5"
+                "weapon_357" "5"
+		"weapon_oicw" "5"
             }
         }
         "8"
@@ -83,7 +88,9 @@
                 "weapon_shotgun" "4"
                 "weapon_railgun" "3"
                 "weapon_m249para" "4"
+                "weapon_mp5" "3"
                 "weapon_sniper_rifle" "3"
+		"weapon_oicw" "5"
             }
         }
         "11"

@@ -1610,26 +1610,27 @@ HG_CIVVIES hgrunt/hg_civvies {Len 6.73}
 
 // powerup
 
-HEV_AAx hl1/fvox/bell
+HEV_AAx hl1/fvox/bell, HEV_logon, powerarmor_on, atmospherics_on,vitalsigns_on, automedic_on, weaponselect_on, munitionview_on, communications_on, safe_day {Len 41.76}
 
-//HEV_logon, powerarmor_on, atmospherics_on,vitalsigns_on, automedic_on, weaponselect_on, munitionview_on, communications_on, safe_day {Len 41.76}
+HEV_A0 hl1/fvox/bell, HEV_logon {Len 11.07}
 
-//HEV_A0 hl1/fvox/bell, HEV_logon {Len 11.07}
+HEV_A1 hl1/fvox/blip blip(p130) powermove_on {Len 3.71}
+HEV_A2 hl1/fvox/blip blip powerarmor_on {Len 4.42}
+HEV_A3 hl1/fvox/blip blip(p130) atmospherics_on {Len 4.41}
+HEV_A4 hl1/fvox/blip blip vitalsigns_on boop, boop, boop {Len 5.28}
+HEV_A5 hl1/fvox/blip blip(p130) munitionview_on {Len 3.84}
+HEV_A6 hl1/fvox/blip blip communications_on {Len 3.59}
+HEV_A7 hl1/fvox/blip blip(p70) weaponselect_on {Len 3.97}
+HEV_A8 hl1/fvox/blip blip(p70) automedic_on {Len 3.77}
+HEV_A9 hl1/fvox/fuzz power_level_is onehundred percent {Len 4.14}
+HEV_A10 hl1/fvox/safe_day, bell {Len 3.66}
 
-//HEV_A1 hl1/fvox/blip blip(p130) powermove_on {Len 3.71}
-//HEV_A2 hl1/fvox/blip blip powerarmor_on {Len 4.42}
-//HEV_A3 hl1/fvox/blip blip(p130) atmospherics_on {Len 4.41}
-//HEV_A4 hl1/fvox/blip blip vitalsigns_on boop, boop, boop {Len 5.28}
-//HEV_A5 hl1/fvox/blip blip(p130) munitionview_on {Len 3.84}
-//HEV_A6 hl1/fvox/blip blip communications_on {Len 3.59}
-//HEV_A7 hl1/fvox/blip blip(p70) weaponselect_on {Len 3.97}
-//HEV_A8 hl1/fvox/blip blip(p70) automedic_on {Len 3.77}
-//HEV_A9 hl1/fvox/fuzz power_level_is onehundred percent {Len 4.14}
-//HEV_A10 hl1/fvox/safe_day, bell {Len 3.66}
+HEV_FR_BOOTUP hl1/fvox/bell, online {Len 1}
+HEV_FR_BOOTUP_SHORT hl1/fvox/bell {Len 0.5}
 
 // medical
-HEV_DEAD0 hl1/fvox/beep beep, beep beep, beep, beep, flatline {Len 6.29 closecaption HEV.Flatline}
-HEV_DEAD1 hl1/fvox/beep beep, beep beep, beep, flatline {Len 5.82 closecaption HEV.Flatline}
+HEV_DEAD0 hl1/fvox/beep beep, beep beep, beep, beep, flatline, (p100) hiss {Len 6.29 closecaption HEV.Flatline}
+HEV_DEAD1 hl1/fvox/beep beep, beep beep, beep, flatline, (p100) hiss {Len 5.82 closecaption HEV.Flatline}
 
 HEV_MED0 hl1/fvox/(p140) boop, boop, boop, (p100) innsuficient_medical {Len 1.41 closecaption HEV.insufficient_medical}
 HEV_MED1 hl1/fvox/(p140) boop, boop, boop, (p100) automedic_on {Len 4.92 closecaption HEV.automedic_on}

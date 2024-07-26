@@ -103,10 +103,16 @@
 		"price"		"800"
 		"command"	"ammo Railgun 25" 
 	}
-    "18"
+    	"18"
 	{
 		"name"		"RailgunOvercharge"
 		"price"		"500"
 		"command"	"ammo Railgun 300" 
+	}
+	"19"
+	{
+		"name"		"OICWAmmo"
+		"price"		"30"
+		"command"	"ammo 556Round 60" 
 	}
 }

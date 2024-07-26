@@ -377,14 +377,17 @@ const char* g_charPlayerbotMidRangeWeapons[] =
 	"weapon_ar2",
 	"weapon_railgun",
 	"weapon_m249para",
-	"weapon_sniper_rifle"
+	"weapon_sniper_rifle",
+	"weapon_mp5",
+	"weapon_oicw"
 };
 
 const char* g_charPlayerbotShortRangeWeapons[] =
 {
 	"weapon_shotgun",
 	"weapon_pistol",
-	"weapon_crowbar"
+	"weapon_crowbar",
+	"weapon_357"
 };
 
 const char* g_charAvailablePlayerbotModels[] =

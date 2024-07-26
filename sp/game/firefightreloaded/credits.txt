@@ -1,0 +1,114 @@
+Asset Credits:
+
+The SMOD Author (the_author) for the font used in FIREFIGHT RELOADED.
+
+OneManShow from BSNOOCH for various SMOD modifications used in this mod:
+ - Fixed 9mm Pistol
+ - Fixed AR2
+ - Fixed Shotgun
+ - Fixed .357 Magnum
+ - Fixed SMG1 V2
+
+FreeKill from BSNOOCH for various SMOD modifications used in this mod:
+ - CSS M249 PARA
+
+Taito for the following items from Half-Life 2 Survivor Ver2.0 and Cyber Diver:
+ - Gordon Freeman player model.
+ - Sniper Rifle models (Viewmodel and Worldmodel)
+ - Pulse Knife models (Viewmodel and Worldmodel)
+ - Katana models (Viewmodel and Worldmodel)
+ - Energy Pistol models (Worldmodel, used for the Grappling Beam)
+ - Fire Grenade textures
+ - Combine Female Sniper model and textures (Used for the Combine Assassin enhancements done by Maestra Fénix)
+
+[NOR] Marcuzzz for Headspack V1.1, used for gore effects.
+Chyvachok from BSNOOCH, for even MORE gore effects and gibs.
+Rantis for his 'Powered by Source' intro video.
+DeviantXS for his FIREFIGHT intro video.
+Modular Combat for the HL2: Deathmatch map nodegraphs.
+Real Beb for various weapon icons.
+Nicolas Kirsch for the enhanced cubemaps.
+Gmadador for the Gasmask Citizen remake model.
+Facepunch Studios for some player models and viewmodels.
+xDShot for the two-handed pistol animations.
+
+linx_567 for the OICW model.
+https://creativecommons.org/licenses/by/4.0/
+Changes made are as follows:
+ - Adapted the model for use in a weapon animation rig
+ - Adapted the textures for use in the Source Engine.
+ - Removed the Bepis sticker.
+ - Recalculated normals.
+ - Added seperate lense texture.
+ - Changed materials to make it closer to the HL2 art style.
+ - Minor lense fixes.
+ - Closed grenade shell eject door.
+ - Decreased texture resolution.
+ - Removed loose geometry.
+ - Removed chain for ease of animation.
+
+Code Credits:
+Sirmasters from BSNOOCH, for making the Mapadd, Kick, and Custom Weapon code. (Part of SMMOD)
+Joshua Ashton for the mainmenu code.
+Saul Rennison for code used for auto-complete for the 'give' command, Dynamic RTT Shadow Angles, and provided the basis for using autocomplete with other commands.
+Theuaredead for various Weapon and NPC code additions, suggestions, and creating most of the achievement icons for FIREFIGHT RELOADED.
+The Obsidian Conflict Team and Maestro Fénix for the Grappling Hook code.
+OrangeBox CoOperative Base Modification for the multiplayer AI code.
+The Source SDK 2013 CE Team for making the many fixes implemented in this mod.
+Momentum Mod team for the FOV patch and some Mobility Mod code changes.
+Maestra Fénix for the following:" "CreditsOutroText
+ - Improved Combine Assassin model and code.
+ - Improved Advisor model and code.
+
+The Open Fortress Team for the color proxy code.
+Iván Bravo Bravo for the node generation code.
+The Mapbase Team for logic_eventlistener.
+Spirrwell for their FMOD implementation.
+FMOD created by Firelight Technologies Pty Ltd.
+
+This mod uses code from Mobility Mod for Half-Life 2 by Rob Cruickshank.
+
+Thank you to the following for your GitHub contributions:
+ - DeciusMagnus
+ - xDShot
+ - z33ky
+ - ratchet3789
+
+Suggestions:
+
+From the Steam Universe Chatroom who came up with achievement names:
+ - Argyle
+ - Vlady Puts Fegelantic master
+
+Vedad1944 from BSNOOCH for creating the idea of the 'The Uprising' achievement.
+
+Tool Credits:
+James Holloway for making a patch that extended the VBSP brush limit.
+
+Translations:
+ - FarSeer - Russian Translation
+ - Insane Black Rock Shooter - Simplified Chinese Translation
+
+Thank you to the following people who have playtested the mod to make sure it works properly:
+ - Tyler 'BFBC2143' Schield
+ - Pierce 'herbj54' Johnson
+ - Greenie
+ - Kasey/Tytygigas
+ - DeviantXS
+ - Pepper 'PepperAlien' Axebane
+
+Special thanks to:
+ - The SMOD Author for making SMOD
+ - Valve Developer Wiki for being a coder's paradise
+ - Source SDK 2013 GitHub Pull Requests for helping provide fixes to the engine
+ - Valve for building Half-Life 2, the Source Engine, and many assets used in this mod.
+
+
+
+Last but not least:
+Thank you to all my close friends who changed my life in a positive way and got me in the mood to work on projects again. You're all amazing people.
+
+
+Dedicated to:
+Missie
+Pepper 'PepperAlien' Axebane

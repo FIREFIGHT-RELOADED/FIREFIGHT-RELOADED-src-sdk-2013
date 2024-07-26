@@ -42,14 +42,17 @@ ConVar debug_spawner_disable("debug_spawner_disable", "0", FCVAR_CHEAT);
 static const char *g_CombineSoldierWeapons[] =
 {
 	"weapon_smg1",
-	"weapon_ar2"
+	"weapon_ar2",
+	"weapon_mp5",
+	"weapon_oicw"
 };
 
 static const char *g_MetropoliceWeapons[] =
 {
 	"weapon_smg1",
 	"weapon_pistol",
-	"weapon_stunstick"
+	"weapon_stunstick",
+	"weapon_mp5"
 };
 
 //precache list
@@ -547,6 +550,19 @@ void CNPCMakerFirefight::MakeNPC()
 		Q_stristr(pRandomName, "npc_playerbot"))
 	{
 		pent->AddSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI);
+		if (!g_fr_lonewolf.GetBool())
+		{
+			//alert all players.
+			AllyAlert();
+		}
+		else
+		{
+			UTIL_Remove(pent);
+			return;
+		}
+	}
+	else if (Q_stristr(pRandomName, "npc_vortigaunt"))
+	{
 		if (!g_fr_lonewolf.GetBool())
 		{
 			//alert all players.

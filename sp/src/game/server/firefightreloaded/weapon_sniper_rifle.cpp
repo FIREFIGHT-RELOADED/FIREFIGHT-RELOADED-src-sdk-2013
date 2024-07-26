@@ -23,6 +23,16 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+enum ZoomType
+{
+	ZOOM_NONE,
+	ZOOM_1X,
+	ZOOM_2X,
+	ZOOM_3X,
+
+	ZOOM_LAST
+};
+
 //-----------------------------------------------------------------------------
 // CWeaponSniperRifle
 //-----------------------------------------------------------------------------
@@ -49,7 +59,7 @@ public:
 		static const Vector cone = VECTOR_CONE_4DEGREES;
 		static const Vector npccone = VECTOR_CONE_1DEGREES;
 		static const Vector zoomcone = VECTOR_CONE_1DEGREES;
-		if (m_bInZoom)
+		if (m_iZoomMode > 0)
 		{
 			return zoomcone;
 		}
@@ -73,7 +83,7 @@ private:
 	void	ToggleZoom( void );
 	
 private:
-	bool				m_bInZoom;
+	int		m_iZoomMode;
 };
 
 acttable_t CWeaponSniperRifle::m_acttable[] =
@@ -146,7 +156,7 @@ IMPLEMENT_SERVERCLASS_ST( CWeaponSniperRifle, DT_WeaponSniperRifle )
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CWeaponSniperRifle )
-	DEFINE_FIELD( m_bInZoom,		FIELD_BOOLEAN ),
+	DEFINE_FIELD(m_iZoomMode,		FIELD_INTEGER ),
 END_DATADESC()
 
 //-----------------------------------------------------------------------------
@@ -156,7 +166,7 @@ CWeaponSniperRifle::CWeaponSniperRifle( void )
 {
 	m_bReloadsSingly	= false;
 	m_bFiresUnderwater	= false;
-	m_bInZoom			= false;
+	m_iZoomMode = 0;
 
 	m_fMinRange1 = 0;
 	m_fMaxRange1 = 99999;
@@ -303,15 +313,10 @@ void CWeaponSniperRifle::SecondaryAttack( void )
 //-----------------------------------------------------------------------------
 bool CWeaponSniperRifle::Reload(void)
 {
-	CBasePlayer *pPlayer = ToBasePlayer(GetOwner());
-
-	if (m_bInZoom)
+	if (m_iZoomMode > 0)
 	{
-		if (pPlayer->SetFOV(this, 0, 0.2f))
-		{
-			WeaponSound(SPECIAL1);
-			m_bInZoom = false;
-		}
+		m_iZoomMode = ZOOM_LAST - 1;
+		ToggleZoom();
 	}
 
 	return BaseClass::Reload();
@@ -360,15 +365,10 @@ void CWeaponSniperRifle::ItemPostFrame( void )
 //-----------------------------------------------------------------------------
 bool CWeaponSniperRifle::Holster(CBaseCombatWeapon *pSwitchingTo)
 {
-	CBasePlayer *pPlayer = ToBasePlayer(GetOwner());
-
-	if (m_bInZoom)
+	if (m_iZoomMode > 0)
 	{
-		if (pPlayer->SetFOV(this, 0, 0.2f))
-		{
-			WeaponSound(SPECIAL1);
-			m_bInZoom = false;
-		}
+		m_iZoomMode = ZOOM_LAST - 1;
+		ToggleZoom();
 	}
 
 	return BaseClass::Holster(pSwitchingTo);
@@ -376,15 +376,10 @@ bool CWeaponSniperRifle::Holster(CBaseCombatWeapon *pSwitchingTo)
 
 void CWeaponSniperRifle::Drop(const Vector &vecVelocity)
 {
-	CBasePlayer *pPlayer = ToBasePlayer(GetOwner());
-
-	if (m_bInZoom)
+	if (m_iZoomMode > 0)
 	{
-		if (pPlayer->SetFOV(this, 0, 0.2f))
-		{
-			WeaponSound(SPECIAL1);
-			m_bInZoom = false;
-		}
+		m_iZoomMode = ZOOM_LAST - 1;
+		ToggleZoom();
 	}
 
 	BaseClass::Drop(vecVelocity);
@@ -400,23 +395,48 @@ void CWeaponSniperRifle::ToggleZoom( void )
 	if ( pPlayer == NULL )
 		return;
 
+	CBaseViewModel* vm = pPlayer->GetViewModel();
+
+	if (vm == NULL)
+		return;
+
 	if (IsIronsighted())
 		return;
 
-	if ( m_bInZoom )
+	switch (m_iZoomMode)
 	{
-		if ( pPlayer->SetFOV( this, 0, 0.2f ) )
-		{
-			WeaponSound(SPECIAL1);
-			m_bInZoom = false;
-		}
-	}
-	else
-	{
-		if ( pPlayer->SetFOV( this, 20, 0.05f ) )
-		{
-			WeaponSound(SPECIAL1);
-			m_bInZoom = true;
-		}
+		case ZOOM_3X:
+		default:
+			if (pPlayer->SetFOV(this, 0, 0.2f))
+			{
+				vm->RemoveEffects(EF_NODRAW);
+				WeaponSound(SPECIAL2);
+				m_iZoomMode = ZOOM_NONE;
+			}
+			break;
+		case ZOOM_2X:
+			if (pPlayer->SetFOV(this, 5, 0.05f))
+			{
+				vm->AddEffects(EF_NODRAW);
+				WeaponSound(SPECIAL1);
+				m_iZoomMode = ZOOM_3X;
+			}
+			break;
+		case ZOOM_1X:
+			if (pPlayer->SetFOV(this, 10, 0.05f))
+			{
+				vm->AddEffects(EF_NODRAW);
+				WeaponSound(SPECIAL1);
+				m_iZoomMode = ZOOM_2X;
+			}
+			break;
+		case ZOOM_NONE:
+			if (pPlayer->SetFOV(this, 20, 0.05f))
+			{
+				vm->AddEffects(EF_NODRAW);
+				WeaponSound(SPECIAL1);
+				m_iZoomMode = ZOOM_1X;
+			}
+			break;
 	}
 }

@@ -43,6 +43,8 @@ BEGIN_DATADESC( CWeaponAR2 )
 	DEFINE_FIELD( m_flDelayedFire,	FIELD_TIME ),
 	DEFINE_FIELD( m_bShotDelayed,	FIELD_BOOLEAN ),
 	//DEFINE_FIELD( m_nVentPose, FIELD_INTEGER ),
+    DEFINE_FIELD( m_bZoomed,	FIELD_BOOLEAN ),
+    DEFINE_FIELD( m_iFireMode, FIELD_INTEGER ),
 
 END_DATADESC()
 
@@ -233,12 +235,6 @@ void CWeaponAR2::ItemPostFrame( void )
 			}
 		}
 
-		//Allow a refire as fast as the player can click
-		if (m_bZoomed && ((pOwner->m_nButtons & IN_ATTACK) == false) && (m_flSoonestPrimaryAttack < gpGlobals->curtime))
-		{
-			m_flNextPrimaryAttack = gpGlobals->curtime - 0.1f;
-		}
-
 		//Don't kick the same when we're zoomed in
 		if (m_bZoomed)
 		{
@@ -421,7 +417,7 @@ void CWeaponAR2::Zoom(void)
 float CWeaponAR2::GetFireRate(void)
 {
 	if (m_bZoomed)
-		return 0.4f;
+		return 0.3f;
 
 	return 0.1f;
 }

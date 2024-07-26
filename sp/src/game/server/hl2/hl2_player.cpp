@@ -142,6 +142,8 @@ ConVar sv_player_bullettime_shop_timescale("sv_player_bullettime_shop_timescale"
 
 ConVar sv_player_grapple("sv_player_grapple", "1", FCVAR_ARCHIVE, "");
 
+ConVar sv_suitintro("sv_suitintro", "3", FCVAR_ARCHIVE);
+
 #define	FLASH_DRAIN_TIME	 1.1111	// 100 units / 90 secs
 #define	FLASH_CHARGE_TIME	 50.0f	// 100 units / 2 secs
 //const char *szModelName = NULL;
@@ -1758,6 +1760,23 @@ void CHL2_Player::Spawn(void)
 			RemoveFlag(FL_FROZEN);
 			RemoveFlag(FL_NOTARGET);
 		}
+	}
+
+	if (sv_suitintro.GetInt() == 1)
+	{
+		SetSuitUpdate("!HEV_AAx", false, SUIT_REPEAT_OK);
+	}
+	else if (sv_suitintro.GetInt() == 2)
+	{
+		SetSuitUpdate("!HEV_A0", false, SUIT_REPEAT_OK);
+	}
+	else if (sv_suitintro.GetInt() == 3)
+	{
+		SetSuitUpdate("!HEV_FR_BOOTUP", false, SUIT_REPEAT_OK);
+	}
+	else if (sv_suitintro.GetInt() == 4)
+	{
+		SetSuitUpdate("HEV_FR_BOOTUP_SHORT", false, SUIT_REPEAT_OK);
 	}
 
 	DeterminePlayerModel();

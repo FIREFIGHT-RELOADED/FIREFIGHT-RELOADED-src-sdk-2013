@@ -30,13 +30,14 @@ public:
 	void	PrimaryAttack(void);
 	void	Precache(void);
 	void	Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatCharacter *pOperator);
+	void	Operator_ForceNPCFire(CBaseCombatCharacter* pOperator, bool bSecondary);
 	int		CapabilitiesGet(void) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
 	float	GetFireRate(void)	{ return 0.100f; }	// 13.3hz
+	Activity GetPrimaryAttackActivity(void);
 
 	float	WeaponAutoAimScale()	{ return 0.6f; }
 
 	void AddViewKick(void);
-	void DoMachineGunKick(CBasePlayer *pPlayer, float dampEasy, float maxVerticleKickAngle, float fireDurationTime, float slideLimitTime);
 
 	virtual const Vector& GetBulletSpread( void )
 	{
@@ -180,6 +181,49 @@ void CWeaponM249Para::Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatC
 	}
 }
 
+void CWeaponM249Para::Operator_ForceNPCFire(CBaseCombatCharacter* pOperator, bool bSecondary)
+{
+	Vector vecShootOrigin, vecShootDir;
+	QAngle	angShootDir;
+
+	CAI_BaseNPC* npc = pOperator->MyNPCPointer();
+	ASSERT(npc != NULL);
+
+	vecShootOrigin = pOperator->Weapon_ShootPosition();
+	vecShootDir = npc->GetActualShootTrajectory(vecShootOrigin);
+
+	WeaponSoundRealtime(SINGLE);
+
+	CSoundEnt::InsertSound(SOUND_COMBAT | SOUND_CONTEXT_GUNFIRE, pOperator->GetAbsOrigin(), SOUNDENT_VOLUME_MACHINEGUN, 0.2, pOperator, SOUNDENT_CHANNEL_WEAPON, pOperator->GetEnemy());
+
+	//shoot 2 to make it seem we're shooting super fast.
+	pOperator->FireBullets(2, vecShootOrigin, vecShootDir, GetBulletSpread(), MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 2);
+
+	// NOTENOTE: This is overriden on the client-side
+	pOperator->DoMuzzleFlash();
+
+	m_iClip1 = m_iClip1 - 2;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Output : Activity
+//-----------------------------------------------------------------------------
+Activity CWeaponM249Para::GetPrimaryAttackActivity(void)
+{
+	int iRandomActivity = RandomInt(0, 1);
+
+	switch (iRandomActivity)
+	{
+	case 0:
+		return ACT_VM_PRIMARYATTACK;
+	case 1:
+		return ACT_VM_RECOIL1;
+	}
+
+	return ACT_VM_PRIMARYATTACK;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
@@ -248,62 +292,19 @@ void CWeaponM249Para::PrimaryAttack(void)
 
 void CWeaponM249Para::AddViewKick(void)
 {
-#define	EASY_DAMPEN			0.5f
-#define	MAX_VERTICAL_KICK	12.0f	//Degrees
-#define	SLIDE_LIMIT			3.0f	//Seconds
+	#define	EASY_DAMPEN			0.5f
+	#define	MAX_VERTICAL_KICK	10.0f	//Degrees
+	#define	SLIDE_LIMIT			5.0f	//Seconds
 
 	//Get the view kick
-	CBasePlayer *pPlayer = ToBasePlayer(GetOwner());
+	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
 
-	if (pPlayer == NULL)
+	if (!pPlayer)
 		return;
 
-	DoMachineGunKick(pPlayer, EASY_DAMPEN, MAX_VERTICAL_KICK, m_fFireDuration, SLIDE_LIMIT);
-}
+	float flDuration = MIN(m_fFireDuration, 0.75f);
 
-void CWeaponM249Para::DoMachineGunKick(CBasePlayer *pPlayer, float dampEasy, float maxVerticleKickAngle, float fireDurationTime, float slideLimitTime)
-{
-#define	KICK_MIN_X			0.2f	//Degrees
-#define	KICK_MIN_Y			0.2f	//Degrees
-#define	KICK_MIN_Z			0.1f	//Degrees
-
-	QAngle vecScratch;
-
-	//Find how far into our accuracy degradation we are
-	float duration = (fireDurationTime > slideLimitTime) ? slideLimitTime : fireDurationTime;
-	float kickPerc = duration / slideLimitTime;
-
-	// do this to get a hard discontinuity, clear out anything under 10 degrees punch
-	pPlayer->ViewPunchReset(10);
-
-	//Apply this to the view angles as well
-	vecScratch.x = -(KICK_MIN_X + (maxVerticleKickAngle * kickPerc));
-	vecScratch.y = -(KICK_MIN_Y + (maxVerticleKickAngle * kickPerc)) / 3;
-	vecScratch.z = KICK_MIN_Z + (maxVerticleKickAngle * kickPerc) / 8;
-
-	//Wibble left and right
-	if (random->RandomInt(-1, 1) >= 0)
-		vecScratch.y *= -1;
-
-	//Wobble up and down
-	if (random->RandomInt(-1, 1) >= 0)
-		vecScratch.z *= -1;
-
-	//If we're in easy, dampen the effect a bit
-	if (g_pGameRules->IsSkillLevel(SKILL_EASY))
-	{
-		for (int i = 0; i < 3; i++)
-		{
-			vecScratch[i] *= dampEasy;
-		}
-	}
-
-	//Clip this to our desired min/max
-	UTIL_ClipPunchAngleOffset(vecScratch, pPlayer->m_Local.m_vecPunchAngle, QAngle(24.0f, 3.0f, 1.0f));
-
-	//Add it to the view punch
-	// NOTE: 0.5 is just tuned to match the old effect before the punch became simulated
-	pPlayer->ViewPunch(vecScratch * 0.5);
+	DoMachineGunKick(pPlayer, EASY_DAMPEN, MAX_VERTICAL_KICK, flDuration, SLIDE_LIMIT);
 }
 
 //-----------------------------------------------------------------------------

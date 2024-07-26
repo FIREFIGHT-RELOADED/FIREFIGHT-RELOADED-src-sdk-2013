@@ -6,7 +6,7 @@ WeaponData
 	"printname"				"#HL2_MP5"
 	"viewmodel"				"models/weapons/v_smg_mp5.mdl"
 	"playermodel"			"models/weapons/w_smg_mp5.mdl"	//FIXME: 
-	"anim_prefix"			"ar2"
+	"anim_prefix"			"smg2"
 	"weapon_type"			"smg"
 	"bucket"				"2"
 	"bucket_position"		"3"
@@ -47,6 +47,8 @@ WeaponData
 	{
 		"empty"			"Weapon_Pistol.Empty"
 		"single_shot"		"Weapon_MP5.Single"
+		"single_shot_npc"		"Weapon_MP5.Single"
+		"reload_npc"		"Weapon_SMG1.NPC_Reload"
 	}
 
 	// Weapon Sprite data is loaded by the Client DLL.

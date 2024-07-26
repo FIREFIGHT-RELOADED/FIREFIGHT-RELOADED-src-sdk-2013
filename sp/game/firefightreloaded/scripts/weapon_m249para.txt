@@ -46,7 +46,7 @@ WeaponData
 	SoundData
 	{
 //		"reload"		"Weapon_Pistol.Reload"
-		"reload_npc"		"Weapon_Pistol.NPC_Reload"
+		"reload_npc"		"Weapon_SMG1.NPC_Reload"
 		"empty"			"Weapon_Pistol.Empty"
 		"single_shot"		"Weapon_M249.Single"
 		"single_shot_npc"	"Weapon_M249.NPC_Single"

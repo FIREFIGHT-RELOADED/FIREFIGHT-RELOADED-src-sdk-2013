@@ -77,19 +77,19 @@
 			// in folders where they don't exist.  (Searching a VPK is much faster than making an operating
 			// system call.)
 			// this VPK was made so we can load the contents of hl2mp without any config overrides.
-			game+mod			|all_source_engine_paths|base/hl2mp_shared.vpk
-			game+mod			|all_source_engine_paths|base/episodic_content.vpk
-			game				|all_source_engine_paths|base/main/hl2_textures.vpk
-			game				|all_source_engine_paths|base/main/hl2_sound_vo_english.vpk
-			game				|all_source_engine_paths|base/main/hl2_sound_misc.vpk
-			game				|all_source_engine_paths|base/main/hl2_misc.vpk
+			game+mod			|all_source_engine_paths|sourcebase/hl2mp_shared.vpk
+			game+mod			|all_source_engine_paths|sourcebase/episodic_content.vpk
+			game				|all_source_engine_paths|sourcebase/main/hl2_textures.vpk
+			game				|all_source_engine_paths|sourcebase/main/hl2_sound_vo_english.vpk
+			game				|all_source_engine_paths|sourcebase/main/hl2_sound_misc.vpk
+			game				|all_source_engine_paths|sourcebase/main/hl2_misc.vpk
 
-			platform			|all_source_engine_paths|base/platform/platform_misc.vpk
+			platform			|all_source_engine_paths|platform/platform_misc.vpk
 			
 			// Last, mount in shared HL2 loose files
-			game				|all_source_engine_paths|base/episodic_shared
-			game				|all_source_engine_paths|base/main
-			platform			|all_source_engine_paths|base/platform
+			game				|all_source_engine_paths|sourcebase/episodic_shared
+			game				|all_source_engine_paths|sourcebase/main
+			platform			|all_source_engine_paths|platform
 		}
 	}
 }

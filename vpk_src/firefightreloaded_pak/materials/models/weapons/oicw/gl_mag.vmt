@@ -1,0 +1,10 @@
+VertexLitGeneric
+{
+	$basetexture		"models\weapons\oicw\gl_mag_albedo"
+	$bumpmap			"models\weapons\oicw\gl_mag_bump"
+
+	$phong 1
+	$phongexponenttexture		"models\weapons\oicw\gl_mag_phongexp"
+	$phongboost					5.0
+	$phongfresnelranges			"[0.1 0.8 1.0]"
+}

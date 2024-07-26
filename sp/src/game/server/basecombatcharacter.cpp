@@ -1559,7 +1559,7 @@ bool CBaseCombatCharacter::BecomeRagdoll( const CTakeDamageInfo &info, const Vec
 		return true;
 	}
 
-	if( hl2_episodic.GetBool() && (Classify() == CLASS_PLAYER_ALLY_VITAL || Classify() == CLASS_PLAYER_NPC) )
+	if( hl2_episodic.GetBool() && (Classify() == CLASS_PLAYER_ALLY_VITAL || Classify() == CLASS_PLAYER_NPC || Classify() == CLASS_VORTIGAUNT) )
 	{
 		CreateServerRagdoll( this, m_nForceBone, newinfo, COLLISION_GROUP_INTERACTIVE_DEBRIS, true );
 		RemoveDeferred();
@@ -2862,7 +2862,7 @@ CBaseEntity *CBaseCombatCharacter::Weapon_FindUsable( const Vector &range )
 	if( hl2_episodic.GetBool() && !GetActiveWeapon() )
 	{
 		// Unarmed citizens are conservative in their weapon finding
-		if ( Classify() != CLASS_PLAYER_ALLY_VITAL || Classify() != CLASS_PLAYER_NPC)
+		if ( Classify() != CLASS_PLAYER_ALLY_VITAL || Classify() != CLASS_PLAYER_NPC || Classify() != CLASS_VORTIGAUNT)
 		{
 			bConservative = true;
 		}
@@ -3063,7 +3063,7 @@ float CBaseCombatCharacter::CalculatePhysicsStressDamage( vphysics_objectstress_
 void CBaseCombatCharacter::ApplyStressDamage( IPhysicsObject *pPhysics, bool bRequireLargeObject )
 {
 #ifdef HL2_DLL
-	if( Classify() == CLASS_PLAYER_ALLY || Classify() == CLASS_PLAYER_ALLY_VITAL || Classify() == CLASS_PLAYER_NPC)
+	if( Classify() == CLASS_PLAYER_ALLY || Classify() == CLASS_PLAYER_ALLY_VITAL || Classify() == CLASS_PLAYER_NPC || Classify() == CLASS_VORTIGAUNT)
 	{
 		// Bypass stress completely for allies and vitals.
 		if( hl2_episodic.GetBool() )

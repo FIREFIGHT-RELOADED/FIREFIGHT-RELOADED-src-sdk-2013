@@ -1,0 +1,7 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "Models/weapons/oicw/lance"
+	"$selfillum" 1
+}
+
+

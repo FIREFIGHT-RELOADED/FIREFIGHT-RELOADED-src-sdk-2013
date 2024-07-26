@@ -176,6 +176,11 @@
 				"font"		"WeaponIconsKillFeed"
 				"character"	"9"
 		}
+		"prop_physics_respawnable"
+		{
+				"font"		"WeaponIconsKillFeed"
+				"character"	"9"
+		}
 		"kick"
 		{
 				"font"		"WeaponIconsKillFeed"
@@ -289,6 +294,12 @@
 		{
 				"font"		"WeaponIconsKillFeed"
 				"character"	"-"
+		}
+		"weapon_oicw"
+		{
+				"font"		"WeaponIconsKillFeed2"
+				"character"	"f"
+				"weaponicon"	"1"
 		}
 	}	
 }

@@ -60,7 +60,11 @@ public:
 
 		if (GetOwner() && GetOwner()->IsPlayer())
 		{
-			if (IsIronsighted() || m_bZoomed)
+			if (IsIronsighted())
+			{
+				cone = VECTOR_CONE_2DEGREES;
+			}
+            else if (m_bZoomed)
 			{
 				cone = VECTOR_CONE_1DEGREES;
 			}
@@ -84,8 +88,6 @@ protected:
 	bool				m_bZoomed;
 
 	int					m_iFireMode;
-
-	float				m_flSoonestPrimaryAttack;
 
 	float					m_flDelayedFire;
 	bool					m_bShotDelayed;

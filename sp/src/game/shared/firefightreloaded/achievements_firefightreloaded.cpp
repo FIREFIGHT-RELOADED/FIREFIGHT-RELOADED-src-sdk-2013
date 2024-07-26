@@ -852,7 +852,7 @@ protected:
 
 	void Init()
 	{
-		SetFlags(ACH_LISTEN_MAP_EVENTS | ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
+		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
 		SetGameDirFilter("firefightreloaded");
 		SetGoal(10);
 	}
@@ -883,7 +883,7 @@ protected:
 
 	void Init()
 	{
-		SetFlags(ACH_LISTEN_MAP_EVENTS | ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
+		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
 		SetGameDirFilter("firefightreloaded");
 		SetGoal(20);
 	}
@@ -939,14 +939,35 @@ protected:
 		SetGoal(1);
 	}
 
-	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
+	virtual void ListenForEvents()
 	{
-		CBasePlayer *pPlayer = UTIL_GetLocalPlayerOrListenServerHost();
-		if (pPlayer && pVictim == pPlayer)
+		ListenForGameEvent("player_death");
+		ListenForGameEvent("player_death_npc");
+	}
+
+	void FireGameEvent_Internal(IGameEvent* event)
+	{
+		int iFragGoal = 100;
+		if (Q_strcmp(event->GetName(), "player_death") == 0)
 		{
-			if (pPlayer->FragCount() >= 100)
+			CBasePlayer* victim = UTIL_PlayerByUserId(event->GetInt("userid"));
+			if (victim)
 			{
-				IncrementCount();
+				if (victim->FragCount() >= iFragGoal)
+				{
+					IncrementCount();
+				}
+			}
+		}
+		else if (Q_strcmp(event->GetName(), "player_death_npc") == 0)
+		{
+			CBasePlayer* victim = UTIL_PlayerByUserId(event->GetInt("userid"));
+			if (victim)
+			{
+				if (victim->FragCount() >= iFragGoal)
+				{
+					IncrementCount();
+				}
 			}
 		}
 	}

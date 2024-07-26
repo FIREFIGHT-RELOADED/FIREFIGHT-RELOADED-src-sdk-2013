@@ -1206,7 +1206,7 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 		if (m_pSquad && m_pSquad->NumMembers() > 2)
 		{
 			// the enemy must be far enough away
-			if (GetEnemy() && (GetEnemy()->WorldSpaceCenter() - WorldSpaceCenter()).Length() > 512.0 )
+			if (GetEnemy() && (GetEnemy()->WorldSpaceCenter() - WorldSpaceCenter()).Length() > 128.0 )
 			{
 				m_flNextAttack	= gpGlobals->curtime + pTask->flTaskData;
 			}
@@ -1316,7 +1316,7 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 				{
 					m_flShotDelay = GetActiveWeapon()->GetFireRate();
 				}
-				m_flNextAttack = gpGlobals->curtime + m_flShotDelay - 0.1;
+				m_flNextAttack = gpGlobals->curtime + (m_flShotDelay - 0.1);
 				ResetIdealActivity(ACT_RANGE_ATTACK1);
 				m_flLastAttackTime = gpGlobals->curtime;
 			}
@@ -1449,42 +1449,40 @@ void CNPC_Combine::RunTask( const Task_t *pTask )
 
 	case TASK_RANGE_ATTACK1:
 		{
-			if (IsAce())
+			AutoMovement();
+
+			Vector vecEnemyLKP = GetEnemyLKP();
+			if (!FInAimCone(vecEnemyLKP))
 			{
-				AutoMovement();
+				GetMotor()->SetIdealYawToTargetAndUpdate(vecEnemyLKP, AI_KEEP_YAW_SPEED);
+			}
+			else
+			{
+				GetMotor()->SetIdealYawAndUpdate(GetMotor()->GetIdealYaw(), AI_KEEP_YAW_SPEED);
+			}
 
-				Vector vecEnemyLKP = GetEnemyLKP();
-				if (!FInAimCone(vecEnemyLKP))
+			if (gpGlobals->curtime >= m_flNextAttack)
+			{
+				--m_nShots;
+				if (IsActivityFinished())
 				{
-					GetMotor()->SetIdealYawToTargetAndUpdate(vecEnemyLKP, AI_KEEP_YAW_SPEED);
-				}
-				else
-				{
-					GetMotor()->SetIdealYawAndUpdate(GetMotor()->GetIdealYaw(), AI_KEEP_YAW_SPEED);
-				}
-
-				if (gpGlobals->curtime >= m_flNextAttack)
-				{
-					if (IsActivityFinished())
+					if (m_nShots > 0)
 					{
-						if (--m_nShots > 0)
-						{
-							// DevMsg("ACT_RANGE_ATTACK1\n");
-							ResetIdealActivity(ACT_RANGE_ATTACK1);
-							m_flLastAttackTime = gpGlobals->curtime;
-							m_flNextAttack = gpGlobals->curtime + m_flShotDelay - 0.1;
-						}
-						else
-						{
-							// DevMsg("TASK_RANGE_ATTACK1 complete\n");
-							TaskComplete();
-						}
+						// DevMsg("ACT_RANGE_ATTACK1\n");
+						ResetIdealActivity(ACT_RANGE_ATTACK1);
+						m_flLastAttackTime = gpGlobals->curtime;
+						m_flNextAttack = gpGlobals->curtime + m_flShotDelay - 0.1;
+					}
+					else
+					{
+						// DevMsg("TASK_RANGE_ATTACK1 complete\n");
+						TaskComplete();
 					}
 				}
-				else
-				{
-					// DevMsg("Wait\n");
-				}
+			}
+			else
+			{
+				// DevMsg("Wait\n");
 			}
 		}
 		break;
@@ -2367,7 +2365,7 @@ int CNPC_Combine::SelectFailSchedule( int failedSchedule, int failedTask, AI_Tas
 bool CNPC_Combine::ShouldChargePlayer()
 {
 	//allow us to charge at all enemies.
-	return GetEnemy() /*&& GetEnemy()->IsPlayer()*/  && PlayerHasMegaPhysCannon() && !IsLimitingHintGroups();
+	return GetEnemy() != nullptr; /*&& GetEnemy()->IsPlayer()  && PlayerHasMegaPhysCannon() && !IsLimitingHintGroups()*/;
 }
 
 
@@ -2726,6 +2724,14 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 			}
 			else
 			{
+				if (OccupyStrategySlot(SQUAD_SLOT_SPECIAL_ATTACK))
+				{
+					// Since I'm holding this squadslot, no one else can try right now. If I die before the shot 
+					// goes off, I won't have affected anyone else's ability to use this attack at their nearest
+					// convenience.
+					return SCHED_COMBINE_AR2_ALTFIRE;
+				}
+
 				if (IsCrouching() || (CrouchIsDesired() && !HasCondition(COND_HEAVY_DAMAGE)))
 				{
 					// See if we can crouch and shoot
@@ -3773,9 +3779,25 @@ WeaponProficiency_t CNPC_Combine::CalcWeaponProficiency( CBaseCombatWeapon *pWea
 	{
 		return WEAPON_PROFICIENCY_GOOD;
 	}
+	else if (FClassnameIs(pWeapon, "weapon_mp5"))
+	{
+		return WEAPON_PROFICIENCY_GOOD;
+	}
+	else if (FClassnameIs(pWeapon, "weapon_sniper_rifle"))
+	{
+		return WEAPON_PROFICIENCY_PERFECT;
+	}
+	else if (FClassnameIs(pWeapon, "weapon_m249para"))
+	{
+		return WEAPON_PROFICIENCY_PERFECT;
+	}
 	else if (FClassnameIs(pWeapon, "weapon_pistol"))
 	{
 		return WEAPON_PROFICIENCY_POOR;
+	}
+	else if (FClassnameIs(pWeapon, "weapon_oicw"))
+	{
+		return WEAPON_PROFICIENCY_VERY_GOOD;
 	}
 
 	return BaseClass::CalcWeaponProficiency( pWeapon );

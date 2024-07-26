@@ -1510,10 +1510,19 @@
 "Weapon_Sniper_Rifle.Special1"
 {
 	"channel"		"CHAN_WEAPON"
-	"volume"		"0.7"
+	"volume"		"1.0"
 	"soundlevel"	"SNDLVL_NORM"
 
-	"wave"		"weapons/sniper_rifle/scope.wav"
+	"wave"				"weapons/sniper/sniper_zoomin.wav"
+}
+
+"Weapon_Sniper_Rifle.Special2"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons/sniper/sniper_zoomout.wav"
 }
 
 "Weapon_Sniper_Rifle.Single"
@@ -1712,58 +1721,6 @@
 	"wave"	"weapons/tripwire/mine_activate.wav"
 }
 
-// weapon_oicw.txt
-"Weapon_OICW.Empty"
-{
-	"channel"		"CHAN_WEAPON"
-	"volume"		"1.0"
-	"soundlevel"	"SNDLVL_NORM"
-
-	"wave"			"weapons/OICW/ar2_empty.wav"
-}
-
-"Weapon_OICW.Reload"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"1.0"
-	"soundlevel"	"SNDLVL_NORM"
-
-	"wave"			"weapons/OICW/ar2_reload.wav"
-}
-
-"Weapon_OICW.Single"
-{
-	"channel"		"CHAN_WEAPON"
-	"volume"		"1.0"
-	"soundlevel"	"SNDLVL_GUNFIRE"
-	"pitch"			"95,105"
-
-	"rndwave"
-	{
-		"wave"			"weapons/OICW/OICW_fire1.wav"
-		"wave"			"weapons/OICW/OICW_fire2.wav"
-		"wave"			"weapons/OICW/OICW_fire3.wav"
-	}
-}
-
-"Weapon_OICW.Special1"
-{
-	"channel"		"CHAN_WEAPON"
-	"volume"		"1.0"
-	"soundlevel"	"SNDLVL_NORM"
-
-	"wave"				"weapons/sniper/sniper_zoomin.wav"
-}
-
-"Weapon_OICW.Special2"
-{
-	"channel"		"CHAN_WEAPON"
-	"volume"		"1.0"
-	"soundlevel"	"SNDLVL_NORM"
-
-	"wave"			"weapons/sniper/sniper_zoomout.wav"
-}
-
 // weapon_gluon
 "Weapon_Gluon.Start"
 {
@@ -1944,4 +1901,14 @@
 	"soundlevel"  		"SNDLVL_90dB"
 
 	"wave"			"weapons/slam/buttonclick.wav"
+}
+
+//he's back fellas
+"Weapon_OICW.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"weapons/oicw/oicw_fire.wav"
 }

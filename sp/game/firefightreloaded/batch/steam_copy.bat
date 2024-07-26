@@ -40,6 +40,7 @@ XCOPY /E "%CD%\gamepadui" "%gamepaduidir%" /sy
 XCOPY /E "%CD%\bin" "%gamebindir%" /sy
 XCOPY /E "%CD%\bin_linux" "%gamebinlinuxdir%" /sy
 XCOPY "%CD%\gameinfo.txt" "%basedir%" /y
+XCOPY "%CD%\credits.txt" "%basedir%" /y
 XCOPY "%CD%\steam.inf" "%basedir%" /y
 XCOPY "%CD%\version.txt" "%basedir%" /y
 XCOPY "%CD%\firefightreloaded_pak_000.vpk" "%basedir%" /y

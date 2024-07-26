@@ -151,7 +151,7 @@
 		"weapon_classname" "weapon_mp5"
 		"ammo_num"	"30"
 	}
-    "18"
+    	"18"
 	{
 		"name"		"#GameUI_Store_Buy_RailgunAmmo"
 		"item_type"	"7"
@@ -159,12 +159,20 @@
 		"weapon_classname" "weapon_railgun"
 		"ammo_num"	"25"
 	}
-    "19"
+    	"19"
 	{
 		"name"		"#GameUI_Store_Buy_RailgunOvercharge"
 		"item_type"	"7"
 		"min_level"	"12"
 		"weapon_classname" "weapon_railgun"
 		"ammo_num"	"200"
+	}
+    	"20"
+	{
+		"name"		"#GameUI_Store_Buy_OICWAmmo"
+		"item_type"	"7"
+		"min_level"	"4"
+		"weapon_classname" "weapon_oicw"
+		"ammo_num"	"60"
 	}
 }

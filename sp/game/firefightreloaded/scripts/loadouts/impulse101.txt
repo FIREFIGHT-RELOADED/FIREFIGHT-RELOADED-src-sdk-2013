@@ -1,0 +1,130 @@
+"impulse101"
+{
+	"1"
+	{
+		"health"	"999"
+		"setmaxhealth"	"1"
+		"armor"		"999"
+		"setmaxarmor"	"1"
+		"level"		"20"
+		"kash"		"9999"
+	}
+	"2"
+	{
+		"weapon"	"weapon_smg1"
+		"ammotype"	"SMG1"
+		"ammonum"	"999"
+		"ammo2type"	"SMG1_Grenade"
+		"ammo2num"	"999"
+	}
+	"3"
+	{
+		"weapon"	"weapon_frag"
+		"ammotype"	"grenade"
+		"ammonum"	"999"
+	}
+	"4"
+	{
+		"weapon"	"weapon_crowbar"
+	}
+	"5"
+	{
+		"weapon"	"weapon_pistol"
+		"ammotype"	"Pistol"
+		"ammonum"	"999"
+	}
+	"6"
+	{
+		"weapon"	"weapon_ar2"
+		"ammotype"	"AR2"
+		"ammonum"	"999"
+		"ammo2type"	"AR2AltFire"
+		"ammo2num"	"999"
+	}
+	"7"
+	{
+		"weapon"	"weapon_shotgun"
+		"ammotype"	"Buckshot"
+		"ammonum"	"999"
+	}
+	"8"
+	{
+		"weapon"	"weapon_physcannon"
+	}
+	"9"
+	{
+		"weapon"	"weapon_bugbait"
+	}
+	"10"
+	{
+		"weapon"	"weapon_rpg"
+		"ammotype"	"rpg_round"
+		"ammonum"	"999"
+	}
+	"11"
+	{
+		"weapon"	"weapon_357"
+		"ammotype"	"357"
+		"ammonum"	"999"
+	}
+	"12"
+	{
+		"weapon"	"weapon_crossbow"
+		"ammotype"	"XBowBolt"
+		"ammonum"	"999"
+	}
+	"13"
+	{
+		"weapon"	"weapon_sniper_rifle"
+		"ammotype"	"Sniper"
+		"ammonum"	"999"
+	}
+	"14"
+	{
+		"weapon"	"weapon_m249para"
+		"ammotype"	"M249"
+		"ammonum"	"999"
+	}
+	"15"
+	{
+		"weapon"	"weapon_slam"
+		"ammotype"	"slam"
+		"ammonum"	"999"
+	}
+	"16"
+	{
+		"weapon"	"weapon_knife"
+	}
+	"17"
+	{
+		"weapon"	"weapon_gauss"
+		"ammotype"	"GaussEnergy"
+		"ammonum"	"999"
+	}
+	"18"
+	{
+		"weapon"	"weapon_mp5"
+		"ammotype"	"MP5Ammo"
+		"ammonum"	"999"
+	}
+	"19"
+	{
+		"weapon"	"weapon_grapple"
+	}
+	"20"
+	{
+		"weapon"	"weapon_katana"
+	}
+	"21"
+	{
+		"weapon"	"weapon_railgun"
+		"ammotype"	"Railgun"
+		"ammonum"	"400"
+	}
+	"22"
+	{
+		"weapon"	"weapon_oicw"
+		"ammotype"	"556Round"
+		"ammonum"	"999"
+	}
+}

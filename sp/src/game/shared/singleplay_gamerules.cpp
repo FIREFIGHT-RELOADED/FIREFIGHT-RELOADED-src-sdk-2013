@@ -694,7 +694,9 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 
 		//starting to not like allies getting reported on the kill log since it gives the player free exp without doing anything.
 		if (!Q_stricmp(pInflictor->GetClassname(), "npc_citizen") || 
-			!Q_stricmp(pKiller->GetClassname(), "npc_citizen"))
+			!Q_stricmp(pKiller->GetClassname(), "npc_citizen") || 
+			!Q_stricmp(pInflictor->GetClassname(), "npc_vortigaunt") ||
+			!Q_stricmp(pKiller->GetClassname(), "npc_vortigaunt"))
 		{
 			return;
 		}

@@ -136,7 +136,7 @@ bool CAI_LeadBehavior::IsNavigationUrgent( void )
 #if defined( HL2_DLL )
 	if( HasGoal() && !hl2_episodic.GetBool() )
 	{
-		return (GetOuter()->Classify() == CLASS_PLAYER_ALLY_VITAL || GetOuter()->Classify() == CLASS_PLAYER_NPC);
+		return (GetOuter()->Classify() == CLASS_PLAYER_ALLY_VITAL || GetOuter()->Classify() == CLASS_PLAYER_NPC || GetOuter()->Classify() == CLASS_VORTIGAUNT);
 	}
 #endif
 	return BaseClass::IsNavigationUrgent();

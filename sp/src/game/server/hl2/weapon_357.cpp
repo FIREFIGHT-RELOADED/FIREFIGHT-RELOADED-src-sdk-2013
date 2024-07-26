@@ -35,7 +35,10 @@ public:
 	CWeapon357( void );
 
 	void	PrimaryAttack( void );
+	int		CapabilitiesGet(void) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
+	void	FireNPCPrimaryAttack(CBaseCombatCharacter* pOperator, Vector& vecShootOrigin, Vector& vecShootDir);
 	void	Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+	void	Operator_ForceNPCFire(CBaseCombatCharacter* pOperator, bool bSecondary);
 
 	float	WeaponAutoAimScale()	{ return 0.6f; }
 
@@ -115,31 +118,29 @@ void CWeapon357::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatChara
 			Vector vecShootOrigin, vecShootDir;
 			vecShootOrigin = pOperator->Weapon_ShootPosition();
 
-			CAI_BaseNPC *npc = pOperator->MyNPCPointer();
+			CAI_BaseNPC* npc = pOperator->MyNPCPointer();
 			ASSERT(npc != NULL);
 
 			vecShootDir = npc->GetActualShootTrajectory(vecShootOrigin);
 
-			CSoundEnt::InsertSound(SOUND_COMBAT | SOUND_CONTEXT_GUNFIRE, pOperator->GetAbsOrigin(), SOUNDENT_VOLUME_PISTOL, 0.2, pOperator, SOUNDENT_CHANNEL_WEAPON, pOperator->GetEnemy());
-
-			WeaponSound(SINGLE_NPC);
-			pOperator->FireBullets(1, vecShootOrigin, vecShootDir, VECTOR_CONE_PRECALCULATED, MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 2);
-			pOperator->DoMuzzleFlash();
-			m_iClip1 = m_iClip1 - 1;
+			FireNPCPrimaryAttack(pOperator, vecShootOrigin, vecShootDir);
 		}
 		case EVENT_WEAPON_RELOAD:
 		{
 			CBasePlayer *pOwner = ToBasePlayer(GetOwner());
-			CEffectData data;
-
-			// Emit six spent shells
-			for (int i = 0; i < 6; i++)
+			if (pOwner)
 			{
-				data.m_vOrigin = pOwner->WorldSpaceCenter() + RandomVector(-4, 4);
-				data.m_vAngles = QAngle(90, random->RandomInt(0, 360), 0);
-				data.m_nEntIndex = entindex();
+				CEffectData data;
 
-				DispatchEffect("ShellEject", data);
+				// Emit six spent shells
+				for (int i = 0; i < 6; i++)
+				{
+					data.m_vOrigin = pOwner->WorldSpaceCenter() + RandomVector(-4, 4);
+					data.m_vAngles = QAngle(90, random->RandomInt(0, 360), 0);
+					data.m_nEntIndex = entindex();
+
+					DispatchEffect("ShellEject", data);
+				}
 			}
 		}
 		break;
@@ -147,6 +148,34 @@ void CWeapon357::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatChara
 			BaseClass::Operator_HandleAnimEvent(pEvent, pOperator);
 			break;
 	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CWeapon357::FireNPCPrimaryAttack(CBaseCombatCharacter* pOperator, Vector& vecShootOrigin, Vector& vecShootDir)
+{
+	CSoundEnt::InsertSound(SOUND_COMBAT | SOUND_CONTEXT_GUNFIRE, pOperator->GetAbsOrigin(), SOUNDENT_VOLUME_PISTOL, 0.2, pOperator, SOUNDENT_CHANNEL_WEAPON, pOperator->GetEnemy());
+	WeaponSound(SINGLE_NPC);
+	pOperator->FireBullets(1, vecShootOrigin, vecShootDir, VECTOR_CONE_PRECALCULATED, MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 2);
+	pOperator->DoMuzzleFlash();
+	m_iClip1 = m_iClip1 - 1;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CWeapon357::Operator_ForceNPCFire(CBaseCombatCharacter* pOperator, bool bSecondary)
+{
+	Vector vecShootOrigin, vecShootDir;
+	vecShootOrigin = pOperator->Weapon_ShootPosition();
+
+	CAI_BaseNPC* npc = pOperator->MyNPCPointer();
+	ASSERT(npc != NULL);
+
+	vecShootDir = npc->GetActualShootTrajectory(vecShootOrigin);
+
+	FireNPCPrimaryAttack(pOperator, vecShootOrigin, vecShootDir);
 }
 
 //-----------------------------------------------------------------------------

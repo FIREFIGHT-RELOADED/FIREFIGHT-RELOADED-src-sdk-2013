@@ -112,11 +112,18 @@
 		"weapon_classname" "weapon_knife"
 		"unlocks_in_iron_kick" "1"
 	}
-    "14"
+    	"14"
 	{
 		"name"		"#GameUI_Store_Buy_Railgun"
 		"item_type"	"5"
 		"min_level"	"8"
 		"weapon_classname" "weapon_railgun"
+	}
+	"14"
+	{
+		"name"		"#GameUI_Store_Buy_OICW"
+		"item_type"	"5"
+		"min_level"	"4"
+		"weapon_classname" "weapon_oicw"
 	}
 }

@@ -92,7 +92,7 @@ bool CAI_Pathfinder::UseStrongOptimizations()
 	}
 
 #ifdef HL2_DLL
-	if( GetOuter()->Classify() == CLASS_PLAYER_ALLY_VITAL || GetOuter()->Classify() == CLASS_PLAYER_NPC)
+	if( GetOuter()->Classify() == CLASS_PLAYER_ALLY_VITAL || GetOuter()->Classify() == CLASS_PLAYER_NPC || GetOuter()->Classify() == CLASS_VORTIGAUNT)
 	{
 		return false;
 	}

@@ -1852,6 +1852,22 @@
 
 				"textprecision" "2"
 			}
+            
+            "SuitBootup"
+			{
+				"text"			"#GameUI_SuitBootupMode"
+				"type"			"wheelywheel"
+				"convar"		"sv_suitintro"
+
+				"options"
+				{
+					"0"	"#gameui_disabled"
+					"1"	"#GameUI_SuitBootupMode_HL1"
+					"2"	"#GameUI_SuitBootupMode_HL1S"
+					"3"	"#GameUI_SuitBootupMode_FR"
+                    "3"	"#GameUI_SuitBootupMode_FRS"
+				}
+			}
 			
 			"ManOfAFewWordsArentYou"
 			{

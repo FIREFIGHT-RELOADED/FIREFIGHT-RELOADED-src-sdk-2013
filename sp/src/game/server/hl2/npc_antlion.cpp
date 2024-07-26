@@ -399,7 +399,8 @@ void CNPC_Antlion::Activate( void )
 			{
 				if (pNpc->Classify() == CLASS_PLAYER_ALLY ||
 					pNpc->Classify() == CLASS_PLAYER_ALLY_VITAL ||
-					pNpc->Classify() == CLASS_PLAYER_NPC)
+					pNpc->Classify() == CLASS_PLAYER_NPC || 
+					pNpc->Classify() == CLASS_VORTIGAUNT)
 				{
 					AddEntityRelationship(pNpc, D_LI, 0);
 					pNpc->AddEntityRelationship(this, D_LI, 0);
