@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "6440"
-	"mapversion" "202"
+	"mapversion" "203"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,7 +20,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "202"
+	"mapversion" "203"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -15292,10 +15292,6 @@ entity
 		"OnTrigger" "FR4,Enable,,0,-1"
 		"OnTrigger" "music_intro,StopSound,,0,-1"
 		"OnTrigger" "music_fight,PlaySound,,0,-1"
-		"OnTrigger" "FR5,Enable,,0,-1"
-		"OnTrigger" "FR6,Enable,,0,-1"
-		"OnTrigger" "FR7,Enable,,0,-1"
-		"OnTrigger" "FR8,Enable,,0,-1"
 		"OnTrigger" "globals_HUD,TurnOff,,0,-1"
 	}
 	solid
@@ -15606,7 +15602,7 @@ entity
 	"RareNPCRarity" "15"
 	"SpawnFrequency" "5"
 	"StartDisabled" "1"
-	"targetname" "FR8"
+	"targetname" "FR4"
 	"origin" "288 -7705.16 176"
 	editor
 	{
@@ -15628,52 +15624,8 @@ entity
 	"RareNPCRarity" "15"
 	"SpawnFrequency" "5"
 	"StartDisabled" "1"
-	"targetname" "FR7"
+	"targetname" "FR3"
 	"origin" "-224 -7689.16 175"
-	editor
-	{
-		"color" "220 30 220"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 0]"
-	}
-}
-entity
-{
-	"id" "9582"
-	"classname" "npc_maker_firefight"
-	"AllowLargeNPCs" "0"
-	"angles" "0 0 0"
-	"MaxLiveChildren" "-1"
-	"MaxLiveRareNPCs" "-1"
-	"NPCSquadname" "squad6"
-	"RareNPCRarity" "15"
-	"SpawnFrequency" "5"
-	"StartDisabled" "1"
-	"targetname" "FR6"
-	"origin" "-227.704 -7120 176"
-	editor
-	{
-		"color" "220 30 220"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 0]"
-	}
-}
-entity
-{
-	"id" "9584"
-	"classname" "npc_maker_firefight"
-	"AllowLargeNPCs" "0"
-	"angles" "0 0 0"
-	"MaxLiveChildren" "-1"
-	"MaxLiveRareNPCs" "-1"
-	"NPCSquadname" "squad5"
-	"RareNPCRarity" "15"
-	"SpawnFrequency" "5"
-	"StartDisabled" "1"
-	"targetname" "FR5"
-	"origin" "272 -7122.81 175"
 	editor
 	{
 		"color" "220 30 220"
@@ -16283,10 +16235,6 @@ entity
 		"IfAtLevel" "endmessage,ShowMessage,,0,-1"
 		"IfAtLevel" "speed,ModifySpeed,0,0,-1"
 		"IfAtLevel" "music_fight,StopSound,,0,-1"
-		"IfAtLevel" "FR5,DisableAndDestroyAll,,0,-1"
-		"IfAtLevel" "FR6,DisableAndDestroyAll,,0,-1"
-		"IfAtLevel" "FR7,DisableAndDestroyAll,,0,-1"
-		"IfAtLevel" "FR8,DisableAndDestroyAll,,0,-1"
 		"IfAtLevel" "ach,FireEvent,,0,-1"
 	}
 	"origin" "284.55 -7506.71 161"
@@ -17686,50 +17634,6 @@ entity
 }
 entity
 {
-	"id" "15227"
-	"classname" "npc_maker_firefight"
-	"AllowLargeNPCs" "0"
-	"angles" "0 0 0"
-	"MaxLiveChildren" "-1"
-	"MaxLiveRareNPCs" "-1"
-	"NPCSquadname" "squad2"
-	"RareNPCRarity" "15"
-	"SpawnFrequency" "5"
-	"StartDisabled" "1"
-	"targetname" "FR2"
-	"origin" "-224 -6304 -1"
-	editor
-	{
-		"color" "220 30 220"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 0]"
-	}
-}
-entity
-{
-	"id" "15229"
-	"classname" "npc_maker_firefight"
-	"AllowLargeNPCs" "0"
-	"angles" "0 0 0"
-	"MaxLiveChildren" "-1"
-	"MaxLiveRareNPCs" "-1"
-	"NPCSquadname" "squad1"
-	"RareNPCRarity" "15"
-	"SpawnFrequency" "5"
-	"StartDisabled" "1"
-	"targetname" "FR1"
-	"origin" "288 -6320 0"
-	editor
-	{
-		"color" "220 30 220"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 0]"
-	}
-}
-entity
-{
 	"id" "15231"
 	"classname" "npc_maker_firefight"
 	"AllowLargeNPCs" "0"
@@ -17740,7 +17644,7 @@ entity
 	"RareNPCRarity" "15"
 	"SpawnFrequency" "5"
 	"StartDisabled" "1"
-	"targetname" "FR4"
+	"targetname" "FR2"
 	"origin" "288 -5088 175"
 	editor
 	{
@@ -17762,7 +17666,7 @@ entity
 	"RareNPCRarity" "15"
 	"SpawnFrequency" "5"
 	"StartDisabled" "1"
-	"targetname" "FR3"
+	"targetname" "FR1"
 	"origin" "-211.704 -5085.19 176"
 	editor
 	{
