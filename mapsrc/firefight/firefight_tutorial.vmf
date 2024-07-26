@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "6440"
-	"mapversion" "199"
+	"mapversion" "202"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,7 +20,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "199"
+	"mapversion" "202"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -16287,6 +16287,7 @@ entity
 		"IfAtLevel" "FR6,DisableAndDestroyAll,,0,-1"
 		"IfAtLevel" "FR7,DisableAndDestroyAll,,0,-1"
 		"IfAtLevel" "FR8,DisableAndDestroyAll,,0,-1"
+		"IfAtLevel" "ach,FireEvent,,0,-1"
 	}
 	"origin" "284.55 -7506.71 161"
 	editor
@@ -17836,6 +17837,22 @@ entity
 	editor
 	{
 		"color" "0 0 200"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "17627"
+	"classname" "logic_achievement"
+	"AchievementEvent" "ACHIEVEMENT_EVENT_FIREFIGHTRELOADED_COMPLETEDTUTORIAL"
+	"StartDisabled" "0"
+	"targetname" "ach"
+	"origin" "238.932 -7554.49 161"
+	editor
+	{
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 0]"
