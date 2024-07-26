@@ -9,7 +9,7 @@ WeaponData
 	"anim_prefix"		"gauss"
 	"weapon_type"		"utility"
 	"bucket"			"5"
-	"bucket_position"	"99"
+	"bucket_position"	"1"
 	"bucket_360"			"0"
 	"bucket_position_360"	"0"
 

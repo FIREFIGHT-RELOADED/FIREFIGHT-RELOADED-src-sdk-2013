@@ -6,7 +6,6 @@
 		"setmaxhealth"	"1"
 		"armor"		"999"
 		"setmaxarmor"	"1"
-		"level"		"20"
 		"kash"		"9999"
 	}
 	"2"

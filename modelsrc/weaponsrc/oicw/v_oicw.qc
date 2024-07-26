@@ -121,8 +121,8 @@ $sequence "idle" {
 $sequence "reload" {
 	"v_anims\reload.smd"
 	activity "ACT_VM_RELOAD" 1
-	{ event 5004 14 "Weapon_MP5.Clipout" }
-	{ event 5004 48 "Weapon_MP5.Clipin" }
+	{ event 5004 10 "Weapon_MP5.Clipout" }
+	{ event 5004 40 "Weapon_MP5.Clipin" }
 	{ event 5004 76 "Weapon_MP5.Slideback" }
 	fadein 0.2
 	fadeout 0.2

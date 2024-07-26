@@ -121,4 +121,10 @@
 	{
 		"weapon"	"weapon_katana"
 	}
+	"21"
+	{
+		"weapon"	"weapon_oicw"
+		"ammotype"	"556Round"
+		"ammonum"	"250"
+	}
 }
