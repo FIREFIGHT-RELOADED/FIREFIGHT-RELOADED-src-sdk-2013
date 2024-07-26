@@ -934,7 +934,7 @@ protected:
 
 	virtual void Init()
 	{
-		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
+		SetFlags(ACH_SAVE_WITH_GAME);
 		SetGameDirFilter("firefightreloaded");
 		SetGoal(1);
 	}
@@ -947,22 +947,18 @@ protected:
 
 	void FireGameEvent_Internal(IGameEvent* event)
 	{
-		int iFragGoal = 100;
-		if (Q_strcmp(event->GetName(), "player_death") == 0)
+		CBasePlayer* victim = UTIL_PlayerByUserId(event->GetInt("userid"));
+		if (victim)
 		{
-			CBasePlayer* victim = UTIL_PlayerByUserId(event->GetInt("userid"));
-			if (victim)
+			int iFragGoal = 100;
+			if (Q_strcmp(event->GetName(), "player_death") == 0)
 			{
 				if (victim->FragCount() >= iFragGoal)
 				{
 					IncrementCount();
 				}
 			}
-		}
-		else if (Q_strcmp(event->GetName(), "player_death_npc") == 0)
-		{
-			CBasePlayer* victim = UTIL_PlayerByUserId(event->GetInt("userid"));
-			if (victim)
+			else if (Q_strcmp(event->GetName(), "player_death_npc") == 0)
 			{
 				if (victim->FragCount() >= iFragGoal)
 				{
@@ -1006,5 +1002,6 @@ DECLARE_ACHIEVEMENT(CAchievementKill10EnemiesWithOwnGrenade, ACHIEVEMENT_FIREFIG
 	DECLARE_MAP_EVENT_ACHIEVEMENT_( achievementID, achievementName, "firefightreloaded", iPointValue, iHidden )
 
 DECLARE_FR_MAP_EVENT_ACHIEVEMENT(ACHIEVEMENT_FIREFIGHTRELOADED_COMPLETEDBOSSFIGHT, "FIREFIGHTRELOADED_COMPLETEDBOSSFIGHT", 50, false);
+//DECLARE_FR_MAP_EVENT_ACHIEVEMENT(ACHIEVEMENT_FIREFIGHTRELOADED_COMPLETEDTUTORIAL, "FIREFIGHTRELOADED_COMPLETEDTUTORIAL", 50, false);
 
 #endif // GAME_DLL
