@@ -35,7 +35,7 @@ xDShot for the two-handed pistol animations.
 linx_567 for the OICW model.
 https://creativecommons.org/licenses/by/4.0/
 Changes made are as follows:
- - Adapted the model for use in a weapon animation rig
+ - Adapted the model for use in a weapon animation rig and NPC/Player use.
  - Adapted the textures for use in the Source Engine.
  - Removed the Bepis sticker.
  - Recalculated normals.

@@ -90,7 +90,7 @@
 	"linx_567 for the OICW model."	"CreditsOutroText"
 	"https://creativecommons.org/licenses/by/4.0/"	"CreditsOutroText"
 	"Changes made are as follows:"	"CreditsOutroText"
-	"Adapted the model for use in a weapon animation rig"	"CreditsOutroText"
+	"Adapted the model for use in a weapon animation rig and NPC/Player use."	"CreditsOutroText"
 	"Adapted the textures for use in the Source Engine."	"CreditsOutroText"
 	"Removed the Bepis sticker."	"CreditsOutroText"
 	"Recalculated normals."	"CreditsOutroText"
