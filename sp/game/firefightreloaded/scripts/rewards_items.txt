@@ -175,4 +175,12 @@
 		"weapon_classname" "weapon_oicw"
 		"ammo_num"	"60"
 	}
+	"21"
+	{
+		"name"		"#GameUI_Store_Buy_AlyxgunAmmo"
+		"item_type"	"7"
+		"min_level"	"8"
+		"weapon_classname" "weapon_alyxgun"
+		"ammo_num"	"60"
+	}
 }

@@ -126,4 +126,10 @@
 		"ammotype"	"556Round"
 		"ammonum"	"999"
 	}
+	"23"
+	{
+		"weapon"	"weapon_alyxgun"
+		"ammotype"	"Alyxgun"
+		"ammonum"	"999"
+	}
 }

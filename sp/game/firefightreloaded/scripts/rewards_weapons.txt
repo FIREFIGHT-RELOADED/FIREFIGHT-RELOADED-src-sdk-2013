@@ -126,4 +126,11 @@
 		"min_level"	"4"
 		"weapon_classname" "weapon_oicw"
 	}
+	"15"
+	{
+		"name"		"#GameUI_Store_Buy_Alyxgun"
+		"item_type"	"5"
+		"min_level"	"8"
+		"weapon_classname" "weapon_alyxgun"
+	}
 }

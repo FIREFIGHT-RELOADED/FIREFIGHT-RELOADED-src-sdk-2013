@@ -115,4 +115,10 @@
 		"price"		"30"
 		"command"	"ammo 556Round 60" 
 	}
+	"20"
+	{
+		"name"		"AlyxgunAmmo"
+		"price"		"25"
+		"command"	"ammo Alyxgun 60" 
+	}
 }

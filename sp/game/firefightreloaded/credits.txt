@@ -1,6 +1,13 @@
 Asset Credits:
 
-The SMOD Author (the_author) for the font used in FIREFIGHT RELOADED.
+The SMOD Author (the_author) for:
+- The font used in FIREFIGHT RELOADED.
+- The kick viewmodel.
+- The gib/gore models.
+- The Alyxgun model.
+- And many other SMOD assets.
+Without him, FIREFIGHT RELOADED wouldn't be a thing.
+It's a sequel to a SMOD mod after all.
 
 OneManShow from BSNOOCH for various SMOD modifications used in this mod:
  - Fixed 9mm Pistol
@@ -30,7 +37,7 @@ Real Beb for various weapon icons.
 Nicolas Kirsch for the enhanced cubemaps.
 Gmadador for the Gasmask Citizen remake model.
 Facepunch Studios for some player models and viewmodels.
-xDShot for the two-handed pistol animations.
+xDShot for the two-handed pistol animations used in the Pistol and Alyxgun.
 
 linx_567 for the OICW model.
 https://creativecommons.org/licenses/by/4.0/

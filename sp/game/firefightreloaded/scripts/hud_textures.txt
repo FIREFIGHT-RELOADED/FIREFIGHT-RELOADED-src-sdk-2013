@@ -301,5 +301,13 @@
 				"character"	"f"
 				"weaponicon"	"1"
 		}
+		"weapon_alyxgun"
+		{
+				"file"		"sprites/hud_weapons"
+				"x"		"0"
+				"y"		"160"
+				"width"		"64"
+				"height"	"32"
+		}
 	}	
 }

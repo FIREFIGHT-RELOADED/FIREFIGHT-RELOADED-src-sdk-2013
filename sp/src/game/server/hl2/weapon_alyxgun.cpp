@@ -85,6 +85,15 @@ acttable_t	CWeaponAlyxGun::m_acttable[] =
 
 //	{ ACT_ARM,				ACT_ARM_PISTOL,					true },
 //	{ ACT_DISARM,			ACT_DISARM_PISTOL,				true },
+
+	{ ACT_HL2MP_IDLE,				ACT_HL2MP_IDLE_PISTOL,			false },
+	{ ACT_HL2MP_RUN,				ACT_HL2MP_RUN_PISTOL,			false },
+	{ ACT_HL2MP_IDLE_CROUCH,		ACT_HL2MP_IDLE_CROUCH_PISTOL,	false },
+	{ ACT_HL2MP_WALK_CROUCH,		ACT_HL2MP_WALK_CROUCH_PISTOL,	false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,		ACT_HL2MP_GESTURE_RANGE_ATTACK_PISTOL,		false },
+	{ ACT_HL2MP_GESTURE_RELOAD,				ACT_HL2MP_GESTURE_RELOAD_PISTOL,		false },
+	{ ACT_HL2MP_JUMP,				ACT_HL2MP_JUMP_PISTOL,			false },
+	{ ACT_RANGE_ATTACK1,			ACT_RANGE_ATTACK_PISTOL,		false },
 };
 
 IMPLEMENT_ACTTABLE(CWeaponAlyxGun);
@@ -123,6 +132,18 @@ void CWeaponAlyxGun::Precache( void )
 void CWeaponAlyxGun::Equip( CBaseCombatCharacter *pOwner )
 {
 	BaseClass::Equip( pOwner );
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+bool CWeaponAlyxGun::Reload(void)
+{
+	bool fRet = DefaultReload(GetMaxClip1(), GetMaxClip2(), ACT_VM_RELOAD);
+	if (fRet && !GetOwner()->MyNPCPointer())
+	{
+		WeaponSound(RELOAD);
+	}
+	return fRet;
 }
 
 //-----------------------------------------------------------------------------
@@ -250,6 +271,14 @@ void CWeaponAlyxGun::FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, bool
 	}
 }
 
+void CWeaponAlyxGun::SecondaryAttack(void)
+{
+	if (!GetOwner()->MyNPCPointer())
+		return;
+
+	return BaseClass::SecondaryAttack();
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -301,7 +330,7 @@ const Vector& CWeaponAlyxGun::GetBulletSpread( void )
 	static const Vector cone = VECTOR_CONE_2DEGREES;
 	static const Vector injuredCone = VECTOR_CONE_6DEGREES;
 
-	if ( IsAlyxInInjuredMode() )
+	if (GetOwner()->MyNPCPointer() && IsAlyxInInjuredMode() )
 		return injuredCone;
 
 	return cone;
@@ -310,7 +339,7 @@ const Vector& CWeaponAlyxGun::GetBulletSpread( void )
 //-----------------------------------------------------------------------------
 float CWeaponAlyxGun::GetMinRestTime( void )
 {
-	if ( IsAlyxInInjuredMode() )
+	if ( GetOwner()->MyNPCPointer() && IsAlyxInInjuredMode() )
 		return 1.5f;
 
 	return BaseClass::GetMinRestTime();
@@ -319,8 +348,16 @@ float CWeaponAlyxGun::GetMinRestTime( void )
 //-----------------------------------------------------------------------------
 float CWeaponAlyxGun::GetMaxRestTime( void )
 {
-	if ( IsAlyxInInjuredMode() )
+	if (GetOwner()->MyNPCPointer() && IsAlyxInInjuredMode() )
 		return 3.0f;
 
 	return BaseClass::GetMaxRestTime();
+}
+
+float CWeaponAlyxGun::GetFireRate(void)
+{ 
+	if (GetOwner()->MyNPCPointer())
+		return 0.1f;
+
+	return 0.13f;
 }
