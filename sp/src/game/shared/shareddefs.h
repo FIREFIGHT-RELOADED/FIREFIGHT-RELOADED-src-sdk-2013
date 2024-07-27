@@ -684,6 +684,7 @@ struct FireBulletsInfo_t
 		m_iPlayerDamage = 0;
 		m_pAttacker = NULL;
 		m_nFlags = 0;
+		m_nDamageFlags = 0;
 		m_pAdditionalIgnoreEnt = NULL;
 		m_flDamageForceScale = 1.0f;
 
@@ -708,6 +709,7 @@ struct FireBulletsInfo_t
 		m_iPlayerDamage = 0;
 		m_pAttacker = NULL;
 		m_nFlags = 0;
+		m_nDamageFlags = 0;
 		m_pAdditionalIgnoreEnt = NULL;
 		m_flDamageForceScale = 1.0f;
 		m_bPrimaryAttack = bPrimaryAttack;
@@ -723,6 +725,7 @@ struct FireBulletsInfo_t
 	float m_flDamage;
 	int m_iPlayerDamage;	// Damage to be used instead of m_flDamage if we hit a player
 	int m_nFlags;			// See FireBulletsFlags_t
+	int m_nDamageFlags;
 	float m_flDamageForceScale;
 	CBaseEntity *m_pAttacker;
 	CBaseEntity *m_pAdditionalIgnoreEnt;

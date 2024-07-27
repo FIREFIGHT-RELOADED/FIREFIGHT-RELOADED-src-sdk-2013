@@ -6479,7 +6479,7 @@ void CNPC_Hunter::CreateRailgunProjectile(const Vector& vecSrc, Vector& vecShoot
 	UTIL_TraceLine(VecShootOrigin, endPos, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr);
 
 	CAmmoDef* def = GetAmmoDef();
-	int m_iPrimaryAmmoType = GetAmmoDef()->Index("Railgun");
+	int m_iPrimaryAmmoType = def->Index("Railgun");
 	int definedDamage = def->NPCDamage(m_iPrimaryAmmoType);
 	if (!bOvercharged)
 	{

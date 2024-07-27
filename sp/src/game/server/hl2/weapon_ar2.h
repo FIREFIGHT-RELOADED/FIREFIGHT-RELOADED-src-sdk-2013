@@ -26,6 +26,7 @@ public:
 
 	DECLARE_SERVERCLASS();
 
+	void	PrimaryAttack(void);
 	void	ItemPostFrame( void );
 	void	Precache( void );
 	void	BallAttack(void);

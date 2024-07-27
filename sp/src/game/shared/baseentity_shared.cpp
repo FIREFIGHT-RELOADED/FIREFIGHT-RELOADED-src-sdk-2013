@@ -1601,7 +1601,13 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 	static int	tracerCount;
 	trace_t		tr;
 	CAmmoDef*	pAmmoDef	= GetAmmoDef();
-	int			nDamageType	= pAmmoDef->DamageType(info.m_iAmmoType);
+	int			nDamageType = info.m_nDamageFlags;
+
+	if (nDamageType == 0)
+	{
+		nDamageType = pAmmoDef->DamageType(info.m_iAmmoType);
+	}
+
 	int			nAmmoFlags	= pAmmoDef->Flags(info.m_iAmmoType);
 	
 	bool bDoServerEffects = true;
