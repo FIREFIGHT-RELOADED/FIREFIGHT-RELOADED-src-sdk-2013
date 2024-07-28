@@ -229,6 +229,10 @@ ConVar	sk_plr_dmg_556round("sk_plr_dmg_556round", "0", FCVAR_REPLICATED);
 ConVar	sk_npc_dmg_556round("sk_npc_dmg_556round", "0", FCVAR_REPLICATED);
 ConVar	sk_max_556round("sk_max_556round", "0", FCVAR_REPLICATED);
 
+ConVar	sk_plr_dmg_gatling("sk_plr_dmg_gatling", "0", FCVAR_REPLICATED);
+ConVar	sk_npc_dmg_gatling("sk_npc_dmg_gatling", "0", FCVAR_REPLICATED);
+ConVar	sk_max_gatling("sk_max_gatling", "0", FCVAR_REPLICATED);
+
 ConVar    sk_plr_dmg_katana("sk_plr_dmg_katana", "0", FCVAR_REPLICATED);
 ConVar    sk_npc_dmg_katana("sk_npc_dmg_katana", "0", FCVAR_REPLICATED);
 
@@ -1843,7 +1847,8 @@ CAmmoDef *GetAmmoDef()
 		def.AddAmmoType("M249",				DMG_BULLET | DMG_SNIPER, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_m249para", "sk_npc_dmg_m249para", "sk_max_m249para", BULLET_IMPULSE(200, 1225), 0, 'r');
 		def.AddAmmoType("slam",				DMG_BURN | DMG_ALWAYSGIB, TRACER_NONE, "sk_plr_dmg_slam", "sk_npc_dmg_slam", "sk_max_slam", 0, 0, 'o');
 		def.AddAmmoType("MP5Ammo", DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_mp5", "sk_npc_dmg_mp5", "sk_max_mp5", BULLET_IMPULSE(200, 1225), 0, 'p');
-		def.AddAmmoType("556Round", DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_mp5", "sk_npc_dmg_mp5", "sk_max_mp5", BULLET_IMPULSE(200, 1225), 0, 'p');
+		def.AddAmmoType("556Round", DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_mp5", "sk_npc_dmg_mp5", "sk_max_mp5", BULLET_IMPULSE(200, 1225), 0, 'r');
+		def.AddAmmoType("gatling", DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_gatling", "sk_npc_dmg_gatling", "sk_max_gatling", BULLET_IMPULSE(200, 1225), 0, 'r');
 		def.AddAmmoType("Katana", DMG_SLASH, TRACER_NONE, "sk_plr_dmg_katana", "sk_npc_dmg_katana", 1, BULLET_IMPULSE(200, 1225), 0);
 		//CUSTOM AMMO TYPES HERE.
 		def.AddAmmoType("CustomBullet1_Normal", DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_custom_normal", "sk_npc_dmg_custom_normal", "sk_max_custom_normal", BULLET_IMPULSE(800, 5000), 0);

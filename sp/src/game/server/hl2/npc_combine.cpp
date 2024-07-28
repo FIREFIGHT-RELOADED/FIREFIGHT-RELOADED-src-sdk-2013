@@ -1975,7 +1975,7 @@ int CNPC_Combine::SelectCombatSchedule()
 	if (IsAce() && randReload < 30)
 	{
 		// We never actually run out of ammo, just need to refill the clip
-		if (GetActiveWeapon())
+		if (GetActiveWeapon() && (GetActiveWeapon()->UsesClipsForAmmo1() || GetActiveWeapon()->UsesClipsForAmmo2()))
 		{
 			GetActiveWeapon()->WeaponSound(RELOAD_NPC);
 			GetActiveWeapon()->m_iClip1 = GetActiveWeapon()->GetMaxClip1();
@@ -2915,7 +2915,7 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 		case COMBINE_AE_RELOAD:
 
 			// We never actually run out of ammo, just need to refill the clip
-			if (GetActiveWeapon())
+			if (GetActiveWeapon() && (GetActiveWeapon()->UsesClipsForAmmo1() || GetActiveWeapon()->UsesClipsForAmmo2()))
 			{
 				GetActiveWeapon()->WeaponSound( RELOAD_NPC );
 				GetActiveWeapon()->m_iClip1 = GetActiveWeapon()->GetMaxClip1(); 

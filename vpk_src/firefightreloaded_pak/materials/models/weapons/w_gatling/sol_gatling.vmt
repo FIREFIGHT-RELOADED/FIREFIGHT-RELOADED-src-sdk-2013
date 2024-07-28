@@ -1,0 +1,10 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\weapons\w_gatling\sol_gatling"
+	"$bumpmap" "models\weapons\w_gatling\sol_gatling_normal"
+	"$phong" "1"
+	"$phongexponent" "5"
+	"$phongboost"	"2"
+	"$phongfresnelranges"	"[.1 0.4 3]"
+	"$selfillum" 1
+}

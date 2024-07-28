@@ -29,6 +29,8 @@ public:
 	
 	void	PrimaryAttack(void);
 	void	Precache(void);
+	int		GetMinBurst() { return 10; }
+	int		GetMaxBurst() { return 20; }
 	void	Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatCharacter *pOperator);
 	void	Operator_ForceNPCFire(CBaseCombatCharacter* pOperator, bool bSecondary);
 	int		CapabilitiesGet(void) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
@@ -134,7 +136,7 @@ IMPLEMENT_ACTTABLE(CWeaponM249Para);
 CWeaponM249Para::CWeaponM249Para( )
 {
 	m_fMinRange1		= 0;// No minimum range. 
-	m_fMaxRange1		= 1400;
+	m_fMaxRange1		= 6400;
 
 	m_bFiresUnderwater = false;
 }
