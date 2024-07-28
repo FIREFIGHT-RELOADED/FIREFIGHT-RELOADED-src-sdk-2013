@@ -1,0 +1,11 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\weapons\oicw/v_oicw_sheet2"
+	"$bumpmap" "models\shared/shared_normal"
+	"$model" "1"
+	"$phong" "1"
+	"$phongboost" "1"
+	"$phongexponenttexture" "models\weapons\oicw/v_oicw_sheet2_exp"
+	"$phongalbedotint" "1"								
+	"$phongfresnelranges"	"[.1 5 1]"
+}

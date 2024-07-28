@@ -38,21 +38,7 @@ Nicolas Kirsch for the enhanced cubemaps.
 Gmadador for the Gasmask Citizen remake model.
 Facepunch Studios for some player models and viewmodels.
 xDShot for the two-handed pistol animations used in the Pistol and Alyxgun.
-
-linx_567 for the OICW model.
-https://creativecommons.org/licenses/by/4.0/
-Changes made are as follows:
- - Adapted the model for use in a weapon animation rig and NPC/Player use.
- - Adapted the textures for use in the Source Engine.
- - Removed the Bepis sticker.
- - Recalculated normals.
- - Added seperate lense texture.
- - Changed materials to make it closer to the HL2 art style.
- - Minor lense fixes.
- - Closed grenade shell eject door.
- - Decreased texture resolution.
- - Removed loose geometry.
- - Removed chain for ease of animation.
+Mister Sandman for the OICW model.
 
 Code Credits:
 Sirmasters from BSNOOCH, for making the Mapadd, Kick, and Custom Weapon code. (Part of SMMOD)

@@ -6,7 +6,10 @@ $bodygroup "studio"
 {
 	studio "v_ociw_remake_ref.smd"
 }
-
+$bodygroup "Hands"
+{
+	studio "c_arms_hev.smd"
+}
 
 $surfaceprop "default"
 
