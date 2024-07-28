@@ -147,7 +147,7 @@
 			"weapon_sniper_rifle" "3"
             "weapon_mp5" "3"
 			"weapon_oicw" "5"
-            "weapon_gatling" "2"
+            "weapon_gatling" "1"
 		}
 	}
 	"19"
