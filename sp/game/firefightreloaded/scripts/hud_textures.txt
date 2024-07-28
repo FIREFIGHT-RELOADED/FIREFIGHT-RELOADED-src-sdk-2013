@@ -309,5 +309,14 @@
 				"width"		"64"
 				"height"	"32"
 		}
+		"weapon_gatling"
+		{
+				"file"		"VGUI/basic2d_linear/ex_weaponicon_26"
+				"x"			"0"
+				"y"			"0"
+				"width"		"64"
+				"height"	"32"
+				"weaponicon"	"1"
+		}
 	}	
 }

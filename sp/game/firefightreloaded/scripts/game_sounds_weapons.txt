@@ -1912,3 +1912,91 @@
 
 	"wave"			"weapons/oicw/oicw_fire.wav"
 }
+
+// --------------------------------------------------------------------------------
+// weapon_gatling.txt
+"Weapon_Gatling.Reload"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0.75"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"weapons/smg1/smg1_reload.wav"
+}
+
+"Weapon_Gatling.NPC_Reload"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0.75"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"weapons/smg1/smg1_reload.wav"
+}
+
+"Weapon_Gatling.Empty"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.75"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"weapons/pistol/pistol_empty.wav"
+}
+
+"Weapon_Gatling.Single"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+	"pitch"			"95,105"
+
+	"wave"		"weapons/gatling/gatring_gun_fire_solo.wav"
+}
+
+"Weapon_Gatling.Double"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.45"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+
+	"wave"			"weapons/gatling/gatring_gun_huri.wav"
+}
+
+"Weapon_Gatling.NPC_Single"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+	"pitch"			"95,105"
+
+	"wave"		"weapons/gatling/gatring_gun_fire_solo.wav"
+}
+
+"Weapon_Gatling.Special1"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+	"pitch"			"95,105"
+
+	"wave"			"weapons/gatling/gatring_gun_fire_solo.wav"
+}
+
+"Weapon_Gatling.Special2"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.75"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons/smg1/switch_burst.wav"
+}
+
+"Weapon_Gatling.Burst"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.45"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+	"pitch"			"98,105"
+
+	"wave"		"^weapons/smg1/smg1_fire1.wav"
+
+}

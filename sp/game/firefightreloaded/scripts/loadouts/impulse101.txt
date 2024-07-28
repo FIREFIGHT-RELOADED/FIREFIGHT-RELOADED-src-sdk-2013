@@ -132,4 +132,10 @@
 		"ammotype"	"Alyxgun"
 		"ammonum"	"999"
 	}
+	"24"
+	{
+		"weapon"	"weapon_gatling"
+		"ammotype"	"gatling"
+		"ammonum"	"999"
+	}
 }

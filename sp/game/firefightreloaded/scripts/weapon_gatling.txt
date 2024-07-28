@@ -1,0 +1,89 @@
+// Small Machine Gun 1
+
+WeaponData
+{
+	// Weapon data is loaded by both the Game and Client DLLs.
+	"printname"				"#HL2_GATLING"
+	"viewmodel"				"models/weapons/v_gatling.mdl"
+	"playermodel"			"models/weapons/w_gatling.mdl"	//FIXME: 
+	"anim_prefix"			"smg2"
+	"weapon_type"			"smg"
+	"bucket"			"2"
+	"bucket_position"		"5"
+	"bucket_360"			"1"
+	"bucket_position_360"		"2"
+
+	"clip_size"				"-1"
+	"clip2_size"			"-1"
+
+	"default_clip"			"1000"
+	"default_clip2"			"-1"
+
+	"primary_ammo"			"gatling"
+	"secondary_ammo"		"None"
+
+	"weight"				"3"
+	"rumble"			"5"
+	"item_flags"			"0"
+	
+	"BuiltRightHanded" 		"1" 
+	"AllowFlipping" 		"1"
+	"MagazineStyledReloads"		"1"
+	"UseMuzzleSmoke"		"1"
+	"useironsights"			"0"
+	"LowerWeapon"			"0"
+	"useironsightcrosshair" 	"1"
+
+	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	SoundData
+	{
+		"reload"			"Weapon_Gatling.Reload"
+		"reload_npc"		"Weapon_Gatling.NPC_Reload"
+		"empty"				"Weapon_Gatling.Empty"
+		"single_shot"		"Weapon_Gatling.Single"
+		"single_shot_npc"	"Weapon_Gatling.NPC_Single"
+		"special1"			"Weapon_Gatling.Special1"
+		"special2"			"Weapon_Gatling.Special2"
+		"double_shot"		"Weapon_Gatling.Double"
+		"burst"				"Weapon_Gatling.Burst"
+	}
+
+	// Weapon Sprite data is loaded by the Client DLL.
+	TextureData
+	{
+		"weapon"
+		{
+				"file"		"VGUI/basic2d_linear/ex_weaponicon_26"
+				"x"			"0"
+				"y"			"0"
+				"width"		"64"
+				"height"	"32"
+		}
+		"weapon_s"
+		{	
+				"file"		"VGUI/basic2d_linear/ex_weaponicon_26"
+				"x"			"0"
+				"y"			"0"
+				"width"		"64"
+				"height"	"32"
+		}
+		"ammo"
+		{
+				"font"		"WeaponIconsSmall"
+				"character"	"r"
+		}
+		"crosshair"
+		{
+				"font"		"Crosshairs"
+				"character"	"Q"
+		}
+		"autoaim"
+		{
+				"file"		"sprites/crosshairs"
+				"x"			"0"
+				"y"			"48"
+				"width"		"24"
+				"height"	"24"
+		}
+	}
+}

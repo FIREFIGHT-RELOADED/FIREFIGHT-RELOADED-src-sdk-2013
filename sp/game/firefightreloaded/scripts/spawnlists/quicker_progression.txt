@@ -134,7 +134,7 @@
 			"weapon_shotgun" "2"
 			"weapon_m249para" "3"
 			"weapon_sniper_rifle" "3"
-            		"weapon_mp5" "3"
+            "weapon_mp5" "3"
 			"weapon_oicw" "5"
 		}
 	}
@@ -229,6 +229,18 @@
 		"classname"		"npc_combine_ace"
 		"min_level"		"10"
 		"exp"	"75"
+        "equipment"	
+		{
+			"weapon_ar2" "5"
+			"weapon_smg1" "3"
+			"weapon_shotgun" "4"
+			"weapon_railgun" "3"
+			"weapon_m249para" "4"
+			"weapon_sniper_rifle" "3"
+           	"weapon_mp5" "3"
+			"weapon_oicw" "5"
+            "weapon_gatling" "3"
+		}
 	}
 	"33"
 	{
@@ -294,8 +306,9 @@
 			"weapon_railgun" "3"
 			"weapon_m249para" "4"
 			"weapon_sniper_rifle" "3"
-           	 	"weapon_mp5" "3"
+           	"weapon_mp5" "3"
 			"weapon_oicw" "5"
+            "weapon_gatling" "3"
 		}
 	}
 	//LEVEL 16
@@ -343,7 +356,7 @@
 			"weapon_railgun" "3"
 			"weapon_m249para" "4"
 			"weapon_sniper_rifle" "3"
-            		"weapon_mp5" "3"
+            "weapon_mp5" "3"
 			"weapon_oicw" "5"
 		}
 	}

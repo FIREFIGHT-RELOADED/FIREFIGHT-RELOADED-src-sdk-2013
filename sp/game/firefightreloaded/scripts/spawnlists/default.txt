@@ -251,7 +251,7 @@
 		"min_level"		"13"
 		"rare"			"1"
 		"exp"	"60"
-		"equipment"	
+        "equipment"	
 		{
 			"weapon_ar2" "5"
 			"weapon_smg1" "3"
@@ -259,8 +259,9 @@
 			"weapon_railgun" "3"
 			"weapon_m249para" "4"
 			"weapon_sniper_rifle" "3"
-            		"weapon_mp5" "3"
+           	"weapon_mp5" "3"
 			"weapon_oicw" "5"
+            "weapon_gatling" "3"
 		}
 	}
 	"33"
@@ -321,7 +322,7 @@
 		"min_level"		"15"
 		"rare"			"1"
 		"exp"	"100"
-		"equipment"	
+        "equipment"	
 		{
 			"weapon_ar2" "5"
 			"weapon_smg1" "3"
@@ -329,8 +330,9 @@
 			"weapon_railgun" "3"
 			"weapon_m249para" "4"
 			"weapon_sniper_rifle" "3"
-            		"weapon_mp5" "3"
+           	"weapon_mp5" "3"
 			"weapon_oicw" "5"
+            "weapon_gatling" "3"
 		}
 	}
 	//LEVEL 16
@@ -378,7 +380,7 @@
 			"weapon_railgun" "3"
 			"weapon_m249para" "4"
 			"weapon_sniper_rifle" "3"
-            		"weapon_mp5" "3"
+            "weapon_mp5" "3"
 			"weapon_oicw" "5"
 		}
 	}

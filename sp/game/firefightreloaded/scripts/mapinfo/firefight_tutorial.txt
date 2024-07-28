@@ -62,7 +62,7 @@
                 "weapon_shotgun" "3"
                 "weapon_mp5" "5"
                 "weapon_357" "5"
-		"weapon_oicw" "5"
+                "weapon_oicw" "5"
             }
             "exp"	"25"
         }
@@ -81,7 +81,7 @@
                 "weapon_m249para" "3"
                 "weapon_mp5" "3"
                 "weapon_sniper_rifle" "3"
-		"weapon_oicw" "5"
+                "weapon_oicw" "5"
             }
         }
         "10"
@@ -113,7 +113,7 @@
                 "weapon_m249para" "4"
                 "weapon_mp5" "3"
                 "weapon_sniper_rifle" "3"
-		"weapon_oicw" "5"
+                "weapon_oicw" "5"
             }
         }
     }
