@@ -1214,6 +1214,13 @@ bool GiveNewWeapon(CBasePlayer* pPlayer, const char* pClassname)
 						pPlayer->m_awardedWeapons.AddToTail(ConvertedClassname);
 					}
 				}
+				else
+				{
+					if (pPlayer->m_awardedWeapons.Size() > 0)
+					{
+						pPlayer->m_awardedWeapons.Purge();
+					}
+				}
 
 				//give them enough ammo for 2 reloads
 				if (pWeapon->UsesClipsForAmmo1() && pWeapon->GetPrimaryAmmoCount() == pWeapon->GetMaxClip1())
@@ -8144,6 +8151,13 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 							m_boughtWeapons.AddToTail(ConvertedClassname);
 						}
 					}
+					else
+					{
+						if (m_boughtWeapons.Size() > 0)
+						{
+							m_boughtWeapons.Purge();
+						}
+					}
 
 					//give them enough ammo for 2 reloads
 					if (pWeapon->UsesClipsForAmmo1() && pWeapon->GetPrimaryAmmoCount() == pWeapon->GetMaxClip1())
@@ -8418,6 +8432,13 @@ bool CBasePlayer::BumpWeapon( CBaseCombatWeapon *pWeapon )
 				GiveAmmo(pWeapon->GetMaxClip1() * 2, pWeapon->GetPrimaryAmmoType());
 			}
 			//assuming the clip is already full based on default clip.....
+		}
+		else
+		{
+			if (m_droppedWeapons.Size() > 0)
+			{
+				m_droppedWeapons.Purge();
+			}
 		}
 	
 		Weapon_Equip( pWeapon );
