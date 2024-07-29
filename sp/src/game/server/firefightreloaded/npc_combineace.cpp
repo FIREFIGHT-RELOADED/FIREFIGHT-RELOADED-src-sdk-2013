@@ -209,6 +209,11 @@ void CNPC_CombineAce::Spawn( void )
 		
 	}
 
+	if (!m_bBulletResistanceBroken)
+	{
+		AddEFlags(EFL_NO_MEGAPHYSCANNON_RAGDOLL);
+	}
+
 	CreateShieldOutline();
 
 	/*
@@ -636,6 +641,7 @@ CTakeDamageInfo CNPC_CombineAce::BulletResistanceLogic(const CTakeDamageInfo& in
 		SpeakSentence("SHIELDDANGER", SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL);
 		EmitSound("Weapon_StriderBuster.Detonate");
 		SetBloodColor(BLOOD_COLOR_RED);
+		RemoveEFlags(EFL_NO_MEGAPHYSCANNON_RAGDOLL);
 		if (!m_bBulletResistanceOutlineDisabled)
 		{
 			RemoveGlowEffect();

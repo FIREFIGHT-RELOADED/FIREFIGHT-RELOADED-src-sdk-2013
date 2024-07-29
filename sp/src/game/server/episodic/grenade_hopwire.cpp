@@ -102,13 +102,10 @@ void CGravityVortexController::PullPlayersInRange( void )
 			color32 black = { 0, 0, 0, 255 };
 			UTIL_ScreenFade(pPlayer, black, 0.1f, 0.0f, (FFADE_OUT | FFADE_STAYOUT));
 
-			if (GlobalEntity_GetState("player_inbossbattle") == GLOBAL_OFF)
-			{
-				char szMapCommand[1024];
-				// create the command to execute
-				Q_snprintf(szMapCommand, sizeof(szMapCommand), "map firefight_advisor\nprogress_enable\n");
-				engine->ClientCommand(pPlayer->edict(), szMapCommand);
-			}
+			char szMapCommand[1024];
+			// create the command to execute
+			Q_snprintf(szMapCommand, sizeof(szMapCommand), "map firefight_advisor\nprogress_enable\n");
+			engine->ClientCommand(pPlayer->edict(), szMapCommand);
 
 			return;
 		}

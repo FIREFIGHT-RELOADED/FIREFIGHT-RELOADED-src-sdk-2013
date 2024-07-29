@@ -674,19 +674,22 @@ void CAI_BaseNPC::Event_Killed( const CTakeDamageInfo &info )
 		new_info.SetAttacker( pAttacker );
 		((CSingleplayRules*)GameRules())->NPCKilled(this, new_info);
 
-		CBasePlayer* pPlayer = (CBasePlayer*)pAttacker;
-		if (!pPlayer)
-			return;
-
-		CBaseCombatWeapon* pWeapon = pPlayer->GetActiveWeapon();
-		if (!pWeapon)
-			return;
-
-		if (pPlayer->GetLevel() == MAX_LEVEL && m_IsAdvisorDrone && !(FStrEq(pWeapon->GetClassname(), "weapon_physcannon") && PlayerHasMegaPhysCannon()))
+		if (GlobalEntity_GetState("player_inbossbattle") == GLOBAL_OFF)
 		{
-			//spawn a portal to send him to our daddy.
-			CBaseGrenade *hopwire = HopWire_Create_Simple(origin, angle, this, 1.0f, true);
-			hopwire->Detonate();
+			CBasePlayer* pPlayer = (CBasePlayer*)pAttacker;
+			if (!pPlayer)
+				return;
+
+			CBaseCombatWeapon* pWeapon = pPlayer->GetActiveWeapon();
+			if (!pWeapon)
+				return;
+
+			if (pPlayer->GetLevel() == MAX_LEVEL && m_IsAdvisorDrone && !(FStrEq(pWeapon->GetClassname(), "weapon_physcannon") && PlayerHasMegaPhysCannon()))
+			{
+				//spawn a portal to send him to our daddy.
+				CBaseGrenade* hopwire = HopWire_Create_Simple(origin, angle, this, 1.0f, true);
+				hopwire->Detonate();
+			}
 		}
 	}
 }
