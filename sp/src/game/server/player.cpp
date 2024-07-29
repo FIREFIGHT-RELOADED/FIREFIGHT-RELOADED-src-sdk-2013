@@ -698,6 +698,8 @@ BEGIN_DATADESC( CBasePlayer )
 	DEFINE_FIELD( m_vecWallNorm, FIELD_POSITION_VECTOR ),
 
 	DEFINE_UTLVECTOR(m_awardedWeapons, FIELD_STRING),
+	DEFINE_UTLVECTOR(m_boughtWeapons, FIELD_STRING),
+	DEFINE_UTLVECTOR(m_droppedWeapons, FIELD_STRING),
 
 	// DEFINE_FIELD( m_nBodyPitchPoseParam, FIELD_INTEGER ),
 	// DEFINE_ARRAY( m_StepSoundCache, StepSoundCache_t,  2  ),
@@ -6152,6 +6154,71 @@ void CBasePlayer::LoadLoadoutFile(const char* kvName, bool savetoLoadout)
 		}
 	}
 
+	//ugh
+	if (sk_savepurchasedweapons.GetBool())
+	{
+		if (m_boughtWeapons.Size() > 0)
+		{
+			for (int i = m_boughtWeapons.Size() - 1; i >= 0; i--)
+			{
+				const char* ConvertedString = STRING(m_boughtWeapons[i]);
+
+				if (ConvertedString)
+				{
+					if (Q_stristr(ConvertedString, "weapon_grapple") && !sv_player_grapple.GetBool())
+						continue;
+
+					CBaseEntity* item = GiveNamedItem(ConvertedString);
+					if (item != NULL)
+					{
+						CBaseCombatWeapon* pWeapon = (CBaseCombatWeapon*)item;
+						if (pWeapon)
+						{
+							//give them enough ammo for 2 reloads
+							if (pWeapon->UsesClipsForAmmo1())
+							{
+								GiveAmmo(pWeapon->GetDefaultClip1() * 2, pWeapon->GetPrimaryAmmoType());
+							}
+							//assuming the clip is already full based on default clip.....
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if (sk_savedroppedweapons.GetBool())
+	{
+		if (m_droppedWeapons.Size() > 0)
+		{
+			for (int i = m_droppedWeapons.Size() - 1; i >= 0; i--)
+			{
+				const char* ConvertedString = STRING(m_droppedWeapons[i]);
+
+				if (ConvertedString)
+				{
+					if (Q_stristr(ConvertedString, "weapon_grapple") && !sv_player_grapple.GetBool())
+						continue;
+
+					CBaseEntity* item = GiveNamedItem(ConvertedString);
+					if (item != NULL)
+					{
+						CBaseCombatWeapon* pWeapon = (CBaseCombatWeapon*)item;
+						if (pWeapon)
+						{
+							//give them enough ammo for 2 reloads
+							if (pWeapon->UsesClipsForAmmo1())
+							{
+								GiveAmmo(pWeapon->GetDefaultClip1() * 2, pWeapon->GetPrimaryAmmoType());
+							}
+							//assuming the clip is already full based on default clip.....
+						}
+					}
+				}
+			}
+		}
+	}
+
 	Weapon_Switch(Weapon_OwnsThisType("weapon_physcannon"));
 
 	if (m_bIronKick)
@@ -7153,23 +7220,6 @@ CBaseEntity	*CBasePlayer::GiveNamedItem( const char *pszName, int iSubType, bool
 			}
 		}
 		pWeapon->SetSubType( iSubType );
-
-		if (sk_savedroppedweapons.GetBool())
-		{
-			string_t ConvertedClassname = MAKE_STRING(pWeapon->GetClassname());
-
-			if (!m_awardedWeapons.HasElement(ConvertedClassname))
-			{
-				m_awardedWeapons.AddToTail(ConvertedClassname);
-			}
-
-			//give them enough ammo for 2 reloads
-			if (pWeapon->UsesClipsForAmmo1())
-			{
-				GiveAmmo(pWeapon->GetDefaultClip1() * 2, pWeapon->GetPrimaryAmmoType());
-			}
-			//assuming the clip is already full based on default clip.....
-		}
 	}
 
 	DispatchSpawn( pent );
@@ -8089,9 +8139,9 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 					{
 						string_t ConvertedClassname = MAKE_STRING(pWeapon->GetClassname());
 
-						if (!m_awardedWeapons.HasElement(ConvertedClassname))
+						if (!m_boughtWeapons.HasElement(ConvertedClassname))
 						{
-							m_awardedWeapons.AddToTail(ConvertedClassname);
+							m_boughtWeapons.AddToTail(ConvertedClassname);
 						}
 					}
 
@@ -8352,6 +8402,23 @@ bool CBasePlayer::BumpWeapon( CBaseCombatWeapon *pWeapon )
 
 		pWeapon->AddSolidFlags( FSOLID_NOT_SOLID );
 		pWeapon->AddEffects( EF_NODRAW );
+
+		if (sk_savedroppedweapons.GetBool())
+		{
+			string_t ConvertedClassname = MAKE_STRING(pWeapon->GetClassname());
+
+			if (!m_droppedWeapons.HasElement(ConvertedClassname))
+			{
+				m_droppedWeapons.AddToTail(ConvertedClassname);
+			}
+
+			//give them enough ammo for 2 reloads
+			if (pWeapon->UsesClipsForAmmo1())
+			{
+				GiveAmmo(pWeapon->GetDefaultClip1() * 2, pWeapon->GetPrimaryAmmoType());
+			}
+			//assuming the clip is already full based on default clip.....
+		}
 	
 		Weapon_Equip( pWeapon );
 		if ( IsInAVehicle() )

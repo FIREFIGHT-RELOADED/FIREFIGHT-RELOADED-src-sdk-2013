@@ -2426,7 +2426,10 @@ bool CBaseCombatWeapon::DefaultReload( int iClipSize1, int iClipSize2, int iActi
 	// Play reload
 	WeaponSound( RELOAD );
 #endif
-	SendWeaponAnim( iActivity );
+	if (iActivity != ACT_INVALID)
+	{
+		SendWeaponAnim(iActivity);
+	}
 
 	// Play the player's reload animation
 	if ( pOwner->IsPlayer() )

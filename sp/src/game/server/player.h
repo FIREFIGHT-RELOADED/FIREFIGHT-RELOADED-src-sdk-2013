@@ -988,6 +988,8 @@ public:
 
 	KeyValues* m_kvLoadout;
 	CUtlVector<string_t> m_awardedWeapons;
+	CUtlVector<string_t> m_boughtWeapons;
+	CUtlVector<string_t> m_droppedWeapons;
 	
 	// FIXME: Make these protected or private!
 
