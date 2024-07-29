@@ -14,7 +14,7 @@ WeaponData
 	"bucket_position_360"	"2"
 
 	"clip_size"			"2"
-	"default_clip"		"12"
+	"default_clip"		"6"
 	"primary_ammo"		"Sniper"
 	"secondary_ammo"	"None"
 

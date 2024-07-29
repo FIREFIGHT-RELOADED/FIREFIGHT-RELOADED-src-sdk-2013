@@ -1221,13 +1221,6 @@ bool GiveNewWeapon(CBasePlayer* pPlayer, const char* pClassname)
 						pPlayer->m_awardedWeapons.Purge();
 					}
 				}
-
-				//give them enough ammo for 2 reloads
-				if (pWeapon->UsesClipsForAmmo1() && pWeapon->GetPrimaryAmmoCount() == pWeapon->GetMaxClip1())
-				{
-					pPlayer->GiveAmmo(pWeapon->GetMaxClip1() * 2, pWeapon->GetPrimaryAmmoType());
-				}
-				//assuming the clip is already full based on default clip.....
 			}
 		}
 		return true;
@@ -6142,20 +6135,7 @@ void CBasePlayer::LoadLoadoutFile(const char* kvName, bool savetoLoadout)
 					if (Q_stristr(ConvertedString, "weapon_grapple") && !sv_player_grapple.GetBool())
 						continue;
 
-					CBaseEntity* item = GiveNamedItem(ConvertedString);
-					if (item != NULL)
-					{
-						CBaseCombatWeapon* pWeapon = (CBaseCombatWeapon*)item;
-						if (pWeapon)
-						{
-							//give them enough ammo for 2 reloads
-							if (pWeapon->UsesClipsForAmmo1() && pWeapon->GetPrimaryAmmoCount() == pWeapon->GetMaxClip1())
-							{
-								GiveAmmo(pWeapon->GetMaxClip1() * 2, pWeapon->GetPrimaryAmmoType());
-							}
-							//assuming the clip is already full based on default clip.....
-						}
-					}
+					GiveNamedItem(ConvertedString);
 				}
 			}
 		}
@@ -6175,20 +6155,7 @@ void CBasePlayer::LoadLoadoutFile(const char* kvName, bool savetoLoadout)
 					if (Q_stristr(ConvertedString, "weapon_grapple") && !sv_player_grapple.GetBool())
 						continue;
 
-					CBaseEntity* item = GiveNamedItem(ConvertedString);
-					if (item != NULL)
-					{
-						CBaseCombatWeapon* pWeapon = (CBaseCombatWeapon*)item;
-						if (pWeapon)
-						{
-							//give them enough ammo for 2 reloads
-							if (pWeapon->UsesClipsForAmmo1() && pWeapon->GetPrimaryAmmoCount() == pWeapon->GetMaxClip1())
-							{
-								GiveAmmo(pWeapon->GetMaxClip1() * 2, pWeapon->GetPrimaryAmmoType());
-							}
-							//assuming the clip is already full based on default clip.....
-						}
-					}
+					GiveNamedItem(ConvertedString);
 				}
 			}
 		}
@@ -6207,20 +6174,7 @@ void CBasePlayer::LoadLoadoutFile(const char* kvName, bool savetoLoadout)
 					if (Q_stristr(ConvertedString, "weapon_grapple") && !sv_player_grapple.GetBool())
 						continue;
 
-					CBaseEntity* item = GiveNamedItem(ConvertedString);
-					if (item != NULL)
-					{
-						CBaseCombatWeapon* pWeapon = (CBaseCombatWeapon*)item;
-						if (pWeapon)
-						{
-							//give them enough ammo for 2 reloads
-							if (pWeapon->UsesClipsForAmmo1() && pWeapon->GetPrimaryAmmoCount() == pWeapon->GetMaxClip1())
-							{
-								GiveAmmo(pWeapon->GetMaxClip1() * 2, pWeapon->GetPrimaryAmmoType());
-							}
-							//assuming the clip is already full based on default clip.....
-						}
-					}
+					GiveNamedItem(ConvertedString);
 				}
 			}
 		}
@@ -8158,13 +8112,6 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 							m_boughtWeapons.Purge();
 						}
 					}
-
-					//give them enough ammo for 2 reloads
-					if (pWeapon->UsesClipsForAmmo1() && pWeapon->GetPrimaryAmmoCount() == pWeapon->GetMaxClip1())
-					{
-						GiveAmmo(pWeapon->GetMaxClip1() * 2, pWeapon->GetPrimaryAmmoType());
-					}
-					//assuming the clip is already full based on default clip.....
 				}
 			}
 
@@ -8433,13 +8380,6 @@ bool CBasePlayer::BumpWeapon( CBaseCombatWeapon *pWeapon )
 				m_droppedWeapons.Purge();
 			}
 		}
-
-		//give them enough ammo for 2 reloads
-		if (pWeapon->UsesClipsForAmmo1() && pWeapon->GetPrimaryAmmoCount() == pWeapon->GetMaxClip1())
-		{
-			GiveAmmo(pWeapon->GetMaxClip1() * 2, pWeapon->GetPrimaryAmmoType());
-		}
-		//assuming the clip is already full based on default clip.....
 	
 		Weapon_Equip( pWeapon );
 		if ( IsInAVehicle() )
