@@ -121,6 +121,8 @@ ConVar cl_backspeed( "cl_backspeed", "450", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sv_noclipduringpause( "sv_noclipduringpause", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "If cheats are enabled, then you can noclip with the game paused (for doing screenshots, etc.)." );
 
 ConVar sk_saveweapons("sk_saveweapons", "1", FCVAR_ARCHIVE);
+ConVar sk_savepurchasedweapons("sk_savepurchasedweapons", "0", FCVAR_ARCHIVE);
+ConVar sk_savedroppedweapons("sk_savedroppedweapons", "0", FCVAR_ARCHIVE);
 
 extern ConVar sv_maxunlag;
 extern ConVar sv_turbophysics;
@@ -1198,14 +1200,19 @@ bool GiveNewWeapon(CBasePlayer* pPlayer, const char* pClassname)
 		CBaseEntity *item = pPlayer->GiveNamedItem(pClassname, 0, true);
 		if (item != NULL)
 		{
-			if (sk_saveweapons.GetBool())
-			{
-				pPlayer->m_awardedWeapons.AddToTail(MAKE_STRING(item->GetClassname()));
-			}
-
 			CBaseCombatWeapon* pWeapon = (CBaseCombatWeapon*)item;
 			if (pWeapon)
 			{
+				if (sk_saveweapons.GetBool())
+				{
+					string_t ConvertedClassname = MAKE_STRING(pWeapon->GetClassname());
+
+					if (!pPlayer->m_awardedWeapons.HasElement(ConvertedClassname))
+					{
+						pPlayer->m_awardedWeapons.AddToTail(ConvertedClassname);
+					}
+				}
+
 				//give them enough ammo for 2 reloads
 				if (pWeapon->UsesClipsForAmmo1())
 				{
@@ -6113,7 +6120,7 @@ void CBasePlayer::LoadLoadoutFile(const char* kvName, bool savetoLoadout)
 		pNode = pNode->GetNextKey();
 	}
 
-	if (sk_saveweapons.GetBool())
+	if (sk_saveweapons.GetBool() || sk_savepurchasedweapons.GetBool() || sk_savedroppedweapons.GetBool())
 	{
 		if (m_awardedWeapons.Size() > 0)
 		{
@@ -7146,6 +7153,23 @@ CBaseEntity	*CBasePlayer::GiveNamedItem( const char *pszName, int iSubType, bool
 			}
 		}
 		pWeapon->SetSubType( iSubType );
+
+		if (sk_savedroppedweapons.GetBool())
+		{
+			string_t ConvertedClassname = MAKE_STRING(pWeapon->GetClassname());
+
+			if (!m_awardedWeapons.HasElement(ConvertedClassname))
+			{
+				m_awardedWeapons.AddToTail(ConvertedClassname);
+			}
+
+			//give them enough ammo for 2 reloads
+			if (pWeapon->UsesClipsForAmmo1())
+			{
+				GiveAmmo(pWeapon->GetDefaultClip1() * 2, pWeapon->GetPrimaryAmmoType());
+			}
+			//assuming the clip is already full based on default clip.....
+		}
 	}
 
 	DispatchSpawn( pent );
@@ -8054,7 +8078,32 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		}
 		else
 		{
-			GiveNamedItem(args[1]);
+			CBaseEntity *item = GiveNamedItem(args[1]);
+
+			if (item)
+			{
+				CBaseCombatWeapon* pWeapon = (CBaseCombatWeapon*)item;
+				if (pWeapon)
+				{
+					if (sk_savepurchasedweapons.GetBool())
+					{
+						string_t ConvertedClassname = MAKE_STRING(pWeapon->GetClassname());
+
+						if (!m_awardedWeapons.HasElement(ConvertedClassname))
+						{
+							m_awardedWeapons.AddToTail(ConvertedClassname);
+						}
+					}
+
+					//give them enough ammo for 2 reloads
+					if (pWeapon->UsesClipsForAmmo1())
+					{
+						GiveAmmo(pWeapon->GetDefaultClip1() * 2, pWeapon->GetPrimaryAmmoType());
+					}
+					//assuming the clip is already full based on default clip.....
+				}
+			}
+
 			engine->ClientCommand(edict(), "confirm_purchase %i", moneyAmount);
 		}
 
