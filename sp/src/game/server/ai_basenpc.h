@@ -1419,6 +1419,7 @@ public:
 	bool			m_bDisableInitAttributes;
 	bool			m_denyOutlines;
 	bool			m_IgnoreWeaponActivities;
+	bool			m_IsAdvisorDrone;
 	//-----------------------------------------------------
 	//
 	// Eye position, view offset, head direction, eye direction

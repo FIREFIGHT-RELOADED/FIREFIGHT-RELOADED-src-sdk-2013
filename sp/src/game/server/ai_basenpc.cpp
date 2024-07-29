@@ -93,6 +93,8 @@
 #include "npc_alyx_episodic.h"
 #endif
 
+#include "grenade_hopwire.h"
+
 #ifdef PORTAL
 	#include "prop_portal_shared.h"
 #endif
@@ -586,6 +588,9 @@ void CAI_BaseNPC::Event_Killed( const CTakeDamageInfo &info )
 		return;
 	}
 
+	Vector origin = GetAbsOrigin();
+	QAngle angle = GetAbsAngles();
+
 	Wake( false );
 	
 	//Adrian: Select a death pose to extrapolate the ragdoll's velocity.
@@ -668,6 +673,21 @@ void CAI_BaseNPC::Event_Killed( const CTakeDamageInfo &info )
 		CTakeDamageInfo new_info( info );
 		new_info.SetAttacker( pAttacker );
 		((CSingleplayRules*)GameRules())->NPCKilled(this, new_info);
+
+		CBasePlayer* pPlayer = (CBasePlayer*)pAttacker;
+		if (!pPlayer)
+			return;
+
+		CBaseCombatWeapon* pWeapon = pPlayer->GetActiveWeapon();
+		if (!pWeapon)
+			return;
+
+		if (pPlayer->GetLevel() == MAX_LEVEL && m_IsAdvisorDrone && !(FStrEq(pWeapon->GetClassname(), "weapon_physcannon") && PlayerHasMegaPhysCannon()))
+		{
+			//spawn a portal to send him to our daddy.
+			CBaseGrenade *hopwire = HopWire_Create_Simple(origin, angle, this, 1.0f, true);
+			hopwire->Detonate();
+		}
 	}
 }
 
@@ -7134,6 +7154,8 @@ void CAI_BaseNPC::LoadInitAttributes()
 				m_denyOutlines = true;
 			}
 		}
+
+		m_IsAdvisorDrone = m_pAttributes->GetBool("advisor_drone", 0);
 	}
 }
 

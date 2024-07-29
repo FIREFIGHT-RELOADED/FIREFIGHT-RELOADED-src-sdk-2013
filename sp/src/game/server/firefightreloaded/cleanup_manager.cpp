@@ -6,6 +6,7 @@
 ConVar g_max_combine_mines( "g_max_combine_mines", "32", FCVAR_REPLICATED | FCVAR_ARCHIVE, "Maximum number of hoppers dropped by scanners." );
 ConVar g_max_gib_pieces( "g_max_gib_pieces", "32", FCVAR_REPLICATED | FCVAR_ARCHIVE, "Maximum number of gibs." );
 ConVar g_max_thrown_knives( "g_max_thrown_knives", "32", FCVAR_REPLICATED | FCVAR_ARCHIVE, "Maximum number of thrown knives." );
+ConVar g_max_dropped_weapons("g_max_dropped_weapons", "32", FCVAR_REPLICATED | FCVAR_ARCHIVE, "Maximum number of dropped weapons.");
 ConVar g_ragdoll_maxcount( "g_ragdoll_maxcount", "32", FCVAR_REPLICATED | FCVAR_ARCHIVE, "Maximum number of ragdolls." );
 
 BEGIN_DATADESC( CCleanupManager )
@@ -13,6 +14,7 @@ DEFINE_UTLVECTOR( m_CombineMines, FIELD_EHANDLE ),
 DEFINE_UTLVECTOR( m_Gibs, FIELD_EHANDLE ),
 DEFINE_UTLVECTOR( m_Ragdolls, FIELD_EHANDLE ),
 DEFINE_UTLVECTOR( m_ThrownKnives, FIELD_EHANDLE ),
+DEFINE_UTLVECTOR(m_Weapons, FIELD_EHANDLE ),
 END_DATADESC()
 
 LINK_ENTITY_TO_CLASS( cleanup_manager, CCleanupManager )
@@ -91,6 +93,11 @@ void CCleanupManager::AddThrownKnife( EHANDLE knife )
 	Add( GetManager()->m_ThrownKnives, knife, g_max_thrown_knives, cleanupSolid );
 }
 
+void CCleanupManager::AddWeapon(EHANDLE weapon)
+{
+	Add(GetManager()->m_Weapons, weapon, g_max_dropped_weapons, cleanupSolid);
+}
+
 bool CCleanupManager::RemoveCombineMine( EHANDLE mine )
 {
 	return Remove( GetManager()->m_CombineMines, mine );
@@ -109,6 +116,11 @@ bool CCleanupManager::RemoveRagdoll( EHANDLE mine )
 bool CCleanupManager::RemoveThrownKnife( EHANDLE knife )
 {
 	return Remove( GetManager()->m_ThrownKnives, knife );
+}
+
+bool CCleanupManager::RemoveWeapon(EHANDLE weapon)
+{
+	return Remove(GetManager()->m_Weapons, weapon);
 }
 
 void CCleanupManager::Shutdown()

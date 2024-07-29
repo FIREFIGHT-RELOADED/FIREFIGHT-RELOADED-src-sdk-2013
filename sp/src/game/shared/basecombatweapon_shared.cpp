@@ -37,6 +37,8 @@
 	#include "hl2mp_gamerules.h"
 #endif
 
+#include "firefightreloaded/cleanup_manager.h"
+
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -835,6 +837,8 @@ void CBaseCombatWeapon::Drop( const Vector &vecVelocity )
 			return;
 		}
 	}
+
+	CCleanupManager::AddWeapon(this);
 #endif
 
 	DisableIronsights();
@@ -884,6 +888,7 @@ void CBaseCombatWeapon::OnPickedUp( CBaseCombatCharacter *pNewOwner )
 #endif
 
 	// Someone picked me up, so make it so that I can't be removed.
+	CCleanupManager::RemoveWeapon(this);
 	SetRemoveable( false );
 #endif
 }
@@ -2265,6 +2270,15 @@ const WeaponProficiencyInfo_t *CBaseCombatWeapon::GetProficiencyValues()
 float CBaseCombatWeapon::GetFireRate( void )
 {
 	return 0;
+}
+
+void CBaseCombatWeapon::UpdateOnRemove(void)
+{
+#if !defined( CLIENT_DLL )
+	CCleanupManager::RemoveWeapon(this);
+#endif
+
+	BaseClass::UpdateOnRemove();
 }
 
 //-----------------------------------------------------------------------------

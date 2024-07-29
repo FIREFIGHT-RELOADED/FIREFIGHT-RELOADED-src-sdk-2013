@@ -418,4 +418,3 @@ int	C_GrenadeHopwire::DrawModel( int flags )
 
 	return BaseClass::DrawModel( flags );
 }
-

@@ -156,20 +156,6 @@ void respawn( CBaseEntity *pEdict, bool fCopyCorpse )
 	CHL2_Player *pPlayer = (CHL2_Player *)pEdict;
 	if (pPlayer)
 	{
-		if (pPlayer->IsAtMaxLevel() && !g_pGameRules->IsMultiplayer())
-		{
-			if (GlobalEntity_GetState("player_inbossbattle") == GLOBAL_OFF)
-			{
-				char szMapCommand[1024];
-				// create the command to execute
-				Q_snprintf(szMapCommand, sizeof(szMapCommand), "map firefight_advisor\nprogress_enable\n");
-				engine->ClientCommand(pPlayer->edict(), szMapCommand);
-
-				if (pPlayer->m_bHardcore)
-					return;
-			}
-		}
-
 		if (pPlayer->m_bHardcore && !g_pGameRules->IsMultiplayer())
 		{
 			// create the command to execute

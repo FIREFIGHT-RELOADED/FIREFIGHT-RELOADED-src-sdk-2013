@@ -300,6 +300,8 @@ public:
 	virtual Activity		GetDrawActivity( void );
 	virtual float			GetDefaultAnimSpeed( void ) { return 1.0; }
 
+	virtual void			UpdateOnRemove(void);
+
 	// Bullet launch information
 	virtual int				GetBulletType( void );
 	virtual const Vector&	GetBulletSpread( void );

@@ -1072,8 +1072,6 @@ void CBasePlayer::CheckLevel()
 
 		if (!m_bIronKick)
 		{
-			RemoveAllItems(false);
-
 			/*if (!GlobalEntity_IsInTable("super_phys_gun"))
 			{
 				GlobalEntity_Add(MAKE_STRING("super_phys_gun"), gpGlobals->mapname, GLOBAL_ON);
@@ -1084,7 +1082,7 @@ void CBasePlayer::CheckLevel()
 			}*/
 
 			HL2GameRules()->SetMegaPhyscannonActive();
-			LoadLoadoutFile("maxlevel");
+			Weapon_Switch(Weapon_OwnsThisType("weapon_physcannon"));
 		}
 
 		CFmtStr hint;
@@ -6093,14 +6091,7 @@ void CBasePlayer::WeaponSpawnLogic(void)
 	{
 		if (!m_bForcedLoadout)
 		{
-			if (!m_bIronKick && IsAtMaxLevel())
-			{
-				LoadLoadoutFile("maxlevel");
-			}
-			else
-			{
-				LoadLoadoutFile(sv_player_defaultloadout.GetString());
-			}
+			LoadLoadoutFile(sv_player_defaultloadout.GetString());
 		}
 		else
 		{

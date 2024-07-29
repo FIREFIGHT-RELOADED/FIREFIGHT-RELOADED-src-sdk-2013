@@ -2472,6 +2472,20 @@
 
 				"textprecision" "2"
 			}
+            
+            "DroppedWeaponCount"
+			{
+				"text"			"#GameUI_Performance_WeaponCount"
+				"type"			"slideyslide"
+				"advanced"		"1"
+				"convar"		"g_max_dropped_weapons"
+
+				"min"			"32"
+				"max"			"128"
+				"step"			"5"
+
+				"textprecision" "2"
+			}
 			
 			"RagdollCount"
 			{

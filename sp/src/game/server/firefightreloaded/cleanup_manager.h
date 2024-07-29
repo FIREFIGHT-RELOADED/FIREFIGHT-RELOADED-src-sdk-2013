@@ -22,6 +22,7 @@ class CCleanupManager : public CBaseEntity
 	Handles m_Gibs;
 	Handles m_Ragdolls;
 	Handles m_ThrownKnives;
+	Handles m_Weapons;
 
 	static CCleanupManager* pManager;
 	static CCleanupManager* GetManager();
@@ -35,11 +36,13 @@ public:
 	static void AddGib( EHANDLE gib );
 	static void AddRagdoll( EHANDLE ragdoll );
 	static void AddThrownKnife( EHANDLE knife );
+	static void AddWeapon(EHANDLE weapon);
 
 	static bool RemoveCombineMine( EHANDLE mine );
 	static bool RemoveGib( EHANDLE gib );
 	static bool RemoveRagdoll( EHANDLE ragdoll );
 	static bool RemoveThrownKnife( EHANDLE knife );
+	static bool RemoveWeapon(EHANDLE weapon);
 
 	static void Shutdown();
 };

@@ -154,8 +154,8 @@ float CBasePlayer::GetTimeBase( void ) const
 
 int CBasePlayer::GetXpToLevelUp(int level)
 {
-	int exp_base = 750;
-	return (exp_base * level);
+	int exp_base = 1000 * (level * (level > 1 ? 0.5 : 1));
+	return exp_base;
 }
 
 int CBasePlayer::GetLevel()

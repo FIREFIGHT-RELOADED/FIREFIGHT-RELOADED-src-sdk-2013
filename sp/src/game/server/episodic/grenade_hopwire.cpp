@@ -14,6 +14,7 @@
 #include "explode.h"
 #include "physics_prop_ragdoll.h"
 #include "movevars_shared.h"
+#include "globalstate.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -30,33 +31,6 @@ ConVar g_debug_hopwire( "g_debug_hopwire", "0" );
 #define	DENSE_BALL_MODEL	"models/props_junk/metal_paintcan001b.mdl"
 
 #define	MAX_HOP_HEIGHT		(hopwire_hopheight.GetFloat())		// Maximum amount the grenade will "hop" upwards when detonated
-
-class CGravityVortexController : public CBaseEntity
-{
-	DECLARE_CLASS( CGravityVortexController, CBaseEntity );
-	DECLARE_DATADESC();
-
-public:
-	
-			CGravityVortexController( void ) : m_flEndTime( 0.0f ), m_flRadius( 256 ), m_flStrength( 256 ), m_flMass( 0.0f ) {}	
-	float	GetConsumedMass( void ) const;
-
-	static CGravityVortexController *Create( const Vector &origin, float radius, float strength, float duration );
-
-private:
-
-	void	ConsumeEntity( CBaseEntity *pEnt );
-	void	PullPlayersInRange( void );
-	bool	KillNPCInRange( CBaseEntity *pVictim, IPhysicsObject **pPhysObj );
-	void	CreateDenseBall( void );
-	void	PullThink( void );
-	void	StartPull( const Vector &origin, float radius, float strength, float duration );
-
-	float	m_flMass;		// Mass consumed by the vortex
-	float	m_flEndTime;	// Time when the vortex will stop functioning
-	float	m_flRadius;		// Area of effect for the vortex
-	float	m_flStrength;	// Pulling strength of the vortex
-};
 
 //-----------------------------------------------------------------------------
 // Purpose: Returns the amount of mass consumed by the vortex
@@ -110,14 +84,32 @@ void CGravityVortexController::PullPlayersInRange( void )
 	// FIXME: Need a more deterministic method here
 	if ( dist < 128.0f )
 	{
-		// Kill the player (with falling death sound and effects)
-		CTakeDamageInfo deathInfo( this, this, GetAbsOrigin(), GetAbsOrigin(), 200, DMG_FALL );
-		pPlayer->TakeDamage( deathInfo );
-		
-		if ( pPlayer->IsAlive() == false )
+		if (!m_bIsBossTeleporter)
+		{
+			// Kill the player (with falling death sound and effects)
+			CTakeDamageInfo deathInfo(this, this, GetAbsOrigin(), GetAbsOrigin(), 200, DMG_FALL);
+			pPlayer->TakeDamage(deathInfo);
+
+			if (pPlayer->IsAlive() == false)
+			{
+				color32 black = { 0, 0, 0, 255 };
+				UTIL_ScreenFade(pPlayer, black, 0.1f, 0.0f, (FFADE_OUT | FFADE_STAYOUT));
+				return;
+			}
+		}
+		else
 		{
 			color32 black = { 0, 0, 0, 255 };
-			UTIL_ScreenFade( pPlayer, black, 0.1f, 0.0f, (FFADE_OUT|FFADE_STAYOUT) );
+			UTIL_ScreenFade(pPlayer, black, 0.1f, 0.0f, (FFADE_OUT | FFADE_STAYOUT));
+
+			if (GlobalEntity_GetState("player_inbossbattle") == GLOBAL_OFF)
+			{
+				char szMapCommand[1024];
+				// create the command to execute
+				Q_snprintf(szMapCommand, sizeof(szMapCommand), "map firefight_advisor\nprogress_enable\n");
+				engine->ClientCommand(pPlayer->edict(), szMapCommand);
+			}
+
 			return;
 		}
 	}
@@ -160,6 +152,13 @@ bool CGravityVortexController::KillNPCInRange( CBaseEntity *pVictim, IPhysicsObj
 		// Don't bother with striders
 		if ( FClassnameIs( pBCC, "npc_strider" ) )
 			return false;
+
+		if (m_bIsBossTeleporter)
+		{
+			//don't kill any players
+			if (pBCC->IsPlayer())
+				return false;
+		}
 
 		// TODO: Make this an interaction between the NPC and the vortex
 
@@ -310,12 +309,23 @@ void CGravityVortexController::StartPull( const Vector &origin, float radius, fl
 //-----------------------------------------------------------------------------
 // Purpose: Creation utility
 //-----------------------------------------------------------------------------
-CGravityVortexController *CGravityVortexController::Create( const Vector &origin, float radius, float strength, float duration )
+CGravityVortexController *CGravityVortexController::Create( const Vector &origin, float radius, float strength, float duration, bool isTeleporter)
 {
 	// Create an instance of the vortex
 	CGravityVortexController *pVortex = (CGravityVortexController *) CreateEntityByName( "vortex_controller" );
 	if ( pVortex == NULL )
 		return NULL;
+
+	pVortex->m_bIsBossTeleporter = isTeleporter;
+
+	// Start our client-side effect. Normally the Hopwire would do this, but we have our own for this circumstance.
+	// We don't want to spawn a Hopwire for this effect.
+	if (pVortex->m_bIsBossTeleporter)
+	{
+		EntityMessageBegin(pVortex, true);
+		WRITE_BYTE(0);
+		MessageEnd();
+	}
 
 	// Start the vortex working
 	pVortex->StartPull( origin, radius, strength, duration );
@@ -463,7 +473,7 @@ void CGrenadeHopwire::KillStriders( void )
 //-----------------------------------------------------------------------------
 void CGrenadeHopwire::EndThink( void )
 {
-	if ( hopwire_vortex.GetBool() )
+	if ( hopwire_vortex.GetBool() || m_bIsBossTeleporter)
 	{
 		EntityMessageBegin( this, true );
 			WRITE_BYTE( 1 );
@@ -499,9 +509,12 @@ void CGrenadeHopwire::CombatThink( void )
 	UTIL_ScreenFade( pPlayer, white, 0.2f, 0.0f, FFADE_IN );
 
 	// Create the vortex controller to pull entities towards us
-	if ( hopwire_vortex.GetBool() )
+	if ( hopwire_vortex.GetBool() || m_bIsBossTeleporter)
 	{
-		m_hVortexController = CGravityVortexController::Create( GetAbsOrigin(), 512, 150, 3.0f );
+		m_hVortexController = CGravityVortexController::Create( GetAbsOrigin(), 
+			(m_bIsBossTeleporter ? MAX_COORD_FLOAT : 512), 
+			(m_bIsBossTeleporter ? 256.0f : 150), 
+			(m_bIsBossTeleporter ? 50.0f : 3.0f), m_bIsBossTeleporter);
 
 		// Start our client-side effect
 		EntityMessageBegin( this, true );
@@ -564,7 +577,7 @@ void CGrenadeHopwire::Detonate( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-CBaseGrenade *HopWire_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, float timer )
+CBaseGrenade *HopWire_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, float timer, bool isTeleporter)
 {
 	CGrenadeHopwire *pGrenade = (CGrenadeHopwire *) CBaseEntity::Create( "npc_grenade_hopwire", position, angles, pOwner );
 	
@@ -574,8 +587,30 @@ CBaseGrenade *HopWire_Create( const Vector &position, const QAngle &angles, cons
 		pGrenade->SetTimer( timer );
 	}
 
+	pGrenade->m_bIsBossTeleporter = isTeleporter;
+
 	pGrenade->SetVelocity( velocity, angVelocity );
 	pGrenade->SetThrower( ToBaseCombatCharacter( pOwner ) );
+
+	return pGrenade;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+CBaseGrenade* HopWire_Create_Simple(const Vector& position, const QAngle& angles, CBaseEntity* pOwner, float timer, bool isTeleporter)
+{
+	CGrenadeHopwire* pGrenade = (CGrenadeHopwire*)CBaseEntity::Create("npc_grenade_hopwire", position, angles, pOwner);
+
+	// Only set ourselves to detonate on a timer if we're not a trap hopwire
+	if (hopwire_trap.GetBool() == false)
+	{
+		pGrenade->SetTimer(timer);
+	}
+
+	pGrenade->m_bIsBossTeleporter = isTeleporter;
+
+	pGrenade->SetThrower(ToBaseCombatCharacter(pOwner));
 
 	return pGrenade;
 }
