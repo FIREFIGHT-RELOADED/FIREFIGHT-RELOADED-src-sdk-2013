@@ -8425,13 +8425,6 @@ bool CBasePlayer::BumpWeapon( CBaseCombatWeapon *pWeapon )
 			{
 				m_droppedWeapons.AddToTail(ConvertedClassname);
 			}
-
-			//give them enough ammo for 2 reloads
-			if (pWeapon->UsesClipsForAmmo1() && pWeapon->GetPrimaryAmmoCount() == pWeapon->GetMaxClip1())
-			{
-				GiveAmmo(pWeapon->GetMaxClip1() * 2, pWeapon->GetPrimaryAmmoType());
-			}
-			//assuming the clip is already full based on default clip.....
 		}
 		else
 		{
@@ -8440,6 +8433,13 @@ bool CBasePlayer::BumpWeapon( CBaseCombatWeapon *pWeapon )
 				m_droppedWeapons.Purge();
 			}
 		}
+
+		//give them enough ammo for 2 reloads
+		if (pWeapon->UsesClipsForAmmo1() && pWeapon->GetPrimaryAmmoCount() == pWeapon->GetMaxClip1())
+		{
+			GiveAmmo(pWeapon->GetMaxClip1() * 2, pWeapon->GetPrimaryAmmoType());
+		}
+		//assuming the clip is already full based on default clip.....
 	
 		Weapon_Equip( pWeapon );
 		if ( IsInAVehicle() )
