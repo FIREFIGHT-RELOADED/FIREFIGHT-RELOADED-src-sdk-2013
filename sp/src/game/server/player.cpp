@@ -1216,9 +1216,9 @@ bool GiveNewWeapon(CBasePlayer* pPlayer, const char* pClassname)
 				}
 
 				//give them enough ammo for 2 reloads
-				if (pWeapon->UsesClipsForAmmo1())
+				if (pWeapon->UsesClipsForAmmo1() && pWeapon->GetPrimaryAmmoCount() == pWeapon->GetMaxClip1())
 				{
-					pPlayer->GiveAmmo(pWeapon->GetDefaultClip1() * 2, pWeapon->GetPrimaryAmmoType());
+					pPlayer->GiveAmmo(pWeapon->GetMaxClip1() * 2, pWeapon->GetPrimaryAmmoType());
 				}
 				//assuming the clip is already full based on default clip.....
 			}
@@ -6142,9 +6142,9 @@ void CBasePlayer::LoadLoadoutFile(const char* kvName, bool savetoLoadout)
 						if (pWeapon)
 						{
 							//give them enough ammo for 2 reloads
-							if (pWeapon->UsesClipsForAmmo1())
+							if (pWeapon->UsesClipsForAmmo1() && pWeapon->GetPrimaryAmmoCount() == pWeapon->GetMaxClip1())
 							{
-								GiveAmmo(pWeapon->GetDefaultClip1() * 2, pWeapon->GetPrimaryAmmoType());
+								GiveAmmo(pWeapon->GetMaxClip1() * 2, pWeapon->GetPrimaryAmmoType());
 							}
 							//assuming the clip is already full based on default clip.....
 						}
@@ -6175,9 +6175,9 @@ void CBasePlayer::LoadLoadoutFile(const char* kvName, bool savetoLoadout)
 						if (pWeapon)
 						{
 							//give them enough ammo for 2 reloads
-							if (pWeapon->UsesClipsForAmmo1())
+							if (pWeapon->UsesClipsForAmmo1() && pWeapon->GetPrimaryAmmoCount() == pWeapon->GetMaxClip1())
 							{
-								GiveAmmo(pWeapon->GetDefaultClip1() * 2, pWeapon->GetPrimaryAmmoType());
+								GiveAmmo(pWeapon->GetMaxClip1() * 2, pWeapon->GetPrimaryAmmoType());
 							}
 							//assuming the clip is already full based on default clip.....
 						}
@@ -6207,9 +6207,9 @@ void CBasePlayer::LoadLoadoutFile(const char* kvName, bool savetoLoadout)
 						if (pWeapon)
 						{
 							//give them enough ammo for 2 reloads
-							if (pWeapon->UsesClipsForAmmo1())
+							if (pWeapon->UsesClipsForAmmo1() && pWeapon->GetPrimaryAmmoCount() == pWeapon->GetMaxClip1())
 							{
-								GiveAmmo(pWeapon->GetDefaultClip1() * 2, pWeapon->GetPrimaryAmmoType());
+								GiveAmmo(pWeapon->GetMaxClip1() * 2, pWeapon->GetPrimaryAmmoType());
 							}
 							//assuming the clip is already full based on default clip.....
 						}
@@ -8146,9 +8146,9 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 					}
 
 					//give them enough ammo for 2 reloads
-					if (pWeapon->UsesClipsForAmmo1())
+					if (pWeapon->UsesClipsForAmmo1() && pWeapon->GetPrimaryAmmoCount() == pWeapon->GetMaxClip1())
 					{
-						GiveAmmo(pWeapon->GetDefaultClip1() * 2, pWeapon->GetPrimaryAmmoType());
+						GiveAmmo(pWeapon->GetMaxClip1() * 2, pWeapon->GetPrimaryAmmoType());
 					}
 					//assuming the clip is already full based on default clip.....
 				}
@@ -8413,9 +8413,9 @@ bool CBasePlayer::BumpWeapon( CBaseCombatWeapon *pWeapon )
 			}
 
 			//give them enough ammo for 2 reloads
-			if (pWeapon->UsesClipsForAmmo1())
+			if (pWeapon->UsesClipsForAmmo1() && pWeapon->GetPrimaryAmmoCount() == pWeapon->GetMaxClip1())
 			{
-				GiveAmmo(pWeapon->GetDefaultClip1() * 2, pWeapon->GetPrimaryAmmoType());
+				GiveAmmo(pWeapon->GetMaxClip1() * 2, pWeapon->GetPrimaryAmmoType());
 			}
 			//assuming the clip is already full based on default clip.....
 		}
