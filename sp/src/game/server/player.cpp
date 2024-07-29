@@ -1205,14 +1205,11 @@ bool GiveNewWeapon(CBasePlayer* pPlayer, const char* pClassname)
 			CBaseCombatWeapon* pWeapon = (CBaseCombatWeapon*)item;
 			if (pWeapon)
 			{
-				if (sk_saveweapons.GetBool())
-				{
-					string_t ConvertedClassname = MAKE_STRING(pWeapon->GetClassname());
+				string_t ConvertedClassname = MAKE_STRING(pWeapon->GetClassname());
 
-					if (!pPlayer->m_awardedWeapons.HasElement(ConvertedClassname))
-					{
-						pPlayer->m_awardedWeapons.AddToTail(ConvertedClassname);
-					}
+				if (!pPlayer->m_awardedWeapons.HasElement(ConvertedClassname))
+				{
+					pPlayer->m_awardedWeapons.AddToTail(ConvertedClassname);
 				}
 
 				//give them enough ammo for 2 reloads
@@ -8135,14 +8132,11 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 				CBaseCombatWeapon* pWeapon = (CBaseCombatWeapon*)item;
 				if (pWeapon)
 				{
-					if (sk_savepurchasedweapons.GetBool())
-					{
-						string_t ConvertedClassname = MAKE_STRING(pWeapon->GetClassname());
+					string_t ConvertedClassname = MAKE_STRING(pWeapon->GetClassname());
 
-						if (!m_boughtWeapons.HasElement(ConvertedClassname))
-						{
-							m_boughtWeapons.AddToTail(ConvertedClassname);
-						}
+					if (!m_boughtWeapons.HasElement(ConvertedClassname))
+					{
+						m_boughtWeapons.AddToTail(ConvertedClassname);
 					}
 
 					//give them enough ammo for 2 reloads
@@ -8403,22 +8397,19 @@ bool CBasePlayer::BumpWeapon( CBaseCombatWeapon *pWeapon )
 		pWeapon->AddSolidFlags( FSOLID_NOT_SOLID );
 		pWeapon->AddEffects( EF_NODRAW );
 
-		if (sk_savedroppedweapons.GetBool())
+		string_t ConvertedClassname = MAKE_STRING(pWeapon->GetClassname());
+
+		if (!m_droppedWeapons.HasElement(ConvertedClassname))
 		{
-			string_t ConvertedClassname = MAKE_STRING(pWeapon->GetClassname());
-
-			if (!m_droppedWeapons.HasElement(ConvertedClassname))
-			{
-				m_droppedWeapons.AddToTail(ConvertedClassname);
-			}
-
-			//give them enough ammo for 2 reloads
-			if (pWeapon->UsesClipsForAmmo1() && pWeapon->GetPrimaryAmmoCount() == pWeapon->GetMaxClip1())
-			{
-				GiveAmmo(pWeapon->GetMaxClip1() * 2, pWeapon->GetPrimaryAmmoType());
-			}
-			//assuming the clip is already full based on default clip.....
+			m_droppedWeapons.AddToTail(ConvertedClassname);
 		}
+
+		//give them enough ammo for 2 reloads
+		if (pWeapon->UsesClipsForAmmo1() && pWeapon->GetPrimaryAmmoCount() == pWeapon->GetMaxClip1())
+		{
+			GiveAmmo(pWeapon->GetMaxClip1() * 2, pWeapon->GetPrimaryAmmoType());
+		}
+		//assuming the clip is already full based on default clip.....
 	
 		Weapon_Equip( pWeapon );
 		if ( IsInAVehicle() )
