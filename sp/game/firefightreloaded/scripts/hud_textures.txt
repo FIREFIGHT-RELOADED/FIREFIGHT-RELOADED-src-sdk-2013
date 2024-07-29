@@ -318,5 +318,11 @@
 				"height"	"32"
 				"weaponicon"	"1"
 		}
+		"weapon_physcannon"
+		{
+				"font"		"WeaponIconsKillFeed2"
+				"character"	"m"
+				"weaponicon"	"1"
+		}
 	}	
 }

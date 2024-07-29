@@ -11,5 +11,7 @@
 	"volley_normal_delay"	"0.1"
 	"volley_size"		"8"
 	"gibs"			"0"
+	//spawns a vortex on death that takes level 20 players to a different map.
+	"advisor_drone"		"1"
 	"persist"		"0"
 }
