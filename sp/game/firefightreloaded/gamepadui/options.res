@@ -158,6 +158,19 @@
 
 				"textprecision" "2"
 			}
+            
+            "SaveWeapons"
+            {
+                "text"			"#GameUI_SaveWeapons"
+				"type"			"wheelywheel"
+				"convar"		"sk_saveweapons"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+            }
 			
 			"Grapple"
 			{
@@ -921,6 +934,34 @@
 				"step"			"5"
 
 				"textprecision" "2"
+			}
+            
+            "BossGoTo_DroneKill"
+			{
+				"text"			"#GameUI_BossGoTo_DroneKill"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"sk_gotoboss_ondronekill"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+            
+            "BossGoTo_OnDeath"
+			{
+				"text"			"#GameUI_BossGoTo_OnDeath"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"sk_gotoboss_ondeath"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
 			}
             
             "AdvisorSpeed"

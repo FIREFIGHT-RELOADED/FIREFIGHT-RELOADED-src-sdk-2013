@@ -1012,8 +1012,8 @@ public:
 				}
 			}
 
-			// If we hit an antlion, don't stop, but kill it
-			if ( pEntity->Classify() == CLASS_ANTLION  && g_pGameRules->IsSkillLevel( SKILL_EASY ) )
+			// kill anything in our path
+			if (pEntity->IsNPC())
 			{
 				CBaseEntity *pHunter = (CBaseEntity *)EntityFromEntityHandle( m_pPassEnt );
 				Hunter_ApplyChargeDamage( pHunter, pEntity, pEntity->GetHealth() );

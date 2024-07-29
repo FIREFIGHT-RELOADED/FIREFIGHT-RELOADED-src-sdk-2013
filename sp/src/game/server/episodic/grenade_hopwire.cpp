@@ -511,7 +511,7 @@ void CGrenadeHopwire::CombatThink( void )
 		m_hVortexController = CGravityVortexController::Create( GetAbsOrigin(), 
 			(m_bIsBossTeleporter ? 8192 : 512),
 			(m_bIsBossTeleporter ? 256.0f : 150), 
-			(m_bIsBossTeleporter ? 50.0f : 3.0f), m_bIsBossTeleporter);
+			(m_bIsBossTeleporter ? 20.0f : 3.0f), m_bIsBossTeleporter);
 
 		// Start our client-side effect
 		EntityMessageBegin( this, true );

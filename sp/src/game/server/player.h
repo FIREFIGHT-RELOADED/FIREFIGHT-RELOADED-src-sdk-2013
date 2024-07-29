@@ -321,7 +321,7 @@ public:
 	virtual void			ForceRespawn( void );
 
 	virtual void			InitialSpawn( void );
-	KeyValues*				LoadLoadoutFile(const char* kvName);
+	virtual void			LoadLoadoutFile(const char* kvName, bool savetoLoadout = true);
 	virtual void			WeaponSpawnLogic(void);
 	virtual void			InitHUD( void ) {}
 	virtual void			ShowViewPortPanel( const char * name, bool bShow = true, KeyValues *data = NULL );
@@ -985,6 +985,9 @@ public:
 
 	// Used by gamemovement to check if the entity is stuck.
 	int m_StuckLast;
+
+	KeyValues* m_kvLoadout;
+	CUtlVector<string_t> m_awardedWeapons;
 	
 	// FIXME: Make these protected or private!
 

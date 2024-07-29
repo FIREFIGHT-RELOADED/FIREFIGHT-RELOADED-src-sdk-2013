@@ -120,6 +120,8 @@ ConVar cl_backspeed( "cl_backspeed", "450", FCVAR_REPLICATED | FCVAR_CHEAT );
 // This is declared in the engine, too
 ConVar	sv_noclipduringpause( "sv_noclipduringpause", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "If cheats are enabled, then you can noclip with the game paused (for doing screenshots, etc.)." );
 
+ConVar sk_saveweapons("sk_saveweapons", "1", FCVAR_ARCHIVE);
+
 extern ConVar sv_maxunlag;
 extern ConVar sv_turbophysics;
 extern ConVar *sv_maxreplay;
@@ -693,6 +695,8 @@ BEGIN_DATADESC( CBasePlayer )
 	DEFINE_FIELD( m_nWallRunState, FIELD_INTEGER),
 	DEFINE_FIELD( m_vecWallNorm, FIELD_POSITION_VECTOR ),
 
+	DEFINE_UTLVECTOR(m_awardedWeapons, FIELD_STRING),
+
 	// DEFINE_FIELD( m_nBodyPitchPoseParam, FIELD_INTEGER ),
 	// DEFINE_ARRAY( m_StepSoundCache, StepSoundCache_t,  2  ),
 
@@ -892,6 +896,8 @@ CBasePlayer::CBasePlayer( )
 	m_iHealthUpgrades = 0;
 
 	m_fRegenRate = sv_regeneration_rate.GetFloat();
+
+	m_kvLoadout = NULL;
 }
 
 CBasePlayer::~CBasePlayer( )
@@ -1189,7 +1195,25 @@ bool GiveNewWeapon(CBasePlayer* pPlayer, const char* pClassname)
 {
 	if (!pPlayer->Weapon_OwnsThisType(pClassname))
 	{
-		pPlayer->GiveNamedItem(pClassname, 0, true);
+		CBaseEntity *item = pPlayer->GiveNamedItem(pClassname, 0, true);
+		if (item != NULL)
+		{
+			if (sk_saveweapons.GetBool())
+			{
+				pPlayer->m_awardedWeapons.AddToTail(MAKE_STRING(item->GetClassname()));
+			}
+
+			CBaseCombatWeapon* pWeapon = (CBaseCombatWeapon*)item;
+			if (pWeapon)
+			{
+				//give them enough ammo for 2 reloads
+				if (pWeapon->UsesClipsForAmmo1())
+				{
+					pPlayer->GiveAmmo(pWeapon->GetDefaultClip1() * 2, pWeapon->GetPrimaryAmmoType());
+				}
+				//assuming the clip is already full based on default clip.....
+			}
+		}
 		return true;
 	}
 	else
@@ -5946,119 +5970,178 @@ CBaseEntity *CBasePlayer::EntSelectSpawnPoint()
 	return pSpot;
 }
 
-KeyValues* CBasePlayer::LoadLoadoutFile(const char* kvName)
+void CBasePlayer::LoadLoadoutFile(const char* kvName, bool savetoLoadout)
 {
 	EquipSuit();
 
+	//disable the loadout values so the values don't persist upon loadout change.
+	SetPreventWeaponPickup(false);
+	m_bHardcore = false;
+	m_bHardcoreNoDisconnect = false;
+	m_bIronKick = false;
+	m_bIronKickNoWeaponPickupOnly = false;
+
 	char szFullFileName[_MAX_PATH];
 	Q_snprintf(szFullFileName, sizeof(szFullFileName), "scripts/loadouts/%s.txt", kvName);
-
+	
 	KeyValues* pKV = new KeyValues(kvName);
 	if (pKV->LoadFromFile(filesystem, szFullFileName))
 	{
-		KeyValues* pNode = pKV->GetFirstSubKey();
-		while (pNode)
+		if (savetoLoadout && m_kvLoadout == NULL)
 		{
+			m_kvLoadout = pKV->MakeCopy();
+		}
+	}
+	else
+	{
+		LoadLoadoutFile("default", savetoLoadout);
+		return;
+	}
+
+	KeyValues* pNode = NULL;
+
+	if (!savetoLoadout)
+	{
+		pNode = pKV->GetFirstSubKey();
+	}
+	else
+	{
+		pNode = m_kvLoadout->GetFirstSubKey();
+	}
+
+	while (pNode)
+	{
+		if (m_bHardcore == false)
+		{
+			m_bHardcore = pNode->GetBool("hardcore", false);
+
 			if (m_bHardcore == false)
 			{
-				m_bHardcore = pNode->GetBool("hardcore", false);
-
-				if (m_bHardcore == false)
-				{
-					m_bHardcore = pNode->GetBool("permadeath", false);
-				}
-
-				if (m_bHardcore)
-				{
-					m_bHardcoreNoDisconnect = pNode->GetBool("nodisconnect", false);
-				}
+				m_bHardcore = pNode->GetBool("permadeath", false);
 			}
 
-			const char* itemName = pNode->GetString("weapon", "");
-
-			if (itemName)
+			if (m_bHardcore)
 			{
-				if (Q_stristr(itemName, "weapon_grapple") && !sv_player_grapple.GetBool())
-					continue;
-
-				GiveNamedItem(itemName);
+				m_bHardcoreNoDisconnect = pNode->GetBool("nodisconnect", false);
 			}
+		}
 
-			const char* itemAmmoType = pNode->GetString("ammotype", "");
-			int itemAmmoNum = pNode->GetInt("ammonum", 0);
+		const char* itemName = pNode->GetString("weapon", "");
 
-			if (itemAmmoType && itemAmmoNum > 0)
+		if (itemName)
+		{
+			if (Q_stristr(itemName, "weapon_grapple") && !sv_player_grapple.GetBool())
+				continue;
+
+			GiveNamedItem(itemName);
+		}
+
+		const char* itemAmmoType = pNode->GetString("ammotype", "");
+		int itemAmmoNum = pNode->GetInt("ammonum", 0);
+
+		if (itemAmmoType && itemAmmoNum > 0)
+		{
+			BaseClass::GiveAmmo(itemAmmoNum, itemAmmoType);
+
+			//only read ammo2 if ammo 1 is available lol.
+			const char* itemAmmo2Type = pNode->GetString("ammo2type", "");
+			int itemAmmo2Num = pNode->GetInt("ammo2num", 0);
+
+			if (itemAmmo2Type && itemAmmo2Num > 0)
 			{
-				BaseClass::GiveAmmo(itemAmmoNum, itemAmmoType);
-
-				//only read ammo2 if ammo 1 is available lol.
-				const char* itemAmmo2Type = pNode->GetString("ammo2type", "");
-				int itemAmmo2Num = pNode->GetInt("ammo2num", 0);
-
-				if (itemAmmo2Type && itemAmmo2Num > 0)
-				{
-					BaseClass::GiveAmmo(itemAmmo2Num, itemAmmo2Type);
-				}
+				BaseClass::GiveAmmo(itemAmmo2Num, itemAmmo2Type);
 			}
+		}
 
-			int healthNum = pNode->GetInt("health", 0);
-			bool setMaxHealth = pNode->GetBool("setmaxhealth", false);
+		int healthNum = pNode->GetInt("health", 0);
+		bool setMaxHealth = pNode->GetBool("setmaxhealth", false);
 
-			if (healthNum > 0)
+		if (healthNum > 0)
+		{
+			IncrementHealthValue(healthNum, healthNum);
+			if (setMaxHealth)
 			{
-				IncrementHealthValue(healthNum, healthNum);
-				if (setMaxHealth)
-				{
-					IncrementMaxHealthValue(healthNum, healthNum);
-				}
+				IncrementMaxHealthValue(healthNum, healthNum);
 			}
+		}
 
-			int armorNum = pNode->GetInt("armor", 0);
-			bool setMaxArmor = pNode->GetBool("setmaxarmor", false);
+		int armorNum = pNode->GetInt("armor", 0);
+		bool setMaxArmor = pNode->GetBool("setmaxarmor", false);
 
-			if (armorNum > 0)
+		if (armorNum > 0)
+		{
+			IncrementArmorValue(armorNum, armorNum);
+			if (setMaxArmor)
 			{
-				IncrementArmorValue(armorNum, armorNum);
-				if (setMaxArmor)
-				{
-					IncrementMaxArmorValue(armorNum, armorNum);
-				}
+				IncrementMaxArmorValue(armorNum, armorNum);
 			}
+		}
 
-			int level = pNode->GetInt("level", 0);
+		int level = pNode->GetInt("level", 0);
 
-			if (level > 0)
+		if (level > 0)
+		{
+			SetLevel(level);
+		}
+
+		int money = pNode->GetInt("kash", 0);
+
+		if (money > 0)
+		{
+			if (GetMoney() <= 0)
 			{
-				SetLevel(level);
+				SetMoney(money);
 			}
+		}
 
-			int money = pNode->GetInt("kash", 0);
-
-			if (money > 0)
-			{
-				if (GetMoney() <= 0)
-				{
-					SetMoney(money);
-				}
-			}
+		if (m_bIronKick == false)
+		{
+			m_bIronKick = pNode->GetBool("ironkick", false);
 
 			if (m_bIronKick == false)
 			{
-				m_bIronKick = pNode->GetBool("ironkick", false);
+				m_bIronKick = pNode->GetBool("preventweaponpickup", false);
 
-				if (m_bIronKick == false)
+				//if enabled here, only disable weapon pickups.
+				if (m_bIronKick)
 				{
-					m_bIronKick = pNode->GetBool("preventweaponpickup", false);
+					m_bIronKickNoWeaponPickupOnly = true;
+				}
+			}
+		}
 
-					//if enabled here, only disable weapon pickups.
-					if (m_bIronKick)
+		pNode = pNode->GetNextKey();
+	}
+
+	if (sk_saveweapons.GetBool())
+	{
+		if (m_awardedWeapons.Size() > 0)
+		{
+			for (int i = m_awardedWeapons.Size() - 1; i >= 0; i--)
+			{
+				const char* ConvertedString = STRING(m_awardedWeapons[i]);
+
+				if (ConvertedString)
+				{
+					if (Q_stristr(ConvertedString, "weapon_grapple") && !sv_player_grapple.GetBool())
+						continue;
+
+					CBaseEntity* item = GiveNamedItem(ConvertedString);
+					if (item != NULL)
 					{
-						m_bIronKickNoWeaponPickupOnly = true;
+						CBaseCombatWeapon* pWeapon = (CBaseCombatWeapon*)item;
+						if (pWeapon)
+						{
+							//give them enough ammo for 2 reloads
+							if (pWeapon->UsesClipsForAmmo1())
+							{
+								GiveAmmo(pWeapon->GetDefaultClip1() * 2, pWeapon->GetPrimaryAmmoType());
+							}
+							//assuming the clip is already full based on default clip.....
+						}
 					}
 				}
 			}
-
-			pNode = pNode->GetNextKey();
 		}
 	}
 
@@ -6068,8 +6151,6 @@ KeyValues* CBasePlayer::LoadLoadoutFile(const char* kvName)
 	{
 		SetPreventWeaponPickup(true);
 	}
-
-	return pKV;
 }
 
 void CBasePlayer::WeaponSpawnLogic(void)
@@ -6079,13 +6160,6 @@ void CBasePlayer::WeaponSpawnLogic(void)
 
 	Q_FixSlashes(mapname);
 	Q_strlower(mapname);
-
-	//disable the loadout values so the values don't persist upon loadout change.
-	SetPreventWeaponPickup(false);
-	m_bHardcore = false;
-	m_bHardcoreNoDisconnect = false;
-	m_bIronKick = false;
-	m_bIronKickNoWeaponPickupOnly = false;
 
 	if (gpGlobals->eLoadType != MapLoad_Background && !V_stristr(mapname, "credits"))
 	{
@@ -7538,7 +7612,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 
 	case 101:
 		gEvilImpulse101 = true;
-		LoadLoadoutFile("impulse101");
+		LoadLoadoutFile("impulse101", false);
 		gEvilImpulse101		= false;
 
 		break;

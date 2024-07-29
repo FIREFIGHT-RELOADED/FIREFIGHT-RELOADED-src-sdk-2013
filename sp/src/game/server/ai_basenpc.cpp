@@ -157,6 +157,8 @@ ConVar	ai_use_think_optimizations( "ai_use_think_optimizations", "1" );
 
 ConVar	ai_test_moveprobe_ignoresmall( "ai_test_moveprobe_ignoresmall", "0" );
 
+ConVar	sk_gotoboss_ondronekill("sk_gotoboss_ondronekill", "1", FCVAR_ARCHIVE);
+
 #ifdef HL2_EPISODIC
 extern ConVar ai_vehicle_avoidance;
 #endif // HL2_EPISODIC
@@ -674,7 +676,7 @@ void CAI_BaseNPC::Event_Killed( const CTakeDamageInfo &info )
 		new_info.SetAttacker( pAttacker );
 		((CSingleplayRules*)GameRules())->NPCKilled(this, new_info);
 
-		if (GlobalEntity_GetState("player_inbossbattle") == GLOBAL_OFF)
+		if (GlobalEntity_GetState("player_inbossbattle") == GLOBAL_OFF && sk_gotoboss_ondronekill.GetBool())
 		{
 			CBasePlayer* pPlayer = (CBasePlayer*)pAttacker;
 			if (!pPlayer)
@@ -7090,6 +7092,9 @@ void CAI_BaseNPC::NPCInit ( void )
 
 	m_denyOutlines = false;
 
+	m_iAttributePresetNum = -1;
+	m_IsWildcard = false;
+
 	if (!m_bDisableInitAttributes && entity_attributes.GetBool())
 	{
 		m_pAttributes = LoadRandomPresetFile(GetClassname());
@@ -7124,8 +7129,13 @@ void CAI_BaseNPC::LoadInitAttributes()
 
 		if (healthupgrade > 0)
 		{
-			SetHealth(GetHealth() + healthupgrade);
-			SetMaxHealth(GetHealth());
+			int upgradedHealth = GetMaxHealth() + healthupgrade;
+
+			if (GetMaxHealth() != upgradedHealth)
+			{
+				SetHealth(upgradedHealth);
+				SetMaxHealth(GetHealth());
+			}
 		}
 		else
 		{
@@ -7133,8 +7143,13 @@ void CAI_BaseNPC::LoadInitAttributes()
 
 			if (healthmulti > 0.0f)
 			{
-				SetHealth(GetHealth() * healthmulti);
-				SetMaxHealth(GetHealth());
+				int upgradedHealth = GetMaxHealth() * healthmulti;
+
+				if (GetMaxHealth() != upgradedHealth)
+				{
+					SetHealth(upgradedHealth);
+					SetMaxHealth(GetHealth());
+				}
 			}
 		}
 
@@ -7149,6 +7164,11 @@ void CAI_BaseNPC::LoadInitAttributes()
 
 		if (showOutlines && !m_denyOutlines)
 		{
+			if (IsGlowEffectActive())
+			{
+				RemoveGlowEffect();
+			}
+
 			//we can't transfer Color objects through the server, so we use Vectors.
 			Vector outlineColor = m_pAttributes->GetVector("outline_color");
 			if (outlineColor != Vector(0, 0, 0))
@@ -7159,6 +7179,9 @@ void CAI_BaseNPC::LoadInitAttributes()
 		}
 
 		m_IsAdvisorDrone = m_pAttributes->GetBool("advisor_drone", 0);
+
+		m_iAttributePresetNum = m_pAttributes->presetNum;
+		m_IsWildcard = m_pAttributes->wildcard;
 	}
 }
 
@@ -11007,6 +11030,9 @@ BEGIN_DATADESC( CAI_BaseNPC )
 	DEFINE_FIELD( m_bImportanRagdoll,			FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bPlayerAvoidState,			FIELD_BOOLEAN ),
 	DEFINE_FIELD(m_bBoss, FIELD_BOOLEAN),
+	DEFINE_FIELD(m_IsAdvisorDrone, FIELD_BOOLEAN),
+	DEFINE_FIELD(m_iAttributePresetNum, FIELD_INTEGER),
+	DEFINE_FIELD(m_IsWildcard, FIELD_BOOLEAN),
 
 	// Satisfy classcheck
 	// DEFINE_FIELD( m_ScheduleHistory, CUtlVector < AIScheduleChoice_t > ),
@@ -11498,6 +11524,18 @@ int CAI_BaseNPC::Restore( IRestore &restore )
 	{
 		m_bDoPostRestoreRefindPath = false;
 		DiscardScheduleState();
+	}
+
+	if (m_iAttributePresetNum > -1)
+	{
+		if (m_IsWildcard)
+		{
+			GiveWildcardAttributes(m_iAttributePresetNum);
+		}
+		else
+		{
+			GiveAttributes(m_iAttributePresetNum);
+		}
 	}
 
 	return status;

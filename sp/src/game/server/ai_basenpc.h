@@ -1420,6 +1420,8 @@ public:
 	bool			m_denyOutlines;
 	bool			m_IgnoreWeaponActivities;
 	bool			m_IsAdvisorDrone;
+	int				m_iAttributePresetNum;
+	bool			m_IsWildcard;
 	//-----------------------------------------------------
 	//
 	// Eye position, view offset, head direction, eye direction
