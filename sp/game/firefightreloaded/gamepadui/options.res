@@ -171,6 +171,32 @@
 					"1"		"#gameui_enabled"
 				}
             }
+            
+            "SavePurchasedWeapons"
+            {
+                "text"			"#GameUI_SaveWeapons_Store"
+				"type"			"wheelywheel"
+				"convar"		"sk_savepurchasedweapons"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+            }
+            
+            "SaveDroppedWeapons"
+            {
+                "text"			"#GameUI_SaveWeapons_Drops"
+				"type"			"wheelywheel"
+				"convar"		"sk_savedroppedweapons"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+            }
 			
 			"Grapple"
 			{

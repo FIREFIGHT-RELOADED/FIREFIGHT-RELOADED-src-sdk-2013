@@ -193,14 +193,14 @@
 		"ypos" 	"16"
 		"visible" "1"
 		"enabled" "1"
-		"SmallBoxSize" "40"
+		"SmallBoxSize" "50"
 		"LargeBoxWide" "178"
-		"LargeBoxTall" "80"
+		"LargeBoxTall" "50"
 		"BoxGap" "4"
 		"SelectionNumberXPos" "4"
 		"SelectionNumberYPos" "4"
 		"SelectionGrowTime"	"0.4"
-		"TextYPos" "62"
+		"TextYPos" "35"
 	}
 
 	HudCrosshair
