@@ -104,6 +104,8 @@
 @PointClass base(Weapon) studio("models/weapons/w_357.mdl") = wweapon_positiongrabber : "Mapadd Position Grabber" []
 @PointClass base(Weapon) studio("models/weapons/w_grapple.mdl") = weapon_grapple : "Grapple Beam" []
 @PointClass base(Weapon) studio("models/weapons/w_oicw_remake.mdl") = weapon_oicw : "OICW" []
+@PointClass base(Weapon) studio("models/weapons/w_alyx_gun.mdl") = weapon_alyxgun : "Alyxgun" []
+@PointClass base(Weapon) studio("models/weapons/w_gatling.mdl") = weapon_gatling : "Gatling Gun" []
 @PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom1 : "Custom Weapon 1" []
 @PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom2 : "Custom Weapon 2" []
 @PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom3 : "Custom Weapon 3" []
