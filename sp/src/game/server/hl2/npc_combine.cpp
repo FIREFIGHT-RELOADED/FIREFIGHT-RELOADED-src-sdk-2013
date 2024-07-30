@@ -2856,17 +2856,9 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 	{
 		if ( pEvent->event == COMBINE_AE_BEGIN_ALTFIRE )
 		{
-			if (FClassnameIs(GetActiveWeapon(), "weapon_ar2"))
+			if (GetActiveWeapon())
 			{
-				EmitSound("Weapon_CombineGuard.Special1");
-			}
-			else if (FClassnameIs(GetActiveWeapon(), "weapon_smg1"))
-			{
-				EmitSound("Weapon_SMG1.Double");
-			}
-			else
-			{
-				EmitSound("Weapon_CombineGuard.Special1"); //We left this play by default
+				EmitSound(GetActiveWeapon()->GetShootSound(DOUBLE_NPC));
 			}
 			handledEvent = true;
 		}

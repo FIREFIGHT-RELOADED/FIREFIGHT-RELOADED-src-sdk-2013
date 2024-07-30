@@ -235,8 +235,30 @@ void CGrenadeBugBait::BugBaitTouch( CBaseEntity *pOther )
 								}
 							}
 
-							pAntlion->SetFightTarget(this);
-							pAntlion->SetMoveState(ANTLION_MOVE_FIGHT_TO_GOAL);
+
+							CAI_BaseNPC* pNpc = (CAI_BaseNPC*)pOther;
+							if (pNpc)
+							{
+								CBasePlayer* pPlayer = ToBasePlayer(GetThrower());
+								if (pPlayer)
+								{
+									Relationship_t* npcrelationship = pPlayer->FindEntityRelationship(pNpc);
+
+									if (npcrelationship->disposition == D_HT)
+									{
+										//KILL THEM ALL in the future.
+										pAntlion->AddClassRelationship(pNpc->Classify(), D_HT, 0);
+										pNpc->AddEntityRelationship(pAntlion, D_HT, 0);
+										pAntlion->SetFightTarget(pNpc);
+										pAntlion->SetMoveState(ANTLION_MOVE_FIGHT_TO_GOAL);
+									}
+								}
+							}
+							else
+							{
+								pAntlion->SetFightTarget(this);
+								pAntlion->SetMoveState(ANTLION_MOVE_FIGHT_TO_GOAL);
+							}
 						}
 					}
 				}
@@ -244,28 +266,28 @@ void CGrenadeBugBait::BugBaitTouch( CBaseEntity *pOther )
 		}
 		else
 		{
-			CBasePlayer* pPlayer = ToBasePlayer(GetThrower());
-
-			if (pPlayer)
+			for (int i = 0; i < g_AI_Manager.NumAIs(); i++)
 			{
-				CAI_BaseNPC* pNpc = (CAI_BaseNPC*)pOther;
-				if (pNpc)
+				CAI_BaseNPC* pAI = g_AI_Manager.AccessAIs()[i];
+				if (pAI)
 				{
-					for (int i = 0; i < g_AI_Manager.NumAIs(); i++)
+					if (FClassnameIs(pAI, "npc_antlion") || FClassnameIs(pAI, "npc_antlionworker"))
 					{
-						CAI_BaseNPC* pAI = g_AI_Manager.AccessAIs()[i];
-						if (pAI)
+						CNPC_Antlion* pAntlion = (CNPC_Antlion*)pAI;
+						if (pAntlion)
 						{
-							if (FClassnameIs(pAI, "npc_antlion") || FClassnameIs(pAI, "npc_antlionworker"))
+							CAI_BaseNPC* pNpc = (CAI_BaseNPC*)pOther;
+							if (pNpc)
 							{
-								CNPC_Antlion* pAntlion = (CNPC_Antlion*)pAI;
-								if (pAntlion)
+								CBasePlayer* pPlayer = ToBasePlayer(GetThrower());
+								if (pPlayer)
 								{
-									Relationship_t *npcrelationship = pPlayer->FindEntityRelationship(pNpc);
+									Relationship_t* npcrelationship = pPlayer->FindEntityRelationship(pNpc);
 
 									if (npcrelationship->disposition == D_HT)
 									{
-										pAntlion->AddEntityRelationship(pNpc, D_HT, 0);
+										//KILL THEM ALL in the future.
+										pAntlion->AddClassRelationship(pNpc->Classify(), D_HT, 0);
 										pNpc->AddEntityRelationship(pAntlion, D_HT, 0);
 										pAntlion->SetFightTarget(pNpc);
 										pAntlion->SetMoveState(ANTLION_MOVE_FIGHT_TO_GOAL);

@@ -981,6 +981,9 @@ void C_SporeExplosion::Start( CParticleMgr *pParticleMgr, IPrototypeArgAccess *p
 //-----------------------------------------------------------------------------
 void C_SporeExplosion::AddParticles( void )
 {
+	if (m_pSporeEffect == NULL)
+		return;
+
 	//Spores
 	Vector	offset;
 	Vector	dir;
@@ -988,7 +991,7 @@ void C_SporeExplosion::AddParticles( void )
 	//Get our direction
 	AngleVectors( GetAbsAngles(), &dir );
 
-	SimpleParticle	*sParticle;
+	SimpleParticle	*sParticle = NULL;
 
 	for ( int i = 0; i < 4; i++ )
 	{
