@@ -1,0 +1,18 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/props_combine/combine_booth_tall01b"
+	"$surfaceprop" "metal"
+//	"$bumpmap" "models/props_combine/combine_booth_tall01b_normal"
+	"$envmap" "env_cubemap"
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[ .76 .9 1 ]"
+	"$basealphaenvmapmask" 1
+
+	"VertexLitGeneric_DX8"
+	{
+		"$envmaptint" "[ .25 .35 .4 ]"
+	}
+
+
+}

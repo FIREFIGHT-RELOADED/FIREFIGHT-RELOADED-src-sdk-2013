@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/wansyo/wansyo05"
+	"$selfillum" 1
+
+}

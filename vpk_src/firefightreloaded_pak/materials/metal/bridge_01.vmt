@@ -1,0 +1,8 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "Metal/bridge_01"
+//	"%compilepassbullets" 1
+	"$surfaceprop" "metal"
+	"%keywords" "airexchange,c17industrial,combine,wasteland"
+//	"$translucent" 1
+}

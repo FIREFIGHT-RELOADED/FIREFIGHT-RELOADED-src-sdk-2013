@@ -1,0 +1,24 @@
+"Refract"
+{
+	"$refractamount" ".2"
+ 	"$bluramount" "1"
+	"$REFRACTTINT" "{255 255 255}"
+	"$scale" "[1 1]"
+ 	"$normalmap" "models/jewel/jewel_l_normal"
+	"$envmap" "env_cubemap"
+	"$envmapsaturation" "[0 0 0]"
+	"$envmaptint" "[.5 .5 .5]"
+	"$envmapcontrast" 1
+ 	"$model" 1
+	"$refracttinttexture" "models/jewel/jewel_m01"
+	"Proxies"
+	{
+		"TextureScroll"
+		{
+			"texturescrollvar" "$bumptransform"
+			"texturescrollrate" 0.1
+			"texturescrollangle" 0
+		}
+
+	}
+}

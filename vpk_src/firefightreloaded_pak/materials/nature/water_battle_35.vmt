@@ -1,0 +1,82 @@
+// Wasteland water that's allowed to be expensive on dx9. Used on d2_coast_01, 03, and 04.
+
+"Water"
+{
+	"Water_DX60"
+	{
+		"$fallbackmaterial" "nature/water_dx70_opaq"
+	}
+	"Water_DX80"
+	{
+		"$refractamount" ".5"
+	}
+
+	"$abovewater" 1
+	"%compilewater" 1 
+
+//	"$basetexture" "nature/water002a"		// The main texture for the water surface.
+	"$bottommaterial" "nature/water_wasteland002a_beneath"	// material you look at the water surface from inside the water volume.
+							// This surface will have no reflection, just refraction, if it's enabled.
+	"%tooltexture" "nature/water002a"		// This is the texture that shows up in the Hammer browser.
+
+	// "$forcecheap" 1			// force water to not do realtime reflection/refraction.
+	// "$forceexpensive" 1		// force water to do realtime reflection/refraction.
+	// "$reflectentities" 1		// force water to reflect entities. By default, it does not.
+
+	"$refracttexture" "_rt_WaterRefraction"	// Determines if you get realtime refraction. It's always set to this value.
+	"$reflecttexture" "_rt_WaterReflection"	// Determines if you get realtime reflection. It's always set to this value.
+	
+	"$refractamount" "2"			// This determines the amount of screenspace warping that for real-time refraction.
+//	"$refracttint" "{150 150 170}"	// In the real-time refraction case, this modulates the color of the refraction.
+					 	// In the non-real-time case, this is not used.
+	"$reflectamount" "1"			// This determines the amount of screenspace warping that you get for real-time reflection.
+	"$reflecttint" "[1 1 1]"		// Same as for refract tint, but for reflection.
+	
+	"$normalmap" "dev/water_normal"		// This is the normal map for the water surface.
+	"$bumpmap" "dev/water_dudv"		// This is the dudv map for the water surface. Required for dx8 to work.
+	"$bumpframe" "0"
+			// Frame used for animated bump texture.
+
+	// "$bumptransform" 		// This is a transformer for the texcoords for the normal/dudv maps!
+					// See usage in TextureScroll below.
+					
+	"$scale" "[1 1]"		// BUG BUG: this isn't used currently!!!
+
+//	"$envmap" "Environment Maps/water_wasteland05"
+	
+	 "$envmap" "env_cubemap" 	// This is the envmap for cheap water reflection. Usually env_cubemap.
+	// "$envmapframe" 0		// This is the frame in case you ever need an animated envmap.
+
+	"$surfaceprop" "water"		// Set the surface property for bullet effects, etc.
+	
+	
+	"$fogenable" 1			// Turns on the fogging when inside the water volume.
+	"$fogcolor" "{25 32 40}"	// This is the fog color for the underwater volumetric fog for real-time refraction.
+					// For cheap water, this is the opaque refraction color.
+	"$fogstart" 0.0		// Sets the near plane for fogging.
+	"$fogend" 450.00		// Sets the far plane for fogging.
+
+
+	// NOTE: always use the "WaterLOD" proxy below!!!!!!
+
+	"Proxies"			// These proxies control the water animation.
+	{
+		"AnimatedTexture"
+		{
+			"animatedtexturevar" "$normalmap"
+			"animatedtextureframenumvar" "$bumpframe"
+			"animatedtextureframerate" 30.00
+		}
+
+		"TextureScroll"
+		{
+			"texturescrollvar" "$bumptransform"
+			"texturescrollrate" .05
+			"texturescrollangle" 45.00
+		}
+
+		"WaterLOD"
+		{
+		}
+	}
+}

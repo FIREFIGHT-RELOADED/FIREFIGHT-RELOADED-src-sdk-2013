@@ -1,0 +1,7 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models/props_foliage/b52_tree04"
+        "$model" 1
+        "$alphatest" 1
+        "$nodecal" 1
+}

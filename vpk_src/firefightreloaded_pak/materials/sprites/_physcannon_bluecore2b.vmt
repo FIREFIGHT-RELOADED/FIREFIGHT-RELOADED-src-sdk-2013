@@ -1,0 +1,12 @@
+//"Sprite"
+"UnlitGeneric"
+{
+	"$additive" 1
+	"$vertexcolor" 1
+	"$vertexalpha" 1
+	"$spriteorientation" "vp_parallel"
+	"$spriteorigin" "[ 0.50 0.50 ]"
+	"$basetexture" "sprites/physcannon_bluecore2b"
+//	"$basetexture" "sprites/orangecore2"
+//	"$ignorez" "1"
+}

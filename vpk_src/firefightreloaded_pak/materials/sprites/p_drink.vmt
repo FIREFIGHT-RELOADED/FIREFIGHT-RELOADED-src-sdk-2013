@@ -1,0 +1,8 @@
+"Sprite"
+{
+	"$spriteorientation" "parallel_upright"
+	"$spriteorigin" "[ 0.50 0.50 ]"
+	"$basetexture" "sprites/p_drink"
+	"$translucent" "1"
+	"$additive" 1
+}

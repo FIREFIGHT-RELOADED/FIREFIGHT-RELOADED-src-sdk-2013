@@ -240,7 +240,9 @@ public:
 };
 
 LINK_ENTITY_TO_CLASS( item_healthvial, CHealthVial );
+LINK_ENTITY_TO_CLASS(item_jewel, CHealthVial);
 PRECACHE_REGISTER( item_healthvial );
+PRECACHE_REGISTER( item_jewel );
 
 //-----------------------------------------------------------------------------
 // Wall mounted health kit. Heals the player when used.
