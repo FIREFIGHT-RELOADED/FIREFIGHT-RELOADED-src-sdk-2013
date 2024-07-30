@@ -6,17 +6,21 @@ SET dest=G:\Projects\GitHub\FIREFIGHT-RELOADED-src-sdk-2013
 SET modDir=D:\SteamLibrary\steamapps\common\FIREFIGHT RELOADED\firefightreloaded
 echo Destination set to %dest%
 
-SET debug=0
+SET debug=1
 SET basedir=%CD%\github
 SET gamesounddir=%basedir%\sound
 SET gamescriptdir=%basedir%\scripts
 SET gamecfgdir=%basedir%\cfg
+SET gamemapdir=%basedir%\maps
+SET gamemapgraphdir=%gamemapdir%\graphs
 SET gamesresourcedir=%basedir%\resource
 SET gamemapadddir=%basedir%\mapadd
 SET gamepaduidir=%basedir%\gamepadui
 if not exist "%gamesounddir%" mkdir "%gamesounddir%"
 if not exist "%gamescriptdir%" mkdir "%gamescriptdir%"
 if not exist "%gamecfgdir%" mkdir "%gamecfgdir%"
+if not exist "%gamemapdir%" mkdir "%gamemapdir%"
+if not exist "%gamemapgraphdir%" mkdir "%gamemapgraphdir%"
 if not exist "%gamesresourcedir%" mkdir "%gamesresourcedir%"
 if not exist "%gamemapadddir%" mkdir "%gamemapadddir%"
 if not exist "%gamepaduidir%" mkdir "%gamepaduidir%"
@@ -27,6 +31,7 @@ XCOPY /E "%CD%\sound" "%gamesounddir%" /sy
 XCOPY /E "%CD%\resource" "%gamesresourcedir%" /sy
 XCOPY /E "%CD%\scripts" "%gamescriptdir%" /sy
 XCOPY /E "%CD%\cfg" "%gamecfgdir%" /sy
+XCOPY /E "%CD%\maps\graphs" "%gamemapdir%" /s /y
 XCOPY /E "%CD%\mapadd" "%gamemapadddir%" /sy
 XCOPY /E "%CD%\gamepadui" "%gamepaduidir%" /sy
 XCOPY "%CD%\credits.txt" "%basedir%" /y
