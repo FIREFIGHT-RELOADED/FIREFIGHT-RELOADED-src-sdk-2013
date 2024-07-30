@@ -124,6 +124,8 @@ ConVar sk_saveweapons("sk_saveweapons", "1", FCVAR_ARCHIVE);
 ConVar sk_savepurchasedweapons("sk_savepurchasedweapons", "0", FCVAR_ARCHIVE);
 ConVar sk_savedroppedweapons("sk_savedroppedweapons", "0", FCVAR_ARCHIVE);
 
+ConVar player_defaulthealth("player_defaulthealth", "200", FCVAR_ARCHIVE, "");
+
 extern ConVar sv_maxunlag;
 extern ConVar sv_turbophysics;
 extern ConVar *sv_maxreplay;
@@ -599,7 +601,6 @@ BEGIN_DATADESC( CBasePlayer )
 	DEFINE_FIELD( m_ArmorValue, FIELD_INTEGER ),
 	DEFINE_FIELD( m_MaxArmorValue, FIELD_INTEGER),
 	DEFINE_FIELD(m_MaxHealthVal, FIELD_INTEGER),
-	DEFINE_FIELD(m_MaxHealthValExtra, FIELD_INTEGER),
 	DEFINE_FIELD(m_iHealthUpgrades, FIELD_INTEGER),
 	DEFINE_FIELD( m_DmgOrigin, FIELD_VECTOR ),
 	DEFINE_FIELD( m_DmgTake, FIELD_FLOAT ),
@@ -1683,10 +1684,13 @@ void CBasePlayer::ShowPerkMessage(const char *pMessage)
 	MessageEnd();
 }
 
-void CBasePlayer::Market_SetMaxHealth()
+void CBasePlayer::Market_SetMaxHealth(int limit)
 {
-	IncrementMaxHealthRegenValue(10);
-	m_iHealthUpgrades++;
+	if (m_iHealthUpgrades < limit)
+	{
+		IncrementMaxHealthValue(10, player_defaulthealth.GetInt() + (10 * limit));
+		m_iHealthUpgrades++;
+	}
 }
 
 void CBasePlayer::LevelUpClassic()
@@ -5540,8 +5544,6 @@ void CBasePlayer::ForceOrigin( const Vector &vecOrigin )
 	m_vForcedOrigin = vecOrigin;
 }
 
-extern ConVar player_defaulthealth;
-
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -6228,6 +6230,8 @@ void CBasePlayer::InitialSpawn( void )
 
 	SetXP(0);
 	SetLevel();
+
+	m_MaxHealthVal = player_defaulthealth.GetInt();
 }
 
 //-----------------------------------------------------------------------------
@@ -6251,9 +6255,9 @@ void CBasePlayer::Spawn( void )
 
 	m_ArmorValue		= SpawnArmorValue();
 	SetBlocksLOS( false );
-	m_iHealth = m_iHealth + m_MaxHealthValExtra;
+	
+	m_iHealth			= m_MaxHealthVal;
 	m_iMaxHealth		= INT_MAX;
-	m_MaxHealthVal		= m_iHealth;
 
 	// Clear all flags except for FL_FULLEDICT
 	if ( GetFlags() & FL_FAKECLIENT )
@@ -6713,19 +6717,6 @@ void CBasePlayer::IncrementMaxHealthValue(int nCount, int nMaxValue)
 		if (m_MaxHealthVal > nMaxValue)
 			m_MaxHealthVal = nMaxValue;
 	}
-}
-
-void CBasePlayer::IncrementMaxHealthRegenValue(int nCount, int nMaxValue)
-{
-	m_MaxHealthValExtra += nCount;
-
-	if (nMaxValue > 0)
-	{
-		if (m_MaxHealthValExtra > nMaxValue)
-			m_MaxHealthValExtra = nMaxValue;
-	}
-
-	IncrementMaxHealthValue(m_MaxHealthValExtra);
 }
 
 void CBasePlayer::IncrementHealthValue(int nCount, int nMaxValue)
@@ -8165,7 +8156,7 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		{
 			if (m_iHealthUpgrades < limit)
 			{
-				Market_SetMaxHealth();
+				Market_SetMaxHealth(limit);
 				engine->ClientCommand(edict(), "confirm_purchase %i", moneyAmount);
 			}
 			else

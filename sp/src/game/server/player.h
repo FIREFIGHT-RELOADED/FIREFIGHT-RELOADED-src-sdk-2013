@@ -718,7 +718,7 @@ public:
 	void					ShowLevelMessage(const char *pMessage);
 	void					ShowPerkMessage(const char *pMessage);
 
-	void					Market_SetMaxHealth();
+	void					Market_SetMaxHealth(int limit);
 
 	// Accessor methods
 	int		FragCount() const		{ return m_iFrags; }
@@ -767,7 +767,6 @@ public:
 
 	void	IncrementMaxArmorValue(int nCount, int nMaxValue = -1);
 	void	IncrementMaxHealthValue(int nCount, int nMaxValue = -1);
-	void	IncrementMaxHealthRegenValue(int nCount, int nMaxValue = -1);
 	virtual int	GetMaxHealthValue(void) { return m_MaxHealthVal; }
 	void	IncrementHealthValue(int nCount, int nMaxValue = -1);
 
@@ -1230,7 +1229,6 @@ private:
 	int						m_MaxArmorValue;
 
 	int						m_MaxHealthVal;
-	int						m_MaxHealthValExtra;
 	
 	float					m_AirFinished;
 	float					m_PainFinished;
