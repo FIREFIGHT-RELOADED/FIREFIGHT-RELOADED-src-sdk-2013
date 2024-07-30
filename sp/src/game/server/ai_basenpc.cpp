@@ -4148,10 +4148,10 @@ void CAI_BaseNPC::NPCThink( void )
 
 	if (ai_disappear.GetBool() && gpGlobals->curtime >= m_fIdleTime && !m_bBoss)
 	{
-		auto* pEnemy = GetEnemy();
-		auto* pComChar = pEnemy != nullptr ? pEnemy->MyCombatCharacterPointer() : nullptr;
+		CBaseEntity* pEnemy = GetEnemy();
+		CBaseCombatCharacter* pComChar = (pEnemy != nullptr) ? pEnemy->MyCombatCharacterPointer() : nullptr;
 
-		if ((pEnemy == nullptr || pComChar != nullptr) && !(pComChar->FInViewCone(this) && pComChar->FVisible(this)))
+		if (pComChar != nullptr && !(pComChar->FInViewCone(this) && pComChar->FVisible(this)))
 		{
 			// If I don't have an enemy, or if I do and they should be visible and I can't see them,
 			// then I've idled long enough. Get rid of me.
