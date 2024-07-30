@@ -1,0 +1,343 @@
+//firefightreloaded.fgd
+@include "hl2mp.fgd"
+
+@NPCClass base(BaseCombine) studio("models/combine_ace_soldier.mdl") = npc_combine_ace : "Combine Ace Soldier"
+[
+	input Assault(string) : "Start an assault. Parameter passed in should be the name of the rally point."
+
+	tacticalvariant(choices) : "Tactical Variant" : "0" =
+	[
+		"0" : "Normal Tactics"
+		"1" : "Pressure the enemy (Keep advancing)"
+		"2" : "Pressure until within 30ft, then normal"
+		"3" : "Grenade Happy"
+	]
+	
+	usemarch(choices) : "Walk Easy" : "0" : "When true, will use a variety of more casual walking animations instead of the standard walk. For use in crowds. WARNING: this animation only has a north component. For use under very special circumstances only." =
+	[
+		"0" : "No"
+		"2" : "Yes"
+	]
+	
+	input Assault(target_destination) : "Start an assault. Parameter passed in should be the name of the rally point."
+	input SetTacticalVariant(integer) : "Sets this soldier's tactical variant based on integer value."
+]
+
+@NPCClass base(BaseNPC) studio("models/fassassin.mdl") = npc_assassin : "Combine Assassin" []
+
+@NPCClass base(BaseNPC) studio("models/ministrider.mdl") = npc_ministrider :
+	"A smaller, faster, strider that can pursue the player into buildings. Fires AR2 rounds."
+[
+	FollowTarget(target_destination) : "Strider to Follow" : "" : "The name of the strider that this hunter should follow."
+	
+    // Inputs
+    input FollowStrider(target_destination) : "Sets the name of the strider that this hunter should follow."
+    
+	input SetMinigunTime(float) : "Time to shoot at any set minigun target."
+	input SetMinigunTarget(string) : "Hunter will shoot minigun at the named target."
+
+	input DisableShooting(void) : "Forces the hunter to be melee-only."
+	input EnableShooting(void) : "Allows the hunter to use range attacks or melee attacks."
+
+	input DisableSquadShootDelay(void) : "Disables the delay between range attacks for squads of hunters, allowing them to shoot as frequently as they wish."
+	input EnableSquadShootDelay(void) : "Enables the delay between range attacks for squads of hunters."
+	
+	input EnableUnplantedShooting(void) : "Used mainly for scripted attacks against bullseyes. Enables the hunter to shoot without having to plant first."
+	input DisableUnplantedShooting(void) : "Returns the hunter to normal after a call to EnableUnplantedShooting."
+
+	input DoPhysicsBlast(void) : "Hunter will instantly do the defensive physics blast."
+
+	input Crouch(void) : "Crouch down."
+	input Stand(void) : "Stand up from crouch."
+	input DisableCrouchWalk(void) : "UNUSED: Prevents the hunter from crouch walking."
+	input EnableCrouchWalk(void) : "UNUSED: Allows the hunter to crouch walk."
+
+	input UseSiegeTargets(string) : "Pass in the name of info_targets to shoot at when I can't shoot at the player."
+]
+
+@NPCClass base(BaseNPC) studio() = npc_advisor :
+	"An adorable sluglike alien with benevolent psychic powers."
+[
+	model(studio) : "World model" : "models/advisor_combat.mdl"
+	
+	levitationarea(string) : "Levitation Area" : "" : "Trigger volume inside which levitated objects reside"
+	
+	levitategoal_bottom(target_destination) : "Levitation Goal Bottom" : "" : "Objects will levitate at least this high"
+	levitategoal_top(target_destination)    : "Levitation Goal Top" : "" : "Objects will levitate at least this high"
+	
+	staging_ent_names(string) : "Staging Position Names"  : "" : "All entities with this name will be considered staging positions for the throw behavior."
+	priority_grab_name(string) : "Priority Name For Grabbing" : "" : "If any entities named this are present, the advisor will preferentially pick them up for throwing at the player."
+
+	output OnPickingThrowable(void) : "Fires just before I pick something to hurl"
+	output OnThrowWarn(void)        : "Fires when I trigger the warning green glow before tossing"
+	output OnThrow(void)            : "Fires just after I throw something"
+	output OnHealthIsNow(integer)       : "When I am damaged, my hitpoints thereafter"
+	
+	input SetThrowRate(float) : "Advisor will throw an object once per this many seconds (plus a little more)"
+	input WrenchImmediate(string) : "Advisor will immediately start levitating all objects with this name"
+	input SetStagingNum(integer): "Advisor will stage this many objects at once, then barrage the player."
+	input PinPlayer(string) : "Advisor will wrench the player to this point in the air. Use a null param to let go."
+	input BeamOn(string) : "Start a psychic-TK effect beam from the advisor to the specified object. You must remember to turn it off later."
+	input BeamOff(string) : "Turn off a psychic-TK effect beam from the advisor to the specified object."
+	
+	input ELightOn(void) : "Turn on an entity light at my location. Please remember to turn this off."
+	input ELightOff(void) : "Turn off my entity light."
+    
+    input TurnOnBulletResistanceOutline(void) : "Turn on our shields."
+	
+	input DoNothing(void) : ""
+]
+
+@NPCClass base(BaseNPC) studio("models/bullsquid.mdl") = npc_bullsquid : "Bullsquid" []
+@NPCClass base(BaseNPC) studio("models/houndeye.mdl") = npc_houndeye : "Houndeye" []
+@NPCClass base(BaseNPC) studio("models/agrunt.mdl") = npc_agrunt : "Alien Grunt" []
+@NPCClass base(BaseNPC) studio("models/controller.mdl") = npc_acontroller : "Alien Controller" []
+
+@PointClass base(Item) studio("models/items/grenadeammo.mdl") = item_ammo_grenade : "Frag Grenade (ammo)" []
+@PointClass base(Weapon) studio("models/weapons/w_sniper_new.mdl") = weapon_sniper_rifle : "Sniper Rifle" []
+@PointClass base(Weapon) studio("models/weapons/w_gauss.mdl") = weapon_gauss : "Tau Cannon" []
+@PointClass base(Weapon) studio("models/weapons/w_railgun.mdl") = weapon_railgun : "Railgun" []
+@PointClass base(Weapon) studio("models/weapons/w_katana.mdl") = weapon_katana : "Katana" []
+@PointClass base(Weapon) studio("models/weapons/w_knife.mdl") = weapon_knife : "Knife" []
+@PointClass base(Weapon) studio("models/weapons/w_mach_m249para.mdl") = weapon_m249para : "M249 Para" []
+@PointClass base(Weapon) studio("models/weapons/w_smg_mp5.mdl") = weapon_mp5 : "MP5" []
+@PointClass base(Weapon) studio("models/weapons/w_357.mdl") = wweapon_positiongrabber : "Mapadd Position Grabber" []
+@PointClass base(Weapon) studio("models/weapons/w_grapple.mdl") = weapon_grapple : "Grapple Beam" []
+@PointClass base(Weapon) studio("models/weapons/w_oicw_remake.mdl") = weapon_oicw : "OICW" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom1 : "Custom Weapon 1" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom2 : "Custom Weapon 2" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom3 : "Custom Weapon 3" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom4 : "Custom Weapon 4" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom5 : "Custom Weapon 5" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom6 : "Custom Weapon 6" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom7 : "Custom Weapon 7" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom8 : "Custom Weapon 8" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom9 : "Custom Weapon 9" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom10 : "Custom Weapon 10" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom11 : "Custom Weapon 11" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom12 : "Custom Weapon 12" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom13 : "Custom Weapon 13" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom14 : "Custom Weapon 14" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom15 : "Custom Weapon 15" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom16 : "Custom Weapon 16" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom17 : "Custom Weapon 17" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom18 : "Custom Weapon 18" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom19 : "Custom Weapon 19" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom20 : "Custom Weapon 20" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom21 : "Custom Weapon 21" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom22 : "Custom Weapon 22" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom23 : "Custom Weapon 23" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom24 : "Custom Weapon 24" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom25 : "Custom Weapon 25" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom26 : "Custom Weapon 26" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom27 : "Custom Weapon 27" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom28 : "Custom Weapon 28" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom29 : "Custom Weapon 29" []
+@PointClass base(Weapon) studio("models/weapons/w_pistol.mdl") = weapon_custom30 : "Custom Weapon 30" []
+
+@PointClass base(Item) studio("models/blueheart.mdl") = item_blueheart : "Small Health Kit (Blueheart)" []
+@PointClass base(Item) studio("models/blueheart.mdl") = item_blueheart2 : "HEV battery (Blueheart)" []
+
+@PointClass base(BasePropPhysics, Targetname, Angles, DamageFilter, BaseFadeProp) studio("models/items/item_item_crate.mdl") = item_crate_firefight : "Item Crate (Firefight)"
+[
+	CrateAppearance(string) : "Crate Appearance" : "models/items/item_item_crate.mdl"
+
+	ItemClass1(pointentityclass) : "Item Type 1" : "item_dynamic_resupply" : "Class name of the entity to spawn when the crate is broken"
+	ItemClass2(pointentityclass) : "Item Type 2" : "item_dynamic_resupply" : "Class name of the entity to spawn when the crate is broken"
+	ItemClass3(pointentityclass) : "Item Type 3" : "item_dynamic_resupply" : "Class name of the entity to spawn when the crate is broken"
+	ItemClass4(pointentityclass) : "Item Type 4" : "item_dynamic_resupply" : "Class name of the entity to spawn when the crate is broken"
+	ItemClass5(pointentityclass) : "Item Type 5" : "item_dynamic_resupply" : "Class name of the entity to spawn when the crate is broken"
+	ItemClass6(pointentityclass) : "Item Type 6" : "item_dynamic_resupply" : "Class name of the entity to spawn when the crate is broken"
+	ItemClass7(pointentityclass) : "Item Type 7" : "item_dynamic_resupply" : "Class name of the entity to spawn when the crate is broken"
+	ItemClass8(pointentityclass) : "Item Type 8" : "item_dynamic_resupply" : "Class name of the entity to spawn when the crate is broken"
+	ItemClass9(pointentityclass) : "Item Type 9" : "item_dynamic_resupply" : "Class name of the entity to spawn when the crate is broken"
+	ItemClass10(pointentityclass) : "Item Type 10" : "item_dynamic_resupply" : "Class name of the entity to spawn when the crate is broken"
+	ItemCount(integer) : "Item Count" : 1 : "Number of items to emit upon breakage"
+	SpecificResupply(target_destination) : "Specific resupply" : "" : "If item type is item_dynamic_resupply, specify a specific one to use instead of the master"
+
+	// Inputs
+	input Kill(void) : "Remove the item crate"
+	input Break(void) : "Breaks the breakable."
+	input SetHealth(integer) : "Sets a new value for health. If the breakable's health reaches zero it will break."
+	input AddHealth(integer) : "Adds health to the breakable. If the breakable's health reaches zero it will break."
+	input RemoveHealth(integer) : "Removes health from the breakable. If the breakable's health reaches zero it will break."
+	
+	// Outputs
+	output OnBreak(void) : "Fires when broken."
+	output OnHealthChanged(float) : "Fires when the health of this breakable changes, passing the new value of health as a percentage of max health, from [0..1]."
+
+	output OnCacheInteraction(void) : "This output fires when the player proves they have 'found' this crate. Fires on: Picked up by +USE, Picked up by Physcannon, Punted by Physcannon, Broken."
+]
+
+@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) = player_loadoutchanger : "Gives the player a default loadout."
+[
+	// Inputs
+	input SetLoadout(string) : "Set the player's loadout."
+    input UnsetLoadout(void) : "Revert the player's loadout back to the currently set default."
+]
+
+//-------------------------------------------------------------------------
+// Used to listen to events called from code
+//-------------------------------------------------------------------------
+
+@PointClass base(Targetname) = logic_eventlistener :
+	"An entity that can listen to events fired from code and fire " +
+	"an output when it happens."
+[
+	EventName(string) : "Event Name" : "" : "The name of the event that you want to listen for."
+	
+	StartDisabled(choices) : "Start Disabled" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	
+	//TeamNum(choices) : "Team Number" : -1 : "If set, will only fire its output if the event is generated from someone of the specified team." =
+	//[
+	//	-1 : "Don't care"
+	//	1 : "Team 1"
+	//	2 : "Team 2 (ORANGE)"
+	//	3 : "Team 3 (BLUE)"
+	//]
+		
+	// Inputs
+	input Enable(void) : "Enables this entity."
+	input Disable(void) : "Disables this entity."
+	input Toggle(void) : "Toggles this entity."
+	
+	// Outputs
+	output OnEventFired(void)  : "Fires when the event has been detected."
+]
+
+@PointClass base(logic_eventlistener) = point_event :
+	"An entity that can listen to events fired from code and fire " +
+	"an output when it happens."
+[
+	EventName(string) : "Event Name" : "" : "The names of the events that you want to listen for. Separated by colon. (e.g. player_hurt:game_init)"
+	
+	KeyName01(string) : "Key Name 01" : "" : "A keyvalue name to search for in detected events. If an event contains this key, then this entity will fire its respective OutValue output with the value."
+	KeyName02(string) : "Key Name 02" : "" : "A keyvalue name to search for in detected events. If an event contains this key, then this entity will fire its respective OutValue output with the value."
+	KeyName03(string) : "Key Name 03" : "" : "A keyvalue name to search for in detected events. If an event contains this key, then this entity will fire its respective OutValue output with the value."
+	KeyName04(string) : "Key Name 04" : "" : "A keyvalue name to search for in detected events. If an event contains this key, then this entity will fire its respective OutValue output with the value."
+	KeyName05(string) : "Key Name 05" : "" : "A keyvalue name to search for in detected events. If an event contains this key, then this entity will fire its respective OutValue output with the value."
+	KeyName06(string) : "Key Name 06" : "" : "A keyvalue name to search for in detected events. If an event contains this key, then this entity will fire its respective OutValue output with the value."
+	KeyName07(string) : "Key Name 07" : "" : "A keyvalue name to search for in detected events. If an event contains this key, then this entity will fire its respective OutValue output with the value."
+	KeyName08(string) : "Key Name 08" : "" : "A keyvalue name to search for in detected events. If an event contains this key, then this entity will fire its respective OutValue output with the value."
+	
+	StartDisabled(choices) : "Start Disabled" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	
+	//TeamNum(choices) : "Team Number" : -1 : "If set, will only fire its output if the event is generated from someone of the specified team." =
+	//[
+	//	-1 : "Don't care"
+	//	1 : "Team 1"
+	//	2 : "Team 2 (ORANGE)"
+	//	3 : "Team 3 (BLUE)"
+	//]
+		
+	// Inputs
+	input SetAllEvents(string) : "Sets all events using the keyvalue's : format. Pass nothing to clear all events."
+	input AddEvent(string) : "Adds an event to this entity."
+	
+	// Outputs
+	output OutEventName(string)  : "Outputs the detected event's name in case this entity is listening for multiple events."
+	output OutValue01(string)  : "Passes the value found in its respective keyname when an event is fired."
+	output OutValue02(string)  : "Passes the value found in its respective keyname when an event is fired."
+	output OutValue03(string)  : "Passes the value found in its respective keyname when an event is fired."
+	output OutValue04(string)  : "Passes the value found in its respective keyname when an event is fired."
+	output OutValue05(string)  : "Passes the value found in its respective keyname when an event is fired."
+	output OutValue06(string)  : "Passes the value found in its respective keyname when an event is fired."
+	output OutValue07(string)  : "Passes the value found in its respective keyname when an event is fired."
+	output OutValue08(string)  : "Passes the value found in its respective keyname when an event is fired."
+]
+
+@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) = player_loadoutchanger : "Gives the player a default loadout."
+[
+	// Inputs
+	input SetLoadout(string) : "Set the player's loadout."
+    input UnsetLoadout(void) : "Revert the player's loadout back to the currently set default."
+]
+
+@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) = player_levelchecker : "Checks the player's level and sees if it's at a certain point."
+[
+	Level(integer) : "Player Level to Check" : 1 : "The level this entity should watch out for."
+    
+    // Outputs
+	output IfAtLevel(void)  : "If the player is at the level defined in 'Player Level to Check', then...."
+]
+
+@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) = mapadd : "Mapadd Entity"
+[
+	input RunLabel(string) : "Run a mapadd label."
+]
+
+@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) = ambient_fmod : "An entity used to control the clientside FMOD integration."
+[
+	spawnflags(flags) =
+	[
+		1: "Play Everywhere" : 0
+        16: "Start Silent" : 0
+        32: "Not Looping" : 0
+        64: "Music" : 0
+	]
+    
+    message(sound) : "Sound to Play" : "" : "Name of the GameSound entry for the sound to play. Also supports direct .wav filenames."
+    volume(float) : "Volume" : 10 : "Sound volume, expressed as a range from 0 to 10, where 10 is the loudest."
+    pitch(float) : "Pitch" : 100 : "Sound pitch, expressed as a range from 0 to 255, where 255 is the highest."
+    maxdistance(float) : "Max Audible Distance" : "1250" : "Maximum distance at which this sound is audible."
+	SourceEntityName(string) : "Source Entity Name" : "" : "If an entity is specified, sound will come from this named entity instead of the location of ambient_fmod."
+
+	// Inputs
+	input PlaySound(void) : "Play the FMOD sound."
+	input StopSound(void) : "Stop the FMOD sound."
+    input SetVolume(float) : "Set the sound volume."
+    input IncreaseVolume(float) : "Increase the sound volume."
+    input DecreaseVolume(float) : "Decrease the sound volume."
+    input SetMusicSpeed(float) : "Set the speed of the sound."
+    input Pitch(float) : "Set the pitch of the sound."
+    input IncreasePitch(float) : "Increase the pitch of the sound."
+    input DecreasePitch(float) : "Decrease the pitch of the sound."
+]
+
+@PointClass base(Targetname, Parentname, Angles) iconsprite("editor/npc_maker.vmt") = npc_maker_firefight : "NPC Maker (Firefight)"
+[
+	StartDisabled(choices) : "Start Disabled" : 1 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	
+	AllowLargeNPCs(choices) : "Allow Large NPCs" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	
+	SpawnFrequency(string) : "Frequency" : "5" : "How often (in seconds) a new NPC will be spawned. If set to -1, a new NPC will be made when the last NPC dies."
+	RareNPCRarity(integer) : "Rare NPC Rarity" : 15 : "How often a rare NPC should spawn."
+	MaxLiveChildren(integer) : "Max Live NPCs" : -1 : "Maximum number of live children allowed at any one time (new ones will not be made until one dies). If set to -1, no limit is applied."
+	MaxLiveRareNPCs(integer) : "Max Live Rare NPCs" : -1 : "Maximum number of live rare NPCs allowed at any one time (new ones will not be made until one dies). If set to -1, no limit is applied. The rare enemies flag should be set to 1 before using."
+	NPCTargetname(string) : "Childrens' Name"
+	NPCSquadname(string) : "Childrens' Squad Name"
+	NPCHintGroup(string) : "Childrens' Hint Group"
+	
+	// Outputs
+	output OnSpawnNPC(string) : "Fired when an NPC is spawned. The activator is the NPC, and the string is the name of the NPC."
+	output OnSpawnRareNPC(string) : "Fired when a rare NPC is spawned. The activator is the rare NPC, and the string is the name of the rare NPC."
+	output OnAllLiveChildrenDead(void) : "Fired when all spawned children have died. This does not mean the spawned is exhausted, so a new child may be spawned any time after this (unless the maker is disabled)."
+
+	// Inputs
+	input Spawn(void) : "Spawns an NPC."
+	input SpawnRare(void) : "Spawns a Rare NPC."
+	input Toggle(void) : "Toggles the spawner enabled/disabled state."
+	input Enable(void) : "Enables the spawner."
+	input Disable(void) : "Disables the spawner."
+    input DisableAndDestroyAll(void) : "Disables the spawner and destroys all children."
+	input SetMaxLiveChildren(integer) : "Sets the maximum number of NPCs that can be alive at any one time from this spawner."
+	input SetMaxLiveRareNPCs(integer) : "Sets the maximum number of rare NPCs that can be alive at any one time from this spawner."
+	input SetSpawnFrequency(float) : "Sets how often (in seconds) a new NPC will be spawned."
+	input SetRareNPCRarity(integer) : "Sets how often a rare NPC should spawn."
+]
