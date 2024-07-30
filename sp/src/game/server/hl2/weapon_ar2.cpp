@@ -496,7 +496,7 @@ void CWeaponAR2::Zoom(void)
 float CWeaponAR2::GetFireRate(void)
 {
 	if (m_bZoomed)
-		return 0.3f;
+		return 0.2f;
 
 	return 0.1f;
 }

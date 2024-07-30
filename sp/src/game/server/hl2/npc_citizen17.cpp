@@ -1977,6 +1977,11 @@ int CNPC_Citizen::SelectScheduleRetrieveItem()
 {
 	if ( HasCondition(COND_BETTER_WEAPON_AVAILABLE) )
 	{
+		//playerbots have an assigned weapon loadout. Citizen will switch between weapons anyways, 
+		//meaning that whatever we pick up will get deleted
+		if (HasSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI))
+			return SCHED_NONE;
+
 		CBaseHLCombatWeapon *pWeapon = dynamic_cast<CBaseHLCombatWeapon *>(Weapon_FindUsable( WEAPON_SEARCH_DELTA ));
 		if ( pWeapon )
 		{
