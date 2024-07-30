@@ -200,40 +200,79 @@ void CGrenadeBugBait::BugBaitTouch( CBaseEntity *pOther )
 
 #if defined(FR_DLL)
 	//in FR, allow us to use bugbait to get antlions over to our side.
-	if (GlobalEntity_GetState("antlion_allied") != GLOBAL_ON && g_pGameRules->GetGamemode() != FIREFIGHT_PRIMARY_ANTLIONASSAULT && !g_fr_lonewolf.GetBool())
+	if (g_pGameRules->GetGamemode() != FIREFIGHT_PRIMARY_ANTLIONASSAULT && !g_fr_lonewolf.GetBool())
 	{
-		if (!GlobalEntity_IsInTable("antlion_allied"))
+		if (GlobalEntity_GetState("antlion_allied") != GLOBAL_ON)
 		{
-			GlobalEntity_Add(MAKE_STRING("antlion_allied"), gpGlobals->mapname, GLOBAL_ON);
+			if (!GlobalEntity_IsInTable("antlion_allied"))
+			{
+				GlobalEntity_Add(MAKE_STRING("antlion_allied"), gpGlobals->mapname, GLOBAL_ON);
+			}
+			else
+			{
+				GlobalEntity_SetState(MAKE_STRING("antlion_allied"), GLOBAL_ON);
+			}
+
+			for (int i = 0; i < g_AI_Manager.NumAIs(); i++)
+			{
+				CAI_BaseNPC* pNpc = g_AI_Manager.AccessAIs()[i];
+				if (pNpc)
+				{
+					if (FClassnameIs(pNpc, "npc_antlion") || FClassnameIs(pNpc, "npc_antlionworker"))
+					{
+						CNPC_Antlion* pAntlion = (CNPC_Antlion*)pNpc;
+						if (pAntlion)
+						{
+							//enable relationships.
+							pNpc->Activate();
+
+							if (g_pGameRules->GetSkillLevel() < SKILL_VERYHARD)
+							{
+								// heal them.
+								if (pNpc->GetHealth() < pNpc->GetMaxHealth())
+								{
+									pNpc->SetHealth(pNpc->GetMaxHealth());
+								}
+							}
+
+							pAntlion->SetFightTarget(this);
+							pAntlion->SetMoveState(ANTLION_MOVE_FIGHT_TO_GOAL);
+						}
+					}
+				}
+			}
 		}
 		else
 		{
-			GlobalEntity_SetState(MAKE_STRING("antlion_allied"), GLOBAL_ON);
-		}
+			CBasePlayer* pPlayer = ToBasePlayer(GetThrower());
 
-		for (int i = 0; i < g_AI_Manager.NumAIs(); i++)
-		{
-			CAI_BaseNPC* pNpc = g_AI_Manager.AccessAIs()[i];
-			if (pNpc)
+			if (pPlayer)
 			{
-				if (FClassnameIs(pNpc, "npc_antlion") || FClassnameIs(pNpc, "npc_antlionworker"))
+				CAI_BaseNPC* pNpc = (CAI_BaseNPC*)pOther;
+				if (pNpc)
 				{
-					//enable relationships.
-					pNpc->Activate();
-					if (g_pGameRules->GetSkillLevel() < SKILL_VERYHARD)
+					for (int i = 0; i < g_AI_Manager.NumAIs(); i++)
 					{
-						// heal them.
-						if (pNpc->GetHealth() < pNpc->GetMaxHealth())
+						CAI_BaseNPC* pAI = g_AI_Manager.AccessAIs()[i];
+						if (pAI)
 						{
-							pNpc->SetHealth(pNpc->GetMaxHealth());
-						}
-					}
+							if (FClassnameIs(pAI, "npc_antlion") || FClassnameIs(pAI, "npc_antlionworker"))
+							{
+								CNPC_Antlion* pAntlion = (CNPC_Antlion*)pAI;
+								if (pAntlion)
+								{
+									Relationship_t *npcrelationship = pPlayer->FindEntityRelationship(pNpc);
 
-					CNPC_Antlion* pAntlion = (CNPC_Antlion*)pNpc;
-					if (pAntlion)
-					{
-						pAntlion->SetFightTarget(this);
-						pAntlion->SetMoveState(ANTLION_MOVE_FIGHT_TO_GOAL);
+									if (npcrelationship->disposition == D_HT)
+									{
+										pAntlion->AddEntityRelationship(pNpc, D_HT, 0);
+										pNpc->AddEntityRelationship(pAntlion, D_HT, 0);
+										pAntlion->SetFightTarget(pNpc);
+										pAntlion->SetMoveState(ANTLION_MOVE_FIGHT_TO_GOAL);
+									}
+								}
+							}
+						}
 					}
 				}
 			}

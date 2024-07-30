@@ -94,6 +94,7 @@ ConVar mp_usehwmmodels( "mp_usehwmmodels", "0", NULL, "Enable the use of the hw 
 #endif
 
 ConVar player_defaulthealth("player_defaulthealth", "200", FCVAR_ARCHIVE, "");
+ConVar player_basexp("player_basexp", "1500", FCVAR_ARCHIVE, "");
 
 //extremely hacky solution for an extremely hacky problem
 ConVar player_cur_money("player_cur_money", "0", FCVAR_DEVELOPMENTONLY, "");
@@ -154,7 +155,7 @@ float CBasePlayer::GetTimeBase( void ) const
 
 int CBasePlayer::GetXpToLevelUp(int level)
 {
-	int exp_base = 1000 * (level * (level > 1 ? 0.5 : 1));
+	int exp_base = player_basexp.GetFloat() * (level * (level > 1 ? 0.5 : 1));
 	return exp_base;
 }
 

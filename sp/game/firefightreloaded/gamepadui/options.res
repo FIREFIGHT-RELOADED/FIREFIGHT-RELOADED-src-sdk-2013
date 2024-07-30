@@ -118,6 +118,20 @@
 				"textprecision" "2"
 			}
             
+            "PlayerBaseXP"
+			{
+				"text"			"#GameUI_PlayerBaseXP"
+				"type"			"slideyslide"
+				"convar"		"player_basexp"
+				"advanced"		"1"
+
+				"min"			"1"
+				"max"			"9999"
+				"step"			"5"
+
+				"textprecision" "2"
+			}
+            
             "ArmorMode"
 			{
 				"text"			"#GameUI_ArmorMode"

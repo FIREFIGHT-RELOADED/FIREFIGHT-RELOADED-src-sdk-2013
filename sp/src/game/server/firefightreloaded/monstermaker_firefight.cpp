@@ -639,6 +639,14 @@ void CNPCMakerFirefight::MakeNPC()
 
 	DispatchActivate(pent);
 
+	if (pent->Classify() == CLASS_PLAYER_ALLY ||
+		pent->Classify() == CLASS_PLAYER_ALLY_VITAL ||
+		pent->Classify() == CLASS_VORTIGAUNT)
+	{
+		Vector allyColor = Vector(26, 77, 153);
+		pent->GiveOutline(allyColor);
+	}
+
 	if (m_ChildTargetName != NULL_STRING)
 	{
 		// if I have a netname (overloaded), give the child NPC that name as a targetname

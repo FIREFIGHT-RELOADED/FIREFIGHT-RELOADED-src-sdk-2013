@@ -1012,8 +1012,10 @@ public:
 				}
 			}
 
+			bool isGuardian = (FStrEq(pEntity->GetClassname(), "npc_antlionguard") || FStrEq(pEntity->GetClassname(), "npc_antlionguardian"));
+
 			// kill anything in our path
-			if (pEntity->IsNPC())
+			if (pEntity->IsNPC() && !isGuardian)
 			{
 				CBaseEntity *pHunter = (CBaseEntity *)EntityFromEntityHandle( m_pPassEnt );
 				Hunter_ApplyChargeDamage( pHunter, pEntity, pEntity->GetHealth() );

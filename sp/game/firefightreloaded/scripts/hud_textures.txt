@@ -308,6 +308,7 @@
 				"y"		"160"
 				"width"		"64"
 				"height"	"32"
+				"weaponicon"	"1"
 		}
 		"weapon_gatling"
 		{
