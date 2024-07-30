@@ -6,7 +6,7 @@ SET dest=G:\Projects\GitHub\FIREFIGHT-RELOADED-src-sdk-2013
 SET modDir=D:\SteamLibrary\steamapps\common\FIREFIGHT RELOADED\firefightreloaded
 echo Destination set to %dest%
 
-SET debug=1
+SET debug=0
 SET basedir=%CD%\github
 SET gamesounddir=%basedir%\sound
 SET gamescriptdir=%basedir%\scripts

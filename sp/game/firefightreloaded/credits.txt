@@ -27,6 +27,10 @@ Taito for the following items from Half-Life 2 Survivor Ver2.0 and Cyber Diver:
  - Energy Pistol models (Worldmodel, used for the Grappling Beam)
  - Fire Grenade textures
  - Combine Female Sniper model and textures (Used for the Combine Assassin enhancements done by Maestra Fénix)
+ - The Gatling Gun model
+ - Survivor Ver2.0 Player Models
+ - Survivor Ver2.0 Maps (notated with the prefix su_)
+ - Many other misc. assets.
 
 [NOR] Marcuzzz for Headspack V1.1, used for gore effects.
 Chyvachok from BSNOOCH, for even MORE gore effects and gibs.
