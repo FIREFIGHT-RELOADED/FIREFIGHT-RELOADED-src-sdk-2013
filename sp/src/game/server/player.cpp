@@ -5985,6 +5985,14 @@ void CBasePlayer::LoadLoadoutFile(const char* kvName, bool savetoLoadout)
 {
 	EquipSuit();
 
+	if (savetoLoadout)
+	{
+		if (m_kvLoadout != NULL)
+		{
+			m_kvLoadout = NULL;
+		}
+	}
+
 	//disable the loadout values so the values don't persist upon loadout change.
 	SetPreventWeaponPickup(false);
 	m_bHardcore = false;
