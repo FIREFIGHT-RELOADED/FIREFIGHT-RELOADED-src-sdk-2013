@@ -53,6 +53,7 @@ WeaponData
 		"special1"			"Weapon_SMG1.Special1"
 		"special2"			"Weapon_SMG1.Special2"
 		"double_shot"		"Weapon_SMG1.Double"
+		"double_shot_npc"		"Weapon_SMG1.Double"
 		"burst"				"Weapon_SMG1.Burst"
 	}
 
