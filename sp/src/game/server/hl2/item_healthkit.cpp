@@ -18,7 +18,9 @@
 #include "tier0/memdbgon.h"
 
 ConVar	sk_healthkit( "sk_healthkit","0" );		
-ConVar	sk_healthvial( "sk_healthvial","0" );		
+ConVar	sk_healthvial( "sk_healthvial","0" );
+ConVar	sk_healthvial_jewel_m_multiplier("sk_healthvial_jewel_m_multiplier", "1.5");
+ConVar	sk_healthvial_jewel_l_multiplier("sk_healthvial_jewel_l_multiplier", "2");
 ConVar	sk_healthcharger( "sk_healthcharger","0" );
 ConVar	sk_healthcharger_usesmoney("sk_healthcharger_usesmoney", "1", FCVAR_ARCHIVE);
 ConVar	sv_blueheartmode("sv_blueheartmode", "0", FCVAR_NOTIFY | FCVAR_REPLICATED);
@@ -194,24 +196,81 @@ class CHealthVial : public CItem
 public:
 	DECLARE_CLASS( CHealthVial, CItem );
 
+	enum JewelMode
+	{
+		JEWEL_SMALL,
+		JEWEL_MEDIUM,
+		JEWEL_LARGE,
+	};
+
+	int iJewelMode;
+
 	void Spawn( void )
 	{
 		Precache();
-		SetModel( "models/healthvial.mdl" );
+		if (ClassMatches("item_jewel"))
+		{
+			int randModel = RandomInt(JEWEL_SMALL, JEWEL_LARGE);
+			iJewelMode = randModel;
+			switch (randModel)
+			{
+				default:
+				case JEWEL_SMALL:
+					SetModel("models/jewel/jewel_s.mdl");
+					break;
+
+				case JEWEL_MEDIUM:
+					SetModel("models/jewel/jewel_m.mdl");
+					break;
+
+				case JEWEL_LARGE:
+					SetModel("models/jewel/jewel_l.mdl");
+					break;
+			}
+		}
+		else
+		{
+			SetModel("models/healthvial.mdl");
+		}
 
 		BaseClass::Spawn();
 	}
 
 	void Precache( void )
 	{
-		PrecacheModel("models/healthvial.mdl");
+		if (ClassMatches("item_jewel"))
+		{
+			PrecacheModel("models/jewel/jewel_s.mdl");
+			PrecacheModel("models/jewel/jewel_m.mdl");
+			PrecacheModel("models/jewel/jewel_l.mdl");
+		}
+		else
+		{
+			PrecacheModel("models/healthvial.mdl");
+		}
 
 		PrecacheScriptSound( "HealthVial.Touch" );
 	}
 
 	bool MyTouch( CBasePlayer *pPlayer )
 	{
-		if ( pPlayer->TakeHealth( sk_healthvial.GetFloat(), DMG_GENERIC ) )
+		float healthCount = sk_healthvial.GetFloat();
+
+		if (ClassMatches("item_jewel"))
+		{
+			switch (iJewelMode)
+			{
+			case JEWEL_MEDIUM:
+				healthCount = healthCount * sk_healthvial_jewel_m_multiplier.GetFloat();
+				break;
+
+			case JEWEL_LARGE:
+				healthCount = healthCount * sk_healthvial_jewel_l_multiplier.GetFloat();
+				break;
+			}
+		}
+
+		if ( pPlayer->TakeHealth(healthCount, DMG_GENERIC ) )
 		{
 			CSingleUserRecipientFilter user( pPlayer );
 			user.MakeReliable();
