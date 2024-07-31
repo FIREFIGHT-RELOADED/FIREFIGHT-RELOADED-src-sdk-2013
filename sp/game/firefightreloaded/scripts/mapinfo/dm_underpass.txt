@@ -319,7 +319,7 @@
                     "ItemClass2"    "weapon_smg1"
                     "ItemClass3"    "weapon_shotgun"
                     "ItemClass4"    "weapon_railgun"
-                    "ItemClass5"    "weapon_ar2"
+                    "ItemClass5"    "weapon_oicw"
                     "ItemClass6"    "weapon_m249para"
                     "ItemClass7"    "item_ammo_grenade"
                     "ItemClass8"    "weapon_rpg"
