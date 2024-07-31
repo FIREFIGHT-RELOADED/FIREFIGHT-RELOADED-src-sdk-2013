@@ -1594,7 +1594,7 @@ void CNPC_Citizen::GatherConditions()
 
 		float flDistSqr = ( GetAbsOrigin() - pPlayer->GetAbsOrigin() ).Length2DSqr();
 		float flStareDist = sk_citizen_player_stare_dist.GetFloat();
-		float flPlayerDamage = pPlayer->GetMaxHealth() - pPlayer->GetHealth();
+		float flPlayerDamage = pPlayer->GetMaxHealthValue() - pPlayer->GetHealth();
 
 		if( pPlayer->IsAlive() && flPlayerDamage > 0 && (flDistSqr <= flStareDist * flStareDist) && pPlayer->FInViewCone( this ) && pPlayer->FVisible( this ) )
 		{
@@ -2158,6 +2158,25 @@ void CNPC_Citizen::OnClearGoal( CAI_BehaviorBase *pBehavior, CAI_GoalEntity *pGo
 		m_hSavedFollowGoalEnt = NULL;
 }
 
+int GetMaxHealthValueForEntity(CBaseEntity* pEnt)
+{
+	if (pEnt->IsPlayer())
+	{
+		CBasePlayer* plr = (CBasePlayer*)pEnt;
+		if (plr)
+		{
+			return plr->GetMaxHealthValue();
+		}
+		else
+		{
+			return pEnt->GetMaxHealth();
+		}
+	}
+	else
+	{
+		return pEnt->GetMaxHealth();
+	}
+}
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -2201,7 +2220,7 @@ void CNPC_Citizen::StartTask( const Task_t *pTask )
 #endif
 		if ( IsMedic() )
 		{
-			if ( GetTarget() && GetTarget()->IsPlayer() && GetTarget()->m_iMaxHealth == GetTarget()->m_iHealth )
+			if ( GetTarget() && GetTarget()->IsPlayer() && GetMaxHealthValueForEntity(GetTarget()) == GetTarget()->GetHealth() )
 			{
 				// Doesn't need us anymore
 				TaskComplete();
@@ -3948,7 +3967,7 @@ bool CNPC_Citizen::ShouldHealTarget( CBaseEntity *pTarget, bool bActiveUse )
 #endif
 			)
 	 	{
-			if ( pTarget->m_iHealth > 0 )
+			if ( pTarget->GetHealth() > 0 )
 			{
 	 			if ( bActiveUse )
 				{
@@ -3957,12 +3976,12 @@ bool CNPC_Citizen::ShouldHealTarget( CBaseEntity *pTarget, bool bActiveUse )
 					float timeRecharge = sk_citizen_heal_player_delay.GetFloat();
 					float maximumHealAmount = sk_citizen_heal_player.GetFloat();
 					float healAmt = ( maximumHealAmount * ( 1.0 - ( timeFullHeal - gpGlobals->curtime ) / timeRecharge ) );
-					if ( healAmt > pTarget->m_iMaxHealth - pTarget->m_iHealth )
-						healAmt = pTarget->m_iMaxHealth - pTarget->m_iHealth;
+					if ( healAmt > GetMaxHealthValueForEntity(pTarget) - pTarget->GetHealth() )
+						healAmt = GetMaxHealthValueForEntity(pTarget) - pTarget->GetHealth();
 					if ( healAmt < sk_citizen_heal_player_min_forced.GetFloat() )
 						return false;
 
-	 				return ( pTarget->m_iMaxHealth > pTarget->m_iHealth );
+	 				return (GetMaxHealthValueForEntity(pTarget) > pTarget->GetHealth() );
 				}
 	 				
 				// Are we ready to heal again?
@@ -3975,17 +3994,17 @@ bool CNPC_Citizen::ShouldHealTarget( CBaseEntity *pTarget, bool bActiveUse )
 					int requiredHealth;
 
 					if ( bTargetIsPlayer )
-						requiredHealth = pTarget->GetMaxHealth() - sk_citizen_heal_player.GetFloat();
+						requiredHealth = GetMaxHealthValueForEntity(pTarget) - sk_citizen_heal_player.GetFloat();
 					else
-						requiredHealth = pTarget->GetMaxHealth() * sk_citizen_heal_player_min_pct.GetFloat();
+						requiredHealth = GetMaxHealthValueForEntity(pTarget) * sk_citizen_heal_player_min_pct.GetFloat();
 
-					if ( ( pTarget->m_iHealth <= requiredHealth ) && IRelationType( pTarget ) == D_LI )
+					if ( ( pTarget->GetHealth() <= requiredHealth ) && IRelationType( pTarget ) == D_LI )
 						return true;
 				}
 			}
 			else
 			{
-				DevMsg("Hello?\nAnyone who happens to be nearby!\nThe person at this computer is dead!\nThey have fallen prey to any number of your countless human physiological vulnerabilities.\nIt's indicative of the long-term sustainability of your species!\nPlease remove their corpse from the area and instruct another human to take their place making sure they understand basic first-person video game mechanics and filling them in on the history of narrative tropes in video gaming so that the irony and insightful commentary of this game is not lost on them.");
+				Warning("Hello?\nAnyone who happens to be nearby!\nThe person at this computer is dead!\nThey have fallen prey to any number of your countless human physiological vulnerabilities.\nIt's indicative of the long-term sustainability of your species!\nPlease remove their corpse from the area and instruct another human to take their place making sure they understand basic first-person video game mechanics and filling them in on the history of narrative tropes in video gaming so that the irony and insightful commentary of this game is not lost on them.");
 			}
 		}
 	}
@@ -4054,7 +4073,7 @@ bool CNPC_Citizen::ShouldHealTossTarget( CBaseEntity *pTarget, bool bActiveUse )
 	Vector toPlayer = ( pTarget->GetAbsOrigin() - GetAbsOrigin() );
 	if ( bActiveUse || !HaveCommandGoal() || toPlayer.Length() < HEAL_TOSS_TARGET_RANGE )
 	{
-		if ( pTarget->m_iHealth > 0 )
+		if ( pTarget->GetHealth() > 0 )
 		{
 			if ( bActiveUse )
 			{
@@ -4063,12 +4082,12 @@ bool CNPC_Citizen::ShouldHealTossTarget( CBaseEntity *pTarget, bool bActiveUse )
 				float timeRecharge = sk_citizen_heal_player_delay.GetFloat();
 				float maximumHealAmount = sk_citizen_heal_player.GetFloat();
 				float healAmt = ( maximumHealAmount * ( 1.0 - ( timeFullHeal - gpGlobals->curtime ) / timeRecharge ) );
-				if ( healAmt > pTarget->m_iMaxHealth - pTarget->m_iHealth )
-					healAmt = pTarget->m_iMaxHealth - pTarget->m_iHealth;
+				if ( healAmt > GetMaxHealthValueForEntity(pTarget) - pTarget->GetHealth() )
+					healAmt = GetMaxHealthValueForEntity(pTarget) - pTarget->GetHealth();
 				if ( healAmt < sk_citizen_heal_player_min_forced.GetFloat() )
 					return false;
 
-				return ( pTarget->m_iMaxHealth > pTarget->m_iHealth );
+				return (GetMaxHealthValueForEntity(pTarget) > pTarget->GetHealth());
 			}
 
 			// Are we ready to heal again?
@@ -4081,13 +4100,17 @@ bool CNPC_Citizen::ShouldHealTossTarget( CBaseEntity *pTarget, bool bActiveUse )
 				int requiredHealth;
 
 				if ( bTargetIsPlayer )
-					requiredHealth = pTarget->GetMaxHealth() - sk_citizen_heal_player.GetFloat();
+					requiredHealth = GetMaxHealthValueForEntity(pTarget) - sk_citizen_heal_player.GetFloat();
 				else
-					requiredHealth = pTarget->GetMaxHealth() * sk_citizen_heal_player_min_pct.GetFloat();
+					requiredHealth = GetMaxHealthValueForEntity(pTarget) * sk_citizen_heal_player_min_pct.GetFloat();
 
-				if ( ( pTarget->m_iHealth <= requiredHealth ) && IRelationType( pTarget ) == D_LI )
+				if ( ( pTarget->GetHealth() <= requiredHealth ) && IRelationType( pTarget ) == D_LI )
 					return true;
 			}
+		}
+		else
+		{
+			Warning("Hello?\nAnyone who happens to be nearby!\nThe person at this computer is dead!\nThey have fallen prey to any number of your countless human physiological vulnerabilities.\nIt's indicative of the long-term sustainability of your species!\nPlease remove their corpse from the area and instruct another human to take their place making sure they understand basic first-person video game mechanics and filling them in on the history of narrative tropes in video gaming so that the irony and insightful commentary of this game is not lost on them.");
 		}
 	}
 	
@@ -4274,7 +4297,7 @@ bool CNPC_Citizen::ShouldLookForHealthItem()
 
 	// Player is hurt, don't steal his health.
 	CBasePlayer *pNearest = UTIL_GetNearestVisiblePlayer(this);
-	if (pNearest && pNearest->GetHealth() <= pNearest->GetMaxHealth() * 0.75f)
+	if (pNearest && pNearest->GetHealth() <= (pNearest->GetMaxHealthValue() * 0.75f))
 		return false;
 
 	// Wait till you're standing still.
