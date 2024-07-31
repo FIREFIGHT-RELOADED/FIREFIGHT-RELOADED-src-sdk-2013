@@ -126,6 +126,7 @@ ConVar sk_savedroppedweapons("sk_savedroppedweapons", "0", FCVAR_ARCHIVE);
 
 ConVar player_defaulthealth("player_defaulthealth", "200", FCVAR_ARCHIVE, "");
 ConVar player_defaultarmor("player_defaultarmor", "200", FCVAR_REPLICATED);
+ConVar player_maxarmor("player_maxarmor", "500", FCVAR_REPLICATED);
 
 extern ConVar sv_maxunlag;
 extern ConVar sv_turbophysics;
@@ -6437,7 +6438,7 @@ void CBasePlayer::Spawn( void )
 	m_weaponFiredTimer.Invalidate();
 
 	SetArmorValue(player_defaultarmor.GetInt());
-	SetMaxArmorValue(INT_MAX);
+	SetMaxArmorValue(player_maxarmor.GetInt());
 }
 
 void CBasePlayer::Activate( void )
