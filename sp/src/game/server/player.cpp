@@ -125,6 +125,7 @@ ConVar sk_savepurchasedweapons("sk_savepurchasedweapons", "0", FCVAR_ARCHIVE);
 ConVar sk_savedroppedweapons("sk_savedroppedweapons", "0", FCVAR_ARCHIVE);
 
 ConVar player_defaulthealth("player_defaulthealth", "200", FCVAR_ARCHIVE, "");
+ConVar player_defaultarmor("player_defaultarmor", "200", FCVAR_REPLICATED);
 
 extern ConVar sv_maxunlag;
 extern ConVar sv_turbophysics;
@@ -211,8 +212,6 @@ ConVar sv_regen_interval("sv_regen_interval", "10", FCVAR_REPLICATED | FCVAR_CHE
 ConVar sv_decay_rate("sv_decay_rate", "8.5", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar sv_decay_increaserateminhealth("sv_decay_increaserateminhealth", "1000", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar sv_decay_increaseratemultiplier("sv_decay_increaseratemultiplier", "2", FCVAR_REPLICATED | FCVAR_CHEAT);
-
-ConVar sv_player_maxsuitpower("sv_player_maxsuitpower", "200", FCVAR_REPLICATED);
 
 ConVar sv_player_voice("sv_player_voice", "0", FCVAR_ARCHIVE);
 ConVar sv_player_voice_kill_freq("sv_player_voice_kill_freq", "8", FCVAR_CHEAT);
@@ -6437,7 +6436,8 @@ void CBasePlayer::Spawn( void )
 
 	m_weaponFiredTimer.Invalidate();
 
-	SetMaxArmorValue(sv_player_maxsuitpower.GetInt());
+	SetArmorValue(player_defaultarmor.GetInt());
+	SetMaxArmorValue(INT_MAX);
 }
 
 void CBasePlayer::Activate( void )

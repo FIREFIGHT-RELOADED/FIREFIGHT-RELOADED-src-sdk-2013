@@ -96,6 +96,8 @@ extern bool AIStrongOpt( void );
 
 #define ITEM_PICKUP_TOLERANCE	48.0f
 
+#define	MIN_KICK_KNOCKBACK_DAMAGE	40.0f
+
 // Max's of the box used to search for a weapon to pick up. 45x45x~8 ft.
 #define WEAPON_SEARCH_DELTA	Vector( 540, 540, 100 )
 

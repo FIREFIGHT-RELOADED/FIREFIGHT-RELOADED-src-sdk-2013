@@ -869,7 +869,7 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	Vector vecDir = vec3_origin;
 
-	if (info.GetDamageType() & DMG_BLAST)
+	if (info.GetDamageType() & DMG_BLAST || (info.GetDamageType() & DMG_CLUB && info.GetDamage() >= MIN_KICK_KNOCKBACK_DAMAGE))
 	{
 		if (!FClassnameIs(this, "npc_strider"))
 		{

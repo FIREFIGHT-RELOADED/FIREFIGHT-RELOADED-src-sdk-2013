@@ -127,9 +127,9 @@ ConVar sv_hud_hidechat("sv_hud_hidechat", "1");
 ConVar sk_kick_throwforce("sk_kick_throwforce", "40");
 ConVar sk_kick_throwforce_mult("sk_kick_throwforce_mult", "1");
 ConVar sk_kick_throwforce_div("sk_kick_throwforce_div", "48");
-ConVar sk_kick_dmg_div("sk_kick_dmg_div", "2");
-ConVar sk_kick_propdmg_div("sk_kick_propdmg_div", "10");
-ConVar sk_kick_shake_propmass("sk_kick_shake_propmass", "250");
+ConVar sk_kick_dmg("sk_kick_dmg", "50");
+ConVar sk_kick_propdmg_div("sk_kick_propdmg", "10");
+ConVar sk_kick_shake_propmass("sk_kick_shake_propmass", "150");
 
 ConVar sv_player_shootinzoom("sv_player_shootinzoom", "1", FCVAR_ARCHIVE);
 
@@ -1289,7 +1289,7 @@ void CHL2_Player::KickAttack(void)
 
 			// did I hit someone?
 			float KickThrowForceMult = sk_kick_throwforce.GetFloat() + (sk_kick_throwforce_mult.GetFloat() * ((fabs(GetAbsVelocity().x) + fabs(GetAbsVelocity().y) + fabs(GetAbsVelocity().z)) / sk_kick_throwforce_div.GetFloat()));
-			float KickDamageMult = KickThrowForceMult / sk_kick_dmg_div.GetFloat();
+			float KickDamageMult = sk_kick_dmg.GetFloat();
 			float KickDamageFlightBoost = (m_bIronKick && !m_bIronKickNoWeaponPickupOnly) ? 9999999.0f : (m_bInGrapple ? KickDamageMult * 3 : KickDamageMult);
 			float KickDamageProps = KickThrowForceMult / sk_kick_propdmg_div.GetFloat();
 
@@ -1324,16 +1324,32 @@ void CHL2_Player::KickAttack(void)
 					return;
 				}
 
-				CBaseEntity* Victim = CheckTraceHullAttack(Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), KickDamageFlightBoost, (DMG_CLUB | DMG_BLAST), KickThrowForceMult, true);
+				Msg("%f\n", KickDamageFlightBoost);
+
+				CBaseEntity* Victim = CheckTraceHullAttack(Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), KickDamageFlightBoost, (DMG_CLUB), KickThrowForceMult, true);
 				if (Victim && Victim->IsNPC())
 				{
 					//don't kick striders, only deliver damage.
-					// Note that DMG_BLAST delivers knockback now, so the prior knockback damage is unneeded.
 					if (FClassnameIs(Victim, "npc_strider"))
 					{
 						CAmmoDef *ammodef = GetAmmoDef();
 						Vector vecAiming = BaseClass::GetAutoaimVector(AUTOAIM_SCALE_DEFAULT);
-						FireBullets(3, Weapon_ShootPosition(), vecAiming, VECTOR_CONE_4DEGREES, kick_range, ammodef->Index("RPG_Round"), 0, -1, -1, KickDamageFlightBoost);
+
+						FireBulletsInfo_t info;
+						info.m_iShots = 3;
+						info.m_vecSrc = Weapon_ShootPosition();
+						info.m_vecDirShooting = vecAiming;
+						info.m_vecSpread = VECTOR_CONE_2DEGREES;
+						info.m_flDistance = kick_range;
+						info.m_iAmmoType = ammodef->Index("RPG_Round");
+						info.m_iTracerFreq = 0;
+						info.m_flDamage = KickDamageFlightBoost;
+						info.m_pAttacker = this;
+						info.m_nFlags = 0;
+						info.m_bPrimaryAttack = true;
+						info.m_nDamageFlags = (DMG_CLUB | DMG_BLAST);
+
+						FireBullets(info);
 					}
 					EmitSound("HL2Player.kick_body");
 					return;
