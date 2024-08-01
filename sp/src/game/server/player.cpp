@@ -85,6 +85,8 @@
 #include "weapon_physcannon.h"
 #endif
 
+#include "firefightreloaded/mapinfo.h"
+
 ConVar autoaim_max_dist( "autoaim_max_dist", "2160" ); // 2160 = 180 feet
 ConVar autoaim_max_deflect( "autoaim_max_deflect", "0.99" );
 
@@ -6028,6 +6030,8 @@ void CBasePlayer::LoadLoadoutFile(const char* kvName, bool savetoLoadout)
 		pNode = m_kvLoadout->GetFirstSubKey();
 	}
 
+	KeyValues* pInfo = CMapInfo::GetMapInfoData();
+
 	while (pNode)
 	{
 		if (m_bHardcore == false)
@@ -6049,7 +6053,7 @@ void CBasePlayer::LoadLoadoutFile(const char* kvName, bool savetoLoadout)
 
 		if (itemName)
 		{
-			if (Q_stristr(itemName, "weapon_grapple") && !sv_player_grapple.GetBool())
+			if (Q_stristr(itemName, "weapon_grapple") && (!sv_player_grapple.GetBool() || !pInfo->GetBool("CanGrapple", true)))
 				continue;
 
 			GiveNamedItem(itemName);
@@ -6142,7 +6146,7 @@ void CBasePlayer::LoadLoadoutFile(const char* kvName, bool savetoLoadout)
 
 				if (ConvertedString)
 				{
-					if (Q_stristr(ConvertedString, "weapon_grapple") && !sv_player_grapple.GetBool())
+					if (Q_stristr(ConvertedString, "weapon_grapple") && (!sv_player_grapple.GetBool() || !pInfo->GetBool("CanGrapple", true)))
 						continue;
 
 					GiveNamedItem(ConvertedString);
@@ -6162,7 +6166,7 @@ void CBasePlayer::LoadLoadoutFile(const char* kvName, bool savetoLoadout)
 
 				if (ConvertedString)
 				{
-					if (Q_stristr(ConvertedString, "weapon_grapple") && !sv_player_grapple.GetBool())
+					if (Q_stristr(ConvertedString, "weapon_grapple") && (!sv_player_grapple.GetBool() || !pInfo->GetBool("CanGrapple", true)))
 						continue;
 
 					GiveNamedItem(ConvertedString);
@@ -6181,7 +6185,7 @@ void CBasePlayer::LoadLoadoutFile(const char* kvName, bool savetoLoadout)
 
 				if (ConvertedString)
 				{
-					if (Q_stristr(ConvertedString, "weapon_grapple") && !sv_player_grapple.GetBool())
+					if (Q_stristr(ConvertedString, "weapon_grapple") && (!sv_player_grapple.GetBool() || !pInfo->GetBool("CanGrapple", true)))
 						continue;
 
 					GiveNamedItem(ConvertedString);
@@ -6210,7 +6214,19 @@ void CBasePlayer::WeaponSpawnLogic(void)
 	{
 		if (!m_bForcedLoadout)
 		{
-			LoadLoadoutFile(sv_player_defaultloadout.GetString());
+			//if our loadout isn't forced by an entity, check if the mapinfo has one.
+			KeyValues* pInfo = CMapInfo::GetMapInfoData();
+			m_szForcedLoadoutName = pInfo->GetString("ForcedLoadout", "");
+
+			if (!m_szForcedLoadoutName[0])
+			{
+				LoadLoadoutFile(sv_player_defaultloadout.GetString());
+			}
+			else
+			{
+				m_bForcedLoadout = true;
+				LoadLoadoutFile(m_szForcedLoadoutName);
+			}
 		}
 		else
 		{

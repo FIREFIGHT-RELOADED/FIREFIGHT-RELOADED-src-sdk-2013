@@ -26,6 +26,7 @@
 #include "randnpcloader.h"
 #include "firefightreloaded/npc_combineace.h"
 #include "npc_citizen17.h"
+#include "firefightreloaded/mapinfo.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -128,6 +129,7 @@ void CNPCMakerFirefight::Spawn(void)
 	m_nLiveChildren		= 0;
 	m_nLiveRareNPCs		= 0;
 	m_flLastLargeNPCSpawn = 0;
+	m_bUsingMapSpawnTime = false;
 	Precache();
 
 	//m_spawnflags |= SF_NPCMAKER_FADE;
@@ -159,9 +161,18 @@ void CNPCMakerFirefight::Precache(void)
 		AssertFatal(g_npcLoader->Load());
 	}
 
-	float setSpawnTime = g_npcLoader->m_Settings.spawnTime;
-	if (setSpawnTime != 0 && setSpawnTime != TIME_SETBYHAMMER)
+	KeyValues* pInfo = CMapInfo::GetMapInfoData();
+	bool useMapDefinedSpawnTimes = pInfo->GetBool("UseMapSpawnTimes");
+
+	float setSpawnTime = useMapDefinedSpawnTimes ? TIME_SETBYHAMMER : g_npcLoader->m_Settings.spawnTime;
+	if (setSpawnTime > 0)
+	{
 		m_flSpawnFrequency = setSpawnTime;
+	}
+	else
+	{
+		m_bUsingMapSpawnTime = true;
+	}
 
 	int nWeapons = ARRAYSIZE(g_Weapons);
 	for (int i = 0; i < nWeapons; ++i)
@@ -176,6 +187,19 @@ void CNPCMakerFirefight::MakerThink(void)
 	if (m_flSpawnFrequency <= 0)
 	{
 		m_flSpawnFrequency = 5;
+	}
+	else
+	{
+		if (m_bUsingMapSpawnTime)
+		{
+			KeyValues* pInfo = CMapInfo::GetMapInfoData();
+			int steamDeckTimeAdd = pInfo->GetInt("DeckMapSpawnTimeOverride", TIME_SETBYHAMMER);
+
+			if (UTIL_IsSteamDeck() && steamDeckTimeAdd > 0)
+			{
+				m_flSpawnFrequency = m_flSpawnFrequency + steamDeckTimeAdd;
+			}
+		}
 	}
 
 	SetNextThink(gpGlobals->curtime + m_flSpawnFrequency);

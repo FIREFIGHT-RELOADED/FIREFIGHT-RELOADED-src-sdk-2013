@@ -56,6 +56,7 @@
 #include "func_break.h"
 #include "ammodef.h"
 #include "movevars_shared.h"
+#include "firefightreloaded/mapinfo.h"
 
 #ifdef HL2_EPISODIC
 #include "npc_alyx_episodic.h"
@@ -713,6 +714,10 @@ void CHL2_Player::HandleGrapple(void)
 
 	if (sv_player_grapple.GetBool())
 	{
+		KeyValues* pInfo = CMapInfo::GetMapInfoData();
+		if (!pInfo->GetBool("CanGrapple", true))
+			return;
+
 		if (m_afButtonPressed & IN_GRAPPLE)
 		{
 			engine->ClientCommand(edict(), "cancelselect");

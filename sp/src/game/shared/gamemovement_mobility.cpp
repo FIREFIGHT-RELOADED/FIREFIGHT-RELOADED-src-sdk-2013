@@ -15,6 +15,7 @@
 #include "decals.h"
 #include "coordsize.h"
 #include "rumble_shared.h"
+#include "firefightreloaded/mapinfo.h"
 
 #if defined(HL2_DLL) || defined(HL2_CLIENT_DLL)
 #include "hl_movedata.h"
@@ -60,6 +61,10 @@ float VectorYaw( Vector& v )
 void CGameMovement::CheckPowerSlide( void )
 {
 	if (!sv_slide.GetBool())
+		return;
+
+	KeyValues* pInfo = CMapInfo::GetMapInfoData();
+	if (!pInfo->GetBool("CanPowerslide", true))
 		return;
 
 	if (mv->m_nButtons & IN_GRAPPLE)
@@ -204,6 +209,10 @@ void CGameMovement::AnticipateWallRun( void )
 	if (!sv_wallrun.GetBool())
 		return;
 
+	KeyValues* pInfo = CMapInfo::GetMapInfoData();
+	if (!pInfo->GetBool("CanWallrun", true))
+		return;
+
 	// No idea how this can be called when wallrunning, but it is
 	if (player->m_nWallRunState >= WALLRUN_RUNNING)
 		return;
@@ -248,6 +257,10 @@ void CGameMovement::AnticipateWallRun( void )
 void CGameMovement::CheckWallRun( Vector &vecWallNormal, trace_t &pm )
 {
 	if (!sv_wallrun.GetBool())
+		return;
+
+	KeyValues* pInfo = CMapInfo::GetMapInfoData();
+	if (!pInfo->GetBool("CanWallrun", true))
 		return;
 
 	// Can't wallrun without the suit
@@ -901,6 +914,10 @@ void CGameMovement::WallRunAnticipateBump( void )
 void CGameMovement::CheckWallRunScramble( bool& steps )
 {
 	if (!sv_wallrun.GetBool())
+		return;
+
+	KeyValues* pInfo = CMapInfo::GetMapInfoData();
+	if (!pInfo->GetBool("CanWallrun", true))
 		return;
 
 	Vector	flatforward;

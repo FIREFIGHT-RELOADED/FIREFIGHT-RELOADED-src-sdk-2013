@@ -79,6 +79,7 @@ public:
 
 	bool	m_bDisabled;
 	bool	m_bLargeNPCsEnabled;
+	bool	m_bUsingMapSpawnTime;
 
 	EHANDLE m_hIgnoreEntity;
 	string_t m_iszIngoreEnt;

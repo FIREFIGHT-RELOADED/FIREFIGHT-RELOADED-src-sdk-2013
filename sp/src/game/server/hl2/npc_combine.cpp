@@ -2364,10 +2364,10 @@ int CNPC_Combine::SelectFailSchedule( int failedSchedule, int failedTask, AI_Tas
 //-----------------------------------------------------------------------------
 bool CNPC_Combine::ShouldChargePlayer()
 {
-	//allow us to charge at all enemies.
-	return GetEnemy() != nullptr; /*&& GetEnemy()->IsPlayer()  && PlayerHasMegaPhysCannon() && !IsLimitingHintGroups()*/;
+	//allow us to charge at all enemies. Do it randomly on lower difficulties.
+	int randCharge = (g_pGameRules->GetSkillLevel() >= SKILL_VERYHARD) ? 3 : RandomInt(1, 3);
+	return (g_pGameRules->GetSkillLevel() > SKILL_EASY) && GetEnemy() != nullptr && (randCharge == 3);
 }
-
 
 //-----------------------------------------------------------------------------
 // Select attack schedules
