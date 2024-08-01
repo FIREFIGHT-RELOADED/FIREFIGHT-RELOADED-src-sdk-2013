@@ -168,6 +168,9 @@ CON_COMMAND_F(npc_create_playerbot, "Creates an npc_playerbot/citizen of the giv
 			}
 		}
 
+		Vector allyColor = Vector(26, 77, 153);
+		baseNPC->GiveOutline(allyColor);
+
 		// Now attempt to drop into the world
 		CBasePlayer* pPlayer = UTIL_GetCommandClient();
 		trace_t tr;
@@ -850,8 +853,6 @@ void CNPC_Citizen::Spawn()
 	{
 		CapabilitiesAdd(bits_CAP_MOVE_JUMP);
 		AddSpawnFlags(SF_CITIZEN_MEDIC);
-		Vector allyColor = Vector(26, 77, 153);
-		GiveOutline(allyColor);
 		GiveWeapons();
 
 		if (!npc_playerbot_talk.GetBool())

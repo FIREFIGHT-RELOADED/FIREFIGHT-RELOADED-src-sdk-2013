@@ -241,7 +241,7 @@ bool CNPC_Vortigaunt::PlayerBelowHealthPercentage( CBasePlayer *pPlayer, float f
 	if ( pPlayer->ArmorValue() )
 		return false;
 
-	float flMaxHealth = pPlayer->GetMaxHealth();
+	float flMaxHealth = pPlayer->GetMaxHealthValue();
 	if ( flMaxHealth == 0.0f )
 		return false;
 

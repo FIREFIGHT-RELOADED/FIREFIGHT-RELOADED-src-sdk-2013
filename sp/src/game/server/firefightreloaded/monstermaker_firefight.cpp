@@ -570,33 +570,9 @@ void CNPCMakerFirefight::MakeNPC()
 
 	pent->m_spawnEquipment = MAKE_STRING(equip);
 
-	if (Q_stristr(pRandomName, "npc_citizen") || 
-		Q_stristr(pRandomName, "npc_playerbot"))
+	if (Q_stristr(pRandomName, "npc_citizen"))
 	{
 		pent->AddSpawnFlags(SF_CITIZEN_USE_PLAYERBOT_AI);
-		if (!g_fr_lonewolf.GetBool())
-		{
-			//alert all players.
-			AllyAlert();
-		}
-		else
-		{
-			UTIL_Remove(pent);
-			return;
-		}
-	}
-	else if (Q_stristr(pRandomName, "npc_vortigaunt"))
-	{
-		if (!g_fr_lonewolf.GetBool())
-		{
-			//alert all players.
-			AllyAlert();
-		}
-		else
-		{
-			UTIL_Remove(pent);
-			return;
-		}
 	}
 	else if (Q_stristr(pRandomName, "npc_strider"))
 	{
@@ -606,14 +582,6 @@ void CNPCMakerFirefight::MakeNPC()
 	{
 		if (g_pGameRules->GetSkillLevel() > SKILL_HARD)
 			pent->AddSpawnFlags(SF_CSCANNER_STRIDER_SCOUT);
-	}
-	else if (Q_stristr(pRandomName, "npc_antlion"))
-	{
-		if (GlobalEntity_GetState("antlion_allied") == GLOBAL_ON && g_pGameRules->GetGamemode() != FIREFIGHT_PRIMARY_ANTLIONASSAULT && !g_fr_lonewolf.GetBool())
-		{
-			//alert all players.
-			AllyAlert();
-		}
 	}
 
 	if (entry->npcAttributePreset != 0 )
@@ -661,15 +629,32 @@ void CNPCMakerFirefight::MakeNPC()
 		}
 	}
 
-	DispatchActivate(pent);
-
 	if (pent->Classify() == CLASS_PLAYER_ALLY ||
 		pent->Classify() == CLASS_PLAYER_ALLY_VITAL ||
-		pent->Classify() == CLASS_VORTIGAUNT)
+		pent->Classify() == CLASS_VORTIGAUNT ||
+		pent->Classify() == CLASS_PLAYER_NPC ||
+		(pent->Classify() == CLASS_ANTLION &&
+			GlobalEntity_GetState("antlion_allied") == GLOBAL_ON && g_pGameRules->GetGamemode() != FIREFIGHT_PRIMARY_ANTLIONASSAULT))
 	{
-		Vector allyColor = Vector(26, 77, 153);
-		pent->GiveOutline(allyColor);
+		if (!g_fr_lonewolf.GetBool())
+		{
+			//alert all players.
+			AllyAlert();
+		}
+		else
+		{
+			UTIL_Remove(pent);
+			return;
+		}
+
+		if (!pent->IsGlowEffectActive() && !pent->m_denyOutlines)
+		{
+			Vector allyColor = Vector(26, 77, 153);
+			pent->GiveOutline(allyColor);
+		}
 	}
+
+	DispatchActivate(pent);
 
 	if (m_ChildTargetName != NULL_STRING)
 	{
