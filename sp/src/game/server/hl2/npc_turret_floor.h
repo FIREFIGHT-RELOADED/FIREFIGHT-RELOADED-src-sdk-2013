@@ -174,8 +174,11 @@ public:
 	{
 		// For now, turn green so we can tell who is hacked.
 		//SetRenderColor( 0, 255, 0 );
-		Vector allyColor = Vector(26, 77, 153);
-		GiveOutline(allyColor);
+		if (!IsGlowEffectActive() && !m_denyOutlines)
+		{
+			Vector allyColor = Vector(26, 77, 153);
+			GiveOutline(allyColor);
+		}
 		m_bHackedByAlyx = true; 
 	}
 

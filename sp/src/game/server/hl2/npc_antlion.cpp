@@ -410,8 +410,11 @@ void CNPC_Antlion::Activate( void )
 
 		//make us immune from player/ally damage
 		CapabilitiesAdd(bits_CAP_FRIENDLY_DMG_IMMUNE);
-		Vector allyColor = Vector(26, 77, 153);
-		GiveOutline(allyColor);
+		if (!IsGlowEffectActive() && !m_denyOutlines)
+		{
+			Vector allyColor = Vector(26, 77, 153);
+			GiveOutline(allyColor);
+		}
 	}
 
 	BaseClass::Activate();
