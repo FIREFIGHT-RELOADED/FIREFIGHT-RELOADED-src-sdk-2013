@@ -3,19 +3,19 @@
 	"1"
 	{
 		"name"		"HealthKit"
-		"price"		"10"
+		"price"		"20"
 		"command"	"healthkit"
 	}
 	"2"
 	{
 		"name"		"SuitBattery"
-		"price"		"50"
+		"price"		"100"
 		"command"	"battery"
 	}
 	"3"
 	{
 		"name"		"MaxHealth"
-		"price"		"150"
+		"price"		"550"
         "limit"	    "15"
 		"command"	"upgrade 0"
 	}
@@ -34,7 +34,7 @@
 	"6"
 	{
 		"name"		"SMGGrenade"
-		"price"		"85"
+		"price"		"185"
 		"command"	"ammo SMG1_Grenade 1"
 	}
 	"7"
@@ -58,7 +58,7 @@
 	"10"
 	{
 		"name"		"AR2DarkEnergyBall"
-		"price"		"150"
+		"price"		"250"
 		"command"	"ammo AR2AltFire 1"
 	}
 	"11"
@@ -76,13 +76,13 @@
 	"13"
 	{
 		"name"		"RPGAmmo"
-		"price"		"150"
+		"price"		"250"
 		"command"	"ammo RPG_Round 1" 
 	}
 	"14"
 	{
 		"name"		"SniperRifleAmmo"
-		"price"		"65"
+		"price"		"85"
 		"command"	"ammo Sniper 15" 
 	}
 	"15"
@@ -103,10 +103,10 @@
 		"price"		"800"
 		"command"	"ammo Railgun 25" 
 	}
-    	"18"
+    "18"
 	{
 		"name"		"RailgunOvercharge"
-		"price"		"500"
+		"price"		"3000"
 		"command"	"ammo Railgun 300" 
 	}
 	"19"
