@@ -108,7 +108,21 @@
 			{
 				"text"			"#GameUI_PlayerArmor"
 				"type"			"slideyslide"
-				"convar"		"sv_player_maxsuitpower"
+				"convar"		"player_defaultarmor"
+				"advanced"		"1"
+
+				"min"			"1"
+				"max"			"999"
+				"step"			"5"
+
+				"textprecision" "2"
+			}
+            
+            "PlayerMaxArmor"
+			{
+				"text"			"#GameUI_PlayerMaxArmor"
+				"type"			"slideyslide"
+				"convar"		"player_maxarmor"
 				"advanced"		"1"
 
 				"min"			"1"
