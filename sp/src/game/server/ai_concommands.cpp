@@ -14,6 +14,7 @@
 #include "ai_networkmanager.h"
 #include "ndebugoverlay.h"
 #include "datacache/imdlcache.h"
+#include "globalstate.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -631,6 +632,20 @@ CON_COMMAND_F_COMPLETION(npc_create, "Creates an NPC of the given type where the
 			}
 		}
 
+		if (baseNPC->Classify() == CLASS_PLAYER_ALLY ||
+			baseNPC->Classify() == CLASS_PLAYER_ALLY_VITAL ||
+			baseNPC->Classify() == CLASS_VORTIGAUNT ||
+			baseNPC->Classify() == CLASS_PLAYER_NPC ||
+			(baseNPC->Classify() == CLASS_ANTLION &&
+				GlobalEntity_GetState("antlion_allied") == GLOBAL_ON && g_pGameRules->GetGamemode() != FIREFIGHT_PRIMARY_ANTLIONASSAULT))
+		{
+			if (!baseNPC->IsGlowEffectActive() && !baseNPC->m_denyOutlines)
+			{
+				Vector allyColor = Vector(26, 77, 153);
+				baseNPC->GiveOutline(allyColor);
+			}
+		}
+
 		// Now attempt to drop into the world
 		CBasePlayer* pPlayer = UTIL_GetCommandClient();
 		trace_t tr;
@@ -721,6 +736,20 @@ CON_COMMAND_F_COMPLETION(npc_create_aimed, "Creates an NPC aimed away from the p
 			else
 			{
 				baseNPC->GiveAttributes(atoi(args[2]));
+			}
+		}
+
+		if (baseNPC->Classify() == CLASS_PLAYER_ALLY ||
+			baseNPC->Classify() == CLASS_PLAYER_ALLY_VITAL ||
+			baseNPC->Classify() == CLASS_VORTIGAUNT ||
+			baseNPC->Classify() == CLASS_PLAYER_NPC ||
+			(baseNPC->Classify() == CLASS_ANTLION &&
+				GlobalEntity_GetState("antlion_allied") == GLOBAL_ON && g_pGameRules->GetGamemode() != FIREFIGHT_PRIMARY_ANTLIONASSAULT))
+		{
+			if (!baseNPC->IsGlowEffectActive() && !baseNPC->m_denyOutlines)
+			{
+				Vector allyColor = Vector(26, 77, 153);
+				baseNPC->GiveOutline(allyColor);
 			}
 		}
 

@@ -168,8 +168,11 @@ CON_COMMAND_F(npc_create_playerbot, "Creates an npc_playerbot/citizen of the giv
 			}
 		}
 
-		Vector allyColor = Vector(26, 77, 153);
-		baseNPC->GiveOutline(allyColor);
+		if (!baseNPC->IsGlowEffectActive() && !baseNPC->m_denyOutlines)
+		{
+			Vector allyColor = Vector(26, 77, 153);
+			baseNPC->GiveOutline(allyColor);
+		}
 
 		// Now attempt to drop into the world
 		CBasePlayer* pPlayer = UTIL_GetCommandClient();
