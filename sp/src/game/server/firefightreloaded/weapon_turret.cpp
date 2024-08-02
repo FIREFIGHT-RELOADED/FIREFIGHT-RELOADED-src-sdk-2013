@@ -25,6 +25,8 @@
 #define TURRET_MAX_PLACEMENT_RANGE 256.0f
 #define TURRET_MIN_PLACEMENT_RANGE 32.0f
 
+#define	FLOOR_TURRET_WEAPON_MODEL			"models/weapons/floor_turret_rb.mdl"
+
 class CTurretHologram : public CBaseAnimating
 {
 public:
@@ -42,7 +44,7 @@ public:
 	{
 		Precache();
 		BaseClass::Spawn();
-		SetModel(FLOOR_TURRET_MODEL);
+		SetModel(FLOOR_TURRET_WEAPON_MODEL);
 		SetThink(&CTurretHologram::OnThink);
 		SetNextThink(gpGlobals->curtime + 0.01f);
 	}
@@ -73,7 +75,8 @@ public:
 	}
 
 	void SetStatus(HologramStatus statusToReport) { status = statusToReport; }
-	void Precache(void) { PrecacheModel(FLOOR_TURRET_MODEL); }
+	void Precache(void) { PrecacheModel(FLOOR_TURRET_WEAPON_MODEL); }
+	HologramStatus GetStatus(void) { return status; }
 
 private:
 	Color clrHighlightColor;
@@ -121,6 +124,8 @@ public:
 
 private:
 	CTurretHologram		*pHologram;
+	bool				m_bSetToRemoveAmmo;
+	bool				m_bStopMovingHologram;
 };
 
 IMPLEMENT_SERVERCLASS_ST(CWeaponTurret, DT_WeaponTurret)
@@ -151,6 +156,8 @@ CWeaponTurret::CWeaponTurret()
 {
 	m_fMinRange1 = TURRET_MIN_PLACEMENT_RANGE;
 	m_fMaxRange1 = TURRET_MAX_PLACEMENT_RANGE;
+	m_bSetToRemoveAmmo = false;
+	m_bStopMovingHologram = false;
 }
 
 void CWeaponTurret::Spawn( )
@@ -173,18 +180,60 @@ void CWeaponTurret::Precache( void )
 {
 	BaseClass::Precache();
 	UTIL_PrecacheOther( "npc_turret_floor" );
+	PrecacheModel(FLOOR_TURRET_WEAPON_MODEL);
 }
 
 void CWeaponTurret::ItemPreFrame(void)
 {
-	MoveHologram();
+	if (!m_bStopMovingHologram)
+	{
+		MoveHologram();
+	}
 
 	BaseClass::ItemPreFrame();
 }
 
 void CWeaponTurret::ItemPostFrame(void)
 {
+	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
+	if (!pOwner)
+		return;
+
 	MoveHologram();
+
+	if (m_bSetToRemoveAmmo && (m_flNextPrimaryAttack <= gpGlobals->curtime))
+	{
+		CNPC_FloorTurret* pTurret = dynamic_cast<CNPC_FloorTurret*>(CreateEntityByName("npc_turret_floor"));
+		if (pTurret)
+		{
+			pTurret->SetName(AllocPooledString("spawnedTurret"));
+			pTurret->m_bDisableInitAttributes = true;
+			DispatchSpawn(pTurret);
+			pTurret->MakeAllied();
+			pTurret->SetModel(FLOOR_TURRET_WEAPON_MODEL);
+			pTurret->SetOwnerEntity(pOwner);
+			if (pHologram)
+			{
+				pTurret->Teleport(&pHologram->GetAbsOrigin(), &pHologram->GetAbsAngles(), NULL);
+			}
+			UTIL_DropToFloor(pTurret, MASK_NPCSOLID);
+
+
+			pTurret->Activate();
+
+			WeaponSound(SPECIAL1);
+		}
+
+		if (!DecrementAmmo(pOwner))
+		{
+			BaseClass::ItemPostFrame();
+			return;
+		}
+		else
+		{
+			m_bSetToRemoveAmmo = false;
+		}
+	}
 
 	BaseClass::ItemPostFrame();
 }
@@ -201,69 +250,27 @@ void CWeaponTurret::PrimaryAttack( void )
 	if ( !pPlayer )
 		return;
 
-	// Now attempt to drop into the world
-	QAngle angles;
-	trace_t tr;
-	Vector forward;
-	pPlayer->EyeVectors(&forward);
-	VectorAngles(forward, angles);
-	angles.x = 0;
-	angles.z = 0;
-	AI_TraceLine(pPlayer->EyePosition(),
-		pPlayer->EyePosition() + forward * MAX_TRACE_LENGTH, MASK_NPCSOLID,
-		pPlayer, COLLISION_GROUP_NONE, &tr);
-
-	if( tr.fraction != 1.0 )
+	if (pHologram)
 	{
-		CNPC_FloorTurret* pTurret = dynamic_cast<CNPC_FloorTurret*>(CreateEntityByName("npc_turret_floor"));
-		if (pTurret)
+		if (pHologram->GetStatus() == CTurretHologram::TURRET_INVALIDPLACEMENT ||
+			pHologram->GetStatus() == CTurretHologram::TURRET_TOOFAR)
 		{
-			pTurret->SetName(AllocPooledString("spawnedTurret"));
-			pTurret->m_bDisableInitAttributes = true;
-			DispatchSpawn(pTurret);
-			pTurret->MakeAllied();
-			pTurret->SetOwnerEntity(pPlayer);
-			pTurret->Teleport(&tr.endpos, &angles, NULL);
-			UTIL_DropToFloor(pTurret, MASK_NPCSOLID);
-			// Now check that this is a valid location for the new npc to be
-			Vector	vUpBit = pTurret->GetAbsOrigin();
-			vUpBit.z += 1;
-
-			AI_TraceHull(pTurret->GetAbsOrigin(), vUpBit, pTurret->GetHullMins(), pTurret->GetHullMaxs(),
-				MASK_NPCSOLID, pTurret, COLLISION_GROUP_NONE, &tr);
-			if (tr.startsolid || (tr.fraction < 1.0))
-			{
-				pTurret->SUB_Remove();
-				WeaponSound(EMPTY);
-				m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
-				return;
-			}
-
-			float enemyDelta = (pTurret->WorldSpaceCenter() - pPlayer->WorldSpaceCenter()).Length();
-
-			if (enemyDelta > TURRET_MAX_PLACEMENT_RANGE)
-			{
-				pTurret->SUB_Remove();
-				WeaponSound(EMPTY);
-				m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
-				return;
-			}
-			else if (enemyDelta < TURRET_MIN_PLACEMENT_RANGE)
-			{
-				pTurret->SUB_Remove();
-				WeaponSound(EMPTY);
-				m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
-				return;
-			}
-
-			pTurret->Activate();
+			WeaponSound(EMPTY);
+			m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
+			return;
 		}
 
-		m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
-
-		if (!DecrementAmmo(pPlayer))
-			return;
+		m_bStopMovingHologram = true;
 	}
+
+	WeaponSound(SINGLE);
+	SendWeaponAnim(ACT_SLAM_TRIPMINE_ATTACH);
+	pPlayer->SetAnimation(PLAYER_ATTACK1);
+
+	m_flNextPrimaryAttack = gpGlobals->curtime + (SequenceDuration() * 0.3f);
+	m_bSetToRemoveAmmo = true;
+
+	//sequence duration dictates turret spawn.
 }
 
 //-----------------------------------------------------------------------------

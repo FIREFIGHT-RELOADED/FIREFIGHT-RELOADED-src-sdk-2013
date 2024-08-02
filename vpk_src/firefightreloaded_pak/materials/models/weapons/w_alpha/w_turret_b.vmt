@@ -1,0 +1,18 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\weapons\w_alpha\w_turret_b"
+	"$surfaceprop" "metal"
+	"$bumpmap" "models\weapons\w_alpha\w_turret_nomal"
+	"$phong" 1
+	"$phongexponent" "10"
+	//"$phongexponenttexture" "models/combine_turrets/floor_turret/combine_gun002_phong"
+	"$phongboost" "4"
+	"$phongalbedotint" 1										
+	"$phongfresnelranges"	"[.1 .5  1]"
+	"$selfillum" 1
+
+
+	
+	
+	
+	
