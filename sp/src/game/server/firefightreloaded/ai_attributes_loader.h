@@ -16,6 +16,8 @@ public:
 	virtual Vector GetVector(const char* szString, Vector defaultValue = Vector(0,0,0));
 	virtual void SwitchEntityModel(CBaseEntity *ent, const char* szString, const char* defaultValue);
 	virtual void SwitchEntityColor(CBaseEntity* ent, const char* szString);
+	virtual void SwitchEntityRenderMode(CBaseEntity* ent, const char* szString, RenderMode_t defaultValue = kRenderNormal);
+	virtual void SwitchEntityRenderFX(CBaseEntity* ent, const char* szString, RenderFx_t defaultValue = kRenderFxNone);
 	virtual void SwitchEntityBodygroup(CBaseAnimating* ent, const char* szNum, const char* szVal);
 	virtual void SwitchEntitySkin(CBaseAnimating* ent, const char* szVal);
 	virtual void Die(void);

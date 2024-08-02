@@ -155,9 +155,27 @@ void CAttributesLoader::SwitchEntityModel(CBaseEntity* ent, const char* szString
 void CAttributesLoader::SwitchEntityColor(CBaseEntity* ent, const char* szString)
 {
 	Color newColor = GetColor(szString);
-	if (newColor.GetRawColor() != 0)
+	if (newColor.GetRawColor() >= 0)
 	{
 		ent->SetRenderColor(newColor.r(), newColor.g(), newColor.b(), newColor.a());
+	}
+}
+
+void CAttributesLoader::SwitchEntityRenderMode(CBaseEntity* ent, const char* szString, RenderMode_t defaultValue)
+{
+	int renderMode = GetInt(szString, defaultValue);
+	if (renderMode >= kRenderNormal)
+	{
+		ent->SetRenderMode(defaultValue);
+	}
+}
+
+void CAttributesLoader::SwitchEntityRenderFX(CBaseEntity* ent, const char* szString, RenderFx_t defaultValue)
+{
+	int renderFX = GetInt(szString, defaultValue);
+	if (renderFX >= kRenderFxNone)
+	{
+		ent->m_nRenderFX = defaultValue;
 	}
 }
 

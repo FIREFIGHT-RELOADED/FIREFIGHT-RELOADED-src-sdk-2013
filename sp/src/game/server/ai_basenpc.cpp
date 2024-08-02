@@ -7112,6 +7112,8 @@ void CAI_BaseNPC::LoadInitAttributes()
 	{
 		m_pAttributes->SwitchEntityModel(this, "new_model", STRING(GetModelName()));
 		m_pAttributes->SwitchEntityColor(this, "new_color");
+		m_pAttributes->SwitchEntityRenderMode(this, "new_render_mode");
+		m_pAttributes->SwitchEntityRenderFX(this, "new_render_fx");
 		Vector matColor = m_pAttributes->GetVector("new_material_color");
 
 		if (matColor != Vector(0,0,0))

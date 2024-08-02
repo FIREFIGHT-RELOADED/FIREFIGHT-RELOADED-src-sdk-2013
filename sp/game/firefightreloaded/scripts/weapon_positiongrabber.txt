@@ -8,8 +8,8 @@ WeaponData
 	"playermodel"		"models/weapons/w_357.mdl"
 	"anim_prefix"		"python"
 	"weapon_type"		"dev"
-	"bucket"			"1"
-	"bucket_position"	"2"
+	"bucket"			"5"
+	"bucket_position"	"97"
 	"bucket_360"			"0"
 	"bucket_position_360"	"2"
 

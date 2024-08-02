@@ -233,8 +233,10 @@ ConVar	sk_plr_dmg_gatling("sk_plr_dmg_gatling", "0", FCVAR_REPLICATED);
 ConVar	sk_npc_dmg_gatling("sk_npc_dmg_gatling", "0", FCVAR_REPLICATED);
 ConVar	sk_max_gatling("sk_max_gatling", "0", FCVAR_REPLICATED);
 
-ConVar    sk_plr_dmg_katana("sk_plr_dmg_katana", "0", FCVAR_REPLICATED);
-ConVar    sk_npc_dmg_katana("sk_npc_dmg_katana", "0", FCVAR_REPLICATED);
+ConVar  sk_plr_dmg_katana("sk_plr_dmg_katana", "0", FCVAR_REPLICATED);
+ConVar  sk_npc_dmg_katana("sk_npc_dmg_katana", "0", FCVAR_REPLICATED);
+
+ConVar	sk_max_turret("sk_max_turret", "0", FCVAR_REPLICATED);
 
 ConVar    sk_npc_dmg_assassinpistol("sk_npc_dmg_assassinpistol", "0", FCVAR_REPLICATED);
 
@@ -566,6 +568,8 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_METROPOLICE, D_HT, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_ALIEN_MILITARY, D_HT, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_SCANNER, D_HT, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_TURRET, CLASS_PLAYER, D_HT, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER, CLASS_COMBINE_TURRET, D_HT, 0);
 
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_BARNACLE, CLASS_PLAYER_NPC, D_HT, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE, CLASS_PLAYER_NPC, D_HT, 0);
@@ -589,6 +593,8 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_NPC, CLASS_METROPOLICE, D_HT, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_NPC, CLASS_ALIEN_MILITARY, D_HT, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_NPC, CLASS_SCANNER, D_HT, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_TURRET, CLASS_PLAYER_NPC, D_HT, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_NPC, CLASS_COMBINE_TURRET, D_HT, 0);
 
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_BARNACLE, CLASS_PLAYER_ALLY, D_HT, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE, CLASS_PLAYER_ALLY, D_HT, 0);
@@ -612,6 +618,8 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_ALLY, CLASS_METROPOLICE, D_HT, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_ALLY, CLASS_ALIEN_MILITARY, D_HT, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_ALLY, CLASS_SCANNER, D_HT, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_TURRET, CLASS_PLAYER_ALLY, D_HT, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_ALLY, CLASS_COMBINE_TURRET, D_HT, 0);
 
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_BARNACLE, CLASS_VORTIGAUNT, D_HT, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE, CLASS_VORTIGAUNT, D_HT, 0);
@@ -635,6 +643,8 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_VORTIGAUNT, CLASS_METROPOLICE, D_HT, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_VORTIGAUNT, CLASS_ALIEN_MILITARY, D_HT, 0);
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_VORTIGAUNT, CLASS_SCANNER, D_HT, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_TURRET, CLASS_VORTIGAUNT, D_HT, 0);
+		CBaseCombatCharacter::SetDefaultRelationship(CLASS_VORTIGAUNT, CLASS_COMBINE_TURRET, D_HT, 0);
 
 		//combine
 		CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE, CLASS_COMBINE_GUNSHIP, D_LI, 0);
@@ -1854,6 +1864,7 @@ CAmmoDef *GetAmmoDef()
 		def.AddAmmoType("556Round", DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_mp5", "sk_npc_dmg_mp5", "sk_max_mp5", BULLET_IMPULSE(200, 1225), 0, 'r');
 		def.AddAmmoType("gatling", DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_gatling", "sk_npc_dmg_gatling", "sk_max_gatling", BULLET_IMPULSE(200, 1225), 0, 'r');
 		def.AddAmmoType("Katana", DMG_SLASH, TRACER_NONE, "sk_plr_dmg_katana", "sk_npc_dmg_katana", 1, BULLET_IMPULSE(200, 1225), 0);
+		def.AddAmmoType("turret", DMG_GENERIC, TRACER_NONE, 0, 0, "sk_max_turret", 0, 0);
 		//CUSTOM AMMO TYPES HERE.
 		def.AddAmmoType("CustomBullet1_Normal", DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_custom_normal", "sk_npc_dmg_custom_normal", "sk_max_custom_normal", BULLET_IMPULSE(800, 5000), 0);
 		def.AddAmmoType("CustomBullet2_NormalBurn", DMG_BULLET | DMG_BURN, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_custom_normal", "sk_npc_dmg_custom_normal", "sk_max_custom_normal", BULLET_IMPULSE(800, 5000), 0);

@@ -43,6 +43,7 @@ STUB_WEAPON_CLASS(weapon_grapple, WeaponGrapple, C_BaseHLCombatWeapon);
 STUB_WEAPON_CLASS(weapon_railgun, WeaponRailgun, C_BaseHLCombatWeapon);
 STUB_WEAPON_CLASS(weapon_oicw, WeaponOICW, C_HLMachineGun );
 STUB_WEAPON_CLASS(weapon_gatling, WeaponGatling, C_HLMachineGun);
+STUB_WEAPON_CLASS(weapon_turret, WeaponTurret, C_BaseHLCombatWeapon);
 #ifdef HL2_EPISODIC
 STUB_WEAPON_CLASS( weapon_hopwire, WeaponHopwire, C_BaseHLCombatWeapon );
 //STUB_WEAPON_CLASS( weapon_proto1, WeaponProto1, C_BaseHLCombatWeapon );

@@ -44,6 +44,9 @@ enum eyeState_t
 #define SF_FLOOR_TURRET_OUT_OF_AMMO			0x00000100
 #define SF_FLOOR_TURRET_CITIZEN				0x00000200	// Citizen modified turret
 
+#define	FLOOR_TURRET_MODEL			"models/combine_turrets/floor_turret.mdl"
+#define	FLOOR_TURRET_MODEL_CITIZEN	"models/combine_turrets/citizen_turret.mdl"
+
 class CTurretTipController;
 class CBeam;
 class CSprite;
@@ -172,6 +175,11 @@ public:
 	virtual	bool	HasBeenInteractedWith()	{ return m_bHackedByAlyx; }
 	virtual void	NotifyInteraction( CAI_BaseNPC *pUser )
 	{
+		MakeAllied();
+	}
+
+	virtual void	MakeAllied(void)
+	{
 		// For now, turn green so we can tell who is hacked.
 		//SetRenderColor( 0, 255, 0 );
 		if (!IsGlowEffectActive() && !m_denyOutlines)
@@ -179,7 +187,7 @@ public:
 			Vector allyColor = Vector(26, 77, 153);
 			GiveOutline(allyColor);
 		}
-		m_bHackedByAlyx = true; 
+		m_bHackedByAlyx = true;
 	}
 
 	static float	fMaxTipControllerVelocity;
