@@ -88,27 +88,6 @@
                     "MaxLiveRareNPCs"    "5"
                 }
             }
-            "npc_maker_firefight"
-            {
-                //Positions
-                "x" "-53.270302"
-                "y" "-1016.434875"
-                "z" "-309.968750"
-                //Rotations
-                "roll"  "0"  
-                "yaw"   "0"
-                "pitch" "0"
-                "KeyValues"
-                {
-                    "targetname" "Spawner_5"
-                    "RareNPCRarity"    "5"
-                    "StartDisabled"    "0"
-                    "NPCSquadName"    "Squad_5"
-                    "SpawnFrequency"    "5"
-                    "MaxLiveChildren"    "15"
-                    "MaxLiveRareNPCs"    "5"
-                }
-            }
             "item_heavyarmor"
             {
                 //Positions
@@ -233,22 +212,6 @@
                     "ItemClass10"    "weapon_357"
                     "ItemCount"        "1"
                     "CrateAppearance"    "models/items/item_beacon_crate.mdl"
-                }
-            }
-            "weapon_sniper_rifle"
-            {
-                //Positions
-                "x" "-2517.828369"
-                "y" "-850.828430"
-                "z" "81.566750"
-                //Rotations
-                "roll"  "0"  
-                "yaw"   "0"
-                "pitch" "0"
-                "KeyValues"
-                {
-                    "targetname" "boomheadshot"
-                    "StartDisabled"	"0"
                 }
             }
         }
