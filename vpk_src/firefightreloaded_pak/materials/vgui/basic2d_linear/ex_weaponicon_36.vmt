@@ -1,0 +1,9 @@
+"UnlitGeneric"
+{
+	"$baseTexture" "VGUI\basic2d_linear/ex_weaponicon_36"
+	"$additive" "1"
+	"$vertexcolor" "1"
+	"$vertexalpha" "1"
+	"$alpha"	"0.7"
+	"$ignorez"     "1"
+}

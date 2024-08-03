@@ -112,7 +112,7 @@
 		"weapon_classname" "weapon_knife"
 		"unlocks_in_iron_kick" "1"
 	}
-    	"14"
+    "14"
 	{
 		"name"		"#GameUI_Store_Buy_Railgun"
 		"item_type"	"5"
@@ -132,5 +132,12 @@
 		"item_type"	"5"
 		"min_level"	"8"
 		"weapon_classname" "weapon_alyxgun"
+	}
+    "16"
+	{
+		"name"		"#GameUI_Store_Buy_Turret"
+		"item_type"	"5"
+		"min_level"	"6"
+		"weapon_classname" "weapon_turret"
 	}
 }

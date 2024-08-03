@@ -191,6 +191,10 @@ void CNPC_CombineS::GetSoldierModel()
 		{
 			SetModelName(AllocPooledString("models/combine_soldier.mdl"));
 			m_fIsShotgunner = true;
+			if (m_nSkin != COMBINE_SKIN_SHOTGUNNER)
+			{
+				m_nSkin = COMBINE_SKIN_SHOTGUNNER;
+			}
 		}
 		else if (HasSpawnFlags(SF_COMBINE_S_PRISONGUARD))
 		{

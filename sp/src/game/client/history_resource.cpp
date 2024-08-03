@@ -342,9 +342,8 @@ void CHudHistoryResource::Paint( void )
 			const CHudTexture *itemIcon = NULL;
 			const CHudTexture *itemAmmoIcon = NULL;
 			int iAmount = 0;
-			bool bHalfHeight = false;
+			bool bHalfHeight = true;
 
-			CHudTexture ammoIcon;
 			switch ( m_PickupHistory[i].type )
 			{
 			case HISTSLOT_AMMO:
@@ -361,10 +360,8 @@ void CHudHistoryResource::Paint( void )
 					else
 #endif // HL2MP
 					{
-						//itemIcon = gWR.GetAmmoIconFromWeapon( m_PickupHistory[i].iId );
-						PopulateTexture( ammoIcon, GetAmmoDef()->GetAmmoOfIndex( m_PickupHistory[i].iId )->cAmmoIcon );
-						itemAmmoIcon = &ammoIcon;
-						//bHalfHeight = true;
+						itemIcon = gWR.GetAmmoIconFromWeapon(m_PickupHistory[i].iId);
+						itemAmmoIcon = NULL;
 					}
 
 #ifdef CSTRIKE_DLL
@@ -382,8 +379,8 @@ void CHudHistoryResource::Paint( void )
 				break;
 			case HISTSLOT_AMMODENIED:
 				{
-					PopulateTexture( ammoIcon, GetAmmoDef()->GetAmmoOfIndex( m_PickupHistory[i].iId )->cAmmoIcon );
-					itemAmmoIcon = &ammoIcon;
+					itemIcon = gWR.GetAmmoIconFromWeapon(m_PickupHistory[i].iId);
+					iAmount = 0;
 					bUseAmmoFullMsg = true;
 					// display as red
 					clr = gHUD.m_clrCaution;

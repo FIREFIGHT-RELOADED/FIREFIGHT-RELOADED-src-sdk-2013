@@ -650,6 +650,7 @@ void CNPCMakerFirefight::MakeNPC()
 		if (!pent->IsGlowEffectActive() && !pent->m_denyOutlines)
 		{
 			Vector allyColor = Vector(26, 77, 153);
+			pent->m_bImportantOutline = true;
 			pent->GiveOutline(allyColor);
 		}
 	}

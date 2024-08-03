@@ -1367,20 +1367,6 @@
 				}
 			}
 			
-			"NPCGlow"
-			{
-				"text"			"#GameUI_GlowEffect"
-				"type"			"wheelywheel"
-				"advanced"		"1"
-				"convar"		"npc_gloweffect"
-
-				"options"
-				{
-					"0"		"#gameui_disabled"
-					"1"		"#gameui_enabled"
-				}
-			}
-			
 			"AllyPlayerModel"
 			{
 				"text"			"#GameUI_AlliesUseModel"
@@ -2289,6 +2275,20 @@
 				"type"			"wheelywheel"
 				"advanced"		"1"
 				"convar"		"r_drawviewmodel"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+            
+            "NPCGlow"
+			{
+				"text"			"#GameUI_GlowEffect"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"npc_gloweffect"
 
 				"options"
 				{

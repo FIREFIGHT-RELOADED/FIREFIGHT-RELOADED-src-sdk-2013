@@ -250,6 +250,7 @@ void CNPC_CombineAce::CreateShieldOutline()
 			{
 				m_denyOutlines = true;
 				//we can't transfer Color objects through the server, so we use Vectors.
+				m_bImportantOutline = true;
 				GiveOutline(outlinecolor);
 			}
 		}
@@ -258,6 +259,7 @@ void CNPC_CombineAce::CreateShieldOutline()
 	{
 		m_denyOutlines = true;
 		Vector outline = Vector(0, 255, 0);
+		m_bImportantOutline = true;
 		GiveOutline(outline);
 	}
 }
@@ -336,6 +338,7 @@ void CNPC_CombineAce::LoadInitAttributes()
 			if (m_denyOutlines)
 			{
 				m_denyOutlines = false;
+				m_bImportantOutline = false;
 			}
 		}
 

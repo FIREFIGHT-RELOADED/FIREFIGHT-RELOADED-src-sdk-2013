@@ -138,4 +138,11 @@
         "limit"	    "1"
 		"command"	"item weapon_grapple 0" 
 	}
+    "21"
+	{
+		"name"		"Turret"
+		"price"		"15000"
+        "limit"	    "1"
+		"command"	"item weapon_turret 0" 
+	}
 }

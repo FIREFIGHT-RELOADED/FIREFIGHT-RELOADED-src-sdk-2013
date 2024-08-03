@@ -1329,8 +1329,6 @@ void CHL2_Player::KickAttack(void)
 					return;
 				}
 
-				Msg("%f\n", KickDamageFlightBoost);
-
 				CBaseEntity* Victim = CheckTraceHullAttack(Weapon_ShootPosition(), vecEnd, Vector(-16, -16, -16), Vector(16, 16, 16), KickDamageFlightBoost, (DMG_CLUB), KickThrowForceMult, true);
 				if (Victim && Victim->IsNPC())
 				{

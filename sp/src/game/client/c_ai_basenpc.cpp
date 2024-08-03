@@ -27,6 +27,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_AI_BaseNPC, DT_AI_BaseNPC, CAI_BaseNPC )
 	RecvPropBool( RECVINFO( m_bIsMoving ) ),
 	RecvPropBool( RECVINFO( m_bFadeCorpse ) ),
 	RecvPropVector(RECVINFO(m_vOutlineColor)),
+	RecvPropBool(RECVINFO(m_bImportantOutline)),
 	RecvPropInt( RECVINFO ( m_iDeathPose) ),
 	RecvPropInt( RECVINFO( m_iDeathFrame) ),
 	RecvPropInt( RECVINFO( m_iSpeedModRadius ) ),
@@ -159,12 +160,20 @@ void C_AI_BaseNPC::GetGlowEffectColor(float* r, float* g, float* b)
 
 void C_AI_BaseNPC::OnDataChanged( DataUpdateType_t type )
 {
-	if (IsAlive() && npc_gloweffect.GetBool())
+	if (IsAlive())
 	{
-		float r, g, b;
-		GetGlowEffectColor(&r, &g, &b);
-		Vector color = Vector(r, g, b);
-		UpdateGlowEffect(color, 1.0);
+		if (npc_gloweffect.GetBool() || m_bImportantOutline)
+		{
+			float r, g, b;
+			GetGlowEffectColor(&r, &g, &b);
+			Vector color = Vector(r, g, b);
+			UpdateGlowEffect(color, 1.0);
+		}
+		else
+		{
+			Vector color = Vector(0, 0, 0);
+			UpdateGlowEffect(color, 1.0);
+		}
 	}
 
 	BaseClass::OnDataChanged( type );

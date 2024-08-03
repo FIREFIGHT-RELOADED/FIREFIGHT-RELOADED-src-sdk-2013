@@ -642,6 +642,7 @@ CON_COMMAND_F_COMPLETION(npc_create, "Creates an NPC of the given type where the
 			if (!baseNPC->IsGlowEffectActive() && !baseNPC->m_denyOutlines)
 			{
 				Vector allyColor = Vector(26, 77, 153);
+				baseNPC->m_bImportantOutline = true;
 				baseNPC->GiveOutline(allyColor);
 			}
 		}
@@ -749,6 +750,7 @@ CON_COMMAND_F_COMPLETION(npc_create_aimed, "Creates an NPC aimed away from the p
 			if (!baseNPC->IsGlowEffectActive() && !baseNPC->m_denyOutlines)
 			{
 				Vector allyColor = Vector(26, 77, 153);
+				baseNPC->m_bImportantOutline = true;
 				baseNPC->GiveOutline(allyColor);
 			}
 		}

@@ -224,6 +224,7 @@ void CNPC_Advisor::EnableBulletResistanceOutline()
 		{
 			m_denyOutlines = true;
 			Vector outline = Vector(255, 0, 255);
+			m_bImportantOutline = true;
 			GiveOutline(outline);
 			m_bBulletResistanceOutlineDisabled = false;
 		}
@@ -272,6 +273,7 @@ void CNPC_Advisor::LoadInitAttributes()
 			if (m_denyOutlines)
 			{
 				m_denyOutlines = false;
+				m_bImportantOutline = false;
 			}
 		}
 	}
@@ -346,6 +348,7 @@ CTakeDamageInfo CNPC_Advisor::BulletResistanceLogic(const CTakeDamageInfo& info,
 		if (!m_bBulletResistanceOutlineDisabled)
 		{
 			m_denyOutlines = true;
+			m_bImportantOutline = true;
 			Vector outline = Vector(255, 0, 0);
 			GiveOutline(outline);
 		}

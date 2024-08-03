@@ -2146,6 +2146,7 @@ public:
 	CNetworkVar( bool,  m_bFadeCorpse );
 	CNetworkVar( bool,  m_bImportanRagdoll );
 	CNetworkVector(m_vOutlineColor);
+	CNetworkVar(bool, m_bImportantOutline);
 
 	CNetworkVar( bool,  m_bSpeedModActive );
 	CNetworkVar( int,   m_iSpeedModRadius );

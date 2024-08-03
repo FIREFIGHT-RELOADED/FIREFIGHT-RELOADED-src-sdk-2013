@@ -56,6 +56,7 @@ private:
 	bool m_bIsMoving;
 	bool m_bFadeCorpse;
 	bool m_bShowOutlines;
+	bool m_bImportantOutline;
 	Vector m_vOutlineColor;
 
 	bool m_bSpeedModActive;

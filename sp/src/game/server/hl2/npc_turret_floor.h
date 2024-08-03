@@ -185,6 +185,7 @@ public:
 		if (!IsGlowEffectActive() && !m_denyOutlines)
 		{
 			Vector allyColor = Vector(26, 77, 153);
+			m_bImportantOutline = true;
 			GiveOutline(allyColor);
 		}
 		m_bHackedByAlyx = true;

@@ -22,15 +22,15 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-#define TURRET_MAX_PLACEMENT_RANGE 256.0f
+#define TURRET_MAX_PLACEMENT_RANGE 128.0f
 #define TURRET_MIN_PLACEMENT_RANGE 32.0f
 
 #define	FLOOR_TURRET_WEAPON_MODEL			"models/weapons/floor_turret_rb.mdl"
 
-class CTurretHologram : public CBaseAnimating
+class CTurretHologram : public CAI_BaseNPC
 {
 public:
-	DECLARE_CLASS(CTurretHologram, CBaseAnimating);
+	DECLARE_CLASS(CTurretHologram, CAI_BaseNPC);
 	DECLARE_DATADESC();
 
 	static enum HologramStatus
@@ -44,7 +44,13 @@ public:
 	{
 		Precache();
 		BaseClass::Spawn();
+
+		m_bImportantOutline = true;
 		SetModel(FLOOR_TURRET_WEAPON_MODEL);
+
+		SetRenderMode(kRenderTransColor);
+		SetRenderColor(80, 80, 80, 180);
+
 		SetThink(&CTurretHologram::OnThink);
 		SetNextThink(gpGlobals->curtime + 0.01f);
 	}
@@ -56,22 +62,19 @@ public:
 		switch (status)
 		{
 			case TURRET_JUSTRIGHT:
-				clrHighlightColor = Color(128, 255, 128, 200);
+				clrHighlightColor = Color(80, 255, 80);
 				break;
 			case TURRET_TOOFAR:
-				clrHighlightColor = Color(255, 128, 128, 200);
-				break;
 			case TURRET_INVALIDPLACEMENT:
-				clrHighlightColor = Color(255, 128, 128, 200);
+				clrHighlightColor = Color(255, 80, 80);
 				break;
 		}
 
-		SetRenderMode(kRenderGlow);
-		m_nRenderFX = kRenderFxGlowShell;
-		SetRenderColor(clrHighlightColor.r(),
-			clrHighlightColor.g(),
-			clrHighlightColor.b(),
-			clrHighlightColor.a());
+		SetRenderMode(kRenderTransColor);
+		SetRenderColor(clrHighlightColor.r(), clrHighlightColor.g(), clrHighlightColor.b(), 210);
+		
+		Vector outlineColor = Vector(clrHighlightColor.r(), clrHighlightColor.g(), clrHighlightColor.b());
+		GiveOutline(outlineColor);
 	}
 
 	void SetStatus(HologramStatus statusToReport) { status = statusToReport; }

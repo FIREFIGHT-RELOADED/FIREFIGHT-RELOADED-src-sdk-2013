@@ -1863,8 +1863,8 @@ CAmmoDef *GetAmmoDef()
 		def.AddAmmoType("MP5Ammo", DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_mp5", "sk_npc_dmg_mp5", "sk_max_mp5", BULLET_IMPULSE(200, 1225), 0, 'p');
 		def.AddAmmoType("556Round", DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_mp5", "sk_npc_dmg_mp5", "sk_max_mp5", BULLET_IMPULSE(200, 1225), 0, 'r');
 		def.AddAmmoType("gatling", DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_gatling", "sk_npc_dmg_gatling", "sk_max_gatling", BULLET_IMPULSE(200, 1225), 0, 'r');
-		def.AddAmmoType("Katana", DMG_SLASH, TRACER_NONE, "sk_plr_dmg_katana", "sk_npc_dmg_katana", 1, BULLET_IMPULSE(200, 1225), 0);
-		def.AddAmmoType("turret", DMG_GENERIC, TRACER_NONE, 0, 0, "sk_max_turret", 0, 0);
+		def.AddAmmoType("Katana", DMG_SLASH, TRACER_NONE, "sk_plr_dmg_katana", "sk_npc_dmg_katana", 1, BULLET_IMPULSE(200, 1225), 0, 'r');
+		def.AddAmmoType("turret", DMG_GENERIC, TRACER_NONE, 0, 0, "sk_max_turret", 0, 0, BULLET_IMPULSE(200, 1225), 0, 'r');
 		//CUSTOM AMMO TYPES HERE.
 		def.AddAmmoType("CustomBullet1_Normal", DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_custom_normal", "sk_npc_dmg_custom_normal", "sk_max_custom_normal", BULLET_IMPULSE(800, 5000), 0);
 		def.AddAmmoType("CustomBullet2_NormalBurn", DMG_BULLET | DMG_BURN, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_custom_normal", "sk_npc_dmg_custom_normal", "sk_max_custom_normal", BULLET_IMPULSE(800, 5000), 0);

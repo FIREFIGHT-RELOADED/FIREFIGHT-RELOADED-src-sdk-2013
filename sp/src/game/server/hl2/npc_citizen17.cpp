@@ -171,6 +171,7 @@ CON_COMMAND_F(npc_create_playerbot, "Creates an npc_playerbot/citizen of the giv
 		if (!baseNPC->IsGlowEffectActive() && !baseNPC->m_denyOutlines)
 		{
 			Vector allyColor = Vector(26, 77, 153);
+			baseNPC->m_bImportantOutline = true;
 			baseNPC->GiveOutline(allyColor);
 		}
 
