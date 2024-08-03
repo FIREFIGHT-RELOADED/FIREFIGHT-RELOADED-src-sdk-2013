@@ -201,31 +201,3 @@
 
 	"wave"		 "common/null.wav" 
 }
-
-// Ported from Alien Swarm for the game instructor in Mapbase
-"Instructor.LessonStart"
-{
-	"channel"		"CHAN_STATIC"
-	"volume"		"0.75"
-	"pitch"			"PITCH_NORM"
-
-	"soundlevel" 		"SNDLVL_NORM"
-
-	"wave"			"#ui/beepclear.wav"
-}
-
-"Instructor.ImportantLessonStart"
-{
-	"channel"		"CHAN_STATIC"
-	"volume"		"0.75"
-	"pitch"			"PITCH_NORM"
-
-	"soundlevel" 		"SNDLVL_NORM"
-
-	"wave"			"#ui/beep22.wav"
-}
-
-
-
-
-

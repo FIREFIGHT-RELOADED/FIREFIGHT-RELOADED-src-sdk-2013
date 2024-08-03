@@ -4,9 +4,9 @@ WeaponData
 {
 	// Weapon data is loaded by both the Game and Client DLLs.
 	"printname"	"#HL2_Turret"
-	"viewmodel"		"models/weapons/v_pistol.mdl"
-	"playermodel"		"models/weapons/w_pistol.mdl"
-	"anim_prefix"		"pistol"
+	"viewmodel"		"models/weapons/v_turret_b.mdl"
+	"playermodel"		"models/weapons/w_turret_rb.mdl"
+	"anim_prefix"		"slam"
 	"weapon_type"		"utility"
 	"bucket"			"5"
 	"bucket_position"	"1"
@@ -31,18 +31,17 @@ WeaponData
 	"useironsightcrosshair" 	"0"
 	"MeleeWeapon"			"1"
 
+	Adjust
+	{
+		"right"		"5.5"
+	}
+
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
 	{
-		"reload"		"Weapon_Pistol.Reload"
-		"reload_npc"		"Weapon_Pistol.NPC_Reload"
+		"single_shot"		"HL2Player.Use"
 		"empty"			"Weapon_Pistol.Empty"
-		"single_shot"		"Weapon_Pistol.Single"
-		"single_shot_npc"	"Weapon_Pistol.NPC_Single"
-		"special1"		"Weapon_Pistol.Special1"
-		"special2"		"Weapon_Pistol.Special2"
-		"special3"		"Weapon_FlareGun.Single"
-		"burst"			"Weapon_Pistol.Burst"
+		"special1"		"SolidMetal.ImpactHard"
 	}
 
 	// Weapon Sprite data is loaded by the Client DLL.

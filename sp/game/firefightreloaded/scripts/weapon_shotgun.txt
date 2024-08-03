@@ -38,12 +38,6 @@ WeaponData
 		"fov"		"-5"
 		"pitch"		"0.5"
 	}
-	
-	Adjust
-	{
-		"right"		"-1.5"
-		"pitch"		"-0.6"
-	}
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
