@@ -56,6 +56,8 @@ float CNPC_FloorTurret::fMaxTipControllerAngularVelocity = 90.0f * 90.0f;
 #define FLOOR_TURRET_SHORT_WAIT		2.0		// Used for FAST_RETIRE spawnflag
 #define	FLOOR_TURRET_PING_TIME		1.0f	//LPB!!
 
+#define FLOOR_TURRET_MAXIMUM_ALARMS_UNTILWEFUCKINGEXPLODE		100
+
 #define	FLOOR_TURRET_VOICE_PITCH_LOW	45
 #define	FLOOR_TURRET_VOICE_PITCH_HIGH	100
 
@@ -103,6 +105,8 @@ BEGIN_DATADESC( CNPC_FloorTurret )
 	DEFINE_FIELD( m_hLaser,			FIELD_EHANDLE ),
 	DEFINE_FIELD( m_bSelfDestructing,	FIELD_BOOLEAN ),
 
+	DEFINE_FIELD(m_nPlayerAlarms, FIELD_INTEGER),
+
 	DEFINE_FIELD( m_hPhysicsAttacker, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_flLastPhysicsInfluenceTime, FIELD_TIME ),
 
@@ -145,6 +149,8 @@ BEGIN_DATADESC( CNPC_FloorTurret )
 END_DATADESC()
 
 LINK_ENTITY_TO_CLASS( npc_turret_floor, CNPC_FloorTurret );
+LINK_ENTITY_TO_CLASS(npc_turret_floor_citizen, CNPC_FloorTurret);
+LINK_ENTITY_TO_CLASS(npc_turret_floor_weapon, CNPC_FloorTurret);
 
 //-----------------------------------------------------------------------------
 // Constructor
@@ -166,7 +172,8 @@ CNPC_FloorTurret::CNPC_FloorTurret( void ) :
 	m_flThrashTime( 0.0f ),
 	m_pMotionController( NULL ),
 	m_bEnabled( false ),
-	m_bSelfDestructing( false )
+	m_bSelfDestructing( false ),
+	m_nPlayerAlarms(0)
 {
 	m_vecGoalAngles.Init();
 
@@ -181,7 +188,7 @@ Class_T	CNPC_FloorTurret::Classify( void )
 	if ( m_bEnabled ) 
 	{
 		// Hacked or friendly turrets don't attack players
-		if( m_bHackedByAlyx || IsCitizenTurret() )
+		if( m_bHackedByAlyx || IsWeaponTurret() || IsCitizenTurret() )
 			return CLASS_PLAYER_ALLY;
 
 		return CLASS_COMBINE_TURRET;
@@ -222,13 +229,22 @@ void CNPC_FloorTurret::UpdateOnRemove( void )
 void CNPC_FloorTurret::Precache( void )
 {
 	const char *pModelName = STRING( GetModelName() );
-	pModelName = ( pModelName && pModelName[ 0 ] != '\0' ) ? pModelName : FLOOR_TURRET_MODEL;
+
+	if (IsWeaponTurret())
+	{
+		pModelName = (pModelName && pModelName[0] != '\0') ? pModelName : FLOOR_TURRET_WEAPON_MODEL;
+	}
+	else
+	{
+		pModelName = (pModelName && pModelName[0] != '\0') ? pModelName : FLOOR_TURRET_MODEL;
+	}
+
 	PrecacheModel( pModelName );
 	PrecacheModel( FLOOR_TURRET_GLOW_SPRITE );
 
 	PropBreakablePrecacheAll( MAKE_STRING( pModelName ) );
 
-	if ( IsCitizenTurret() )
+	if ( IsCitizenTurret() || IsWeaponTurret())
 	{
 		PrecacheModel( LASER_BEAM_SPRITE );
 		PrecacheScriptSound( "NPC_FloorTurret.AlarmPing");
@@ -267,10 +283,29 @@ void CNPC_FloorTurret::Precache( void )
 //-----------------------------------------------------------------------------
 void CNPC_FloorTurret::Spawn( void )
 { 
+	if (FClassnameIs(this, "npc_turret_floor_citizen"))
+	{
+		AddSpawnFlags(SF_FLOOR_TURRET_CITIZEN);
+	}
+	else if (FClassnameIs(this, "npc_turret_floor_weapon"))
+	{
+		AddSpawnFlags(SF_FLOOR_TURRET_WEAPON);
+	}
+
 	Precache();
 
-	const char *pModelName = STRING( GetModelName() );
-	SetModel( ( pModelName && pModelName[ 0 ] != '\0' ) ? pModelName : FLOOR_TURRET_MODEL );
+	const char* pModelName = STRING(GetModelName());
+
+	if (IsWeaponTurret())
+	{
+		pModelName = (pModelName && pModelName[0] != '\0') ? pModelName : FLOOR_TURRET_WEAPON_MODEL;
+	}
+	else
+	{
+		pModelName = (pModelName && pModelName[0] != '\0') ? pModelName : FLOOR_TURRET_MODEL;
+	}
+
+	SetModel(pModelName);
 	
 	// If we're a citizen turret, we use a different skin
 	if ( IsCitizenTurret() )
@@ -291,6 +326,10 @@ void CNPC_FloorTurret::Spawn( void )
 			m_nSkin = clamp(m_iKeySkin,1,4);
 		}
 	}
+	else if (IsWeaponTurret())
+	{
+		MakeAllied();
+	}
 
 	BaseClass::Spawn();
 
@@ -308,7 +347,14 @@ void CNPC_FloorTurret::Spawn( void )
 	SetPoseParameter( m_poseAim_Yaw, 0 );
 	SetPoseParameter( m_poseAim_Pitch, 0 );
 
-	m_iAmmoType = GetAmmoDef()->Index( "PISTOL" );
+	if (IsWeaponTurret())
+	{
+		m_iAmmoType = GetAmmoDef()->Index("Sniper");
+	}
+	else
+	{
+		m_iAmmoType = GetAmmoDef()->Index("PISTOL");
+	}
 
 	m_iMuzzleAttachment = LookupAttachment( "eyes" );
 	m_iEyeAttachment = LookupAttachment( "light" );
@@ -348,6 +394,16 @@ void CNPC_FloorTurret::Spawn( void )
 	SetBoneCacheFlags( BCF_NO_ANIMATION_SKIP );
 
 	CreateVPhysics();
+
+	if (IsWeaponTurret())
+	{
+		//our mass is increased to prevent us getting knocked over as easily.
+		IPhysicsObject* pPhys = VPhysicsGetObject();
+		if (pPhys != NULL)
+		{
+			pPhys->SetMass(pPhys->GetMass() * 2.0f);
+		}
+	}
 
 	SetState(NPC_STATE_IDLE);
 }
@@ -1055,7 +1111,14 @@ void CNPC_FloorTurret::SearchThink( void )
 		}
 		else
 		{
-			m_flShotTime  = gpGlobals->curtime + 0.1f;
+			if (IsWeaponTurret())
+			{
+				m_flShotTime = gpGlobals->curtime + 0.05f;
+			}
+			else
+			{
+				m_flShotTime = gpGlobals->curtime + 0.1f;
+			}
 		}
 
 		m_flLastSight = 0;
@@ -1259,7 +1322,7 @@ void CNPC_FloorTurret::TippedThink( void )
 			{
 				DryFire();
 			}
-			else if ( IsCitizenTurret() == false )	// Citizen turrets don't wildly fire
+			else if ( IsCitizenTurret() == false)	// Citizen turrets don't wildly fire
 			{
 				Vector vecMuzzle, vecMuzzleDir;
 				UpdateMuzzleMatrix();
@@ -1354,7 +1417,7 @@ void CNPC_FloorTurret::InactiveThink( void )
 		return;
 	}
 
-	if ( IsCitizenTurret() )
+	if ( IsCitizenTurret() || IsWeaponTurret())
 	{
 		// Blink if we have ammo or our current blink is "on" and we need to turn it off again
 		if ( HasSpawnFlags( SF_FLOOR_TURRET_OUT_OF_AMMO ) == false || m_bBlinkState )
@@ -1362,12 +1425,30 @@ void CNPC_FloorTurret::InactiveThink( void )
 			// If we're on our side, ping and complain to the player
 			if ( m_bBlinkState == false )
 			{
-				// Ping when the light is going to come back on
-				EmitSound( "NPC_FloorTurret.AlarmPing" );
+				EmitSound("NPC_FloorTurret.AlarmPing");
 			}
 
 			SetEyeState( TURRET_EYE_ALARM );
-			SetNextThink( gpGlobals->curtime + 0.25f );
+
+			//for weapon turrets, we have a timer that will make us explode
+			if (IsWeaponTurret() && m_nPlayerAlarms >= FLOOR_TURRET_MAXIMUM_ALARMS_UNTILWEFUCKINGEXPLODE)
+			{
+				BeginSelfDestruct();
+			}
+			else
+			{
+				m_nPlayerAlarms++;
+			}
+
+			if (IsWeaponTurret())
+			{
+				//slower, for tension!
+				SetNextThink(gpGlobals->curtime + 0.5f);
+			}
+			else
+			{
+				SetNextThink(gpGlobals->curtime + 0.25f);
+			}
 		}
 	}
 	else
@@ -1382,6 +1463,7 @@ void CNPC_FloorTurret::InactiveThink( void )
 void CNPC_FloorTurret::ReturnToLife( void )
 {
 	m_flThrashTime = 0;
+	m_nPlayerAlarms = 0;
 
 	// Enable the tip controller
 	m_pMotionController->Enable( true );
@@ -1391,9 +1473,15 @@ void CNPC_FloorTurret::ReturnToLife( void )
 	m_lifeState = LIFE_ALIVE;
 	SetCollisionGroup( COLLISION_GROUP_NONE );
 
-	if (HasBeenInteractedWith())
+	if (Classify() == CLASS_PLAYER_ALLY)
 	{
-		MakeAllied();
+		if (!IsGlowEffectActive() && !m_denyOutlines)
+		{
+			//thank god our color is stored....
+			Vector oldColor = m_vOutlineColor;
+			m_bImportantOutline = true;
+			GiveOutline(oldColor);
+		}
 	}
 
 	// Become active again
@@ -1542,6 +1630,28 @@ bool CNPC_FloorTurret::PreThink( turretState_e state )
 	return false;
 }
 
+void CNPC_FloorTurret::TurnOnLaser()
+{
+	if (m_hLaser == NULL)
+	{
+		m_hLaser = CBeam::BeamCreate(LASER_BEAM_SPRITE, 1.0f);
+		if (m_hLaser == NULL)
+			return;
+
+		m_hLaser->EntsInit(this, this);
+		m_hLaser->FollowEntity(this);
+		m_hLaser->SetStartAttachment(LookupAttachment("laser_start"));
+		m_hLaser->SetEndAttachment(LookupAttachment("laser_end"));
+		m_hLaser->SetNoise(0);
+		m_hLaser->SetColor(255, 0, 0);
+		m_hLaser->SetScrollRate(0);
+		m_hLaser->SetWidth(1.0f);
+		m_hLaser->SetEndWidth(1.0f);
+		m_hLaser->SetBrightness(160);
+		m_hLaser->SetBeamFlags(SF_BEAM_SHADEIN);
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Sets the state of the glowing eye attached to the turret
 // Input  : state - state the eye should be in
@@ -1561,23 +1671,12 @@ void CNPC_FloorTurret::SetEyeState( eyeState_t state )
 	}
 
 	// Add the laser if it doesn't already exist
-	if ( IsCitizenTurret() && HasSpawnFlags( SF_FLOOR_TURRET_OUT_OF_AMMO ) == false && m_hLaser == NULL )
+	if (HasSpawnFlags(SF_FLOOR_TURRET_OUT_OF_AMMO) == false)
 	{
-		m_hLaser = CBeam::BeamCreate( LASER_BEAM_SPRITE, 1.0f );
-		if ( m_hLaser == NULL )
-			return;
-
-		m_hLaser->EntsInit( this, this );
-		m_hLaser->FollowEntity( this );
-		m_hLaser->SetStartAttachment( LookupAttachment( "laser_start" ) );
-		m_hLaser->SetEndAttachment( LookupAttachment( "laser_end" ) );
-		m_hLaser->SetNoise( 0 );
-		m_hLaser->SetColor( 255, 0, 0 );
-		m_hLaser->SetScrollRate( 0 );
-		m_hLaser->SetWidth( 1.0f );
-		m_hLaser->SetEndWidth( 1.0f );
-		m_hLaser->SetBrightness( 160 );
-		m_hLaser->SetBeamFlags( SF_BEAM_SHADEIN );
+		if (IsCitizenTurret() || IsWeaponTurret())
+		{
+			TurnOnLaser();
+		}
 	}
 
 	m_iEyeState = state;
@@ -1944,6 +2043,12 @@ float CNPC_FloorTurret::GetAttackDamageScale( CBaseEntity *pVictim )
 //-----------------------------------------------------------------------------
 Vector CNPC_FloorTurret::GetAttackSpread( CBaseCombatWeapon *pWeapon, CBaseEntity *pTarget ) 
 {
+	if (IsWeaponTurret())
+	{
+		//player floor turrets are incredibly accurate.
+		return VECTOR_CONE_5DEGREES * ((CBaseHLCombatWeapon::GetDefaultProficiencyValues())[WEAPON_PROFICIENCY_PERFECT].spreadscale);
+	}
+
 	WeaponProficiency_t weaponProficiency = WEAPON_PROFICIENCY_AVERAGE;
 
 	// Switch our weapon proficiency based upon our target
@@ -2112,9 +2217,12 @@ void CNPC_FloorTurret::SelfDestructThink( void )
 		// Save this as the last time we pinged
 		m_flPingTime = gpGlobals->curtime;
 		
-		// Randomly twitch
-		m_vecGoalAngles.x = GetAbsAngles().x + random->RandomFloat( -60*flDestructPerc, 60*flDestructPerc );
-		m_vecGoalAngles.y = GetAbsAngles().y + random->RandomFloat( -60*flDestructPerc, 60*flDestructPerc );
+		if (!OnSide())
+		{
+			// Randomly twitch
+			m_vecGoalAngles.x = GetAbsAngles().x + random->RandomFloat(-60 * flDestructPerc, 60 * flDestructPerc);
+			m_vecGoalAngles.y = GetAbsAngles().y + random->RandomFloat(-60 * flDestructPerc, 60 * flDestructPerc);
+		}
 	}
 	
 	UpdateFacing();
@@ -2123,34 +2231,39 @@ void CNPC_FloorTurret::SelfDestructThink( void )
 	SetNextThink( gpGlobals->curtime + 0.05f );
 }
 
-//-----------------------------------------------------------------------------
-// Purpose: Make us explode
-//-----------------------------------------------------------------------------
-void CNPC_FloorTurret::InputSelfDestruct( inputdata_t &inputdata )
+void CNPC_FloorTurret::BeginSelfDestruct(void)
 {
 	// Ka-boom!
 	m_flDestructStartTime = gpGlobals->curtime;
 	m_flPingTime = gpGlobals->curtime;
 	m_bSelfDestructing = true;
 
-	SetThink( &CNPC_FloorTurret::SelfDestructThink );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetThink(&CNPC_FloorTurret::SelfDestructThink);
+	SetNextThink(gpGlobals->curtime + 0.1f);
 
 	// Create the dust effect in place
-	m_hFizzleEffect = (CParticleSystem *) CreateEntityByName( "info_particle_system" );
-	if ( m_hFizzleEffect != NULL )
+	m_hFizzleEffect = (CParticleSystem*)CreateEntityByName("info_particle_system");
+	if (m_hFizzleEffect != NULL)
 	{
 		Vector vecUp;
-		GetVectors( NULL, NULL, &vecUp );
+		GetVectors(NULL, NULL, &vecUp);
 
 		// Setup our basic parameters
-		m_hFizzleEffect->KeyValue( "start_active", "1" );
-		m_hFizzleEffect->KeyValue( "effect_name", "explosion_turret_fizzle" );
-		m_hFizzleEffect->SetParent( this );
-		m_hFizzleEffect->SetAbsOrigin( WorldSpaceCenter() + ( vecUp * 12.0f ) );
-		DispatchSpawn( m_hFizzleEffect );
+		m_hFizzleEffect->KeyValue("start_active", "1");
+		m_hFizzleEffect->KeyValue("effect_name", "explosion_turret_fizzle");
+		m_hFizzleEffect->SetParent(this);
+		m_hFizzleEffect->SetAbsOrigin(WorldSpaceCenter() + (vecUp * 12.0f));
+		DispatchSpawn(m_hFizzleEffect);
 		m_hFizzleEffect->Activate();
 	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Make us explode
+//-----------------------------------------------------------------------------
+void CNPC_FloorTurret::InputSelfDestruct( inputdata_t &inputdata )
+{
+	BeginSelfDestruct();
 }
 
 // 

@@ -25,7 +25,7 @@
 #define TURRET_MAX_PLACEMENT_RANGE 128.0f
 #define TURRET_MIN_PLACEMENT_RANGE 32.0f
 
-#define	FLOOR_TURRET_WEAPON_MODEL			"models/weapons/floor_turret_rb.mdl"
+ConVar	sv_infinite_turrets("sv_infinite_turrets", "0", FCVAR_ARCHIVE);
 
 class CTurretHologram : public CAI_BaseNPC
 {
@@ -71,7 +71,7 @@ public:
 		}
 
 		SetRenderMode(kRenderTransColor);
-		SetRenderColor(clrHighlightColor.r(), clrHighlightColor.g(), clrHighlightColor.b(), 210);
+		SetRenderColor(clrHighlightColor.r(), clrHighlightColor.g(), clrHighlightColor.b(), 150);
 		
 		Vector outlineColor = Vector(clrHighlightColor.r(), clrHighlightColor.g(), clrHighlightColor.b());
 		GiveOutline(outlineColor);
@@ -183,7 +183,6 @@ void CWeaponTurret::Precache( void )
 {
 	BaseClass::Precache();
 	UTIL_PrecacheOther( "npc_turret_floor" );
-	PrecacheModel(FLOOR_TURRET_WEAPON_MODEL);
 }
 
 void CWeaponTurret::ItemPreFrame(void)
@@ -206,14 +205,13 @@ void CWeaponTurret::ItemPostFrame(void)
 
 	if (m_bSetToRemoveAmmo && (m_flNextPrimaryAttack <= gpGlobals->curtime))
 	{
-		CNPC_FloorTurret* pTurret = dynamic_cast<CNPC_FloorTurret*>(CreateEntityByName("npc_turret_floor"));
+		CNPC_FloorTurret* pTurret = dynamic_cast<CNPC_FloorTurret*>(CreateEntityByName("npc_turret_floor_weapon"));
 		if (pTurret)
 		{
 			pTurret->SetName(AllocPooledString("spawnedTurret"));
 			pTurret->m_bDisableInitAttributes = true;
+			pTurret->AddSpawnFlags(SF_FLOOR_TURRET_WEAPON);
 			DispatchSpawn(pTurret);
-			pTurret->MakeAllied();
-			pTurret->SetModel(FLOOR_TURRET_WEAPON_MODEL);
 			pTurret->SetOwnerEntity(pOwner);
 			if (pHologram)
 			{
@@ -383,14 +381,19 @@ void CWeaponTurret::StopHologram(void)
 
 bool CWeaponTurret::DecrementAmmo( CBaseCombatCharacter *pOwner )
 {
-	pOwner->RemoveAmmo( 1, m_iPrimaryAmmoType );
-	
-	if (pOwner->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
+	if (!sv_infinite_turrets.GetBool())
 	{
-		pOwner->Weapon_Drop( this );
-		pOwner->SwitchToNextBestWeapon(this);
-		UTIL_Remove(this);
-        return false;
+		pOwner->RemoveAmmo(1, m_iPrimaryAmmoType);
+
+		if (pOwner->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
+		{
+			StopHologram();
+			pOwner->Weapon_Detach(this);
+			engine->ClientCommand(pOwner->edict(), "lastinv");
+			engine->ClientCommand(pOwner->edict(), "-attack");
+			UTIL_Remove(this);
+			return false;
+		}
 	}
     
     return true;

@@ -43,6 +43,9 @@ public:
 
 	virtual void			GetGlowEffectColor(float* r, float* g, float* b);
 
+public:
+	Vector m_vOutlineColor;
+
 private:
 	C_AI_BaseNPC( const C_AI_BaseNPC & ); // not defined, not accessible
 	float m_flTimePingEffect;
@@ -57,7 +60,6 @@ private:
 	bool m_bFadeCorpse;
 	bool m_bShowOutlines;
 	bool m_bImportantOutline;
-	Vector m_vOutlineColor;
 
 	bool m_bSpeedModActive;
 	bool m_bImportanRagdoll;

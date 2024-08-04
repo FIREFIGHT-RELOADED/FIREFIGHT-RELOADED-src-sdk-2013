@@ -43,9 +43,11 @@ enum eyeState_t
 #define SF_FLOOR_TURRET_FASTRETIRE			0x00000080
 #define SF_FLOOR_TURRET_OUT_OF_AMMO			0x00000100
 #define SF_FLOOR_TURRET_CITIZEN				0x00000200	// Citizen modified turret
+#define SF_FLOOR_TURRET_WEAPON				0x00000400	// Citizen modified turret
 
 #define	FLOOR_TURRET_MODEL			"models/combine_turrets/floor_turret.mdl"
 #define	FLOOR_TURRET_MODEL_CITIZEN	"models/combine_turrets/citizen_turret.mdl"
+#define	FLOOR_TURRET_WEAPON_MODEL	"models/weapons/floor_turret_rb.mdl"
 
 class CTurretTipController;
 class CBeam;
@@ -127,6 +129,8 @@ public:
 		}
 	}
 
+	void	BeginSelfDestruct(void);
+
 	// Inputs
 	void	InputToggle( inputdata_t &inputdata );
 	void	InputEnable( inputdata_t &inputdata );
@@ -199,6 +203,7 @@ protected:
 	virtual bool	PreThink( turretState_e state );
 	virtual void	Shoot( const Vector &vecSrc, const Vector &vecDirToEnemy, bool bStrict = false );
 	virtual void	SetEyeState( eyeState_t state );
+	void			TurnOnLaser(void);
 	void			Ping( void );	
 	void			Toggle( void );
 	void			Enable( void );
@@ -209,6 +214,7 @@ protected:
 	virtual bool	OnSide( void );
 
 	bool	IsCitizenTurret( void ) { return HasSpawnFlags( SF_FLOOR_TURRET_CITIZEN ); }
+	bool	IsWeaponTurret(void) { return HasSpawnFlags(SF_FLOOR_TURRET_WEAPON); }
 	bool	UpdateFacing( void );
 	void	DryFire( void );
 	void	UpdateMuzzleMatrix();
@@ -217,6 +223,7 @@ protected:
 	matrix3x4_t m_muzzleToWorld;
 	int		m_muzzleToWorldTick;
 	int		m_iAmmoType;
+	int		m_nPlayerAlarms;
 
 	bool	m_bAutoStart;
 	bool	m_bActive;		//Denotes the turret is deployed and looking for targets

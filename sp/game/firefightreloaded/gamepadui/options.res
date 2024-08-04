@@ -567,6 +567,20 @@
 				}
 			}
             
+            "InfiniteTurrets"
+			{
+				"text"			"#GameUI_InfiniteTurrets"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"sv_infinite_turrets"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
+            
             "ShootInZoom"
 			{
 				"text"			"#GameUI_ShootInZoom"
