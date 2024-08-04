@@ -282,6 +282,7 @@
 		128 : "Fast Retire" : 0
 		256 : "Out of Ammo" : 0
 		512 : "Citizen modified (Friendly)" : 0
+        1024 : "Turret weapon version (Friendly)" : 0
 	]
 
 	SkinNumber(integer) : "Skin Number" : 0 : "Which skin to use for this turret. Set to 0 to select randomly."
