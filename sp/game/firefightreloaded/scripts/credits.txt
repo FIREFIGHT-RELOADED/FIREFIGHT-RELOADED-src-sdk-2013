@@ -168,6 +168,8 @@
 	"Kasey/Tytygigas"	"CreditsOutroText"
 	"DeviantXS"	"CreditsOutroText"
 	"Pepper 'PepperAlien' Axebane"	"CreditsOutroText"
+	"Aaron Dee"	"CreditsOutroText"
+	"speedydavedxm"	"CreditsOutroText"
 	" "	"CreditsOutroText"
 	"Special thanks to:"	"CreditsOutroText"
 	" "	"CreditsOutroText"
