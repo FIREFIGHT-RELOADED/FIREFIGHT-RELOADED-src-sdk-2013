@@ -27,6 +27,12 @@ del bin\server.so.dbg
 del bin\server_srv.so.dbg
 del bin\gamepadui.so.dbg
 del bin\gamepadui_srv.so.dbg
+del bin_linux\client.so.dbg
+del bin_linux\client_srv.so.dbg
+del bin_linux\server.so.dbg
+del bin_linux\server_srv.so.dbg
+del bin_linux\gamepadui.so.dbg
+del bin_linux\gamepadui_srv.so.dbg
 del sound\sound.cache
 del /q maps\graphs\*.ain
 rmdir /S /Q materials\vgui\logos\ui\
