@@ -1,6 +1,6 @@
 //"LightmappedGeneric"
 "UnlitGeneric"
 {
-	"$baseTexture" "gamepadui\maps\dm_resistance"
+	"$baseTexture" "gamepadui\maps\dm_steamlab"
 	"$vertexalpha" 1
 }

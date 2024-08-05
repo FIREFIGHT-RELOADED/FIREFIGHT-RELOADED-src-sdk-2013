@@ -1,6 +1,6 @@
 //"LightmappedGeneric"
 "UnlitGeneric"
 {
-	"$baseTexture" "gamepadui\maps\chapter_lockdown"
+	"$baseTexture" "gamepadui\maps\dm_lockdown"
 	"$vertexalpha" 1
 }

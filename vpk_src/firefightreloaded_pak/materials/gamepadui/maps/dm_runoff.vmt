@@ -1,6 +1,6 @@
 //"LightmappedGeneric"
 "UnlitGeneric"
 {
-	"$baseTexture" "gamepadui\maps\chapter_runoff"
+	"$baseTexture" "gamepadui\maps\dm_runoff"
 	"$vertexalpha" 1
 }

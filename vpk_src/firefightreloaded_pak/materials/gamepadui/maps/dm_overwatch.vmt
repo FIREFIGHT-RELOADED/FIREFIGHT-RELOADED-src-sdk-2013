@@ -1,6 +1,6 @@
 //"LightmappedGeneric"
 "UnlitGeneric"
 {
-	"$baseTexture" "gamepadui\maps\chapter_overwatch"
+	"$baseTexture" "gamepadui\maps\dm_overwatch"
 	"$vertexalpha" 1
 }
