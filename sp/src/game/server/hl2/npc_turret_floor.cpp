@@ -1358,6 +1358,8 @@ void CNPC_FloorTurret::TippedThink( void )
 			//If we're done moving to our desired facing, close up
 			if ( UpdateFacing() == false )
 			{
+				StopSound("NPC_FloorTurret.Alarm");
+
 				//Make any last death noises and anims
 				EmitSound( "NPC_FloorTurret.Die" );
 				SpinDown();
@@ -2149,6 +2151,7 @@ void CNPC_FloorTurret::BreakThink( void )
 	RadiusDamage( CTakeDamageInfo( this, this, 15.0f, DMG_BLAST ), vecOrigin, (10*12), CLASS_NONE, this );
 
 	EmitSound( "NPC_FloorTurret.Destruct" );
+	StopSound("NPC_FloorTurret.Alarm");
 
 	breakablepropparams_t params( GetAbsOrigin(), GetAbsAngles(), vec3_origin, RandomAngularImpulse( -800.0f, 800.0f ) );
 	params.impactEnergyScale = 1.0f;

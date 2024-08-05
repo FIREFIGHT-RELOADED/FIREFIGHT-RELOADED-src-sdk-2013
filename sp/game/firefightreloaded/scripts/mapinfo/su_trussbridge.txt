@@ -28,6 +28,27 @@
             "npc_maker_firefight"
             {
                 //Positions
+                "x" "124.468559"
+                "y" "1807.852661"
+                "z" "2058.031250"
+                //Rotations
+                "roll"  "0"  
+                "yaw"   "0"
+                "pitch" "0"
+                "KeyValues"
+                {
+                    "targetname" "Floor_1_Spawner_2"
+                    "RareNPCRarity"    "5"
+                    "StartDisabled"    "0"
+                    "NPCSquadName"    "Floor_1_Squad_2"
+                    "SpawnFrequency"    "5"
+                    "MaxLiveChildren"    "18"
+                    "MaxLiveRareNPCs"    "5"
+                }
+            }
+            "npc_maker_firefight"
+            {
+                //Positions
                 "x" "251.184601"
                 "y" "431.536163"
                 "z" "1738.031250"
