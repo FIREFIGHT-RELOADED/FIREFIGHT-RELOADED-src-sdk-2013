@@ -8,7 +8,7 @@
 
 #include "cbase.h"
 #include "basehlcombatweapon.h"
-#include "NPCevent.h"
+#include "npcevent.h"
 #include "basecombatcharacter.h"
 #include "ai_basenpc.h"
 #include "player.h"
@@ -33,7 +33,7 @@ public:
 	DECLARE_CLASS(CTurretHologram, CAI_BaseNPC);
 	DECLARE_DATADESC();
 
-	static enum HologramStatus
+	enum HologramStatus
 	{
 		TURRET_JUSTRIGHT,
 		TURRET_TOOFAR,
