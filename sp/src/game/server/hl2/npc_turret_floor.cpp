@@ -401,7 +401,7 @@ void CNPC_FloorTurret::Spawn( void )
 		IPhysicsObject* pPhys = VPhysicsGetObject();
 		if (pPhys != NULL)
 		{
-			pPhys->SetMass(pPhys->GetMass() * 4.0f);
+			pPhys->SetMass(pPhys->GetMass() * 6.5f);
 		}
 	}
 

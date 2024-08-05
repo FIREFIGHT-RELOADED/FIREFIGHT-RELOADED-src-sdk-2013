@@ -40,6 +40,8 @@
 #include "ai_interactions.h"
 #include "rumble_shared.h"
 #include "gamestats.h"
+#include "items.h"
+#include "npc_turret_floor.h"
 // NVNT haptic utils
 #include "haptics/haptic_utils.h"
 
@@ -1110,7 +1112,6 @@ void CPlayerPickupController::Shutdown( bool bThrown )
 	Remove();
 }
 
-#include "items.h"
 void CPlayerPickupController::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
 	if ( ToBasePlayer(pActivator) == m_pPlayer )
@@ -3497,6 +3498,14 @@ bool CWeaponPhysCannon::CanPickupObject( CBaseEntity *pTarget )
 
 	if ( FClassnameIs( pTarget, "weapon_knife" ) )
 		return true;
+
+	//HACK: we should be able to pick up placed turrets. They aren't detected because the mass is 650, over the original turret's 100.
+	if (pTarget->HasSpawnFlags(SF_FLOOR_TURRET_WEAPON))
+	{
+		CNPC_FloorTurret* pTurret = dynamic_cast<CNPC_FloorTurret*>(pTarget);
+		if (pTurret != NULL)
+			return true;
+	}
 
 	if ( !IsMegaPhysCannon() )
 	{

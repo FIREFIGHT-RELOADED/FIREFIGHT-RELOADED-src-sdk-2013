@@ -210,15 +210,11 @@ void CWeaponTurret::ItemPostFrame(void)
 		{
 			pTurret->SetName(AllocPooledString("spawnedTurret"));
 			pTurret->m_bDisableInitAttributes = true;
-			pTurret->AddSpawnFlags(SF_FLOOR_TURRET_WEAPON);
 			DispatchSpawn(pTurret);
-			pTurret->SetOwnerEntity(pOwner);
 			if (pHologram)
 			{
 				pTurret->Teleport(&pHologram->GetAbsOrigin(), &pHologram->GetAbsAngles(), NULL);
 			}
-			UTIL_DropToFloor(pTurret, MASK_NPCSOLID);
-
 
 			pTurret->Activate();
 
