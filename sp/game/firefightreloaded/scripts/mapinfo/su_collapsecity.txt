@@ -67,6 +67,90 @@
                     "MaxLiveRareNPCs"    "5"
                 }
             }
+            "npc_maker_firefight"
+            {
+                //Positions
+                "x" "6276.713867"
+                "y" "-1552.000488"
+                "z" "10.031250"
+                //Rotations
+                "roll"  "0"  
+                "yaw"   "0"
+                "pitch" "0"
+                "KeyValues"
+                {
+                    "targetname" "Spawner_4"
+                    "RareNPCRarity"    "5"
+                    "StartDisabled"    "0"
+                    "NPCSquadName"    "Squad_4"
+                    "SpawnFrequency"    "5"
+                    "MaxLiveChildren"    "15"
+                    "MaxLiveRareNPCs"    "5"
+                }
+            }
+            "npc_maker_firefight"
+            {
+                //Positions
+                "x" "5406.332031"
+                "y" "-723.056458"
+                "z" "10.031250"
+                //Rotations
+                "roll"  "0"  
+                "yaw"   "0"
+                "pitch" "0"
+                "KeyValues"
+                {
+                    "targetname" "Spawner_5"
+                    "RareNPCRarity"    "5"
+                    "StartDisabled"    "0"
+                    "NPCSquadName"    "Squad_5"
+                    "SpawnFrequency"    "5"
+                    "MaxLiveChildren"    "15"
+                    "MaxLiveRareNPCs"    "5"
+                }
+            }
+            "npc_maker_firefight"
+            {
+                //Positions
+                "x" "6182.386230"
+                "y" "-1399.579712"
+                "z" "138.031250"
+                //Rotations
+                "roll"  "0"  
+                "yaw"   "0"
+                "pitch" "0"
+                "KeyValues"
+                {
+                    "targetname" "Spawner_6"
+                    "RareNPCRarity"    "5"
+                    "StartDisabled"    "0"
+                    "NPCSquadName"    "Squad_6"
+                    "SpawnFrequency"    "5"
+                    "MaxLiveChildren"    "15"
+                    "MaxLiveRareNPCs"    "5"
+                }
+            }
+            "npc_maker_firefight"
+            {
+                //Positions
+                "x" "4790.530762"
+                "y" "-765.141479"
+                "z" "-117.968750"
+                //Rotations
+                "roll"  "0"  
+                "yaw"   "0"
+                "pitch" "0"
+                "KeyValues"
+                {
+                    "targetname" "Spawner_7"
+                    "RareNPCRarity"    "5"
+                    "StartDisabled"    "0"
+                    "NPCSquadName"    "Squad_7"
+                    "SpawnFrequency"    "5"
+                    "MaxLiveChildren"    "15"
+                    "MaxLiveRareNPCs"    "5"
+                }
+            }
             "weapon_shotgun"
             {
                 //Positions

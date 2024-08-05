@@ -3,7 +3,7 @@
     "1"
 	{
 		"name"		"Turret"
-		"price"		"7500"
+		"price"		"9000"
         "limit"	    "1"
 		"command"	"item weapon_turret 0" 
 	}
