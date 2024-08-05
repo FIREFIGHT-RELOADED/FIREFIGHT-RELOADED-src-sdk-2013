@@ -1313,9 +1313,10 @@ void CBaseCombatWeapon::Equip( CBaseCombatCharacter *pOwner )
 	m_flNextSecondaryAttack		= gpGlobals->curtime;
 	SetTouch( NULL );
 	SetThink( NULL );
-#if !defined( CLIENT_DLL )
-	VPhysicsDestroyObject();
-#endif
+	//fixes a crash
+//#if !defined( CLIENT_DLL )
+//	VPhysicsDestroyObject();
+//#endif
 
 	if ( pOwner->IsPlayer() )
 	{

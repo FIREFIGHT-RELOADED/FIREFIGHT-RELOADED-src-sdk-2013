@@ -132,6 +132,8 @@ void CGunTarget::Activate( void )
 	if ( pTarg )
 	{
 		m_hTargetEnt = pTarg;
+		if (m_hTargetEnt == NULL)
+			return;
 		Vector nextPos = pTarg->GetAbsOrigin();
 		Teleport( &nextPos, NULL, NULL );
 	}
@@ -155,6 +157,10 @@ void CGunTarget::Next( void )
 	SetThink( NULL );
 
 	m_hTargetEnt = GetNextTarget();
+
+	if (m_hTargetEnt == NULL)
+		return;
+
 	CBaseEntity *pTarget = m_hTargetEnt;
 	
 	if ( !pTarget )
