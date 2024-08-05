@@ -1314,9 +1314,9 @@ void CBaseCombatWeapon::Equip( CBaseCombatCharacter *pOwner )
 	SetTouch( NULL );
 	SetThink( NULL );
 	//fixes a crash
-//#if !defined( CLIENT_DLL )
-//	VPhysicsDestroyObject();
-//#endif
+#if !defined( CLIENT_DLL )
+	VPhysicsDestroyObject();
+#endif
 
 	if ( pOwner->IsPlayer() )
 	{

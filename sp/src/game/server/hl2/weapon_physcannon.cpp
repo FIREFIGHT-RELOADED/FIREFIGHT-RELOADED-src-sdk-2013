@@ -1128,7 +1128,7 @@ void CPlayerPickupController::Use( CBaseEntity *pActivator, CBaseEntity *pCaller
 		
 		//Adrian: Oops, our object became motion disabled, let go!
 		IPhysicsObject *pPhys = pAttached->VPhysicsGetObject();
-		if ( pPhys == NULL || pPhys->IsMoveable() == false )
+		if ((pPhys == nullptr || pPhys == NULL) || pPhys->IsMoveable() == false )
 		{
 			Shutdown();
 			return;
