@@ -1,5 +1,6 @@
 "firefight_tutorial"
 {
+    "ForcedLoadout" "training"
     "Spawnlist"
     {
         "settings"

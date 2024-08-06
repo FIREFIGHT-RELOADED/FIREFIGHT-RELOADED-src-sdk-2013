@@ -1,5 +1,6 @@
 "firefight_advisor"
 {
+    "ForcedLoadout" "boss"
     "Spawnlist"
     {
         "settings"

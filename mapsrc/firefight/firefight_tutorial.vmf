@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "6440"
-	"mapversion" "203"
+	"mapversion" "204"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,7 +20,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "203"
+	"mapversion" "204"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -10994,7 +10994,6 @@ entity
 	"targetname" "spawnevent"
 	connections
 	{
-		"OnEventFired" "loadout,SetLoadout,training,0,-1"
 		"OnEventFired" "hinttimer,Enable,,0,-1"
 		"OnEventFired" "hinttimer,FireTimer,,0,-1"
 		"OnEventFired" "speed,ModifySpeed,0,0,-1"
@@ -11006,20 +11005,6 @@ entity
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 500]"
-	}
-}
-entity
-{
-	"id" "366"
-	"classname" "player_loadoutchanger"
-	"targetname" "loadout"
-	"origin" "-923.641 692.048 33"
-	editor
-	{
-		"color" "220 30 220"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 1000]"
 	}
 }
 entity
