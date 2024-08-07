@@ -4094,6 +4094,7 @@ bool CNPC_MetroPolice::CorpseGib(const CTakeDamageInfo& info)
 		SpawnBlood(GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage());
 		DispatchParticleEffect("smod_blood_gib_r", GetAbsOrigin(), GetAbsAngles(), this);
 		EmitSound("Gore.Headshot");
+		m_bNoDeathSound = true;
 		float flFadeTime = 25.0;
 
 		CBaseEntity* pHeadGib = CGib::SpawnSpecificSingleGib(this, 750, 1500, GetGibModel(APPENDAGE_HEAD), flFadeTime);
@@ -4212,35 +4213,12 @@ bool CNPC_MetroPolice::CorpseGib(const CTakeDamageInfo& info)
 			}
 		}
 
-		Wake(false);
-		m_lifeState = LIFE_DYING;
-		m_bNoDeathSound = true;
-		CleanupOnDeath(info.GetAttacker());
-		StopLoopingSounds();
+		CTakeDamageInfo infoNew = info;
+		infoNew.AddDamageType(DMG_REMOVENORAGDOLL);
+
 		SentenceStop();
-		DeathSound(info);
-		SetCondition(COND_LIGHT_DAMAGE);
-		SetIdealState(NPC_STATE_DEAD);
-		SetState(NPC_STATE_DEAD);
-		SendOnKilledGameEvent(info);
-
-		// tell owner ( if any ) that we're dead.This is mostly for NPCMaker functionality.
-		CBaseEntity* pOwner = GetOwnerEntity();
-		if (pOwner)
-		{
-			if (pOwner->KilledNotice(this))
-			{
-				SetOwnerEntity(NULL);
-			}
-		}
-
-		if (info.GetAttacker()->IsPlayer())
-		{
-			((CSingleplayRules*)GameRules())->NPCKilled(this, info);
-		}
-
-		UTIL_Remove(this);
-		SetThink(NULL);
+		m_iHealth = 0;
+		BaseClass::Event_Killed(infoNew);
 		return true;
 	}
 
