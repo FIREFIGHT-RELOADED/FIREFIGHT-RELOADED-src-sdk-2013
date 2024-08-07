@@ -331,10 +331,10 @@ void CKnifeBolt::BoltTouch( CBaseEntity *pOther )
 
 	if ( doneMoving )
 	{
-		auto angle = GetAbsAngles();
+		QAngle angle = GetAbsAngles();
 		// The weapon model is reversed for some reason.
 		angle[0] += 180;
-		auto pWeap = (CWeaponKnife*)CBaseEntity::CreateNoSpawn( "weapon_knife", GetAbsOrigin(), angle );
+		CWeaponKnife* pWeap = (CWeaponKnife*)CBaseEntity::CreateNoSpawn( "weapon_knife", GetAbsOrigin(), angle );
 		pWeap->AddSpawnFlags( SF_NORESPAWN );
 		pWeap->m_hStuckRagdoll = ragdoll;
 		DispatchSpawn( pWeap );
@@ -345,7 +345,7 @@ void CKnifeBolt::BoltTouch( CBaseEntity *pOther )
 			DispatchEffect( "BoltImpact", data );
 		}
 
-		auto phys = pWeap->VPhysicsGetObject();
+		IPhysicsObject *phys = pWeap->VPhysicsGetObject();
 		if ( stuck && phys != nullptr )
 		{
 			phys->EnableMotion( false );

@@ -29,11 +29,6 @@
             "classname"		"npc_combine_p"
             "exp"	"15"
         }
-        "5"
-        {
-            "classname"		"npc_playerbot"
-            "rare"			"1"
-        }
         //LEVEL 2
         "6"
         {

@@ -7127,6 +7127,27 @@ void CAI_BaseNPC::LoadInitAttributes()
 		m_pAttributes->SwitchEntityBodygroup(this, "new_bodygroup4", "new_bodygroup_num4");
 		m_pAttributes->SwitchEntitySkin(this, "new_skin");
 
+		int spawnflags = m_pAttributes->GetInt("new_spawnflags", -1);
+
+		if (spawnflags > -1)
+		{
+			AddSpawnFlags(spawnflags);
+		}
+
+		int eflags = m_pAttributes->GetInt("new_eflags", -1);
+
+		if (eflags > -1)
+		{
+			AddEFlags(eflags);
+		}
+
+		int effects = m_pAttributes->GetInt("new_effects", -1);
+
+		if (effects > -1)
+		{
+			AddEffects(effects);
+		}
+
 		int healthupgrade = m_pAttributes->GetInt("additional_health");
 
 		if (healthupgrade > 0)

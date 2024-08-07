@@ -905,6 +905,9 @@ CBasePlayer::CBasePlayer( )
 	m_fRegenRate = sv_regeneration_rate.GetFloat();
 
 	m_kvLoadout = NULL;
+
+	m_bForcedLoadout = false;
+	m_szForcedLoadoutName = "";
 }
 
 CBasePlayer::~CBasePlayer( )
@@ -6215,8 +6218,11 @@ void CBasePlayer::WeaponSpawnLogic(void)
 		if (!m_bForcedLoadout)
 		{
 			//if our loadout isn't forced by an entity, check if the mapinfo has one.
-			KeyValues* pInfo = CMapInfo::GetMapInfoData();
-			m_szForcedLoadoutName = pInfo->GetString("ForcedLoadout", "");
+			if (!m_szForcedLoadoutName[0])
+			{
+				KeyValues* pInfo = CMapInfo::GetMapInfoData();
+				m_szForcedLoadoutName = pInfo->GetString("ForcedLoadout", "");
+			}
 
 			if (!m_szForcedLoadoutName[0])
 			{

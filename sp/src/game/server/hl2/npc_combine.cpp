@@ -615,10 +615,12 @@ bool CNPC_Combine::CorpseGib(const CTakeDamageInfo& info)
 		m_bNoDeathSound = true;
 		CleanupOnDeath(info.GetAttacker());
 		StopLoopingSounds();
+		SentenceStop();
 		DeathSound(info);
 		SetCondition(COND_LIGHT_DAMAGE);
 		SetIdealState(NPC_STATE_DEAD);
 		SetState(NPC_STATE_DEAD);
+		SendOnKilledGameEvent(info);
 
 		// tell owner ( if any ) that we're dead.This is mostly for NPCMaker functionality.
 		CBaseEntity* pOwner = GetOwnerEntity();

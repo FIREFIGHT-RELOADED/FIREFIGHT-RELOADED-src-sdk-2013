@@ -1082,11 +1082,11 @@ bool CNPC_BaseZombie::IsChopped( const CTakeDamageInfo &info )
 	if (info.GetDamageType() & DMG_SLASH)
 		return true;
 
-	if (info.GetDamageType() & DMG_CRUSH)
-		return true;
-
 	if (info.GetDamageType() & DMG_BLAST)
 		return true;
+
+	if (info.GetDamageType() & DMG_CRUSH)
+		return false;
 
 	if ( info.GetDamageType() & DMG_REMOVENORAGDOLL )
 		return false;
@@ -1121,7 +1121,7 @@ void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info)
 
 	forceVector += CalcDamageForceVector( info );
 
-	if( !IsHeadless() && !bSquashed )
+	if( !IsHeadless() && !bSquashed && !(info.GetDamageType() & DMG_BLAST))
 	{
 		int randInt = random->RandomInt(0, 1);
 		bool SpawnCrabRagdoll = (randInt == 0 ? true : false);
@@ -1235,7 +1235,7 @@ void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info)
 	}
 
 	m_iHealth = 0;
-	//Event_Killed(info);
+	Event_Killed(info);
 }
 
 //-----------------------------------------------------------------------------
@@ -2358,7 +2358,8 @@ void CNPC_BaseZombie::Event_Killed( const CTakeDamageInfo &info )
 	}
 
 	//this crashes the game for some reason.
-	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && info.GetDamageType() & (DMG_ALWAYSGIB | DMG_BLAST | DMG_CRUSH) && !(info.GetDamageType() & (DMG_NEVERGIB | DMG_DISSOLVE)) && !m_fIsTorso && !FClassnameIs(this, "npc_poisonzombie"))
+	//i don't know where past bitl got this from but this doesn't crash the game anymore......
+	if (!(g_Language.GetInt() == LANGUAGE_GERMAN || UTIL_IsLowViolence()) && info.GetDamageType() & (DMG_ALWAYSGIB | DMG_BLAST | DMG_SLASH) && !(info.GetDamageType() & (DMG_NEVERGIB | DMG_DISSOLVE)) && !m_fIsTorso && !FClassnameIs(this, "npc_poisonzombie"))
 	{
 		Vector vecDamageDir = info.GetDamageForce();
 		VectorNormalize(vecDamageDir);

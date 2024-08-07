@@ -686,6 +686,9 @@ void CBaseCombatWeapon::SetOwner( CBaseCombatCharacter *owner )
 		OnActiveStateChanged( iOldState );
 #endif
 
+		if (IsIronsighted())
+			DisableIronsights();
+
 		// make sure we clear out our HideThink if we have one pending
 		SetContextThink( NULL, 0, HIDEWEAPON_THINK_CONTEXT );
 	}
@@ -841,7 +844,8 @@ void CBaseCombatWeapon::Drop( const Vector &vecVelocity )
 	CCleanupManager::AddWeapon(this);
 #endif
 
-	DisableIronsights();
+	if (IsIronsighted())
+		DisableIronsights();
 }
 
 
@@ -891,6 +895,9 @@ void CBaseCombatWeapon::OnPickedUp( CBaseCombatCharacter *pNewOwner )
 	CCleanupManager::RemoveWeapon(this);
 	SetRemoveable( false );
 #endif
+
+	if (IsIronsighted())
+		DisableIronsights();
 }
 
 bool CBaseCombatWeapon::HasIronsights()
@@ -905,6 +912,10 @@ bool CBaseCombatWeapon::CanIronsightUseCrosshair()
 
 bool CBaseCombatWeapon::IsIronsighted()
 {
+	//if we don't have ironsights we can't be ironsighted.
+	if (!HasIronsights())
+		return false;
+
 	return m_bIsIronsighted || viewmodel_adjust_enabled.GetBool();
 }
 
@@ -1681,6 +1692,9 @@ bool CBaseCombatWeapon::ReloadOrSwitchWeapons( void )
 	if ( !HasAnyAmmo() && m_flNextPrimaryAttack < gpGlobals->curtime && m_flNextSecondaryAttack < gpGlobals->curtime )
 	{
 		// weapon isn't useable, switch.
+		if (IsIronsighted())
+			DisableIronsights();
+
 		if ( ( (GetWeaponFlags() & ITEM_FLAG_NOAUTOSWITCHEMPTY) == false ) && ( g_pGameRules->SwitchToNextBestWeapon( pOwner, this ) ) )
 		{
 			m_flNextPrimaryAttack = gpGlobals->curtime + 0.3;
@@ -1769,6 +1783,9 @@ bool CBaseCombatWeapon::DefaultDeploy( char *szViewModel, char *szWeaponModel, i
 	SetWeaponVisible( true );
 
 	m_bHolstering = false;
+
+	if (IsIronsighted())
+		DisableIronsights();
 
 /*
 
@@ -1868,7 +1885,8 @@ bool CBaseCombatWeapon::Holster( CBaseCombatWeapon *pSwitchingTo )
 	}
 #endif
 
-	DisableIronsights();
+	if (IsIronsighted())
+		DisableIronsights();
 
 	return true;
 }
@@ -2445,7 +2463,8 @@ bool CBaseCombatWeapon::DefaultReload( int iClipSize1, int iClipSize2, int iActi
 
 	m_bInReload = true;
 
-	DisableIronsights();
+	if (IsIronsighted())
+		DisableIronsights();
 
 	return true;
 }

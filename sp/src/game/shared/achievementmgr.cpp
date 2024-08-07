@@ -320,6 +320,8 @@ bool CAchievementMgr::Init()
 	ListenForGameEvent( "game_init" );
 #else
 	ListenForGameEvent( "player_death" );
+	ListenForGameEvent("player_death_npc");
+	ListenForGameEvent("npc_death");
 	ListenForGameEvent( "player_stats_updated" );
 	usermessages->HookMessage( "AchievementEvent", MsgFunc_AchievementEvent );
 #endif // CLIENT_DLL
@@ -1496,11 +1498,23 @@ void CAchievementMgr::FireGameEvent( IGameEvent *event )
 #endif // GAME_DLL
 	}
 #ifdef CLIENT_DLL
+	else if (0 == Q_strcmp(name, "npc_death"))
+	{
+		CBaseEntity* pVictim = ClientEntityList().GetEnt(event->GetInt("userid"));
+		CBaseEntity* pAttacker = ClientEntityList().GetEnt(event->GetInt("attacker"));
+		OnKillEvent(pVictim, pAttacker, NULL, event);
+	}
 	else if ( 0 == Q_strcmp( name, "player_death" ) )
 	{
 		CBaseEntity *pVictim = ClientEntityList().GetEnt( engine->GetPlayerForUserID( event->GetInt("userid") ) );
 		CBaseEntity *pAttacker = ClientEntityList().GetEnt( engine->GetPlayerForUserID( event->GetInt("attacker") ) );
 		OnKillEvent( pVictim, pAttacker, NULL, event );
+	}
+	else if (0 == Q_strcmp(name, "player_death_npc"))
+	{
+		CBaseEntity* pVictim = ClientEntityList().GetEnt(engine->GetPlayerForUserID(event->GetInt("userid")));
+		CBaseEntity* pAttacker = ClientEntityList().GetEnt(event->GetInt("attacker"));
+		OnKillEvent(pVictim, pAttacker, NULL, event);
 	}
 	else if ( 0 == Q_strcmp( name, "localplayer_changeclass" ) )
 	{

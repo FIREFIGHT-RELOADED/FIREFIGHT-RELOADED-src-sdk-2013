@@ -116,6 +116,8 @@ public:
 	void				MoveHologram(void);
 	void				StopHologram(void);
 
+	void				SpawnTurret(void);
+
 	float GetFireRate(void)
 	{
 		return 0.5f;
@@ -139,6 +141,8 @@ PRECACHE_WEAPON_REGISTER(weapon_turret);
 
 BEGIN_DATADESC(CWeaponTurret)
 	DEFINE_FIELD(pHologram, FIELD_EHANDLE),
+	DEFINE_FIELD(m_bSetToRemoveAmmo, FIELD_BOOLEAN),
+	DEFINE_FIELD(m_bStopMovingHologram, FIELD_BOOLEAN),
 END_DATADESC()
 
 acttable_t CWeaponTurret::m_acttable[] =
@@ -205,34 +209,43 @@ void CWeaponTurret::ItemPostFrame(void)
 
 	if (m_bSetToRemoveAmmo && (m_flNextPrimaryAttack <= gpGlobals->curtime))
 	{
-		CNPC_FloorTurret* pTurret = dynamic_cast<CNPC_FloorTurret*>(CreateEntityByName("npc_turret_floor_weapon"));
-		if (pTurret)
-		{
-			pTurret->SetName(AllocPooledString("spawnedTurret"));
-			pTurret->m_bDisableInitAttributes = true;
-			DispatchSpawn(pTurret);
-			if (pHologram)
-			{
-				pTurret->Teleport(&pHologram->GetAbsOrigin(), &pHologram->GetAbsAngles(), NULL);
-			}
-
-			pTurret->Activate();
-
-			WeaponSound(SPECIAL1);
-		}
-
-		if (!DecrementAmmo(pOwner))
-		{
-			BaseClass::ItemPostFrame();
-			return;
-		}
-		else
-		{
-			m_bSetToRemoveAmmo = false;
-		}
+		SpawnTurret();
 	}
 
 	BaseClass::ItemPostFrame();
+}
+
+void CWeaponTurret::SpawnTurret(void)
+{
+	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
+	if (!pOwner)
+		return;
+
+	CNPC_FloorTurret* pTurret = dynamic_cast<CNPC_FloorTurret*>(CreateEntityByName("npc_turret_floor_weapon"));
+	if (pTurret)
+	{
+		pTurret->SetName(AllocPooledString("spawnedTurret"));
+		pTurret->m_bDisableInitAttributes = true;
+		DispatchSpawn(pTurret);
+		if (pHologram)
+		{
+			pTurret->Teleport(&pHologram->GetAbsOrigin(), &pHologram->GetAbsAngles(), NULL);
+		}
+
+		pTurret->Activate();
+
+		WeaponSound(SPECIAL1);
+	}
+
+	if (!DecrementAmmo(pOwner))
+	{
+		BaseClass::ItemPostFrame();
+		return;
+	}
+	else
+	{
+		m_bSetToRemoveAmmo = false;
+	}
 }
 
 bool CWeaponTurret::Reload( void )
@@ -276,7 +289,23 @@ void CWeaponTurret::PrimaryAttack( void )
 //-----------------------------------------------------------------------------
 bool CWeaponTurret::Holster(CBaseCombatWeapon* pSwitchingTo)
 {
-	StopHologram();
+	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
+	if (!pOwner)
+		return BaseClass::Holster(pSwitchingTo);
+
+	if (m_bSetToRemoveAmmo && (m_flNextPrimaryAttack > gpGlobals->curtime))
+	{
+		//spawn it NOW.
+		SpawnTurret();
+		StopHologram();
+		pOwner->Weapon_Detach(this);
+		UTIL_Remove(this);
+	}
+	else
+	{
+		StopHologram();
+	}
+
 	return BaseClass::Holster(pSwitchingTo);
 }
 
@@ -285,7 +314,23 @@ bool CWeaponTurret::Holster(CBaseCombatWeapon* pSwitchingTo)
 //-----------------------------------------------------------------------------
 void CWeaponTurret::Drop(const Vector& velocity)
 {
-	StopHologram();
+	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
+	if (!pOwner)
+		return;
+
+	if (m_bSetToRemoveAmmo && (m_flNextPrimaryAttack > gpGlobals->curtime))
+	{
+		//spawn it NOW.
+		SpawnTurret();
+		StopHologram();
+		pOwner->Weapon_Detach(this);
+		UTIL_Remove(this);
+	}
+	else
+	{
+		StopHologram();
+	}
+
 	BaseClass::Drop(velocity);
 }
 

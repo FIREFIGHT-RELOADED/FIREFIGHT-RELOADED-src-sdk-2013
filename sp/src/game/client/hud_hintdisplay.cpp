@@ -569,6 +569,22 @@ bool CHudHintKeyDisplay::SetHintText( const char *text )
 						bUseThisKey = true;
 					}
 
+					if (!bUseThisKey &&
+						(Q_stricmp(pBinding, "+ironsight") == 0 || Q_stricmp(pBinding, "toggle_ironsight") == 0) &&
+						(Q_stricmp(binding, "+ironsight") == 0 || Q_stricmp(binding, "toggle_ironsight") == 0))
+					{
+						// +zoom and toggle_zoom are interchangable
+						bUseThisKey = true;
+					}
+
+					if (!bUseThisKey &&
+						(Q_stricmp(pBinding, "+bullettime") == 0 || Q_stricmp(pBinding, "toggle_bullettime") == 0) &&
+						(Q_stricmp(binding, "+bullettime") == 0 || Q_stricmp(binding, "toggle_bullettime") == 0))
+					{
+						// +zoom and toggle_zoom are interchangable
+						bUseThisKey = true;
+					}
+
 					// Don't use this bind in out list
 					if ( !bUseThisKey )
 						continue;

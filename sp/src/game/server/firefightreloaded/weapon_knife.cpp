@@ -48,10 +48,12 @@ IMPLEMENT_SERVERCLASS_ST(CWeaponKnife, DT_WeaponKnife)
 SendPropEHandle(SENDINFO(m_hStuckRagdoll))
 END_SEND_TABLE()
 
-#ifndef HL2MP
 LINK_ENTITY_TO_CLASS( weapon_knife, CWeaponKnife );
 PRECACHE_WEAPON_REGISTER( weapon_knife );
-#endif
+
+BEGIN_DATADESC(CWeaponKnife)
+DEFINE_FIELD(m_bSetToRemoveAmmo, FIELD_BOOLEAN),
+END_DATADESC()
 
 acttable_t CWeaponKnife::m_acttable[] = 
 {
@@ -92,6 +94,43 @@ bool CWeaponKnife::Deploy(void)
 	}
 
 	return deployVal;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : NULL - 
+//-----------------------------------------------------------------------------
+bool CWeaponKnife::Holster(CBaseCombatWeapon* pSwitchingTo)
+{
+	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
+	if (!pOwner)
+		return BaseClass::Holster(pSwitchingTo);
+
+	if (m_bSetToRemoveAmmo && (m_flNextSecondaryAttack > gpGlobals->curtime))
+	{
+		pOwner->Weapon_Detach(this);
+		UTIL_Remove(this);
+	}
+
+	return BaseClass::Holster(pSwitchingTo);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CWeaponKnife::Drop(const Vector& velocity)
+{
+	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
+	if (!pOwner)
+		return;
+
+	if (m_bSetToRemoveAmmo && (m_flNextSecondaryAttack > gpGlobals->curtime))
+	{
+		pOwner->Weapon_Detach(this);
+		UTIL_Remove(this);
+	}
+
+	BaseClass::Drop(velocity);
 }
 
 #define THROWNKNIFE_AIR_VELOCITY	2500
@@ -138,6 +177,11 @@ void CWeaponKnife::ThrowKnife(void)
 
 	AddEffects(EF_NODRAW);
 	m_flNextSecondaryAttack = gpGlobals->curtime + KNIFE_REFIRE_THROW;
+
+	if (!sv_infinite_knives.GetBool())
+	{
+		m_bSetToRemoveAmmo = true;
+	}
 }
 
 void CWeaponKnife::SecondaryAttack(void)
@@ -148,21 +192,26 @@ void CWeaponKnife::SecondaryAttack(void)
 		m_iSecondaryAttacks++;
 		gamestats->Event_WeaponFired(pPlayer, true, GetClassname());
 		ThrowKnife();
-		if ( !sv_infinite_knives.GetBool() )
-		{
-			pPlayer->Weapon_Detach( this );
-			engine->ClientCommand( pPlayer->edict(), "lastinv" );
-			engine->ClientCommand( pPlayer->edict(), "-attack2" );
-			UTIL_Remove( this );
-		}
 	}
 }
 
 void CWeaponKnife::ItemPostFrame(void)
 {
+	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
+	if (!pOwner)
+		return;
+
 	if (m_flNextSecondaryAttack <= gpGlobals->curtime)
 	{
 		RemoveEffects(EF_NODRAW);
+
+		if (m_bSetToRemoveAmmo)
+		{
+			pOwner->Weapon_Detach(this);
+			engine->ClientCommand(pOwner->edict(), "lastinv");
+			engine->ClientCommand(pOwner->edict(), "-attack2");
+			UTIL_Remove(this);
+		}
 	}
 
 	BaseClass::ItemPostFrame();

@@ -1703,7 +1703,13 @@ bool CBaseCombatCharacter::Weapon_Detach( CBaseCombatWeapon *pWeapon )
 	{
 		if ( pWeapon == m_hMyWeapons[i] )
 		{
+			if (pWeapon->IsIronsighted())
+			{
+				pWeapon->DisableIronsights();
+			}
+
 			pWeapon->Detach();
+
 			if ( pWeapon->HolsterOnDetach() )
 			{
 				pWeapon->Holster();

@@ -19,7 +19,7 @@
 
 #define	KNIFE_RANGE	50.0f
 #define	KNIFE_REFIRE 0.4f
-#define	KNIFE_REFIRE_THROW 1.25f
+#define	KNIFE_REFIRE_THROW 0.9f
 
 //-----------------------------------------------------------------------------
 // CWeaponKnife
@@ -32,6 +32,7 @@ public:
 
 	DECLARE_SERVERCLASS();
 	DECLARE_ACTTABLE();
+	DECLARE_DATADESC();
 
 	CWeaponKnife();
 
@@ -45,6 +46,8 @@ public:
 	virtual int WeaponMeleeAttack1Condition( float flDot, float flDist );
 	void		SecondaryAttack(void);
 	bool		Deploy(void);
+	bool		Holster(CBaseCombatWeapon* pSwitchingTo = NULL);
+	void		Drop(const Vector& velocity);
 	void		ItemPostFrame(void);
 
 	int			OnTakeDamage( const CTakeDamageInfo& info );
@@ -64,6 +67,9 @@ public:
 
 protected:
 	virtual	void	ImpactEffect(trace_t &trace);
+
+private:
+	bool				m_bSetToRemoveAmmo;
 };
 
 #endif // WEAPON_KNIFE_H
