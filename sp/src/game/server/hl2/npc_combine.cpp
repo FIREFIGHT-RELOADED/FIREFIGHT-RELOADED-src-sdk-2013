@@ -379,6 +379,32 @@ void CNPC_Combine::LoadInitAttributes()
 	BaseClass::LoadInitAttributes();
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : pevInflictor - 
+//			pAttacker - 
+//			flDamage - 
+//			bitsDamageType - 
+// Output : int
+//-----------------------------------------------------------------------------
+int CNPC_Combine::OnTakeDamage_Alive(const CTakeDamageInfo& inputInfo)
+{
+	CTakeDamageInfo info = inputInfo;
+
+	//allow the player to decapitate us with a sawblade if our health is low enough
+	float flDamageThreshold = MIN(1, info.GetDamage() / GetMaxHealth());
+
+	if (flDamageThreshold > 0.5)
+	{
+		if (info.GetDamageType() & DMG_SLASH)
+		{
+			CorpseDecapitate(info);
+		}
+	}
+
+	return BaseClass::OnTakeDamage_Alive(info);
+}
+
 const char* CNPC_Combine::GetGibModel(appendage_t appendage)
 {
 	return "";
@@ -421,8 +447,9 @@ bool CNPC_Combine::CorpseDecapitate(const CTakeDamageInfo& info)
 			m_bNoDeathSound = true;
 			m_bDecapitated = true;
 		}
+		SentenceStop();
 		m_iHealth = 0;
-		Event_Killed(info);
+		//Event_Killed(info);
 
 		return true;
 	}
@@ -457,8 +484,9 @@ bool CNPC_Combine::CorpseDecapitate(const CTakeDamageInfo& info)
 			m_bNoDeathSound = true;
 			m_bDecapitated = true;
 		}
+		SentenceStop();
 		m_iHealth = 0;
-		Event_Killed(info);
+		//Event_Killed(info);
 
 		return true;
 	}

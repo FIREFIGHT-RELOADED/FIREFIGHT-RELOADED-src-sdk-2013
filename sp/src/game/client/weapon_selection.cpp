@@ -37,6 +37,7 @@ DECLARE_HUD_COMMAND_NAME(CBaseHudWeaponSelection, Slot9, "CHudWeaponSelection");
 DECLARE_HUD_COMMAND_NAME(CBaseHudWeaponSelection, Slot0, "CHudWeaponSelection");
 DECLARE_HUD_COMMAND_NAME(CBaseHudWeaponSelection, Slot10, "CHudWeaponSelection");
 DECLARE_HUD_COMMAND_NAME(CBaseHudWeaponSelection, Close, "CHudWeaponSelection");
+DECLARE_HUD_COMMAND_NAME(CBaseHudWeaponSelection, SelectWeapon, "CHudWeaponSelection");
 DECLARE_HUD_COMMAND_NAME(CBaseHudWeaponSelection, NextWeapon, "CHudWeaponSelection");
 DECLARE_HUD_COMMAND_NAME(CBaseHudWeaponSelection, PrevWeapon, "CHudWeaponSelection");
 DECLARE_HUD_COMMAND_NAME(CBaseHudWeaponSelection, LastWeapon, "CHudWeaponSelection");
@@ -53,6 +54,7 @@ HOOK_COMMAND( slot9, Slot9 );
 HOOK_COMMAND( slot0, Slot0 );
 HOOK_COMMAND( slot10, Slot10 );
 HOOK_COMMAND( cancelselect, Close );
+HOOK_COMMAND( selectinv, SelectWeapon);
 HOOK_COMMAND( invnext, NextWeapon );
 HOOK_COMMAND( invprev, PrevWeapon );
 HOOK_COMMAND( lastinv, LastWeapon );
@@ -426,6 +428,16 @@ void CBaseHudWeaponSelection::UserCmd_Close(void)
 	CancelWeaponSelection();
 }
 
+void CBaseHudWeaponSelection::UserCmd_SelectWeapon(void)
+{
+	// If we're not allowed to draw, ignore weapon selections
+	if (!BaseClass::ShouldDraw())
+		return;
+
+	SelectWeapon();
+	UpdateSelectionTime();
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Selects the next item in the weapon menu
 //-----------------------------------------------------------------------------
@@ -491,7 +503,23 @@ void CBaseHudWeaponSelection::SwitchToLastWeapon( void )
 	if ( !player )
 		return;
 
-	input->MakeWeaponSelection( player->GetLastWeapon() );
+	if (player->GetLastWeapon())
+	{
+		if (CanBeSelectedInHUD(player->GetLastWeapon()))
+		{
+			input->MakeWeaponSelection(player->GetLastWeapon());
+		}
+		else
+		{
+			CycleToNextWeapon();
+			SelectWeapon();
+		}
+	}
+	else
+	{
+		CycleToNextWeapon();
+		SelectWeapon();
+	}
 }
 
 //-----------------------------------------------------------------------------

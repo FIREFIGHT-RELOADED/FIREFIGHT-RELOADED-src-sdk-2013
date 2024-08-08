@@ -299,7 +299,7 @@ void CHudAmmo::SetAmmo(int ammo, bool playAnimation)
 		m_iAmmo = ammo;
 	}
 
-	SetDisplayValue(ammo);
+	SetDisplayValue(m_iAmmo);
 }
 
 //-----------------------------------------------------------------------------
@@ -327,7 +327,7 @@ void CHudAmmo::SetAmmo2(int ammo2, bool playAnimation)
 		m_iAmmo2 = ammo2;
 	}
 
-	SetSecondaryValue(ammo2);
+	SetSecondaryValue(m_iAmmo2);
 }
 
 //-----------------------------------------------------------------------------
@@ -366,7 +366,6 @@ public:
 	CHudSecondaryAmmo( const char *pElementName ) : BaseClass( NULL, "HudAmmoSecondary" ), CHudElement( pElementName )
 	{
 		m_iAmmo = -1;
-
 		SetHiddenBits( HIDEHUD_HEALTH | HIDEHUD_WEAPONSELECTION | HIDEHUD_PLAYERDEAD | HIDEHUD_NEEDSUIT );
 	}
 
@@ -383,6 +382,9 @@ public:
 			SetLabelText(L"ALT");
 		}
 #endif // HL2MP
+
+		m_bSmallDisplayValueMoney = false;
+		m_bSmallDisplayValue = false;
 	}
 
 	void VidInit( void )
@@ -410,7 +412,7 @@ public:
 
 			m_iAmmo = ammo;
 		}
-		SetDisplayValue( ammo );
+		SetDisplayValue(m_iAmmo);
 	}
 
 	void Reset()
@@ -421,6 +423,8 @@ public:
 		m_hCurrentActiveWeapon = NULL;
 		SetAlpha( 0 );
 		UpdateAmmoState();
+		m_bSmallDisplayValueMoney = false;
+		m_bSmallDisplayValue = false;
 	}
 
 	virtual void Paint( void )
@@ -443,6 +447,8 @@ public:
 			m_iconSecondaryAmmo->DrawSelf( x, y, GetFgColor() );
 		}
 #endif // HL2MP
+		m_bSmallDisplayValueMoney = false;
+		m_bSmallDisplayValue = false;
 	}
 
 protected:
@@ -496,6 +502,9 @@ protected:
 			// Get the icon we should be displaying
 			m_iconSecondaryAmmo = gWR.GetAmmoIconFromWeapon( m_hCurrentActiveWeapon->GetSecondaryAmmoType() );
 		}
+
+		m_bSmallDisplayValueMoney = false;
+		m_bSmallDisplayValue = false;
 	}
 	
 private:

@@ -71,6 +71,7 @@ public:
 	void UserCmd_Slot0( void );
 	void UserCmd_Slot10( void );
 	void UserCmd_Close( void );
+	void UserCmd_SelectWeapon(void);
 	void UserCmd_NextWeapon( void );
 	void UserCmd_PrevWeapon( void );
 	void UserCmd_LastWeapon( void );

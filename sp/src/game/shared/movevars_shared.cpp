@@ -18,7 +18,7 @@
 // some cvars used by player movement system
 #if defined (FR_DLL)
 //makes it feels the most like HL2's movement in testing
-#define DEFAULT_GRAVITY_STRING	"1000"
+#define DEFAULT_GRAVITY_STRING	"1100"
 #else
 #if defined( HL2_DLL ) || defined( HL2_CLIENT_DLL )
 #define DEFAULT_GRAVITY_STRING	"600"

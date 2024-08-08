@@ -1235,7 +1235,7 @@ void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info)
 	}
 
 	m_iHealth = 0;
-	Event_Killed(info);
+	//Event_Killed(info);
 }
 
 //-----------------------------------------------------------------------------

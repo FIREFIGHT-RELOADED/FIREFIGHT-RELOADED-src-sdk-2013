@@ -4026,8 +4026,9 @@ bool CNPC_MetroPolice::CorpseDecapitate(const CTakeDamageInfo& info)
 			m_bDecapitated = true;
 			m_bNoDeathSound = true;
 		}
+		SentenceStop();
 		m_iHealth = 0;
-		Event_Killed(info);
+		//Event_Killed(info);
 
 		return true;
 	}
@@ -4062,8 +4063,9 @@ bool CNPC_MetroPolice::CorpseDecapitate(const CTakeDamageInfo& info)
 			m_bDecapitated = true;
 			m_bNoDeathSound = true;
 		}
+		SentenceStop();
 		m_iHealth = 0;
-		Event_Killed(info);
+		//Event_Killed(info);
 
 		return true;
 	}
@@ -5302,20 +5304,23 @@ int CNPC_MetroPolice::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 		EnemyResistingArrest();
 	}
 
-#if 0
-	// Die instantly from a hit in idle/alert states
-	if( m_NPCState == NPC_STATE_IDLE || m_NPCState == NPC_STATE_ALERT )
-	{
-		info.SetDamage( m_iHealth );
-	}
-#endif //0
-
 	if (info.GetAttacker() == GetEnemy())
 	{
 		// Keep track of recent damage by my attacker. If it seems like we're
 		// being killed, consider running off and hiding.
 		m_nRecentDamage += info.GetDamage();
 		m_flRecentDamageTime = gpGlobals->curtime;
+	}
+
+	//allow the player to decapitate us with a sawblade if our health is low enough
+	float flDamageThreshold = MIN(1, info.GetDamage() / GetMaxHealth());
+
+	if (flDamageThreshold > 0.5)
+	{
+		if (info.GetDamageType() & DMG_SLASH)
+		{
+			CorpseDecapitate(info);
+		}
 	}
 
 	return BaseClass::OnTakeDamage_Alive( info ); 

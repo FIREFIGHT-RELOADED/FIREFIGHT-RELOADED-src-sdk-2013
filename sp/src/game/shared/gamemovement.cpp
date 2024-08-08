@@ -2563,8 +2563,8 @@ bool CGameMovement::CheckJumpButton( void )
 	if ( g_bMovementOptimizations )
 	{
 #if defined (FR_DLL)
-		Assert(GetCurrentGravity() == 1000.0f);
-		flMul = 204.939015319f;
+		Assert(GetCurrentGravity() == 1100.0f);
+		flMul = 214.941852602f;
 #else
 #if defined(HL2_DLL) || defined(HL2_CLIENT_DLL)
 		Assert( GetCurrentGravity() == 600.0f );
