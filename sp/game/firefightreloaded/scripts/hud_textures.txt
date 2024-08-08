@@ -181,6 +181,11 @@
 				"font"		"WeaponIconsKillFeed"
 				"character"	"9"
 		}
+		"npc_manhack"
+		{
+				"font"		"WeaponIconsKillFeed"
+				"character"	"9"
+		}
 		"kick"
 		{
 				"font"		"WeaponIconsKillFeed"
@@ -280,12 +285,17 @@
 				"font"		"WeaponIconsKillFeed3"
 				"character"	"x"
 		}
-                "weapon_physgun"
+                	"weapon_physgun"
 		{
 				"font"		"WeaponIconsKillFeed2"
 				"character"	"!"
 		}
 		"headshot"
+		{
+				"font"		"WeaponIconsKillFeed3"
+				"character"	"D"
+		}
+		"npc_zombie"
 		{
 				"font"		"WeaponIconsKillFeed3"
 				"character"	"D"
