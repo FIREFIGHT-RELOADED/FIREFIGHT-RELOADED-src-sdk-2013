@@ -4025,10 +4025,10 @@ bool CNPC_MetroPolice::CorpseDecapitate(const CTakeDamageInfo& info)
 			EmitSound("Gore.Decap");
 			m_bDecapitated = true;
 			m_bNoDeathSound = true;
+			SentenceStop();
+			m_iHealth = 0;
+			//Event_Killed(info);
 		}
-		SentenceStop();
-		m_iHealth = 0;
-		//Event_Killed(info);
 
 		return true;
 	}
@@ -4062,10 +4062,10 @@ bool CNPC_MetroPolice::CorpseDecapitate(const CTakeDamageInfo& info)
 			EmitSound("Gore.Decap");
 			m_bDecapitated = true;
 			m_bNoDeathSound = true;
+			SentenceStop();
+			m_iHealth = 0;
+			//Event_Killed(info);
 		}
-		SentenceStop();
-		m_iHealth = 0;
-		//Event_Killed(info);
 
 		return true;
 	}

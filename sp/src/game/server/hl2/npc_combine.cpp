@@ -446,10 +446,10 @@ bool CNPC_Combine::CorpseDecapitate(const CTakeDamageInfo& info)
 			EmitSound("Gore.Decap");
 			m_bNoDeathSound = true;
 			m_bDecapitated = true;
+			SentenceStop();
+			m_iHealth = 0;
+			//Event_Killed(info);
 		}
-		SentenceStop();
-		m_iHealth = 0;
-		//Event_Killed(info);
 
 		return true;
 	}
@@ -483,10 +483,10 @@ bool CNPC_Combine::CorpseDecapitate(const CTakeDamageInfo& info)
 			EmitSound("Gore.Decap");
 			m_bNoDeathSound = true;
 			m_bDecapitated = true;
+			SentenceStop();
+			m_iHealth = 0;
+			//Event_Killed(info);
 		}
-		SentenceStop();
-		m_iHealth = 0;
-		//Event_Killed(info);
 
 		return true;
 	}
