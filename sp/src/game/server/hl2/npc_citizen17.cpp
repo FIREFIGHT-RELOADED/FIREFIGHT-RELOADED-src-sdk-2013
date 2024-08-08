@@ -4009,7 +4009,7 @@ bool CNPC_Citizen::ShouldHealTarget( CBaseEntity *pTarget, bool bActiveUse )
 			}
 			else
 			{
-				Warning("Hello?\nAnyone who happens to be nearby!\nThe person at this computer is dead!\nThey have fallen prey to any number of your countless human physiological vulnerabilities.\nIt's indicative of the long-term sustainability of your species!\nPlease remove their corpse from the area and instruct another human to take their place making sure they understand basic first-person video game mechanics and filling them in on the history of narrative tropes in video gaming so that the irony and insightful commentary of this game is not lost on them.\n");
+				Warning("Hello?\nAnyone who happens to be nearby!\nThe person at this computer is dead!\nThey have fallen prey to any number of your countless human physiological vulnerabilities.\nIt's indicative of the long-term sustainability of your species!\nPlease remove their corpse from the area and instruct another human to take their place making sure they understand basic first-person video game mechanics\nand filling them in on the history of narrative tropes in video gaming\nso that the irony and insightful commentary of this game is not lost on them.\n");
 			}
 		}
 	}
@@ -4115,7 +4115,7 @@ bool CNPC_Citizen::ShouldHealTossTarget( CBaseEntity *pTarget, bool bActiveUse )
 		}
 		else
 		{
-			Warning("Hello?\nAnyone who happens to be nearby!\nThe person at this computer is dead!\nThey have fallen prey to any number of your countless human physiological vulnerabilities.\nIt's indicative of the long-term sustainability of your species!\nPlease remove their corpse from the area and instruct another human to take their place making sure they understand basic first-person video game mechanics and filling them in on the history of narrative tropes in video gaming so that the irony and insightful commentary of this game is not lost on them.\n");
+			Warning("Hello?\nAnyone who happens to be nearby!\nThe person at this computer is dead!\nThey have fallen prey to any number of your countless human physiological vulnerabilities.\nIt's indicative of the long-term sustainability of your species!\nPlease remove their corpse from the area and instruct another human to take their place making sure they understand basic first-person video game mechanics\nand filling them in on the history of narrative tropes in video gaming\nso that the irony and insightful commentary of this game is not lost on them.\n");
 		}
 	}
 	
