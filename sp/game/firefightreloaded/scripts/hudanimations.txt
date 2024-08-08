@@ -154,36 +154,6 @@ event SuitAuxPowerThreeItemsActive
 	Animate HudSuitPower Position		"48 348"			Linear 0.0 0.4	[$X360]
 }
 
-// Mapbase
-event SuitAuxPowerFourItemsActive
-{
-	// resize the aux power to fit four items
-	Animate HudSuitPower Size			"102 66"			Linear 0.0 0.4	[$WIN32]
-	Animate HudSuitPower Position		"16 360"			Linear 0.0 0.4	[$WIN32]
-	Animate HudSuitPower Size			"102 72"			Linear 0.0 0.4	[$X360]
-	Animate HudSuitPower Position		"48 338"			Linear 0.0 0.4	[$X360]
-}
-
-// Mapbase
-event SuitAuxPowerFiveItemsActive
-{
-	// resize the aux power to fit five items
-	Animate HudSuitPower Size			"102 76"			Linear 0.0 0.4	[$WIN32]
-	Animate HudSuitPower Position		"16 350"			Linear 0.0 0.4	[$WIN32]
-	Animate HudSuitPower Size			"102 82"			Linear 0.0 0.4	[$X360]
-	Animate HudSuitPower Position		"48 328"			Linear 0.0 0.4	[$X360]
-}
-
-// Mapbase
-event SuitAuxPowerSixItemsActive
-{
-	// resize the aux power to fit six items
-	Animate HudSuitPower Size			"102 86"			Linear 0.0 0.4	[$WIN32]
-	Animate HudSuitPower Position		"16 340"			Linear 0.0 0.4	[$WIN32]
-	Animate HudSuitPower Size			"102 92"			Linear 0.0 0.4	[$X360]
-	Animate HudSuitPower Position		"48 318"			Linear 0.0 0.4	[$X360]
-}
-
 event SuitFlashlightOn
 {
 	Animate HudFlashlight TextColor		"255 220 0 255"	Linear 0.0 0.1
