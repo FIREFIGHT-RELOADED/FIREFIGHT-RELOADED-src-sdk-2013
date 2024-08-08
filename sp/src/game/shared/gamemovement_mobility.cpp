@@ -1114,8 +1114,7 @@ void CGameMovement::CheckFeetCanReachWall( void )
 	}
 }
 
-bool    
-CGameMovement::CheckForSteps( const Vector& startpos, const Vector& vel )
+bool CGameMovement::CheckForSteps( const Vector& startpos, const Vector& vel )
 {
 	// Check for steps - are we blocked in front but can move up and forwards?
 	// Yes, that's really how it checks for stairs. 
@@ -1170,8 +1169,7 @@ CGameMovement::CheckForSteps( const Vector& startpos, const Vector& vel )
 // This function tests whether you could move sideways then forwards from
 // a position behind you, 
 // to stop you getting stuck in a corner between a wall and a drainpipe or something.
-bool 
-CGameMovement::TryEscape( Vector& behind, float rotation, Vector move )
+bool CGameMovement::TryEscape( Vector& behind, float rotation, Vector move )
 {
 	VectorYawRotate( move, rotation, move );
 	Vector posE = behind + move;
