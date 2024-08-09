@@ -694,9 +694,20 @@ Vector CBaseEntity::HeadTarget( const Vector &posSrc )
 
 void CBaseEntity::UpdateMaterialColor(float r, float g, float b)
 {
-	m_iColorRed = r / 255.0f;
-	m_iColorGreen = g / 255.0f;
-	m_iColorBlue = b / 255.0f;
+	switch (m_iColorMode)
+	{
+		case COLORMODE_RANDOM:
+			m_iColorRed = (RandomFloat(r, g)) / 255.0f;
+			m_iColorGreen = (RandomFloat(r, g)) / 255.0f;
+			m_iColorBlue = (RandomFloat(r, g)) / 255.0f;
+			break;
+		case COLORMODE_NORMAL:
+		default:
+			m_iColorRed = r / 255.0f;
+			m_iColorGreen = g / 255.0f;
+			m_iColorBlue = b / 255.0f;
+			break;
+	}
 }
 
 struct TimedOverlay_t
@@ -1851,9 +1862,10 @@ BEGIN_DATADESC_NO_BASE( CBaseEntity )
 	DEFINE_FIELD(m_iExtraExp, FIELD_INTEGER),
 	DEFINE_FIELD(m_iExtraMoney, FIELD_INTEGER),
 
-	DEFINE_FIELD(m_iColorRed, FIELD_INTEGER),
-	DEFINE_FIELD(m_iColorGreen, FIELD_INTEGER),
-	DEFINE_FIELD(m_iColorBlue, FIELD_INTEGER),
+	DEFINE_FIELD(m_iColorRed, FIELD_FLOAT),
+	DEFINE_FIELD(m_iColorGreen, FIELD_FLOAT),
+	DEFINE_FIELD(m_iColorBlue, FIELD_FLOAT),
+	DEFINE_FIELD(m_iColorMode, FIELD_INTEGER),
 
 //	DEFINE_FIELD( m_bSentLastFrame, FIELD_INTEGER ),
 

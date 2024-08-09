@@ -301,6 +301,12 @@ enum DebugOverlayBits_t
 	OVERLAY_VIEWOFFSET			=	0x40000000,		// show view offset
 };
 
+enum MaterialColorModes_t
+{
+	COLORMODE_NORMAL,
+	COLORMODE_RANDOM
+};
+
 struct TimedOverlay_t;
 
 /* =========  CBaseEntity  ======== 
@@ -1751,10 +1757,13 @@ public:
 
 	virtual void UpdateMaterialColor(float r, float g, float b);
 
+	virtual void SetMaterialColorMode(int mode) { m_iColorMode = mode; }
+
 private:
 	CNetworkVar(float, m_iColorRed);
 	CNetworkVar(float, m_iColorGreen);
 	CNetworkVar(float, m_iColorBlue);
+	int m_iColorMode;
 
 // Methods shared by client and server
 public:

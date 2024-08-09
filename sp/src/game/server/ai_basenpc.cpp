@@ -7114,11 +7114,23 @@ void CAI_BaseNPC::LoadInitAttributes()
 		m_pAttributes->SwitchEntityColor(this, "new_color");
 		m_pAttributes->SwitchEntityRenderMode(this, "new_render_mode");
 		m_pAttributes->SwitchEntityRenderFX(this, "new_render_fx");
-		Vector matColor = m_pAttributes->GetVector("new_material_color");
 
+		Vector matColor = m_pAttributes->GetVector("new_material_color");
 		if (matColor != Vector(0,0,0))
 		{
+			SetMaterialColorMode(COLORMODE_NORMAL);
 			UpdateMaterialColor(matColor.x, matColor.y, matColor.z);
+		}
+		else
+		{
+			bool materialmodeRand = m_pAttributes->GetBool("new_material_color_random", false);
+			if (materialmodeRand)
+			{
+				SetMaterialColorMode(COLORMODE_RANDOM);
+				int matColorMin = m_pAttributes->GetInt("new_material_color_rand_min", 0);
+				int matColorMax = m_pAttributes->GetInt("new_material_color_rand_max", 255);
+				UpdateMaterialColor(matColorMin, matColorMax, 0);
+			}
 		}
 
 		m_pAttributes->SwitchEntityBodygroup(this, "new_bodygroup1", "new_bodygroup_num1");
