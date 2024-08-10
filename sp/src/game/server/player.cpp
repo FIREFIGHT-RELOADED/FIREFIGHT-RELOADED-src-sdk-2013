@@ -5673,8 +5673,10 @@ void CBasePlayer::PostThink()
 	SimulatePlayerSimulatedEntities();
 #endif
 
+	bool invulnrable = ((GetFlags() & FL_GODMODE) || (m_debugOverlays & OVERLAY_BUDDHA_MODE));
+
 	// Regenerate heath
-	if (IsAlive() && GetHealth() < m_MaxHealthVal && (sv_regeneration.GetInt() == 1) && m_iPerkHealthRegen == 1)
+	if (IsAlive() && GetHealth() < m_MaxHealthVal && (sv_regeneration.GetInt() == 1) && (m_iPerkHealthRegen == 1) && !invulnrable)
 	{
 		SetSuitUpdate("!HEV_MED2", false, SUIT_NEXT_IN_30SEC);
 		SetSuitUpdate("!HEV_HEAL6", false, SUIT_NEXT_IN_30SEC);
@@ -5701,7 +5703,7 @@ void CBasePlayer::PostThink()
 		}
 	}
 
-	if (IsAlive() && GetHealth() > m_MaxHealthVal)
+	if (IsAlive() && GetHealth() > m_MaxHealthVal && !invulnrable)
 	{
 		m_fDecayRemander += ((GetHealth() >= sv_decay_increaserateminhealth.GetFloat()) ?
 			sv_decay_rate.GetFloat() * sv_decay_increaseratemultiplier.GetFloat() :
