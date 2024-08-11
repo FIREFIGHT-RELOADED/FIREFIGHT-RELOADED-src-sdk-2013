@@ -112,64 +112,89 @@ void CAmbientFMOD::Spawn( void )
 
 void CAmbientFMOD::InputPlaySound( inputdata_t &inputData )
 {
-	m_bActive = true;
+	SoundPlayingState(true);
 }
 
 void CAmbientFMOD::InputStopSound( inputdata_t &inputData )
 {
-	m_bActive = false;
+	SoundPlayingState(false);
+}
+
+void CAmbientFMOD::SetVolume(float flVol)
+{
+	if (flVol < 0.0f)
+		m_flVolume = 0.0f;
+	else if (flVol > 10.0f)
+		m_flVolume = 1.0f;
+	else if (flVol >= 0.0f && flVol <= 10.0f)
+		m_flVolume = (flVol / 10.0f);
 }
 
 void CAmbientFMOD::InputSetVolume( inputdata_t &inputData )
 {
-	if ( inputData.value.Float() < 0.0f )
-		m_flVolume = 0.0f;
-	else if ( inputData.value.Float() > 10.0f )
-		m_flVolume = 1.0f;
-	else if ( inputData.value.Float() >= 0.0f &&  inputData.value.Float() <= 10.0f )
-		m_flVolume = ( inputData.value.Float() / 10.0f );
+	SetVolume(inputData.value.Float());
 }
 
-void CAmbientFMOD::InputIncreaseVolume( inputdata_t &inputData )
+void CAmbientFMOD::IncreaseVolume(float flVol)
 {
-	float flIncrease = ( inputData.value.Float() / 10.0f );
+	float flIncrease = (flVol / 10.0f);
 
-	if ( flIncrease + m_flVolume.Get() > 1.0f )
+	if (flIncrease + m_flVolume.Get() > 1.0f)
 		m_flVolume = 1.0f;
 	else
 		m_flVolume = m_flVolume.Get() + flIncrease;
 }
 
-void CAmbientFMOD::InputDecreaseVolume( inputdata_t &inputData )
+void CAmbientFMOD::InputIncreaseVolume( inputdata_t &inputData )
 {
-	if ( ( m_flVolume.Get() - ( inputData.value.Float() / 10.0f ) ) < 0.0f )
+	IncreaseVolume(inputData.value.Float());
+}
+
+void CAmbientFMOD::DecreaseVolume(float flVol)
+{
+	if ((m_flVolume.Get() - (flVol / 10.0f)) < 0.0f)
 		m_flVolume = 0.0f;
 	else
-		m_flVolume = ( m_flVolume.Get() - ( inputData.value.Float() / 10.0f ) );
+		m_flVolume = (m_flVolume.Get() - (flVol / 10.0f));
+}
+
+void CAmbientFMOD::InputDecreaseVolume( inputdata_t &inputData )
+{
+	DecreaseVolume(inputData.value.Float());
 }
 
 void CAmbientFMOD::InputSetMusicSpeed( inputdata_t &inputData )
 {
-	m_flMusicSpeed = inputData.value.Float();
+	SetMusicSpeed(inputData.value.Float());
 }
 
 void CAmbientFMOD::InputPitch( inputdata_t &inputData )
 {
-	m_flPitch = inputData.value.Float();
+	SetPitch(inputData.value.Float());
+}
+
+void CAmbientFMOD::IncreasePitch(float flPitch)
+{
+	if (m_flPitch + flPitch > 255.0f)
+		m_flPitch = 255.0f;
+	else
+		m_flPitch += flPitch;
+}
+
+void CAmbientFMOD::DecreasePitch(float flPitch)
+{
+	if (m_flPitch - flPitch < 0.0f)
+		m_flPitch = 0.0f;
+	else
+		m_flPitch -= flPitch;
 }
 
 void CAmbientFMOD::InputIncreasePitch( inputdata_t &inputData )
 {
-	if ( m_flPitch + inputData.value.Float() > 255.0f )
-		m_flPitch = 255.0f;
-	else
-		m_flPitch += inputData.value.Float();
+	IncreasePitch(inputData.value.Float());
 }
 
 void CAmbientFMOD::InputDecreasePitch( inputdata_t &inputData )
 {
-	if ( m_flPitch - inputData.value.Float() < 0.0f )
-		m_flPitch = 0.0f;
-	else
-		m_flPitch -= inputData.value.Float();
+	DecreasePitch(inputData.value.Float());
 }

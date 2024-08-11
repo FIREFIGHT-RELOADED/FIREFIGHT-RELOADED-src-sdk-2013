@@ -56,12 +56,10 @@ static ConCommand dumpspawnlist( "dumpspawnlist", dumpspawnlist_cb, "Dumps the s
 
 CRandNPCLoader::CRandNPCLoader()
 {
-	m_KVs = new KeyValues("");
 }
 
 CRandNPCLoader::~CRandNPCLoader()
 {
-	m_KVs->deleteThis();
 }
 
 bool CRandNPCLoader::Load()
@@ -206,7 +204,6 @@ bool CRandNPCLoader::AddEntries( KeyValues* pKV )
 			continue;
 
 		auto newKV = iter->MakeCopy();
-		m_KVs->AddSubKey( iter->MakeCopy() );
 		SpawnEntry_t entry;
 		if (!ParseEntry(entry, newKV))
 		{

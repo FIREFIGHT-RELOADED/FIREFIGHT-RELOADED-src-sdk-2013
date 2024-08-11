@@ -71,4 +71,39 @@ private:
 
 CFMODManager *GetFMODManager();
 
+//CLIENT SIDE MUSIC SYSTEM
+
+struct Song_t
+{
+	const char* Title;
+	const char* Artist;
+	const char* Album;
+	int ID;
+};
+
+class CFMODMusicSystem : public CAutoGameSystemPerFrame
+{
+public:
+	CFMODMusicSystem();
+
+	// Initilaztion and Shutdown functions
+	virtual bool Init();
+	virtual void Shutdown();
+
+	// Called on Level Init after entities are created
+	virtual void LevelInitPostEntity();
+
+	// Called on Level Shutdown before entities are released
+	virtual void LevelShutdownPreEntity();
+
+	// Per frame update function
+	virtual void Update(float frametime);
+
+private:
+	CUtlVector< Song_t >	m_Songs;
+	bool m_bShuffle;
+};
+
+CFMODMusicSystem* GetMusicSystem();
+
 #endif // FMODMANAGER_H

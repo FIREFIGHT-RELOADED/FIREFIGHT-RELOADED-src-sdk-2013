@@ -2,6 +2,7 @@
 #include "fmodmanager.h"
 #include "filesystem.h"
 #include "c_baseplayer.h"
+#include "firefightreloaded/mapinfo.h"
 
 #include <fmod_errors.h>
 
@@ -245,3 +246,91 @@ FMOD_RESULT CFMODManager::CheckError( FMOD_RESULT result )
 
 static CFMODManager s_FMODManager;
 CFMODManager *GetFMODManager() { return &s_FMODManager; }
+
+//CLIENT SIDE MUSIC SYSTEM
+
+ConVar snd_fmod_musicsystem("snd_fmod_musicsystem", "1", FCVAR_ARCHIVE);
+ConVar snd_fmod_musicsystem_playlist("snd_fmod_musicsystem_playlist", "scripts/playlists/default.txt", FCVAR_ARCHIVE);
+
+CFMODMusicSystem::CFMODMusicSystem() : CAutoGameSystemPerFrame("fmod_music_system")
+{
+}
+
+bool CFMODMusicSystem::Init()
+{
+	if (!GetFMODManager())
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void CFMODMusicSystem::Shutdown()
+{
+	m_Songs.Purge();
+}
+
+void CFMODMusicSystem::LevelInitPostEntity()
+{
+	//this is where we init the playlist.
+	KeyValues* pKV = new KeyValues("");
+	if (pKV->LoadFromFile(filesystem, snd_fmod_musicsystem_playlist.GetString()))
+	{
+		int num = 0;
+		bool failed = false;
+		for (auto iter = pKV->GetFirstSubKey(); iter != NULL; iter = iter->GetNextKey())
+		{
+			auto newKV = iter->MakeCopy();
+			Song_t entry;
+			entry.Title = newKV->GetString("title", NULL);
+			entry.Artist = newKV->GetString("artist", NULL);
+			entry.Album = newKV->GetString("album", "Music");
+			entry.ID = num;
+
+			if (entry.Title == NULL || entry.Artist == NULL)
+			{
+				failed = true;
+				break;
+			}
+
+			m_Songs.AddToTail(entry);
+			num++;
+		}
+
+		if (failed)
+		{
+			DevWarning("CFMODMusicSystem: Failed to load playlist! File failed to load because entries are missing important values.\n");
+			return;
+		}
+
+		DevMsg("CFMODMusicSystem: User-specified playlist loaded.\n");
+	}
+	else
+	{
+		DevWarning("CFMODMusicSystem: Failed to load playlist! File may not exist.\n");
+	}
+}
+
+void CFMODMusicSystem::LevelShutdownPreEntity()
+{
+	//FMOD manager will handle any FMOD related things here.
+	m_Songs.Purge();
+}
+
+void CFMODMusicSystem::Update(float frametime)
+{
+	if (!snd_fmod_musicsystem.GetBool())
+		return;
+
+	KeyValues* pInfo = CMapInfo::GetMapInfoData();
+	bool allowMusicSystem = pInfo->GetBool("AllowMusicSystem", true);
+
+	if (!allowMusicSystem)
+		return;
+
+	//this is where we handle playback
+}
+
+static CFMODMusicSystem s_FMODMusicSystem;
+CFMODMusicSystem* GetMusicSystem() { return &s_FMODMusicSystem; }

@@ -98,15 +98,14 @@ Thank you to the following people who have playtested the mod to make sure it wo
 
 Special thanks to:
  - The SMOD Author for making SMOD
- - Valve Developer Wiki for being a coder's paradise
- - Source SDK 2013 GitHub Pull Requests for helping provide fixes to the engine
+ - Valve Developer Wiki for its knowlege and info used in the creation of this mod.
+ - Source SDK 2013 GitHub Pull Requests for helping provide fixes to the mod and engine.
  - Valve for building Half-Life 2, the Source Engine, and many assets used in this mod.
-
-
 
 Last but not least:
 Thank you to all my close friends who changed my life in a positive way and got me in the mood to work on projects again. You're all amazing people.
 
+Thank you to Kayce Date for her love and support over the last few months of the ENDGAME update's development.
 
 Dedicated to:
 Missie

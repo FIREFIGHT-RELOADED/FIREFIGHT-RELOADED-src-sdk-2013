@@ -96,7 +96,6 @@ private:
 	static bool ParseRange( int& min, int& man, const char* s );
 
 	CUtlVector<SpawnEntry_t> m_Entries;
-	KeyValues* m_KVs;
 
 	friend void dumpspawnlist_cb();
 };
