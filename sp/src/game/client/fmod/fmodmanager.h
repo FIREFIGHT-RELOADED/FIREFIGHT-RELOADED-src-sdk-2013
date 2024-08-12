@@ -75,7 +75,6 @@ CFMODManager *GetFMODManager();
 
 struct Song_t
 {
-	int ID;
 	const char* Path;
 	const char* Title;
 	const char* Artist;
@@ -108,7 +107,6 @@ private:
 	Song_t CreateNullSong() 
 	{
 		Song_t song;
-		song.ID = -1;
 		song.Path = "null.wav";
 		song.Title = "Nullified";
 		song.Artist = "Null Body";

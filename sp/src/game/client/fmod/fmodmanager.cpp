@@ -309,19 +309,29 @@ void CFMODMusicSystem::LevelInitPostEntity()
 	KeyValues* pKV = new KeyValues("");
 	if (pKV->LoadFromFile(filesystem, snd_fmod_musicsystem_playlist.GetString()))
 	{
-		m_bShuffle = pKV->GetBool("shuffle");
+		KeyValues* settings = pKV->FindKey("settings");
+		if (settings)
+		{
+			m_bShuffle = settings->GetBool("shuffle");
+		}
+		else
+		{
+			m_bShuffle = false;
+		}
 
 		int num = 0;
 		bool failed = false;
 		for (auto iter = pKV->GetFirstSubKey(); iter != NULL; iter = iter->GetNextKey())
 		{
+			if (!strcmp(iter->GetName(), "settings"))
+				continue;
+
 			auto newKV = iter->MakeCopy();
 			Song_t entry;
 			entry.Path = newKV->GetString("path", NULL);
 			entry.Title = newKV->GetString("title", NULL);
 			entry.Artist = newKV->GetString("artist", NULL);
 			entry.Album = newKV->GetString("album", "Music");
-			entry.ID = num;
 
 			if (entry.Path == NULL || entry.Title == NULL || entry.Artist == NULL)
 			{
@@ -373,6 +383,7 @@ void CFMODMusicSystem::Update(float frametime)
 	if (m_bShuffle && !m_bJustShuffled)
 	{
 		//we might need to handle shuffling here
+		m_Songs.Shuffle(random);
 		m_bJustShuffled = true;
 	}
 
@@ -389,8 +400,8 @@ void CFMODMusicSystem::PlaySong()
 	for (int i = 0; i < m_Songs.Count(); ++i)
 	{
 		const Song_t& song = m_Songs[i];
-		Msg("SEARCHING FOR SONG: %i (CAND: %s, %i)\n", curID, song.Title, song.ID);
-		if (song.ID == curID)
+		Msg("SEARCHING FOR SONG: %i (CAND: %s, %i)\n", curID, song.Title, i);
+		if (curID == i)
 		{
 			curSong = song;
 		}
