@@ -10,7 +10,23 @@ KeyValues* CMapInfo::GetMapInfoData()
 #if !defined( CLIENT_DLL )
 	Q_snprintf(mapname, sizeof(mapname), "%s", STRING(gpGlobals->mapname));
 #else
-	Q_strncpy(mapname, engine->GetLevelName(), sizeof(mapname));
+	const char* levelname = engine->GetLevelName();
+
+	const char* str = Q_strstr(levelname, "maps");
+	if (str)
+	{
+		Q_strncpy(mapname, str + 5, sizeof(mapname) - 1);	// maps + \\ = 5
+	}
+	else
+	{
+		Q_strncpy(mapname, levelname, sizeof(mapname) - 1);
+	}
+
+	char* ext = Q_strstr(mapname, ".bsp");
+	if (ext)
+	{
+		*ext = 0;
+	}
 #endif
 
 	char szFullName[512];

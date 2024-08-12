@@ -140,30 +140,6 @@ void CGamepadUIFMODManager::OnClose()
 	}
 }
 
-void CGamepadUIFMODManager::Mute()
-{
-	for (unsigned int i = 0; i < NUM_CHANNELGROUPS; i++)
-		m_pChannelGroups[i]->setMute(true);
-}
-
-void CGamepadUIFMODManager::Unmute()
-{
-	for (unsigned int i = 0; i < NUM_CHANNELGROUPS; i++)
-		m_pChannelGroups[i]->setMute(false);
-}
-
-void CGamepadUIFMODManager::Pause()
-{
-	for (unsigned int i = 0; i < NUM_CHANNELGROUPS; i++)
-		m_pChannelGroups[i]->setPaused(true);
-}
-
-void CGamepadUIFMODManager::Unpause()
-{
-	for (unsigned int i = 0; i < NUM_CHANNELGROUPS; i++)
-		m_pChannelGroups[i]->setPaused(false);
-}
-
 void CGamepadUIFMODManager::OnThink()
 {
 	// Update the FMOD system

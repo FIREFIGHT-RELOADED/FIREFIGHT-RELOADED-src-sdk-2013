@@ -33,11 +33,6 @@ public:
 	virtual bool Init();
 	virtual void Shutdown();
 
-	virtual void Mute();
-	virtual void Unmute();
-	virtual void Pause();
-	virtual void Unpause();
-
 	// Called on Level Init before entities are created
 	virtual void LevelInitPreEntity();
 
@@ -52,6 +47,9 @@ public:
 
 	// Get one of our channel groups
 	FMOD::ChannelGroup *GetChannelGroup( eChannelGroupType channelgroupType ) { return m_pChannelGroups[channelgroupType]; }
+	FMOD::ChannelGroup *GetChannelGroup(int channelgroupType) { return m_pChannelGroups[channelgroupType]; }
+
+	FMOD::ChannelGroup *GetMasterChannelGroup() { return m_pMasterChannelGroup; }
 
 	// Used to check for errors when using FMOD
 	static FMOD_RESULT CheckError( FMOD_RESULT result );
@@ -79,13 +77,13 @@ struct Song_t
 	const char* Title;
 	const char* Artist;
 	const char* Album;
+	float Volume;
 	FMOD::Sound* FMODPointer;
 };
 
 struct Settings_t
 {
 	bool Shuffle;
-	float Volume;
 };
 
 class CFMODMusicSystem : public CAutoGameSystemPerFrame
@@ -110,6 +108,8 @@ public:
 
 	virtual void Kill();
 
+	virtual bool IsDisabled() { return m_bDisabled; }
+
 private:
 	Song_t CreateNullSong() 
 	{
@@ -119,6 +119,7 @@ private:
 		song.Artist = "Artist";
 		song.Album = "Album";
 		song.FMODPointer = nullptr;
+		song.Volume = 1.0f;
 		return song;
 	}
 
@@ -126,12 +127,12 @@ private:
 	{
 		Settings_t settings;
 		settings.Shuffle = false;
-		settings.Volume = 1.0f;
 		return settings;
 	}
 
 private:
 	bool m_bStart;
+	bool m_bDisabled;
 	CUtlVector< Song_t >	m_Songs;
 	Settings_t m_sSettings;
 	bool m_bJustShuffled;

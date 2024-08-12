@@ -34,11 +34,6 @@ public:
 	virtual bool Init();
 	virtual void OnClose();
 
-	virtual void Mute();
-	virtual void Unmute();
-	virtual void Pause();
-	virtual void Unpause();
-
 	// Per frame update function
 	virtual void OnThink();
 
@@ -47,6 +42,9 @@ public:
 
 	// Get one of our channel groups
 	FMOD::ChannelGroup *GetChannelGroup( eChannelGroupType channelgroupType ) { return m_pChannelGroups[channelgroupType]; }
+	FMOD::ChannelGroup *GetChannelGroup(int channelgroupType) { return m_pChannelGroups[channelgroupType]; }
+
+	FMOD::ChannelGroup* GetMasterChannelGroup() { return m_pMasterChannelGroup; }
 
 	// Used to check for errors when using FMOD
 	static FMOD_RESULT CheckError( FMOD_RESULT result );

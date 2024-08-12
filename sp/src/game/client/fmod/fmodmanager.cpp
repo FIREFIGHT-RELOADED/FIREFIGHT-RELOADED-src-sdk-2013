@@ -142,38 +142,20 @@ void CFMODManager::Shutdown()
 	}
 }
 
-void CFMODManager::Mute()
-{
-	for (unsigned int i = 0; i < NUM_CHANNELGROUPS; i++)
-		m_pChannelGroups[i]->setMute(true);
-}
-
-void CFMODManager::Unmute()
-{
-	for (unsigned int i = 0; i < NUM_CHANNELGROUPS; i++)
-		m_pChannelGroups[i]->setMute(false);
-}
-
-void CFMODManager::Pause()
-{
-	for (unsigned int i = 0; i < NUM_CHANNELGROUPS; i++)
-		m_pChannelGroups[i]->setPaused(true);
-}
-
-void CFMODManager::Unpause()
-{
-	for (unsigned int i = 0; i < NUM_CHANNELGROUPS; i++)
-		m_pChannelGroups[i]->setPaused(false);
-}
-
 void CFMODManager::LevelInitPreEntity()
 {
-	Unmute();
+	for (unsigned int i = 0; i < NUM_CHANNELGROUPS; i++)
+	{
+		m_pChannelGroups[i]->setMute(false);
+	}
 }
 
 void CFMODManager::LevelShutdownPreEntity()
 {
-	Mute();
+	for (unsigned int i = 0; i < NUM_CHANNELGROUPS; i++)
+	{
+		m_pChannelGroups[i]->setMute(true);
+	}
 }
 
 void CFMODManager::Update( float frametime )
@@ -255,6 +237,7 @@ ConVar snd_fmod_musicsystem_playlist("snd_fmod_musicsystem_playlist", "scripts/p
 CFMODMusicSystem::CFMODMusicSystem() : CAutoGameSystemPerFrame("fmod_music_system")
 {
 	m_pChannel = nullptr;
+	m_bDisabled = false;
 	m_bStart = false;
 	curID = 0;
 	tracktime = 0.0f;
@@ -326,6 +309,7 @@ void CFMODMusicSystem::LevelInitPostEntity()
 			entry.Title = newKV->GetString("title", nullSong.Title);
 			entry.Artist = newKV->GetString("artist", nullSong.Artist);
 			entry.Album = newKV->GetString("album", nullSong.Album);
+			entry.Volume = newKV->GetFloat("volume", nullSong.Volume);
 
 			if (entry.Path == NULL)
 			{
@@ -369,16 +353,27 @@ void CFMODMusicSystem::LevelShutdownPreEntity()
 void CFMODMusicSystem::Update(float frametime)
 {
 	if (!m_bStart)
+	{
+		m_bDisabled = true;
 		return;
+	}
 
 	if (!snd_fmod_musicsystem.GetBool())
+	{
+		m_bDisabled = true;
 		return;
+	}
 
 	KeyValues* pInfo = CMapInfo::GetMapInfoData();
 	bool allowMusicSystem = pInfo->GetBool("AllowMusicSystem", true);
 
 	if (!allowMusicSystem)
+	{
+		m_bDisabled = true;
 		return;
+	}
+	
+	m_bDisabled = false;
 
 	if (m_sSettings.Shuffle && !m_bJustShuffled)
 	{
@@ -390,18 +385,31 @@ void CFMODMusicSystem::Update(float frametime)
 	//this is where we handle playback
 	if (gpGlobals->curtime >= tracktime)
 	{
+		// We could just return, but maybe there's a legitimate reason to re-set the sound
+		// This should be handled elsewhere though.
 		if (m_pChannel)
 		{
-			// We could just return, but maybe there's a legitimate reason to re-set the sound
-			// This should be handled elsewhere though.
-			if (m_pChannel)
-			{
-				m_pChannel->stop();
-				m_pChannel = NULL;
-			}
+			m_pChannel->stop();
+			m_pChannel = NULL;
 		}
 
 		PlaySong();
+	}
+	else
+	{
+		//since our music system is reliant on in-game time which is paused on engine pause, 
+		//we have to forcefully pause it if certain values are disabled.
+		//This is to ensure that the playlist will work effectively.
+
+		if (m_pChannel)
+		{
+			for (unsigned int i = 0; i < NUM_CHANNELGROUPS; i++)
+			{
+				m_pChannel->setPaused(!engine->IsActiveApp());
+				m_pChannel->setMute(!engine->IsActiveApp());
+				m_pChannel->setPaused(engine->IsPaused());
+			}
+		}
 	}
 }
 
@@ -426,7 +434,7 @@ void CFMODMusicSystem::PlaySong()
 	if (m_pChannel)
 	{
 		CFMODManager::CheckError(m_pChannel->setPitch(1.0f));
-		CFMODManager::CheckError(m_pChannel->setVolume(m_sSettings.Volume));
+		CFMODManager::CheckError(m_pChannel->setVolume(m_sCurSong.Volume));
 		CFMODManager::CheckError(m_pChannel->setPaused(false));
 	}
 

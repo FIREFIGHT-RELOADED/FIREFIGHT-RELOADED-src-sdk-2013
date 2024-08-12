@@ -139,7 +139,9 @@ bool GamepadUIBasePanel::StartBackgroundMusic( float flVolume )
         CGamepadUIFMODManager::CheckError(m_pChannel->setVolume(flVolume * gamepadui_background_music_duck.GetFloat()));
 
         m_pChannel->setPaused(false);
-        GetFMODManager()->Unmute();
+
+        for (unsigned int i = 0; i < NUM_CHANNELGROUPS; i++)
+            GetFMODManager()->GetChannelGroup(i)->setMute(false);
     }
 
     fileNames.PurgeAndDeleteElements();
@@ -149,7 +151,8 @@ bool GamepadUIBasePanel::StartBackgroundMusic( float flVolume )
 
 void GamepadUIBasePanel::ReleaseBackgroundMusic()
 {
-    GetFMODManager()->Mute();
+    for (unsigned int i = 0; i < NUM_CHANNELGROUPS; i++)
+        GetFMODManager()->GetChannelGroup(i)->setMute(true);
 
     if (m_pChannel != nullptr)
     {
