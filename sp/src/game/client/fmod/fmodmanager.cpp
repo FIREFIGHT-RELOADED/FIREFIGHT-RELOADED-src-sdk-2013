@@ -255,13 +255,12 @@ ConVar snd_fmod_musicsystem_playlist("snd_fmod_musicsystem_playlist", "scripts/p
 CFMODMusicSystem::CFMODMusicSystem() : CAutoGameSystemPerFrame("fmod_music_system")
 {
 	m_pChannel = nullptr;
-	m_pSound = nullptr;
 	m_bStart = false;
 	curID = 0;
 	tracktime = 0.0f;
 	m_bJustShuffled = false;
-	m_bShuffle = false;
-	curSong = CreateNullSong();
+	m_sSettings = CreateNullSettings();
+	m_sCurSong = CreateNullSong();
 }
 
 bool CFMODMusicSystem::Init()
@@ -283,18 +282,12 @@ void CFMODMusicSystem::Kill()
 		m_pChannel = nullptr;
 	}
 
-	if (m_pSound != nullptr)
-	{
-		m_pSound->release();
-		m_pSound = nullptr;
-	}
-
 	m_bStart = false;
 	curID = 0;
 	tracktime = 0.0f;
 	m_bJustShuffled = false;
-	m_bShuffle = false;
-	curSong = CreateNullSong();
+	m_sSettings = CreateNullSettings();
+	m_sCurSong = CreateNullSong();
 	m_Songs.Purge();
 }
 
@@ -312,11 +305,11 @@ void CFMODMusicSystem::LevelInitPostEntity()
 		KeyValues* settings = pKV->FindKey("settings");
 		if (settings)
 		{
-			m_bShuffle = settings->GetBool("shuffle");
+			m_sSettings.Shuffle = settings->GetBool("shuffle");
 		}
 		else
 		{
-			m_bShuffle = false;
+			m_sSettings.Shuffle = false;
 		}
 
 		int num = 0;
@@ -328,15 +321,22 @@ void CFMODMusicSystem::LevelInitPostEntity()
 
 			auto newKV = iter->MakeCopy();
 			Song_t entry;
+			Song_t nullSong = CreateNullSong();
 			entry.Path = newKV->GetString("path", NULL);
-			entry.Title = newKV->GetString("title", NULL);
-			entry.Artist = newKV->GetString("artist", NULL);
-			entry.Album = newKV->GetString("album", "Music");
+			entry.Title = newKV->GetString("title", nullSong.Title);
+			entry.Artist = newKV->GetString("artist", nullSong.Artist);
+			entry.Album = newKV->GetString("album", nullSong.Album);
 
-			if (entry.Path == NULL || entry.Title == NULL || entry.Artist == NULL)
+			if (entry.Path == NULL)
 			{
 				failed = true;
 				break;
+			}
+			else
+			{
+				//create the song so that there's no stutters when we load it.
+				const char* szSound = GetFMODManager()->GetFullPathToSound(entry.Path);
+				CFMODManager::CheckError(GetFMODManager()->GetSystem()->createSound(szSound, FMOD_DEFAULT, 0, &entry.FMODPointer));
 			}
 
 			m_Songs.AddToTail(entry);
@@ -345,14 +345,14 @@ void CFMODMusicSystem::LevelInitPostEntity()
 
 		if (failed)
 		{
-			DevWarning("CFMODMusicSystem: Failed to load playlist! File failed to load because entries are missing important values.\n");
+			DevWarning("CFMODMusicSystem: Failed to load playlist! File failed to load because entries are missing paths.\n");
 			return;
 		}
 
 		DevMsg("CFMODMusicSystem: User-specified playlist loaded.\n");
 		//play stuff as soon as ents have finished initalizing.
 		m_bStart = true;
-		tracktime = gpGlobals->curtime + 5.0f;
+		tracktime = gpGlobals->curtime + 0.1f;
 	}
 	else
 	{
@@ -380,7 +380,7 @@ void CFMODMusicSystem::Update(float frametime)
 	if (!allowMusicSystem)
 		return;
 
-	if (m_bShuffle && !m_bJustShuffled)
+	if (m_sSettings.Shuffle && !m_bJustShuffled)
 	{
 		//we might need to handle shuffling here
 		m_Songs.Shuffle(random);
@@ -390,6 +390,17 @@ void CFMODMusicSystem::Update(float frametime)
 	//this is where we handle playback
 	if (gpGlobals->curtime >= tracktime)
 	{
+		if (m_pChannel)
+		{
+			// We could just return, but maybe there's a legitimate reason to re-set the sound
+			// This should be handled elsewhere though.
+			if (m_pChannel)
+			{
+				m_pChannel->stop();
+				m_pChannel = NULL;
+			}
+		}
+
 		PlaySong();
 	}
 }
@@ -400,16 +411,36 @@ void CFMODMusicSystem::PlaySong()
 	for (int i = 0; i < m_Songs.Count(); ++i)
 	{
 		const Song_t& song = m_Songs[i];
-		Msg("SEARCHING FOR SONG: %i (CAND: %s, %i)\n", curID, song.Title, i);
+		DevMsg("SEARCHING FOR SONG: %i (CAND: %s, %i)\n", curID, song.Title, i);
 		if (curID == i)
 		{
-			curSong = song;
+			m_sCurSong = song;
+			DevMsg("SELECTED %s, %i\n", m_sCurSong, curID);
 		}
 	}
 
-	//TESTING: each track is 5 seconds long.
-	Msg("PLAYING: %s, %i\n", curSong.Title, curID);
-	tracktime = gpGlobals->curtime + 5.0f;
+	FMOD::Sound *sound = m_sCurSong.FMODPointer;
+
+	CFMODManager::CheckError(GetFMODManager()->GetSystem()->playSound(sound, GetFMODManager()->GetChannelGroup(CHANNELGROUP_MUSIC), true, &m_pChannel));
+
+	if (m_pChannel)
+	{
+		CFMODManager::CheckError(m_pChannel->setPitch(1.0f));
+		CFMODManager::CheckError(m_pChannel->setVolume(m_sSettings.Volume));
+		CFMODManager::CheckError(m_pChannel->setPaused(false));
+	}
+
+	DevMsg("PLAYING: %s, %i\n", m_sCurSong.Title, curID);
+
+	unsigned int songTime = 5000;
+	CFMODManager::CheckError(sound->getLength(&songTime, FMOD_TIMEUNIT_MS));
+	DevMsg("LENGTH (MS): %i\n", songTime);
+
+	//convert MS into seconds
+	songTime = (songTime / 1000);
+	DevMsg("LENGTH (SEC): %i\n", songTime);
+
+	tracktime = gpGlobals->curtime + songTime;
 
 	//increment curID.
 	curID++;

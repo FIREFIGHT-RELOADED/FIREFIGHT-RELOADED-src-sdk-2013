@@ -79,6 +79,13 @@ struct Song_t
 	const char* Title;
 	const char* Artist;
 	const char* Album;
+	FMOD::Sound* FMODPointer;
+};
+
+struct Settings_t
+{
+	bool Shuffle;
+	float Volume;
 };
 
 class CFMODMusicSystem : public CAutoGameSystemPerFrame
@@ -107,23 +114,31 @@ private:
 	Song_t CreateNullSong() 
 	{
 		Song_t song;
-		song.Path = "null.wav";
-		song.Title = "Nullified";
-		song.Artist = "Null Body";
-		song.Album = "The NULL Album";
+		song.Path = "common/null.wav";
+		song.Title = "Song";
+		song.Artist = "Artist";
+		song.Album = "Album";
+		song.FMODPointer = nullptr;
 		return song;
+	}
+
+	Settings_t CreateNullSettings()
+	{
+		Settings_t settings;
+		settings.Shuffle = false;
+		settings.Volume = 1.0f;
+		return settings;
 	}
 
 private:
 	bool m_bStart;
 	CUtlVector< Song_t >	m_Songs;
-	bool m_bShuffle;
+	Settings_t m_sSettings;
 	bool m_bJustShuffled;
 	int curID;
 	float tracktime;
-	Song_t curSong;
+	Song_t m_sCurSong;
 	FMOD::Channel* m_pChannel;
-	FMOD::Sound* m_pSound;
 };
 
 CFMODMusicSystem* GetMusicSystem();
