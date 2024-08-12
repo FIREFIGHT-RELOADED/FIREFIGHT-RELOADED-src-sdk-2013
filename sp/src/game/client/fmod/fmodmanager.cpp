@@ -423,7 +423,7 @@ void CFMODMusicSystem::PlaySong()
 		if (curID == i)
 		{
 			m_sCurSong = song;
-			DevMsg("SELECTED %s, %i\n", m_sCurSong, curID);
+			DevMsg("SELECTED %s\n", m_sCurSong);
 		}
 	}
 
@@ -438,7 +438,7 @@ void CFMODMusicSystem::PlaySong()
 		CFMODManager::CheckError(m_pChannel->setPaused(false));
 	}
 
-	DevMsg("PLAYING: %s, %i\n", m_sCurSong.Title, curID);
+	DevMsg("PLAYING: %s\n", m_sCurSong.Title);
 
 	unsigned int songTime = 5000;
 	CFMODManager::CheckError(sound->getLength(&songTime, FMOD_TIMEUNIT_MS));
