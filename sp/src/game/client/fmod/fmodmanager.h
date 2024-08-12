@@ -75,10 +75,11 @@ CFMODManager *GetFMODManager();
 
 struct Song_t
 {
+	int ID;
+	const char* Path;
 	const char* Title;
 	const char* Artist;
 	const char* Album;
-	int ID;
 };
 
 class CFMODMusicSystem : public CAutoGameSystemPerFrame
@@ -99,9 +100,32 @@ public:
 	// Per frame update function
 	virtual void Update(float frametime);
 
+	virtual void PlaySong();
+
+	virtual void Kill();
+
 private:
+	Song_t CreateNullSong() 
+	{
+		Song_t song;
+		song.ID = -1;
+		song.Path = "null.wav";
+		song.Title = "Nullified";
+		song.Artist = "Null Body";
+		song.Album = "The NULL Album";
+		return song;
+	}
+
+private:
+	bool m_bStart;
 	CUtlVector< Song_t >	m_Songs;
 	bool m_bShuffle;
+	bool m_bJustShuffled;
+	int curID;
+	float tracktime;
+	Song_t curSong;
+	FMOD::Channel* m_pChannel;
+	FMOD::Sound* m_pSound;
 };
 
 CFMODMusicSystem* GetMusicSystem();
