@@ -232,7 +232,6 @@ CFMODManager *GetFMODManager() { return &s_FMODManager; }
 //CLIENT SIDE MUSIC SYSTEM
 
 ConVar snd_fmod_musicsystem("snd_fmod_musicsystem", "1", FCVAR_ARCHIVE);
-ConVar snd_fmod_musicsystem_lowmem("snd_fmod_musicsystem_lowmem", "0", FCVAR_ARCHIVE);
 ConVar snd_fmod_musicsystem_playlist("snd_fmod_musicsystem_playlist", "scripts/playlists/default.txt", FCVAR_ARCHIVE);
 
 CFMODMusicSystem::CFMODMusicSystem() : CAutoGameSystemPerFrame("fmod_music_system")
