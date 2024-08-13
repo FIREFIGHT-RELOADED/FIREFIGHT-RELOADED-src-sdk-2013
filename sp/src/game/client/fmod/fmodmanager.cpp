@@ -179,7 +179,7 @@ void CFMODManager::Update( float frametime )
 	m_pChannelGroups[CHANNELGROUP_MUSIC]->setVolume( snd_musicvolume.GetFloat() );
 
 	// Get the local player for updating the 3D listener
-	C_BasePlayer *pLocalPlayer = C_BasePlayer::GetLocalPlayer();
+	C_BasePlayer* pLocalPlayer = C_BasePlayer::GetLocalPlayer();
 
 	// Update the 3D listener if the local player is valid
 	if ( pLocalPlayer != nullptr )
@@ -232,13 +232,16 @@ CFMODManager *GetFMODManager() { return &s_FMODManager; }
 //CLIENT SIDE MUSIC SYSTEM
 
 ConVar snd_fmod_musicsystem("snd_fmod_musicsystem", "1", FCVAR_ARCHIVE);
+ConVar snd_fmod_musicsystem_lowmem("snd_fmod_musicsystem_lowmem", "0", FCVAR_ARCHIVE);
 ConVar snd_fmod_musicsystem_playlist("snd_fmod_musicsystem_playlist", "scripts/playlists/default.txt", FCVAR_ARCHIVE);
 
 CFMODMusicSystem::CFMODMusicSystem() : CAutoGameSystemPerFrame("fmod_music_system")
 {
 	m_pChannel = nullptr;
+	m_pSong = nullptr;
 	m_bDisabled = false;
 	m_bStart = false;
+	m_bPlaylistLoaded = false;
 	curID = 0;
 	tracktime = 0.0f;
 	m_bJustShuffled = false;
@@ -257,7 +260,7 @@ bool CFMODMusicSystem::Init()
 }
 
 //kill him. do it now.
-void CFMODMusicSystem::Kill()
+void CFMODMusicSystem::Kill(bool full)
 {
 	if (m_pChannel != nullptr)
 	{
@@ -265,10 +268,20 @@ void CFMODMusicSystem::Kill()
 		m_pChannel = nullptr;
 	}
 
-	m_bStart = false;
+	if (m_pSong != nullptr)
+	{
+		m_pSong->release();
+		m_pSong = nullptr;
+	}
+
+	if (full)
+	{
+		m_bStart = false;
+	}
+	m_bJustShuffled = false;
+	m_bPlaylistLoaded = false;
 	curID = 0;
 	tracktime = 0.0f;
-	m_bJustShuffled = false;
 	m_sSettings = CreateNullSettings();
 	m_sCurSong = CreateNullSong();
 	m_Songs.Purge();
@@ -279,8 +292,24 @@ void CFMODMusicSystem::Shutdown()
 	Kill();
 }
 
-void CFMODMusicSystem::LevelInitPostEntity()
+void CFMODMusicSystem::ReadPlaylist()
 {
+	if (m_bPlaylistLoaded)
+		return;
+
+	KeyValues* pInfo = CMapInfo::GetMapInfoData();
+	bool allowMusicSystem = (pInfo != NULL) ? pInfo->GetBool("AllowMusicSystem", true) : true;
+
+	if (!allowMusicSystem)
+	{
+		m_bDisabled = true;
+		if (pInfo != NULL)
+		{
+			pInfo->deleteThis();
+		}
+		return;
+	}
+
 	//this is where we init the playlist.
 	KeyValues* pKV = new KeyValues("");
 	if (pKV->LoadFromFile(filesystem, snd_fmod_musicsystem_playlist.GetString()))
@@ -316,12 +345,6 @@ void CFMODMusicSystem::LevelInitPostEntity()
 				failed = true;
 				break;
 			}
-			else
-			{
-				//create the song so that there's no stutters when we load it.
-				const char* szSound = GetFMODManager()->GetFullPathToSound(entry.Path);
-				CFMODManager::CheckError(GetFMODManager()->GetSystem()->createSound(szSound, FMOD_DEFAULT, 0, &entry.FMODPointer));
-			}
 
 			m_Songs.AddToTail(entry);
 			num++;
@@ -335,13 +358,18 @@ void CFMODMusicSystem::LevelInitPostEntity()
 
 		DevMsg("CFMODMusicSystem: User-specified playlist loaded.\n");
 		//play stuff as soon as ents have finished initalizing.
-		m_bStart = true;
 		tracktime = gpGlobals->curtime + 0.1f;
+		m_bPlaylistLoaded = true;
 	}
 	else
 	{
 		DevWarning("CFMODMusicSystem: Failed to load playlist! File may not exist.\n");
 	}
+}
+
+void CFMODMusicSystem::LevelInitPostEntity()
+{
+	m_bStart = true;
 }
 
 void CFMODMusicSystem::LevelShutdownPreEntity()
@@ -354,26 +382,32 @@ void CFMODMusicSystem::Update(float frametime)
 {
 	if (!m_bStart)
 	{
-		m_bDisabled = true;
+		if (!m_bDisabled)
+		{
+			m_bDisabled = true;
+		}
 		return;
 	}
 
 	if (!snd_fmod_musicsystem.GetBool())
 	{
-		m_bDisabled = true;
-		return;
-	}
-
-	KeyValues* pInfo = CMapInfo::GetMapInfoData();
-	bool allowMusicSystem = pInfo->GetBool("AllowMusicSystem", true);
-
-	if (!allowMusicSystem)
-	{
-		m_bDisabled = true;
+		if (!m_bDisabled)
+		{
+			m_bDisabled = true;
+			Kill(false);
+		}
 		return;
 	}
 	
-	m_bDisabled = false;
+	if (m_bDisabled)
+	{
+		m_bDisabled = false;
+	}
+
+	if (!m_bDisabled)
+	{
+		ReadPlaylist();
+	}
 
 	if (m_sSettings.Shuffle && !m_bJustShuffled)
 	{
@@ -391,6 +425,12 @@ void CFMODMusicSystem::Update(float frametime)
 		{
 			m_pChannel->stop();
 			m_pChannel = NULL;
+		}
+
+		if (m_pSong)
+		{
+			m_pSong->release();
+			m_pSong = NULL;
 		}
 
 		PlaySong();
@@ -427,9 +467,9 @@ void CFMODMusicSystem::PlaySong()
 		}
 	}
 
-	FMOD::Sound *sound = m_sCurSong.FMODPointer;
-
-	CFMODManager::CheckError(GetFMODManager()->GetSystem()->playSound(sound, GetFMODManager()->GetChannelGroup(CHANNELGROUP_MUSIC), true, &m_pChannel));
+	const char* szSound = GetFMODManager()->GetFullPathToSound(m_sCurSong.Path);
+	CFMODManager::CheckError(GetFMODManager()->GetSystem()->createSound(szSound, FMOD_DEFAULT | FMOD_CREATESTREAM, 0, &m_pSong));
+	CFMODManager::CheckError(GetFMODManager()->GetSystem()->playSound(m_pSong, GetFMODManager()->GetChannelGroup(CHANNELGROUP_MUSIC), true, &m_pChannel));
 
 	if (m_pChannel)
 	{
@@ -441,7 +481,7 @@ void CFMODMusicSystem::PlaySong()
 	DevMsg("PLAYING: %s\n", m_sCurSong.Title);
 
 	unsigned int songTime = 5000;
-	CFMODManager::CheckError(sound->getLength(&songTime, FMOD_TIMEUNIT_MS));
+	CFMODManager::CheckError(m_pSong->getLength(&songTime, FMOD_TIMEUNIT_MS));
 	DevMsg("LENGTH (MS): %i\n", songTime);
 
 	//convert MS into seconds

@@ -64,8 +64,16 @@ void CGameMovement::CheckPowerSlide( void )
 		return;
 
 	KeyValues* pInfo = CMapInfo::GetMapInfoData();
-	if (!pInfo->GetBool("CanPowerslide", true))
+	if (pInfo != NULL && !pInfo->GetBool("CanPowerslide", true))
+	{
+		pInfo->deleteThis();
 		return;
+	}
+
+	if (pInfo != NULL)
+	{
+		pInfo->deleteThis();
+	}
 
 	if (mv->m_nButtons & IN_GRAPPLE)
 		return;
@@ -210,8 +218,16 @@ void CGameMovement::AnticipateWallRun( void )
 		return;
 
 	KeyValues* pInfo = CMapInfo::GetMapInfoData();
-	if (!pInfo->GetBool("CanWallrun", true))
+	if (pInfo != NULL && !pInfo->GetBool("CanWallrun", true))
+	{
+		pInfo->deleteThis();
 		return;
+	}
+
+	if (pInfo != NULL)
+	{
+		pInfo->deleteThis();
+	}
 
 	// No idea how this can be called when wallrunning, but it is
 	if (player->m_nWallRunState >= WALLRUN_RUNNING)
@@ -260,8 +276,16 @@ void CGameMovement::CheckWallRun( Vector &vecWallNormal, trace_t &pm )
 		return;
 
 	KeyValues* pInfo = CMapInfo::GetMapInfoData();
-	if (!pInfo->GetBool("CanWallrun", true))
+	if (pInfo != NULL && !pInfo->GetBool("CanWallrun", true))
+	{
+		pInfo->deleteThis();
 		return;
+	}
+
+	if (pInfo != NULL)
+	{
+		pInfo->deleteThis();
+	}
 
 	// Can't wallrun without the suit
 	if (!player->IsSuitEquipped())
@@ -917,8 +941,16 @@ void CGameMovement::CheckWallRunScramble( bool& steps )
 		return;
 
 	KeyValues* pInfo = CMapInfo::GetMapInfoData();
-	if (!pInfo->GetBool("CanWallrun", true))
+	if (pInfo != NULL && !pInfo->GetBool("CanWallrun", true))
+	{
+		pInfo->deleteThis();
 		return;
+	}
+
+	if (pInfo != NULL)
+	{
+		pInfo->deleteThis();
+	}
 
 	Vector	flatforward;
 	Vector forward;

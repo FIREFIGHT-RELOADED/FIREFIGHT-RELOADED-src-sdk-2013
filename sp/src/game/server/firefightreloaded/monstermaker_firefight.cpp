@@ -162,7 +162,7 @@ void CNPCMakerFirefight::Precache(void)
 	}
 
 	KeyValues* pInfo = CMapInfo::GetMapInfoData();
-	bool useMapDefinedSpawnTimes = pInfo->GetBool("UseMapSpawnTimes");
+	bool useMapDefinedSpawnTimes = (pInfo != NULL) ? pInfo->GetBool("UseMapSpawnTimes") : false;
 
 	float setSpawnTime = useMapDefinedSpawnTimes ? TIME_SETBYHAMMER : g_npcLoader->m_Settings.spawnTime;
 	if (setSpawnTime > 0)
@@ -172,6 +172,11 @@ void CNPCMakerFirefight::Precache(void)
 	else
 	{
 		m_bUsingMapSpawnTime = true;
+	}
+
+	if (pInfo != NULL)
+	{
+		pInfo->deleteThis();
 	}
 
 	int nWeapons = ARRAYSIZE(g_Weapons);
@@ -193,11 +198,17 @@ void CNPCMakerFirefight::MakerThink(void)
 		if (m_bUsingMapSpawnTime)
 		{
 			KeyValues* pInfo = CMapInfo::GetMapInfoData();
-			int steamDeckTimeAdd = pInfo->GetInt("DeckMapSpawnTimeOverride", TIME_SETBYHAMMER);
 
-			if (UTIL_IsSteamDeck() && steamDeckTimeAdd > 0)
+			if (pInfo != NULL)
 			{
-				m_flSpawnFrequency = m_flSpawnFrequency + steamDeckTimeAdd;
+				int steamDeckTimeAdd = pInfo->GetInt("DeckMapSpawnTimeOverride", TIME_SETBYHAMMER);
+
+				if (UTIL_IsSteamDeck() && steamDeckTimeAdd > 0)
+				{
+					m_flSpawnFrequency = m_flSpawnFrequency + steamDeckTimeAdd;
+				}
+
+				pInfo->deleteThis();
 			}
 		}
 	}

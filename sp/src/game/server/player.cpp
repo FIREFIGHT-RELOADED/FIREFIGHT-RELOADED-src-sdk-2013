@@ -6199,6 +6199,11 @@ void CBasePlayer::LoadLoadoutFile(const char* kvName, bool savetoLoadout)
 		}
 	}
 
+	if (pInfo != NULL)
+	{
+		pInfo->deleteThis();
+	}
+
 	Weapon_Switch(Weapon_OwnsThisType("weapon_physcannon"));
 
 	if (m_bIronKick)
@@ -6223,17 +6228,20 @@ void CBasePlayer::WeaponSpawnLogic(void)
 			if (!m_szForcedLoadoutName[0])
 			{
 				KeyValues* pInfo = CMapInfo::GetMapInfoData();
-				m_szForcedLoadoutName = pInfo->GetString("ForcedLoadout", "");
+
+				if (pInfo != NULL)
+				{
+					m_szForcedLoadoutName = pInfo->GetString("ForcedLoadout", "");
+					m_bForcedLoadout = true;
+					LoadLoadoutFile(m_szForcedLoadoutName);
+					pInfo->deleteThis();
+					return;
+				}
 			}
 
 			if (!m_szForcedLoadoutName[0])
 			{
 				LoadLoadoutFile(sv_player_defaultloadout.GetString());
-			}
-			else
-			{
-				m_bForcedLoadout = true;
-				LoadLoadoutFile(m_szForcedLoadoutName);
 			}
 		}
 		else

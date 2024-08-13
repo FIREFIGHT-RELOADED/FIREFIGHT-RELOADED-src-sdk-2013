@@ -78,7 +78,6 @@ struct Song_t
 	const char* Artist;
 	const char* Album;
 	float Volume;
-	FMOD::Sound* FMODPointer;
 };
 
 struct Settings_t
@@ -106,9 +105,11 @@ public:
 
 	virtual void PlaySong();
 
-	virtual void Kill();
+	virtual void Kill(bool full = true);
 
 	virtual bool IsDisabled() { return m_bDisabled; }
+
+	virtual void ReadPlaylist();
 
 private:
 	Song_t CreateNullSong() 
@@ -118,7 +119,6 @@ private:
 		song.Title = "Song";
 		song.Artist = "Artist";
 		song.Album = "Album";
-		song.FMODPointer = nullptr;
 		song.Volume = 1.0f;
 		return song;
 	}
@@ -136,10 +136,12 @@ private:
 	CUtlVector< Song_t >	m_Songs;
 	Settings_t m_sSettings;
 	bool m_bJustShuffled;
+	bool m_bPlaylistLoaded;
 	int curID;
 	float tracktime;
 	Song_t m_sCurSong;
 	FMOD::Channel* m_pChannel;
+	FMOD::Sound* m_pSong;
 };
 
 CFMODMusicSystem* GetMusicSystem();

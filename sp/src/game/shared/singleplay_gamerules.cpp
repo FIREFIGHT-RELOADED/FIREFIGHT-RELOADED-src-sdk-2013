@@ -364,6 +364,8 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 					Q_snprintf(szCommand, sizeof(szCommand), "exec %s\n", customMapCFGFile);
 					engine->ServerCommand(szCommand);
 				}
+
+				pInfo->deleteThis();
 			}
 		}
 	}

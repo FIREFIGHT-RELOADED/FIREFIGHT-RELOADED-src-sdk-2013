@@ -109,6 +109,8 @@ bool CRandNPCLoader::Load()
 			{
 				failed = true;
 			}
+
+			pInfo->deleteThis();
 		}
 		else
 		{
