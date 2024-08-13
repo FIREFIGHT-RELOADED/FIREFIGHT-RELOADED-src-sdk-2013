@@ -192,16 +192,16 @@ bool C_AmbientFMOD::SetSound()
 	if ( m_bLooping )
 	{
 		if ( !m_bGlobal )
-			CFMODManager::CheckError( GetFMODManager()->GetSystem()->createSound( szSound, FMOD_LOOP_NORMAL | FMOD_3D | FMOD_3D_LINEARSQUAREROLLOFF, 0, &m_pSound ) );
+			CFMODManager::CheckError( GetFMODManager()->GetSystem()->createSound( szSound, FMOD_LOOP_NORMAL | FMOD_3D | FMOD_3D_LINEARSQUAREROLLOFF | FMOD_CREATESTREAM, 0, &m_pSound ) );
 		else
-			CFMODManager::CheckError( GetFMODManager()->GetSystem()->createSound( szSound, FMOD_DEFAULT | FMOD_LOOP_NORMAL, 0, &m_pSound ) );
+			CFMODManager::CheckError( GetFMODManager()->GetSystem()->createSound( szSound, FMOD_DEFAULT | FMOD_LOOP_NORMAL | FMOD_CREATESTREAM, 0, &m_pSound ) );
 	}
 	else
 	{
 		if ( !m_bGlobal )
-			CFMODManager::CheckError( GetFMODManager()->GetSystem()->createSound( szSound, FMOD_3D | FMOD_3D_LINEARSQUAREROLLOFF, 0, &m_pSound ) );
+			CFMODManager::CheckError( GetFMODManager()->GetSystem()->createSound( szSound, FMOD_3D | FMOD_3D_LINEARSQUAREROLLOFF | FMOD_CREATESTREAM, 0, &m_pSound ) );
 		else
-			CFMODManager::CheckError( GetFMODManager()->GetSystem()->createSound( szSound, FMOD_DEFAULT, 0, &m_pSound ) );
+			CFMODManager::CheckError( GetFMODManager()->GetSystem()->createSound( szSound, FMOD_DEFAULT | FMOD_CREATESTREAM, 0, &m_pSound ) );
 	}
 
 	// Play sound right away if true

@@ -454,6 +454,9 @@ void CFMODMusicSystem::Update(float frametime)
 
 void CFMODMusicSystem::PlaySong()
 {
+	if (m_bDisabled)
+		return;
+
 	//then search for the song we want
 	for (int i = 0; i < m_Songs.Count(); ++i)
 	{
