@@ -129,7 +129,7 @@ bool GamepadUIBasePanel::StartBackgroundMusic( float flVolume )
     
     const char* szSound = GetFMODManager()->GetFullPathToSound(pSoundFile);
 
-    CGamepadUIFMODManager::CheckError(GetFMODManager()->GetSystem()->createSound(szSound, FMOD_DEFAULT | FMOD_LOOP_NORMAL, 0, &m_pSound));
+    CGamepadUIFMODManager::CheckError(GetFMODManager()->GetSystem()->createSound(szSound, FMOD_DEFAULT | FMOD_LOOP_NORMAL | FMOD_CREATESTREAM, 0, &m_pSound));
     eChannelGroupType channelgroupType = CHANNELGROUP_MUSIC;
     CGamepadUIFMODManager::CheckError(GetFMODManager()->GetSystem()->playSound(m_pSound, GetFMODManager()->GetChannelGroup(channelgroupType), true, &m_pChannel));
 

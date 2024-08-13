@@ -1,6 +1,7 @@
 "firefight_tutorial"
 {
     "ForcedLoadout" "training"
+    "AllowMusicSystem" "0"
     "Spawnlist"
     {
         "settings"

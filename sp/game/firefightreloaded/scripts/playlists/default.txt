@@ -1,0 +1,183 @@
+"default"
+{
+	"settings"
+	{
+		"shuffle"	"1"
+	}
+	"1"
+	{
+		"path"	"music/hl1_song10.mp3"
+		"title"	"Diabolical Adrenaline Guitar"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life"
+	}
+	"2"
+	{
+		"path"	"music/hl1_song15.mp3"
+		"title"	"Nuclear Mission Jam"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life"
+	}
+	"3"
+	{
+		"path"	"music/hl2_song12_long.mp3"
+		"title"	"Hard Fought"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life 2"
+	}
+	"4"
+	{
+		"path"	"music/hl2_song14.mp3"
+		"title"	"You're Not Supposed to Be Here"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life 2"
+	}
+	"5"
+	{
+		"path"	"music/hl2_song15.mp3"
+		"title"	"Kaon"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life 2"
+	}
+	"6"
+	{
+		"path"	"music/hl2_song16.mp3"
+		"title"	"LG Orbifold"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life 2"
+	}
+	"7"
+	{
+		"path"	"music/hl2_song20_submix0.mp3"
+		"title"	"CP Violation"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life 2"
+	}
+	"8"
+	{
+		"path"	"music/hl2_song20_submix4.mp3"
+		"title"	"CP Violation (Remix)"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life 2"
+	}
+	"9"
+	{
+		"path"	"music/hl2_song29.mp3"
+		"title"	"Apprehension and Evasion"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life 2"
+	}
+	"10"
+	{
+		"path"	"music/hl2_song3.mp3"
+		"title"	"Dark Energy"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life 2"
+	}
+	"11"
+	{
+		"path"	"music/hl2_song31.mp3"
+		"title"	"Brane Scan"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life 2"
+	}
+	"12"
+	{
+		"path"	"music/hl2_song4.mp3"
+		"title"	"The Innsbruck Experiment"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life 2"
+	}
+	"13"
+	{
+		"path"	"music/hl2_song6.mp3"
+		"title"	"Pulse Phase"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life 2"
+	}
+	"14"
+	{
+		"path"	"music/VLVX_song11.mp3"
+		"title"	"Disrupted Original"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life 2: Episode One"
+	}
+	"15"
+	{
+		"path"	"music/VLVX_song12.mp3"
+		"title"	"Self Destruction"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life 2: Episode One"
+	}
+	"16"
+	{
+		"path"	"music/VLVX_song4.mp3"
+		"title"	"Guard Down"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life 2: Episode One"
+	}
+	"17"
+	{
+		"path"	"music/VLVX_song18.mp3"
+		"title"	"What Kind of Hospital Is This?"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life 2: Episode One"
+	}
+	"18"
+	{
+		"path"	"music/VLVX_song21.mp3"
+		"title"	"Penultimatum"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life 2: Episode One"
+	}
+	"19"
+	{
+		"path"	"music/VLVX_song22.mp3"
+		"title"	"Vortal Combat"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life 2: Episode Two"
+	}
+	"20"
+	{
+		"path"	"music/VLVX_song9.mp3"
+		"title"	"Crawl Yard"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life 2: Episode Two"
+	}
+	"21"
+	{
+		"path"	"music/VLVX_song27.mp3"
+		"title"	"Hunting Party"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life 2: Episode Two"
+	}
+	"22"
+	{
+		"path"	"music/VLVX_song23.mp3"
+		"title"	"Sector Sweep"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life 2: Episode Two"
+	}
+	"23"
+	{
+		"path"	"music/VLVX_song28.mp3"
+		"title"	"Eon Trap"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life 2: Episode Two"
+	}
+	"24"
+	{
+		"path"	"music/VLVX_song25.mp3"
+		"title"	"Abandoned In Place"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life 2: Episode Two"
+	}
+	"25"
+	{
+		"path"	"music/VLVX_song24.mp3"
+		"title"	"Last Legs"
+		"artist"	"Kelly Bailey"
+		"album"	"Half-Life 2: Episode Two"
+	}
+	//FR tracks here
+}
