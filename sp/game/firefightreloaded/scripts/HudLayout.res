@@ -150,11 +150,8 @@
 		"fieldName" "HudLocator"
 		"visible" "1"
 		"PaintBackgroundType"	"2"
-		"xpos"	"c8"	[$WIN32]
-		"ypos"	"r36"	[$WIN32]
-		"xpos"	"c-32"	[$X360]
-		"ypos_hidef"	"r52"	[$X360]
-		"ypos_lodef"	"r95"	[$X360]		// 52 is aligned to bottom of HudSuit
+		"xpos"	"c8"
+		"ypos"	"r36"
 		"wide"	"64"
 		"tall"  "24"
 	}
@@ -182,8 +179,7 @@
 		"Circle1Radius" "66"
 		"Circle2Radius"	"74"
 		"DashGap"	"16"
-		"DashHeight" "4"	[$WIN32]
-		"DashHeight" "6"	[$X360]		
+		"DashHeight" "4"	
 		"BorderThickness" "88"
 	}
 
@@ -294,12 +290,9 @@
 		"visible"	"0"
 		"enabled"	"1"
 		"xpos"		"c-250"
-		"ypos"		"276"	[$WIN32]
-		"ypos_hidef"	"236"	[$X360]
-		"ypos_lodef"	"206"	[$X360]			//236
+		"ypos"		"276"
 		"wide"		"500"
-		"tall"		"136"	[$WIN32]
-		"tall"		"176"	[$X360]
+		"tall"		"136"
 
 		"BgAlpha"	"128"
 
@@ -307,8 +300,7 @@
 		"ItemHiddenTime"	"0.2"  // Nearly same as grow time so that the item doesn't start to show until growth is finished
 		"ItemFadeInTime"	"0.15"	// Once ItemHiddenTime is finished, takes this much longer to fade in
 		"ItemFadeOutTime"	"0.3"
-		"topoffset"		"0"		[$WIN32]
-		"topoffset"		"40"	[$X360]
+		"topoffset"		"0"
 	}
 
 	HudChat
@@ -322,7 +314,7 @@
 		"tall"	 "4"
 	}
 
-	HudHistoryResource	[$WIN32]
+	HudHistoryResource
 	{
 		"fieldName" "HudHistoryResource"
 		"visible" "1"
@@ -391,17 +383,15 @@
 		"visible"	"0"
 		"enabled" "1"
 		"Alpha"		"0"		// Remove this to enable hint hud element
-		"xpos"	"r120"	[$WIN32]
-		"ypos"	"r340"	[$WIN32]
-		"xpos"	"r148"	[$X360]
-		"ypos"	"r338"	[$X360]
+		"xpos"	"r120"
+		"ypos"	"r340"
 		"wide"	"100"
 		"tall"	"200"
 		"text_xpos"	"8"
 		"text_ypos"	"8"
 		"text_xgap"	"8"
 		"text_ygap"	"8"
-		"TextColor"	"255 170 0 220"
+		"TextColor"	"FgColor"
 
 		"PaintBackgroundType"	"2"
 	}
@@ -411,15 +401,15 @@
 		"fieldName"	"HudHintKeyDisplay"
 		"visible"	"0"
 		"enabled" 	"1"
-		"xpos"		"r120"	[$WIN32]
-		"ypos"		"r380"	[$WIN32]
+		"xpos"		"r120"
+		"ypos"		"r380"
 		"wide"		"100"
 		"tall"		"200"
 		"text_xpos"	"8"
 		"text_ypos"	"8"
 		"text_xgap"	"8"
 		"text_ygap"	"8"
-		"TextColor"	"255 170 0 220"
+		"TextColor"	"FgColor"
 
 		"PaintBackgroundType"	"2"
 	}
@@ -437,7 +427,7 @@
 		"text_ypos"	"8"
 		"text_xgap"	"8"
 		"text_ygap"	"8"
-		"TextColor"	"255 170 0 220"
+		"TextColor"	"FgColor"
 
 		"PaintBackgroundType"	"2"
 	}
@@ -455,7 +445,7 @@
 		"text_ypos"	"8"
 		"text_xgap"	"8"
 		"text_ygap"	"8"
-		"TextColor"	"255 170 0 220"
+		"TextColor"	"FgColor"
 
 		"PaintBackgroundType"	"2"
 	}
@@ -473,12 +463,12 @@
 		"text_ypos"	"8"
 		"text_xgap"	"8"
 		"text_ygap"	"8"
-		"TextColor"	"255 170 0 220"
+		"TextColor"	"FgColor"
 
 		"PaintBackgroundType"	"2"
 	}
 
-	HudSquadStatus	[$WIN32]
+	HudSquadStatus
 	{
 		"fieldName"	"HudSquadStatus"
 		"visible"	"1"
@@ -497,7 +487,7 @@
 		"PaintBackgroundType"	"2"
 	}
 
-	HudPoisonDamageIndicator	[$WIN32]
+	HudPoisonDamageIndicator
 	{
 		"fieldName"	"HudPoisonDamageIndicator"
 		"visible"	"0"
@@ -509,7 +499,23 @@
 		"text_xpos"	"8"
 		"text_ypos"	"8"
 		"text_ygap" "14"
-		"TextColor"	"255 170 0 220"
+		"TextColor"	"FgColor"
+		"PaintBackgroundType"	"2"
+	}
+    
+    HudNowPlaying
+	{
+		"fieldName"	"HudNowPlaying"
+		"visible"	"1"
+		"enabled" "1"
+		"xpos"	 "16"
+		"ypos"	 "5"
+		"wide"	"180"
+		"tall"	"40"
+		"text_xpos"	"4"
+		"text_ypos"	"4"
+		"text_ygap" "10"
+		"TextColor"	"FgColor"
 		"PaintBackgroundType"	"2"
 	}
 
@@ -531,10 +537,8 @@
 		"fieldName" "HUDAutoAim"
 		"visible" "1"
 		"enabled" "1"
-		"wide"	 "640"	[$WIN32]
-		"tall"	 "480"	[$WIN32]
-		"wide"	 "960"	[$X360]
-		"tall"	 "720"	[$X360]
+		"wide"	 "640"
+		"tall"	 "480"
 	}
 
 	HudCommentary
@@ -615,8 +619,7 @@
 		"enabled"				"1"
 		"xpos"					"0"
 		"ypos"					"180"
-		"wide"					"f10"	[$WIN32]
-		"wide"					"f60"	[$X360]
+		"wide"					"f10"
 		"tall"					"100"
 	}
 	

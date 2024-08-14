@@ -1849,6 +1849,19 @@
 					"1"		"#gameui_enabled"
 				}
 			}
+            
+            "MusicSystemHUD"
+			{
+				"text"			"#GameUI_MusicSystemHUD"
+				"type"			"wheelywheel"
+				"convar"		"snd_fmod_shownowplayinghud"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
 
 			"SpeakerConfiguration"
 			{
