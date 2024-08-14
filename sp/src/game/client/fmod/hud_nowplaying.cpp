@@ -27,6 +27,8 @@ using namespace vgui;
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+ConVar snd_fmod_shownowplayinghud("snd_fmod_shownowplayinghud", "1", FCVAR_ARCHIVE);
+
 //-----------------------------------------------------------------------------
 // Purpose: HDU Damage indication
 //-----------------------------------------------------------------------------
@@ -40,7 +42,6 @@ public:
 	virtual bool ShouldDraw( void );
 
 private:
-	virtual void OnThink();
 	virtual void Paint();
 	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
 
@@ -78,23 +79,7 @@ void CHudNowPlaying::Reset( void )
 //-----------------------------------------------------------------------------
 bool CHudNowPlaying::ShouldDraw( void )
 {
-	return (GetMusicSystem() && !GetMusicSystem()->IsDisabled());
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: updates poison damage
-//-----------------------------------------------------------------------------
-void CHudNowPlaying::OnThink()
-{
-	if (!GetMusicSystem())
-	{
-		return;
-	}
-
-	if (GetMusicSystem() && GetMusicSystem()->IsDisabled())
-	{
-		return;
-	}
+	return (GetMusicSystem() && !GetMusicSystem()->IsDisabled() && snd_fmod_shownowplayinghud.GetBool());
 }
 
 //-----------------------------------------------------------------------------
