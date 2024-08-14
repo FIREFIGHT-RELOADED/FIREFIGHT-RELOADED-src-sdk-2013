@@ -511,7 +511,7 @@
 		"xpos"	 "16"
 		"ypos"	 "5"
 		"wide"	"180"
-		"tall"	"50"
+		"tall"	"47"
 		"text_xpos"	"4"
 		"text_ypos"	"4"
 		"text_ygap" "10"
