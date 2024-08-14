@@ -3,6 +3,9 @@
 #include "filesystem.h"
 #include "c_baseplayer.h"
 #include "firefightreloaded/mapinfo.h"
+#include "tier3/tier3.h"
+#include <vgui/ILocalize.h>
+#include "fmtstr.h"
 
 #include <fmod_errors.h>
 
@@ -470,7 +473,7 @@ void CFMODMusicSystem::PlaySong()
 	}
 
 	const char* szSound = GetFMODManager()->GetFullPathToSound(m_sCurSong.Path);
-	CFMODManager::CheckError(GetFMODManager()->GetSystem()->createSound(szSound, FMOD_DEFAULT | FMOD_CREATESTREAM, 0, &m_pSong));
+	CFMODManager::CheckError(GetFMODManager()->GetSystem()->createSound(szSound, FMOD_DEFAULT | FMOD_CREATESTREAM | FMOD_ACCURATETIME | FMOD_IGNORETAGS | FMOD_LOWMEM, 0, &m_pSong));
 	CFMODManager::CheckError(GetFMODManager()->GetSystem()->playSound(m_pSong, GetFMODManager()->GetChannelGroup(CHANNELGROUP_MUSIC), true, &m_pChannel));
 
 	if (m_pChannel)
@@ -502,6 +505,38 @@ void CFMODMusicSystem::PlaySong()
 		//tell the shuffle system we need to shuffle again.
 		m_bJustShuffled = false;
 	}
+}
+
+const char *CFMODMusicSystem::CombinedSongString()
+{
+	char szTitleString[2048];
+	Q_snprintf(szTitleString, sizeof(szTitleString), "#Song_Title_%s", m_sCurSong.Title);
+	wchar_t* convertedTitle = g_pVGuiLocalize->Find(szTitleString);
+	if (!convertedTitle)
+	{
+		Q_snprintf(szTitleString, sizeof(szTitleString), "%s", m_sCurSong.Title);
+	}
+
+	char szArtistString[2048];
+	Q_snprintf(szArtistString, sizeof(szArtistString), "#Song_Artist_%s", m_sCurSong.Artist);
+	wchar_t* convertedArtist = g_pVGuiLocalize->Find(szArtistString);
+	if (!convertedArtist)
+	{
+		Q_snprintf(szArtistString, sizeof(szArtistString), "%s", m_sCurSong.Artist);
+	}
+
+	char szAlbumString[2048];
+	Q_snprintf(szAlbumString, sizeof(szAlbumString), "#Song_Album_%s", m_sCurSong.Album);
+	wchar_t* convertedAlbum = g_pVGuiLocalize->Find(szAlbumString);
+	if (!convertedAlbum)
+	{
+		Q_snprintf(szAlbumString, sizeof(szAlbumString), "%s", m_sCurSong.Album);
+	}
+
+	CFmtStr result;
+	result.sprintf("%s\n%s\n%s", szTitleString, szArtistString, szAlbumString);
+
+	return result.Access();
 }
 
 static CFMODMusicSystem s_FMODMusicSystem;

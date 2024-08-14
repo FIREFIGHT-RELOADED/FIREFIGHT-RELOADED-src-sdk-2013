@@ -111,6 +111,8 @@ public:
 
 	virtual void ReadPlaylist();
 
+	virtual const char* CombinedSongString();
+
 private:
 	Song_t CreateNullSong() 
 	{
@@ -140,6 +142,7 @@ private:
 	int curID;
 	float tracktime;
 	Song_t m_sCurSong;
+	Song_t m_sNextSong;
 	FMOD::Channel* m_pChannel;
 	FMOD::Sound* m_pSong;
 };

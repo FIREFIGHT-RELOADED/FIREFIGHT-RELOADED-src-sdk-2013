@@ -2156,26 +2156,23 @@ int CNPC_Combine::SelectSchedule( void )
 		{
 			Vector vecTarget = m_hForcedGrenadeTarget->WorldSpaceCenter();
 
-			if (!IsAce())
+			if (IsElite() || IsAce())
 			{
-				if (IsElite())
+				if (FVisible(m_hForcedGrenadeTarget))
 				{
-					if (FVisible(m_hForcedGrenadeTarget))
-					{
-						m_vecAltFireTarget = vecTarget;
-						m_hForcedGrenadeTarget = NULL;
-						return SCHED_COMBINE_AR2_ALTFIRE;
-					}
+					m_vecAltFireTarget = vecTarget;
+					m_hForcedGrenadeTarget = NULL;
+					return SCHED_COMBINE_AR2_ALTFIRE;
 				}
-				else
+			}
+			else
+			{
+				// If we can, throw a grenade at the target. 
+				// Ignore grenade count / distance / etc
+				if (CheckCanThrowGrenade(vecTarget))
 				{
-					// If we can, throw a grenade at the target. 
-					// Ignore grenade count / distance / etc
-					if (CheckCanThrowGrenade(vecTarget))
-					{
-						m_hForcedGrenadeTarget = NULL;
-						return SCHED_COMBINE_FORCED_GRENADE_THROW;
-					}
+					m_hForcedGrenadeTarget = NULL;
+					return SCHED_COMBINE_FORCED_GRENADE_THROW;
 				}
 			}
 		}
@@ -2229,7 +2226,7 @@ int CNPC_Combine::SelectSchedule( void )
 					if (pSound->m_iType & SOUND_DANGER)
 					{
 						// I hear something dangerous, probably need to take cover.
-						// dangerous sound nearby!, call it out if we are not elite metropolice
+						// dangerous sound nearby!
 						const char* pSentenceName = "DANGER";
 
 						CBaseEntity* pSoundOwner = pSound->m_hOwner;
@@ -2858,7 +2855,7 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 		}
 		else if ( pEvent->event == COMBINE_AE_ALTFIRE )
 		{
-			if (IsElite() && !IsAce())
+			if (IsElite() || IsAce())
 			{
 				animevent_t fakeEvent;
 
@@ -3448,9 +3445,6 @@ bool CNPC_Combine::CanAltFireEnemy( bool bUseFreeKnowledge )
 	if (!IsElite())
 		return false;
 
-	if (IsAce())
-		return false;
-
 	if (!GetActiveWeapon()->HasSecondaryAmmo())
 		return false;
 
@@ -3624,8 +3618,7 @@ Vector CNPC_Combine::EyePosition( void )
 //-----------------------------------------------------------------------------
 Vector CNPC_Combine::GetAltFireTarget()
 {
-	Assert(IsElite() && !IsAce());
-
+	Assert(IsElite());
 	return m_vecAltFireTarget;
 }
 

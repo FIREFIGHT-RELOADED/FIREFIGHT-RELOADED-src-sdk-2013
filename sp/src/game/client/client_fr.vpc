@@ -74,6 +74,7 @@ $Project "Client (FR)"
 			$File	"fmod\fmodmanager.h"
 			$File	"fmod\c_sound_fmod.cpp"
 			$File	"fmod\c_sound_fmod.h"
+            $File	"fmod\hud_nowplaying.cpp"
 		}
 
 		$Folder	"HL2 DLL"
