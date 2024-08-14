@@ -132,13 +132,15 @@ private:
 		return settings;
 	}
 
-private:
+public:
 	bool m_bStart;
 	bool m_bDisabled;
-	CUtlVector< Song_t >	m_Songs;
-	Settings_t m_sSettings;
 	bool m_bJustShuffled;
 	bool m_bPlaylistLoaded;
+
+private:
+	CUtlVector< Song_t >	m_Songs;
+	Settings_t m_sSettings;
 	int curID;
 	float tracktime;
 	Song_t m_sCurSong;

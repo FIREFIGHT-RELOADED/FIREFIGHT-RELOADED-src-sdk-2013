@@ -4,6 +4,7 @@
 #include "c_baseplayer.h"
 #include "firefightreloaded/mapinfo.h"
 #include "tier3/tier3.h"
+#include "tier1/iconvar.h"
 #include <vgui/ILocalize.h>
 #include "fmtstr.h"
 
@@ -235,7 +236,17 @@ CFMODManager *GetFMODManager() { return &s_FMODManager; }
 //CLIENT SIDE MUSIC SYSTEM
 
 ConVar snd_fmod_musicsystem("snd_fmod_musicsystem", "1", FCVAR_ARCHIVE);
-ConVar snd_fmod_musicsystem_playlist("snd_fmod_musicsystem_playlist", "scripts/playlists/default.txt", FCVAR_ARCHIVE);
+ConVar snd_fmod_musicsystem_playlist("snd_fmod_musicsystem_playlist", "scripts/playlists/default.txt", FCVAR_ARCHIVE, "");
+
+void CC_ReloadSystem(void)
+{
+	if (GetMusicSystem())
+	{
+		GetMusicSystem()->Kill(true);
+		GetMusicSystem()->m_bStart = true;
+	}
+}
+static ConCommand snd_fmod_musicsystem_reload("snd_fmod_musicsystem_reload", CC_ReloadSystem, "");
 
 CFMODMusicSystem::CFMODMusicSystem() : CAutoGameSystemPerFrame("fmod_music_system")
 {
@@ -362,6 +373,7 @@ void CFMODMusicSystem::ReadPlaylist()
 		//play stuff as soon as ents have finished initalizing.
 		tracktime = gpGlobals->curtime + 0.1f;
 		m_bPlaylistLoaded = true;
+		m_bJustShuffled = false;
 	}
 	else
 	{

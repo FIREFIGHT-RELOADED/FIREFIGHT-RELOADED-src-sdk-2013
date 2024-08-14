@@ -44,7 +44,7 @@
 
 //#define		STALKER_DEBUG
 #define	MIN_STALKER_FIRE_RANGE		64
-#define	MAX_STALKER_FIRE_RANGE		1600 // 3600 feet.
+#define	MAX_STALKER_FIRE_RANGE		3600
 #define	STALKER_LASER_ATTACHMENT	1
 #define	STALKER_TRIGGER_DIST		200	// Enemy dist. that wakes up the stalker
 #define	STALKER_SENTENCE_VOLUME		(float)0.35
@@ -1190,6 +1190,14 @@ void CNPC_Stalker::KillAttackBeam(void)
 	ClearCondition( COND_CAN_RANGE_ATTACK1 );
 
 	RelaxAim();
+}
+
+void CNPC_Stalker::UpdateOnRemove(void)
+{
+	KillAttackBeam();
+
+	// Chain at end to mimic destructor unwind order
+	BaseClass::UpdateOnRemove();
 }
 
 //-----------------------------------------------------------------------------

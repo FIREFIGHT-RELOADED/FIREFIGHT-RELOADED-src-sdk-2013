@@ -97,6 +97,7 @@ public:
 	void			PainSound( const CTakeDamageInfo &info );
 
 	void			Event_Killed( const CTakeDamageInfo &info );
+	void			UpdateOnRemove(void);
 	void			DoSmokeEffect( const Vector &position );
 
 	void			AddZigZagToPath(void);

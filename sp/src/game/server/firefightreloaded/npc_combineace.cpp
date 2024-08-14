@@ -926,6 +926,15 @@ void CNPC_CombineAce::Event_Killed( const CTakeDamageInfo &info )
 	BaseClass::Event_Killed( info );
 }
 
+void CNPC_CombineAce::UpdateOnRemove(void)
+{
+	m_pEyeSprite = NULL;
+	m_pEyeTrail = NULL;
+
+	// Chain at end to mimic destructor unwind order
+	BaseClass::UpdateOnRemove();
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : &info - 

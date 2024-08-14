@@ -62,6 +62,7 @@ public:
 	void		Event_Killed( const CTakeDamageInfo &info );
 	void		OnListened();
 	bool		AllowedToIgnite(void);
+	void		UpdateOnRemove(void);
 
 	void		ClearAttackConditions( void );
 

@@ -23,6 +23,11 @@ $Project "GamepadUI (FR)"
 {
 	$Folder "Source Files"
     {
+        $Folder "FMOD"
+    	{
+            $File "fmod/gamepadui_fmod_playlistchooser.cpp"
+		}
+    
 		$Folder "FIREFIGHT RELOADED DLL"
     	{
 			$File "firefightreloaded/gamepadui_fr_mapchooser.cpp"
