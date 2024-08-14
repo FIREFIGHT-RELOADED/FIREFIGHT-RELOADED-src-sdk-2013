@@ -4,7 +4,7 @@
 	{
 		"text"			"#GameUI_GameMenu_ResumeGame"
 		"command"		"cmd gamemenucommand resumegame"
-		"priority"		"11"
+		"priority"		"12"
 		"family"		"ingame"
 	}
 	
@@ -12,15 +12,15 @@
 	{
 		"text"			"#GameUI_GameMenu_NewGame"
 		"command"		"cmd gamepadui_openmapchooser"
-		"priority"		"10"
+		"priority"		"11"
 		"family"		"all"
 	}
     
     "NewTutorial"
 	{
-		"text"			"#Tutorial_Menu"
+		"text"			"#GameUI_TrainingRoom"
 		"command"		"cmd gamepadui_starttutorial"
-		"priority"		"9"
+		"priority"		"10"
 		"family"		"all"
 	}
 	
@@ -28,7 +28,7 @@
 	{
 		"text"			"#GameUI_GameMenu_SaveGame"
 		"command"		"cmd gamepadui_opensavegamedialog"
-		"priority"		"8"
+		"priority"		"9"
 		"family"		"ingame"
 	}
 
@@ -36,7 +36,7 @@
 	{
 		"text"			"#GameUI_GameMenu_LoadGame"
 		"command"		"cmd gamepadui_openloadgamedialog"
-		"priority"		"7"
+		"priority"		"8"
 		"family"		"all"
 	}
 
@@ -44,7 +44,7 @@
 	{
 		"text"			"#GameUI_GameMenu_Options"
 		"command"		"cmd gamepadui_openoptionsdialog"
-		"priority"		"6"
+		"priority"		"7"
 		"family"		"all"
 	}
 
@@ -52,7 +52,7 @@
 	{
 		"text"			"#FRMP_PlayerModel_Title"
 		"command"		"cmd gamepadui_openmodelchooser"
-		"priority"		"5"
+		"priority"		"6"
 		"family"		"all"
 	}
 
@@ -60,6 +60,14 @@
 	{
 		"text"			"#FR_Spawnlist_Title"
 		"command"		"cmd gamepadui_openspawnlistchooser"
+		"priority"		"5"
+		"family"		"all"
+	}
+    
+    "PlaylistOptions"
+	{
+		"text"			"#FR_Playlist_Title"
+		"command"		"cmd gamepadui_openplaylistchooser"
 		"priority"		"4"
 		"family"		"all"
 	}

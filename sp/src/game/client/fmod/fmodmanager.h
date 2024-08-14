@@ -118,9 +118,9 @@ private:
 	{
 		Song_t song;
 		song.Path = "common/null.wav";
-		song.Title = "Song";
-		song.Artist = "Artist";
-		song.Album = "Album";
+		song.Title = "Loading";
+		song.Artist = "";
+		song.Album = "";
 		song.Volume = 1.0f;
 		return song;
 	}

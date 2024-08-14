@@ -21,13 +21,14 @@
 #include "IEffects.h"
 #include "hudelement.h"
 #include "fmodmanager.h"
+#include "fmtstr.h"
 
 using namespace vgui;
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar snd_fmod_shownowplayinghud("snd_fmod_shownowplayinghud", "1", FCVAR_ARCHIVE);
+ConVar snd_fmod_musicsystem_shownowplayinghud("snd_fmod_musicsystem_shownowplayinghud", "1", FCVAR_ARCHIVE);
 
 //-----------------------------------------------------------------------------
 // Purpose: HDU Damage indication
@@ -79,7 +80,7 @@ void CHudNowPlaying::Reset( void )
 //-----------------------------------------------------------------------------
 bool CHudNowPlaying::ShouldDraw( void )
 {
-	return (GetMusicSystem() && !GetMusicSystem()->IsDisabled() && snd_fmod_shownowplayinghud.GetBool());
+	return (GetMusicSystem() && !GetMusicSystem()->IsDisabled() && snd_fmod_musicsystem_shownowplayinghud.GetBool());
 }
 
 //-----------------------------------------------------------------------------
@@ -93,9 +94,21 @@ void CHudNowPlaying::Paint()
 	surface()->DrawSetTextPos(text_xpos, text_ypos);
 	int ypos = text_ypos;
 
-	const char* labelText = GetMusicSystem()->CombinedSongString();
-	Assert( labelText );
-	for (const char *wch = labelText; wch && *wch != 0; wch++)
+	char szLabelString[2048];
+	Q_snprintf(szLabelString, sizeof(szLabelString), "#GameUI_MusicSystem_NowPlaying");
+	wchar_t* labelText = UTIL_GetTextForLanguage(szLabelString);
+	g_pVGuiLocalize->ConvertUnicodeToANSI(labelText, szLabelString, sizeof(szLabelString));
+
+	const char* songText = GetMusicSystem()->CombinedSongString();
+	Assert( songText );
+
+	CFmtStr result;
+	result.sprintf("%s\n%s", szLabelString, songText);
+
+	const char* finalText = result.Access();
+	Assert(finalText);
+
+	for (const char *wch = finalText; wch && *wch != 0; wch++)
 	{
 		if (*wch == '\n')
 		{

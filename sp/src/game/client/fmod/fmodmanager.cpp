@@ -236,6 +236,7 @@ CFMODManager *GetFMODManager() { return &s_FMODManager; }
 //CLIENT SIDE MUSIC SYSTEM
 
 ConVar snd_fmod_musicsystem("snd_fmod_musicsystem", "1", FCVAR_ARCHIVE);
+ConVar snd_fmod_musicsystem_forceshuffle("snd_fmod_musicsystem_forceshuffle", "0", FCVAR_ARCHIVE);
 ConVar snd_fmod_musicsystem_playlist("snd_fmod_musicsystem_playlist", "scripts/playlists/default.txt", FCVAR_ARCHIVE, "");
 
 void CC_ReloadSystem(void)
@@ -423,7 +424,7 @@ void CFMODMusicSystem::Update(float frametime)
 		ReadPlaylist();
 	}
 
-	if (m_sSettings.Shuffle && !m_bJustShuffled)
+	if ((m_sSettings.Shuffle || snd_fmod_musicsystem_forceshuffle.GetBool()) && !m_bJustShuffled)
 	{
 		//we might need to handle shuffling here
 		m_Songs.Shuffle(random);
@@ -521,26 +522,42 @@ void CFMODMusicSystem::PlaySong()
 
 const char *CFMODMusicSystem::CombinedSongString()
 {
+	// i hate this
 	char szTitleString[2048];
-	Q_snprintf(szTitleString, sizeof(szTitleString), "#Song_Title_%s", m_sCurSong.Title);
-	wchar_t* convertedTitle = g_pVGuiLocalize->Find(szTitleString);
-	if (!convertedTitle)
+	Q_snprintf(szTitleString, sizeof(szTitleString), "#GameUI_%s", m_sCurSong.Title);
+
+	if (UTIL_CanGetLanguageString(szTitleString))
+	{
+		wchar_t* convertedTitle = UTIL_GetTextForLanguage(szTitleString);
+		g_pVGuiLocalize->ConvertUnicodeToANSI(convertedTitle, szTitleString, sizeof(szTitleString));
+	}
+	else
 	{
 		Q_snprintf(szTitleString, sizeof(szTitleString), "%s", m_sCurSong.Title);
 	}
 
 	char szArtistString[2048];
-	Q_snprintf(szArtistString, sizeof(szArtistString), "#Song_Artist_%s", m_sCurSong.Artist);
-	wchar_t* convertedArtist = g_pVGuiLocalize->Find(szArtistString);
-	if (!convertedArtist)
+	Q_snprintf(szArtistString, sizeof(szArtistString), "#GameUI_%s", m_sCurSong.Artist);
+
+	if (UTIL_CanGetLanguageString(szArtistString))
+	{
+		wchar_t* convertedArtist = UTIL_GetTextForLanguage(szArtistString);
+		g_pVGuiLocalize->ConvertUnicodeToANSI(convertedArtist, szArtistString, sizeof(szArtistString));
+	}
+	else
 	{
 		Q_snprintf(szArtistString, sizeof(szArtistString), "%s", m_sCurSong.Artist);
 	}
 
 	char szAlbumString[2048];
-	Q_snprintf(szAlbumString, sizeof(szAlbumString), "#Song_Album_%s", m_sCurSong.Album);
-	wchar_t* convertedAlbum = g_pVGuiLocalize->Find(szAlbumString);
-	if (!convertedAlbum)
+	Q_snprintf(szAlbumString, sizeof(szAlbumString), "#GameUI_%s", m_sCurSong.Album);
+
+	if (UTIL_CanGetLanguageString(szAlbumString))
+	{
+		wchar_t* convertedAlbum = UTIL_GetTextForLanguage(szAlbumString);
+		g_pVGuiLocalize->ConvertUnicodeToANSI(convertedAlbum, szAlbumString, sizeof(szAlbumString));
+	}
+	else
 	{
 		Q_snprintf(szAlbumString, sizeof(szAlbumString), "%s", m_sCurSong.Album);
 	}

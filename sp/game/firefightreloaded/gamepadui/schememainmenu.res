@@ -3,8 +3,8 @@
 	"BaseSettings"
 	{
 		"Logo.OffsetX"							"85"
-		"Logo.OffsetY.MainMenu"					"350"
-		"Logo.OffsetY.InGame"					"350"
+		"Logo.OffsetY.MainMenu"					"375"
+		"Logo.OffsetY.InGame"					"375"
 	
 		"Buttons.OffsetX"						"85"
 		"Buttons.OffsetY.MainMenu"				"100"
