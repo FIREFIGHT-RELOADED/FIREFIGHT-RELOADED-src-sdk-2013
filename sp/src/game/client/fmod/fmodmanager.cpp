@@ -524,7 +524,7 @@ const char *CFMODMusicSystem::CombinedSongString()
 {
 	// i hate this
 	char szTitleString[2048];
-	Q_snprintf(szTitleString, sizeof(szTitleString), "#GameUI_%s", m_sCurSong.Title);
+	Q_snprintf(szTitleString, sizeof(szTitleString), "#Song_Title_%s", m_sCurSong.Title);
 
 	if (UTIL_CanGetLanguageString(szTitleString))
 	{
@@ -537,7 +537,7 @@ const char *CFMODMusicSystem::CombinedSongString()
 	}
 
 	char szArtistString[2048];
-	Q_snprintf(szArtistString, sizeof(szArtistString), "#GameUI_%s", m_sCurSong.Artist);
+	Q_snprintf(szArtistString, sizeof(szArtistString), "#Song_Artist_%s", m_sCurSong.Artist);
 
 	if (UTIL_CanGetLanguageString(szArtistString))
 	{
@@ -550,7 +550,7 @@ const char *CFMODMusicSystem::CombinedSongString()
 	}
 
 	char szAlbumString[2048];
-	Q_snprintf(szAlbumString, sizeof(szAlbumString), "#GameUI_%s", m_sCurSong.Album);
+	Q_snprintf(szAlbumString, sizeof(szAlbumString), "#Song_Album_%s", m_sCurSong.Album);
 
 	if (UTIL_CanGetLanguageString(szAlbumString))
 	{
