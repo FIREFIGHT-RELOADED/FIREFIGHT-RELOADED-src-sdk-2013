@@ -6,199 +6,262 @@
 	}
 	"1"
 	{
+		"path"	"hl1/music/Half-Life12.mp3"
+		"title"	"Klaxon Beat"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"2"
+	{
 		"path"	"hl1/music/Half-Life02.mp3"
 		"title"	"Diabolical Adrenaline Guitar"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife"
 	}
-	"2"
+	"3"
 	{
 		"path"	"hl1/music/Half-Life01.mp3"
 		"title"	"Adrenaline Horror"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife"
 	}
-	"3"
+	"4"
 	{
 		"path"	"hl1/music/Half-Life15.mp3"
 		"title"	"Alien Shock"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife"
 	}
-	"4"
+	"5"
 	{
 		"path"	"hl1/music/Half-Life16.mp3"
 		"title"	"Nuclear Mission Jam"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife"
 	}
-	"5"
+	"6"
 	{
 		"path"	"hl1/music/Half-Life08.mp3"
 		"title"	"Hard Technology Rock"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife"
 	}
-	"6"
+	"7"
+	{
+		"path"	"hl1/music/Half-Life17.mp3"
+		"title"	"Credits / Closing Theme"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"8"
+	{
+		"path"	"music/HL1_song25_REMIX3.mp3"
+		"title"	"Tracking Device (remix)"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"9"
 	{
 		"path"	"music/hl2_song12_long.mp3"
 		"title"	"Hard Fought"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife2"
 	}
-	"7"
+	"10"
 	{
 		"path"	"music/hl2_song14.mp3"
 		"title"	"You're Not Supposed to Be Here"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife2"
 	}
-	"8"
+	"11"
 	{
 		"path"	"music/hl2_song15.mp3"
 		"title"	"Kaon"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife2"
 	}
-	"9"
+	"12"
 	{
 		"path"	"music/hl2_song16.mp3"
 		"title"	"LG Orbifold"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife2"
 	}
-	"10"
+	"13"
 	{
 		"path"	"music/hl2_song20_submix0.mp3"
 		"title"	"CP Violation"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife2"
 	}
-	"11"
+	"14"
 	{
 		"path"	"music/hl2_song20_submix4.mp3"
 		"title"	"CP Violation (Remix)"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife2"
 	}
-	"12"
+	"15"
 	{
 		"path"	"music/hl2_song29.mp3"
 		"title"	"Apprehension and Evasion"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife2"
 	}
-	"13"
+	"16"
 	{
 		"path"	"music/hl2_song3.mp3"
 		"title"	"Dark Energy"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife2"
 	}
-	"14"
+	"17"
 	{
 		"path"	"music/hl2_song31.mp3"
 		"title"	"Brane Scan"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife2"
 	}
-	"15"
+	"18"
 	{
 		"path"	"music/hl2_song4.mp3"
 		"title"	"The Innsbruck Experiment"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife2"
 	}
-	"16"
+	"19"
 	{
 		"path"	"music/HL2_song5.mp3"
 		"title"	"Pulse Phase"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife2"
 	}
-	"17"
+	"20"
 	{
 		"path"	"music/VLVX_song11.mp3"
 		"title"	"Disrupted Original"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife2EP1"
 	}
-	"18"
+	"21"
 	{
 		"path"	"music/VLVX_song12.mp3"
 		"title"	"Self Destruction"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife2EP1"
 	}
-	"19"
+	"22"
 	{
 		"path"	"music/VLVX_song4.mp3"
 		"title"	"Guard Down"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife2EP1"
 	}
-	"20"
+	"23"
 	{
 		"path"	"music/VLVX_song18.mp3"
 		"title"	"What Kind of Hospital Is This?"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife2EP1"
 	}
-	"21"
+	"24"
 	{
 		"path"	"music/VLVX_song21.mp3"
 		"title"	"Penultimatum"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife2EP1"
 	}
-	"22"
+	"25"
 	{
 		"path"	"music/VLVX_song22.mp3"
 		"title"	"Vortal Combat"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife2EP2"
 	}
-	"23"
+	"26"
 	{
 		"path"	"music/VLVX_song9.mp3"
 		"title"	"Crawl Yard"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife2EP2"
 	}
-	"24"
+	"27"
 	{
 		"path"	"music/VLVX_song27.mp3"
 		"title"	"Hunting Party"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife2EP2"
 	}
-	"25"
+	"28"
 	{
 		"path"	"music/VLVX_song23.mp3"
 		"title"	"Sector Sweep"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife2EP2"
 	}
-	"26"
+	"29"
 	{
 		"path"	"music/VLVX_song28.mp3"
 		"title"	"Eon Trap"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife2EP2"
 	}
-	"27"
+	"30"
 	{
 		"path"	"music/VLVX_song25.mp3"
 		"title"	"Abandoned In Place"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife2EP2"
 	}
-	"28"
+	"31"
 	{
 		"path"	"music/VLVX_song24.mp3"
 		"title"	"Last Legs"
 		"artist"	"Kelly Bailey"
 		"album"	"HalfLife2EP2"
+	}
+	"32"
+	{
+		"path"	"hl1/music/Prospero03.mp3"
+		"title"	"Traveling Through Limbo"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"33"
+	{
+		"path"	"music/HL1_song14.mp3"
+		"title"	"Triple Entanglement"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"34"
+	{
+		"path"	"music/HL1_song13.mp3"
+		"title"	"Biozeminade Fragment"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"35"
+	{
+		"path"	"music/HL2_song8.mp3"
+		"title"	"Highway 17"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"36"
+	{
+		"path"	"music/HL2_song26_trainstation1.mp3"
+		"title"	"Train Station 1"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"37"
+	{
+		"path"	"music/HL2_song27_trainstation2.mp3"
+		"title"	"Train Station 2"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
 	}
 	//FR tracks here
 }

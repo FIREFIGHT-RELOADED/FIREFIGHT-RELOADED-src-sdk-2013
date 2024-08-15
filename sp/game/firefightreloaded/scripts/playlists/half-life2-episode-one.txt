@@ -1,0 +1,80 @@
+"half-life2-episode-one"
+{
+	"1"
+	{
+		"path"	"music/VLVX_song1.mp3"
+		"title"	"Eine Kleiner Elevatormuzik"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP1"
+	}
+	"2"
+	{
+		"path"	"music/VLVX_song2.mp3"
+		"title"	"Combine Advisory"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP1"
+	}
+	"3"
+	{
+		"path"	"music/HL1_song19.mp3"
+		"title"	"Negative Pressure"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP1"
+	}
+	"4"
+	{
+		"path"	"music/VLVX_song19a.mp3"
+		"title"	"Infraradiant"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP1"
+	}
+	"5"
+	{
+		"path"	"music/VLVX_song8.mp3"
+		"title"	"Darkness at Noon"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP1"
+	}
+	"6"
+	{
+		"path"	"music/VLVX_song11.mp3"
+		"title"	"Disrupted Original"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP1"
+	}
+	"7"
+	{
+		"path"	"music/VLVX_song19b.mp3"
+		"title"	"Decay Mode"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP1"
+	}
+	"8"
+	{
+		"path"	"music/VLVX_song12.mp3"
+		"title"	"Self Destruction"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP1"
+	}
+	"9"
+	{
+		"path"	"music/VLVX_song4.mp3"
+		"title"	"Guard Down"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP1"
+	}
+	"10"
+	{
+		"path"	"music/VLVX_song18.mp3"
+		"title"	"What Kind of Hospital Is This?"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP1"
+	}
+	"11"
+	{
+		"path"	"music/VLVX_song21.mp3"
+		"title"	"Penultimatum"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP1"
+	}
+}

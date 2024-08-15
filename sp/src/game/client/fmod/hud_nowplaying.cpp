@@ -80,7 +80,7 @@ void CHudNowPlaying::Reset( void )
 //-----------------------------------------------------------------------------
 bool CHudNowPlaying::ShouldDraw( void )
 {
-	return (GetMusicSystem() && !GetMusicSystem()->IsDisabled() && snd_fmod_musicsystem_shownowplayinghud.GetBool());
+	return (GetMusicSystem() && !GetMusicSystem()->m_bDisabled && snd_fmod_musicsystem_shownowplayinghud.GetBool());
 }
 
 //-----------------------------------------------------------------------------

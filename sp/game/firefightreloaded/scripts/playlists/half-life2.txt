@@ -1,0 +1,423 @@
+"half-life2"
+{
+	"1"
+	{
+		"path"	"hl1/music/Half-Life13.mp3"
+		"title"	"Hazardous Environments"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"2"
+	{
+		"path"	"music/HL2_song20_submix0.mp3"
+		"title"	"CP Violation"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"3"
+	{
+		"path"	"music/HL2_song20_submix4.mp3"
+		"title"	"CP Violation (remix)"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"4"
+	{
+		"path"	"music/HL2_song4.mp3"
+		"title"	"The Innsbruck Experiment"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"5"
+	{
+		"path"	"music/HL2_song31.mp3"
+		"title"	"Brane Scan"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"6"
+	{
+		"path"	"music/HL2_song3.mp3"
+		"title"	"Dark Energy"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"7"
+	{
+		"path"	"music/Ravenholm_1.mp3"
+		"title"	"Requiem For Ravenholm"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"8"
+	{
+		"path"	"music/HL2_song5.mp3"
+		"title"	"Pulse Phase"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"9"
+	{
+		"path"	"music/HL2_song7.mp3"
+		"title"	"Ravenholm Reprise"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"10"
+	{
+		"path"	"music/HL2_song33.mp3"
+		"title"	"Probably Not a Problem"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"11"
+	{
+		"path"	"music/HL2_song30.mp3"
+		"title"	"Calabi-Yau Model"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"12"
+	{
+		"path"	"music/HL2_song32.mp3"
+		"title"	"Slow Light"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"13"
+	{
+		"path"	"music/HL2_song29.mp3"
+		"title"	"Apprehension and Evasion"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"14"
+	{
+		"path"	"music/HL2_song28.mp3"
+		"title"	"Hunter Down"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"15"
+	{
+		"path"	"music/HL2_song26.mp3"
+		"title"	"Our Resurrected Teleport"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"16"
+	{
+		"path"	"music/HL2_song25_Teleporter.mp3"
+		"title"	"Miscount Detected"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"17"
+	{
+		"path"	"music/HL2_song24_Lamar.mp3"
+		"title"	"Headhumper"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"18"
+	{
+		"path"	"music/HL2_song23_SuitSong3.mp3"
+		"title"	"Triage at Dawn"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"19"
+	{
+		"path"	"music/HL2_song22_CombineTheme3.mp3"
+		"title"	"Combine Harvester"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"20"
+	{
+		"path"	"music/HL2_song2.mp3"
+		"title"	"Lab Practicum"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"21"
+	{
+		"path"	"music/HL2_song19.mp3"
+		"title"	"Nova Prospekt"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"22"
+	{
+		"path"	"music/HL2_song17.mp3"
+		"title"	"Broken Symmetry"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"23"
+	{
+		"path"	"music/HL2_song16.mp3"
+		"title"	"LG Orbifold"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"24"
+	{
+		"path"	"music/HL2_song15.mp3"
+		"title"	"Kaon"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"25"
+	{
+		"path"	"music/HL2_song14.mp3"
+		"title"	"You're Not Supposed to Be Here"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"26"
+	{
+		"path"	"music/HL2_song13.mp3"
+		"title"	"Suppression Field"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"27"
+	{
+		"path"	"music/HL2_song12_long.mp3"
+		"title"	"Hard Fought"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"28"
+	{
+		"path"	"music/HL2_song1.mp3"
+		"title"	"Particle Ghost"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"29"
+	{
+		"path"	"music/HL2_intro.mp3"
+		"title"	"Shadows Fore and Aft"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"30"
+	{
+		"path"	"music/HL1_song9.mp3"
+		"title"	"Neutrino Trap"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"31"
+	{
+		"path"	"music/HL1_song6.mp3"
+		"title"	"Zero Point Energy Field"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"32"
+	{
+		"path"	"music/HL1_song5.mp3"
+		"title"	"Echoes of a Resonance Cascade"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"33"
+	{
+		"path"	"music/HL1_song3.mp3"
+		"title"	"Black Mesa Inbound"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"34"
+	{
+		"path"	"music/HL1_song26.mp3"
+		"title"	"Xen Relay"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"35"
+	{
+		"path"	"hl1/music/Half-Life17.mp3"
+		"title"	"Tracking Device"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"36"
+	{
+		"path"	"music/HL1_song25_REMIX3.mp3"
+		"title"	"Tracking Device (remix)"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"37"
+	{
+		"path"	"music/HL1_song24.mp3"
+		"title"	"Singularity"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"38"
+	{
+		"path"	"music/HL1_song21.mp3"
+		"title"	"Dirac Shore"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"39"
+	{
+		"path"	"music/HL1_song20.mp3"
+		"title"	"Escape Array"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"40"
+	{
+		"path"	"music/HL1_song19.mp3"
+		"title"	"Negative Pressure"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"41"
+	{
+		"path"	"music/HL1_song17.mp3"
+		"title"	"Tau-9"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"42"
+	{
+		"path"	"music/HL1_song15.mp3"
+		"title"	"Something Secret Steers Us"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"43"
+	{
+		"path"	"music/HL1_song14.mp3"
+		"title"	"Triple Entanglement"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"44"
+	{
+		"path"	"music/HL1_song13.mp3"
+		"title"	"Biozeminade Fragment"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"45"
+	{
+		"path"	"music/HL1_song10.mp3"
+		"title"	"Lambda Core"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"46"
+	{
+		"path"	"music/HL2_song0.mp3"
+		"title"	"Entanglement"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"47"
+	{
+		"path"	"music/HL2_song8.mp3"
+		"title"	"Highway 17"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"48"
+	{
+		"path"	"music/HL2_song10.mp3"
+		"title"	"A Red Letter Day"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"49"
+	{
+		"path"	"music/HL2_song11.mp3"
+		"title"	"Sandtraps"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"50"
+	{
+		"path"	"music/HL2_song26_trainstation1.mp3"
+		"title"	"Train Station 1"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"51"
+	{
+		"path"	"music/HL2_song27_trainstation2.mp3"
+		"title"	"Train Station 2"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"52"
+	{
+		"path"	"music/radio1.mp3"
+		"title"	"Radio"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"53"
+	{
+		"path"	"music/HL1_song20.mp3"
+		"title"	"Escape Array"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"54"
+	{
+		"path"	"music/stingers/industrial_suspense1.wav"
+		"title"	"Industrial Suspense 1"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"55"
+	{
+		"path"	"music/stingers/industrial_suspense2.wav"
+		"title"	"Industrial Suspense 2"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"56"
+	{
+		"path"	"music/stingers/HL1_stinger_song7.mp3"
+		"title"	"Apprehensive Short"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"57"
+	{
+		"path"	"music/stingers/HL1_stinger_song8.mp3"
+		"title"	"Bass String Short"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"58"
+	{
+		"path"	"music/stingers/HL1_stinger_song16.mp3"
+		"title"	"Scared Confusion Short"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"59"
+	{
+		"path"	"music/stingers/HL1_stinger_song27.mp3"
+		"title"	"Dark Piano Short"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+	"60"
+	{
+		"path"	"music/stingers/HL1_stinger_song28.mp3"
+		"title"	"Sharp Fear Short"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2"
+	}
+}

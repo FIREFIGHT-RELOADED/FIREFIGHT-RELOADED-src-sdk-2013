@@ -1,0 +1,193 @@
+"half-life1"
+{
+	"1"
+	{
+		"path"	"hl1/music/Half-Life01.mp3"
+		"title"	"Adrenaline Horror"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"2"
+	{
+		//using the HL2 version since I can't be assed to convert the original and fix the HLS version.
+		"path"	"music/HL1_song3.mp3"
+		"title"	"Vague Voices"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"3"
+	{
+		"path"	"hl1/music/Half-Life12.mp3"
+		"title"	"Klaxon Beat"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"4"
+	{
+		"path"	"hl1/music/Half-Life07.mp3"
+		"title"	"Space Ocean"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"5"
+	{
+		"path"	"hl1/music/Half-Life10.mp3"
+		"title"	"Cavern Ambience"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"6"
+	{
+		"path"	"hl1/music/Suspense01.mp3"
+		"title"	"Apprehensive"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"7"
+	{
+		"path"	"hl1/music/Suspense03.mp3"
+		"title"	"Bass String"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"8"
+	{
+		"path"	"hl1/music/Half-Life09.mp3"
+		"title"	"Hurricane Strings"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"9"
+	{
+		"path"	"hl1/music/Half-Life02.mp3"
+		"title"	"Diabolical Adrenaline Guitar"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"10"
+	{
+		"path"	"hl1/music/Half-Life13.mp3"
+		"title"	"Valve Theme [Extended]"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"11"
+	{
+		"path"	"hl1/music/Half-Life04.mp3"
+		"title"	"Nepal Monastery"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"12"
+	{
+		"path"	"hl1/music/Half-Life15.mp3"
+		"title"	"Alien Shock"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"13"
+	{
+		"path"	"hl1/music/Half-Life14.mp3"
+		"title"	"Sirens in the Distance"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"14"
+	{
+		"path"	"hl1/music/Half-Life16.mp3"
+		"title"	"Nuclear Mission Jam"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"15"
+	{
+		"path"	"hl1/music/Suspense02.mp3"
+		"title"	"Scared Confused Short"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"16"
+	{
+		"path"	"hl1/music/Half-Life03.mp3"
+		"title"	"Drums & Riffs"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"17"
+	{
+		"path"	"hl1/music/Half-Life08.mp3"
+		"title"	"Hard Technology Rock"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"18"
+	{
+		"path"	"hl1/music/Prospero02.mp3"
+		"title"	"Steam in the Pipes"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"19"
+	{
+		"path"	"hl1/music/Half-Life05.mp3"
+		"title"	"Electric Guitar Ambience"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"20"
+	{
+		"path"	"hl1/music/Prospero04.mp3"
+		"title"	"Dimensionless Deepness"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"21"
+	{
+		"path"	"hl1/music/Half-Life11.mp3"
+		"title"	"Military Precision"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"22"
+	{
+		"path"	"hl1/music/Half-Life06.mp3"
+		"title"	"Jungle Drums"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"23"
+	{
+		"path"	"hl1/music/Prospero03.mp3"
+		"title"	"Traveling Through Limbo"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"24"
+	{
+		"path"	"hl1/music/Half-Life17.mp3"
+		"title"	"Credits / Closing Theme"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"25"
+	{
+		"path"	"hl1/music/Prospero05.mp3"
+		"title"	"Threatening Short"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"26"
+	{
+		"path"	"hl1/music/Suspense05.mp3"
+		"title"	"Dark Piano Short"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+	"27"
+	{
+		"path"	"hl1/music/Suspense07.mp3"
+		"title"	"Sharp Fear Short"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife"
+	}
+}

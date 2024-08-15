@@ -249,6 +249,29 @@ void CC_ReloadSystem(void)
 }
 static ConCommand snd_fmod_musicsystem_reload("snd_fmod_musicsystem_reload", CC_ReloadSystem, "");
 
+void CC_MoveForwardInPlaylist(void)
+{
+	if (GetMusicSystem())
+	{
+		GetMusicSystem()->m_bManualControl = true;
+		GetMusicSystem()->tracktime = gpGlobals->curtime;
+	}
+}
+static ConCommand snd_fmod_musicsystem_forward("snd_fmod_musicsystem_forward", CC_MoveForwardInPlaylist, "");
+
+void CC_MoveBackInPlaylist(void)
+{
+	if (GetMusicSystem())
+	{
+		//this goes back before the previous and current track. 
+		//The system will automatically go to the previous track as it adds +1 to this value.
+		GetMusicSystem()->curID -= 2;
+		GetMusicSystem()->m_bManualControl = true;
+		GetMusicSystem()->tracktime = gpGlobals->curtime;
+	}
+}
+static ConCommand snd_fmod_musicsystem_backward("snd_fmod_musicsystem_backward", CC_MoveBackInPlaylist, "");
+
 CFMODMusicSystem::CFMODMusicSystem() : CAutoGameSystemPerFrame("fmod_music_system")
 {
 	m_pChannel = nullptr;
@@ -473,15 +496,30 @@ void CFMODMusicSystem::PlaySong()
 	if (m_bDisabled)
 		return;
 
+	DevMsg("CFMODMusicSystem: TRYING TO LOAD SONG: %i\n", curID);
+
+	int lastSong = (m_Songs.Count() - 1);
+
+	if (curID < 0)
+	{
+		curID = lastSong;
+	}
+	else if (curID > lastSong)
+	{
+		curID = 0;
+	}
+
+	DevMsg("CFMODMusicSystem: CORRECTED ID TO: %i\n", curID);
+
 	//then search for the song we want
 	for (int i = 0; i < m_Songs.Count(); ++i)
 	{
 		const Song_t& song = m_Songs[i];
-		DevMsg("SEARCHING FOR SONG: %i (CAND: %s, %i)\n", curID, song.Title, i);
+		DevMsg("CFMODMusicSystem: SEARCHING FOR SONG: %i (CAND: %s, %i)\n", curID, song.Title, i);
 		if (curID == i)
 		{
 			m_sCurSong = song;
-			DevMsg("SELECTED %s\n", m_sCurSong);
+			DevMsg("CFMODMusicSystem: SELECTED\n%s\n", CombinedSongString());
 		}
 	}
 
@@ -496,27 +534,44 @@ void CFMODMusicSystem::PlaySong()
 		CFMODManager::CheckError(m_pChannel->setPaused(false));
 	}
 
-	DevMsg("PLAYING: %s\n", m_sCurSong.Title);
+	DevMsg("CFMODMusicSystem: PLAYING:\n%s\n", CombinedSongString());
 
 	unsigned int songTime = 5000;
 	CFMODManager::CheckError(m_pSong->getLength(&songTime, FMOD_TIMEUNIT_MS));
-	DevMsg("LENGTH (MS): %i\n", songTime);
+	DevMsg("CFMODMusicSystem: LENGTH (MS): %i\n", songTime);
 
 	//convert MS into seconds
 	songTime = (songTime / 1000);
-	DevMsg("LENGTH (SEC): %i\n", songTime);
+	DevMsg("CFMODMusicSystem: LENGTH (SEC): %i\n", songTime);
 
 	tracktime = gpGlobals->curtime + songTime;
+
+	//DEBUGGING
+	if (!m_bManualControl)
+	{
+		DevMsg("CFMODMusicSystem: MANUAL CONTROL OFF\n");
+	}
+	else
+	{
+		DevMsg("CFMODMusicSystem: MANUAL CONTROL ON\n");
+	}
 
 	//increment curID.
 	curID++;
 
-	if (curID > (m_Songs.Count() - 1))
+	if (!m_bManualControl)
 	{
-		//RESET!
-		curID = 0;
-		//tell the shuffle system we need to shuffle again.
-		m_bJustShuffled = false;
+		if (curID > lastSong)
+		{
+			//RESET!
+			curID = 0;
+			//tell the shuffle system we need to shuffle again.
+			m_bJustShuffled = false;
+		}
+	}
+	else
+	{
+		m_bManualControl = false;
 	}
 }
 

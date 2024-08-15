@@ -107,8 +107,6 @@ public:
 
 	virtual void Kill(bool full = true);
 
-	virtual bool IsDisabled() { return m_bDisabled; }
-
 	virtual void ReadPlaylist();
 
 	virtual const char* CombinedSongString();
@@ -137,14 +135,14 @@ public:
 	bool m_bDisabled;
 	bool m_bJustShuffled;
 	bool m_bPlaylistLoaded;
-
-private:
+	bool m_bManualControl;
+	float tracktime;
+	int curID;
 	CUtlVector< Song_t >	m_Songs;
 	Settings_t m_sSettings;
-	int curID;
-	float tracktime;
 	Song_t m_sCurSong;
-	Song_t m_sNextSong;
+
+private:
 	FMOD::Channel* m_pChannel;
 	FMOD::Sound* m_pSong;
 };

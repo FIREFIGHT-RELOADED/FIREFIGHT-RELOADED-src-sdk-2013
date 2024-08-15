@@ -1,0 +1,101 @@
+"half-life2-episode-two"
+{
+	"1"
+	{
+		"path"	"music/VLVX_song20.mp3"
+		"title"	"Extinction Event Horizon"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP2"
+	}
+	"2"
+	{
+		"path"	"music/VLVX_song22.mp3"
+		"title"	"Vortal Combat"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP2"
+	}
+	"3"
+	{
+		"path"	"music/VLVX_song15.mp3"
+		"title"	"Nectarium"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP2"
+	}
+	"4"
+	{
+		"path"	"music/VLVX_song26.mp3"
+		"title"	"Inhuman Frequency"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP2"
+	}
+	"5"
+	{
+		"path"	"music/VLVX_song9.mp3"
+		"title"	"Crawl Yard"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP2"
+	}
+	"6"
+	{
+		"path"	"music/VLVX_song27.mp3"
+		"title"	"Hunting Party"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP2"
+	}
+	"7"
+	{
+		"path"	"music/stingers/industrial_suspense1.wav"
+		"title"	"Industrial Suspense 1"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP2"
+	}
+	"8"
+	{
+		"path"	"music/VLVX_song23ambient.mp3"
+		"title"	"Shu'ulathoi"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP2"
+	}
+	"9"
+	{
+		"path"	"music/VLVX_song23.mp3"
+		"title"	"Sector Sweep"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP2"
+	}
+	"10"
+	{
+		"path"	"music/VLVX_song0.mp3"
+		"title"	"No One Rides For Free"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP2"
+	}
+	"11"
+	{
+		"path"	"music/VLVX_song28.mp3"
+		"title"	"Eon Trap"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP2"
+	}
+	"12"
+	{
+		"path"	"music/VLVX_song25.mp3"
+		"title"	"Abandoned In Place"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP2"
+	}
+	"13"
+	{
+		"path"	"music/VLVX_song24.mp3"
+		"title"	"Last Legs"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP2"
+	}
+	"14"
+	{
+		"path"	"music/VLVX_song3.mp3"
+		"title"	"Dark Interval"
+		"artist"	"Kelly Bailey"
+		"album"	"HalfLife2EP2"
+	}
+}
