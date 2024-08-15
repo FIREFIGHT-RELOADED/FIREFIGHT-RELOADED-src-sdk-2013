@@ -1,0 +1,10 @@
+UnlitGeneric
+{
+// Original shader: BaseTimesVertexColorAlphaBlendNoOverbright
+	"$translucent" "1"
+	"$basetexture"	"gamepadui\playermodels\gordon_old"
+	"$vertexcolor" "1"
+	"$vertexalpha" "1"
+	"$no_fullbright" "1"
+	"$ignorez"	"1"
+}

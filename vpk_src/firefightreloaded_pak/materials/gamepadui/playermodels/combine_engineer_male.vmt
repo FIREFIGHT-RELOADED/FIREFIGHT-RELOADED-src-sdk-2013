@@ -1,0 +1,8 @@
+"UnlitGeneric"
+{
+	"$baseTexture" "gamepadui\playermodels\combine_engineer_male"
+	"$translucent" "1"
+	"$vertexcolor" "1"
+	"$vertexalpha" "1"
+	"$ignorez" "1"
+}
