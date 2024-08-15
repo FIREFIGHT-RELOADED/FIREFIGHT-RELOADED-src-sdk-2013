@@ -1,10 +1,5 @@
-"default"
+"headcrab_swarm"
 {
-	"settings"
-	{
-		"spawntime"		"5"
-		"spawntime_steamdeck"	"7"
-	}
 	"1"
 	{
 		"classname"		"npc_headcrab"
