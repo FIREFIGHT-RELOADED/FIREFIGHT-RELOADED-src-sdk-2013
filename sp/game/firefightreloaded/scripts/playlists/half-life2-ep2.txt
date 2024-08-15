@@ -1,4 +1,4 @@
-"half-life2-episode-two"
+"half-life2-ep2"
 {
 	"1"
 	{

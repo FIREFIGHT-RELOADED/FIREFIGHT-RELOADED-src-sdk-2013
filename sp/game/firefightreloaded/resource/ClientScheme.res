@@ -24,6 +24,7 @@ Scheme
 		"SMODNormalDim"			"64 64 255 120"
 		"SMODBright"			"128 128 255 255"
 		"SMODCaution"			"255 84 255 255"
+        "FRNormal"              "0 113 229 255"
 		
 		// base colors
 		"Orange"			"255 176 0 255"
@@ -231,6 +232,10 @@ Scheme
 		
 		"FgColor"		"SMODNormal"
 		"BgColor"		"TransparentBlack"
+        
+        "SteamDeckLoadingBar"			"FRNormal"
+		"SteamDeckSpinner"				"FRNormal"
+		"SteamDeckLoadingText"			"181 179 175 255"
 	}
 
 	//////////////////////// BITMAP FONT FILES /////////////////////////////

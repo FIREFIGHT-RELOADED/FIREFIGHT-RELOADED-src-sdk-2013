@@ -51,18 +51,18 @@
 
 	"Colors"
 	{
-		"Logo"									"19 119 230 255"
+		"Logo"									"0 113 229 255"
 		
 		"Button.Background.Out"					"0 0 0 0"
 		"Button.Background.Over"				"15 25 40 110"
 		"Button.Background.Pressed"				"255 255 255 255"
 
 		"Button.Background.LeftBorder.Out"			"0 0 0 255"
-		"Button.Background.LeftBorder.Over"			"19 119 230 255"
+		"Button.Background.LeftBorder.Over"			"0 113 229 255"
 		"Button.Background.LeftBorder.Pressed"		"255 255 255 255"
 
 		"Button.Text.Out"						"227 224 224 255"
-		"Button.Text.Over"						"19 119 230 255"
+		"Button.Text.Over"						"0 113 229 255"
 		"Button.Text.Pressed"					"0 0 0 255"
 
 		"Button.Description.Out"				"0 0 0 0"
