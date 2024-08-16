@@ -109,7 +109,9 @@ public:
 
 	virtual void ReadPlaylist();
 
-	virtual const char* CombinedSongString();
+	virtual const char* GetTitleString();
+	virtual const char* GetArtistString();
+	virtual const char* GetAlbumString();
 
 private:
 	Song_t CreateNullSong() 
@@ -136,7 +138,6 @@ public:
 	bool m_bJustShuffled;
 	bool m_bPlaylistLoaded;
 	bool m_bManualControl;
-	bool m_bDisplayDisplayDebugMessages;
 	float tracktime;
 	int curID;
 	CUtlVector< Song_t >	m_Songs;

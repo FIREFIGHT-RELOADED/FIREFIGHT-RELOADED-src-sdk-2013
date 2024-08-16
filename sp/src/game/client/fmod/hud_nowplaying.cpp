@@ -22,6 +22,7 @@
 #include "hudelement.h"
 #include "fmodmanager.h"
 #include "fmtstr.h"
+#include "gamepadui_string.h"
 
 using namespace vgui;
 
@@ -94,21 +95,24 @@ void CHudNowPlaying::Paint()
 	surface()->DrawSetTextPos(text_xpos, text_ypos);
 	int ypos = text_ypos;
 
-	char szLabelString[2048];
-	Q_snprintf(szLabelString, sizeof(szLabelString), "#GameUI_MusicSystem_NowPlaying");
-	wchar_t* labelText = UTIL_GetTextForLanguage(szLabelString);
-	g_pVGuiLocalize->ConvertUnicodeToANSI(labelText, szLabelString, sizeof(szLabelString));
+	CFMODMusicSystem* system = GetMusicSystem();
 
-	const char* songText = GetMusicSystem()->CombinedSongString();
-	Assert( songText );
+	GamepadUIString nowPlaying = "#GameUI_MusicSystem_NowPlaying";
+	GamepadUIString title = system->GetTitleString();
+	GamepadUIString artist = system->GetArtistString();
+	GamepadUIString album = system->GetAlbumString();
 
-	CFmtStr result;
-	result.sprintf("%s\n%s", szLabelString, songText);
+	wchar_t wszBuf[4096];
+#ifdef WIN32
+	V_snwprintf(wszBuf, 4096, L"%s\n%s\n%s\n%s", nowPlaying.String(), title.String(), artist.String(), album.String());
+#else
+	V_snwprintf(wszBuf, 4096, L"%S\n%S\n%S\n%S", nowPlaying.String(), title.String(), artist.String(), album.String());
+#endif
 
-	const char* finalText = result.Access();
+	const wchar_t* finalText = wszBuf;
 	Assert(finalText);
 
-	for (const char *wch = finalText; wch && *wch != 0; wch++)
+	for (const wchar_t* wch = finalText; wch && *wch != 0; wch++)
 	{
 		if (*wch == '\n')
 		{
