@@ -279,6 +279,7 @@ CFMODMusicSystem::CFMODMusicSystem() : CAutoGameSystemPerFrame("fmod_music_syste
 	m_bDisabled = false;
 	m_bStart = false;
 	m_bPlaylistLoaded = false;
+	m_bDisplayDisplayDebugMessages = false;
 	curID = 0;
 	tracktime = 0.0f;
 	m_bJustShuffled = false;
@@ -317,6 +318,7 @@ void CFMODMusicSystem::Kill(bool full)
 	}
 	m_bJustShuffled = false;
 	m_bPlaylistLoaded = false;
+	m_bDisplayDisplayDebugMessages = false;
 	curID = 0;
 	tracktime = 0.0f;
 	m_sSettings = CreateNullSettings();
@@ -509,6 +511,8 @@ void CFMODMusicSystem::PlaySong()
 		curID = 0;
 	}
 
+	m_bDisplayDisplayDebugMessages = true;
+
 	DevMsg("CFMODMusicSystem: CORRECTED ID TO: %i\n", curID);
 
 	//then search for the song we want
@@ -522,6 +526,8 @@ void CFMODMusicSystem::PlaySong()
 			DevMsg("CFMODMusicSystem: SELECTED\n%s\n", CombinedSongString());
 		}
 	}
+
+	m_bDisplayDisplayDebugMessages = false;
 
 	const char* szSound = GetFMODManager()->GetFullPathToSound(m_sCurSong.Path);
 	CFMODManager::CheckError(GetFMODManager()->GetSystem()->createSound(szSound, FMOD_DEFAULT | FMOD_CREATESTREAM | FMOD_ACCURATETIME | FMOD_IGNORETAGS | FMOD_LOWMEM, 0, &m_pSong));
@@ -591,6 +597,9 @@ const char *CFMODMusicSystem::CombinedSongString()
 		Q_snprintf(szTitleString, sizeof(szTitleString), "%s", m_sCurSong.Title);
 	}
 
+	if (m_bDisplayDisplayDebugMessages)
+		DevMsg("CFMODMusicSystem: TITLE STRING: %s\n", szTitleString);
+
 	char szArtistString[2048];
 	Q_snprintf(szArtistString, sizeof(szArtistString), "#Song_Artist_%s", m_sCurSong.Artist);
 
@@ -603,6 +612,9 @@ const char *CFMODMusicSystem::CombinedSongString()
 	{
 		Q_snprintf(szArtistString, sizeof(szArtistString), "%s", m_sCurSong.Artist);
 	}
+
+	if (m_bDisplayDisplayDebugMessages)
+		DevMsg("CFMODMusicSystem: ARTIST STRING: %s\n", szArtistString);
 
 	char szAlbumString[2048];
 	Q_snprintf(szAlbumString, sizeof(szAlbumString), "#Song_Album_%s", m_sCurSong.Album);
@@ -617,10 +629,14 @@ const char *CFMODMusicSystem::CombinedSongString()
 		Q_snprintf(szAlbumString, sizeof(szAlbumString), "%s", m_sCurSong.Album);
 	}
 
-	CFmtStr result;
-	result.sprintf("%s\n%s\n%s", szTitleString, szArtistString, szAlbumString);
+	if (m_bDisplayDisplayDebugMessages)
+		DevMsg("CFMODMusicSystem: ALBUM STRING: %s\n", szAlbumString);
 
-	return result.Access();
+	char szResultString[6144];
+	Q_snprintf(szResultString, sizeof(szResultString), "%s\n%s\n%s", szTitleString, szArtistString, szAlbumString);
+	const char* result = szResultString;
+
+	return result;
 }
 
 static CFMODMusicSystem s_FMODMusicSystem;

@@ -136,6 +136,7 @@ public:
 	bool m_bJustShuffled;
 	bool m_bPlaylistLoaded;
 	bool m_bManualControl;
+	bool m_bDisplayDisplayDebugMessages;
 	float tracktime;
 	int curID;
 	CUtlVector< Song_t >	m_Songs;
