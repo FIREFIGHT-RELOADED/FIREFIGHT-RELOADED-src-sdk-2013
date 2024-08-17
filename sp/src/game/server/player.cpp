@@ -6035,8 +6035,6 @@ void CBasePlayer::LoadLoadoutFile(const char* kvName, bool savetoLoadout)
 		pNode = m_kvLoadout->GetFirstSubKey();
 	}
 
-	KeyValues* pInfo = CMapInfo::GetMapInfoData();
-
 	while (pNode)
 	{
 		if (m_bHardcore == false)
@@ -6058,9 +6056,6 @@ void CBasePlayer::LoadLoadoutFile(const char* kvName, bool savetoLoadout)
 
 		if (itemName)
 		{
-			if (Q_stristr(itemName, "weapon_grapple") && (!sv_player_grapple.GetBool() || !pInfo->GetBool("CanGrapple", true)))
-				continue;
-
 			GiveNamedItem(itemName);
 		}
 
@@ -6151,9 +6146,6 @@ void CBasePlayer::LoadLoadoutFile(const char* kvName, bool savetoLoadout)
 
 				if (ConvertedString)
 				{
-					if (Q_stristr(ConvertedString, "weapon_grapple") && (!sv_player_grapple.GetBool() || !pInfo->GetBool("CanGrapple", true)))
-						continue;
-
 					GiveNamedItem(ConvertedString);
 				}
 			}
@@ -6171,9 +6163,6 @@ void CBasePlayer::LoadLoadoutFile(const char* kvName, bool savetoLoadout)
 
 				if (ConvertedString)
 				{
-					if (Q_stristr(ConvertedString, "weapon_grapple") && (!sv_player_grapple.GetBool() || !pInfo->GetBool("CanGrapple", true)))
-						continue;
-
 					GiveNamedItem(ConvertedString);
 				}
 			}
@@ -6190,18 +6179,10 @@ void CBasePlayer::LoadLoadoutFile(const char* kvName, bool savetoLoadout)
 
 				if (ConvertedString)
 				{
-					if (Q_stristr(ConvertedString, "weapon_grapple") && (!sv_player_grapple.GetBool() || !pInfo->GetBool("CanGrapple", true)))
-						continue;
-
 					GiveNamedItem(ConvertedString);
 				}
 			}
 		}
-	}
-
-	if (pInfo != NULL)
-	{
-		pInfo->deleteThis();
 	}
 
 	Weapon_Switch(Weapon_OwnsThisType("weapon_physcannon"));
@@ -7179,6 +7160,18 @@ CBaseEntity	*CBasePlayer::GiveNamedItem( const char *pszName, int iSubType, bool
 	// If I already own this type don't create one
 	if ( Weapon_OwnsThisType(pszName, iSubType) )
 		return NULL;
+
+	KeyValues* pInfo = CMapInfo::GetMapInfoData();
+	if (Q_stristr(pszName, "weapon_grapple") && (!sv_player_grapple.GetBool() || (pInfo != NULL && !pInfo->GetBool("CanGrapple", true))))
+	{
+		pInfo->deleteThis();
+		return NULL;
+	}
+
+	if (pInfo != NULL)
+	{
+		pInfo->deleteThis();
+	}
 
 	// Msg( "giving %s\n", pszName );
 
