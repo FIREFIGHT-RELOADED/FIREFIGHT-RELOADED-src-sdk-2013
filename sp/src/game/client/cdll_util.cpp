@@ -900,35 +900,6 @@ const char * UTIL_SafeName( const char *oldName )
 	return safeName;
 }
 
-wchar_t* UTIL_GetTextForLanguage(const char* query)
-{
-	wchar_t m_wcsText[2048];
-	wchar_t* wcs = g_pVGuiLocalize->Find(query);
-	if (wcs)
-	{
-		V_wcsncpy(m_wcsText, wcs, sizeof(m_wcsText));
-	}
-	else
-	{
-		g_pVGuiLocalize->ConvertANSIToUnicode(query, m_wcsText, sizeof(m_wcsText));
-		wcs = m_wcsText;
-	}
-	
-	return wcs;
-}
-
-bool UTIL_CanGetLanguageString(const char* query)
-{
-	bool found = true;
-	wchar_t* wcs = g_pVGuiLocalize->Find(query);
-	if (!wcs)
-	{
-		found = false;
-	}
-
-	return found;
-}
-
 //-----------------------------------------------------------------------------
 // Purpose: Looks up key bindings for commands and replaces them in string.
 //			%<commandname>% will get replaced with its bound control, e.g. %attack2%

@@ -518,7 +518,7 @@ void CFMODMusicSystem::PlaySong()
 		if (curID == i)
 		{
 			m_sCurSong = song;
-			DevMsg("CFMODMusicSystem: SELECTED %s\n", GetTitleString());
+			DevMsg("CFMODMusicSystem: SELECTED %s\n", m_sCurSong.Title);
 		}
 	}
 
@@ -533,7 +533,7 @@ void CFMODMusicSystem::PlaySong()
 		CFMODManager::CheckError(m_pChannel->setPaused(false));
 	}
 
-	DevMsg("CFMODMusicSystem: PLAYING: %s\n", GetTitleString());
+	DevMsg("CFMODMusicSystem: PLAYING: %s\n", m_sCurSong.Title);
 
 	unsigned int songTime = 5000;
 	CFMODManager::CheckError(m_pSong->getLength(&songTime, FMOD_TIMEUNIT_MS));
@@ -572,63 +572,6 @@ void CFMODMusicSystem::PlaySong()
 	{
 		m_bManualControl = false;
 	}
-}
-
-const char* CFMODMusicSystem::GetTitleString()
-{
-	char szTitleString[2048];
-	Q_snprintf(szTitleString, sizeof(szTitleString), "#Song_Title_%s", m_sCurSong.Title);
-
-	if (UTIL_CanGetLanguageString(szTitleString))
-	{
-		wchar_t* convertedTitle = UTIL_GetTextForLanguage(szTitleString);
-		g_pVGuiLocalize->ConvertUnicodeToANSI(convertedTitle, szTitleString, sizeof(szTitleString));
-	}
-	else
-	{
-		Q_snprintf(szTitleString, sizeof(szTitleString), "%s", m_sCurSong.Title);
-	}
-
-	const char* result = szTitleString;
-	return result;
-}
-
-const char* CFMODMusicSystem::GetArtistString()
-{
-	char szArtistString[2048];
-	Q_snprintf(szArtistString, sizeof(szArtistString), "#Song_Artist_%s", m_sCurSong.Artist);
-
-	if (UTIL_CanGetLanguageString(szArtistString))
-	{
-		wchar_t* convertedArtist = UTIL_GetTextForLanguage(szArtistString);
-		g_pVGuiLocalize->ConvertUnicodeToANSI(convertedArtist, szArtistString, sizeof(szArtistString));
-	}
-	else
-	{
-		Q_snprintf(szArtistString, sizeof(szArtistString), "%s", m_sCurSong.Artist);
-	}
-
-	const char* result = szArtistString;
-	return result;
-}
-
-const char* CFMODMusicSystem::GetAlbumString()
-{
-	char szAlbumString[2048];
-	Q_snprintf(szAlbumString, sizeof(szAlbumString), "#Song_Album_%s", m_sCurSong.Album);
-
-	if (UTIL_CanGetLanguageString(szAlbumString))
-	{
-		wchar_t* convertedAlbum = UTIL_GetTextForLanguage(szAlbumString);
-		g_pVGuiLocalize->ConvertUnicodeToANSI(convertedAlbum, szAlbumString, sizeof(szAlbumString));
-	}
-	else
-	{
-		Q_snprintf(szAlbumString, sizeof(szAlbumString), "%s", m_sCurSong.Album);
-	}
-
-	const char* result = szAlbumString;
-	return result;
 }
 
 static CFMODMusicSystem s_FMODMusicSystem;

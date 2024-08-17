@@ -4,6 +4,7 @@
 #include <fmod.hpp>
 
 #include "igamesystem.h"
+#include "fmtstr.h"
 
 FMOD_RESULT F_CALLBACK USER_FMOD_FILE_OPEN_CALLBACK(const char* name, unsigned int* filesize, void** handle, void* userdata);
 FMOD_RESULT F_CALLBACK USER_FMOD_FILE_CLOSE_CALLBACK(void* handle, void* userdata);
@@ -85,6 +86,15 @@ struct Settings_t
 	bool Shuffle;
 };
 
+#define FMOD_MUSICSYSTEM_TITLE_LOCALIZED_NAME_FROM_STR( name ) \
+	( g_pVGuiLocalize->Find( CFmtStr( "#Song_Title_%s", name ) ) )
+
+#define FMOD_MUSICSYSTEM_ARTIST_LOCALIZED_NAME_FROM_STR( name ) \
+	( g_pVGuiLocalize->Find( CFmtStr( "#Song_Artist_%s", name ) ) )
+
+#define FMOD_MUSICSYSTEM_ALBUM_LOCALIZED_NAME_FROM_STR( name ) \
+	( g_pVGuiLocalize->Find( CFmtStr( "#Song_Album_%s", name ) ) )
+
 class CFMODMusicSystem : public CAutoGameSystemPerFrame
 {
 public:
@@ -108,10 +118,6 @@ public:
 	virtual void Kill(bool full = true);
 
 	virtual void ReadPlaylist();
-
-	virtual const char* GetTitleString();
-	virtual const char* GetArtistString();
-	virtual const char* GetAlbumString();
 
 private:
 	Song_t CreateNullSong() 

@@ -116,14 +116,23 @@ void CHudNowPlaying::Paint()
 	//change font color/size if necessary.
 	surface()->DrawSetTextFont(m_hSongFont);
 	surface()->DrawSetTextColor(m_SongColor);
+
 	//add a new line for the other bits.
 	ypos += text_ygap;
 	surface()->DrawSetTextPos(text_xpos, ypos);
 
 	wchar_t title[256];
-	const char* titleText = system->GetTitleString();
-	g_pVGuiLocalize->ConvertANSIToUnicode(titleText, title, sizeof(title));
-	Assert(titleText);
+	wchar_t* titleLocale = FMOD_MUSICSYSTEM_TITLE_LOCALIZED_NAME_FROM_STR(system->m_sCurSong.Title);
+	
+	if (titleLocale)
+	{
+		g_pVGuiLocalize->ConstructString(title, sizeof(title), titleLocale, 0);
+	}
+	else
+	{
+		g_pVGuiLocalize->ConvertANSIToUnicode(system->m_sCurSong.Title, title, sizeof(title));
+	}
+
 	surface()->DrawUnicodeString(title);
 
 	//add a new line for the other bits.
@@ -131,9 +140,17 @@ void CHudNowPlaying::Paint()
 	surface()->DrawSetTextPos(text_xpos, ypos);
 
 	wchar_t artist[256];
-	const char* artistText = system->GetArtistString();
-	g_pVGuiLocalize->ConvertANSIToUnicode(artistText, artist, sizeof(artist));
-	Assert(artistText);
+	wchar_t* artistLocale = FMOD_MUSICSYSTEM_ARTIST_LOCALIZED_NAME_FROM_STR(system->m_sCurSong.Artist);
+
+	if (artistLocale)
+	{
+		g_pVGuiLocalize->ConstructString(artist, sizeof(artist), artistLocale, 0);
+	}
+	else
+	{
+		g_pVGuiLocalize->ConvertANSIToUnicode(system->m_sCurSong.Artist, artist, sizeof(artist));
+	}
+
 	surface()->DrawUnicodeString(artist);
 
 	//add a new line for the other bits.
@@ -141,9 +158,17 @@ void CHudNowPlaying::Paint()
 	surface()->DrawSetTextPos(text_xpos, ypos);
 
 	wchar_t album[256];
-	const char* albumText = system->GetAlbumString();
-	g_pVGuiLocalize->ConvertANSIToUnicode(albumText, album, sizeof(album));
-	Assert(album);
+	wchar_t* albumLocale = FMOD_MUSICSYSTEM_ALBUM_LOCALIZED_NAME_FROM_STR(system->m_sCurSong.Album);
+
+	if (albumLocale)
+	{
+		g_pVGuiLocalize->ConstructString(album, sizeof(album), albumLocale, 0);
+	}
+	else
+	{
+		g_pVGuiLocalize->ConvertANSIToUnicode(system->m_sCurSong.Album, album, sizeof(album));
+	}
+
 	surface()->DrawUnicodeString(album);
 }
 
