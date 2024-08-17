@@ -581,13 +581,16 @@ const char* CFMODMusicSystem::GetTitleString()
 
 	if (UTIL_CanGetLanguageString(szTitleString))
 	{
-		const char* result = szTitleString;
-		return result;
+		wchar_t* convertedTitle = UTIL_GetTextForLanguage(szTitleString);
+		g_pVGuiLocalize->ConvertUnicodeToANSI(convertedTitle, szTitleString, sizeof(szTitleString));
 	}
 	else
 	{
-		return m_sCurSong.Title;
+		Q_snprintf(szTitleString, sizeof(szTitleString), "%s", m_sCurSong.Title);
 	}
+
+	const char* result = szTitleString;
+	return result;
 }
 
 const char* CFMODMusicSystem::GetArtistString()
@@ -597,13 +600,16 @@ const char* CFMODMusicSystem::GetArtistString()
 
 	if (UTIL_CanGetLanguageString(szArtistString))
 	{
-		const char* result = szArtistString;
-		return result;
+		wchar_t* convertedArtist = UTIL_GetTextForLanguage(szArtistString);
+		g_pVGuiLocalize->ConvertUnicodeToANSI(convertedArtist, szArtistString, sizeof(szArtistString));
 	}
 	else
 	{
-		return m_sCurSong.Artist;
+		Q_snprintf(szArtistString, sizeof(szArtistString), "%s", m_sCurSong.Artist);
 	}
+
+	const char* result = szArtistString;
+	return result;
 }
 
 const char* CFMODMusicSystem::GetAlbumString()
@@ -613,13 +619,16 @@ const char* CFMODMusicSystem::GetAlbumString()
 
 	if (UTIL_CanGetLanguageString(szAlbumString))
 	{
-		const char* result = szAlbumString;
-		return result;
+		wchar_t* convertedAlbum = UTIL_GetTextForLanguage(szAlbumString);
+		g_pVGuiLocalize->ConvertUnicodeToANSI(convertedAlbum, szAlbumString, sizeof(szAlbumString));
 	}
 	else
 	{
-		return m_sCurSong.Album;
+		Q_snprintf(szAlbumString, sizeof(szAlbumString), "%s", m_sCurSong.Album);
 	}
+
+	const char* result = szAlbumString;
+	return result;
 }
 
 static CFMODMusicSystem s_FMODMusicSystem;

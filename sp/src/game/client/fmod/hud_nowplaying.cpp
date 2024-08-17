@@ -22,7 +22,6 @@
 #include "hudelement.h"
 #include "fmodmanager.h"
 #include "fmtstr.h"
-#include "gamepadui_string.h"
 
 using namespace vgui;
 
@@ -49,7 +48,9 @@ private:
 
 private:
 	CPanelAnimationVar( vgui::HFont, m_hTextFont, "TextFont", "Default" );
+	CPanelAnimationVar(vgui::HFont, m_hSongFont, "SongFont", "Default");
 	CPanelAnimationVar( Color, m_TextColor, "TextColor", "FgColor" );
+	CPanelAnimationVar(Color, m_SongColor, "SongColor", "FgColor");
 	CPanelAnimationVarAliasType( float, text_xpos, "text_xpos", "8", "proportional_float" );
 	CPanelAnimationVarAliasType( float, text_ypos, "text_ypos", "8", "proportional_float" );
 	CPanelAnimationVarAliasType( float, text_ygap, "text_ygap", "14", "proportional_float" );
@@ -97,22 +98,9 @@ void CHudNowPlaying::Paint()
 
 	CFMODMusicSystem* system = GetMusicSystem();
 
-	GamepadUIString nowPlaying = "#GameUI_MusicSystem_NowPlaying";
-	GamepadUIString title = system->GetTitleString();
-	GamepadUIString artist = system->GetArtistString();
-	GamepadUIString album = system->GetAlbumString();
-
-	wchar_t wszBuf[4096];
-#ifdef WIN32
-	V_snwprintf(wszBuf, 4096, L"%s\n%s\n%s\n%s", nowPlaying.String(), title.String(), artist.String(), album.String());
-#else
-	V_snwprintf(wszBuf, 4096, L"%S\n%S\n%S\n%S", nowPlaying.String(), title.String(), artist.String(), album.String());
-#endif
-
-	const wchar_t* finalText = wszBuf;
-	Assert(finalText);
-
-	for (const wchar_t* wch = finalText; wch && *wch != 0; wch++)
+	const wchar_t* labelText = g_pVGuiLocalize->Find("#GameUI_MusicSystem_NowPlaying");
+	Assert(labelText);
+	for (const wchar_t* wch = labelText; wch && *wch != 0; wch++)
 	{
 		if (*wch == '\n')
 		{
@@ -123,6 +111,42 @@ void CHudNowPlaying::Paint()
 		{
 			surface()->DrawUnicodeChar(*wch);
 		}
+	}
+
+	//change font color/size if necessary.
+	surface()->DrawSetTextFont(m_hSongFont);
+	surface()->DrawSetTextColor(m_SongColor);
+	//add a new line for the other bits.
+	ypos += text_ygap;
+	surface()->DrawSetTextPos(text_xpos, ypos);
+
+	const char* titleText = system->GetTitleString();
+	Assert(titleText);
+	for (const char* wch = titleText; wch && *wch != 0; wch++)
+	{
+		surface()->DrawUnicodeChar(*wch);
+	}
+
+	//add a new line for the other bits.
+	ypos += text_ygap;
+	surface()->DrawSetTextPos(text_xpos, ypos);
+
+	const char* artistText = system->GetArtistString();
+	Assert(artistText);
+	for (const char* wch = artistText; wch && *wch != 0; wch++)
+	{
+		surface()->DrawUnicodeChar(*wch);
+	}
+
+	//add a new line for the other bits.
+	ypos += text_ygap;
+	surface()->DrawSetTextPos(text_xpos, ypos);
+
+	const char* albumText = system->GetAlbumString();
+	Assert(albumText);
+	for (const char* wch = albumText; wch && *wch != 0; wch++)
+	{
+		surface()->DrawUnicodeChar(*wch);
 	}
 }
 

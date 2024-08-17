@@ -516,6 +516,7 @@
 		"text_ypos"	"4"
 		"text_ygap" "10"
 		"TextColor"	"FgColor"
+        "SongFont"  "HudSelectionText"
 		"PaintBackgroundType"	"2"
 	}
 
