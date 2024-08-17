@@ -17,8 +17,8 @@
 #error weapon_katana.h must not be included in hl2mp. The windows compiler will use the wrong class elsewhere if it is.
 #endif
 
-#define	KATANA_RANGE	150.0f
-#define	KATANA_REFIRE	0.45f
+#define	KATANA_RANGE	165.0f
+#define	KATANA_REFIRE	0.75f
 
 //-----------------------------------------------------------------------------
 // CWeaponKatana
