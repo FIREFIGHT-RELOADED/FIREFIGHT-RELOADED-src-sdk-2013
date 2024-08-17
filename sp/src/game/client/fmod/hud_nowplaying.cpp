@@ -120,34 +120,31 @@ void CHudNowPlaying::Paint()
 	ypos += text_ygap;
 	surface()->DrawSetTextPos(text_xpos, ypos);
 
+	wchar_t title[256];
 	const char* titleText = system->GetTitleString();
+	g_pVGuiLocalize->ConvertANSIToUnicode(titleText, title, sizeof(title));
 	Assert(titleText);
-	for (const char* wch = titleText; wch && *wch != 0; wch++)
-	{
-		surface()->DrawUnicodeChar(*wch);
-	}
+	surface()->DrawUnicodeString(title);
 
 	//add a new line for the other bits.
 	ypos += text_ygap;
 	surface()->DrawSetTextPos(text_xpos, ypos);
 
+	wchar_t artist[256];
 	const char* artistText = system->GetArtistString();
+	g_pVGuiLocalize->ConvertANSIToUnicode(artistText, artist, sizeof(artist));
 	Assert(artistText);
-	for (const char* wch = artistText; wch && *wch != 0; wch++)
-	{
-		surface()->DrawUnicodeChar(*wch);
-	}
+	surface()->DrawUnicodeString(artist);
 
 	//add a new line for the other bits.
 	ypos += text_ygap;
 	surface()->DrawSetTextPos(text_xpos, ypos);
 
+	wchar_t album[256];
 	const char* albumText = system->GetAlbumString();
-	Assert(albumText);
-	for (const char* wch = albumText; wch && *wch != 0; wch++)
-	{
-		surface()->DrawUnicodeChar(*wch);
-	}
+	g_pVGuiLocalize->ConvertANSIToUnicode(albumText, album, sizeof(album));
+	Assert(album);
+	surface()->DrawUnicodeString(album);
 }
 
 //-----------------------------------------------------------------------------
