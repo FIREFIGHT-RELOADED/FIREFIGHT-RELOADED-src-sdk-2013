@@ -1,6 +1,11 @@
 "vertexlitgeneric"
 {
 	"$baseTexture" "models/player/ct_gign/ct_gign"
-    "$bumpmap" "models/player/ct_gign/ct_gign_normal"
+        "$envmap" 			"env_cubemap"
+        "$bumpmap" "models/player/ct_gign/ct_gign_normal"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 0.3
+	"$envmapsaturation" 0.7
+	"$envmaptint" "[ 0.36 0.36 0.36 ]"
 }
 

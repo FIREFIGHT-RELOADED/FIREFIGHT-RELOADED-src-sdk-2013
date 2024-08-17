@@ -1,5 +1,10 @@
 VertexLitGeneric
 {
 	"$basetexture"	"models\player\t_arctic\t_arctic"
-    "$bumpmap" "models/player/t_arctic\t_arctic_normal"
+	 "$envmap" 			"env_cubemap"
+	 "$bumpmap" "models/player/t_arctic\t_arctic_normal"
+	"$normalmapalphaenvmapmask" "1"
+	"$envmapcontrast" 0.3
+	"$envmapsaturation" 0.7
+	"$envmaptint" "[ 0.36 0.36 0.36 ]"
 }
