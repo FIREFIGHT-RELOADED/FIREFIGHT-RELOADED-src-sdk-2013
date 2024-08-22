@@ -196,7 +196,8 @@ void GamepadUIFrame::LayoutFooterButtons()
 #ifdef HL2_RETAIL // Steam input and Steam Controller are not supported in SDK2013 (Madi)
         const bool bController = g_pInputSystem->IsSteamControllerActive();
 #else
-        const bool bController = ( g_pInputSystem->GetJoystickCount() >= 1 );
+        ConVarRef cl_glyphtype("cl_glyphtype");
+        const bool bController = (( g_pInputSystem->GetJoystickCount() >= 1 ) || ButtonLabels::IsControllerControls((LabelType)cl_glyphtype.GetInt()));
 #endif
 
         const bool bVisible = bController || !( m_ControllerOnlyFooterMask & button );

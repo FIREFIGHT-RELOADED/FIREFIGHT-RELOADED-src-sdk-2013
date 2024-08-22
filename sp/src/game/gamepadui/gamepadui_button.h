@@ -44,6 +44,10 @@ namespace ButtonLabels
         RB
     };
 
+    inline bool IsPCControls(LabelType setting) { return (setting == ButtonLabels::None) || (setting == ButtonLabels::Keyboard); }
+    //this is so fucking lazy.
+    inline bool IsControllerControls(LabelType setting) { return !IsPCControls(setting); }
+
     inline const wchar_t* GetLabelName(LabelType setting, ButtonType button)
     {
         switch (setting)
