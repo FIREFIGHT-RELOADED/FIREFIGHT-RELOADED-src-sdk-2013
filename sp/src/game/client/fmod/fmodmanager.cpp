@@ -339,10 +339,6 @@ void CFMODMusicSystem::ReadPlaylist()
 	if (!allowMusicSystem)
 	{
 		m_bDisabled = true;
-		if (pInfo != NULL)
-		{
-			pInfo->deleteThis();
-		}
 		return;
 	}
 

@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "6440"
-	"mapversion" "152"
+	"mapversion" "153"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,7 +20,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "152"
+	"mapversion" "153"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -15180,11 +15180,11 @@ entity
 	"id" "5170"
 	"classname" "ambient_fmod"
 	"maxdistance" "1250"
-	"message" "music/hl1_song25_remix3.mp3"
+	"message" "music/fr_credits_mixed.mp3"
 	"pitch" "100"
 	"spawnflags" "113"
 	"targetname" "creditsmusic"
-	"volume" "7"
+	"volume" "8"
 	"origin" "-41.1133 619.849 129"
 	editor
 	{

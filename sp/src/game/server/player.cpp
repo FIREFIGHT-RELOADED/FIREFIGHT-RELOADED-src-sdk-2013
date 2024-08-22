@@ -644,6 +644,9 @@ BEGIN_DATADESC( CBasePlayer )
 	DEFINE_FIELD( m_fLastPlayerTalkTime, FIELD_FLOAT ),
 	DEFINE_FIELD( m_hLastWeapon, FIELD_EHANDLE ),
 
+	DEFINE_FIELD(m_bForcedLoadout, FIELD_BOOLEAN),
+	DEFINE_FIELD(m_szForcedLoadoutName, FIELD_STRING),
+
 #if !defined( NO_ENTITY_PREDICTION )
 	// DEFINE_FIELD( m_SimulatedByThisPlayer, CUtlVector < CHandle < CBaseEntity > > ),
 #endif
@@ -5678,8 +5681,6 @@ void CBasePlayer::PostThink()
 	// Regenerate heath
 	if (IsAlive() && GetHealth() < m_MaxHealthVal && (sv_regeneration.GetInt() == 1) && (m_iPerkHealthRegen == 1) && !invulnrable)
 	{
-		SetSuitUpdate("!HEV_MED2", false, SUIT_NEXT_IN_30SEC);
-		SetSuitUpdate("!HEV_HEAL6", false, SUIT_NEXT_IN_30SEC);
 		// Color to overlay on the screen while the player is taking damage
 
 		if (m_fTimeLastHurt < gpGlobals->curtime)
@@ -5696,6 +5697,8 @@ void CBasePlayer::PostThink()
 				}
 				else 
 				{
+					SetSuitUpdate("!HEV_MED2", false, SUIT_NEXT_IN_30SEC);
+					SetSuitUpdate("!HEV_HEAL6", false, SUIT_NEXT_IN_30SEC);
 					TakeHealth(m_fRegenRemander, DMG_GENERIC);
 					m_fRegenRemander = 0;
 				}
@@ -6214,8 +6217,7 @@ void CBasePlayer::WeaponSpawnLogic(void)
 				{
 					m_szForcedLoadoutName = pInfo->GetString("ForcedLoadout", "");
 					m_bForcedLoadout = true;
-					LoadLoadoutFile(m_szForcedLoadoutName);
-					pInfo->deleteThis();
+					WeaponSpawnLogic();
 					return;
 				}
 			}
@@ -7164,13 +7166,7 @@ CBaseEntity	*CBasePlayer::GiveNamedItem( const char *pszName, int iSubType, bool
 	KeyValues* pInfo = CMapInfo::GetMapInfoData();
 	if (Q_stristr(pszName, "weapon_grapple") && (!sv_player_grapple.GetBool() || (pInfo != NULL && !pInfo->GetBool("CanGrapple", true))))
 	{
-		pInfo->deleteThis();
 		return NULL;
-	}
-
-	if (pInfo != NULL)
-	{
-		pInfo->deleteThis();
 	}
 
 	// Msg( "giving %s\n", pszName );

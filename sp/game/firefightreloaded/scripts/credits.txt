@@ -28,8 +28,8 @@
 	"color" "255 255 255 128"
 
 //Outro Parameters
-	"scrolltime" "158"
-	"separation"  "10"
+	"scrolltime" "350"
+	"separation"  "13"
 }
 
 //========================================================
@@ -46,7 +46,7 @@
 	"The SMOD Author (the_author) for:"	"CreditsOutroText"
 	"The font used in FIREFIGHT RELOADED."	"CreditsOutroText"
 	"The kick viewmodel."	"CreditsOutroText"
-	"The gib/gore models."	"CreditsOutroText"
+	"The gib models."	"CreditsOutroText"
 	"The Alyxgun model."	"CreditsOutroText"
 	"And many other SMOD assets."	"CreditsOutroText"
 	"Without him, FIREFIGHT RELOADED wouldn't be a thing."	"CreditsOutroText"
@@ -165,7 +165,7 @@
 	"Tyler 'BFBC2143' Schield"	"CreditsOutroText"
 	"Pierce 'herbj54' Johnson"	"CreditsOutroText"
 	"Greenie"	"CreditsOutroText"
-	"Kasey/Tytygigas"	"CreditsOutroText"
+	"Kasey 'Tytygigas'"	"CreditsOutroText"
 	"DeviantXS"	"CreditsOutroText"
 	"Pepper 'PepperAlien' Axebane"	"CreditsOutroText"
 	"Aaron Dee"	"CreditsOutroText"
@@ -183,7 +183,8 @@
 	"Thank you to all my close friends who changed my life in a positive way and"	"CreditsOutroText"
 	"got me in the mood to work on projects again. You're all amazing people."	"CreditsOutroText"
 	" "	"CreditsOutroText"
-	"Thank you to Kayce Date for her love and support over the last few months of the ENDGAME update's development. "	"CreditsOutroText"
+	"Thank you to Kayce Date for her love and support "	"CreditsOutroText"
+	"over the last few months of the ENDGAME update's development. "	"CreditsOutroText"
 	" "	"CreditsOutroText"
 	" "	"CreditsOutroText"
 	" "	"CreditsOutroText"

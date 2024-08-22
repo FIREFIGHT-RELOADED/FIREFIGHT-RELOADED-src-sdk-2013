@@ -717,13 +717,7 @@ void CHL2_Player::HandleGrapple(void)
 		KeyValues* pInfo = CMapInfo::GetMapInfoData();
 		if (pInfo != NULL && !pInfo->GetBool("CanGrapple", true))
 		{
-			pInfo->deleteThis();
 			return;
-		}
-
-		if (pInfo != NULL)
-		{
-			pInfo->deleteThis();
 		}
 
 		if (m_afButtonPressed & IN_GRAPPLE)

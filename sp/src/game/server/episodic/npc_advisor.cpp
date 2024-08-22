@@ -22,6 +22,7 @@
 #include "weapon_physcannon.h"
 #include "hl2/prop_combine_ball.h"
 #include "weapon_flaregun.h"
+#include "hl2_player.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -390,6 +391,21 @@ int CNPC_Advisor::OnTakeDamage_Alive(const CTakeDamageInfo& info)
 //-----------------------------------------------------------------------------
 bool CNPC_Advisor::PassesDamageFilter(const CTakeDamageInfo& info)
 {
+	CBaseEntity* inflictor = info.GetInflictor();
+	CBaseEntity* attacker = info.GetAttacker();
+	//way to make it so we don't recieve kick damage.
+	CBasePlayer* player = (inflictor->IsPlayer() ? (CBasePlayer*)inflictor : (attacker->IsPlayer() ? (CBasePlayer*)attacker : NULL));
+
+	if (player)
+	{
+		CHL2_Player* hlPlayer = (CHL2_Player*)player;
+
+		if (hlPlayer && hlPlayer->m_bIsKicking)
+		{
+			return false;
+		}
+	}
+
 	if ((info.GetDamageType() & DMG_CRUSH))
 	{
 		return false;
@@ -400,12 +416,12 @@ bool CNPC_Advisor::PassesDamageFilter(const CTakeDamageInfo& info)
 		return false;
 	}
 
-	if (UTIL_IsAR2CombineBall(info.GetInflictor()))
+	if (UTIL_IsAR2CombineBall(inflictor))
 	{
 		return false;
 	}
 
-	if (UTIL_IsFlare(info.GetInflictor()))
+	if (UTIL_IsFlare(inflictor))
 	{
 		return false;
 	}

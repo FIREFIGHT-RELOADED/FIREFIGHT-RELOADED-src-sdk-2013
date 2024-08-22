@@ -123,8 +123,6 @@ bool CMapAdd::RunLabel( const char *szLabel)
 				}
 			}
 		}
-
-		pInfo->deleteThis();
 	}
 
 	return true;

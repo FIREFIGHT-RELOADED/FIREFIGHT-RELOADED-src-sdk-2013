@@ -174,11 +174,6 @@ void CNPCMakerFirefight::Precache(void)
 		m_bUsingMapSpawnTime = true;
 	}
 
-	if (pInfo != NULL)
-	{
-		pInfo->deleteThis();
-	}
-
 	int nWeapons = ARRAYSIZE(g_Weapons);
 	for (int i = 0; i < nWeapons; ++i)
 		UTIL_PrecacheOther(g_Weapons[i]);
@@ -207,8 +202,6 @@ void CNPCMakerFirefight::MakerThink(void)
 				{
 					m_flSpawnFrequency = m_flSpawnFrequency + steamDeckTimeAdd;
 				}
-
-				pInfo->deleteThis();
 			}
 		}
 	}

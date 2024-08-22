@@ -66,13 +66,7 @@ void CGameMovement::CheckPowerSlide( void )
 	KeyValues* pInfo = CMapInfo::GetMapInfoData();
 	if (pInfo != NULL && !pInfo->GetBool("CanPowerslide", true))
 	{
-		pInfo->deleteThis();
 		return;
-	}
-
-	if (pInfo != NULL)
-	{
-		pInfo->deleteThis();
 	}
 
 	if (mv->m_nButtons & IN_GRAPPLE)
@@ -220,13 +214,7 @@ void CGameMovement::AnticipateWallRun( void )
 	KeyValues* pInfo = CMapInfo::GetMapInfoData();
 	if (pInfo != NULL && !pInfo->GetBool("CanWallrun", true))
 	{
-		pInfo->deleteThis();
 		return;
-	}
-
-	if (pInfo != NULL)
-	{
-		pInfo->deleteThis();
 	}
 
 	// No idea how this can be called when wallrunning, but it is
@@ -278,13 +266,7 @@ void CGameMovement::CheckWallRun( Vector &vecWallNormal, trace_t &pm )
 	KeyValues* pInfo = CMapInfo::GetMapInfoData();
 	if (pInfo != NULL && !pInfo->GetBool("CanWallrun", true))
 	{
-		pInfo->deleteThis();
 		return;
-	}
-
-	if (pInfo != NULL)
-	{
-		pInfo->deleteThis();
 	}
 
 	// Can't wallrun without the suit
@@ -943,13 +925,7 @@ void CGameMovement::CheckWallRunScramble( bool& steps )
 	KeyValues* pInfo = CMapInfo::GetMapInfoData();
 	if (pInfo != NULL && !pInfo->GetBool("CanWallrun", true))
 	{
-		pInfo->deleteThis();
 		return;
-	}
-
-	if (pInfo != NULL)
-	{
-		pInfo->deleteThis();
 	}
 
 	Vector	flatforward;

@@ -2,8 +2,6 @@
 {
 	"1"
 	{
-		"hardcore"	"1"
-		"nodisconnect"	"1"
 		"health"	"350"
 		"setmaxhealth"	"1"
 		"armor"		"350"
