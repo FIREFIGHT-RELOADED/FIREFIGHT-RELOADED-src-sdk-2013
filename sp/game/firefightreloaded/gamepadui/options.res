@@ -2718,6 +2718,20 @@
 					"1"		"#gameui_enabled"
 				}
 			}
+            
+            "Turbophysics"
+			{
+				"text"			"#GameUI_Turbophysics"
+				"type"			"wheelywheel"
+				"advanced"		"1"
+				"convar"		"sv_turbophysics"
+
+				"options"
+				{
+					"0"		"#gameui_disabled"
+					"1"		"#gameui_enabled"
+				}
+			}
 
 			"HDR"
 			{
