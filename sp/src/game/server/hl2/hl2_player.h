@@ -187,6 +187,8 @@ public:
 	void CheckBullettime(void);
 	void ToggleBullettime(void);
 
+	void CheckIronsights(void);
+
 	void HandleGrapple(void);
 
 	bool CanZoom( CBaseEntity *pRequester );

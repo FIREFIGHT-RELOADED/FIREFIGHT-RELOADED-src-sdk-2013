@@ -807,6 +807,7 @@ void CHL2_Player::PreThink(void)
 		CheckSuitUpdate();
 		CheckSuitZoom();
 		CheckBullettime();
+		CheckIronsights();
 
 		WaterMove();	
 		return;
@@ -940,6 +941,19 @@ void CHL2_Player::PreThink(void)
 
 	VPROF_SCOPE_BEGIN("CHL2_Player::PreThink-CheckBullettime");
 	CheckBullettime();
+	VPROF_SCOPE_END();
+
+	//this is going to get technical
+	//
+	//so the commands in HL2 which require you to hold a key down are in the PreThink function, which most keys reside there.
+	//However, for whatever reason, the code for the ironsights was in PostThink.
+	//It was probably in there for years(probably back when FR released in fact) and before I did some refactors to the code, 
+	//which made the issue worse.
+	//Past bitl didn't know what he was doing so it laid there for a while.
+	//
+	//it should be fixed now as that code was moved over to PreThink
+	VPROF_SCOPE_BEGIN("CHL2_Player::PreThink-CheckHoldIronsights");
+	CheckIronsights();
 	VPROF_SCOPE_END();
 
 	if (m_lifeState >= LIFE_DYING)
@@ -1428,19 +1442,6 @@ void CHL2_Player::PostThink( void )
 		if (m_afButtonReleased & IN_KICK && m_flNextKickAttack < gpGlobals->curtime /* && m_flNextKickAttack < gpGlobals->curtime  && !m_bIsKicking*/)
 		{
 			KickAttack();
-		}
-	}
-
-	CBaseCombatWeapon *pWeapon = this->GetActiveWeapon();
-	if (pWeapon != NULL)
-	{
-		if (m_afButtonPressed & IN_IRONSIGHT)
-		{
-			pWeapon->EnableIronsights();
-		}
-		else if (m_afButtonReleased & IN_IRONSIGHT)
-		{
-			pWeapon->DisableIronsights();
 		}
 	}
 
@@ -2139,6 +2140,22 @@ void CHL2_Player::StopBullettime(bool bPlaySound, bool bFlashScreen, bool bInSho
 
 	m_HL2Local.m_fIsInBullettime = false;
 	g_pGameRules->isInBullettime = false;
+}
+
+void CHL2_Player::CheckIronsights(void)
+{
+	CBaseCombatWeapon* pWeapon = GetActiveWeapon();
+	if (pWeapon != NULL)
+	{
+		if (m_afButtonReleased & IN_IRONSIGHT)
+		{
+			pWeapon->DisableIronsights();
+		}
+		else if (m_afButtonPressed & IN_IRONSIGHT)
+		{
+			pWeapon->EnableIronsights();
+		}
+	}
 }
 
 void CHL2_Player::InitBullettime(void)

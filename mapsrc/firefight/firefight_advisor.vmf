@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "6440"
-	"mapversion" "153"
+	"mapversion" "155"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,7 +20,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "153"
+	"mapversion" "155"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -14599,6 +14599,7 @@ entity
 	{
 		"OnShowMessage" "creditsmusic,PlaySound,,10,-1"
 		"OnShowMessage" "rollcredits,RollOutroCredits,,10,-1"
+		"OnShowMessage" "credits_weaponstrip,StripWeaponsAndSuit,,10,-1"
 	}
 	"origin" "86.9901 547.976 129"
 	editor
@@ -18562,6 +18563,20 @@ entity
 	"spawnflags" "0"
 	"targetname" "grapplehint"
 	"origin" "-192.087 553.464 129"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "20646"
+	"classname" "player_weaponstrip"
+	"targetname" "credits_weaponstrip"
+	"origin" "42.1245 617.105 129"
 	editor
 	{
 		"color" "220 30 220"
