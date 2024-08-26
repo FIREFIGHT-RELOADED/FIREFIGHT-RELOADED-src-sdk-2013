@@ -1,0 +1,94 @@
+"firefight-reloaded-endgame"
+{
+	"1"
+	{
+		"path"	"music/FR_Album1.mp3"
+		"title"	"DISCOVERY OF ZIOCRONICA"
+		"artist"	"Bitl Development Studio"
+		"album"	"FirefightReloaded"
+	}
+	"2"
+	{
+		"path"	"music/fr_theme.mp3"
+		"title"	"VIOLENCE IN ULTRAVIOLET"
+		"artist"	"Bitl Development Studio"
+		"album"	"FirefightReloaded"
+	}
+	"3"
+	{
+		"path"	"music/FR_Combat1.mp3"
+		"title"	"DISRUPTOR"
+		"artist"	"Bitl Development Studio"
+		"album"	"FirefightReloaded"
+	}
+	"4"
+	{
+		"path"	"music/FR_Combat2.mp3"
+		"title"	"BLOOD HAZARD"
+		"artist"	"Bitl Development Studio"
+		"album"	"FirefightReloaded"
+	}
+	"5"
+	{
+		"path"	"music/FR_Album5.mp3"
+		"title"	"CODE: EXPUNGE (OST Mix)"
+		"artist"	"Bitl Development Studio"
+		"album"	"FirefightReloaded"
+	}
+	"6"
+	{
+		"path"	"music/FR_Album6.mp3"
+		"title"	"E.M.P. (Electronic Merchant Protocol)"
+		"artist"	"Bitl Development Studio"
+		"album"	"FirefightReloaded"
+	}
+	"7"
+	{
+		"path"	"music/FR_Combat3.mp3"
+		"title"	"MOMENTUM"
+		"artist"	"Bitl Development Studio"
+		"album"	"FirefightReloaded"
+	}
+	"8"
+	{
+		"path"	"music/FR_Combat4.mp3"
+		"title"	"MANIFEST"
+		"artist"	"Bitl Development Studio"
+		"album"	"FirefightReloaded"
+	}
+	"9"
+	{
+		"path"	"music/FR_Album9.mp3"
+		"title"	"MINDFIELD (OST Mix)"
+		"artist"	"Bitl Development Studio"
+		"album"	"FirefightReloaded"
+	}
+	"10"
+	{
+		"path"	"music/FR_Album10.mp3"
+		"title"	"TRAVELLER (Credits, SMOD Tribute)"
+		"artist"	"Bitl Development Studio"
+		"album"	"FirefightReloaded"
+	}
+	"11"
+	{
+		"path"	"music/FR_Album11.mp3"
+		"title"	"BLUEHEART V (Reprise)"
+		"artist"	"Bitl Development Studio"
+		"album"	"FirefightReloaded"
+	}
+	"12"
+	{
+		"path"	"music/FR_Combat5.mp3"
+		"title"	"CODE: EXPUNGE (In-Game)"
+		"artist"	"Bitl Development Studio"
+		"album"	"FirefightReloaded"
+	}
+	"13"
+	{
+		"path"	"music/FR_Album13.mp3"
+		"title"	"MINDFIELD (In-Game)"
+		"artist"	"Bitl Development Studio"
+		"album"	"FirefightReloaded"
+	}
+}

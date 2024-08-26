@@ -264,4 +264,39 @@
 		"album"	"HalfLife2"
 	}
 	//FR tracks here
+	"38"
+	{
+		"path"	"music/FR_Combat1.mp3"
+		"title"	"DISRUPTOR"
+		"artist"	"Bitl Development Studio"
+		"album"	"FirefightReloaded"
+	}
+	"39"
+	{
+		"path"	"music/FR_Combat2.mp3"
+		"title"	"BLOOD HAZARD"
+		"artist"	"Bitl Development Studio"
+		"album"	"FirefightReloaded"
+	}
+	"40"
+	{
+		"path"	"music/FR_Combat3.mp3"
+		"title"	"MOMENTUM"
+		"artist"	"Bitl Development Studio"
+		"album"	"FirefightReloaded"
+	}
+	"41"
+	{
+		"path"	"music/FR_Combat4.mp3"
+		"title"	"MANIFEST"
+		"artist"	"Bitl Development Studio"
+		"album"	"FirefightReloaded"
+	}
+	"42"
+	{
+		"path"	"music/FR_Combat5.mp3"
+		"title"	"CODE: EXPUNGE"
+		"artist"	"Bitl Development Studio"
+		"album"	"FirefightReloaded"
+	}
 }
