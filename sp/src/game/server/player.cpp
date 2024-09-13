@@ -6485,8 +6485,9 @@ void CBasePlayer::Precache( void )
 	PrecacheScriptSound( "Player.DrownContinue" );
 	PrecacheScriptSound( "Player.Wade" );
 	PrecacheScriptSound( "Player.AmbientUnderWater" );
+	PrecacheScriptSound( "Player.PowerSlideStart");
 	m_hssPowerSlideSound = PrecacheScriptSound( "Player.PowerSlide" );
-	m_hssWallRunSound = PrecacheScriptSound( "HL2Player.SprintStart" );
+	m_hssWallRunSound = PrecacheScriptSound( "Player.WallRunStart" );
 	//Voice
 	if (sv_player_voice.GetBool())
 	{

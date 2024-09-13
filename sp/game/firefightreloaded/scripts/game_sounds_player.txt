@@ -358,6 +358,33 @@
 	"wave"	"player/player_slide.wav"
 }
 
+"Player.WallRunStart"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"0.9"
+	"soundlevel"  "SNDLVL_60dB"
+
+	"wave"	"player/suit_sprint.wav"
+}
+
+"Player.PowerSlideStart"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"		"60"
+
+	"rndwave"
+	{
+		"wave"	"physics/body/body_medium_impact_hard1.wav"
+		"wave"	"physics/body/body_medium_impact_hard2.wav"
+		"wave"	"physics/body/body_medium_impact_hard3.wav"
+		"wave"	"physics/body/body_medium_impact_hard4.wav"
+		"wave"	"physics/body/body_medium_impact_hard5.wav"
+		"wave"	"physics/body/body_medium_impact_hard6.wav"
+	}
+}
+
 "Geiger.BeepLow"
 {
 	"channel"	"CHAN_STATIC"

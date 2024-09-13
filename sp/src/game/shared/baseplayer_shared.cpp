@@ -904,14 +904,14 @@ void CBasePlayer::PlayWallRunSound( Vector &vecOrigin )
 	EmitSound(
 		filter,
 		entindex(),
-		"HL2Player.SprintStart",
+		"Player.WallRunStart",
 		m_hssWallRunSound );
 }
 
 
 void CBasePlayer::StopWallRunSound( void )
 {
-	StopSound( "HL2Player.SprintStart", m_hssWallRunSound );
+	StopSound( "Player.WallRunStart", m_hssWallRunSound );
 }
 
 void CBasePlayer::UpdateButtonState( int nUserCmdButtonMask )

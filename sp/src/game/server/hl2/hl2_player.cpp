@@ -524,7 +524,7 @@ void CHL2_Player::Precache( void )
 	PrecacheScriptSound("HL2Player.bullettimeon");
 	PrecacheScriptSound("HL2Player.bullettimeoff");
 	PrecacheScriptSound("HL2Player.heartbeat");
-
+	PrecacheScriptSound("HL2Player.SprintStart");
 	PrecacheScriptSound( "HL2Player.SprintNoPower" );
 	PrecacheScriptSound( "HL2Player.UseDeny" );
 	PrecacheScriptSound( "HL2Player.FlashLightOn" );
