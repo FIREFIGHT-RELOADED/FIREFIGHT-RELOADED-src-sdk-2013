@@ -376,12 +376,12 @@
 
 	"rndwave"
 	{
-		"wave"	"physics/body/body_medium_impact_hard1.wav"
-		"wave"	"physics/body/body_medium_impact_hard2.wav"
-		"wave"	"physics/body/body_medium_impact_hard3.wav"
-		"wave"	"physics/body/body_medium_impact_hard4.wav"
-		"wave"	"physics/body/body_medium_impact_hard5.wav"
-		"wave"	"physics/body/body_medium_impact_hard6.wav"
+		"wave"	"player/player_slide_thump1.wav"
+		"wave"	"player/player_slide_thump2.wav"
+		"wave"	"player/player_slide_thump3.wav"
+		"wave"	"player/player_slide_thump4.wav"
+		"wave"	"player/player_slide_thump5.wav"
+		"wave"	"player/player_slide_thump6.wav"
 	}
 }
 
