@@ -354,7 +354,7 @@
 	"channel"	"CHAN_BODY"
 	"volume"	"0.35"
 	"soundlevel"  "SNDLVL_75dB"
-    	"pitch"     "60"
+    	"pitch"     "60,75,90"
 	"wave"	"player/player_slide.wav"
 }
 
@@ -372,7 +372,7 @@
 	"channel"		"CHAN_ITEM"
 	"volume"		"1.0"
 	"soundlevel"	"SNDLVL_75dB"
-	"pitch"		"60"
+	"pitch"		"60,75,90"
 
 	"rndwave"
 	{
