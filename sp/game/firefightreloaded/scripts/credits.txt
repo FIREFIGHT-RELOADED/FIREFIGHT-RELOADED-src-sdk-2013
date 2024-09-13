@@ -98,6 +98,8 @@
 	" "	"CreditsOutroText"
 	"Mister Sandman for the OICW model."	"CreditsOutroText"	
 	" "	"CreditsOutroText"
+	"Running with Scissors for the kick sound effects."	"CreditsOutroText"	
+	" "	"CreditsOutroText"
 	"Code Credits:"	"CreditsOutroText"
 	" "	"CreditsOutroText"
 	"Sirmasters from BSNOOCH, for making the Mapadd, Kick,"	"CreditsOutroText"

@@ -43,6 +43,7 @@ Gmadador for the Gasmask Citizen remake model.
 Facepunch Studios for some player models and viewmodels.
 xDShot for the two-handed pistol animations used in the Pistol and Alyxgun.
 Mister Sandman for the OICW model.
+Running with Scissors for the kick sound effects.
 
 Code Credits:
 Sirmasters from BSNOOCH, for making the Mapadd, Kick, and Custom Weapon code. (Part of SMMOD)
