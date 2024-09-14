@@ -6208,21 +6208,26 @@ void CBasePlayer::WeaponSpawnLogic(void)
 	{
 		if (!m_bForcedLoadout)
 		{
+			bool isLoadoutNameNull = (!m_szForcedLoadoutName[0] || Q_strcmp(m_szForcedLoadoutName, "") == 0);
+
 			//if our loadout isn't forced by an entity, check if the mapinfo has one.
-			if (!m_szForcedLoadoutName[0])
+			if (isLoadoutNameNull)
 			{
 				KeyValues* pInfo = CMapInfo::GetMapInfoData();
 
 				if (pInfo != NULL)
 				{
 					m_szForcedLoadoutName = pInfo->GetString("ForcedLoadout", "");
-					m_bForcedLoadout = true;
-					WeaponSpawnLogic();
-					return;
+					if (Q_strcmp(m_szForcedLoadoutName, ""))
+					{
+						m_bForcedLoadout = true;
+						WeaponSpawnLogic();
+						return;
+					}
 				}
 			}
 
-			if (!m_szForcedLoadoutName[0])
+			if (isLoadoutNameNull)
 			{
 				LoadLoadoutFile(sv_player_defaultloadout.GetString());
 			}
@@ -6244,15 +6249,11 @@ void CBasePlayer::InitialSpawn( void )
 
 	if (sv_player_startingmoney.GetBool())
 	{
-		SetMoney(sv_player_startingmoney_amount.GetInt());
+		if ((GetMoney() < sv_player_startingmoney_amount.GetInt()) && !(GetMoney() >= sv_player_startingmoney_amount.GetInt()))
+		{
+			AddMoney(sv_player_startingmoney_amount.GetInt());
+		}
 	}
-	else
-	{
-		SetMoney(0);
-	}
-
-	SetXP(0);
-	SetLevel();
 
 	m_MaxHealthVal = player_defaulthealth.GetInt();
 }
