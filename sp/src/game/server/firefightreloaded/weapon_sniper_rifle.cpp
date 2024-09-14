@@ -322,7 +322,7 @@ bool CWeaponSniperRifle::Reload(void)
 {
 	if (m_iZoomMode > 0)
 	{
-		m_iZoomMode = ZOOM_NONE;
+		m_iZoomMode = ZOOM_1X;
 		ToggleZoom(ZOOM_NORMAL);
 	}
 
@@ -378,7 +378,7 @@ bool CWeaponSniperRifle::Holster(CBaseCombatWeapon *pSwitchingTo)
 {
 	if (m_iZoomMode > 0)
 	{
-		m_iZoomMode = ZOOM_NONE;
+		m_iZoomMode = ZOOM_1X;
 		ToggleZoom(ZOOM_NORMAL);
 	}
 
@@ -389,7 +389,7 @@ void CWeaponSniperRifle::Drop(const Vector &vecVelocity)
 {
 	if (m_iZoomMode > 0)
 	{
-		m_iZoomMode = ZOOM_NONE;
+		m_iZoomMode = ZOOM_1X;
 		ToggleZoom(ZOOM_NORMAL);
 	}
 
