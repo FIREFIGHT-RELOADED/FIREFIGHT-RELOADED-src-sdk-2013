@@ -2857,26 +2857,29 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 		{
 			if (IsElite() || IsAce())
 			{
-				animevent_t fakeEvent;
-
-				fakeEvent.pSource = this;
-				fakeEvent.event = EVENT_WEAPON_AR2_ALTFIRE;
-				GetActiveWeapon()->Operator_HandleAnimEvent( &fakeEvent, this );
-
-				// Stop other squad members from combine balling for a while.
-				if (!IsAce())
+				if (GetActiveWeapon())
 				{
-					DelaySquadAltFireAttack(10.0f);
-				}
+					animevent_t fakeEvent;
 
-				// I'm disabling this decrementor. At the time of this change, the elites
-				// don't bother to check if they have grenades anyway. This means that all
-				// elites have infinite combine balls, even if the designer marks the elite
-				// as having 0 grenades. By disabling this decrementor, yet enabling the code
-				// that makes sure the elite has grenades in order to fire a combine ball, we
-				// preserve the legacy behavior while making it possible for a designer to prevent
-				// elites from shooting combine balls by setting grenades to '0' in hammer. (sjb) EP2_OUTLAND_10
-				// m_iNumGrenades--;
+					fakeEvent.pSource = this;
+					fakeEvent.event = EVENT_WEAPON_AR2_ALTFIRE;
+					GetActiveWeapon()->Operator_HandleAnimEvent(&fakeEvent, this);
+
+					// Stop other squad members from combine balling for a while.
+					if (!IsAce())
+					{
+						DelaySquadAltFireAttack(10.0f);
+					}
+
+					// I'm disabling this decrementor. At the time of this change, the elites
+					// don't bother to check if they have grenades anyway. This means that all
+					// elites have infinite combine balls, even if the designer marks the elite
+					// as having 0 grenades. By disabling this decrementor, yet enabling the code
+					// that makes sure the elite has grenades in order to fire a combine ball, we
+					// preserve the legacy behavior while making it possible for a designer to prevent
+					// elites from shooting combine balls by setting grenades to '0' in hammer. (sjb) EP2_OUTLAND_10
+					// m_iNumGrenades--;
+				}
 			}
 
 			handledEvent = true;
@@ -3445,7 +3448,7 @@ bool CNPC_Combine::CanAltFireEnemy( bool bUseFreeKnowledge )
 	if (!IsElite())
 		return false;
 
-	if (!GetActiveWeapon()->HasSecondaryAmmo())
+	if (GetActiveWeapon() && !GetActiveWeapon()->HasSecondaryAmmo())
 		return false;
 
 	if (IsCrouching())

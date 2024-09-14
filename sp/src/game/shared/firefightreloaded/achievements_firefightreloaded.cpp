@@ -893,7 +893,9 @@ protected:
 	{
 		CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
 		// if The player's health is less than the maximum, fail
-		if (pPlayer->GetHealth() < pPlayer->GetMaxHealth())
+		//DevMsg("PLAYER HEALTH: %i PLAYER MAX HEALTH: %i", pPlayer->GetHealth(), pPlayer->GetMaxHealthValue());
+		//DevMsg("IS PLAYER ALLOWED TO GET CAchievementKill20EnemiesNoDamage? %i\n", !(pPlayer->GetHealth() < pPlayer->GetMaxHealthValue()));
+		if (pPlayer->GetHealth() < pPlayer->GetMaxHealthValue())
 		{
 			SetFailed();
 		}

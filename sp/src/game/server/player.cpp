@@ -6255,7 +6255,10 @@ void CBasePlayer::InitialSpawn( void )
 		}
 	}
 
-	m_MaxHealthVal = player_defaulthealth.GetInt();
+	if (m_MaxHealthVal < player_defaulthealth.GetInt())
+	{
+		m_MaxHealthVal = player_defaulthealth.GetInt();
+	}
 }
 
 //-----------------------------------------------------------------------------
