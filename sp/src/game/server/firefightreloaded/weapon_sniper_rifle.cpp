@@ -28,9 +28,13 @@ enum ZoomType
 	ZOOM_NONE,
 	ZOOM_1X,
 	ZOOM_2X,
-	ZOOM_3X,
+	ZOOM_3X
+};
 
-	ZOOM_LAST
+enum ZoomOption
+{
+	ZOOM_NORMAL,
+	ZOOM_INCREASEMAGNIFICATION
 };
 
 //-----------------------------------------------------------------------------
@@ -80,10 +84,11 @@ public:
 	
 private:
 	void	CheckZoomToggle( void );
-	void	ToggleZoom( void );
+	void	ToggleZoom(ZoomOption option);
 	
 private:
 	int		m_iZoomMode;
+	bool	m_bReverseZoomOrder;
 };
 
 acttable_t CWeaponSniperRifle::m_acttable[] =
@@ -157,6 +162,7 @@ END_SEND_TABLE()
 
 BEGIN_DATADESC( CWeaponSniperRifle )
 	DEFINE_FIELD(m_iZoomMode,		FIELD_INTEGER ),
+	DEFINE_FIELD(m_bReverseZoomOrder,		FIELD_BOOLEAN),
 END_DATADESC()
 
 //-----------------------------------------------------------------------------
@@ -166,7 +172,8 @@ CWeaponSniperRifle::CWeaponSniperRifle( void )
 {
 	m_bReloadsSingly	= false;
 	m_bFiresUnderwater	= false;
-	m_iZoomMode = 0;
+	m_iZoomMode = ZOOM_NONE;
+	m_bReverseZoomOrder = false;
 
 	m_fMinRange1 = 0;
 	m_fMaxRange1 = 99999;
@@ -315,8 +322,8 @@ bool CWeaponSniperRifle::Reload(void)
 {
 	if (m_iZoomMode > 0)
 	{
-		m_iZoomMode = ZOOM_LAST - 1;
-		ToggleZoom();
+		m_iZoomMode = ZOOM_NONE;
+		ToggleZoom(ZOOM_NORMAL);
 	}
 
 	return BaseClass::Reload();
@@ -333,7 +340,11 @@ void CWeaponSniperRifle::CheckZoomToggle( void )
 	{
 		if (pPlayer->m_afButtonPressed & IN_ATTACK2)
 		{
-			ToggleZoom();
+			ToggleZoom(ZOOM_NORMAL);
+		}
+		else if(pPlayer->m_afButtonPressed & IN_ATTACK3)
+		{
+			ToggleZoom(ZOOM_INCREASEMAGNIFICATION);
 		}
 	}
 }
@@ -367,8 +378,8 @@ bool CWeaponSniperRifle::Holster(CBaseCombatWeapon *pSwitchingTo)
 {
 	if (m_iZoomMode > 0)
 	{
-		m_iZoomMode = ZOOM_LAST - 1;
-		ToggleZoom();
+		m_iZoomMode = ZOOM_NONE;
+		ToggleZoom(ZOOM_NORMAL);
 	}
 
 	return BaseClass::Holster(pSwitchingTo);
@@ -378,8 +389,8 @@ void CWeaponSniperRifle::Drop(const Vector &vecVelocity)
 {
 	if (m_iZoomMode > 0)
 	{
-		m_iZoomMode = ZOOM_LAST - 1;
-		ToggleZoom();
+		m_iZoomMode = ZOOM_NONE;
+		ToggleZoom(ZOOM_NORMAL);
 	}
 
 	BaseClass::Drop(vecVelocity);
@@ -388,7 +399,7 @@ void CWeaponSniperRifle::Drop(const Vector &vecVelocity)
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CWeaponSniperRifle::ToggleZoom( void )
+void CWeaponSniperRifle::ToggleZoom(ZoomOption option)
 {
 	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
 	
@@ -403,40 +414,80 @@ void CWeaponSniperRifle::ToggleZoom( void )
 	if (IsIronsighted())
 		return;
 
-	switch (m_iZoomMode)
+	if (option == ZOOM_NORMAL)
 	{
-		case ZOOM_3X:
-		default:
-			if (pPlayer->SetFOV(this, 0, 0.2f))
-			{
-				vm->RemoveEffects(EF_NODRAW);
-				WeaponSound(SPECIAL2);
-				m_iZoomMode = ZOOM_NONE;
-			}
-			break;
-		case ZOOM_2X:
-			if (pPlayer->SetFOV(this, 5, 0.05f))
-			{
-				vm->AddEffects(EF_NODRAW);
-				WeaponSound(SPECIAL1);
-				m_iZoomMode = ZOOM_3X;
-			}
-			break;
-		case ZOOM_1X:
-			if (pPlayer->SetFOV(this, 10, 0.05f))
-			{
-				vm->AddEffects(EF_NODRAW);
-				WeaponSound(SPECIAL1);
-				m_iZoomMode = ZOOM_2X;
-			}
-			break;
-		case ZOOM_NONE:
-			if (pPlayer->SetFOV(this, 20, 0.05f))
-			{
-				vm->AddEffects(EF_NODRAW);
-				WeaponSound(SPECIAL1);
-				m_iZoomMode = ZOOM_1X;
-			}
-			break;
+		switch (m_iZoomMode)
+		{
+			case ZOOM_1X:
+			case ZOOM_2X:
+			case ZOOM_3X:
+				if (pPlayer->SetFOV(this, 0, 0.2f))
+				{
+					vm->RemoveEffects(EF_NODRAW);
+					WeaponSound(SPECIAL2);
+					m_iZoomMode = ZOOM_NONE;
+					m_bReverseZoomOrder = false;
+				}
+				break;
+			case ZOOM_NONE:
+				if (pPlayer->SetFOV(this, 20, 0.05f))
+				{
+					vm->AddEffects(EF_NODRAW);
+					WeaponSound(SPECIAL1);
+					m_iZoomMode = ZOOM_1X;
+					m_bReverseZoomOrder = false;
+				}
+				break;
+		}
+	}
+	else if (option == ZOOM_INCREASEMAGNIFICATION)
+	{
+		if (m_iZoomMode == ZOOM_NONE)
+		{
+			WeaponSound(EMPTY);
+			return;
+		}
+
+		switch (m_iZoomMode)
+		{
+			case ZOOM_3X:
+				if (pPlayer->SetFOV(this, 10, 0.05f))
+				{
+					vm->AddEffects(EF_NODRAW);
+					WeaponSound(SPECIAL1);
+					m_iZoomMode = ZOOM_2X;
+					m_bReverseZoomOrder = true;
+				}
+				break;
+			case ZOOM_2X:
+				if (m_bReverseZoomOrder)
+				{
+					if (pPlayer->SetFOV(this, 20, 0.05f))
+					{
+						vm->AddEffects(EF_NODRAW);
+						WeaponSound(SPECIAL1);
+						m_iZoomMode = ZOOM_1X;
+						m_bReverseZoomOrder = false;
+					}
+				}
+				else
+				{
+					if (pPlayer->SetFOV(this, 5, 0.05f))
+					{
+						vm->AddEffects(EF_NODRAW);
+						WeaponSound(SPECIAL1);
+						m_iZoomMode = ZOOM_3X;
+					}
+				}
+				break;
+			case ZOOM_1X:
+				if (pPlayer->SetFOV(this, 10, 0.05f))
+				{
+					vm->AddEffects(EF_NODRAW);
+					WeaponSound(SPECIAL1);
+					m_iZoomMode = ZOOM_2X;
+				}
+				break;
+		}
 	}
 }
