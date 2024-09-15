@@ -57,8 +57,6 @@ public:
 	virtual void VidInit( void );
 	virtual void Reset( void );
 	virtual void OnThink();
-
-private:
 };	
 
 DECLARE_HUDELEMENT( CHudTimer );
@@ -101,23 +99,27 @@ void CHudTimer::VidInit()
 //-----------------------------------------------------------------------------
 void CHudTimer::OnThink()
 {
-	if (g_pGameRules && !g_pGameRules->IsMultiplayer() && cl_fr_usetimer.GetBool())
+	ConVarRef host_timescale("host_timescale");
+
+	if (cl_fr_usetimer.GetBool())
 	{
+		SetAlpha(255);
 		int iRemain = (int)gpGlobals->curtime;
 		int iMinutes, iSeconds;
-		iMinutes = iRemain / 60;
-		iSeconds = iRemain % 60;
+		int iTimeMultiplier = 60;
+		iMinutes = iRemain / iTimeMultiplier;
+		iSeconds = iRemain % iTimeMultiplier;
 		SetMinutes(iMinutes);
 		SetSeconds(iSeconds);
-		SetAlpha(255);
 	}
 	else if (g_pGameRules && g_pGameRules->IsMultiplayer() && HL2GameRules()->GetMapRemainingTime() > 0)
 	{
 		SetAlpha(255);
 		int iRemain = (int)HL2GameRules()->GetMapRemainingTime();
 		int iMinutes, iSeconds;
-		iMinutes = iRemain / 60;
-		iSeconds = iRemain % 60;
+		int iTimeMultiplier = 60;
+		iMinutes = iRemain / iTimeMultiplier;
+		iSeconds = iRemain % iTimeMultiplier;
 		SetMinutes(iMinutes);
 		SetSeconds(iSeconds);
 

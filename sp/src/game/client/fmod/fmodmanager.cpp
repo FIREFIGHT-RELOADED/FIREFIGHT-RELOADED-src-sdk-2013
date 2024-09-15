@@ -280,6 +280,8 @@ CFMODMusicSystem::CFMODMusicSystem() : CAutoGameSystemPerFrame("fmod_music_syste
 	m_bPlaylistLoaded = false;
 	curID = 0;
 	tracktime = 0.0f;
+	tracktimeoriginal = tracktime;
+	m_bTimeNeedsUpdate = false;
 	m_bJustShuffled = false;
 	m_sSettings = CreateNullSettings();
 	m_sCurSong = CreateNullSong();
@@ -318,6 +320,8 @@ void CFMODMusicSystem::Kill(bool full)
 	m_bPlaylistLoaded = false;
 	curID = 0;
 	tracktime = 0.0f;
+	tracktimeoriginal = tracktime;
+	m_bTimeNeedsUpdate = false;
 	m_sSettings = CreateNullSettings();
 	m_sCurSong = CreateNullSong();
 	m_Songs.Purge();
@@ -482,6 +486,45 @@ void CFMODMusicSystem::Update(float frametime)
 				m_pChannel->setMute(!engine->IsActiveApp());
 				m_pChannel->setPaused(engine->IsPaused());
 			}
+
+			if (m_pSong)
+			{
+				//first, get the position of the "progress bar"
+				unsigned int songPos = 5000;
+				m_pChannel->getPosition(&songPos, FMOD_TIMEUNIT_MS);
+				songPos = (songPos / 1000);
+
+				//then, calculate the song progress. Length is already stored.
+				int songProgress = tracktimeoriginal - songPos;
+				DevMsg("CFMODMusicSystem: SONG CURRENT PROGRESS: %i\n", songProgress);
+
+				//if our song progress is under or equal to 0, reset the fucker.
+				if (songProgress <= 0)
+				{
+					tracktime = gpGlobals->curtime;
+				}
+				else
+				{ 
+					//since we change host_timescale a lot, dynamically adjust the tracktime based on the timescale.
+					ConVarRef host_timescale("host_timescale");
+
+					//don't do anything if we're normal timescale.
+					float songProgressAdjusted = songProgress / host_timescale.GetFloat();
+					float tracktimeNew = gpGlobals->curtime + songProgressAdjusted;
+
+					if (tracktimeNew != tracktime)
+					{
+						m_bTimeNeedsUpdate = true;
+					}
+
+					if (m_bTimeNeedsUpdate)
+					{
+						tracktime = tracktimeNew;
+						DevMsg("CFMODMusicSystem: SONG TIME UPDATED: %f\n", songProgressAdjusted);
+						m_bTimeNeedsUpdate = false;
+					}
+				}
+			}
 		}
 	}
 }
@@ -540,6 +583,7 @@ void CFMODMusicSystem::PlaySong()
 	DevMsg("CFMODMusicSystem: LENGTH (SEC): %i\n", songTime);
 
 	tracktime = gpGlobals->curtime + songTime;
+	tracktimeoriginal = songTime;
 
 	//DEBUGGING
 	if (!m_bManualControl)

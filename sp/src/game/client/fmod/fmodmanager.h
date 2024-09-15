@@ -144,7 +144,9 @@ public:
 	bool m_bJustShuffled;
 	bool m_bPlaylistLoaded;
 	bool m_bManualControl;
+	bool m_bTimeNeedsUpdate;
 	float tracktime;
+	float tracktimeoriginal;
 	int curID;
 	CUtlVector< Song_t >	m_Songs;
 	Settings_t m_sSettings;
