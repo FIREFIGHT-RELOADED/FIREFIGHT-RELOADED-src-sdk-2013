@@ -45,6 +45,8 @@ public:
 		Precache();
 		BaseClass::Spawn();
 
+		AddEFlags(EFL_DIRTY_ABSTRANSFORM);
+
 		m_bImportantOutline = true;
 		SetModel(FLOOR_TURRET_WEAPON_MODEL);
 
@@ -358,6 +360,11 @@ void CWeaponTurret::MoveHologram(void)
 
 	if (pHologram)
 	{
+		if (!pOwner->IsAlive())
+		{
+			StopHologram();
+		}
+
 		// Now attempt to drop into the world
 		QAngle angles;
 		trace_t tr;

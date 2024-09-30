@@ -2414,9 +2414,12 @@ void CBaseEntity::ApplyLocalVelocityImpulse( const Vector &inVecImpulse )
 
 		if ( GetMoveType() == MOVETYPE_VPHYSICS )
 		{
-			Vector worldVel;
-			VPhysicsGetObject()->LocalToWorld( &worldVel, vecImpulse );
-			VPhysicsGetObject()->AddVelocity( &worldVel, NULL );
+			if (VPhysicsGetObject())
+			{
+				Vector worldVel;
+				VPhysicsGetObject()->LocalToWorld(&worldVel, vecImpulse);
+				VPhysicsGetObject()->AddVelocity(&worldVel, NULL);
+			}
 		}
 		else
 		{
@@ -2449,7 +2452,10 @@ void CBaseEntity::ApplyAbsVelocityImpulse( const Vector &inVecImpulse )
 
 		if ( GetMoveType() == MOVETYPE_VPHYSICS )
 		{
-			VPhysicsGetObject()->AddVelocity( &vecImpulse, NULL );
+			if (VPhysicsGetObject())
+			{
+				VPhysicsGetObject()->AddVelocity(&vecImpulse, NULL);
+			}
 		}
 		else
 		{
@@ -2475,7 +2481,10 @@ void CBaseEntity::ApplyLocalAngularVelocityImpulse( const AngularImpulse &angImp
 
 		if ( GetMoveType() == MOVETYPE_VPHYSICS )
 		{
-			VPhysicsGetObject()->AddVelocity( NULL, &angImpulse );
+			if (VPhysicsGetObject())
+			{
+				VPhysicsGetObject()->AddVelocity(NULL, &angImpulse);
+			}
 		}
 		else
 		{
