@@ -172,13 +172,6 @@
 	output OnCacheInteraction(void) : "This output fires when the player proves they have 'found' this crate. Fires on: Picked up by +USE, Picked up by Physcannon, Punted by Physcannon, Broken."
 ]
 
-@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) = player_loadoutchanger : "Gives the player a default loadout."
-[
-	// Inputs
-	input SetLoadout(string) : "Set the player's loadout."
-    input UnsetLoadout(void) : "Revert the player's loadout back to the currently set default."
-]
-
 //-------------------------------------------------------------------------
 // Used to listen to events called from code
 //-------------------------------------------------------------------------

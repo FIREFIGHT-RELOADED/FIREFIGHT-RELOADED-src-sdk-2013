@@ -6208,29 +6208,21 @@ void CBasePlayer::WeaponSpawnLogic(void)
 	{
 		if (!m_bForcedLoadout)
 		{
-			bool isLoadoutNameNull = (!m_szForcedLoadoutName[0] || Q_strcmp(m_szForcedLoadoutName, "") == 0);
+			KeyValues* pInfo = CMapInfo::GetMapInfoData();
 
-			//if our loadout isn't forced by an entity, check if the mapinfo has one.
-			if (isLoadoutNameNull)
+			if (pInfo != NULL)
 			{
-				KeyValues* pInfo = CMapInfo::GetMapInfoData();
-
-				if (pInfo != NULL)
+				m_szForcedLoadoutName = pInfo->GetString("ForcedLoadout", "");
+				if (Q_strcmp(m_szForcedLoadoutName, "") == 1)
 				{
-					m_szForcedLoadoutName = pInfo->GetString("ForcedLoadout", "");
-					if (Q_strcmp(m_szForcedLoadoutName, ""))
-					{
-						m_bForcedLoadout = true;
-						WeaponSpawnLogic();
-						return;
-					}
+					m_bForcedLoadout = true;
+					WeaponSpawnLogic();
+					LoadLoadoutFile(m_szForcedLoadoutName);
+					return;
 				}
 			}
 
-			if (isLoadoutNameNull)
-			{
-				LoadLoadoutFile(sv_player_defaultloadout.GetString());
-			}
+			LoadLoadoutFile(sv_player_defaultloadout.GetString());
 		}
 		else
 		{
@@ -9344,53 +9336,6 @@ void CBasePlayer::HideViewModels( void )
 
 		vm->SetWeaponModel( NULL, NULL );
 	}
-}
-
-class CLoadoutChanger : public CPointEntity
-{
-	DECLARE_CLASS(CLoadoutChanger, CPointEntity);
-public:
-	void InputSetLoadout(inputdata_t& data);
-	void InputUnsetLoadout(inputdata_t& data);
-	void ResetLoadout(CBasePlayer* pPlayer);
-	DECLARE_DATADESC();
-};
-
-LINK_ENTITY_TO_CLASS(player_loadoutchanger, CLoadoutChanger);
-
-BEGIN_DATADESC(CLoadoutChanger)
-DEFINE_INPUTFUNC(FIELD_STRING, "SetLoadout", InputSetLoadout),
-DEFINE_INPUTFUNC(FIELD_VOID, "UnsetLoadout", InputUnsetLoadout)
-END_DATADESC()
-
-void CLoadoutChanger::InputSetLoadout(inputdata_t& data)
-{
-	CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
-
-	if (pPlayer)
-	{
-		pPlayer->m_bForcedLoadout = true;
-		pPlayer->m_szForcedLoadoutName = data.value.String();
-		ResetLoadout(pPlayer);
-	}
-}
-
-void CLoadoutChanger::InputUnsetLoadout(inputdata_t& data)
-{
-	CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
-
-	if (pPlayer)
-	{
-		pPlayer->m_bForcedLoadout = false;
-		pPlayer->m_szForcedLoadoutName = "";
-		ResetLoadout(pPlayer);
-	}
-}
-
-void CLoadoutChanger::ResetLoadout(CBasePlayer* pPlayer)
-{
-	pPlayer->RemoveAllItems(true);
-	pPlayer->WeaponSpawnLogic();
 }
 
 class CLevelChecker : public CPointEntity,
