@@ -1188,10 +1188,11 @@ bool CNPC_MetroPolice::IsCurrentlyFiringBurst() const
 bool CNPC_MetroPolice::IsEnemyInAnAirboat() const
 {
 	// Should this be a condition??
-	if ( !GetEnemy() || !GetEnemy()->IsPlayer() )
+	CBaseEntity* pEnemy = GetEnemy();
+	if (!pEnemy || !pEnemy->IsPlayer())
 		return false;
 
-	CBaseEntity *pVehicle = static_cast<CBasePlayer*>( GetEnemy() )->GetVehicleEntity(); 
+	CBaseEntity *pVehicle = static_cast<CBasePlayer*>(pEnemy)->GetVehicleEntity();
 	if ( !pVehicle )
 		return false;
 
@@ -1206,10 +1207,11 @@ bool CNPC_MetroPolice::IsEnemyInAnAirboat() const
 CBaseEntity *CNPC_MetroPolice::GetEnemyAirboat() const
 {
 	// Should this be a condition??
-	if ( !GetEnemy() || !GetEnemy()->IsPlayer() )
+	CBaseEntity *pEnemy = GetEnemy();
+	if ( !pEnemy || !pEnemy->IsPlayer() )
 		return NULL;
 
-	return static_cast<CBasePlayer*>( GetEnemy() )->GetVehicleEntity(); 
+	return static_cast<CBasePlayer*>(pEnemy)->GetVehicleEntity();
 }
 
 
