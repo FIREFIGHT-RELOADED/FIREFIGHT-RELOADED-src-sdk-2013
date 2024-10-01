@@ -88,7 +88,7 @@ ConVar	sk_citizen_heal_toss_player_delay("sk_citizen_heal_toss_player_delay", "2
 
 
 #define MEDIC_THROW_SPEED npc_citizen_medic_throw_speed.GetFloat()
-#define USE_EXPERIMENTAL_MEDIC_CODE() (npc_citizen_heal_chuck_medkit.GetBool() /*&& NameMatches("griggs")*/)
+#define USE_EXPERIMENTAL_MEDIC_CODE() (npc_citizen_heal_chuck_medkit.GetBool() && NameMatches("griggs"))
 #endif
 
 ConVar player_squad_autosummon_time( "player_squad_autosummon_time", "5" );
