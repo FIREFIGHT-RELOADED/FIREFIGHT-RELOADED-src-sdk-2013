@@ -226,22 +226,26 @@ void CGravityVortexController::PullThink( void )
 		{	
 			// If we didn't have a valid victim, see if we can just get the vphysics object
 			pPhysObject = pEnts[i]->VPhysicsGetObject();
-			if ( pPhysObject == NULL )
-				continue;
 		}
 
-		float mass;
+		if (pPhysObject == NULL)
+			continue;
+
+		float mass = 0.0f;
 
 		CRagdollProp *pRagdoll = dynamic_cast< CRagdollProp* >( pEnts[i] );
 		if ( pRagdoll != NULL )
 		{
 			ragdoll_t *pRagdollPhys = pRagdoll->GetRagdoll();
-			mass = 0.0f;
-			
-			// Find the aggregate mass of the whole ragdoll
-			for ( int j = 0; j < pRagdollPhys->listCount; ++j )
+			if (pRagdollPhys != NULL)
 			{
-				mass += pRagdollPhys->list[j].pObject->GetMass();
+				mass = 0.0f;
+
+				// Find the aggregate mass of the whole ragdoll
+				for (int j = 0; j < pRagdollPhys->listCount; ++j)
+				{
+					mass += pRagdollPhys->list[j].pObject->GetMass();
+				}
 			}
 		}
 		else
