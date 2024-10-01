@@ -1804,12 +1804,15 @@ int CNPC_Citizen::SelectFailSchedule( int failedSchedule, int failedTask, AI_Tas
 
 	case SCHED_ESTABLISH_LINE_OF_FIRE_FALLBACK:
 	case SCHED_MOVE_TO_WEAPON_RANGE:
-		if( !IsMortar( GetEnemy() ) )
+		if (GetEnemy())
 		{
-			if ( GetActiveWeapon() && ( GetActiveWeapon()->CapabilitiesGet() & bits_CAP_WEAPON_RANGE_ATTACK1 ) && random->RandomInt( 0, 1 ) && HasCondition(COND_SEE_ENEMY))
-				return TranslateSchedule( SCHED_RANGE_ATTACK1 );
+			if (!IsMortar(GetEnemy()))
+			{
+				if (GetActiveWeapon() && (GetActiveWeapon()->CapabilitiesGet() & bits_CAP_WEAPON_RANGE_ATTACK1) && random->RandomInt(0, 1) && HasCondition(COND_SEE_ENEMY))
+					return TranslateSchedule(SCHED_RANGE_ATTACK1);
 
-			return SCHED_STANDOFF;
+				return SCHED_STANDOFF;
+			}
 		}
 		break;
 	}
