@@ -394,4 +394,49 @@
 		"rare"			"1"
 		"exp"	"75"
 	}
+    //Level 19
+    //Same as above, but they aren't rare. This is so players can easily access the ending.
+    "45"
+	{
+		"classname"		"npc_combine_s"
+		"wildcard"		"1"
+		"preset"		"1"
+		"min_level"		"19"
+		"exp"	"60"
+	}
+	"46"
+	{
+		"classname"		"npc_metropolice"
+		"wildcard"		"1"
+		"preset"		"1"
+		"min_level"		"19"
+		"exp"	"60"
+	}
+	"47"
+	{
+		"classname"		"npc_hunter"
+		"wildcard"		"1"
+		"preset"		"1"
+		"min_level"		"19"
+		"exp"	"75"
+	}
+	"48"
+	{
+		"classname"		"npc_combine_ace"
+		"wildcard"		"1"
+		"preset"		"1"
+		"min_level"		"19"
+		"exp"	"100"
+		"equipment"	
+		{
+			"weapon_ar2" "5"
+			"weapon_smg1" "3"
+			"weapon_shotgun" "4"
+			"weapon_railgun" "3"
+			"weapon_m249para" "4"
+			"weapon_sniper_rifle" "3"
+            "weapon_mp5" "3"
+			"weapon_oicw" "5"
+		}
+	}
 }
