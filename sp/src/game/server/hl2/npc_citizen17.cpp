@@ -2007,6 +2007,9 @@ int CNPC_Citizen::SelectScheduleRetrieveItem()
 		}
 		else
 		{
+			if (!m_FollowBehavior.GetFollowTarget())
+				return SCHED_NONE;
+
 			CBaseEntity *pBase = FindHealthItem(m_FollowBehavior.GetFollowTarget()->GetAbsOrigin(), Vector( 120, 120, 120 ) );
 			CItem *pItem = dynamic_cast<CItem *>(pBase);
 
