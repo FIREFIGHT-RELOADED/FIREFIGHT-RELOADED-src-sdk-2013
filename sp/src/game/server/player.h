@@ -761,7 +761,8 @@ public:
 
 	void	RemoveArmor(int value);
 	void	SetArmorValue( int value );
-	void	SetMaxArmorValue(int MaxArmorValue);
+	void	SetMaxArmorValue(int value);
+	void	SetMaxHealthValue(int value);
 	virtual int	GetMaxArmorValue(void) { return m_MaxArmorValue; }
 	void	IncrementArmorValue( int nCount, int nMaxValue = -1 );
 

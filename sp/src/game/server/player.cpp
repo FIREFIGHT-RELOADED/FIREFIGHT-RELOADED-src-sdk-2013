@@ -6081,25 +6081,60 @@ void CBasePlayer::LoadLoadoutFile(const char* kvName, bool savetoLoadout)
 
 		int healthNum = pNode->GetInt("health", 0);
 		bool setMaxHealth = pNode->GetBool("setmaxhealth", false);
+		bool incrementHealth = pNode->GetBool("incrementhealth", true);
+		bool resetHealthUpgrades = pNode->GetBool("resetmaxhealthupgrades", true);
 
 		if (healthNum > 0)
 		{
-			IncrementHealthValue(healthNum, healthNum);
-			if (setMaxHealth)
+			if (setMaxHealth && resetHealthUpgrades)
 			{
-				IncrementMaxHealthValue(healthNum, healthNum);
+				m_iHealthUpgrades = 0;
 			}
+
+			if (incrementHealth)
+			{
+				IncrementHealthValue(healthNum, healthNum);
+				if (setMaxHealth)
+				{
+					IncrementMaxHealthValue(healthNum, healthNum);
+				}
+			}
+			else
+			{
+				SetHealth(healthNum);
+				if (setMaxHealth)
+				{
+					SetMaxHealthValue(healthNum);
+				}
+			}
+		}
+
+		if (GetHealth() > GetMaxHealthValue())
+		{
+			SetHealth(GetMaxHealthValue());
 		}
 
 		int armorNum = pNode->GetInt("armor", 0);
 		bool setMaxArmor = pNode->GetBool("setmaxarmor", false);
+		bool incrementArmor = pNode->GetBool("incrementarmor", true);
 
 		if (armorNum > 0)
 		{
-			IncrementArmorValue(armorNum, armorNum);
-			if (setMaxArmor)
+			if (incrementArmor)
 			{
-				IncrementMaxArmorValue(armorNum, armorNum);
+				IncrementArmorValue(armorNum, armorNum);
+				if (setMaxArmor)
+				{
+					IncrementMaxArmorValue(armorNum, armorNum);
+				}
+			}
+			else
+			{
+				SetArmorValue(armorNum);
+				if (setMaxArmor)
+				{
+					SetMaxArmorValue(armorNum);
+				}
 			}
 		}
 
@@ -6695,6 +6730,11 @@ void CBasePlayer::SetArmorValue( int value )
 void CBasePlayer::SetMaxArmorValue(int value)
 {
 	m_MaxArmorValue = value;
+}
+
+void CBasePlayer::SetMaxHealthValue(int value)
+{
+	m_MaxHealthVal = value;
 }
 
 void CBasePlayer::RemoveArmor(int value)
