@@ -239,8 +239,6 @@ void CGravityVortexController::PullThink( void )
 			ragdoll_t *pRagdollPhys = pRagdoll->GetRagdoll();
 			if (pRagdollPhys != NULL)
 			{
-				mass = 0.0f;
-
 				// Find the aggregate mass of the whole ragdoll
 				for (int j = 0; j < pRagdollPhys->listCount; ++j)
 				{
