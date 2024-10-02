@@ -26,6 +26,8 @@ ConVar hopwire_strider_kill_dist_v( "hopwire_strider_kill_dist_v", "256" );
 ConVar hopwire_strider_hits( "hopwire_strider_hits", "1" );
 ConVar hopwire_hopheight( "hopwire_hopheight", "400" );
 
+ConVar hopwire_teleport_mapcommand("hopwire_teleport_mapcommand", "map firefight_advisor\nprogress_enable\n", FCVAR_ARCHIVE);
+
 ConVar g_debug_hopwire( "g_debug_hopwire", "0" );
 
 #define	DENSE_BALL_MODEL	"models/props_junk/metal_paintcan001b.mdl"
@@ -104,7 +106,7 @@ void CGravityVortexController::PullPlayersInRange( void )
 
 			char szMapCommand[1024];
 			// create the command to execute
-			Q_snprintf(szMapCommand, sizeof(szMapCommand), "map firefight_advisor\nprogress_enable\n");
+			Q_snprintf(szMapCommand, sizeof(szMapCommand), hopwire_teleport_mapcommand.GetString());
 			engine->ClientCommand(pPlayer->edict(), szMapCommand);
 
 			return;

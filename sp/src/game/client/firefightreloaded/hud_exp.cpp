@@ -86,7 +86,9 @@ void CHudEXP::Reset( void )
 
 bool CHudEXP::ShouldDraw(void)
 {
-	bool bNeedsDraw = (!g_fr_classic.GetBool()) || (GetAlpha() > 0);
+	C_BasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();
+
+	bool bNeedsDraw = pPlayer && ((!g_fr_classic.GetBool()) || (GetAlpha() > 0));
 
 	return (bNeedsDraw && CHudElement::ShouldDraw());
 }
@@ -98,66 +100,29 @@ void CHudEXP::Paint()
 {
 	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
 	
-	int maxXP = pPlayer->GetXpToLevelUp(pPlayer->GetLevel());
-
-	// get bar chunks
-	int chunkCount = m_flBarWidth / (m_flBarChunkWidth + m_flBarChunkGap);
-	int enabledChunks = (chunkCount * (pPlayer->GetXP() * 1.0f / maxXP)); //+ 0.5f);
-
-	Color clrEXP;
-	clrEXP = gHUD.m_clrYellowish;
-	Color clrText;
-	clrText = gHUD.m_clrYellowish;
-
-	// Don't draw the progress bar is we're fully charged
-	if (chunkCount == enabledChunks)
-		return;
-
-	// draw our name
-	surface()->DrawSetTextFont(m_hTextFont);
-	surface()->DrawSetTextColor(clrText);
-	surface()->DrawSetTextPos(text_xpos, text_ypos);
-
-	wchar_t *tempString = g_pVGuiLocalize->Find("#Valve_Hud_EXPERIENCE");
-
-	if (tempString)
+	if (pPlayer)
 	{
-		surface()->DrawPrintText(tempString, wcslen(tempString));
-	}
-	else
-	{
-		surface()->DrawPrintText(L"EXPERIENCE", wcslen(L"EXPERIENCE"));
-	}
+		int maxXP = pPlayer->GetXpToLevelUp(pPlayer->GetLevel());
 
-	// draw the suit power bar
-	if (pPlayer->GetLevel() != pPlayer->GetMaxLevel())
-	{
-		surface()->DrawSetColor(clrEXP);
-		int xpos = m_flBarInsetX, ypos = m_flBarInsetY;
-		for (int i = 0; i < enabledChunks; i++)
-		{
-			surface()->DrawFilledRect(xpos, ypos, xpos + m_flBarChunkWidth, ypos + m_flBarHeight);
-			xpos += (m_flBarChunkWidth + m_flBarChunkGap);
-		}
+		// get bar chunks
+		int chunkCount = m_flBarWidth / (m_flBarChunkWidth + m_flBarChunkGap);
+		int enabledChunks = (chunkCount * (pPlayer->GetXP() * 1.0f / maxXP)); //+ 0.5f);
 
-		// Be even less transparent than we already are
-		clrEXP[3] = clrEXP[3] / 8;
+		Color clrEXP;
+		clrEXP = gHUD.m_clrYellowish;
+		Color clrText;
+		clrText = gHUD.m_clrYellowish;
 
-		// draw the exhausted portion of the bar.
-		surface()->DrawSetColor(clrEXP);
-		for (int i = enabledChunks; i < chunkCount; i++)
-		{
-			surface()->DrawFilledRect(xpos, ypos, xpos + m_flBarChunkWidth, ypos + m_flBarHeight);
-			xpos += (m_flBarChunkWidth + m_flBarChunkGap);
-		}
-	}
-	else
-	{
+		// Don't draw the progress bar is we're fully charged
+		if (chunkCount == enabledChunks)
+			return;
+
+		// draw our name
 		surface()->DrawSetTextFont(m_hTextFont);
 		surface()->DrawSetTextColor(clrText);
-		surface()->DrawSetTextPos(text_xpos2, text_ypos2);
+		surface()->DrawSetTextPos(text_xpos, text_ypos);
 
-		wchar_t *tempString = g_pVGuiLocalize->Find("#Valve_Hud_EXPERIENCE_MaxLevel");
+		wchar_t* tempString = g_pVGuiLocalize->Find("#Valve_Hud_EXPERIENCE");
 
 		if (tempString)
 		{
@@ -165,7 +130,47 @@ void CHudEXP::Paint()
 		}
 		else
 		{
-			surface()->DrawPrintText(L"MAXIMUM LEVEL REACHED", wcslen(L"MAXIMUM LEVEL REACHED"));
+			surface()->DrawPrintText(L"EXPERIENCE", wcslen(L"EXPERIENCE"));
+		}
+
+		// draw the suit power bar
+		if (pPlayer->GetLevel() != pPlayer->GetMaxLevel())
+		{
+			surface()->DrawSetColor(clrEXP);
+			int xpos = m_flBarInsetX, ypos = m_flBarInsetY;
+			for (int i = 0; i < enabledChunks; i++)
+			{
+				surface()->DrawFilledRect(xpos, ypos, xpos + m_flBarChunkWidth, ypos + m_flBarHeight);
+				xpos += (m_flBarChunkWidth + m_flBarChunkGap);
+			}
+
+			// Be even less transparent than we already are
+			clrEXP[3] = clrEXP[3] / 8;
+
+			// draw the exhausted portion of the bar.
+			surface()->DrawSetColor(clrEXP);
+			for (int i = enabledChunks; i < chunkCount; i++)
+			{
+				surface()->DrawFilledRect(xpos, ypos, xpos + m_flBarChunkWidth, ypos + m_flBarHeight);
+				xpos += (m_flBarChunkWidth + m_flBarChunkGap);
+			}
+		}
+		else
+		{
+			surface()->DrawSetTextFont(m_hTextFont);
+			surface()->DrawSetTextColor(clrText);
+			surface()->DrawSetTextPos(text_xpos2, text_ypos2);
+
+			wchar_t* tempString = g_pVGuiLocalize->Find("#Valve_Hud_EXPERIENCE_MaxLevel");
+
+			if (tempString)
+			{
+				surface()->DrawPrintText(tempString, wcslen(tempString));
+			}
+			else
+			{
+				surface()->DrawPrintText(L"MAXIMUM LEVEL REACHED", wcslen(L"MAXIMUM LEVEL REACHED"));
+			}
 		}
 	}
 }
