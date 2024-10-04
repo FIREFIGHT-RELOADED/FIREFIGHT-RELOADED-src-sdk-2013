@@ -15,6 +15,7 @@
 #define SF_COMBINE_S_ELITE ( 1 << 19 )
 #define SF_COMBINE_S_SHOTGUNNER ( 1 << 20 )
 #define SF_COMBINE_S_PRISONGUARD ( 1 << 21 )
+#define SF_COMBINE_S_FRIENDLY ( 1 << 22 )
 
 //=========================================================
 //	>> CNPC_CombineS
@@ -29,6 +30,7 @@ class CNPC_CombineS : public CNPC_Combine
 public: 
 	void		Spawn( void );
 	void		Precache( void );
+	Class_T		Classify(void);
 	void		DeathSound( const CTakeDamageInfo &info );
 	void		PrescheduleThink( void );
 	void		BuildScheduleTestBits( void );

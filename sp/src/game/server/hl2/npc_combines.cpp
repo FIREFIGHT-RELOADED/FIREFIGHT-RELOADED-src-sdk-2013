@@ -45,6 +45,8 @@ LINK_ENTITY_TO_CLASS(npc_combine_s, CNPC_CombineS);
 LINK_ENTITY_TO_CLASS(npc_combine_e, CNPC_CombineS);
 LINK_ENTITY_TO_CLASS(npc_combine_p, CNPC_CombineS);
 LINK_ENTITY_TO_CLASS(npc_combine_shot, CNPC_CombineS);
+LINK_ENTITY_TO_CLASS(npc_combine_s_friendly, CNPC_CombineS);
+LINK_ENTITY_TO_CLASS(npc_combine_e_friendly, CNPC_CombineS);
 
 #define AE_SOLDIER_BLOCK_PHYSICS		20 // trying to block an incoming physics object
 
@@ -68,6 +70,15 @@ void CNPC_CombineS::Spawn( void )
 	{
 		AddSpawnFlags(SF_COMBINE_S_SHOTGUNNER);
 	}
+	else if (FClassnameIs(this, "npc_combine_s_friendly") || FClassnameIs(this, "npc_combine_e_friendly"))
+	{
+		AddSpawnFlags(SF_COMBINE_S_FRIENDLY);
+
+		if (FClassnameIs(this, "npc_combine_e_friendly"))
+		{
+			AddSpawnFlags(SF_COMBINE_S_ELITE);
+		}
+	}
 
 	GetSoldierModel();
 
@@ -87,24 +98,35 @@ void CNPC_CombineS::Spawn( void )
 		}
 	}
 
-	//Give him a random amount of grenades on spawn
-	if (!grenadeoverride && combine_soldier_spawnwithgrenades.GetBool())
+	if (!HasSpawnFlags(SF_COMBINE_S_FRIENDLY))
 	{
-		if (g_pGameRules->IsSkillLevel(SKILL_HARD))
+		//Give him a random amount of grenades on spawn
+		if (!grenadeoverride && combine_soldier_spawnwithgrenades.GetBool())
 		{
-			m_iNumGrenades = random->RandomInt(2, 3);
+			if (g_pGameRules->IsSkillLevel(SKILL_HARD))
+			{
+				m_iNumGrenades = random->RandomInt(2, 3);
+			}
+			else if (g_pGameRules->IsSkillLevel(SKILL_VERYHARD))
+			{
+				m_iNumGrenades = random->RandomInt(4, 6);
+			}
+			else if (g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE))
+			{
+				m_iNumGrenades = random->RandomInt(8, 12);
+			}
+			else
+			{
+				m_iNumGrenades = random->RandomInt(0, 2);
+			}
 		}
-		else if (g_pGameRules->IsSkillLevel(SKILL_VERYHARD))
+	}
+	else
+	{
+		//friendlies have a specific number of grenades.
+		if (!grenadeoverride && combine_soldier_spawnwithgrenades.GetBool())
 		{
 			m_iNumGrenades = random->RandomInt(4, 6);
-		}
-		else if (g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE))
-		{
-			m_iNumGrenades = random->RandomInt(8, 12);
-		}
-		else
-		{
-			m_iNumGrenades = random->RandomInt(0, 2);
 		}
 	}
 
@@ -139,6 +161,14 @@ void CNPC_CombineS::Spawn( void )
 	}
 #endif
 	*/
+}
+
+Class_T	CNPC_CombineS::Classify(void)
+{
+	if (HasSpawnFlags(SF_COMBINE_S_FRIENDLY))
+		return CLASS_PLAYER_ALLY;
+
+	return CLASS_COMBINE;
 }
 
 //-----------------------------------------------------------------------------
