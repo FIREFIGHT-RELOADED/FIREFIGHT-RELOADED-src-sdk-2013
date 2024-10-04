@@ -130,6 +130,11 @@ void CNPC_CombineS::Spawn( void )
 		}
 	}
 
+	if (HasSpawnFlags(SF_COMBINE_S_FRIENDLY))
+	{
+		CapabilitiesAdd(bits_CAP_NO_HIT_PLAYER | bits_CAP_NO_HIT_SQUADMATES | bits_CAP_FRIENDLY_DMG_IMMUNE);
+	}
+
 	m_fIsAce = false;
 	m_iUseMarch = false;
 
