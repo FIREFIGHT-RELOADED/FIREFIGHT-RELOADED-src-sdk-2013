@@ -920,6 +920,16 @@ mstudioseqdesc_t &CStudioHdr::pSeqdesc( int i )
 	Assert( ( i >= 0 && i < GetNumSeq() ) || ( i == 1 && GetNumSeq() <= 1 ) );
 	if ( i < 0 || i >= GetNumSeq() )
 	{
+		if ( GetNumSeq() <= 0 )
+		{
+			// Return a zero'd out struct reference if we've got nothing.
+			// C_BaseObject::StopAnimGeneratedSounds was crashing due to this function
+			//	returning a reference to garbage. It should now see numevents is 0,
+			//	and bail.
+			static mstudioseqdesc_t s_nil_seq;
+			return s_nil_seq;
+		}
+
 		// Avoid reading random memory.
 		i = 0;
 	}
