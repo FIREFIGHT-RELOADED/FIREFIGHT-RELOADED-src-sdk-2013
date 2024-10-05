@@ -64,7 +64,9 @@ static const char* g_Weapons[] =
 	"weapon_shotgun",
 	"weapon_pistol",
 	"weapon_stunstick",
-	"weapon_crowbar"
+	"weapon_crowbar",
+	"weapon_oicw",
+	"weapon_mp5"
 };
 
 CRandNPCLoader* g_npcLoader;
@@ -564,7 +566,10 @@ void CNPCMakerFirefight::MakeNPC()
 		else if (Q_stristr(pRandomName, "npc_combine_s") || 
 				Q_stristr(pRandomName, "npc_combine_e") || 
 				Q_stristr(pRandomName, "npc_combine_p") || 
-				Q_stristr(pRandomName, "npc_combine_ace"))
+				Q_stristr(pRandomName, "npc_combine_ace") || 
+				Q_stristr(pRandomName, "npc_combine_s_friendly") ||
+				Q_stristr(pRandomName, "npc_combine_e_friendly") ||
+				Q_stristr(pRandomName, "npc_combine_ace_friendly"))
 		{
 			int nWeaponsSoldier = ARRAYSIZE(g_CombineSoldierWeapons);
 			int randomChoiceSoldier = random->RandomInt(0, nWeaponsSoldier - 1);
