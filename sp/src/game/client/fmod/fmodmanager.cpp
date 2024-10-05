@@ -238,6 +238,8 @@ ConVar snd_fmod_musicsystem("snd_fmod_musicsystem", "1", FCVAR_ARCHIVE);
 ConVar snd_fmod_musicsystem_forceshuffle("snd_fmod_musicsystem_forceshuffle", "0", FCVAR_ARCHIVE);
 ConVar snd_fmod_musicsystem_playlist("snd_fmod_musicsystem_playlist", "scripts/playlists/default.txt", FCVAR_ARCHIVE, "");
 
+ConVar snd_fmod_musicsystem_devmessages("snd_fmod_musicsystem_devmessages", "0", FCVAR_DEVELOPMENTONLY);
+
 void CC_ReloadSystem(void)
 {
 	if (GetMusicSystem())
@@ -388,11 +390,17 @@ void CFMODMusicSystem::ReadPlaylist()
 
 		if (failed)
 		{
-			DevWarning("CFMODMusicSystem: Failed to load playlist! File failed to load because entries are missing paths.\n");
+			if (snd_fmod_musicsystem_devmessages.GetBool())
+			{
+				DevWarning("CFMODMusicSystem: Failed to load playlist! File failed to load because entries are missing paths.\n");
+			}
 			return;
 		}
 
-		DevMsg("CFMODMusicSystem: User-specified playlist loaded.\n");
+		if (snd_fmod_musicsystem_devmessages.GetBool())
+		{
+			DevMsg("CFMODMusicSystem: User-specified playlist loaded.\n");
+		}
 		//play stuff as soon as ents have finished initalizing.
 		tracktime = gpGlobals->curtime + 0.1f;
 		m_bPlaylistLoaded = true;
@@ -400,7 +408,10 @@ void CFMODMusicSystem::ReadPlaylist()
 	}
 	else
 	{
-		DevWarning("CFMODMusicSystem: Failed to load playlist! File may not exist.\n");
+		if (snd_fmod_musicsystem_devmessages.GetBool())
+		{
+			DevWarning("CFMODMusicSystem: Failed to load playlist! File may not exist.\n");
+		}
 	}
 }
 
@@ -496,7 +507,11 @@ void CFMODMusicSystem::Update(float frametime)
 
 				//then, calculate the song progress. Length is already stored.
 				int songProgress = tracktimeoriginal - songPos;
-				DevMsg("CFMODMusicSystem: SONG CURRENT PROGRESS: %i\n", songProgress);
+
+				if (snd_fmod_musicsystem_devmessages.GetBool())
+				{
+					DevMsg("CFMODMusicSystem: SONG CURRENT PROGRESS: %i\n", songProgress);
+				}
 
 				//if our song progress is under or equal to 0, reset the fucker.
 				if (songProgress <= 0)
@@ -520,7 +535,12 @@ void CFMODMusicSystem::Update(float frametime)
 					if (m_bTimeNeedsUpdate)
 					{
 						tracktime = tracktimeNew;
-						DevMsg("CFMODMusicSystem: SONG TIME UPDATED: %f\n", songProgressAdjusted);
+
+						if (snd_fmod_musicsystem_devmessages.GetBool())
+						{
+							DevMsg("CFMODMusicSystem: SONG TIME UPDATED: %f\n", songProgressAdjusted);
+						}
+
 						m_bTimeNeedsUpdate = false;
 					}
 				}
@@ -534,7 +554,10 @@ void CFMODMusicSystem::PlaySong()
 	if (m_bDisabled)
 		return;
 
-	DevMsg("CFMODMusicSystem: TRYING TO LOAD SONG: %i\n", curID);
+	if (snd_fmod_musicsystem_devmessages.GetBool())
+	{
+		DevMsg("CFMODMusicSystem: TRYING TO LOAD SONG: %i\n", curID);
+	}
 
 	int lastSong = (m_Songs.Count() - 1);
 
@@ -547,17 +570,27 @@ void CFMODMusicSystem::PlaySong()
 		curID = 0;
 	}
 
-	DevMsg("CFMODMusicSystem: CORRECTED ID TO: %i\n", curID);
+	if (snd_fmod_musicsystem_devmessages.GetBool())
+	{
+		DevMsg("CFMODMusicSystem: CORRECTED ID TO: %i\n", curID);
+	}
 
 	//then search for the song we want
 	for (int i = 0; i < m_Songs.Count(); ++i)
 	{
 		const Song_t& song = m_Songs[i];
-		DevMsg("CFMODMusicSystem: SEARCHING FOR SONG: %i (CAND: %s, %i)\n", curID, song.Title, i);
+		if (snd_fmod_musicsystem_devmessages.GetBool())
+		{
+			DevMsg("CFMODMusicSystem: SEARCHING FOR SONG: %i (CAND: %s, %i)\n", curID, song.Title, i);
+		}
+
 		if (curID == i)
 		{
 			m_sCurSong = song;
-			DevMsg("CFMODMusicSystem: SELECTED %s\n", m_sCurSong.Title);
+			if (snd_fmod_musicsystem_devmessages.GetBool())
+			{
+				DevMsg("CFMODMusicSystem: SELECTED %s\n", m_sCurSong.Title);
+			}
 		}
 	}
 
@@ -572,15 +605,26 @@ void CFMODMusicSystem::PlaySong()
 		CFMODManager::CheckError(m_pChannel->setPaused(false));
 	}
 
-	DevMsg("CFMODMusicSystem: PLAYING: %s\n", m_sCurSong.Title);
+	if (snd_fmod_musicsystem_devmessages.GetBool())
+	{
+		DevMsg("CFMODMusicSystem: PLAYING: %s\n", m_sCurSong.Title);
+	}
 
 	unsigned int songTime = 5000;
 	CFMODManager::CheckError(m_pSong->getLength(&songTime, FMOD_TIMEUNIT_MS));
-	DevMsg("CFMODMusicSystem: LENGTH (MS): %i\n", songTime);
+
+	if (snd_fmod_musicsystem_devmessages.GetBool())
+	{
+		DevMsg("CFMODMusicSystem: LENGTH (MS): %i\n", songTime);
+	}
 
 	//convert MS into seconds
 	songTime = (songTime / 1000);
-	DevMsg("CFMODMusicSystem: LENGTH (SEC): %i\n", songTime);
+
+	if (snd_fmod_musicsystem_devmessages.GetBool())
+	{
+		DevMsg("CFMODMusicSystem: LENGTH (SEC): %i\n", songTime);
+	}
 
 	tracktime = gpGlobals->curtime + songTime;
 	tracktimeoriginal = songTime;
@@ -588,11 +632,17 @@ void CFMODMusicSystem::PlaySong()
 	//DEBUGGING
 	if (!m_bManualControl)
 	{
-		DevMsg("CFMODMusicSystem: MANUAL CONTROL OFF\n");
+		if (snd_fmod_musicsystem_devmessages.GetBool())
+		{
+			DevMsg("CFMODMusicSystem: MANUAL CONTROL OFF\n");
+		}
 	}
 	else
 	{
-		DevMsg("CFMODMusicSystem: MANUAL CONTROL ON\n");
+		if (snd_fmod_musicsystem_devmessages.GetBool())
+		{
+			DevMsg("CFMODMusicSystem: MANUAL CONTROL ON\n");
+		}
 	}
 
 	//increment curID.

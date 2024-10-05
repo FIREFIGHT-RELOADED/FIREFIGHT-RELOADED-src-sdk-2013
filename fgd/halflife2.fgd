@@ -929,6 +929,7 @@
 		65536 :  "Start LookOff" : 0
 		131072	: "Don't drop grenades" : 0
 		262144  : "Don't drop ar2 alt fire (elite only) " : 0
+        4194304  : "Friendly Combine" : 0
 	]
 
 	NumGrenades(choices) : "Number of Grenades" : "5" =

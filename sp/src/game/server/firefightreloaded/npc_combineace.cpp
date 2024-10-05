@@ -83,6 +83,7 @@ extern ConVar sk_plr_dmg_buckshot;
 extern ConVar sk_plr_num_shotgun_pellets;
 
 LINK_ENTITY_TO_CLASS( npc_combine_ace, CNPC_CombineAce );
+LINK_ENTITY_TO_CLASS(npc_combine_ace_friendly, CNPC_CombineAce);
 
 #define AE_SOLDIER_BLOCK_PHYSICS		20 // trying to block an incoming physics object
 
@@ -96,6 +97,11 @@ extern Activity ACT_COMBINE_LAUNCH_GRENADE;
 //-----------------------------------------------------------------------------
 void CNPC_CombineAce::Spawn( void )
 {
+	if (FClassnameIs(this, "npc_combine_ace_friendly"))
+	{
+		AddSpawnFlags(SF_COMBINE_FRIENDLY);
+	}
+
 	Precache();
 
 	SetModel( "models/combine_ace_soldier.mdl" );
@@ -112,24 +118,35 @@ void CNPC_CombineAce::Spawn( void )
 		}
 	}
 
-	//Give him a random amount of grenades on spawn
-	if (!grenadeoverride && combine_ace_spawnwithgrenades.GetBool())
+	if (!m_fIsFriendly)
 	{
-		if (g_pGameRules->IsSkillLevel(SKILL_HARD))
+		//Give him a random amount of grenades on spawn
+		if (!grenadeoverride && combine_ace_spawnwithgrenades.GetBool())
 		{
-			m_iNumGrenades = random->RandomInt(2, 3);
+			if (g_pGameRules->IsSkillLevel(SKILL_HARD))
+			{
+				m_iNumGrenades = random->RandomInt(2, 3);
+			}
+			else if (g_pGameRules->IsSkillLevel(SKILL_VERYHARD))
+			{
+				m_iNumGrenades = random->RandomInt(4, 6);
+			}
+			else if (g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE))
+			{
+				m_iNumGrenades = random->RandomInt(8, 12);
+			}
+			else
+			{
+				m_iNumGrenades = random->RandomInt(0, 2);
+			}
 		}
-		else if (g_pGameRules->IsSkillLevel(SKILL_VERYHARD))
+	}
+	else
+	{
+		//friendlies have a specific number of grenades.
+		if (!grenadeoverride && combine_ace_spawnwithgrenades.GetBool())
 		{
 			m_iNumGrenades = random->RandomInt(4, 6);
-		}
-		else if (g_pGameRules->IsSkillLevel(SKILL_NIGHTMARE))
-		{
-			m_iNumGrenades = random->RandomInt(8, 12);
-		}
-		else
-		{
-			m_iNumGrenades = random->RandomInt(0, 2);
 		}
 	}
 
@@ -172,16 +189,24 @@ void CNPC_CombineAce::Spawn( void )
 
 	SetEyeState(ACE_EYE_DORMANT);
 
-	if (combine_ace_shieldspawnmode.GetInt() == 1)
+	if (!m_fIsFriendly)
 	{
-		SpawnArmorPieces();
-	}
-	else if (combine_ace_shieldspawnmode.GetInt() > 1)
-	{
-		int iShieldRandom = random->RandomInt(0, 3);
-		if (iShieldRandom == 0)
+		if (combine_ace_shieldspawnmode.GetInt() == 1)
 		{
 			SpawnArmorPieces();
+		}
+		else if (combine_ace_shieldspawnmode.GetInt() > 1)
+		{
+			int iShieldRandom = random->RandomInt(0, 3);
+			if (iShieldRandom == 0)
+			{
+				SpawnArmorPieces();
+			}
+			else
+			{
+				pArmor = NULL;
+				m_bNoArmor = true;
+			}
 		}
 		else
 		{
@@ -191,15 +216,21 @@ void CNPC_CombineAce::Spawn( void )
 	}
 	else
 	{
-		pArmor = NULL;
-		m_bNoArmor = true;
+		SpawnArmorPieces();
 	}
 
-	m_bBulletResistanceOutlineDisabled = false;
+	if (!m_fIsFriendly)
+	{
+		m_bBulletResistanceOutlineDisabled = false;
+	}
+	else
+	{
+		m_bBulletResistanceOutlineDisabled = true;
+	}
 
 	BaseClass::Spawn();
 
-	if (g_pGameRules->GetSkillLevel() > SKILL_EASY)
+	if (g_pGameRules->GetSkillLevel() > SKILL_EASY && !m_fIsFriendly)
 	{
 		m_bBulletResistanceBroken = combine_ace_disablebulletresistance.GetBool();
 	}

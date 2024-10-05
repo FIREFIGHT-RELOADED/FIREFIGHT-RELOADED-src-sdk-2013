@@ -165,6 +165,7 @@ DEFINE_INPUTFUNC( FIELD_STRING,	"ThrowGrenadeAtTarget",	InputThrowGrenadeAtTarge
 DEFINE_FIELD( m_iLastAnimEventHandled, FIELD_INTEGER ),
 DEFINE_FIELD( m_fIsElite, FIELD_BOOLEAN ),
 DEFINE_FIELD( m_fIsAce, FIELD_BOOLEAN ),
+DEFINE_FIELD(m_fIsFriendly, FIELD_BOOLEAN),
 DEFINE_FIELD( m_vecAltFireTarget, FIELD_VECTOR ),
 
 DEFINE_KEYFIELD( m_iTacticalVariant, FIELD_INTEGER, "tacticalvariant" ),
@@ -300,6 +301,11 @@ void CNPC_Combine::Activate()
 //-----------------------------------------------------------------------------
 void CNPC_Combine::Spawn( void )
 {
+	if (HasSpawnFlags(SF_COMBINE_FRIENDLY))
+	{
+		BecomeFriendly();
+	}
+
 	SetHullType(HULL_HUMAN);
 	SetHullSizeNormal();
 
@@ -374,8 +380,22 @@ void CNPC_Combine::Spawn( void )
 	NPCInit();
 }
 
+void CNPC_Combine::BecomeFriendly()
+{
+	m_fIsFriendly = true;
+	CapabilitiesAdd(bits_CAP_NO_HIT_PLAYER | bits_CAP_FRIENDLY_DMG_IMMUNE);
+}
+
 void CNPC_Combine::LoadInitAttributes()
 {
+	if (m_pAttributes != NULL)
+	{
+		if (m_pAttributes->GetBool("is_ally"))
+		{
+			BecomeFriendly();
+		}
+	}
+
 	BaseClass::LoadInitAttributes();
 }
 
@@ -872,11 +892,13 @@ bool CNPC_Combine::OverrideMoveFacing( const AILocalMoveGoal_t &move, float flIn
 //
 //
 //-----------------------------------------------------------------------------
-Class_T	CNPC_Combine::Classify ( void )
+Class_T	CNPC_Combine::Classify(void)
 {
+	if (m_fIsFriendly)
+		return CLASS_PLAYER_ALLY;
+
 	return CLASS_COMBINE;
 }
-
 
 //-----------------------------------------------------------------------------
 // Continuous movement tasks
@@ -2923,6 +2945,8 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 				Vector vecStart;
 				GetAttachment( "lefthand", vecStart );
 
+				bool bFireGrenade = false;
+
 				if( m_NPCState == NPC_STATE_SCRIPT )
 				{
 					// Use a fixed velocity for grenades thrown in scripted state.
@@ -2931,13 +2955,29 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 
 					GetVectors( &forward, NULL, &up );
 					vecThrow = forward * 750 + up * 175;
-					bool bFireGrenade = ((random->RandomInt(0, 1) == 1 && g_pGameRules->GetSkillLevel() >= SKILL_HARD) ? true : false);
+
+					if (IsFriendly())
+					{
+						bFireGrenade = ((random->RandomInt(0, 1) == 1) ? true : false);
+					}
+					else
+					{
+						bFireGrenade = ((random->RandomInt(0, 1) == 1 && g_pGameRules->GetSkillLevel() >= SKILL_HARD) ? true : false);
+					}
+
 					Fraggrenade_Create( vecStart, vec3_angle, vecThrow, vecSpin, this, COMBINE_GRENADE_TIMER, true, bFireGrenade);
 				}
 				else
 				{
 					// Use the Velocity that AI gave us.
-					bool bFireGrenade = ((random->RandomInt(0, 1) == 1 && g_pGameRules->GetSkillLevel() >= SKILL_HARD) ? true : false);
+					if (IsFriendly())
+					{
+						bFireGrenade = ((random->RandomInt(0, 1) == 1) ? true : false);
+					}
+					else
+					{
+						bFireGrenade = ((random->RandomInt(0, 1) == 1 && g_pGameRules->GetSkillLevel() >= SKILL_HARD) ? true : false);
+					}
 					Fraggrenade_Create( vecStart, vec3_angle, m_vecTossVelocity, vecSpin, this, COMBINE_GRENADE_TIMER, true, bFireGrenade);
 					m_iNumGrenades--;
 				}

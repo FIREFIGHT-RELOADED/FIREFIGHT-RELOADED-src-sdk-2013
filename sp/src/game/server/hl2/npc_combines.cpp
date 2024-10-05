@@ -72,12 +72,17 @@ void CNPC_CombineS::Spawn( void )
 	}
 	else if (FClassnameIs(this, "npc_combine_s_friendly") || FClassnameIs(this, "npc_combine_e_friendly"))
 	{
-		AddSpawnFlags(SF_COMBINE_S_FRIENDLY);
+		AddSpawnFlags(SF_COMBINE_FRIENDLY);
 
 		if (FClassnameIs(this, "npc_combine_e_friendly"))
 		{
 			AddSpawnFlags(SF_COMBINE_S_ELITE);
 		}
+	}
+
+	if (HasSpawnFlags(SF_COMBINE_S_SHOTGUNNER))
+	{
+		m_fIsShotgunner = true;
 	}
 
 	GetSoldierModel();
@@ -98,7 +103,7 @@ void CNPC_CombineS::Spawn( void )
 		}
 	}
 
-	if (!HasSpawnFlags(SF_COMBINE_S_FRIENDLY))
+	if (!m_fIsFriendly)
 	{
 		//Give him a random amount of grenades on spawn
 		if (!grenadeoverride && combine_soldier_spawnwithgrenades.GetBool())
@@ -128,11 +133,6 @@ void CNPC_CombineS::Spawn( void )
 		{
 			m_iNumGrenades = random->RandomInt(4, 6);
 		}
-	}
-
-	if (HasSpawnFlags(SF_COMBINE_S_FRIENDLY))
-	{
-		CapabilitiesAdd(bits_CAP_NO_HIT_PLAYER | bits_CAP_NO_HIT_SQUADMATES | bits_CAP_FRIENDLY_DMG_IMMUNE);
 	}
 
 	m_fIsAce = false;
@@ -166,14 +166,6 @@ void CNPC_CombineS::Spawn( void )
 	}
 #endif
 	*/
-}
-
-Class_T	CNPC_CombineS::Classify(void)
-{
-	if (HasSpawnFlags(SF_COMBINE_S_FRIENDLY))
-		return CLASS_PLAYER_ALLY;
-
-	return CLASS_COMBINE;
 }
 
 //-----------------------------------------------------------------------------
@@ -225,7 +217,6 @@ void CNPC_CombineS::GetSoldierModel()
 		else if (HasSpawnFlags(SF_COMBINE_S_SHOTGUNNER))
 		{
 			SetModelName(AllocPooledString("models/combine_soldier.mdl"));
-			m_fIsShotgunner = true;
 			if (m_nSkin != COMBINE_SKIN_SHOTGUNNER)
 			{
 				m_nSkin = COMBINE_SKIN_SHOTGUNNER;

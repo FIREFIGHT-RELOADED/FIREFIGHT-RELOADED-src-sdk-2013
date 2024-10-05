@@ -26,6 +26,7 @@
 #define SF_COMBINE_NO_LOOK	(1 << 16)
 #define SF_COMBINE_NO_GRENADEDROP ( 1 << 17 )
 #define SF_COMBINE_NO_AR2DROP ( 1 << 18 )
+#define SF_COMBINE_FRIENDLY ( 1 << 22 )
 
 #define COMBINE_SKIN_DEFAULT		0
 #define COMBINE_SKIN_SHOTGUNNER		1
@@ -89,6 +90,7 @@ public:
 	bool			UpdateEnemyMemory( CBaseEntity *pEnemy, const Vector &position, CBaseEntity *pInformer = NULL );
 
 	void			Spawn( void );
+	void			BecomeFriendly(void);
 	void			LoadInitAttributes(void);
 	void			Precache( void );
 	void			Activate();
@@ -101,6 +103,8 @@ public:
 	Class_T			Classify( void );
 	bool			IsElite() { return m_fIsElite; }
 	bool			IsAce() { return m_fIsAce; }
+	bool			IsFriendly() { return m_fIsFriendly; }
+	bool			IsShotgunner() { return m_fIsShotgunner; }
 	void			DelayAltFireAttack( float flDelay );
 	void			DelaySquadAltFireAttack( float flDelay );
 	float			MaxYawSpeed( void );
@@ -309,6 +313,7 @@ public:
 	bool			m_fIsElite;
 	bool			m_fIsShotgunner;
 	bool			m_fIsAce;
+	bool			m_fIsFriendly;
 	Vector			m_vecAltFireTarget;
 	bool			m_bNoDeathSound;
 
