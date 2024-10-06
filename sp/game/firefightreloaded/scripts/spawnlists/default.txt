@@ -168,6 +168,17 @@
 		"classname"		"npc_combine_s_friendly"
 		"min_level"		"8"
 		"rare"			"1"
+        "equipment"	
+		{
+            "weapon_smg1" "3"
+            "weapon_ar2" "5"
+            "weapon_mp5" "3"
+            "weapon_oicw" "5"
+            //hack here specifically so we can have friendly shotgunners
+            //since they are not reported in the kill log like normal shotgunners.
+            //npc_combine_shot is a fuck.
+			"weapon_shotgun" "4"
+		}
 	}
 	//LEVEL 9
 	"22"

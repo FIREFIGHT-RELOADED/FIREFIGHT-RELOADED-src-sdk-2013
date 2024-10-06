@@ -1040,6 +1040,11 @@
 @NPCClass base(BaseNPC) studio("models/hunter.mdl") = npc_hunter :
 	"A smaller, faster, strider that can pursue the player into buildings."
 [
+    spawnflags(Flags) = 
+	[
+        16777216 : "Friendly Hunters" : 0
+	]
+
 	FollowTarget(target_destination) : "Strider to Follow" : "" : "The name of the strider that this hunter should follow."
 	
     // Inputs
@@ -1712,6 +1717,7 @@
 		131072 : "Don't use any damage effects" : 0
 		262144 : "Use Air Nodes" : 0
 		1048576 : "No Danger Sounds" : 0
+        2097152 : "Friendly Manhacks" : 0
 	]
 
 	input DisableSwarm(void) : "Disable the manhack swarm behavior."
@@ -1762,8 +1768,9 @@
 		2097152 : "Arrest enemies" : 0
 		4194304 : "No far stitching" : 0
 		8388608 : "Prevent manhack toss" : 0
-		16777216: "Allowed to respond to thrown objects" : 0
-		33554432: "Mid-range attacks (halfway between normal + long-range)" : 0
+		16777216 : "Allowed to respond to thrown objects" : 0
+		33554432 : "Mid-range attacks (halfway between normal + long-range)" : 0
+        268435456 : "Friendly Metropolice" : 0
 	]
 	  
 	// Inputs
