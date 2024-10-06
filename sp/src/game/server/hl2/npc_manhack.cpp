@@ -196,6 +196,7 @@ END_DATADESC()
 
 
 LINK_ENTITY_TO_CLASS( npc_manhack, CNPC_Manhack );
+LINK_ENTITY_TO_CLASS(npc_manhack_friendly, CNPC_Manhack);
 
 IMPLEMENT_SERVERCLASS_ST(CNPC_Manhack, DT_NPC_Manhack)
 	SendPropIntWithMinusOneFlag	(SENDINFO(m_nEnginePitch1), 8 ),
@@ -240,10 +241,8 @@ CNPC_Manhack::~CNPC_Manhack()
 //-----------------------------------------------------------------------------
 Class_T	CNPC_Manhack::Classify(void)
 {
-	return (m_bHeld||m_bHackedByAlyx) ? CLASS_PLAYER_ALLY : CLASS_MANHACK; 
+	return (m_bHeld||m_bHackedByAlyx||m_bIsFriendly) ? CLASS_PLAYER_ALLY : CLASS_MANHACK; 
 }
-
-
 
 //-----------------------------------------------------------------------------
 // Purpose: Turns the manhack into a physics corpse when dying.
@@ -2354,6 +2353,16 @@ void CNPC_Manhack::RunTask( const Task_t *pTask )
 //-----------------------------------------------------------------------------
 void CNPC_Manhack::Spawn(void)
 {
+	if (FClassnameIs(this, "npc_manhack_friendly"))
+	{
+		AddSpawnFlags(SF_MANHACK_FRIENDLY);
+	}
+
+	if (HasSpawnFlags(SF_MANHACK_FRIENDLY))
+	{
+		BecomeFriendly();
+	}
+
 	Precache();
 
 #ifdef _XBOX
@@ -2509,6 +2518,12 @@ void CNPC_Manhack::Activate()
 	{
 		StartEye();
 	}
+}
+
+void CNPC_Manhack::BecomeFriendly()
+{
+	m_bIsFriendly = true;
+	CapabilitiesAdd(bits_CAP_NO_HIT_PLAYER | bits_CAP_FRIENDLY_DMG_IMMUNE);
 }
 
 //-----------------------------------------------------------------------------

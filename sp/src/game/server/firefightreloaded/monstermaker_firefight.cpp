@@ -536,7 +536,8 @@ void CNPCMakerFirefight::MakeNPC()
 	const char* equip = entry->GetRandomEquip();
 	if (equip == NULL)
 	{
-		if (Q_stristr(pRandomName, "npc_metropolice"))
+		if (Q_stristr(pRandomName, "npc_metropolice") ||
+			Q_stristr(pRandomName, "npc_metropolice_friendly"))
 		{
 			int nWeaponsPolice = ARRAYSIZE(g_MetropoliceWeapons);
 			int randomChoicePolice = random->RandomInt(0, nWeaponsPolice - 1);

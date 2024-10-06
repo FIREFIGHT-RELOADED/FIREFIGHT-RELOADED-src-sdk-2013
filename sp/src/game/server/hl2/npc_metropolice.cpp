@@ -155,6 +155,7 @@ int ACT_ACTIVATE_BATON;
 int ACT_DEACTIVATE_BATON;
  
 LINK_ENTITY_TO_CLASS( npc_metropolice, CNPC_MetroPolice );
+LINK_ENTITY_TO_CLASS(npc_metropolice_friendly, CNPC_MetroPolice);
 
 BEGIN_DATADESC( CNPC_MetroPolice )
 
@@ -619,6 +620,16 @@ bool CNPC_MetroPolice::CreateComponents()
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::Spawn( void )
 {
+	if (FClassnameIs(this, "npc_metropolice_friendly"))
+	{
+		AddSpawnFlags(SF_METROPOLICE_FRIENDLY);
+	}
+
+	if (HasSpawnFlags(SF_METROPOLICE_FRIENDLY))
+	{
+		BecomeFriendly();
+	}
+
 	Precache();
 
 #ifdef _XBOX
@@ -764,13 +775,17 @@ void CNPC_MetroPolice::Spawn( void )
 	}
 }
 
+void CNPC_MetroPolice::BecomeFriendly()
+{
+	m_bIsFriendly = true;
+	CapabilitiesAdd(bits_CAP_NO_HIT_PLAYER | bits_CAP_FRIENDLY_DMG_IMMUNE);
+}
+
 void CNPC_MetroPolice::LoadInitAttributes()
 {
 	if (m_pAttributes != NULL)
 	{
-		int isace = m_pAttributes->GetInt("is_ace", 0);
-
-		if (isace)
+		if (m_pAttributes->GetBool("is_ace"))
 		{
 			CapabilitiesAdd(bits_CAP_MOVE_JUMP);
 			//aces have a ton of manhacks
@@ -779,6 +794,11 @@ void CNPC_MetroPolice::LoadInitAttributes()
 			RemoveSpawnFlags(SF_METROPOLICE_NO_MANHACK_DEPLOY);
 			SetBodygroup(METROPOLICE_BODYGROUP_MANHACK, true);
 			m_bIsAce = true;
+		}
+
+		if (m_pAttributes->GetBool("is_ally"))
+		{
+			BecomeFriendly();
 		}
 	}
 
@@ -2810,6 +2830,9 @@ float CNPC_MetroPolice::MaxYawSpeed( void )
 //-----------------------------------------------------------------------------
 Class_T	CNPC_MetroPolice::Classify ( void )
 {
+	if (m_bIsFriendly)
+		return CLASS_PLAYER_ALLY;
+
 	return CLASS_METROPOLICE;
 }
 
@@ -2898,6 +2921,11 @@ void CNPC_MetroPolice::OnAnimEventStartDeployManhack( void )
 	if ( HasSpawnFlags( SF_NPC_FADE_CORPSE ) )
 	{
 		pManhack->AddSpawnFlags( SF_NPC_FADE_CORPSE );
+	}
+
+	if (m_bIsFriendly)
+	{
+		pManhack->AddSpawnFlags(SF_MANHACK_FRIENDLY);
 	}
 
 	pManhack->Spawn();

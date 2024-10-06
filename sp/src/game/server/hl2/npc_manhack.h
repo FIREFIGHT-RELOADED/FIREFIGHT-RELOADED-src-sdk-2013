@@ -21,6 +21,7 @@
 #define SF_MANHACK_USE_AIR_NODES		(1 << 18)
 #define SF_MANHACK_CARRIED				(1 << 19)	// Being carried by a metrocop
 #define SF_MANHACK_NO_DANGER_SOUNDS		(1 << 20)
+#define SF_MANHACK_FRIENDLY				(1 << 21)
 
 enum
 {
@@ -111,6 +112,7 @@ public:
 	void			RunTask( const Task_t *pTask );
 	void			Spawn(void);
 	void			Activate();
+	void			BecomeFriendly();
 	void			StartTask( const Task_t *pTask );
 
 	void			BladesInit();
@@ -246,6 +248,7 @@ private:
 
 	bool			m_bDirtyPitch; // indicates whether we want the sound pitch updated.(sjb)
 	bool			m_bShowingHostile;
+	bool			m_bIsFriendly;
 
 	bool			m_bBladesActive;
 	bool			m_bIgnoreClipbrushes;

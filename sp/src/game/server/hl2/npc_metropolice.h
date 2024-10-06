@@ -34,6 +34,7 @@
 #define SF_METROPOLICE_ARREST_ENEMY			0x00200000
 #define SF_METROPOLICE_NO_FAR_STITCH		0x00400000
 #define SF_METROPOLICE_NO_MANHACK_DEPLOY	0x00800000
+#define SF_METROPOLICE_FRIENDLY				0x10000000
 
 class CNPC_MetroPolice;
 
@@ -48,6 +49,7 @@ public:
 	virtual bool CreateComponents();
 	bool CreateBehaviors();
 	void Spawn( void );
+	void BecomeFriendly(void);
 	void LoadInitAttributes( void );
 	void Precache( void );
 
@@ -415,6 +417,7 @@ private:
 	CSimpleSimTimer m_NextChargeTimer;
 
 	bool			m_bIsAce;
+	bool			m_bIsFriendly;
 
 	// All related to burst firing
 	Vector			m_vecBurstTargetPos;
