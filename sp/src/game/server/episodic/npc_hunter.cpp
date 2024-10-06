@@ -166,6 +166,8 @@ ConVar hunter_laugh("hunter_laugh", "1", FCVAR_ARCHIVE, "If true, the hunter wil
 ConVar hunter_laugh_frequency("hunter_laugh_frequency", "120", FCVAR_NONE, "Changes the frequency of the hunter's laugh. Lower values = higher frequency. Higher values = lower frequency.");
 ConVar hunter_laugh_healthvalue("hunter_laugh_healthvalue", "20", FCVAR_NONE, "Sets the minimal amount of health the player needs in order for the hunter to laugh at it.");
 
+#define SF_HUNTER_FRIENDLY	0x01000000
+
 #define HUNTER_FOV_DOT					0.0		// 180 degree field of view
 #define HUNTER_CHARGE_MIN				256
 #define HUNTER_CHARGE_MAX				1024
@@ -1165,6 +1167,7 @@ public:
 	//---------------------------------
 
 	void			Precache();
+	void			BecomeFriendly();
 	void			Spawn();
 	void			PostNPCInit();
 	void			Activate();
@@ -1492,6 +1495,8 @@ private:
 	bool			m_bEnableSquadShootDelay;
 	bool			m_bIsBleeding;
 
+	bool			m_bIsFriendly;
+
 	Activity		m_eDodgeActivity;
 	CSimpleSimTimer m_RundownDelay;
 	CSimpleSimTimer m_IgnoreVehicleTimer;
@@ -1570,7 +1575,7 @@ private:
 
 
 LINK_ENTITY_TO_CLASS( npc_hunter, CNPC_Hunter );
-
+LINK_ENTITY_TO_CLASS(npc_hunter_friendly, CNPC_Hunter );
 
 BEGIN_DATADESC( CNPC_Hunter )
 
@@ -1776,11 +1781,26 @@ void CNPC_Hunter::Precache()
 	BaseClass::Precache();
 }
 
+void CNPC_Hunter::BecomeFriendly()
+{
+	m_bIsFriendly = true;
+	CapabilitiesAdd(bits_CAP_NO_HIT_PLAYER | bits_CAP_FRIENDLY_DMG_IMMUNE);
+}
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CNPC_Hunter::Spawn()
 {
+	if (FClassnameIs(this, "npc_hunter_friendly"))
+	{
+		AddSpawnFlags(SF_HUNTER_FRIENDLY);
+	}
+
+	if (HasSpawnFlags(SF_HUNTER_FRIENDLY))
+	{
+		BecomeFriendly();
+	}
+
 	Precache();
 
 	SetModel( "models/hunter.mdl" );
@@ -2071,6 +2091,9 @@ void CNPC_Hunter::UpdateOnRemove()
 //-----------------------------------------------------------------------------
 Class_T CNPC_Hunter::Classify()
 {
+	if (m_bIsFriendly)
+		return CLASS_PLAYER_ALLY;
+
 	return CLASS_COMBINE_HUNTER;
 }
 
@@ -2228,7 +2251,7 @@ void CNPC_Hunter::NPCThink()
 
 		if (pPlayer != NULL)
 		{
-			if (hunter_laugh.GetBool() && !pPlayer->IsDead() && !m_bIsLaughing)
+			if (hunter_laugh.GetBool() && !pPlayer->IsDead() && !m_bIsLaughing && !m_bIsFriendly)
 			{
 				if (random->RandomInt(0, hunter_laugh_frequency.GetInt()) == 0 && pPlayer->GetHealth() < hunter_laugh_healthvalue.GetInt() && !m_bIsLaughing)
 				{
