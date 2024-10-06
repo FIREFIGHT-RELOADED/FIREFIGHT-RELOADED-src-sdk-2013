@@ -113,6 +113,7 @@ public:
 	void			Spawn(void);
 	void			Activate();
 	void			BecomeFriendly();
+	void			LoadInitAttributes();
 	void			StartTask( const Task_t *pTask );
 
 	void			BladesInit();

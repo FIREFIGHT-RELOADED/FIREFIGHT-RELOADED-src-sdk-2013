@@ -1169,6 +1169,7 @@ public:
 	void			Precache();
 	void			BecomeFriendly();
 	void			Spawn();
+	void			LoadInitAttributes();
 	void			PostNPCInit();
 	void			Activate();
 	void			UpdateOnRemove();
@@ -2016,6 +2017,18 @@ bool CNPC_Hunter::OverrideMoveFacing( const AILocalMoveGoal_t &move, float flInt
 	return BaseClass::OverrideMoveFacing( move, flInterval );
 }
 
+void CNPC_Hunter::LoadInitAttributes()
+{
+	if (m_pAttributes != NULL)
+	{
+		if (m_pAttributes->GetBool("is_ally"))
+		{
+			BecomeFriendly();
+		}
+	}
+
+	BaseClass::LoadInitAttributes();
+}
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

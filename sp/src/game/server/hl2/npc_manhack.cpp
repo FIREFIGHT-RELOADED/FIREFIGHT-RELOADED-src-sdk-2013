@@ -2526,6 +2526,19 @@ void CNPC_Manhack::BecomeFriendly()
 	CapabilitiesAdd(bits_CAP_NO_HIT_PLAYER | bits_CAP_FRIENDLY_DMG_IMMUNE);
 }
 
+void CNPC_Manhack::LoadInitAttributes()
+{
+	if (m_pAttributes != NULL)
+	{
+		if (m_pAttributes->GetBool("is_ally"))
+		{
+			BecomeFriendly();
+		}
+	}
+
+	BaseClass::LoadInitAttributes();
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Get the engine sound started. Unless we're not supposed to have it on yet!
 //-----------------------------------------------------------------------------
