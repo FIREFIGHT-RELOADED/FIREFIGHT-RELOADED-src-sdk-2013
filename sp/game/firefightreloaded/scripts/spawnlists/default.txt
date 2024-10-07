@@ -167,6 +167,8 @@
 	{
 		"classname"		"npc_combine_s_friendly"
 		"min_level"		"8"
+        "wildcard"      "1"
+        "preset"		"2"
 		"rare"			"1"
         "equipment"	
 		{
@@ -220,6 +222,8 @@
 	{
 		"classname"		"npc_combine_e_friendly"
 		"min_level"		"10"
+        "wildcard"      "1"
+        "preset"		"2"
 		"rare"			"1"
         "equipment"	
 		{
@@ -254,22 +258,28 @@
 		"rare"			"1"
 		"exp"	"50"
 	}
+    "31"
+	{
+		"classname"		"npc_hunter_friendly"
+		"preset"		"1"
+		"min_level"		"11"
+	}
 	//LEVEL 12
-	"31"
+	"32"
 	{
 		"classname"		"npc_antlionguardian"
 		"min_level"		"12"
 		"rare"			"1"
 		"exp"	"65"
 	}
-	"32"
+	"33"
 	{
 		"classname"		"npc_stalker"
 		"min_level"		"12"
 		"rare"			"1"
 		"exp"	"60"
 	}
-	"33"
+	"34"
 	{
 		//boomsquids
 		"classname"		"npc_bullsquid"
@@ -279,7 +289,7 @@
 		"exp"	"50"
 	}
 	//LEVEL 13
-	"34"
+	"35"
 	{
 		"classname"		"npc_combine_ace"
 		"min_level"		"13"
@@ -298,20 +308,20 @@
             "weapon_gatling" "3"
 		}
 	}
-	"35"
+	"36"
 	{
 		"classname"		"npc_rollermine"
 		"min_level"		"13"
 		"exp"	"65"
 	}
-	"36"
+	"37"
 	{
 		"classname"		"npc_cscanner"
 		"min_level"		"13"
 		"exp"	"25"	
 	}
 	//LEVEl 14
-	"37"
+	"38"
 	{
 		//Elite Hunter
 		"classname"		"npc_hunter"
@@ -321,7 +331,7 @@
 		"exp"	"55"
 	}
 	//LEVEL 15
-	"38"
+	"39"
 	{
 		//kamikaze headcrab
 		"classname"		"npc_headcrab_fast"
@@ -330,7 +340,7 @@
 		"rare"			"1"
 		"exp"	"45"
 	}
-	"39"
+	"40"
 	{
 		//Demolitions Hunter
 		"classname"		"npc_hunter"
@@ -339,7 +349,7 @@
 		"rare"			"1"
 		"exp"	"65"
 	}
-	"40"
+	"41"
 	{
 		//Anti-Aircraft Hunter
 		"classname"		"npc_hunter"
@@ -348,7 +358,7 @@
 		"rare"			"1"
 		"exp"	"70"
 	}
-	"41"
+	"42"
 	{
 		//super ace
 		"classname"		"npc_combine_ace"
@@ -369,10 +379,12 @@
             "weapon_gatling" "3"
 		}
 	}
-    "42"
+    "43"
 	{
 		"classname"		"npc_combine_ace_friendly"
 		"min_level"		"15"
+        "wildcard"      "1"
+        "preset"		"2"
 		"rare"			"1"
         "equipment"	
 		{
@@ -388,7 +400,7 @@
 	}
 	//LEVEL 16
 	//advisor drones of various combine units.
-	"43"
+	"44"
 	{
 		"classname"		"npc_combine_s"
 		"wildcard"		"1"
@@ -397,7 +409,7 @@
 		"rare"			"1"
 		"exp"	"60"
 	}
-	"44"
+	"45"
 	{
 		"classname"		"npc_metropolice"
 		"wildcard"		"1"
@@ -406,7 +418,7 @@
 		"rare"			"1"
 		"exp"	"60"
 	}
-	"45"
+	"46"
 	{
 		"classname"		"npc_hunter"
 		"wildcard"		"1"
@@ -415,7 +427,7 @@
 		"rare"			"1"
 		"exp"	"75"
 	}
-	"46"
+	"47"
 	{
 		"classname"		"npc_combine_ace"
 		"wildcard"		"1"
@@ -435,7 +447,7 @@
 			"weapon_oicw" "5"
 		}
 	}
-	"47"
+	"48"
 	{
 		//railgun hunters
 		"classname"		"npc_hunter"
@@ -446,7 +458,7 @@
 	}
     //Level 19
     //Same as above, but they aren't rare. This is so players can easily access the ending.
-    "48"
+    "498"
 	{
 		"classname"		"npc_combine_s"
 		"wildcard"		"1"
@@ -454,7 +466,7 @@
 		"min_level"		"19"
 		"exp"	"60"
 	}
-	"49"
+	"50"
 	{
 		"classname"		"npc_metropolice"
 		"wildcard"		"1"
@@ -462,7 +474,7 @@
 		"min_level"		"19"
 		"exp"	"60"
 	}
-	"50"
+	"51"
 	{
 		"classname"		"npc_hunter"
 		"wildcard"		"1"
@@ -470,7 +482,7 @@
 		"min_level"		"19"
 		"exp"	"75"
 	}
-	"51"
+	"52"
 	{
 		"classname"		"npc_combine_ace"
 		"wildcard"		"1"

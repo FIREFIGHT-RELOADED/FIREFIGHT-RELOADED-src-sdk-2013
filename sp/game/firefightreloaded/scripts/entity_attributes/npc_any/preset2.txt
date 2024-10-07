@@ -1,0 +1,10 @@
+//basic recipe for friendly combine
+//don't use for hunters
+"npc_any_preset2"
+{
+	"new_color"		"75 128 165 255"
+	"health_multiplier"	"2"
+	"additional_speed"	"75"
+	"use_shotgun_secondary"	"1"
+	"persist"		"0"
+}
