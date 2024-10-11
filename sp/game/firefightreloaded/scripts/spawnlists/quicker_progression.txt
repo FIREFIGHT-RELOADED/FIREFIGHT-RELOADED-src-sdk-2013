@@ -2,44 +2,44 @@
 {
 	"settings"
 	{
-		"spawntime"		"4"
+		"spawntime"	"4"
 		"spawntime_steamdeck"	"8"
 	}
 	//LEVEL 1
 	"1"
 	{
-		"classname"		"npc_metropolice"
+		"classname"	"npc_metropolice"
 		"exp"	"75"
 	}
 	"2"
 	{
-		"classname"		"npc_headcrab"
+		"classname"	"npc_headcrab"
 		"exp"	"75"
-		"rare"			"1"
+		"rare"	"1"
 	}
 	"3"
 	{
-		"classname"		"npc_zombie"
+		"classname"	"npc_zombie"
 		"exp"	"75"
 	}
 	"4"
 	{
-		"classname"		"npc_zombie_torso"
+		"classname"	"npc_zombie_torso"
 		"exp"	"75"
 	}
 	"5"
 	{
-		"classname"		"npc_headcrab_fast"
+		"classname"	"npc_headcrab_fast"
 		"exp"	"75"
-		"rare"			"1"
+		"rare"	"1"
 	}
 	//LEVEL 2
 	"6"
 	{
 		//elite metrocops
-		"classname"		"npc_metropolice"
-		"preset"		"1"
-		"min_level"		"2"
+		"classname"	"npc_metropolice"
+		"preset"	"1"
+		"min_level"	"2"
 		"exp"	"75"
 		"equipment"	
 		{
@@ -54,78 +54,78 @@
 	}
 	"7"
 	{
-		"classname"		"npc_combine_s"
-		"min_level"		"2"
+		"classname"	"npc_combine_s"
+		"min_level"	"2"
 		"exp"	"75"
 	}
 	"8"
 	{
-		"classname"		"npc_houndeye"
-		"min_level"		"2"
+		"classname"	"npc_houndeye"
+		"min_level"	"2"
 		"exp"	"75"
 	}
 	//LEVEL 3
 	"9"
 	{
-		"classname"		"npc_combine_p"
-		"min_level"		"3"
+		"classname"	"npc_combine_p"
+		"min_level"	"3"
 		"exp"	"75"
 	}
 	"10"
 	{
-		"classname"		"npc_headcrab_poison"
-		"min_level"		"3"
+		"classname"	"npc_headcrab_poison"
+		"min_level"	"3"
 		"exp"	"75"
-		"rare"			"1"
+		"rare"	"1"
 	}
 	"11"
 	{
-		"classname"		"npc_bullsquid"
-		"min_level"		"3"
+		"classname"	"npc_bullsquid"
+		"min_level"	"3"
 		"exp"	"75"
 	}
 	"12"
 	{
-		"classname"		"npc_fastzombie"
-		"min_level"		"3"
+		"classname"	"npc_fastzombie"
+		"min_level"	"3"
 		"exp"	"75"
 	}
 	"13"
 	{
-		"classname"		"npc_fastzombie_torso"
-		"min_level"		"3"
+		"classname"	"npc_fastzombie_torso"
+		"min_level"	"3"
 		"exp"	"75"
 	}
 	//LEVEL 4
 	"14"
 	{
-		"classname"		"npc_combine_shot"
-		"min_level"		"4"
+		"classname"	"npc_combine_shot"
+		"min_level"	"4"
 		"exp"	"75"
 	}
 	"15"
 	{
-		"classname"		"npc_strider"
-		"min_level"		"4"
+		"classname"	"npc_strider"
+		"min_level"	"4"
 		"exp"	"75"
 	}
 	"16"
 	{
-		"classname"		"npc_antlion"
-		"min_level"		"4"
+		"classname"	"npc_antlion"
+		"min_level"	"4"
 		"exp"	"75"
 	}
 	"17"
 	{
-		"classname"		"npc_playerbot"
-		"min_level"		"4"
-		"rare"			"1"
+		"classname"	"npc_playerbot"
+		"min_level"	"4"
+		"rare"	"1"
 	}
 	//LEVEL 5
 	"18"
 	{
-		"classname"		"npc_combine_e"
-		"min_level"		"5"
+		"classname"	"npc_combine_e"
+		"min_level"	"5"
 		"exp"	"75"
 		"equipment"	
 		{
@@ -134,202 +134,133 @@
 			"weapon_shotgun" "2"
 			"weapon_m249para" "3"
 			"weapon_sniper_rifle" "3"
-            "weapon_mp5" "3"
+			"weapon_mp5" "3"
 			"weapon_oicw" "5"
-            "weapon_gatling" "1"
+			"weapon_gatling" "1"
 		}
 	}
 	"19"
 	{
-		"classname"		"npc_poisonzombie"
-		"min_level"		"5"
+		"classname"	"npc_poisonzombie"
+		"min_level"	"5"
 		"exp"	"75"
 	}
 	"20"
 	{
-		"classname"		"npc_agrunt"
-		"min_level"		"5"
+		"classname"	"npc_agrunt"
+		"min_level"	"5"
 		"exp"	"75"
 	}
-    "21"
+	"21"
 	{
-		"classname"		"npc_combine_s_friendly"
-		"min_level"		"5"
-        "wildcard"      "1"
-        "preset"		"2"
-		"rare"			"1"
+		"classname"	"npc_combine_s_friendly"
+		"min_level"	"5"
+		"wildcard"	"1"
+		"preset"	"2"
+		"rare"	"1"
 	}
 	//LEVEL 6
 	"22"
 	{
-		"classname"		"npc_acontroller"
-		"min_level"		"6"
+		"classname"	"npc_acontroller"
+		"min_level"	"6"
 		"exp"	"75"
 	}
 	"23"
 	{
-		"classname"		"npc_hunter"
-		"min_level"		"6"
+		"classname"	"npc_hunter"
+		"min_level"	"6"
 		"exp"	"75"
 	}
 	"24"
 	{
-		"classname"		"npc_zombine"
-		"min_level"		"6"
+		"classname"	"npc_zombine"
+		"min_level"	"6"
 		"exp"	"75"
 	}
 	//LEVEL 7
 	"25"
 	{
-		"classname"		"npc_antlionworker"
-		"min_level"		"7"
+		"classname"	"npc_antlionworker"
+		"min_level"	"7"
 		"exp"	"75"
 	}
 	"26"
 	{
-		"classname"		"npc_antlionguard"
-		"min_level"		"7"
+		"classname"	"npc_antlionguard"
+		"min_level"	"7"
 		"exp"	"75"
 	}
 	"27"
 	{
-		"classname"		"npc_vortigaunt"
-		"min_level"		"7"
+		"classname"	"npc_vortigaunt"
+		"min_level"	"7"
 	}
-    "28"
+	"28"
 	{
-		"classname"		"npc_combine_e_friendly"
-		"min_level"		"7"
-        "wildcard"      "1"
-        "preset"		"2"
-		"rare"			"1"
-        "equipment"	
+		"classname"	"npc_combine_e_friendly"
+		"min_level"	"7"
+		"wildcard"	"1"
+		"preset"	"2"
+		"rare"	"1"
+		"equipment"	
 		{
 			"weapon_ar2" "5"
 			"weapon_smg1" "3"
 			"weapon_shotgun" "2"
 			"weapon_m249para" "3"
 			"weapon_sniper_rifle" "3"
-            "weapon_mp5" "3"
+			"weapon_mp5" "3"
 			"weapon_oicw" "5"
 		}
 	}
 	//LEVEL 8
 	"29"
 	{
-		"classname"		"npc_assassin"
-		"min_level"		"8"
+		"classname"	"npc_assassin"
+		"min_level"	"8"
 		"exp"	"75"
 	}
 	"30"
 	{
 		//ministrider
-		"classname"		"npc_hunter"
-		"preset"		"4"
-		"min_level"		"8"
+		"classname"	"npc_hunter"
+		"preset"	"4"
+		"min_level"	"8"
 		"exp"	"75"
 	}
-    "31"
+	"31"
 	{
-		"classname"		"npc_hunter_friendly"
-		"preset"		"1"
-		"min_level"		"8"
+		"classname"	"npc_hunter_friendly"
+		"preset"	"1"
+		"min_level"	"8"
 	}
 	//LEVEL 9
 	"32"
 	{
-		"classname"		"npc_antlionguardian"
-		"min_level"		"9"
+		"classname"	"npc_antlionguardian"
+		"min_level"	"9"
 		"exp"	"75"
 	}
 	"33"
 	{
-		"classname"		"npc_stalker"
-		"min_level"		"9"
+		"classname"	"npc_stalker"
+		"min_level"	"9"
 		"exp"	"75"
 	}
 	"34"
 	{
 		//boomsquids
-		"classname"		"npc_bullsquid"
-		"preset"		"1"
-		"min_level"		"9"
+		"classname"	"npc_bullsquid"
+		"preset"	"1"
+		"min_level"	"9"
 		"exp"	"75"
 	}
 	//LEVEL 10
 	"35"
 	{
-		"classname"		"npc_combine_ace"
-		"min_level"		"10"
-		"exp"	"75"
-        "equipment"	
-		{
-			"weapon_ar2" "5"
-			"weapon_smg1" "3"
-			"weapon_shotgun" "4"
-			"weapon_railgun" "3"
-			"weapon_m249para" "4"
-			"weapon_sniper_rifle" "3"
-           	"weapon_mp5" "3"
-			"weapon_oicw" "5"
-            "weapon_gatling" "3"
-		}
-	}
-	"36"
-	{
-		"classname"		"npc_rollermine"
-		"min_level"		"10"
-		"exp"	"75"
-	}
-	"37"
-	{
-		"classname"		"npc_cscanner"
-		"min_level"		"10"
-		"exp"	"75"
-	}
-	//LEVEl 11
-	"38"
-	{
-		//Elite Hunter
-		"classname"		"npc_hunter"
-		"preset"		"3"
-		"min_level"		"10"
-		"exp"	"75"
-	}
-	//LEVEL 12
-	"39"
-	{
-		//kamikaze headcrab
-		"classname"		"npc_headcrab_fast"
-		"preset"		"1"
-		"min_level"		"12"
-		"exp"	"75"
-	}
-	//LEVEL 13
-	"40"
-	{
-		//Demolitions Hunter
-		"classname"		"npc_hunter"
-		"preset"		"2"
-		"min_level"		"13"
-		"exp"	"75"
-	}
-	//LEVEL 14
-	"41"
-	{
-		//Anti-Aircraft Hunter
-		"classname"		"npc_hunter"
-		"preset"		"1"
-		"min_level"		"14"
-		"exp"	"75"
-	}
-	//LEVEL 15
-	"42"
-	{
-		//super ace
-		"classname"		"npc_combine_ace"
-		"preset"		"1"
-		"min_level"		"15"
+		"classname"	"npc_combine_ace"
+		"min_level"	"10"
 		"exp"	"75"
 		"equipment"	
 		{
@@ -339,19 +270,68 @@
 			"weapon_railgun" "3"
 			"weapon_m249para" "4"
 			"weapon_sniper_rifle" "3"
-           	"weapon_mp5" "3"
+			"weapon_mp5" "3"
 			"weapon_oicw" "5"
-            "weapon_gatling" "3"
+			"weapon_gatling" "3"
 		}
 	}
-    "43"
+	"36"
 	{
-		"classname"		"npc_combine_ace_friendly"
-		"min_level"		"15"
-        "wildcard"      "1"
-        "preset"		"2"
-		"rare"			"1"
-        "equipment"	
+		"classname"	"npc_rollermine"
+		"min_level"	"10"
+		"exp"	"75"
+	}
+	"37"
+	{
+		"classname"	"npc_cscanner"
+		"min_level"	"10"
+		"exp"	"75"
+	}
+	//LEVEl 11
+	"38"
+	{
+		//Elite Hunter
+		"classname"	"npc_hunter"
+		"preset"	"3"
+		"min_level"	"10"
+		"exp"	"75"
+	}
+	//LEVEL 12
+	"39"
+	{
+		//kamikaze headcrab
+		"classname"	"npc_headcrab_fast"
+		"preset"	"1"
+		"min_level"	"12"
+		"exp"	"75"
+	}
+	//LEVEL 13
+	"40"
+	{
+		//Demolitions Hunter
+		"classname"	"npc_hunter"
+		"preset"	"2"
+		"min_level"	"13"
+		"exp"	"75"
+	}
+	//LEVEL 14
+	"41"
+	{
+		//Anti-Aircraft Hunter
+		"classname"	"npc_hunter"
+		"preset"	"1"
+		"min_level"	"14"
+		"exp"	"75"
+	}
+	//LEVEL 15
+	"42"
+	{
+		//super ace
+		"classname"	"npc_combine_ace"
+		"preset"	"1"
+		"min_level"	"15"
+		"exp"	"75"
+		"equipment"	
 		{
 			"weapon_ar2" "5"
 			"weapon_smg1" "3"
@@ -359,7 +339,27 @@
 			"weapon_railgun" "3"
 			"weapon_m249para" "4"
 			"weapon_sniper_rifle" "3"
-           	"weapon_mp5" "3"
+			"weapon_mp5" "3"
+			"weapon_oicw" "5"
+			"weapon_gatling" "3"
+		}
+	}
+	"43"
+	{
+		"classname"	"npc_combine_ace_friendly"
+		"min_level"	"15"
+		"wildcard"	"1"
+		"preset"	"2"
+		"rare"	"1"
+		"equipment"	
+		{
+			"weapon_ar2" "5"
+			"weapon_smg1" "3"
+			"weapon_shotgun" "4"
+			"weapon_railgun" "3"
+			"weapon_m249para" "4"
+			"weapon_sniper_rifle" "3"
+			"weapon_mp5" "3"
 			"weapon_oicw" "5"
 		}
 	}
@@ -367,38 +367,38 @@
 	//advisor drones of various combine units.
 	"44"
 	{
-		"classname"		"npc_combine_s"
-		"wildcard"		"1"
-		"preset"		"1"
-		"min_level"		"16"
-		"rare"			"1"
+		"classname"	"npc_combine_s"
+		"wildcard"	"1"
+		"preset"	"1"
+		"min_level"	"16"
+		"rare"	"1"
 		"exp"	"75"
 	}
 	"45"
 	{
-		"classname"		"npc_metropolice"
-		"wildcard"		"1"
-		"preset"		"1"
-		"min_level"		"16"
-		"rare"			"1"
+		"classname"	"npc_metropolice"
+		"wildcard"	"1"
+		"preset"	"1"
+		"min_level"	"16"
+		"rare"	"1"
 		"exp"	"75"
 	}
 	"46"
 	{
-		"classname"		"npc_hunter"
-		"wildcard"		"1"
-		"preset"		"1"
-		"min_level"		"16"
-		"rare"			"1"
+		"classname"	"npc_hunter"
+		"wildcard"	"1"
+		"preset"	"1"
+		"min_level"	"16"
+		"rare"	"1"
 		"exp"	"75"
 	}
 	"47"
 	{
-		"classname"		"npc_combine_ace"
-		"wildcard"		"1"
-		"preset"		"1"
-		"min_level"		"16"
-		"rare"			"1"
+		"classname"	"npc_combine_ace"
+		"wildcard"	"1"
+		"preset"	"1"
+		"min_level"	"16"
+		"rare"	"1"
 		"exp"	"75"
 		"equipment"	
 		{
@@ -408,51 +408,51 @@
 			"weapon_railgun" "3"
 			"weapon_m249para" "4"
 			"weapon_sniper_rifle" "3"
-            "weapon_mp5" "3"
+			"weapon_mp5" "3"
 			"weapon_oicw" "5"
 		}
 	}
 	"48"
 	{
 		//railgun hunters
-		"classname"		"npc_hunter"
-		"preset"		"5"
-		"min_level"		"16"
-		"rare"			"1"
+		"classname"	"npc_hunter"
+		"preset"	"5"
+		"min_level"	"16"
+		"rare"	"1"
 		"exp"	"75"
 	}
-    //Level 19
-    //Same as above, but they aren't rare. This is so players can easily access the ending.
-    "49"
+	//Level 19
+	//Same as above, but they aren't rare. This is so players can easily access the ending.
+	"49"
 	{
-		"classname"		"npc_combine_s"
-		"wildcard"		"1"
-		"preset"		"1"
-		"min_level"		"19"
+		"classname"	"npc_combine_s"
+		"wildcard"	"1"
+		"preset"	"1"
+		"min_level"	"19"
 		"exp"	"60"
 	}
 	"50"
 	{
-		"classname"		"npc_metropolice"
-		"wildcard"		"1"
-		"preset"		"1"
-		"min_level"		"19"
+		"classname"	"npc_metropolice"
+		"wildcard"	"1"
+		"preset"	"1"
+		"min_level"	"19"
 		"exp"	"60"
 	}
 	"51"
 	{
-		"classname"		"npc_hunter"
-		"wildcard"		"1"
-		"preset"		"1"
-		"min_level"		"19"
+		"classname"	"npc_hunter"
+		"wildcard"	"1"
+		"preset"	"1"
+		"min_level"	"19"
 		"exp"	"75"
 	}
 	"52"
 	{
-		"classname"		"npc_combine_ace"
-		"wildcard"		"1"
-		"preset"		"1"
-		"min_level"		"19"
+		"classname"	"npc_combine_ace"
+		"wildcard"	"1"
+		"preset"	"1"
+		"min_level"	"19"
 		"exp"	"100"
 		"equipment"	
 		{
@@ -462,7 +462,7 @@
 			"weapon_railgun" "3"
 			"weapon_m249para" "4"
 			"weapon_sniper_rifle" "3"
-            "weapon_mp5" "3"
+			"weapon_mp5" "3"
 			"weapon_oicw" "5"
 		}
 	}

@@ -1,11 +1,11 @@
 //Ministrider
 "npc_hunter_preset4"
 {
-	"new_model"		"models/hunter_colorable.mdl"
-	"is_rare"		"1"
+	"new_model"	"models/hunter_colorable.mdl"
+	"is_rare"	"1"
 	"new_projectile"	"5"
 	"new_material_color"	"26 52 64"
-	"volley_size"		"24"
+	"volley_size"	"24"
 	"use_ministrider_sounds"	"1"
-	"persist"		"0"
+	"persist"	"0"
 }

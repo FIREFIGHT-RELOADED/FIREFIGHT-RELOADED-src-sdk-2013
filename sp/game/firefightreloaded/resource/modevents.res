@@ -10,54 +10,54 @@
 // All strings are case sensitive
 //
 // valid data key types are:
-//   string : a zero terminated string
-//   bool   : unsigned int, 1 bit
-//   byte   : unsigned int, 8 bit
-//   short  : signed int, 16 bit
-//   long   : signed int, 32 bit
-//   float  : float, 32 bit
-//   local  : any data, but not networked to clients
+//	string : a zero terminated string
+//	bool : unsigned int, 1 bit
+//	byte : unsigned int, 8 bit
+//	short : signed int, 16 bit
+//	long : signed int, 32 bit
+//	float : float, 32 bit
+//	local : any data, but not networked to clients
 //
 // following key names are reserved:
-//   local      : if set to 1, event is not networked to clients
-//   unreliable : networked, but unreliable
-//   suppress   : never fire this event
-//   time	: firing server time
-//   eventid	: holds the event ID
+//	local : if set to 1, event is not networked to clients
+//	unreliable : networked, but unreliable
+//	suppress : never fire this event
+//	time : firing server time
+//	eventid : holds the event ID
 
 "modevents"
 {
 	"player_maxlevel"
 	{
-		"userid"	"short"			
+		"userid"	"short"
 	}
-    
-    "player_levelup"
+
+	"player_levelup"
 	{
 		"userid"	"short"	
-        "level"	    "short"
+		"level"	"short"
 	}
 	
-	"player_death"				// a game event, name may be 32 charaters long
+	"player_death"	// a game event, name may be 32 charaters long
 	{
-		"userid"	"short"   	// user ID who died				
-		"attacker"	"short"	 	// user ID who killed
-		"weapon"	"string" 	// weapon name killed used 
+		"userid"	"short" // user ID who died				
+		"attacker"	"short" // user ID who killed
+		"weapon"	"string" // weapon name killed used
 	}
 	
-	"npc_death"				// a game event, name may be 32 charaters long
+	"npc_death"		// a game event, name may be 32 charaters long
 	{
-		"victimname" "string"   	// user ID who died				
-		"attacker"	"short"	 	// user ID who killed
-		"weapon"	"string" 	// weapon name killed used 
-        "xpreward"	"short"
+		"victimname" "string" // user ID who died
+		"attacker"	"short" // user ID who killed
+		"weapon"	"string" // weapon name killed used
+		"xpreward"	"short"
 		"moneyreward"	"short"
 	}
 	
-	"player_death_npc"				// a game event, name may be 32 charaters long
+	"player_death_npc"	// a game event, name may be 32 charaters long
 	{
-		"userid"	"short"   	// user ID who died				
-		"attacker"	"string"	 	// user ID who killed
-		"weapon"	"string" 	// weapon name killed used 
+		"userid"	"short" // user ID who died
+		"attacker"	"string" // user ID who killed
+		"weapon"	"string" // weapon name killed used
 	}
 }

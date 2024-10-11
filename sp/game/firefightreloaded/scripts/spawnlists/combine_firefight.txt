@@ -3,88 +3,88 @@
 	//COMMON
 	"1"
 	{
-		"classname"		"npc_metropolice"
-		"preset"		"0"
+		"classname"	"npc_metropolice"
+		"preset"	"0"
 	}
 	"2"
 	{
-		"classname"		"npc_combine_s"
-		"preset"		"0"
+		"classname"	"npc_combine_s"
+		"preset"	"0"
 	}
 	"3"
 	{
-		"classname"		"npc_combine_e"
-		"preset"		"0"
+		"classname"	"npc_combine_e"
+		"preset"	"0"
 	}
 	"4"
 	{
-		"classname"		"npc_combine_p"
-		"preset"		"0"
+		"classname"	"npc_combine_p"
+		"preset"	"0"
 	}
 	"5"
 	{
-		"classname"		"npc_combine_shot"
-		"preset"		"0"
+		"classname"	"npc_combine_shot"
+		"preset"	"0"
 	}
 	//RARE
 	"6"
 	{
-		"classname"		"npc_stalker"
-		"preset"		"0"
-		"rare"			"1"
+		"classname"	"npc_stalker"
+		"preset"	"0"
+		"rare"	"1"
 	}
 	"7"
 	{
-		"classname"		"npc_combine_ace"
-		"preset"		"0"
-		"rare"			"1"
+		"classname"	"npc_combine_ace"
+		"preset"	"0"
+		"rare"	"1"
 	}
 	"8"
 	{
-		"classname"		"npc_hunter"
-		"preset"		"0"
-		"rare"			"1"
+		"classname"	"npc_hunter"
+		"preset"	"0"
+		"rare"	"1"
 	}
 	"9"
 	{
-		"classname"		"npc_zombine"
-		"preset"		"0"
-		"rare"			"1"
+		"classname"	"npc_zombine"
+		"preset"	"0"
+		"rare"	"1"
 	}
 	"10"
 	{
-		"classname"		"npc_assassin"
-		"preset"		"0"
-		"rare"			"1"
+		"classname"	"npc_assassin"
+		"preset"	"0"
+		"rare"	"1"
 	}
 	"11"
 	{
-		"classname"		"npc_rollermine"
-		"preset"		"0"
-		"rare"			"1"
+		"classname"	"npc_rollermine"
+		"preset"	"0"
+		"rare"	"1"
 	}
 	"12"
 	{
-		"classname"		"npc_cscanner"
-		"preset"		"0"
-		"rare"			"1"
+		"classname"	"npc_cscanner"
+		"preset"	"0"
+		"rare"	"1"
 	}
 	"13"
 	{
-		"classname"		"npc_strider"
-		"preset"		"0"
-		"rare"			"1"
+		"classname"	"npc_strider"
+		"preset"	"0"
+		"rare"	"1"
 	}
 	"14"
 	{
-		"classname"		"npc_manhack"
-		"preset"		"0"
-		"rare"			"1"
+		"classname"	"npc_manhack"
+		"preset"	"0"
+		"rare"	"1"
 	}
 	"15"
 	{
-		"classname"		"npc_playerbot"
-		"preset"		"0"
-		"rare"			"1"
+		"classname"	"npc_playerbot"
+		"preset"	"0"
+		"rare"	"1"
 	}
 }

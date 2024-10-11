@@ -1,4 +1,4 @@
 "credits"
 {
-    "AllowMusicSystem" "0"
+	"AllowMusicSystem" "0"
 }

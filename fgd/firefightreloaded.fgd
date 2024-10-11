@@ -1,8 +1,7 @@
 //firefightreloaded.fgd
 @include "hl2mp.fgd"
 
-@NPCClass base(BaseCombine) studio("models/Combine_Soldier.mdl") = npc_combine_shot : 
-    "Combine Soldier (Shotgunner, used for if you want shotgunners specifically to show up on kill logs)"
+@NPCClass base(BaseCombine) studio("models/Combine_Soldier.mdl") = npc_combine_shot : "Combine Soldier (Shotgunner, used for if you want shotgunners specifically to show up on kill logs)"
 [
 	input Assault(string) : "Start an assault. Parameter passed in should be the name of the rally point."
 
@@ -55,9 +54,9 @@
 [
 	FollowTarget(target_destination) : "Strider to Follow" : "" : "The name of the strider that this hunter should follow."
 	
-    // Inputs
-    input FollowStrider(target_destination) : "Sets the name of the strider that this hunter should follow."
-    
+	// Inputs
+	input FollowStrider(target_destination) : "Sets the name of the strider that this hunter should follow."
+
 	input SetMinigunTime(float) : "Time to shoot at any set minigun target."
 	input SetMinigunTarget(string) : "Hunter will shoot minigun at the named target."
 
@@ -88,15 +87,15 @@
 	levitationarea(string) : "Levitation Area" : "" : "Trigger volume inside which levitated objects reside"
 	
 	levitategoal_bottom(target_destination) : "Levitation Goal Bottom" : "" : "Objects will levitate at least this high"
-	levitategoal_top(target_destination)    : "Levitation Goal Top" : "" : "Objects will levitate at least this high"
+	levitategoal_top(target_destination)	: "Levitation Goal Top" : "" : "Objects will levitate at least this high"
 	
-	staging_ent_names(string) : "Staging Position Names"  : "" : "All entities with this name will be considered staging positions for the throw behavior."
+	staging_ent_names(string) : "Staging Position Names" : "" : "All entities with this name will be considered staging positions for the throw behavior."
 	priority_grab_name(string) : "Priority Name For Grabbing" : "" : "If any entities named this are present, the advisor will preferentially pick them up for throwing at the player."
 
 	output OnPickingThrowable(void) : "Fires just before I pick something to hurl"
-	output OnThrowWarn(void)        : "Fires when I trigger the warning green glow before tossing"
-	output OnThrow(void)            : "Fires just after I throw something"
-	output OnHealthIsNow(integer)       : "When I am damaged, my hitpoints thereafter"
+	output OnThrowWarn(void)	: "Fires when I trigger the warning green glow before tossing"
+	output OnThrow(void)	: "Fires just after I throw something"
+	output OnHealthIsNow(integer) : "When I am damaged, my hitpoints thereafter"
 	
 	input SetThrowRate(float) : "Advisor will throw an object once per this many seconds (plus a little more)"
 	input WrenchImmediate(string) : "Advisor will immediately start levitating all objects with this name"
@@ -107,8 +106,8 @@
 	
 	input ELightOn(void) : "Turn on an entity light at my location. Please remember to turn this off."
 	input ELightOff(void) : "Turn off my entity light."
-    
-    input TurnOnBulletResistanceOutline(void) : "Turn on our shields."
+
+	input TurnOnBulletResistanceOutline(void) : "Turn on our shields."
 	
 	input DoNothing(void) : ""
 ]
@@ -227,7 +226,7 @@
 	input Toggle(void) : "Toggles this entity."
 	
 	// Outputs
-	output OnEventFired(void)  : "Fires when the event has been detected."
+	output OnEventFired(void) : "Fires when the event has been detected."
 ]
 
 @PointClass base(logic_eventlistener) = point_event :
@@ -264,30 +263,30 @@
 	input AddEvent(string) : "Adds an event to this entity."
 	
 	// Outputs
-	output OutEventName(string)  : "Outputs the detected event's name in case this entity is listening for multiple events."
-	output OutValue01(string)  : "Passes the value found in its respective keyname when an event is fired."
-	output OutValue02(string)  : "Passes the value found in its respective keyname when an event is fired."
-	output OutValue03(string)  : "Passes the value found in its respective keyname when an event is fired."
-	output OutValue04(string)  : "Passes the value found in its respective keyname when an event is fired."
-	output OutValue05(string)  : "Passes the value found in its respective keyname when an event is fired."
-	output OutValue06(string)  : "Passes the value found in its respective keyname when an event is fired."
-	output OutValue07(string)  : "Passes the value found in its respective keyname when an event is fired."
-	output OutValue08(string)  : "Passes the value found in its respective keyname when an event is fired."
+	output OutEventName(string) : "Outputs the detected event's name in case this entity is listening for multiple events."
+	output OutValue01(string) : "Passes the value found in its respective keyname when an event is fired."
+	output OutValue02(string) : "Passes the value found in its respective keyname when an event is fired."
+	output OutValue03(string) : "Passes the value found in its respective keyname when an event is fired."
+	output OutValue04(string) : "Passes the value found in its respective keyname when an event is fired."
+	output OutValue05(string) : "Passes the value found in its respective keyname when an event is fired."
+	output OutValue06(string) : "Passes the value found in its respective keyname when an event is fired."
+	output OutValue07(string) : "Passes the value found in its respective keyname when an event is fired."
+	output OutValue08(string) : "Passes the value found in its respective keyname when an event is fired."
 ]
 
 @PointClass base(Targetname) size(-16 -16 -16, 16 16 16) = player_loadoutchanger : "Gives the player a default loadout."
 [
 	// Inputs
 	input SetLoadout(string) : "Set the player's loadout."
-    input UnsetLoadout(void) : "Revert the player's loadout back to the currently set default."
+	input UnsetLoadout(void) : "Revert the player's loadout back to the currently set default."
 ]
 
 @PointClass base(Targetname) size(-16 -16 -16, 16 16 16) = player_levelchecker : "Checks the player's level and sees if it's at a certain point."
 [
 	Level(integer) : "Player Level to Check" : 1 : "The level this entity should watch out for."
-    
-    // Outputs
-	output IfAtLevel(void)  : "If the player is at the level defined in 'Player Level to Check', then...."
+
+	// Outputs
+	output IfAtLevel(void) : "If the player is at the level defined in 'Player Level to Check', then...."
 ]
 
 @PointClass base(Targetname) size(-16 -16 -16, 16 16 16) = mapadd : "Mapadd Entity"
@@ -300,27 +299,27 @@
 	spawnflags(flags) =
 	[
 		1: "Play Everywhere" : 0
-        16: "Start Silent" : 0
-        32: "Not Looping" : 0
-        64: "Music" : 0
+		16: "Start Silent" : 0
+		32: "Not Looping" : 0
+		64: "Music" : 0
 	]
-    
-    message(sound) : "Sound to Play" : "" : "Name of the GameSound entry for the sound to play. Also supports direct .wav filenames."
-    volume(float) : "Volume" : 10 : "Sound volume, expressed as a range from 0 to 10, where 10 is the loudest."
-    pitch(float) : "Pitch" : 100 : "Sound pitch, expressed as a range from 0 to 255, where 255 is the highest."
-    maxdistance(float) : "Max Audible Distance" : "1250" : "Maximum distance at which this sound is audible."
+
+	message(sound) : "Sound to Play" : "" : "Name of the GameSound entry for the sound to play. Also supports direct .wav filenames."
+	volume(float) : "Volume" : 10 : "Sound volume, expressed as a range from 0 to 10, where 10 is the loudest."
+	pitch(float) : "Pitch" : 100 : "Sound pitch, expressed as a range from 0 to 255, where 255 is the highest."
+	maxdistance(float) : "Max Audible Distance" : "1250" : "Maximum distance at which this sound is audible."
 	SourceEntityName(string) : "Source Entity Name" : "" : "If an entity is specified, sound will come from this named entity instead of the location of ambient_fmod."
 
 	// Inputs
 	input PlaySound(void) : "Play the FMOD sound."
 	input StopSound(void) : "Stop the FMOD sound."
-    input SetVolume(float) : "Set the sound volume."
-    input IncreaseVolume(float) : "Increase the sound volume."
-    input DecreaseVolume(float) : "Decrease the sound volume."
-    input SetMusicSpeed(float) : "Set the speed of the sound."
-    input Pitch(float) : "Set the pitch of the sound."
-    input IncreasePitch(float) : "Increase the pitch of the sound."
-    input DecreasePitch(float) : "Decrease the pitch of the sound."
+	input SetVolume(float) : "Set the sound volume."
+	input IncreaseVolume(float) : "Increase the sound volume."
+	input DecreaseVolume(float) : "Decrease the sound volume."
+	input SetMusicSpeed(float) : "Set the speed of the sound."
+	input Pitch(float) : "Set the pitch of the sound."
+	input IncreasePitch(float) : "Increase the pitch of the sound."
+	input DecreasePitch(float) : "Decrease the pitch of the sound."
 ]
 
 @PointClass base(Targetname, Parentname, Angles) iconsprite("editor/npc_maker.vmt") = npc_maker_firefight : "NPC Maker (Firefight)"
@@ -356,7 +355,7 @@
 	input Toggle(void) : "Toggles the spawner enabled/disabled state."
 	input Enable(void) : "Enables the spawner."
 	input Disable(void) : "Disables the spawner."
-    input DisableAndDestroyAll(void) : "Disables the spawner and destroys all children."
+	input DisableAndDestroyAll(void) : "Disables the spawner and destroys all children."
 	input SetMaxLiveChildren(integer) : "Sets the maximum number of NPCs that can be alive at any one time from this spawner."
 	input SetMaxLiveRareNPCs(integer) : "Sets the maximum number of rare NPCs that can be alive at any one time from this spawner."
 	input SetSpawnFrequency(float) : "Sets how often (in seconds) a new NPC will be spawned."

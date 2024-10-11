@@ -21,7 +21,7 @@
 		"ammonum"	"120"
 	}
 	"4"
-	{ 
+	{
 		// don't make the grapple the last weapon or else the game won't switch
 		// to the gravity gun.
 		"weapon"	"weapon_grapple"

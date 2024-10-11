@@ -1,5 +1,5 @@
-// "surface group" 
-// { 
+// "surface group"
+// {
 // "property" 	"value"
 // ...
 // }
@@ -17,7 +17,7 @@
 // !!! Do not edit the physics properties (especially density) without the proper references !!!
 //`
 // Sounds
-// 
+//
 // stepleft: footstep sound for left foot
 // stepright: footstep sound for right foot
 // impactsoft: Physical impact sound when hitting soft surfaces
@@ -26,7 +26,6 @@
 // scraperough: Looping physics friction sound (when scraping rough surfaces)
 // bulletimpact: bullet impact sound
 // gamematerial: game material index (can be a single letter or a number)
-// 
 
 // NOTE: The properties of "default" will get copied into EVERY material who does not
 // 	 override them!!!
@@ -53,28 +52,28 @@
 
 "advisor_shield"
 {
- "base"  "rock"
- 
- "density" "700"
- "elasticity" "0.1"
- "friction" "0.8"
- "bulletimpact" "NPC_Advisor.shieldblock"
- "scraperough" "NPC_Advisor.shieldblock"
- "scrapesmooth" "NPC_Advisor.shieldblock"
- "impacthard" "NPC_Advisor.shieldblock"
- "impactsoft" "NPC_Advisor.shieldblock"
- 
- "gamematerial" "Z"  // <--- Whatever you make the character index in decals.h
+	"base"  "rock"
+
+	"density" "700"
+	"elasticity" "0.1"
+	"friction" "0.8"
+	"bulletimpact" "NPC_Advisor.shieldblock"
+	"scraperough" "NPC_Advisor.shieldblock"
+	"scrapesmooth" "NPC_Advisor.shieldblock"
+	"impacthard" "NPC_Advisor.shieldblock"
+	"impactsoft" "NPC_Advisor.shieldblock"
+
+	"gamematerial" "Z"	// <--- Whatever you make the character index in decals.h
 }
 
 "antlion_eggshell"
 {
- "base"  "flesh"
-"bulletimpact"	"Flesh.ImpactHard"
-"impacthard"	"Flesh.ImpactHard"
-"impactsoft"	"Flesh.ImpactHard"
+	"base"  "flesh"
+	"bulletimpact"	"Flesh.ImpactHard"
+	"impacthard"	"Flesh.ImpactHard"
+	"impactsoft"	"Flesh.ImpactHard"
 
- "gamematerial" "E"
+	"gamematerial" "E"
 }
 
 
@@ -86,20 +85,20 @@
 
 "jalopytire"
 {
-	"base"			"jeeptire"
-	"elasticity"		"0.1"
+	"base"	"jeeptire"
+	"elasticity"	"0.1"
 }
 
 "slidingrubbertire_jalopyfront"
 {
-	"base"			"jalopytire"
-	"friction"		"0.15"
+	"base"	"jalopytire"
+	"friction"	"0.15"
 }
 
 "slidingrubbertire_jalopyrear"
 {
-	"base"			"jalopytire"
-	"friction"		"0.15"
+	"base"	"jalopytire"
+	"friction"	"0.15"
 }
 
 "water"
@@ -124,8 +123,7 @@
 
 "jalopy"
 {
-	"base"			"metal"
+	"base"	"metal"
 	"impacthard"	"ATV_impact_medium"
 	"impactsoft"	"ATV_impact_medium"
 }
-

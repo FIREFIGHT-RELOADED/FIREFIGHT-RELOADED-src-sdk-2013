@@ -65,7 +65,7 @@
 		"wrap"		"0"
 		"font"		"UiBold"
 	}
-	"CommentaryIcon" 
+	"CommentaryIcon"
 	{
 		"ControlName"		"ImagePanel"
 		"fieldName"		"CommentaryIcon"

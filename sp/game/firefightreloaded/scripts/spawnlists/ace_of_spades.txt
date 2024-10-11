@@ -2,16 +2,16 @@
 {
 	"settings"
 	{
-		"spawntime"		"6"
+		"spawntime"	"6"
 		"spawntime_steamdeck"	"10"
 	}
 	"1"
 	{
 		//elite metrocops
-		"classname"		"npc_metropolice"
-		"preset"		"1"
-		"rare"			"1"
-		"equipment"	
+		"classname"	"npc_metropolice"
+		"preset"	"1"
+		"rare"	"1"
+		"equipment"
 		{
 			"weapon_stunstick" "3"
 			"weapon_pistol" "5"
@@ -23,9 +23,9 @@
 	}
 	"2"
 	{
-		"classname"		"npc_combine_ace"
-		"rare"			"1"
-		"equipment"	
+		"classname"	"npc_combine_ace"
+		"rare"	"1"
+		"equipment"
 		{
 			"weapon_ar2" "5"
 			"weapon_smg1" "3"
@@ -33,16 +33,16 @@
 			"weapon_railgun" "3"
 			"weapon_m249para" "4"
 			"weapon_sniper_rifle" "3"
-            "weapon_mp5" "3"
+			"weapon_mp5" "3"
 		}
 	}
 	"3"
 	{
 		//super ace
-		"classname"		"npc_combine_ace"
-		"preset"		"1"
-		"rare"			"1"
-		"equipment"	
+		"classname"	"npc_combine_ace"
+		"preset"	"1"
+		"rare"	"1"
+		"equipment"
 		{
 			"weapon_ar2" "5"
 			"weapon_smg1" "3"
@@ -50,7 +50,7 @@
 			"weapon_railgun" "3"
 			"weapon_m249para" "4"
 			"weapon_sniper_rifle" "3"
-            "weapon_mp5" "3"
+			"weapon_mp5" "3"
 		}
 	}
 }

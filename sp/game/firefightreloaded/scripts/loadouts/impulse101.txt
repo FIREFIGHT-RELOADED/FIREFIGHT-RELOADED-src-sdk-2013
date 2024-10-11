@@ -2,9 +2,9 @@
 {
 	"1"
 	{
-		"health"		"999"
+		"health"	"999"
 		"incrementhealth"	"0"
-		"kash"		"9999"
+		"kash"	"9999"
 	}
 	"2"
 	{

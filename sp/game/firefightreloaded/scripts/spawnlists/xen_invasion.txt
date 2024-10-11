@@ -3,53 +3,53 @@
 	//COMMON
 	"1"
 	{
-		"classname"		"npc_agrunt"
-		"preset"		"0"
+		"classname"	"npc_agrunt"
+		"preset"	"0"
 	}
 	"2"
 	{
-		"classname"		"npc_houndeye"
-		"preset"		"0"
+		"classname"	"npc_houndeye"
+		"preset"	"0"
 	}
 	"3"
 	{
-		"classname"		"npc_bullsquid"
-		"preset"		"0"
+		"classname"	"npc_bullsquid"
+		"preset"	"0"
 	}
 	"4"
 	{
-		"classname"		"npc_acontroller"
-		"preset"		"0"
+		"classname"	"npc_acontroller"
+		"preset"	"0"
 	}
 	//RARE
 	"5"
 	{
-		"classname"		"npc_headcrab_fast"
-		"preset"		"0"
-		"rare"			"1"
+		"classname"	"npc_headcrab_fast"
+		"preset"	"0"
+		"rare"	"1"
 	}
 	"6"
 	{
-		"classname"		"npc_headcrab_poison"
-		"preset"		"0"
-		"rare"			"1"
+		"classname"	"npc_headcrab_poison"
+		"preset"	"0"
+		"rare"	"1"
 	}
 	"7"
 	{
-		"classname"		"npc_vortigaunt"
-		"preset"		"0"
-		"rare"			"1"
+		"classname"	"npc_vortigaunt"
+		"preset"	"0"
+		"rare"	"1"
 	}
 	"8"
 	{
-		"classname"		"npc_headcrab"
-		"preset"		"0"
-		"rare"			"1"
+		"classname"	"npc_headcrab"
+		"preset"	"0"
+		"rare"	"1"
 	}
 	"9"
 	{
-		"classname"		"npc_playerbot"
-		"preset"		"0"
-		"rare"			"1"
+		"classname"	"npc_playerbot"
+		"preset"	"0"
+		"rare"	"1"
 	}
 }

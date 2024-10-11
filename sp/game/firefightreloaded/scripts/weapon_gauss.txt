@@ -3,37 +3,36 @@
 WeaponData
 {
 	// Weapon fdata is loaded by both the Game and Client DLLs.
-	"printname"			"#HL2_TauCannon"
-	"viewmodel"			"models/weapons/v_gauss.mdl"
-	"playermodel"			"models/weapons/w_gauss.mdl"
-	"anim_prefix"			"gauss"
-	"bucket"			"3"
-	"bucket_position"		"2"
+	"printname"	"#HL2_TauCannon"
+	"viewmodel"	"models/weapons/v_gauss.mdl"
+	"playermodel"	"models/weapons/w_gauss.mdl"
+	"anim_prefix"	"gauss"
+	"bucket"	"3"
+	"bucket_position"	"2"
 
-	"clip_size"			"-1"
-	"clip2_size"			"-1"
-	"default_clip"			"100"
-	"default_clip2"			"-1"
+	"clip_size"	"-1"
+	"clip2_size"	"-1"
+	"default_clip"	"100"
+	"default_clip2"	"-1"
+	"primary_ammo"	"GaussEnergy"
+	"secondary_ammo"	"None"
 
-	"primary_ammo"			"GaussEnergy"
-	"secondary_ammo"		"None"
-
-	"weight"			"2"
-	"item_flags"			"0"
+	"weight"	"2"
+	"item_flags"	"0"
 	
-	"BuiltRightHanded" 		"1" 
-	"AllowFlipping" 		"1"
-	"UseMuzzleSmoke"		"0"
-	"useironsights"			"0"
-	"LowerWeapon"			"0"
+	"BuiltRightHanded"	"1"
+	"AllowFlipping"	"1"
+	"UseMuzzleSmoke"	"0"
+	"useironsights"	"0"
+	"LowerWeapon"	"0"
 	"useironsightcrosshair" 	"0"
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
 	{
-		"single_shot"		"Weapon_Gauss.Single"
-		"special1"			"Weapon_Gauss.Special1"
-		"special2"			"Weapon_Gauss.Special2"	
+		"single_shot"	"Weapon_Gauss.Single"
+		"special1"	"Weapon_Gauss.Special1"
+		"special2"	"Weapon_Gauss.Special2"	
 	}
 
 	// Weapon Sprite data is loaded by the Client DLL.
@@ -41,36 +40,36 @@ WeaponData
 	{
 		"weapon"
 		{
-				"font"		"WeaponIcons"
-				"character"	"h"
+			"font"	"WeaponIcons"
+			"character"	"h"
 		}
 		"weapon_s"
 		{
-				"font"		"WeaponIconsSelected"
-				"character"	"h"
+			"font"	"WeaponIconsSelected"
+			"character"	"h"
 		}
 		"weapon_small"
-		{	
-				"font"		"WeaponIconsSmall"
-				"character"	"h"
+		{
+			"font"	"WeaponIconsSmall"
+			"character"	"h"
 		}
 		"ammo"
 		{
-				"font"		"WeaponIconsSmall"
-				"character"	"r"
+			"font"	"WeaponIconsSmall"
+			"character"	"r"
 		}
 		"crosshair"
 		{
-				"font"		"Crosshairs"
-				"character"	"Q"
+			"font"	"Crosshairs"
+			"character"	"Q"
 		}
 		"autoaim"
 		{
-				"file"		"sprites/crosshairs"
-				"x"			"0"
-				"y"			"48"
-				"width"		"24"
-				"height"	"24"
+			"file"	"sprites/crosshairs"
+			"x"	"0"
+			"y"	"48"
+			"width"	"24"
+			"height"	"24"
 		}
 	}
 }

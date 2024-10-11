@@ -4,44 +4,44 @@ WeaponData
 {
 	// Weapon data is loaded by both the Game and Client DLLs.
 	"printname"	"#HL2_Turret"
-	"viewmodel"		"models/weapons/v_turret_b.mdl"
-	"playermodel"		"models/weapons/w_turret_rb.mdl"
-	"anim_prefix"		"slam"
-	"weapon_type"		"utility"
-	"bucket"			"5"
+	"viewmodel"	"models/weapons/v_turret_b.mdl"
+	"playermodel"	"models/weapons/w_turret_rb.mdl"
+	"anim_prefix"	"slam"
+	"weapon_type"	"utility"
+	"bucket"	"5"
 	"bucket_position"	"1"
-	"bucket_360"			"0"
+	"bucket_360"	"0"
 	"bucket_position_360"	"0"
 
-	"clip_size"			"-1"
-	"default_clip"			"1"
-	"primary_ammo"		"turret"
+	"clip_size"	"-1"
+	"default_clip"	"1"
+	"primary_ammo"	"turret"
 	"secondary_ammo"	"None"
 
-	"weight"		"2"
-	"rumble"		"1"
-	"item_flags"		"0"
+	"weight"	"2"
+	"rumble"	"1"
+	"item_flags"	"0"
 	
-	"BuiltRightHanded" 		"1" 
-	"AllowFlipping" 		"1"
-	"MagazineStyledReloads"		"1"
-	"UseMuzzleSmoke"		"1"
-	"useironsights"			"0"
-	"LowerWeapon"			"1"
+	"BuiltRightHanded"	"1"
+	"AllowFlipping"	"1"
+	"MagazineStyledReloads"	"1"
+	"UseMuzzleSmoke"	"1"
+	"useironsights"	"0"
+	"LowerWeapon"	"1"
 	"useironsightcrosshair" 	"0"
-	"MeleeWeapon"			"1"
+	"MeleeWeapon"	"1"
 
 	Adjust
 	{
-		"right"		"5.5"
+		"right"	"5.5"
 	}
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
 	{
-		"single_shot"		"HL2Player.Use"
-		"empty"			"Weapon_Pistol.Empty"
-		"special1"		"SolidMetal.ImpactHard"
+		"single_shot"	"HL2Player.Use"
+		"empty"	"Weapon_Pistol.Empty"
+		"special1"	"SolidMetal.ImpactHard"
 	}
 
 	// Weapon Sprite data is loaded by the Client DLL.
@@ -49,40 +49,40 @@ WeaponData
 	{
 		"weapon"
 		{
-				"file"		"VGUI/basic2d_linear/ex_weaponicon_36"
-				"x"			"0"
-				"y"			"0"
-				"width"		"128"
-				"height"	"64"
+			"file"	"VGUI/basic2d_linear/ex_weaponicon_36"
+			"x"	"0"
+			"y"	"0"
+			"width"	"128"
+			"height"	"64"
 		}
 		"weapon_s"
-		{	
-				"file"		"VGUI/basic2d_linear/ex_weaponicon_36"
-				"x"			"0"
-				"y"			"0"
-				"width"		"128"
-				"height"	"64"
+		{
+			"file"	"VGUI/basic2d_linear/ex_weaponicon_36"
+			"x"	"0"
+			"y"	"0"
+			"width"	"128"
+			"height"	"64"
 		}
 		"ammo"
-		{	
-				"file"		"VGUI/basic2d_linear/ex_weaponicon_36"
-				"x"			"0"
-				"y"			"0"
-				"width"		"128"
-				"height"	"64"
+		{
+			"file"	"VGUI/basic2d_linear/ex_weaponicon_36"
+			"x"	"0"
+			"y"	"0"
+			"width"	"128"
+			"height"	"64"
 		}
 		"crosshair"
 		{
-				"font"		"Crosshairs"
-				"character"	"Q"
+			"font"	"Crosshairs"
+			"character"	"Q"
 		}
 		"autoaim"
 		{
-				"file"		"sprites/crosshairs"
-				"x"			"0"
-				"y"			"48"
-				"width"		"24"
-				"height"	"24"
+			"file"	"sprites/crosshairs"
+			"x"	"0"
+			"y"	"48"
+			"width"	"24"
+			"height"	"24"
 		}
 	}
 }

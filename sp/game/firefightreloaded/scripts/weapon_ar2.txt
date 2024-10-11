@@ -4,57 +4,56 @@ WeaponData
 {
 	// Weapon data is loaded by both the Game and Client DLLs.
 	"printname"	"#HL2_Pulse_Rifle"
-	"viewmodel"			"models/weapons/v_irifle.mdl"
-	"playermodel"			"models/weapons/w_irifle.mdl"
-	"anim_prefix"			"ar2"
-	"weapon_type"			"smg"
-	"bucket"			"2"
-	"bucket_position"		"1"
-	"bucket_360"			"1"
-	"bucket_position_360"		"2"
+	"viewmodel"	"models/weapons/v_irifle.mdl"
+	"playermodel"	"models/weapons/w_irifle.mdl"
+	"anim_prefix"	"ar2"
+	"weapon_type"	"smg"
+	"bucket"	"2"
+	"bucket_position"	"1"
+	"bucket_360"	"1"
+	"bucket_position_360"	"2"
 
-	"clip_size"			"30"
-	"default_clip"			"120"
+	"clip_size"	"30"
+	"default_clip"	"120"
 
-	"clip2_size"			"-1"
-	"default_clip2"			"-1"
+	"clip2_size"	"-1"
+	"default_clip2"	"-1"
+	"primary_ammo"	"AR2"
+	"secondary_ammo"	"AR2AltFire"
 
-	"primary_ammo"			"AR2"
-	"secondary_ammo"		"AR2AltFire"
-
-	"weight"				"5"
-	"rumble"			"4"
-	"item_flags"			"0" 
+	"weight"	"5"
+	"rumble"	"4"
+	"item_flags"	"0"
 	
-	"BuiltRightHanded" 		"1" 
-	"AllowFlipping" 		"1"
-	"MagazineStyledReloads"		"1"
+	"BuiltRightHanded"	"1"
+	"AllowFlipping"	"1"
+	"MagazineStyledReloads"	"1"
 	
-	"UseMuzzleSmoke"		"1"
-	"useironsights"			"1"
-	"LowerWeapon"			"1"
+	"UseMuzzleSmoke"	"1"
+	"useironsights"	"1"
+	"LowerWeapon"	"1"
 	"useironsightcrosshair" "0"
 	
 	IronSight
 	{
-		"right"		"-5.80"
-		"up"		"2.2"
+		"right"	"-5.80"
+		"up"	"2.2"
 		"forward"	"-12"
-		"fov"		"-20"
+		"fov"	"-20"
 	}
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
 	{
-		"special1"		"Weapon_CombineGuard.Special1"
-		"empty"			"Weapon_IRifle.Empty"
-		"double_shot"		"Weapon_IRifle.Single"
-		"reload"		"Weapon_AR2.Reload"
-		"single_shot"		"Weapon_AR2.Single"
+		"special1"	"Weapon_CombineGuard.Special1"
+		"empty"	"Weapon_IRifle.Empty"
+		"double_shot"	"Weapon_IRifle.Single"
+		"reload"	"Weapon_AR2.Reload"
+		"single_shot"	"Weapon_AR2.Single"
 
 		// NPC SECTION
 		"single_shot_npc"	"Weapon_AR2.NPC_Single"
-		"reload_npc"		"Weapon_AR2.NPC_Reload"
+		"reload_npc"	"Weapon_AR2.NPC_Reload"
 		"double_shot_npc"	"Weapon_AR2.NPC_Double"
 	}
 
@@ -63,41 +62,41 @@ WeaponData
 	{
 		"weapon"
 		{
-				"font"		"WeaponIcons"
-				"character"	"l"
+			"font"	"WeaponIcons"
+			"character"	"l"
 		}
 		"weapon_s"
-		{	
-				"font"		"WeaponIconsSelected"
-				"character"	"l"
+		{
+			"font"	"WeaponIconsSelected"
+			"character"	"l"
 		}
 		"weapon_small"
 		{
-				"font"		"WeaponIconsSmall"
-				"character"	"l"
+			"font"	"WeaponIconsSmall"
+			"character"	"l"
 		}
 		"ammo"
 		{
-				"font"		"WeaponIconsSmall"
-				"character"	"u"
+			"font"	"WeaponIconsSmall"
+			"character"	"u"
 		}
 		"ammo2"
 		{
-				"font"		"WeaponIconsSmall"
-				"character"	"z"
+			"font"	"WeaponIconsSmall"
+			"character"	"z"
 		}
 		"crosshair"
 		{
-				"font"		"Crosshairs"
-				"character"	"Q"
+			"font"	"Crosshairs"
+			"character"	"Q"
 		}
 		"autoaim"
 		{
-				"file"		"sprites/crosshairs"
-				"x"			"0"
-				"y"			"48"
-				"width"		"24"
-				"height"	"24"
+			"file"	"sprites/crosshairs"
+			"x"	"0"
+			"y"	"48"
+			"width"	"24"
+			"height"	"24"
 		}
 	}
 }

@@ -33,8 +33,10 @@ vpc_osx binary
 *.cfg text
 *.res text
 *.rc text
+*.qc text
 *.def text
 *.vmt text
+*.smd text
 *.inl text
 *.asm text
 

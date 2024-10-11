@@ -2,10 +2,7 @@
 
 $modelname "blueheart.mdl"
 
-$bodygroup "axebane"
-{
-	studio "heart.smd"
-}
+$body studio "heart.smd"
 
 $texturegroup "astro"
 {
@@ -13,12 +10,9 @@ $texturegroup "astro"
 	{ "blueheart2" }
 }
 
-$surfaceprop "plastic"
-
+$surfaceprop plastic
 $contents "solid"
-
 $mostlyopaque
-
 $cdmaterials "models\blueheart\"
 
 $sequence "idle" {

@@ -2,13 +2,13 @@
 {
 	"1"
 	{
-		"health"		"350"
+		"health"	"350"
 		"setmaxhealth"	"1"
 		"resetmaxhealthupgrades"	"0"
-		"armor"		"350"
+		"armor"	"350"
 		"setmaxarmor"	"1"
-		"level"		"20"
-		"kash"		"6500"
+		"level"	"20"
+		"kash"	"6500"
 	}
 	"2"
 	{

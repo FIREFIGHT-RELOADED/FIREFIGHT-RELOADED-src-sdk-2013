@@ -5,72 +5,71 @@
 WeaponData
 {
 	// Weapon data is loaded by both the Game and Client DLLs.
-	"printname"			"Example Gun" //Name.
-	"viewmodel"			"models/weapons/v_pistol.mdl" //Viewmodel.
-	"playermodel"		"models/weapons/w_pistol.mdl" //Worldmodel.
-	"anim_prefix"		"pistol" //Animations for NPCs.
-	"weapon_type"		"pistol" //Weapon Type.
-	"bucket"			"1" //The category this will go into.
+	"printname"	"Example Gun" //Name.
+	"viewmodel"	"models/weapons/v_pistol.mdl" //Viewmodel.
+	"playermodel"	"models/weapons/w_pistol.mdl" //Worldmodel.
+	"anim_prefix"	"pistol" //Animations for NPCs.
+	"weapon_type"	"pistol" //Weapon Type.
+	"bucket"	"1" //The category this will go into.
 	"bucket_position"	"0" //The slot this will go into.
-	"bucket_360"			"0"
+	"bucket_360"	"0"
 	"bucket_position_360"	"0"
 
-	"clip_size"			"18"	//Clip 1 size
-	"clip2_size"		"-1"	//Clip 2 size
+	"clip_size"	"18"	//Clip 1 size
+	"clip2_size"	"-1"	//Clip 2 size
+	"default_clip"	"18"	//The amount this will have in Clip 1 when spawned by default.
+	"default_clip2"	"-1"	//The amount this will have in Clip 2 when spawned by default.
+	
+	"primary_ammo"	"Pistol"	//Primary ammo type.
+	"secondary_ammo"	"None"	//Secondary ammo type.
 
-	"default_clip"		"18"	//The amount this will have in Clip 1 when spawned by default.
-	"default_clip2"		"-1"	//The amount this will have in Clip 2 when spawned by default.
+	"weight"	"2"	//How much NPCs want to pick this up.
+	"rumble"	"1"	//Rumble setting for controllers.
+	"item_flags" "0"	//Flags for the weapon.
 	
-	"primary_ammo"		"Pistol"	//Primary ammo type.
-	"secondary_ammo"	"None"		//Secondary ammo type.
+	"BuiltRightHanded"	"1"	//Check to see if this is Left-Handed. Useful for CSS weapons.
+	"AllowFlipping"	"1"	//Check to see if we can use flipping.
+	"MagazineStyledReloads"	"1"	//Check to see if we can use Magazine-Styled Reloads.
+	"UseMuzzleSmoke"	"1"	//Check to see if we can use Muzzle Smoke.
+	"useironsights"	"1"	//Check if we can use Ironsights.
+	"LowerWeapon"	"1"	//Check if we can lower the weapon while sprinting. Disable this if your viewmodel does not have a lowering animation.
+	"useironsightcrosshair" "0"	//Check if we can display a crosshair on ironsight.
 
-	"weight"		"2"		//How much NPCs want to pick this up.
-	"rumble"		"1"		//Rumble setting for controllers.
-	"item_flags"		"0"		//Flags for the weapon.
-	
-	"BuiltRightHanded" 		"1" //Check to see if this is Left-Handed. Useful for CSS weapons.
-	"AllowFlipping" 		"1" //Check to see if we can use flipping.
-	"MagazineStyledReloads"		"1" //Check to see if we can use Magazine-Styled Reloads.
-	"UseMuzzleSmoke"		"1" //Check to see if we can use Muzzle Smoke.
-	"useironsights"		"1"	//Check if we can use Ironsights.
-	"LowerWeapon"			"1" //Check if we can lower the weapon while sprinting. Disable this if your viewmodel does not have a lowering animation.
-	"useironsightcrosshair" "0" //Check if we can display a crosshair on ironsight. 
-	
 	//Ironsight settings
 	IronSight
 	{
-		"right"		"-6.010000"
-		"up"		"4.050000"
+		"right"	"-6.010000"
+		"up"	"4.050000"
 		"forward"	"-10"
-		"pitch"		"-0.1"
-		"yaw"		"-1.050000"
-		"roll"		"0"
-		"fov"		"-5"
+		"pitch" "-0.1"
+		"yaw" "-1.050000"
+		"roll" "0"
+		"fov"	"-5"
 	}
 	
 	//adjust settings
 	Adjust
 	{
-		"right"		"-6.010000"
-		"up"		"4.050000"
+		"right"	"-6.010000"
+		"up"	"4.050000"
 		"forward"	"-10"
-		"pitch"		"-0.1"
-		"yaw"		"-1.050000"
-		"roll"		"0"
+		"pitch" "-0.1"
+		"yaw" "-1.050000"
+		"roll" "0"
 	}
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
 	{
 
-		"reload"		"Weapon_Pistol.Reload"
+		"reload"	"Weapon_Pistol.Reload"
 		"reload_npc"	"Weapon_Pistol.NPC_Reload"
-		"empty"			"Weapon_Pistol.Empty"
+		"empty"	"Weapon_Pistol.Empty"
 		"single_shot"	"Weapon_Pistol.Single"
 		"single_shot_npc"	"Weapon_Pistol.NPC_Single"
-		"special1"		"Weapon_Pistol.Special1"
-		"special2"		"Weapon_Pistol.Special2"
-		"burst"			"Weapon_Pistol.Burst"
+		"special1"	"Weapon_Pistol.Special1"
+		"special2"	"Weapon_Pistol.Special2"
+		"burst"	"Weapon_Pistol.Burst"
 	}
 
 	// Weapon Sprite data is loaded by the Client DLL.
@@ -78,36 +77,36 @@ WeaponData
 	{
 		"weapon"
 		{
-				"font"		"WeaponIcons"
-				"character"	"d"
+			"font"	"WeaponIcons"
+			"character"	"d"
 		}
 		"weapon_s"
-		{	
-				"font"		"WeaponIconsSelected"
-				"character"	"d"
+		{
+			"font"	"WeaponIconsSelected"
+			"character"	"d"
 		}
 		"weapon_small"
 		{
-				"font"		"WeaponIconsSmall"
-				"character"	"d"
+			"font"	"WeaponIconsSmall"
+			"character"	"d"
 		}
 		"ammo"
 		{
-				"font"		"WeaponIconsSmall"
-				"character"	"p"
+			"font"	"WeaponIconsSmall"
+			"character"	"p"
 		}
 		"crosshair"
 		{
-				"font"		"Crosshairs"
-				"character"	"Q"
+			"font"	"Crosshairs"
+			"character"	"Q"
 		}
 		"autoaim"
 		{
-				"file"		"sprites/crosshairs"
-				"x"			"0"
-				"y"			"48"
-				"width"		"24"
-				"height"	"24"
+			"file"	"sprites/crosshairs"
+			"x"	"0"
+			"y"	"48"
+			"width"	"24"
+			"height"	"24"
 		}
 	}
 	
@@ -116,28 +115,29 @@ WeaponData
 	{
 		"WeaponOptions"
 		{
-			"CanReloadSingly" "0" //Check if we can reload 1 round at a time.
-			"DualWeapons"	"0"	//Check if we can use dual welding. This only works on primary fire unless you want "FireBothGuns" on secondary fire.
-			"IsMelee"	"0" //Check to see if this is a Melee weapon. Incompatable with SecondaryCanMelee.
-			"SecondaryCanMelee" "0" // Check to see if we can melee by using the Secondary Fire ONLY. Incompatable with IsMelee.
+			"CanReloadSingly" "0"	//Check if we can reload 1 round at a time.
+			"DualWeapons" "0"	//Check if we can use dual welding. This only works on primary fire unless you want "FireBothGuns" on secondary fire.
+			"IsMelee" "0"	//Check to see if this is a Melee weapon. Incompatable with SecondaryCanMelee.
+			"SecondaryCanMelee" "0"	// Check to see if we can melee by using the Secondary Fire ONLY. Incompatable with IsMelee.
 		}
 	
 		//Stuff that we will do on primary fire. Remove if you do not need primary fire (if you want night vision binoculars).
 		"PrimaryFire"
-		{	
-			"FireRate" "1.0" //How fast this fires
-			"IronsightFireRate"	"1.0" //How fast this fires when ironsighted.
-			"ZoomFireRate"	"1.0" //How fast this fires when zoomed in.
-			"InfiniteAmmo" "0" //This spawns the weapon with infinite clip.
+		{
+			"FireRate"	"1.0"	//How fast this fires
+			"IronsightFireRate" "1.0"	//How fast this fires when ironsighted.
+			"ZoomFireRate" "1.0"	//How fast this fires when zoomed in.
+			"InfiniteAmmo" "0"	//This spawns the weapon with infinite clip.
 			"MinRange"	"0"	//The minimum amount of range that this weapon would fire at.
-			"MaxRange"	"1400" //The maximum amount of range that this weapon would fire at.
-			"CanFireUnderwater"	"1"	//Can we use this underwater?
-			"FireBothGuns"	"0"	//Can we fire both guns? Only works if "Dual Weapons" is on. 
+			"MaxRange"	"1400"	//The maximum amount of range that this weapon would fire at.
+			"CanFireUnderwater" "1"	//Can we use this underwater?
+			"FireBothGuns"	"0"	//Can we fire both guns? Only works if "Dual Weapons" is on.
+
 			//Bullet Settings. Remove if you do not want bullets.
 			"Bullet"
 			{
-				"Damage"	"4" //Amount of damage we will do.
-				"ShotCount"	"1" //How many shots we will fire at once.
+				"Damage"	"4"	//Amount of damage we will do.
+				"ShotCount" "1"	//How many shots we will fire at once.
 				"Spread"
 				{
 					//Spread (in degrees)
@@ -163,46 +163,46 @@ WeaponData
 			//RPG Missle Settings. Remove if you do not want RPG Missles.
 			"Missle"
 			{
-				"UseRecoil"		"1" //Should we use recoil when firing this?
+				"UseRecoil"	"1"	//Should we use recoil when firing this?
 			}
 			//SMG Grenade Settings. Remove if you do not want SMG Grenades.
 			"SMGGrenade"
 			{
-				"Damage"	"4"	//Amount of damage we will do.
-				"UseRecoil"		"1" //Should we use recoil when firing this?
+				"Damage" "4"	//Amount of damage we will do.
+				"UseRecoil"	"1" //Should we use recoil when firing this?
 			}
 			//Combine Energy Ball Settings. Remove if you do not want Combine Energy Balls.
 			"AR2EnergyBall"
 			{
 				"Radius" "10"	//The radius that this will spawn at.
-				"Mass"	"150"	//The amount of mass that this will have.
+				"Mass" "150"	//The amount of mass that this will have.
 				"Duration"	"2"	//How long this will be live for.
 			}
 			//Recoil Settings.
 			"Recoil"
 			{
 				"EasyDampen"	"0.5"	//How much we will dampen the recoil on the Easy difficulty.
-				"Degrees"		"1"		//How many degrees.
-				"Seconds"		"2"		//How long this will be.
+				"Degrees"	"1"	//How many degrees.
+				"Seconds"	"2"	//How long this will be.
 			}
 		}
 		//Stuff that we will do on Secondary Fire. Remove if you do not need Secondary Fire.
 		"SecondaryFire"
-		{	
-			"FireRate" "1.0" //How fast this fires
-			"IronsightFireRate"	"1.0" //How fast this fires when ironsighted.
-			"ZoomFireRate"	"1.0" //How fast this fires when zoomed in.
-			"UsePrimaryAmmo" "0"	//Check if we can use primary ammo on secondary fire
-			"InfiniteAmmo" "0" //This spawns the weapon with infinite clip.
+		{
+			"FireRate" "1.0"	//How fast this fires
+			"IronsightFireRate" "1.0"	//How fast this fires when ironsighted.
+			"ZoomFireRate" "1.0"	//How fast this fires when zoomed in.
+			"UsePrimaryAmmo"	"0"	//Check if we can use primary ammo on secondary fire
+			"InfiniteAmmo"	"0"	//This spawns the weapon with infinite clip.
 			"MinRange"	"0"	//The minimum amount of range that this weapon would fire at.
-			"MaxRange"	"1400" //The maximum amount of range that this weapon would fire at.
-			"CanFireUnderwater"	"1"	//Can we use this underwater?
+			"MaxRange"	"1400"	//The maximum amount of range that this weapon would fire at.
+			"CanFireUnderwater" "1"	//Can we use this underwater?
 			"FireBothGuns"	"0"	//Can we fire both guns? Only works if "Dual Weapons" is on.
 			//Bullet Settings. Remove if you do not want bullets.
 			"Bullet"
 			{
-				"Damage"	"4" //Amount of damage we will do.
-				"ShotCount"	"1" //How many shots we will fire at once.
+				"Damage"	"4"	//Amount of damage we will do.
+				"ShotCount" "1"	//How many shots we will fire at once.
 				"Spread"
 				{
 					//Spread (in degrees)
@@ -228,40 +228,40 @@ WeaponData
 			//RPG Missle Settings. Remove if you do not want RPG Missles.
 			"Missle"
 			{
-				"UseRecoil"		"1" //Should we use recoil when firing this?
+				"UseRecoil"	"1"	//Should we use recoil when firing this?
 			}
 			//SMG Grenade Settings. Remove if you do not want SMG Grenades.
 			"SMGGrenade"
 			{
 				"Damage"	"4"	//Amount of damage we will do.
-				"UseRecoil"		"1" //Should we use recoil when firing this?
+				"UseRecoil" "1"	//Should we use recoil when firing this?
 			}
 			//Combine Energy Ball Settings. Remove if you do not want Combine Energy Balls.
 			"AR2EnergyBall"
 			{
 				"Radius" "10"	//The radius that this will spawn at.
-				"Mass"	"150"	//The amount of mass that this will have.
+				"Mass" "150"	//The amount of mass that this will have.
 				"Duration"	"2"	//How long this will be live for.
 			}
 			//Recoil Settings.
 			"Recoil"
 			{
 				"EasyDampen"	"0.5"	//How much we will dampen the recoil on the Easy difficulty.
-				"Degrees"		"1"		//How many degrees.
-				"Seconds"		"2"		//How long this will be.
+				"Degrees"	"1"	//How many degrees.
+				"Seconds"	"2"	//How long this will be.
 			}
 		}
 		
 		"Melee"
 		{
-			"Damage" "6" //Amount of damage we will do.
-			"Range" "32.0" //How far we can swing this weapon (recommended ranges: 32.0 to 64.0)
+			"Damage" "6"	//Amount of damage we will do.
+			"Range" "32.0"	//How far we can swing this weapon (recommended ranges: 32.0 to 64.0)
 			//Kick Settings (like recoil).
 			"Kick"
 			{
 				"EasyDampen"	"0.5"	//How much we will dampen the kick on the Easy difficulty.
-				"Degrees"		"1"		//How many degrees.
-				"Seconds"		"2"		//How long this will be.
+				"Degrees"	"1"	//How many degrees.
+				"Seconds"	"2"	//How long this will be.
 			}
 		}
 		

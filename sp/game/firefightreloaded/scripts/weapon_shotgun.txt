@@ -4,52 +4,52 @@ WeaponData
 {
 	// Weapon data is loaded by both the Game and Client DLLs.
 	"printname"	"#HL2_Shotgun"
-	"viewmodel"				"models/weapons/v_shotgun.mdl"
-	"playermodel"			"models/weapons/w_shotgun.mdl"
-	"anim_prefix"			"shotgun"
-	"weapon_type"			"shotgun"
-	"bucket"				"3"
-	"bucket_position"		"0"
-	"bucket_360"			"1"
+	"viewmodel"	"models/weapons/v_shotgun.mdl"
+	"playermodel"	"models/weapons/w_shotgun.mdl"
+	"anim_prefix"	"shotgun"
+	"weapon_type"	"shotgun"
+	"bucket"	"3"
+	"bucket_position"	"0"
+	"bucket_360"	"1"
 	"bucket_position_360"	"1"
 
-	"clip_size"				"8"
-	"default_clip"				"24"
-	"primary_ammo"			"Buckshot"
-	"secondary_ammo"		"None"
+	"clip_size"	"8"
+	"default_clip"	"24"
+	"primary_ammo"	"Buckshot"
+	"secondary_ammo"	"None"
 
-	"weight"				"4"
-	"rumble"			"5"
-	"item_flags"			"0"
+	"weight"	"4"
+	"rumble"	"5"
+	"item_flags"	"0"
 	
-	"BuiltRightHanded" 		"1" 
-	"AllowFlipping" 		"1"
+	"BuiltRightHanded"	"1"
+	"AllowFlipping"	"1"
 	
-	"UseMuzzleSmoke"		"1"
-	"useironsights"			"1"
-	"LowerWeapon"			"1"
+	"UseMuzzleSmoke"	"1"
+	"useironsights"	"1"
+	"LowerWeapon"	"1"
 	"useironsightcrosshair" "0"
 	
 	IronSight
 	{
-		"right"		"-9"
-		"up"		"4.4"
+		"right"	"-9"
+		"up"	"4.4"
 		"forward"	"-12"
-		"fov"		"-5"
-		"pitch"		"0.5"
+		"fov"	"-5"
+		"pitch"	"0.5"
 	}
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
 	{
 
-		"empty"				"Weapon_Shotgun.Empty"
-		"reload"			"Weapon_Shotgun.Reload"
-		"special1"			"Weapon_Shotgun.Special1"
-		"single_shot"		"Weapon_Shotgun.Single"
-		"double_shot"		"Weapon_Shotgun.Double"
+		"empty"	"Weapon_Shotgun.Empty"
+		"reload"	"Weapon_Shotgun.Reload"
+		"special1"	"Weapon_Shotgun.Special1"
+		"single_shot"	"Weapon_Shotgun.Single"
+		"double_shot"	"Weapon_Shotgun.Double"
 		// NPC WEAPON SOUNDS
-		"reload_npc"		"Weapon_Shotgun.NPC_Reload"
+		"reload_npc"	"Weapon_Shotgun.NPC_Reload"
 		"single_shot_npc"	"Weapon_Shotgun.NPC_Single"
 	}
 
@@ -58,36 +58,36 @@ WeaponData
 	{
 		"weapon"
 		{
-				"font"		"WeaponIcons"
-				"character"	"b"
+			"font"	"WeaponIcons"
+			"character"	"b"
 		}
 		"weapon_s"
-		{	
-				"font"		"WeaponIconsSelected"
-				"character"	"b"
+		{
+			"font"	"WeaponIconsSelected"
+			"character"	"b"
 		}
 		"weapon_small"
 		{
-				"font"		"WeaponIconsSmall"
-				"character"	"b"
+			"font"	"WeaponIconsSmall"
+			"character"	"b"
 		}
 		"ammo"
 		{
-				"font"		"WeaponIconsSmall"
-				"character"	"s"
+			"font"	"WeaponIconsSmall"
+			"character"	"s"
 		}
 		"crosshair"
 		{
-				"font"		"Crosshairs"
-				"character"	"Q"
+			"font"	"Crosshairs"
+			"character"	"Q"
 		}
 		"autoaim"
 		{
-				"file"		"sprites/crosshairs"
-				"x"			"0"
-				"y"			"48"
-				"width"		"24"
-				"height"	"24"
+			"file"	"sprites/crosshairs"
+			"x"	"0"
+			"y"	"48"
+			"width"	"24"
+			"height"	"24"
 		}
 	}
 }

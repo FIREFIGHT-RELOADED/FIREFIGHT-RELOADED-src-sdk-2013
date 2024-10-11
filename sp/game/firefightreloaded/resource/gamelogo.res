@@ -29,6 +29,6 @@ Resource/GameLogo.res
 		visible		1
 		enabled		1
 		image		../vgui/logo/logo
-		scaleImage	1		
+		scaleImage	1
 	}
 }

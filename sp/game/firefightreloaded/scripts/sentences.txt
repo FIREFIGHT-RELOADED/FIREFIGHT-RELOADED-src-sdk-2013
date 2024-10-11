@@ -1,5 +1,5 @@
 // HALF-LIFE 2 SPEECH SYSTEM SENTENCES.
-// Do not use TABS.  Separate sentence-names from wave definitions with single spaces only.
+// Do not use TABS. Separate sentence-names from wave definitions with single spaces only.
 // Sounds prefixed by "Q_" will be queued up for a while and played as soon as the NPC is allowed to speak
 
 
@@ -48,7 +48,7 @@ V_RNDNAMES8 stinger {Len 0.4}
 V_RNDNAMES9 storm {Len 0.4}
 V_RNDNAMES10 vamp {Len 0.4}
 V_RNDNAMES11 winder {Len 0.4}
-V_RNDNAMES12 star {Len 0.4}  
+V_RNDNAMES12 star {Len 0.4}
 
 //phonetic alphabet/codes:
 
@@ -203,9 +203,9 @@ COMBINE_ASSAULT3 npc/combine_soldier/vo/(v100) on2 targetmyradial V_DIRS degrees
 
 COMBINE_FLANK0 npc/combine_soldier/vo/(v100) on1 V_MYNAMES V_MYNUMS closing off1 {Len 1.36 closecaption NPC_Combine.Coord}
 COMBINE_FLANK1 npc/combine_soldier/vo/(v100) on2 V_MYNAMES V_MYNUMS inbound off1 {Len 1.15 closecaption NPC_Combine.Coord}
-COMBINE_FLANK2 npc/combine_soldier/vo/(v100) on1 movein off2 {Len 1.15  closecaption NPC_Combine.Coord}
+COMBINE_FLANK2 npc/combine_soldier/vo/(v100) on1 movein off2 {Len 1.15 closecaption NPC_Combine.Coord}
 COMBINE_FLANK3 npc/combine_soldier/vo/(v100) on2 V_MYNAMES V_MYNUMS sweepingin off1 {Len 1.15 closecaption NPC_Combine.Coord}
-COMBINE_FLANK4 npc/combine_soldier/vo/(v100) on1 coverme off1 {Len 1.15  closecaption NPC_Combine.Coord}
+COMBINE_FLANK4 npc/combine_soldier/vo/(v100) on1 coverme off1 {Len 1.15 closecaption NPC_Combine.Coord}
 COMBINE_FLANK5 npc/combine_soldier/vo/(v100) on1 V_MYNAMES unitisclosing off1 {Len 1.15 closecaption NPC_Combine.Coord}
 COMBINE_FLANK6 npc/combine_soldier/vo/(v100) on1 V_MYNAMES unitisinbound off1 {Len 1.15 closecaption NPC_Combine.Coord}
 COMBINE_FLANK7 npc/combine_soldier/vo/(v100) on1 V_MYNAMES unitismovingin off1 {Len 1.15 closecaption NPC_Combine.Coord}
@@ -213,7 +213,7 @@ COMBINE_FLANK7 npc/combine_soldier/vo/(v100) on1 V_MYNAMES unitismovingin off1 {
 
 // I am still alert and pursuing enemy
 
-COMBINE_GO_ALERT0 npc/combine_soldier/vo/(v100) on1 alert1 off1 {Len 0.77  closecaption NPC_Combine.Coord}
+COMBINE_GO_ALERT0 npc/combine_soldier/vo/(v100) on1 alert1 off1 {Len 0.77 closecaption NPC_Combine.Coord}
 COMBINE_GO_ALERT1 npc/combine_soldier/vo/(v100) on1 V_MYNAMES V_MYNUMS executingfullresponse off1 {Len 0.77 closecaption NPC_Combine.Coord}
 
 // UNDONE: Nobody has seen enemy in 10 seconds
@@ -231,7 +231,7 @@ COMBINE_LOST_LONG6 npc/combine_soldier/vo/(v100) on1 readyweapons, stayalert off
 COMBINE_LOST_SHORT0 npc/combine_soldier/vo/(v100) on1 targetisat shaddow4 off1 {Len 1.56 closecaption NPC_Combine.RadioChatter}
 COMBINE_LOST_SHORT1 npc/combine_soldier/vo/(v100) on1 readyextractors off1 {Len 1.19 closecaption NPC_Combine.RadioChatter}
 COMBINE_LOST_SHORT2 npc/combine_soldier/vo/(v100) on1 readycharges off1 {Len 1.13 closecaption NPC_Combine.RadioChatter}
-COMBINE_LOST_SHORT3 npc/combine_soldier/vo/(v100) on1 fixsightlinesmovein  off1 {Len 1.13 closecaption NPC_Combine.RadioChatter}
+COMBINE_LOST_SHORT3 npc/combine_soldier/vo/(v100) on1 fixsightlinesmovein off1 {Len 1.13 closecaption NPC_Combine.RadioChatter}
 COMBINE_LOST_SHORT4 npc/combine_soldier/vo/(v100) on1 on1 containmentproceeding off1 {Len 0.98 closecaption NPC_Combine.RadioChatter}
 
 // I just saw a friendly die
@@ -264,7 +264,7 @@ COMBINE_THROW_GRENADE4 npc/combine_soldier/vo/(v100) on1. six, five, four, three
 
 COMBINE_GREN0 npc/combine_soldier/vo/(v100) on1(p120) bouncerbouncer off1 {Len 1.17 closecaption NPC_Combine.Grenade}
 COMBINE_GREN1 npc/combine_soldier/vo/(v100) on1(p120) flaredown off1 {Len 1.17 closecaption NPC_Combine.Grenade}
- 
+
 // Something dangerous nearby, need to run
 
 COMBINE_DANGER0 npc/combine_soldier/vo/(v100) on1(p120) displace off1 {Len 1.17}
@@ -323,8 +323,8 @@ COMBINE_KILL_MONST2 npc/combine_soldier/vo/(v100) V_SEQGLOBNBRS contained off1 {
 
 // I was hit and it hurt. I'm taking cover (commented out in code)
 
-COMBINE_COVER0 npc/combine_soldier/vo/(v100) on1 coverhurt off1 {Len 0.95  closecaption NPC_Combine.Coord}
-COMBINE_COVER1 npc/combine_soldier/vo/(v100) on1 displace2 off1 {Len 0.95  closecaption NPC_Combine.Coord}
+COMBINE_COVER0 npc/combine_soldier/vo/(v100) on1 coverhurt off1 {Len 0.95 closecaption NPC_Combine.Coord}
+COMBINE_COVER1 npc/combine_soldier/vo/(v100) on1 displace2 off1 {Len 0.95 closecaption NPC_Combine.Coord}
 COMBINE_COVER2 npc/combine_soldier/vo/(v100) on2 V_MYNAMES V_MYNUMS requestmedical off1 {Len 0.95 closecaption NPC_Combine.Coord}
 COMBINE_COVER3 npc/combine_soldier/vo/(v100) on1 V_MYNAMES V_MYNUMS requeststimdose off1 {Len 0.95 closecaption NPC_Combine.Coord}
 
@@ -438,9 +438,9 @@ COMBINE_ACE_ASSAULT3 npc/combine_ace/vo/(v100) on2 targetmyradial V_DIRS degrees
 
 COMBINE_ACE_FLANK0 npc/combine_ace/vo/(v100) on1 V_MYNAMES V_MYNUMS closing off1 {Len 1.36 closecaption NPC_Combine.Coord}
 COMBINE_ACE_FLANK1 npc/combine_ace/vo/(v100) on2 V_MYNAMES V_MYNUMS inbound off1 {Len 1.15 closecaption NPC_Combine.Coord}
-COMBINE_ACE_FLANK2 npc/combine_ace/vo/(v100) on1 movein off2 {Len 1.15  closecaption NPC_Combine.Coord}
+COMBINE_ACE_FLANK2 npc/combine_ace/vo/(v100) on1 movein off2 {Len 1.15 closecaption NPC_Combine.Coord}
 COMBINE_ACE_FLANK3 npc/combine_ace/vo/(v100) on2 V_MYNAMES V_MYNUMS sweepingin off1 {Len 1.15 closecaption NPC_Combine.Coord}
-COMBINE_ACE_FLANK4 npc/combine_ace/vo/(v100) on1 coverme off1 {Len 1.15  closecaption NPC_Combine.Coord}
+COMBINE_ACE_FLANK4 npc/combine_ace/vo/(v100) on1 coverme off1 {Len 1.15 closecaption NPC_Combine.Coord}
 COMBINE_ACE_FLANK5 npc/combine_ace/vo/(v100) on1 V_MYNAMES unitisclosing off1 {Len 1.15 closecaption NPC_Combine.Coord}
 COMBINE_ACE_FLANK6 npc/combine_ace/vo/(v100) on1 V_MYNAMES unitisinbound off1 {Len 1.15 closecaption NPC_Combine.Coord}
 COMBINE_ACE_FLANK7 npc/combine_ace/vo/(v100) on1 V_MYNAMES unitismovingin off1 {Len 1.15 closecaption NPC_Combine.Coord}
@@ -448,7 +448,7 @@ COMBINE_ACE_FLANK7 npc/combine_ace/vo/(v100) on1 V_MYNAMES unitismovingin off1 {
 
 // I am still alert and pursuing enemy
 
-COMBINE_ACE_GO_ALERT0 npc/combine_ace/vo/(v100) on1 alert1 off1 {Len 0.77  closecaption NPC_Combine.Coord}
+COMBINE_ACE_GO_ALERT0 npc/combine_ace/vo/(v100) on1 alert1 off1 {Len 0.77 closecaption NPC_Combine.Coord}
 COMBINE_ACE_GO_ALERT1 npc/combine_ace/vo/(v100) on1 V_MYNAMES V_MYNUMS executingfullresponse off1 {Len 0.77 closecaption NPC_Combine.Coord}
 
 // UNDONE: Nobody has seen enemy in 10 seconds
@@ -466,7 +466,7 @@ COMBINE_ACE_LOST_LONG6 npc/combine_ace/vo/(v100) on1 readyweapons, stayalert off
 COMBINE_ACE_LOST_SHORT0 npc/combine_ace/vo/(v100) on1 targetisat shaddow4 off1 {Len 1.56 closecaption NPC_Combine.RadioChatter}
 COMBINE_ACE_LOST_SHORT1 npc/combine_ace/vo/(v100) on1 readyextractors off1 {Len 1.19 closecaption NPC_Combine.RadioChatter}
 COMBINE_ACE_LOST_SHORT2 npc/combine_ace/vo/(v100) on1 readycharges off1 {Len 1.13 closecaption NPC_Combine.RadioChatter}
-COMBINE_ACE_LOST_SHORT3 npc/combine_ace/vo/(v100) on1 fixsightlinesmovein  off1 {Len 1.13 closecaption NPC_Combine.RadioChatter}
+COMBINE_ACE_LOST_SHORT3 npc/combine_ace/vo/(v100) on1 fixsightlinesmovein off1 {Len 1.13 closecaption NPC_Combine.RadioChatter}
 COMBINE_ACE_LOST_SHORT4 npc/combine_ace/vo/(v100) on1 on1 containmentproceeding off1 {Len 0.98 closecaption NPC_Combine.RadioChatter}
 
 // I just saw a friendly die
@@ -499,7 +499,7 @@ COMBINE_ACE_THROW_GRENADE4 npc/combine_ace/vo/(v100) on1. six, five, four, three
 
 COMBINE_ACE_GREN0 npc/combine_ace/vo/(v100) on1(p120) bouncerbouncer off1 {Len 1.17 closecaption NPC_Combine.Grenade}
 COMBINE_ACE_GREN1 npc/combine_ace/vo/(v100) on1(p120) flaredown off1 {Len 1.17 closecaption NPC_Combine.Grenade}
- 
+
 // Something dangerous nearby, need to run
 
 COMBINE_ACE_DANGER0 npc/combine_soldier/vo/(v100) on1(p120) displace off1 {Len 1.17}
@@ -569,8 +569,8 @@ COMBINE_ACE_KILL_MONST2 npc/combine_ace/vo/(v100) V_SEQGLOBNBRS contained off1 {
 
 // I was hit and it hurt. I'm taking cover (commented out in code)
 
-COMBINE_ACE_COVER0 npc/combine_ace/vo/(v100) on1 coverhurt off1 {Len 0.95  closecaption NPC_Combine.Coord}
-COMBINE_ACE_COVER1 npc/combine_ace/vo/(v100) on1 displace2 off1 {Len 0.95  closecaption NPC_Combine.Coord}
+COMBINE_ACE_COVER0 npc/combine_ace/vo/(v100) on1 coverhurt off1 {Len 0.95 closecaption NPC_Combine.Coord}
+COMBINE_ACE_COVER1 npc/combine_ace/vo/(v100) on1 displace2 off1 {Len 0.95 closecaption NPC_Combine.Coord}
 COMBINE_ACE_COVER2 npc/combine_ace/vo/(v100) on2 V_MYNAMES V_MYNUMS requestmedical off1 {Len 0.95 closecaption NPC_Combine.Coord}
 COMBINE_ACE_COVER3 npc/combine_ace/vo/(v100) on1 V_MYNAMES V_MYNUMS requeststimdose off1 {Len 0.95 closecaption NPC_Combine.Coord}
 
@@ -704,7 +704,7 @@ V_G1_LOCATION_MAP07P0 residentialblock
 V_G1_LOCATION_MAP07P1 404zone
 V_G1_LOCATION_MAP07P2 distributionblock
 V_G1_LOCATION_MAP07P3 productionblock
- 
+
 // map 8 citadel
 V_G1_LOCATION_MAP08P0 highpriorityregion
 V_G1_LOCATION_MAP08P1 terminalrestrictionzone
@@ -744,7 +744,7 @@ V_G2_SUSPECT_MAP08P0 freeman
 
 // rnd address suffix (remembered) (duplicated for metropolice and overwatch)
 
-V_G3_NUMBP0 zero 
+V_G3_NUMBP0 zero
 V_G3_NUMBP1 one
 V_G3_NUMBP2 two
 V_G3_NUMBP3 three
@@ -875,22 +875,22 @@ V_RNDNUMP7 seven {Len 0.4}
 V_RNDNUMP8 eight {Len 0.4}
 V_RNDNUMP9 nine {Len 0.4}
 
-// unit names, remembered by speaker  (duplicated for metropolice and overwatch)
+// unit names, remembered by speaker (duplicated for metropolice and overwatch)
 
-V_MYNAMEP0 defender 
-V_MYNAMEP1 hero 
-V_MYNAMEP2 jury 
-V_MYNAMEP3 king 
-V_MYNAMEP4 line 
-V_MYNAMEP5 patrol 
-V_MYNAMEP6 quick 
-V_MYNAMEP7 roller 
-V_MYNAMEP8 stick 
-V_MYNAMEP9 tap 
-V_MYNAMEP10 union 
-V_MYNAMEP11 victor 
-V_MYNAMEP12 xray 
-V_MYNAMEP13 yellow 
+V_MYNAMEP0 defender
+V_MYNAMEP1 hero
+V_MYNAMEP2 jury
+V_MYNAMEP3 king
+V_MYNAMEP4 line
+V_MYNAMEP5 patrol
+V_MYNAMEP6 quick
+V_MYNAMEP7 roller
+V_MYNAMEP8 stick
+V_MYNAMEP9 tap
+V_MYNAMEP10 union
+V_MYNAMEP11 victor
+V_MYNAMEP12 xray
+V_MYNAMEP13 yellow
 V_MYNAMEP14 vice
 
 
@@ -905,7 +905,7 @@ V_MYNUMP5 six
 V_MYNUMP6 seven
 V_MYNUMP7 eight
 V_MYNUMP8 nine
-//V_MYNUMP9 15w40 
+//V_MYNUMP9 15w40
 //V_MYNUMP10 15w3
 //V_MYNUMP11 15r9
 //V_MYNUMP12 15l30
@@ -1026,7 +1026,7 @@ METROPOLICE_IDLE_HARASS_PLAYER2 npc/metropolice/vo/(v70) on1 vacatecitizen off4 
 METROPOLICE_IDLE_HARASS_PLAYER3 npc/metropolice/vo/(v70) on1 youwantamalcomplianceverdict off3 {Len 1.5}
 METROPOLICE_IDLE_HARASS_PLAYER4 npc/metropolice/vo/(v70) on1 lookingfortrouble off3 {Len 1.5}
 METROPOLICE_IDLE_HARASS_PLAYER5 npc/metropolice/vo/(v70) on2 possiblelevel3civilprivacyviolator off3 {Len 1.5}
-METROPOLICE_IDLE_HARASS_PLAYER6 npc/metropolice/vo/(v70) on2 possible647erequestairwatch off3 {Len 1.5} 
+METROPOLICE_IDLE_HARASS_PLAYER6 npc/metropolice/vo/(v70) on2 possible647erequestairwatch off3 {Len 1.5}
 METROPOLICE_IDLE_HARASS_PLAYER7 npc/metropolice/vo/(v70) on2 possible10-103alerttagunits off4 {Len 1.5}
 METROPOLICE_IDLE_HARASS_PLAYER8 npc/metropolice/vo/(v70) on2 gota10-107sendairwatch off3 {Len 1.5}
 
@@ -1102,11 +1102,11 @@ METROPOLICE_IDLE_ANSWER_CR6 npc/metropolice/vo/(v50) on1 affirmative2 off4 {Len 
 
 // These are done in sequence as the player persistently pesters the cops
 
-METROPOLICE_MOVE_ALONG_A0 npc/metropolice/vo/(v60) on1 movealong3 off1 {Len 1.5  closecaption NPC_MetroPolice.MoveAlong1}
+METROPOLICE_MOVE_ALONG_A0 npc/metropolice/vo/(v60) on1 movealong3 off1 {Len 1.5 closecaption NPC_MetroPolice.MoveAlong1}
 METROPOLICE_MOVE_ALONG_A1 npc/metropolice/vo/(v60) on1 move off4 {Len 1.5 closecaption NPC_MetroPolice.MoveAlong1}
 METROPOLICE_MOVE_ALONG_A2 npc/metropolice/vo/(v60) on1 keepmoving off3 {Len 1.5 closecaption NPC_MetroPolice.MoveAlong1}
 
-METROPOLICE_MOVE_ALONG_B0 npc/metropolice/vo/(v70) on1 Isaidmovealong off1 {Len  1.5closecaption NPC_MetroPolice.MoveAlong2}
+METROPOLICE_MOVE_ALONG_B0 npc/metropolice/vo/(v70) on1 Isaidmovealong off1 {Len 1.5closecaption NPC_MetroPolice.MoveAlong2}
 METROPOLICE_MOVE_ALONG_B1 npc/metropolice/vo/(v70) on2 youwantamalcomplianceverdict off3 {Len 1.5closecaption NPC_MetroPolice.MoveAlong2}
 //METROPOLICE_MOVE_ALONG_B2 npc/metropolice/vo/(v70) on1 moveaway off4 {Len 1.5 closecaption NPC_MetroPolice.MoveAlong2}
 
@@ -1130,7 +1130,7 @@ METROPOLICE_BACK_UP_C1 npc/metropolice/vo/(v80) on2 possiblelevel3civilprivacyvi
 METROPOLICE_BACK_UP_C2 npc/metropolice/vo/(v80) on1 finalwarning off3 {Len 1.5 closecaption NPC_MetroPolice.MoveAlong3}
 METROPOLICE_BACK_UP_C3 npc/metropolice/vo/(v80) on2 preparingtojudge10-107 off3 {Len 1.5 closecaption NPC_MetroPolice.MoveAlong3}
 METROPOLICE_BACK_UP_C4 npc/metropolice/vo/(v80) on2 readytoprosecutefinalwarning off3 {Len 1.5 closecaption NPC_MetroPolice.MoveAlong3}
- 
+
 //
 // Baton
 //
@@ -1284,7 +1284,7 @@ METROPOLICE_MONST_ZOMBIES0 npc/metropolice/vo/(v100) on1 freenecrotics, convergi
 METROPOLICE_MONST_ZOMBIES1 npc/metropolice/vo/(v100) on1 necrotics malignant location V_G1_LOCATION_MAP__P V_G3_NUMBP off4 {Len 1.5 closecaption NPC_Combine.Alert}
 
 METROPOLICE_MONST_PARASITES0 npc/metropolice/vo/(v100) on1 non-taggedviromeshere off1 {Len 1.5 closecaption NPC_Combine.Alert}
-METROPOLICE_MONST_PARASITES1 npc/metropolice/vo/(v100) on1 looseparasitics off4 {Len 1.5 closecaption NPC_Combine.Alert} 
+METROPOLICE_MONST_PARASITES1 npc/metropolice/vo/(v100) on1 looseparasitics off4 {Len 1.5 closecaption NPC_Combine.Alert}
 
 //
 // I killed a monster - by type
@@ -1331,7 +1331,7 @@ METROPOLICE_KILL_PARASITES1 npc/metropolice/vo/(v100) on1 sterilize V_SEQG0_NBRP
 
 // Deploying a manhack
 METROPOLICE_DEPLOY_MANHACK0 npc/metropolice/vo/(v90) on1 visceratordeployed off3 {Len 1.5}
-METROPOLICE_DEPLOY_MANHACK1 npc/metropolice/vo/(v90) on1 tenzerovisceratorishunting off3 {Len 1.5} 
+METROPOLICE_DEPLOY_MANHACK1 npc/metropolice/vo/(v90) on1 tenzerovisceratorishunting off3 {Len 1.5}
 //METROPOLICE_DEPLOY_MANHACK2 npc/metropolice/vo/(v90) on1 allunitsvisceratorisactive off4 {Len 1.5}
 
 // My manhack was killed
@@ -1357,7 +1357,7 @@ METROPOLICE_LAST_OF_SQUAD3 npc/overwatch/radiovoice/(v100) on3 engagingteamisnon
 // Danger sounds - by type
 //
 METROPOLICE_DANGER_GREN0 npc/metropolice/vo/(v100) on1 grenade {Len 1.5}
-METROPOLICE_DANGER_GREN1 npc/metropolice/vo/(v100) on1 thatsagrenade {Len 1.5} 
+METROPOLICE_DANGER_GREN1 npc/metropolice/vo/(v100) on1 thatsagrenade {Len 1.5}
 METROPOLICE_DANGER_GREN2 npc/metropolice/vo/(v100) on1 getdown {Len 1.5}
 
 METROPOLICE_DANGER_MANHACK0 npc/metropolice/vo/(v100) on1 lookoutrogueviscerator off4 {Len 1.5}
@@ -1399,7 +1399,7 @@ METROPOLICE_AS_HIT_RALLY1 npc/metropolice/vo/(v70) on2 V_MYNAMEP V_MYNUMP atchec
 METROPOLICE_AS_HIT_RALLY2 npc/metropolice/vo/(v70) on1 V_MYNAMEP V_MYNUMP on1 isreadytogo off1 {Len 1.5 closecaption NPC_Combine.Coord}
 
 // I've hit my assault point, waiting to move out
-METROPOLICE_AS_HIT_ASSAULT0 npc/metropolice/vo/(v70) on1 V_MYNAMEP V_MYNUMP readytojudge  off3 {Len 1.5 closecaption NPC_Combine.Coord}
+METROPOLICE_AS_HIT_ASSAULT0 npc/metropolice/vo/(v70) on1 V_MYNAMEP V_MYNUMP readytojudge off3 {Len 1.5 closecaption NPC_Combine.Coord}
 METROPOLICE_AS_HIT_ASSAULT1 npc/metropolice/vo/(v70) on2 V_MYNAMEP V_MYNUMP inpositiononeready off4 {Len 1.5 closecaption NPC_Combine.Coord}
 METROPOLICE_AS_HIT_ASSAULT2 npc/metropolice/vo/(v70) on1 V_MYNAMEP V_MYNUMP isgo off1 {Len 1.5 closecaption NPC_Combine.Coord}
 
@@ -1458,8 +1458,8 @@ METROPOLICE_HES_RUNNING1 npc/metropolice/vo/(v100) on2 hesgone148 off4 {Len 1.5}
 METROPOLICE_ARREST_IN_POS0 npc/metropolice/vo/(v80) on1 V_MYNAMEP V_MYNUMP, inposition off1 {Len 1.5 closecaption NPC_Combine.Coord}
 METROPOLICE_ARREST_IN_POS1 npc/metropolice/vo/(v80) on2 V_MYNAMEP V_MYNUMP, readytoprosecute off3 {Len 1.5 closecaption NPC_Combine.Coord}
 
-// First cop tells his buddies to fire once they are all in position 
-METROPOLICE_TAKE_HIM_DOWN0 npc/overwatch/radiovoice/(v100) on3 allunitsdeliverterminalverdict off2 {Len 2.5 closecaption NPC_Combine.Coord} 
+// First cop tells his buddies to fire once they are all in position
+METROPOLICE_TAKE_HIM_DOWN0 npc/overwatch/radiovoice/(v100) on3 allunitsdeliverterminalverdict off2 {Len 2.5 closecaption NPC_Combine.Coord}
 METROPOLICE_TAKE_HIM_DOWN1 npc/overwatch/radiovoice/(v100) on3 allunitsverdictcodeis V_RNDJUDGEP off2 {Len 2.5 closecaption NPC_Combine.Coord}
 METROPOLICE_TAKE_HIM_DOWN2 npc/overwatch/radiovoice/(v100) on3 suspectmalignantverdictcodeis V_RNDJUDGEP off2 {Len 2.5 closecaption NPC_Combine.Coord}
 
@@ -1518,7 +1518,7 @@ HG_THROW0 hgrunt/clik(p120) (t40) fire!(e90) in!(e90) the!(e60) hole!(e100) clik
 HG_THROW1 hgrunt/clik (t30) take!(e75) this!(e100 t0) clik {Len 1.03}
 HG_THROW2 hgrunt/clik (t35) fire in the(e50) hole clik(p120) {Len 1.66}
 HG_THROW3 hgrunt/clik(p110) (t35 e80) squad, stay down clik {Len 1.51}
- 
+
 // Taunt
 HG_TAUNT0 hgrunt/clik (t30 e75) uhh, we got heavy fire here clik {Len 2.05}
 HG_TAUNT1 hgrunt/clik(p120) (t40) roger, hold position clik {Len 1.82}
@@ -1765,6 +1765,3 @@ HEV_DET5 hl1/fvox/blip blip blip, antitoxin_shot(e25) radiation_detected(e50), o
 //HEV_GR0r hl1/fvox/range twenty meters(t60)
 //HEV_GR1r hl1/fvox/range nineteen meters
 //HEV_GR2r hl1/fvox/range eighteen meters
-
-
-

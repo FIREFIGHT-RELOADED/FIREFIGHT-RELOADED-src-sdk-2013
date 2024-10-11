@@ -1,17 +1,17 @@
 //Advisor drones.
 "npc_any_preset1"
 {
-	"new_color"		"173 0 173 255"
+	"new_color"	"173 0 173 255"
 	"health_multiplier"	"2"
 	"additional_speed"	"250"
 	"use_shotgun_secondary"	"1"
-	"has_outlines"		"1"
-	"outline_color"		"255 0 255"
+	"has_outlines"	"1"
+	"outline_color"	"255 0 255"
 	"new_projectile"	"1"
 	"volley_normal_delay"	"0.1"
-	"volley_size"		"8"
-	"gibs"			"0"
+	"volley_size"	"8"
+	"gibs"	"0"
 	//spawns a vortex on death that takes level 20 players to a different map.
-	"advisor_drone"		"1"
-	"persist"		"0"
+	"advisor_drone"	"1"
+	"persist"	"0"
 }

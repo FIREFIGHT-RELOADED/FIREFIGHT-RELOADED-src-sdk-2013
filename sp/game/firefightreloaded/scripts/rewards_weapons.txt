@@ -21,84 +21,84 @@
 {
 	"1"
 	{
-		"name"		"#GameUI_Store_Buy_FragGrenade"
+		"name"	"#GameUI_Store_Buy_FragGrenade"
 		"item_type"	"6"
 		"min_level"	"3"
 		"weapon_classname"	"item_ammo_grenade"
 	}
 	"2"
 	{
-		"name"		"#GameUI_Store_Buy_SLAM"
+		"name"	"#GameUI_Store_Buy_SLAM"
 		"item_type"	"6"
 		"min_level"	"3"
 		"weapon_classname"	"item_slam_ammo"
 	}
 	"3"
 	{
-		"name"		"#GameUI_Store_Buy_357Magnum"
+		"name"	"#GameUI_Store_Buy_357Magnum"
 		"item_type"	"5"
 		"min_level"	"1"
 		"weapon_classname" "weapon_357"
 	}
 	"4"
 	{
-		"name"		"#GameUI_Store_Buy_AR2"
+		"name"	"#GameUI_Store_Buy_AR2"
 		"item_type"	"5"
 		"min_level"	"1"
 		"weapon_classname" "weapon_ar2"
 	}
 	"5"
 	{
-		"name"		"#GameUI_Store_Buy_Crossbow"
+		"name"	"#GameUI_Store_Buy_Crossbow"
 		"item_type"	"5"
 		"min_level"	"1"
 		"weapon_classname" "weapon_crossbow"
 	}
 	"6"
 	{
-		"name"		"#GameUI_Store_Buy_Shotgun"
+		"name"	"#GameUI_Store_Buy_Shotgun"
 		"item_type"	"5"
 		"min_level"	"1"
 		"weapon_classname" "weapon_shotgun"
 	}
 	"7"
 	{
-		"name"		"#GameUI_Store_Buy_RPG"
+		"name"	"#GameUI_Store_Buy_RPG"
 		"item_type"	"5"
 		"min_level"	"5"
 		"weapon_classname" "weapon_rpg"
 	}
 	"8"
 	{
-		"name"		"#GameUI_Store_Buy_SniperRifle"
+		"name"	"#GameUI_Store_Buy_SniperRifle"
 		"item_type"	"5"
 		"min_level"	"1"
 		"weapon_classname" "weapon_sniper_rifle"
 	}
 	"9"
 	{
-		"name"		"#GameUI_Store_Buy_M249Para"
+		"name"	"#GameUI_Store_Buy_M249Para"
 		"item_type"	"5"
 		"min_level"	"5"
 		"weapon_classname" "weapon_m249para"
 	}
 	"10"
 	{
-		"name"		"#GameUI_Store_Buy_Gauss"
+		"name"	"#GameUI_Store_Buy_Gauss"
 		"item_type"	"5"
 		"min_level"	"7"
 		"weapon_classname" "weapon_gauss"
 	}
 	"11"
 	{
-		"name"		"#GameUI_Store_Buy_Katana"
+		"name"	"#GameUI_Store_Buy_Katana"
 		"item_type"	"5"
 		"min_level"	"10"
 		"weapon_classname" "weapon_katana"
 	}
 	"12"
 	{
-		"name"		"#GameUI_Bugbait"
+		"name"	"#GameUI_Bugbait"
 		"item_type"	"5"
 		"min_level"	"7"
 		"unlocks_in_lone_wolf"	"0"
@@ -106,36 +106,36 @@
 	}
 	"13"
 	{
-		"name"		"#GameUI_Store_Buy_Knife"
+		"name"	"#GameUI_Store_Buy_Knife"
 		"item_type"	"5"
 		"min_level"	"5"
 		"weapon_classname" "weapon_knife"
 		"unlocks_in_iron_kick" "1"
 	}
-    "14"
+	"14"
 	{
-		"name"		"#GameUI_Store_Buy_Railgun"
+		"name"	"#GameUI_Store_Buy_Railgun"
 		"item_type"	"5"
 		"min_level"	"8"
 		"weapon_classname" "weapon_railgun"
 	}
 	"14"
 	{
-		"name"		"#GameUI_Store_Buy_OICW"
+		"name"	"#GameUI_Store_Buy_OICW"
 		"item_type"	"5"
 		"min_level"	"4"
 		"weapon_classname" "weapon_oicw"
 	}
 	"15"
 	{
-		"name"		"#GameUI_Store_Buy_Alyxgun"
+		"name"	"#GameUI_Store_Buy_Alyxgun"
 		"item_type"	"5"
 		"min_level"	"8"
 		"weapon_classname" "weapon_alyxgun"
 	}
-    "16"
+	"16"
 	{
-		"name"		"#GameUI_Store_Buy_Turret"
+		"name"	"#GameUI_Store_Buy_Turret"
 		"item_type"	"5"
 		"min_level"	"6"
 		"weapon_classname" "weapon_turret"

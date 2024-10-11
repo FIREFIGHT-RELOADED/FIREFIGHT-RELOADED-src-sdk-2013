@@ -3,60 +3,54 @@
 
 "NPC_Combine.SentenceParameters"
 {
-	"channel"		"CHAN_VOICE"
-	"volume"		"0.80"
-	"pitch"		"95,103"
-
+	"channel"	"CHAN_VOICE"
+	"volume"	"0.80"
+	"pitch"	"95,103"
 	"soundlevel"	"SNDLVL_90dB"
-	"wave"		"common/null.wav"
+	"wave"	"common/null.wav"
 }
 
 
 "NPC_Combine.WeaponBash"
 {
-	"channel"		"CHAN_WEAPON"
-	"volume"		"0.800"
-	"pitch"		"PITCH_NORM"
+	"channel"	"CHAN_WEAPON"
+	"volume"	"0.800"
+	"pitch"	"PITCH_NORM"
 
 	"soundlevel"	"SNDLVL_NORM"
-	"wave"		"physics/body/body_medium_impact_hard6.wav"
+	"wave"	"physics/body/body_medium_impact_hard6.wav"
 }
 
 "NPC_Combine.GrenadeLaunch"
 {
-	"channel"		"CHAN_WEAPON"
-	"volume"		"0.800"
-	"pitch"			"PITCH_NORM"
+	"channel"	"CHAN_WEAPON"
+	"volume"	"0.800"
+	"pitch"	"PITCH_NORM"
 
 	"soundlevel"	"SNDLVL_NORM"
 
-	"wave"			"weapons/grenade_launcher1.wav"
+	"wave"	"weapons/grenade_launcher1.wav"
 }
 
 
 "NPC_CombineS.FootstepLeft"
 {
-	"channel"		"CHAN_BODY"
-	"volume"		"1.0"
-	"pitch"		"95, 105"
-
+	"channel"	"CHAN_BODY"
+	"volume"	"1.0"
+	"pitch"	"95, 105"
 	"soundlevel"	"SNDLVL_NORM"
-
 	"rndwave"
 	{
 		"wave"	"player/footsteps/tile1.wav"
 		"wave"	"player/footsteps/tile2.wav"
 	}
 }
-
 "NPC_CombineS.FootstepRight"
 {
-	"channel"		"CHAN_BODY"
-	"volume"		"1.0"
-	"pitch"		"95, 105"
-
+	"channel"	"CHAN_BODY"
+	"volume"	"1.0"
+	"pitch"	"95, 105"
 	"soundlevel"	"SNDLVL_NORM"
-
 	"rndwave"
 	{
 		"wave"	"player/footsteps/tile3.wav"
@@ -66,12 +60,10 @@
 
 "NPC_CombineS.RunFootstepLeft"
 {
-	"channel"		"CHAN_BODY"
-	"volume"		"0.75"
-	"pitch"		"95, 105"
-
+	"channel"	"CHAN_BODY"
+	"volume"	"0.75"
+	"pitch"	"95, 105"
 	"soundlevel"	"SNDLVL_NORM"
-
 	"rndwave"
 	{
 		//"wave"	"player/footsteps/tile1.wav"
@@ -81,15 +73,12 @@
 		"wave"	"npc/combine_soldier/gear5.wav"
 	}
 }
-
 "NPC_CombineS.RunFootstepRight"
 {
-	"channel"		"CHAN_BODY"
-	"volume"		"0.75"
-	"pitch"		"95, 105"
-
+	"channel"	"CHAN_BODY"
+	"volume"	"0.75"
+	"pitch"	"95, 105"
 	"soundlevel"	"SNDLVL_NORM"
-
 	"rndwave"
 	{
 		//"wave"	"player/footsteps/tile3.wav"
@@ -102,12 +91,10 @@
 
 "NPC_CombineS.ElectrocuteScream"
 {
-	"channel"		"CHAN_VOICE"
-	"volume"		"1.0"
-	"pitch"			"95, 105"
-
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.0"
+	"pitch"	"95, 105"
 	"soundlevel"	"SNDLVL_90DB"
-
 	"rndwave"
 	{
 		"wave"	"npc/combine_soldier/die1.wav"
@@ -118,12 +105,10 @@
 
 "NPC_CombineS.DissolveScream"
 {
-	"channel"		"CHAN_VOICE"
-	"volume"		"1.0"
-	"pitch"			"95, 105"
-
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.0"
+	"pitch"	"95, 105"
 	"soundlevel"	"SNDLVL_90DB"
-
 	"rndwave"
 	{
 		"wave"	"npc/combine_soldier/die1.wav"
@@ -134,12 +119,10 @@
 
 "NPC_CombineAce.ElectrocuteScream"
 {
-	"channel"		"CHAN_VOICE"
-	"volume"		"1.0"
-	"pitch"			"95, 105"
-
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.0"
+	"pitch"	"95, 105"
 	"soundlevel"	"SNDLVL_90DB"
-
 	"rndwave"
 	{
 		"wave"	"npc/combine_ace/die1.wav"
@@ -147,15 +130,12 @@
 		"wave"	"npc/combine_ace/die3.wav"
 	}
 }
-
 "NPC_CombineAce.DissolveScream"
 {
-	"channel"		"CHAN_VOICE"
-	"volume"		"1.0"
-	"pitch"			"95, 105"
-
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.0"
+	"pitch"	"95, 105"
 	"soundlevel"	"SNDLVL_90DB"
-
 	"rndwave"
 	{
 		"wave"	"npc/combine_ace/die1.wav"

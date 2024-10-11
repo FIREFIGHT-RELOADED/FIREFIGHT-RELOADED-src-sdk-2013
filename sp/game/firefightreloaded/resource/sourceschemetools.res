@@ -8,10 +8,10 @@
 //		Borders			- description of all the borders
 //
 ///////////////////////////////////////////////////////////
-// 
+//
 // Mapbase scheme file.
 // Use it when we figure out how to get Hammer to mount it but not the game.
-// 
+//
 ///////////////////////////////////////////////////////////
 #base "SourceSchemeBase.res"
 
@@ -89,12 +89,12 @@ Scheme
 //		Button.DepressedBgColor			"ControlDarkBG"	
 		Button.FocusBorderColor			"TransparentBlack"
 		
-		CheckButton.TextColor			"BaseText"
+		CheckButton.TextColor		"BaseText"
 		CheckButton.SelectedTextColor	"BrightControlText"
-		CheckButton.BgColor				"ListBG"
-		CheckButton.Border1  			"Border.Dark" 		// the left checkbutton border
-		CheckButton.Border2  			"Border.Bright"		// the right checkbutton border
-		CheckButton.Check				"BrightControlText"	// color of the check itself
+		CheckButton.BgColor			"ListBG"
+		CheckButton.Border1			"Border.Dark" 		// the left checkbutton border
+		CheckButton.Border2			"Border.Bright"		// the right checkbutton border
+		CheckButton.Check			"BrightControlText"	// color of the check itself
 
 		ComboBoxButton.ArrowColor		"DimBaseText"
 		ComboBoxButton.ArmedArrowColor	"BrightBaseText"

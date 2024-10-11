@@ -2,123 +2,123 @@
 {
 	"1"
 	{
-		"name"		"HealthKit"
-		"price"		"20"
+		"name"	"HealthKit"
+		"price"	"20"
 		"command"	"healthkit"
 	}
 	"2"
 	{
-		"name"		"SuitBattery"
-		"price"		"100"
+		"name"	"SuitBattery"
+		"price"	"100"
 		"command"	"battery"
 	}
 	"3"
 	{
-		"name"		"MaxHealth"
-		"price"		"550"
-        "limit"	    "15"
+		"name"	"MaxHealth"
+		"price"	"550"
+		"limit"	"15"
 		"command"	"upgrade 0"
 	}
 	"4"
 	{
-		"name"		"PistolAmmo"
-		"price"		"10"
+		"name"	"PistolAmmo"
+		"price"	"10"
 		"command"	"ammo Pistol 20"
 	}
 	"5"
 	{
-		"name"		"SMGAmmo"
-		"price"		"15"
+		"name"	"SMGAmmo"
+		"price"	"15"
 		"command"	"ammo SMG1 45"
 	}
 	"6"
 	{
-		"name"		"SMGGrenade"
-		"price"		"185"
+		"name"	"SMGGrenade"
+		"price"	"185"
 		"command"	"ammo SMG1_Grenade 1"
 	}
 	"7"
 	{
-		"name"		"MP5Ammo"
-		"price"		"10"
+		"name"	"MP5Ammo"
+		"price"	"10"
 		"command"	"ammo MP5Ammo 30"
 	}
 	"8"
 	{
-		"name"		"357Ammo"
-		"price"		"40"
+		"name"	"357Ammo"
+		"price"	"40"
 		"command"	"ammo 357 20"
 	}
 	"9"
 	{
-		"name"		"AR2Ammo"
-		"price"		"15"
+		"name"	"AR2Ammo"
+		"price"	"15"
 		"command"	"ammo AR2 20"
 	}
 	"10"
 	{
-		"name"		"AR2DarkEnergyBall"
-		"price"		"250"
+		"name"	"AR2DarkEnergyBall"
+		"price"	"250"
 		"command"	"ammo AR2AltFire 1"
 	}
 	"11"
 	{
-		"name"		"CrossbowAmmo"
-		"price"		"55"
+		"name"	"CrossbowAmmo"
+		"price"	"55"
 		"command"	"ammo XBowBolt 20"
 	}
 	"12"
 	{
-		"name"		"ShotgunAmmo"
-		"price"		"25"
-		"command"	"ammo Buckshot 20" 
+		"name"	"ShotgunAmmo"
+		"price"	"25"
+		"command"	"ammo Buckshot 20"
 	}
 	"13"
 	{
-		"name"		"RPGAmmo"
-		"price"		"250"
-		"command"	"ammo RPG_Round 1" 
+		"name"	"RPGAmmo"
+		"price"	"250"
+		"command"	"ammo RPG_Round 1"
 	}
 	"14"
 	{
-		"name"		"SniperRifleAmmo"
-		"price"		"85"
-		"command"	"ammo Sniper 15" 
+		"name"	"SniperRifleAmmo"
+		"price"	"85"
+		"command"	"ammo Sniper 15"
 	}
 	"15"
 	{
-		"name"		"M249ParaAmmo"
-		"price"		"65"
-		"command"	"ammo M249 120" 
+		"name"	"M249ParaAmmo"
+		"price"	"65"
+		"command"	"ammo M249 120"
 	}
 	"16"
 	{
-		"name"		"GaussAmmo"
-		"price"		"200"
-		"command"	"ammo GaussEnergy 30" 
+		"name"	"GaussAmmo"
+		"price"	"200"
+		"command"	"ammo GaussEnergy 30"
 	}
 	"17"
 	{
-		"name"		"RailgunAmmo"
-		"price"		"800"
-		"command"	"ammo Railgun 25" 
+		"name"	"RailgunAmmo"
+		"price"	"800"
+		"command"	"ammo Railgun 25"
 	}
-    "18"
+	"18"
 	{
-		"name"		"RailgunOvercharge"
-		"price"		"3000"
-		"command"	"ammo Railgun 300" 
+		"name"	"RailgunOvercharge"
+		"price"	"3000"
+		"command"	"ammo Railgun 300"
 	}
 	"19"
 	{
-		"name"		"OICWAmmo"
-		"price"		"30"
-		"command"	"ammo 556Round 60" 
+		"name"	"OICWAmmo"
+		"price"	"30"
+		"command"	"ammo 556Round 60"
 	}
 	"20"
 	{
-		"name"		"AlyxgunAmmo"
-		"price"		"25"
-		"command"	"ammo Alyxgun 60" 
+		"name"	"AlyxgunAmmo"
+		"price"	"25"
+		"command"	"ammo Alyxgun 60"
 	}
 }

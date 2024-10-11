@@ -2,10 +2,10 @@
 // Tracker scheme resource file
 //
 // sections:
-//		Colors			- all the colors used by the scheme
+//		Colors	- all the colors used by the scheme
 //		BaseSettings	- contains settings for app to use to draw controls
-//		Fonts			- list of all the fonts used by app
-//		Borders			- description of all the borders
+//		Fonts	- list of all the fonts used by app
+//		Borders	- description of all the borders
 //
 ///////////////////////////////////////////////////////////
 Scheme
@@ -15,16 +15,16 @@ Scheme
 	// this is a list of all the colors used by the scheme
 	Colors
 	{
-		"White"				"255 255 255 255"
-		"HL2Yellowish"			"255 160 0 255"
-		"HL2Normal"				"255 208 64 255"
-		"HL2Caution"			"255 48 0 255"
-		"SMODBlueish"			"84 84 255 255"
-		"SMODNormal"			"64 64 255 255"
-		"SMODNormalDim"			"64 64 255 120"
-		"SMODBright"			"128 128 255 255"
-		"SMODCaution"			"255 84 255 255"
-        "FRNormal"              "0 113 229 255"
+		"White"		"255 255 255 255"
+		"HL2Yellowish"	"255 160 0 255"
+		"HL2Normal"		"255 208 64 255"
+		"HL2Caution"	"255 48 0 255"
+		"SMODBlueish"	"84 84 255 255"
+		"SMODNormal"	"64 64 255 255"
+		"SMODNormalDim"	"64 64 255 120"
+		"SMODBright"	"128 128 255 255"
+		"SMODCaution"	"255 84 255 255"
+		"FRNormal"		"0 113 229 255"
 		
 		// base colors
 		"Orange"			"255 176 0 255"
@@ -111,8 +111,8 @@ Scheme
 		CheckButton.TextColor			"SMODNormal"
 		CheckButton.SelectedTextColor	"SMODNormal"
 		CheckButton.BgColor				"TransparentBlack"
-		CheckButton.Border1  			"Border.Dark" 		// the left checkbutton border
-		CheckButton.Border2  			"Border.Bright"		// the right checkbutton border
+		CheckButton.Border1				"Border.Dark" 		// the left checkbutton border
+		CheckButton.Border2				"Border.Bright"		// the right checkbutton border
 		CheckButton.Check				"SMODNormal"				// color of the check itself
 
 		ComboBoxButton.ArrowColor		"SMODNormal"
@@ -232,8 +232,8 @@ Scheme
 		
 		"FgColor"		"SMODNormal"
 		"BgColor"		"TransparentBlack"
-        
-        "SteamDeckLoadingBar"			"FRNormal"
+
+		"SteamDeckLoadingBar"			"FRNormal"
 		"SteamDeckSpinner"				"FRNormal"
 		"SteamDeckLoadingText"			"181 179 175 255"
 	}
@@ -461,20 +461,20 @@ Scheme
 				"scanlines" "0"
 			}
 		}
-        DefaultButtonPrompt
+		DefaultButtonPrompt
 		{
 			"1"	[$X360]
 			{
-				"name"		"PromptFont"
-				"tall"		"12"
+				"name"	"PromptFont"
+				"tall"	"12"
 				"weight"	"700"
 				"scanlines" "0"
 				"antialias" "1"
 			}
 			"1"	[$WIN32]
 			{
-				"name"		"PromptFont"
-				"tall"		"9"
+				"name"	"PromptFont"
+				"tall"	"9"
 				"weight"	"700"
 				"scanlines" "0"
 				"antialias" "1"
@@ -482,8 +482,8 @@ Scheme
 			}
 			"2"
 			{
-				"name"		"PromptFont"
-				"tall"		"12"
+				"name"	"PromptFont"
+				"tall"	"12"
 				"weight"	"700"
 				"scanlines" "0"
 				"antialias" "1"
@@ -491,8 +491,8 @@ Scheme
 			}
 			"3"
 			{
-				"name"		"PromptFont"
-				"tall"		"14"
+				"name"	"PromptFont"
+				"tall"	"14"
 				"weight"	"900"
 				"scanlines" "0"
 				"antialias" "1"
@@ -500,8 +500,8 @@ Scheme
 			}
 			"4"
 			{
-				"name"		"PromptFont"
-				"tall"		"20"
+				"name"	"PromptFont"
+				"tall"	"20"
 				"weight"	"900"
 				"scanlines" "0"
 				"antialias" "1"
@@ -509,8 +509,8 @@ Scheme
 			}
 			"5"
 			{
-				"name"		"PromptFont"
-				"tall"		"24"
+				"name"	"PromptFont"
+				"tall"	"24"
 				"weight"	"900"
 				"scanlines" "0"
 				"antialias" "1"
@@ -522,8 +522,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"SMODGUI"
-				"tall"		"15"
+				"name"	"SMODGUI"
+				"tall"	"15"
 				"weight"	"500"
 				"antialias" "1"
 			}
@@ -532,8 +532,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"HL2MP"
-				"tall"		"30"
+				"name"	"HL2MP"
+				"tall"	"30"
 				"weight"	"0"
 				"antialias" "1"
 				"additive"	"1"
@@ -544,8 +544,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"HalfLife2"
-				"tall"		"30"
+				"name"	"HalfLife2"
+				"tall"	"30"
 				"weight"	"2000"
 				"antialias" "1"
 				"additive"	"1"
@@ -556,8 +556,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"csd"
-				"tall"		"30"
+				"name"	"csd"
+				"tall"	"30"
 				"weight"	"0"
 				"antialias" "1"
 				"additive"	"1"
@@ -568,8 +568,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"HalfLife2"
-				"tall"		"30"
+				"name"	"HalfLife2"
+				"tall"	"30"
 				"weight"	"0"
 				"antialias" "1"
 				"additive"	"1"
@@ -580,8 +580,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"SMODGUI"
-				"tall"		"22"
+				"name"	"SMODGUI"
+				"tall"	"22"
 				"weight"	"500"
 				"scanlines" "0"
 				"antialias" "1"
@@ -591,8 +591,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"SMODGUI"
-				"tall"		"15"
+				"name"	"SMODGUI"
+				"tall"	"15"
 				"weight"	"500"
 				"scanlines" "0"
 				"antialias" "1"
@@ -602,8 +602,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"HalfLife2"
-				"tall"		"64"
+				"name"	"HalfLife2"
+				"tall"	"64"
 				"tall_hidef"	"58"
 				"weight"	"0"
 				"scanlines" "0"
@@ -616,8 +616,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"HalfLife2"
-				"tall"		"64"
+				"name"	"HalfLife2"
+				"tall"	"64"
 				"tall_hidef"	"58"
 				"weight"	"0"
 				"antialias" "1"
@@ -630,8 +630,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"HalfLife2"
-				"tall"		"32"
+				"name"	"HalfLife2"
+				"tall"	"32"
 				"weight"	"0"
 				"scanlines" "0"
 				"antialias" "1"
@@ -642,8 +642,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"cs"
-				"tall"		"64"
+				"name"	"cs"
+				"tall"	"64"
 				"tall_hidef"	"58"
 				"weight"	"0"
 				"scanlines" "0"
@@ -656,8 +656,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"cs"
-				"tall"		"64"
+				"name"	"cs"
+				"tall"	"64"
 				"tall_hidef"	"58"
 				"weight"	"0"
 				"antialias" "1"
@@ -670,8 +670,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"cs"
-				"tall"		"32"
+				"name"	"cs"
+				"tall"	"32"
 				"weight"	"0"
 				"scanlines" "0"
 				"antialias" "1"
@@ -682,9 +682,9 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"HalfLife2"
-				"tall"		"40" [!$OSX]
-				"tall"		"41" [$OSX]
+				"name"	"HalfLife2"
+				"tall"	"40" [!$OSX]
+				"tall"	"41" [$OSX]
 				"weight"	"0"
 				"scanlines" "0"
 				"antialias" "0"
@@ -696,8 +696,8 @@ Scheme
 		{
 			"1"	[$X360]
 			{
-				"name"		"HL2cross"
-				"tall"		"57"
+				"name"	"HL2cross"
+				"tall"	"57"
 				"weight"	"0"
 				"scanlines" "0"
 				"antialias" 	"1"
@@ -705,9 +705,9 @@ Scheme
 			}
 			"1"	[$WIN32]
 			{
-				"name"		"HL2cross"
-				"tall"		"28" [!$OSX]
-				"tall"		"50" [$OSX]
+				"name"	"HL2cross"
+				"tall"	"28" [!$OSX]
+				"tall"	"50" [$OSX]
 				"weight"	"0"
 				"scanlines" "0"
 				"antialias" "1"
@@ -718,8 +718,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"SMODGUI"
-				"tall"		"26"
+				"name"	"SMODGUI"
+				"tall"	"26"
 				"weight"	"0"
 				"scanlines" "0"
 				"antialias" "1"
@@ -730,8 +730,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"HalfLife2"
-				"tall"		"50"
+				"name"	"HalfLife2"
+				"tall"	"50"
 				"weight"	"0"
 				"scanlines" "0"
 				"antialias" "1"
@@ -742,8 +742,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"SMODGUI"
-				"tall"		"26"
+				"name"	"SMODGUI"
+				"tall"	"26"
 				"weight"	"0"
 				"blur"		"4"
 				"scanlines" "0"
@@ -755,8 +755,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"SMODGUI"
-				"tall"		"14"
+				"name"	"SMODGUI"
+				"tall"	"14"
 				"weight"	"1000"
 				"scanlines" "0"
 				"antialias" "1"
@@ -767,10 +767,10 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"SMODGUI"
-				"tall"		"14"
+				"name"	"SMODGUI"
+				"tall"	"14"
 				"weight"	"1000"
-				"blur"		"4"
+				"blur"	"4"
 				"scanlines" "0"
 				"antialias" "1"
 				"custom"	"1"
@@ -780,8 +780,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"HalfLife2"
-				"tall"		"16"
+				"name"	"HalfLife2"
+				"tall"	"16"
 				"weight"	"1000"
 				"scanlines" "0"
 				"antialias" "1"
@@ -792,10 +792,10 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"HalfLife2"
-				"tall"		"16"
+				"name"	"HalfLife2"
+				"tall"	"16"
 				"weight"	"1000"
-				"blur"		"4"
+				"blur"	"4"
 				"scanlines" "0"
 				"antialias" "1"
 				"custom"	"1"
@@ -805,8 +805,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"SMODGUI"
-				"tall"		"25"
+				"name"	"SMODGUI"
+				"tall"	"25"
 				"weight"	"0"
 				"scanlines" "0"
 				"antialias" "1"
@@ -817,10 +817,10 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"SMODGUI"
-				"tall"		"25"
+				"name"	"SMODGUI"
+				"tall"	"25"
 				"weight"	"0"
-				"blur"		"4"
+				"blur"	"4"
 				"scanlines" "0"
 				"antialias" "1"
 				"custom"	"1"
@@ -830,8 +830,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"SMODGUI"
-				"tall"		"16"
+				"name"	"SMODGUI"
+				"tall"	"16"
 				"weight"	"1000"
 				"scanlines" "0"
 				"antialias" "1"
@@ -842,8 +842,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"SMODGUI"
-				"tall"		"11"
+				"name"	"SMODGUI"
+				"tall"	"11"
 				"weight"	"700"
 				"scanlines" "0"
 				"antialias" "1"
@@ -861,9 +861,9 @@ Scheme
 			}
 			"1"	[$WIN32]
 			{
-				"name"		"Verdana" [!$OSX]
-				"name"		"Helvetica Bold" [$OSX]
-				"tall"		"14"
+				"name"	"Verdana" [!$OSX]
+				"name"	"Helvetica Bold" [$OSX]
+				"tall"	"14"
 				"weight"	"1000"
 				"scanlines" "0"
 				"antialias" "1"
@@ -873,17 +873,17 @@ Scheme
 		{
 			"1"	[$WIN32]
 			{
-				"name"		"Verdana" [!$OSX]
-				"name"		"Helvetica" [$OSX]
-				"tall"		"11.5"
+				"name"	"Verdana" [!$OSX]
+				"name"	"Helvetica" [$OSX]
+				"tall"	"11.5"
 				"weight"	"700"
 				"scanlines" "0"
 				"antialias" "1"
 			}
 			"1"	[$X360]
 			{
-				"name"		"Verdana"
-				"tall"		"12"
+				"name"	"Verdana"
+				"tall"	"12"
 				"weight"	"700"
 				"scanlines" "0"
 				"antialias" "1"
@@ -893,8 +893,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"Verdana"
-				"tall"		"8"
+				"name"	"Verdana"
+				"tall"	"8"
 				"weight"	"700"
 				"scanlines" "0"
 				"antialias" "1"
@@ -902,8 +902,8 @@ Scheme
 			}
 			"2"
 			{
-				"name"		"Verdana"
-				"tall"		"10"
+				"name"	"Verdana"
+				"tall"	"10"
 				"weight"	"700"
 				"scanlines" "0"
 				"antialias" "1"
@@ -911,8 +911,8 @@ Scheme
 			}
 			"3"
 			{
-				"name"		"Verdana"
-				"tall"		"12"
+				"name"	"Verdana"
+				"tall"	"12"
 				"weight"	"900"
 				"scanlines" "0"
 				"antialias" "1"
@@ -920,8 +920,8 @@ Scheme
 			}
 			"4"
 			{
-				"name"		"Verdana"
-				"tall"		"16"
+				"name"	"Verdana"
+				"tall"	"16"
 				"weight"	"900"
 				"scanlines" "0"
 				"antialias" "1"
@@ -929,8 +929,8 @@ Scheme
 			}
 			"5"
 			{
-				"name"		"Verdana"
-				"tall"		"17"
+				"name"	"Verdana"
+				"tall"	"17"
 				"weight"	"1000"
 				"scanlines" "0"
 				"antialias" "1"
@@ -942,7 +942,7 @@ Scheme
 			"1"	[$X360]
 			{
 				"bitmap"	"1"
-				"name"		"Buttons"
+				"name"	"Buttons"
 				"scalex"	"0.63"
 				"scaley"	"0.63"
 				"scalex_hidef"	"1.0"
@@ -953,8 +953,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"Courier New"
-				"tall"		"14"
+				"name"	"Courier New"
+				"tall"	"14"
 				"weight"	"400"
 				"outline"	"1"
 			}
@@ -963,15 +963,15 @@ Scheme
 		{
 			"1"	[$WIN32]
 			{
-				"name"		"Courier New"
-				"tall"		"14"
+				"name"	"Courier New"
+				"tall"	"14"
 				"weight"	"400"
 				"outline"	"1"
 			}
 			"1"	[$X360]
 			{
-				"name"		"Tahoma"
-				"tall"		"18"
+				"name"	"Tahoma"
+				"tall"	"18"
 				"weight"	"200"
 				"outline"	"1"
 			}
@@ -980,10 +980,10 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"Tahoma" [!$OSX]
-				"name"		"Verdana" [$OSX]
-				"tall"		"26" [!$OSX]
-				"tall"		"24" [$OSX]
+				"name"	"Tahoma" [!$OSX]
+				"name"	"Verdana" [$OSX]
+				"tall"	"26" [!$OSX]
+				"tall"	"24" [$OSX]
 				"weight"	"500"
 			}
 		}
@@ -991,10 +991,10 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"Tahoma" [!$OSX]
-				"name"		"Verdana Italic" [$OSX]
-				"tall"		"26" [!$OSX]
-				"tall"		"24" [$OSX]
+				"name"	"Tahoma" [!$OSX]
+				"name"	"Verdana Italic" [$OSX]
+				"tall"	"26" [!$OSX]
+				"tall"	"24" [$OSX]
 				"weight"	"500"
 				"italic"	"1"
 			}
@@ -1003,10 +1003,10 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"Tahoma" [!$OSX]
-				"name"		"Verdana Bold" [$OSX]
-				"tall"		"26" [!$OSX]
-				"tall"		"24" [$OSX]
+				"name"	"Tahoma" [!$OSX]
+				"name"	"Verdana Bold" [$OSX]
+				"tall"	"26" [!$OSX]
+				"tall"	"24" [$OSX]
 				"weight"	"900"
 			}
 		}
@@ -1014,10 +1014,10 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"Tahoma" [!$OSX]
-				"name"		"Verdana Bold Italic" [$OSX]
-				"tall"		"26" [!$OSX]
-				"tall"		"24" [$OSX]
+				"name"	"Tahoma" [!$OSX]
+				"name"	"Verdana Bold Italic" [$OSX]
+				"tall"	"26" [!$OSX]
+				"tall"	"24" [$OSX]
 				"weight"	"900"
 				"italic"	"1"
 			}
@@ -1026,10 +1026,10 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"Tahoma" [!$OSX]
-				"name"		"Verdana" [$OSX]
-				"tall"		"16" [!$OSX]
-				"tall"		"14" [$OSX]
+				"name"	"Tahoma" [!$OSX]
+				"name"	"Verdana" [$OSX]
+				"tall"	"16" [!$OSX]
+				"tall"	"14" [$OSX]
 				"tall_hidef"	"24"
 				"weight"	"900"
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
@@ -1040,8 +1040,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"Marlett"
-				"tall"		"14"
+				"name"	"Marlett"
+				"tall"	"14"
 				"weight"	"0"
 				"symbol"	"1"
 			}
@@ -1050,10 +1050,10 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"Trebuchet MS"
-				"tall"		"24"
+				"name"	"Trebuchet MS"
+				"tall"	"24"
 				"weight"	"900"
-				"range"		"0x0000 0x007F"	//	Basic Latin
+				"range"	"0x0000 0x007F"	//	Basic Latin
 				"antialias" "1"
 				"additive"	"1"
 			}
@@ -1062,8 +1062,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"Trebuchet MS"
-				"tall"		"18"
+				"name"	"Trebuchet MS"
+				"tall"	"18"
 				"weight"	"900"
 			}
 		}
@@ -1071,8 +1071,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"  "SMODGUI"
-				"tall"			"34"
+				"name"	"SMODGUI"
+				"tall"	"34"
 				"tall_hidef"	"48"
 				"weight" "0"
 				"additive" "0"
@@ -1084,8 +1084,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"  "SMODGUI"
-				"tall"			"24"
+				"name"	"SMODGUI"
+				"tall"	"24"
 				"tall_hidef"	"38"
 				"weight" "0"
 				"additive" "0"
@@ -1097,8 +1097,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"  "SMODGUI"
-				"tall"			"15"
+				"name"	"SMODGUI"
+				"tall"	"15"
 				"tall_hidef"	"27"
 				"weight" "0"
 				"additive" "0"
@@ -1110,8 +1110,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"  "SMODGUI"
-				"tall"			"20"
+				"name"	"SMODGUI"
+				"tall"	"20"
 				"tall_hidef"	"34"
 				"weight" "0"
 				"additive" "0"
@@ -1123,8 +1123,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"  "SMODGUI"
-				"tall"			"34"
+				"name"	"SMODGUI"
+				"tall"	"34"
 				"tall_hidef"	"48"
 				"weight" "0"
 				"additive" "0"
@@ -1136,8 +1136,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"  "SMODGUI"
-				"tall"			"20"
+				"name"	"SMODGUI"
+				"tall"	"20"
 				"tall_hidef"	"38"
 				"weight" "0"
 				"additive" "0"
@@ -1149,8 +1149,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"HalfLife2"
-				"tall"		"128"
+				"name"	"HalfLife2"
+				"tall"	"128"
 				"weight"	"0"
 				"antialias" "1"
 				"additive"	"1"
@@ -1161,8 +1161,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"Trebuchet MS"
-				"tall"		"20"
+				"name"	"Trebuchet MS"
+				"tall"	"20"
 				"weight"	"900"
 				"antialias" "1"
 				"additive"	"1"
@@ -1172,8 +1172,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"HalfLife2"
-				"tall"		"48"
+				"name"	"HalfLife2"
+				"tall"	"48"
 				"weight"	"0"
 				"antialias" "1"
 				"additive"	"1"
@@ -1184,9 +1184,9 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"Verdana" [!$OSX]
-				"name"		"Courier Bold" [$OSX]
-				"tall"		"18"
+				"name"	"Verdana" [!$OSX]
+				"name"	"Courier Bold" [$OSX]
+				"tall"	"18"
 				"weight"	"900"
 				"antialias" "1"
 			}
@@ -1196,9 +1196,9 @@ Scheme
 			// note that this scales with the screen resolution
 			"1"
 			{
-				"name"		"Trebuchet MS" [!$OSX]
-				"name"		"Helvetica" [$OSX]
-				"tall"		"18"
+				"name"	"Trebuchet MS" [!$OSX]
+				"name"	"Helvetica" [$OSX]
+				"tall"	"18"
 				"weight"	"900"
 				"antialias" "1"
 				"additive"	"1"
@@ -1209,8 +1209,8 @@ Scheme
 			// note that this scales with the screen resolution
 			"1"
 			{
-				"name"		"Trebuchet MS"
-				"tall"		"24"
+				"name"	"Trebuchet MS"
+				"tall"	"24"
 				"weight"	"900"
 				"antialias" "1"
 				"additive"	"1"
@@ -1220,8 +1220,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"Trebuchet MS"
-				"tall"		"14"
+				"name"	"Trebuchet MS"
+				"tall"	"14"
 				"weight"	"900"
 				"antialias" "1"
 			}
@@ -1230,61 +1230,61 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"Verdana"
-				"tall"		"12"
+				"name"	"Verdana"
+				"tall"	"12"
 				"weight"	"900"
-				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+				"range"	"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
 				"yres"	"480 599"
 			}
 			"2"
 			{
-				"name"		"Verdana"
-				"tall"		"13"	[$WIN32]
-				"tall"		"20"	[$X360]
+				"name"	"Verdana"
+				"tall"	"13"	[$WIN32]
+				"tall"	"20"	[$X360]
 				"weight"	"900"
-				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+				"range"	"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
 				"yres"	"600 767"
 			}
 			"3"
 			{
-				"name"		"Verdana"
-				"tall"		"14"
+				"name"	"Verdana"
+				"tall"	"14"
 				"weight"	"900"
-				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+				"range"	"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
 				"yres"	"768 1023"
 				"antialias"	"1"
 			}
 			"4"
 			{
-				"name"		"Verdana"
-				"tall"		"20"
+				"name"	"Verdana"
+				"tall"	"20"
 				"weight"	"900"
-				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+				"range"	"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
 				"yres"	"1024 1199"
 				"antialias"	"1"
 			}
 			"5"
 			{
-				"name"		"Verdana"
-				"tall"		"24"
+				"name"	"Verdana"
+				"tall"	"24"
 				"weight"	"900"
-				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+				"range"	"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
 				"yres"	"1200 6000"
 				"antialias"	"1"
 			}
 			"6"
 			{
-				"name"		"Verdana"
-				"tall"		"12"
-				"range" 		"0x0000 0x00FF"
-				"weight"		"900"
+				"name"	"Verdana"
+				"tall"	"12"
+				"range" 	"0x0000 0x00FF"
+				"weight"	"900"
 			}
 			"7"
 			{
-				"name"		"Arial"
-				"tall"		"12"
-				"range" 		"0x0000 0x00FF"
-				"weight"		"800"
+				"name"	"Arial"
+				"tall"	"12"
+				"range" 	"0x0000 0x00FF"
+				"weight"	"800"
 			}
 			
 		}
@@ -1292,8 +1292,8 @@ Scheme
 		{
 			"1"
 			{
-				"Name"			"Verdana"
-				"tall"			"16"
+				"Name"	"Verdana"
+				"tall"	"16"
 				"weight"	"100"
 				"antialias" "1"
 				//"dropshadow"	"1"
@@ -1303,8 +1303,8 @@ Scheme
 		{
 			"1"
 			{
-				"Name"			"Verdana"
-				"tall"			"16"
+				"Name"	"Verdana"
+				"tall"	"16"
 				"weight"	"100"
 				"antialias" "1"
 				//"dropshadow"	"1"
@@ -1314,8 +1314,8 @@ Scheme
 		{
 			"1"
 			{
-				"Name"			"Verdana"
-				"tall"			"16"
+				"Name"	"Verdana"
+				"tall"	"16"
 				"weight"	"100"
 				"antialias" "1"
 				//"dropshadow"	"1"
@@ -1326,8 +1326,8 @@ Scheme
 		{
 			"1"
 			{
-				"Name"			"Verdana"
-				"tall"			"16"
+				"Name"	"Verdana"
+				"tall"	"16"
 				"weight"	"100"
 				"antialias" "1"
 				//"dropshadow"	"1"
@@ -1339,7 +1339,7 @@ Scheme
 			"1"
 			{
 				"bitmap"	"1"
-				"name"		"Buttons"
+				"name"	"Buttons"
 				"scalex"	"0.65"
 				"scaley"	"0.65"
 			}
@@ -1348,8 +1348,8 @@ Scheme
 		{
 			"1"
 			{
-				"name"		"Arial"
-				"tall"		"11"
+				"name"	"Arial"
+				"tall"	"11"
 				"weight"	"500"
 				"antialias" "1"
 			}
@@ -1361,12 +1361,12 @@ Scheme
 	// specifies all the custom (non-system) font files that need to be loaded to service the above described fonts
 	CustomFontFiles
 	{
-		"1"		"resource/HALFLIFE2.ttf"
-		"2"		"resource/HL2crosshairs.ttf"
-		"3"		"resource/HL2EP2.ttf"
-		"4"		"resource/smodgui.ttf"
-		"5"		"resource/hl2mp.ttf"
-		"6"		"resource/cs.ttf"
-		"7"		"resource/csd.ttf"
+		"1"	"resource/HALFLIFE2.ttf"
+		"2"	"resource/HL2crosshairs.ttf"
+		"3"	"resource/HL2EP2.ttf"
+		"4"	"resource/smodgui.ttf"
+		"5"	"resource/hl2mp.ttf"
+		"6"	"resource/cs.ttf"
+		"7"	"resource/csd.ttf"
 	}
 }

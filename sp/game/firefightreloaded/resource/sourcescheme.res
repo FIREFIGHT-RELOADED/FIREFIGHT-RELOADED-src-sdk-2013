@@ -66,13 +66,13 @@ Scheme
 		CheckButton.TextColor			"White"
 		CheckButton.SelectedTextColor		"White"
 		CheckButton.BgColor			"TransparentBlack"
-		CheckButton.Border1  			"Border.Dark" 		// the left checkbutton border
-		CheckButton.Border2  			"Border.Bright"		// the right checkbutton border
+		CheckButton.Border1	"Border.Dark" 		// the left checkbutton border
+		CheckButton.Border2	"Border.Bright"		// the right checkbutton border
 		CheckButton.Check			"White"	// color of the check itself
-		CheckButton.HighlightFgColor		"OffWhite"
+		CheckButton.HighlightFgColor	"OffWhite"
 		CheckButton.ArmedBgColor		"Blank"
-		CheckButton.DepressedBgColor		"Blank"
-		CheckButton.DisabledBgColor	   	"TransparentBlack"
+		CheckButton.DepressedBgColor	"Blank"
+		CheckButton.DisabledBgColor	"TransparentBlack"
 				
 		ComboBoxButton.ArrowColor		"DullWhite"
 		ComboBoxButton.ArmedArrowColor	"White"
@@ -211,8 +211,8 @@ Scheme
 		NewGame.SelectionColor		"OffWhite"
 		NewGame.DisabledColor		"SMODBlueBright"
 
-		"QuickListBGDeselected"		"SMODBlueDark"
-	 	"QuickListBGSelected"           "SMODBlueBright"
+		"QuickListBGDeselected"	"SMODBlueDark"
+	 	"QuickListBGSelected"	"SMODBlueBright"
 	}
 
 	//////////////////////// BITMAP FONT FILES /////////////////////////////
@@ -221,7 +221,7 @@ Scheme
 	BitmapFontFiles
 	{
 		// UI buttons, custom font, (256x64)
-		"Buttons"		"materials/vgui/fonts/buttons_32.vbf"
+		"Buttons"	"materials/vgui/fonts/buttons_32.vbf"
 	}
 
 	//////////////////////// FONTS /////////////////////////////
@@ -1259,10 +1259,9 @@ Scheme
 	// specifies all the custom (non-system) font files that need to be loaded to service the above described fonts
 	CustomFontFiles
 	{
-		"1"		"resource/HALFLIFE2.ttf"
-		"2"		"resource/HL2EP2.ttf"	
-		"3"		"resource/marlett.ttf"
-		"4"		"resource/smodgui.ttf"
+		"1"	"resource/HALFLIFE2.ttf"
+		"2"	"resource/HL2EP2.ttf"
+		"3"	"resource/marlett.ttf"
+		"4"	"resource/smodgui.ttf"
 	}
 }
-

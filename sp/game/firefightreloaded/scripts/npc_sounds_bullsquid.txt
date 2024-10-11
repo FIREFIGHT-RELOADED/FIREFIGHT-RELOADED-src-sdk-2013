@@ -1,26 +1,21 @@
 "NPC_Bullsquid.FootstepLeft"
 {
-	"channel"		"CHAN_BODY"
-	"volume"		"0.300"
-	"pitch"			"PITCH_NORM"
-
+	"channel"	"CHAN_BODY"
+	"volume"	"0.300"
+	"pitch"	"PITCH_NORM"
 	"soundlevel"	"SNDLVL_90dB"
-
 	"rndwave"
 	{
 		"wave"	"npc/antlion/foot1.wav"
 		"wave"	"npc/antlion/foot3.wav"
 	}
 }
-
 "NPC_Bullsquid.FootstepRight"
 {
-	"channel"		"CHAN_BODY"
-	"volume"		"0.300"
-	"pitch"			"PITCH_NORM"
-
+	"channel"	"CHAN_BODY"
+	"volume"	"0.300"
+	"pitch"	"PITCH_NORM"
 	"soundlevel"	"SNDLVL_90dB"
-
 	"rndwave"
 	{
 		"wave"	"npc/antlion/foot2.wav"
@@ -30,23 +25,18 @@
 
 "NPC_Bullsquid.TailWhip"
 {
-	"channel"		"CHAN_WEAPON"
-	"volume"		"VOL_NORM"
-	"pitch"			"PITCH_NORM"
-
+	"channel"	"CHAN_WEAPON"
+	"volume"	"VOL_NORM"
+	"pitch"	"PITCH_NORM"
 	"soundlevel"	"SNDLVL_NORM"
-
-	"wave"			"npc/bullsquid/tail_whip1.wav"
+	"wave"	"npc/bullsquid/tail_whip1.wav"
 }
-
 "NPC_Bullsquid.TailHit"
 {
-	"channel"		"CHAN_WEAPON"
-	"volume"		"VOL_NORM"
-	"pitch"			"PITCH_NORM"
-
+	"channel"	"CHAN_WEAPON"
+	"volume"	"VOL_NORM"
+	"pitch"	"PITCH_NORM"
 	"soundlevel"	"SNDLVL_NORM"
-
 	"rndwave"
 	{
 		"wave"	"npc/bullsquid/tail_hit1.wav"
@@ -57,9 +47,9 @@
 
 "NPC_Bullsquid.Idle"
 {
-	"channel"		"CHAN_VOICE"
-	"volume"		"VOL_NORM"
-	"pitch"			"PITCH_NORM"
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"pitch"	"PITCH_NORM"
 
 	"soundlevel"	"SNDLVL_90dB"
 
@@ -75,9 +65,9 @@
 
 "NPC_Bullsquid.Alert"
 {
-	"channel"		"CHAN_VOICE"
-	"volume"		"VOL_NORM"
-	"pitch"			"PITCH_NORM"
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"pitch"	"PITCH_NORM"
 
 	"soundlevel"	"SNDLVL_90dB"
 
@@ -90,9 +80,9 @@
 
 "NPC_Bullsquid.Pain"
 {
-	"channel"		"CHAN_VOICE"
-	"volume"		"VOL_NORM"
-	"pitch"			"PITCH_NORM"
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"pitch"	"PITCH_NORM"
 
 	"soundlevel"	"SNDLVL_90dB"
 
@@ -107,9 +97,9 @@
 
 "NPC_Bullsquid.Death"
 {
-	"channel"		"CHAN_VOICE"
-	"volume"		"VOL_NORM"
-	"pitch"			"PITCH_NORM"
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"pitch"	"PITCH_NORM"
 
 	"soundlevel"	"SNDLVL_90dB"
 
@@ -123,9 +113,9 @@
 
 "NPC_Bullsquid.Growl"
 {
-	"channel"		"CHAN_VOICE"
-	"volume"		"VOL_NORM"
-	"pitch"			"PITCH_NORM"
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"pitch"	"PITCH_NORM"
 
 	"soundlevel"	"SNDLVL_90dB"
 
@@ -139,9 +129,9 @@
 
 "NPC_Bullsquid.Attack1"
 {
-	"channel"		"CHAN_VOICE"
-	"volume"		"VOL_NORM"
-	"pitch"			"PITCH_NORM"
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"pitch"	"PITCH_NORM"
 
 	"soundlevel"	"SNDLVL_90dB"
 
@@ -154,9 +144,9 @@
 
 "NPC_Bullsquid.Eat"
 {
-	"channel"		"CHAN_VOICE"
-	"volume"		"VOL_NORM"
-	"pitch"			"PITCH_NORM"
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"pitch"	"PITCH_NORM"
 
 	"soundlevel"	"SNDLVL_90dB"
 
@@ -171,9 +161,9 @@
 
 "NPC_Bullsquid.Snort"
 {
-	"channel"		"CHAN_VOICE"
-	"volume"		"VOL_NORM"
-	"pitch"			"PITCH_NORM"
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"pitch"	"PITCH_NORM"
 
 	"soundlevel"	"SNDLVL_90dB"
 
@@ -187,32 +177,29 @@
 
 "NPC_Bullsquid.Excited"
 {
-	"channel"		"CHAN_VOICE"
-	"volume"		"VOL_NORM"
-	"pitch"			"PITCH_NORM"
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"pitch"	"PITCH_NORM"
 
 	"soundlevel"	"SNDLVL_90dB"
 
-	"wave"			"npc/bullsquid/excited1.wav"
+	"wave"	"npc/bullsquid/excited1.wav"
 }
 
 "GrenadeSpit.Acid"
 {
 	"channel"	"CHAN_VOICE"
 	"volume"	"1"
-	"soundlevel"  "SNDLVL_75dB"
+	"soundlevel"	"SNDLVL_75dB"
 	"pitch"	"90,110"
-
 	"wave"	"npc/bullsquid/acid1.wav"
 }
-
 "GrenadeSpit.Hit"
 {
 	"channel"	"CHAN_WEAPON"
 	"volume"	"1"
-	"soundlevel"  "SNDLVL_75dB"
+	"soundlevel"	"SNDLVL_75dB"
 	"pitch"	"90,110"
-
 	"rndwave"
 	{
 		"wave"	"npc/bullsquid/spithit1.wav"

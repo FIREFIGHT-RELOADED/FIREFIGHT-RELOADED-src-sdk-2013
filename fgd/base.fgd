@@ -49,7 +49,7 @@
 
 @BaseClass = BasePlat
 [
- 	input Toggle(void) : "Toggles the platform's state."
+	input Toggle(void) : "Toggles the platform's state."
 	input GoUp(void) : "Tells the platform to go up."
 	input GoDown(void) : "Tells the platform to go down."
 ]
@@ -686,14 +686,14 @@
 	
 	hinttype(choices) : "Hint" : 0 = 
 	[
-		  0 : "None"
+		0 : "None"
 
-		  2: "World: Window"
-		 12: "World: Act Busy Hint"
-		 13: "World: Visually Interesting"
-		 14: "World: Visually Interesting (Don't aim at)"
-		 15: "World: Inhibit Combine Mines within 15 feet"
-		 16: "World: Visually Interesting (Stealth mode)"
+		2: "World: Window"
+		12: "World: Act Busy Hint"
+		13: "World: Visually Interesting"
+		14: "World: Visually Interesting (Don't aim at)"
+		15: "World: Inhibit Combine Mines within 15 feet"
+		16: "World: Visually Interesting (Stealth mode)"
 
 		100: "Crouch Cover Medium"
 		101: "Crouch Cover Low"
@@ -743,16 +743,16 @@
 	]
 
 	// Does not inherit from EnableDisable, as node itself will
-	// use that.  This is enabling/disabling of the hint only
+	// use that. This is enabling/disabling of the hint only
 	StartHintDisabled(choices) : "Start Hint Disabled" : 0 =
 	[
 		0 : "No"
 		1 : "Yes"
 	]
 
-	Group(string) : "Hint Group" : "" : "If specified, gives the hint a specific group name.  Useful for hint nodes that need to be logically grouped together. NPCs may also refuse to use hint nodes that don't match their hint group."
+	Group(string) : "Hint Group" : "" : "If specified, gives the hint a specific group name. Useful for hint nodes that need to be logically grouped together. NPCs may also refuse to use hint nodes that don't match their hint group."
 
-    TargetNode(node_dest) : "Target node" : -1 : "The node ID of an associated target node, if any."
+	TargetNode(node_dest) : "Target node" : -1 : "The node ID of an associated target node, if any."
 
 	IgnoreFacing(choices) : "Ignore Facing" : 2 : "Don't pay attention to the facing of the node. May not apply to a given hint type." =
 	[
@@ -870,7 +870,7 @@
 		1: "Huge Machine"
 		2: "Big Machine"
 		3: "Machine"
-		4: "Slow Fade in"  
+		4: "Slow Fade in"
 		5: "Fade in"
 		6: "Quick Fade in"
 		7: "Slow Pulse"
@@ -929,7 +929,7 @@
 @SolidClass base(Targetname) sphere(DisappearDist) = func_lod : 
 	"Brush-built model that fades out over a specified distance. Useful for creating world detail that doesn't need to be drawn far away, for performance reasons."
 [
-	DisappearDist(integer)    : "Disappear Distance" : 2000 : "Distance at which these brushes should fade out."
+	DisappearDist(integer) : "Disappear Distance" : 2000 : "Distance at which these brushes should fade out."
 	Solid(choices) : "Solid" : 0 : "Set whether or not these brushes should collide with other entities." =
 	[
 		0: "Solid"
@@ -995,7 +995,7 @@
 
 	// Inputs
 	input	StartEffect(float) : "Start the effect with the duration in seconds as the passed parameter."
-	input   StopEffect(float) : "Stop the effect."
+	input StopEffect(float) : "Stop the effect."
 ]
 
 @PointClass base(Targetname) = env_texturetoggle : 
@@ -1260,9 +1260,9 @@
 	"Note: This entity is non-functional in Counter-Strike: Source. In CS:S, use func_ladder instead."
 [
 	target(target_destination) : "Other" : : "A ladder goes between any two func_ladderendpoints pointing at each other."
-	// TODO:  Allow individual ladder end points to be enabled, disabled
-	// TODO:  Allow ladder to specify movement speed or a speed scale while on ladder
-	// TODO:  Allow specifying radius within with you must be in order to +use to get on the ladder
+	// TODO: Allow individual ladder end points to be enabled, disabled
+	// TODO: Allow ladder to specify movement speed or a speed scale while on ladder
+	// TODO: Allow specifying radius within with you must be in order to +use to get on the ladder
 ]
 
 @PointClass base(Parentname) size( -16 -16 0, 16 16 4 ) color(255 128 255)= info_ladder_dismount : 
@@ -1274,12 +1274,12 @@
 @SolidClass base(Targetname) color(0 128 255) = func_areaportalwindow : 
 	"An entity that can be used to optimize the visibility in a map. If you seal off an area with them, when the viewer moves the specified distance away from them, they will go opaque and the parts inside the area will not be drawn. The 'target' brush model should enclose the func_areaportal window so no parts of it are culled by the window. If you use the optional foreground brush model, then it should enclose the 'target' brush model."
 [
-	target(target_destination)  : "Rendered Window" : : "The name of a brush model to render as the window."
+	target(target_destination) : "Rendered Window" : : "The name of a brush model to render as the window."
 	FadeStartDist(integer) : "Fade Start Distance" : 128 : "When the viewer is closer than this distance, the alpha is set to 'TranslucencyLimit'."
-	FadeDist(integer) : "Fade End Distance"   : 512 : "When the viewer is at this distance, the portal becomes solid and closes off."
-	TranslucencyLimit(string) : "Translucency limit"  : "0.2" : "This value limits the translucency of the bmodel and prevents it from becoming invisible when the viewer is right on top of it."
-	BackgroundBModel(string) : "Foreground bmodel"   : "" : "(Optional) brush model that is drawn after the fading brush model. This model should have alpha in its textures so you can see through it."
-	PortalVersion(integer)	readonly	: "Portal Version"      : 1  : "(Don't change). Differentiates between shipping HL2 maps and maps using new engine features."
+	FadeDist(integer) : "Fade End Distance" : 512 : "When the viewer is at this distance, the portal becomes solid and closes off."
+	TranslucencyLimit(string) : "Translucency limit" : "0.2" : "This value limits the translucency of the bmodel and prevents it from becoming invisible when the viewer is right on top of it."
+	BackgroundBModel(string) : "Foreground bmodel" : "" : "(Optional) brush model that is drawn after the fading brush model. This model should have alpha in its textures so you can see through it."
+	PortalVersion(integer) readonly : "Portal Version" : 1 : "(Don't change). Differentiates between shipping HL2 maps and maps using new engine features."
 	
 	// Inputs
 	input SetFadeStartDistance(integer) : "Set fade start distance."
@@ -1441,7 +1441,7 @@
 
 	spawnflags(Flags) = 
 	[
-		1 : "Repeatable"  : 0
+		1 : "Repeatable" : 0
 	]
 
 	// Inputs
@@ -1547,7 +1547,7 @@
 
 	spawnflags(Flags) = 
 	[
-		1 : "Start On"  : 0
+		1 : "Start On" : 0
 		2 : "Toggle" : 0
 	]
 ]
@@ -1595,13 +1595,13 @@
 	current(integer) : "Speed of Current" : 0 : "The speed of the water current in the volume, used to move the bubbles."
 	spawnflags(Flags) = 
 	[
-		1 : "Start Off"  : 0
+		1 : "Start Off" : 0
 	]
 
 	// Inputs
 	input Activate(void) : "Activates the bubbles."
-	input Deactivate(void) :  "Deactivates the bubbles."
-	input Toggle(void) :  "Toggles the bubbles on and off."
+	input Deactivate(void) : "Deactivates the bubbles."
+	input Toggle(void) : "Toggles the bubbles on and off."
 	input SetDensity(integer) : "Sets the bubble density."
 	input SetFrequency(integer) : "Sets bubble emission rate in bubbles per second."
 	input SetCurrent(integer) : "Sets current speed in inches per second."
@@ -1645,7 +1645,7 @@
 	input Explode(void) : "Triggers the explosion."
 ]
 
-@PointClass base(Targetname, Parentname) color(200 50 0)  size(-8 -8 -8, 8 8 8) = env_smoketrail : 
+@PointClass base(Targetname, Parentname) color(200 50 0) size(-8 -8 -8, 8 8 8) = env_smoketrail : 
 	"An entity that creates a smoke trail." 
 [
 	opacity(float) : "Sprite Opacity" : "0.75" : "Opacity of the sprites (range from 0 - 1)."
@@ -1712,7 +1712,7 @@
 ]
 
 
-//  This has been disabled until it can be reimplemented, destroyed, or renamed - jdw
+//This has been disabled until it can be reimplemented, destroyed, or renamed - jdw
 //@PointClass base(Targetname, Parentname) size(-4 -4 -4, 4 4 4) = env_splash : 
 //	"Can be used to create either a spash effect or a stream of falling or spurting liquid." +
 //	"Will create a splash decal on the collided surface the same color as the liquid"
@@ -1966,7 +1966,7 @@
 	[
 		0 : "Small Radius"
 		1 : "Medium Radius"
-		2 : "Large  Radius"
+		2 : "Large Radius"
 		3 : "Play Everywhere"
 	]
 	
@@ -1990,7 +1990,7 @@
 	// Inputs
 	input ShowHudHint(void) : "Shows the hint message."
 	input HideHudHint(void) : "Hides the hint message."
-    input SwitchHudMessage(string) : "Switches the hint message if active."
+	input SwitchHudMessage(string) : "Switches the hint message if active."
 ]
 
 @PointClass sphere() iconsprite("editor/env_shake.vmt") base(Targetname, Parentname) = env_shake : 
@@ -2057,7 +2057,7 @@
 		1: "Wood"
 		2: "Metal"
 		3: "Flesh"
-		4: "Concrete"  
+		4: "Concrete"
 	]
 	simulation(choices) :"Simulate" : 0 =
 	[
@@ -2088,7 +2088,7 @@
 @PointClass base(gibshooterbase, RenderFields) iconsprite("editor/env_shooter.vmt") = env_rotorshooter : 
 	"An entity that creates gibs when it's within the influence of a helicopter's rotor wash."
 [
-	shootmodel(studio) : "Model" : "" : "Thing to shoot out.  Can be a .mdl or a .vmt."
+	shootmodel(studio) : "Model" : "" : "Thing to shoot out. Can be a .mdl or a .vmt."
 	shootsounds(choices) :"Material Sound" : -1 =
 	[
 		-1: "None"
@@ -2096,7 +2096,7 @@
 		1: "Wood"
 		2: "Metal"
 		3: "Flesh"
-		4: "Concrete"  
+		4: "Concrete"
 	]
 	simulation(choices) :"Simulate" : 0 =
 	[
@@ -2205,7 +2205,7 @@
 		2: "Play Once" : 0
 	]
 
-	GlowProxySize(float) : "Size of Glow Proxy Geometry." : "2.0" : "Size of the glow to be rendered for visibility testing. Must be larger than the distance from the sprite center to empty space.  So if this glow is inside geometry (like a light bulb), set this value to be bigger than the bulb's radius. Any time a sphere of this radius would be visible (poking through any nearby geometry), the glow will be rendered."
+	GlowProxySize(float) : "Size of Glow Proxy Geometry." : "2.0" : "Size of the glow to be rendered for visibility testing. Must be larger than the distance from the sprite center to empty space. So if this glow is inside geometry (like a light bulb), set this value to be bigger than the bulb's radius. Any time a sphere of this radius would be visible (poking through any nearby geometry), the glow will be rendered."
 
 	HDRColorScale(float) : "HDR color scale." : "1.0" : "float value to multiply sprite color by when running in HDR mode."
 	
@@ -2219,8 +2219,7 @@
 	input ToggleSprite(void) : "Toggle the sprite between hidden and shown."
 ]
 
-@PointClass base(env_sprite, Angles) = env_sprite_oriented :
-    "A env_sprite that allows orientation."
+@PointClass base(env_sprite, Angles) = env_sprite_oriented : "A env_sprite that allows orientation."
 [
 	framerate(string) : "Framerate" : "10.0" : "Rate at which the sprite should animate, if at all."
 	model(sprite) : "Sprite Name" : "sprites/glow01.spr" : "Material of the sprite to be drawn."
@@ -2231,7 +2230,7 @@
 		2: "Play Once" : 0
 	]
 
-	GlowProxySize(float) : "Size of Glow Proxy Geometry." : "2.0" : "Size of the glow to be rendered for visibility testing. Must be larger than the distance from the sprite center to empty space.  So if this glow is inside geometry (like a light bulb), set this value to be bigger than the bulb's radius. Any time a sphere of this radius would be visible (poking through any nearby geometry), the glow will be rendered."
+	GlowProxySize(float) : "Size of Glow Proxy Geometry." : "2.0" : "Size of the glow to be rendered for visibility testing. Must be larger than the distance from the sprite center to empty space. So if this glow is inside geometry (like a light bulb), set this value to be bigger than the bulb's radius. Any time a sphere of this radius would be visible (poking through any nearby geometry), the glow will be rendered."
 
 	HDRColorScale(float) : "HDR color scale." : "1.0" : "float value to multiply sprite color by when running in HDR mode."
 	
@@ -2321,8 +2320,8 @@
 	"An entity used to limit the number of a particular weapon type in the world. Useful in places where NPCs are spawning rapidly, dying, and dropping weapons." 
 [
 	weaponname(string) : "Weapon Classname" : "" : "Classname of the weapon type to limit."
-	maxpieces(integer) : "Max Allowed in Level"	: 0 : "The maximum amount of the specified weapon type allowed in the world."
-	ammomod(float)	   : "Ammo modifier" : 1 : 	"Modifier for ammount of ammo dropped by a weapon."
+	maxpieces(integer) : "Max Allowed in Level" : 0 : "The maximum amount of the specified weapon type allowed in the world."
+	ammomod(float) : "Ammo modifier" : 1 : "Modifier for ammount of ammo dropped by a weapon."
 
 	// Inputs
 	input SetAmmoModifier(float): "Adjust the ammo modifier."
@@ -2443,8 +2442,8 @@
 [
 	spawnflags(Flags) = 
 	[
-		1 :  "Start On" : 1
-		2 :  "No Dynamic Light" : 1
+		1 : "Start On" : 1
+		2 : "No Dynamic Light" : 1
 	]
 
 	spotlightlength(integer) : "Spotlight Length" : 500 : "Length of the spotlight beam."
@@ -2594,7 +2593,7 @@
 ]
 
 // A decal to be applied to a prop or the world using specified origin and orientation and radius, uses an orientation angle and a radius to determine
-//  ray to cast for projection
+// ray to cast for projection
 @PointClass base(Angles,Targetname) decal() studio("models/editor/axis_helper_thick.mdl") = info_projecteddecal : 
 	"An entity that projects a decal onto the world (or props). If the decal has no target name, it will immediately apply itself when "+
 	"the level is loaded. If it has a name specified, it won't apply until it receives the 'Activate' input."
@@ -2661,8 +2660,7 @@
 	DebugDraw(integer) : "Show Debug" : 0 : "Boolean value (0 or 1)."
 ]
 
-@PointClass size(-4 -4 -4, 4 4 4) color(0 180 0) = info_intermission : 
-    "An entity that defines an intermission spot where dead players will float until they respawn."
+@PointClass size(-4 -4 -4, 4 4 4) color(0 180 0) = info_intermission : "An entity that defines an intermission spot where dead players will float until they respawn."
 [
 	target(target_destination) : "Entity to look at" : : "Name of entity that dead players will face while in intermission at this spot."
 ]
@@ -2677,7 +2675,7 @@
 [
 ]
 
-@PointClass base(Targetname, Parentname, Angles) iconsprite("editor/info_target.vmt")  = info_target : 
+@PointClass base(Targetname, Parentname, Angles) iconsprite("editor/info_target.vmt") = info_target : 
 	"An entity that does nothing. Very useful as a positioning entity for other entities to refer to (i.e. the endpoint of an env_beam)"
 [
 	spawnflags( Flags ) =
@@ -2795,7 +2793,7 @@
 	]
 ]
 
-@PointClass base(Targetname) iconsprite("editor/info_lighting.vmt")  = info_lighting : 
+@PointClass base(Targetname) iconsprite("editor/info_lighting.vmt") = info_lighting : 
 	"An entity that can be used to change the lighting origin of a prop_static. Set the prop_static's Lighting Origin to point at this entity to "+
 	"make the prop_static light as if it was at the info_lighting's origin. Good for prop_static entities that are embedded in world geometry (like rocks/windows/etc)."
 [
@@ -2849,11 +2847,11 @@
 	output OnNPCStoppedUsing(string) : "Fired when an NPC has stopped using this node. Passes along the NPC."
 ]
 
-@PointClass base(Node) studio("models/editor/air_node.mdl") color(232 171 8)  = info_node_air :
+@PointClass base(Node) studio("models/editor/air_node.mdl") color(232 171 8) = info_node_air :
 	"A navigation node for flying NPCs. Air navigation nodes are baked into the nodegraph so that NPCs can move " +
 	"to them. Air nodes do not fall to the ground when they spawn."
 [
-	nodeheight(integer) : "NodeHeight"  : 0
+	nodeheight(integer) : "NodeHeight" : 0
 ]
 
 @PointClass base(Angles, Targetname, HintNode) studio("models/editor/air_node_hint.mdl") color(232 171 8) line(255 255 255, nodeid, TargetNode) = info_node_air_hint :
@@ -2863,7 +2861,7 @@
 	"the NPC should face to perform the hint behavior."
 
 [
-	nodeheight(integer) : "NodeHeight"  : 0
+	nodeheight(integer) : "NodeHeight" : 0
 ]
 
 @PointClass base(Targetname, Angles, HintNode) studio("models/editor/node_hint.mdl") color(255 255 255) = info_hint :
@@ -2877,8 +2875,8 @@
 	"to turn on and off the connection. This could be used to create or destroy a connection in the nodegraph because of some event in your map " +
 	"(a bridge being created/destroyed, etc)."
 [
-    StartNode(node_dest) : "Start node ID" : : "The node ID of one end of the node connection."
-    EndNode(node_dest) : "End node ID" : : "The node ID of one end of the node connection."
+	StartNode(node_dest) : "Start node ID" : : "The node ID of one end of the node connection."
+	EndNode(node_dest) : "End node ID" : : "The node ID of one end of the node connection."
 	initialstate(choices) : "Initial State" : 1 =
 	[
 		0 : "Off"
@@ -3013,7 +3011,7 @@
 	pitch(integer) : "Pitch" : -90
 	distance(float) : "Maximum distance" : 120 : "This is the distance that light is allowed to cast, in inches."
 	spotlight_radius(float) : "Spotlight end radius" : 80 : "This is the radius of the light, in inches, at the object that it is hitting."
-    style(Choices) : "Appearance" : 0 =
+	style(Choices) : "Appearance" : 0 =
 	[
 		0 : "Normal"
 		10: "Fluorescent flicker"
@@ -4275,7 +4273,7 @@
 	IgnoredName13(target_destination) : "IgnoredName 13" :  "" : "Do not send this entity's information back to hammer during hammer_update_safe_entities"
 	IgnoredName14(target_destination) : "IgnoredName 14" :  "" : "Do not send this entity's information back to hammer during hammer_update_safe_entities"
 	IgnoredName15(target_destination) : "IgnoredName 15" :  "" : "Do not send this entity's information back to hammer during hammer_update_safe_entities"
-	IgnoredName16(target_destination) : "IgnoredName 16" : ""  : "Do not send this entity's information back to hammer during hammer_update_safe_entities"
+	IgnoredName16(target_destination) : "IgnoredName 16" : "" : "Do not send this entity's information back to hammer during hammer_update_safe_entities"
 ]
 
 
@@ -4307,7 +4305,7 @@
 	ListenFilter(filterclass) : "Listen Filter" : "" : "The name of an filter entity which specifies the only entities the microphone can hear. Sounds emitted by other entities will not be heard."
 	speaker_dsp_preset(choices) : "Speaker DSP Preset" : 0 : "Only useful in Speaker mode. If specified, when the microphone is enabled, it'll set the global dsp_speaker preset to this value. Sounds played back through speakers will then be affected by the selected DSP." =
 	[
- 		0 : "Use Default"
+		0 : "Use Default"
 		50 : "1 NO EFFECT"
 		51 : "2 (DUPLICATE OF 1)"
 		52 : "3 (DUPLICATE OF 1)"
@@ -4525,7 +4523,7 @@
 		2 : "AutoSpawn: Wait for entity destruction" : 0
 		4 : "AutoSpawn: Even if the player is looking" : 0
 		8 : "ForceSpawn: Only if there's room" : 0
-	  	16 : "ForceSpawn: Only if the player isn't looking" : 0
+		16 : "ForceSpawn: Only if the player isn't looking" : 0
 	]
 
 	EntityTemplate(target_destination) : "Point_template To Spawn" : "" : "Name of the point_template to spawn here."
@@ -4658,7 +4656,7 @@
 		"class name matches the given string will pass the filter. If the filter mode is Disallow, "+
 		"all entities EXCEPT those whose class name matches the given string will pass the filter."
 		
-	filter_radius(float) : "Radius" : 0 : "Radius by which to test the proximity of the enemy.  If the filter mode is Allow, only entities whose "+
+	filter_radius(float) : "Radius" : 0 : "Radius by which to test the proximity of the enemy. If the filter mode is Allow, only entities whose "+
 		"distance is equal to or closer than the radius will pass the filter. If the filter mode is Disallow, "+
 		"all entities outside the radius will pass the filter."
 
@@ -4854,8 +4852,8 @@
 	_minlight(string) : "Minimum Light Level" : : "The minimum level of ambient light that hits this brush."
 	spawnflags(flags) =
 	[
-		4096  : "Start Asleep" : 0
-		8192  : "Ignore +USE for Pickup" : 0
+		4096 : "Start Asleep" : 0
+		8192 : "Ignore +USE for Pickup" : 0
 		16384 : "Debris - Don't collide with the player or other debris" : 0
 		32768 : "Motion Disabled" : 0
 		65536 : "Use Preferred Carry Angles" : 0
@@ -4878,7 +4876,7 @@
 	overridescript(string) : "Override Parameters" : "" : "A list of physics key/value pairs that are usually in a physics prop .qc file. Format is 'key,value,key,value,etc'."
 	damagetoenablemotion(integer) : "Health Level to Override Motion" : 0 : "If specified, this object will start motion disabled. Once its health has dropped below this specified amount, it will enable motion."
 	forcetoenablemotion(float) : "Physics Impact Force to Override Motion" : 0 : "If specified, this object will start motion disabled. Any impact that imparts a force greater than this value on the physbox will enable motion."
-	health(integer) : "Strength" : 0 : "Number of points of damage to take before breaking.  0 means don't break."
+	health(integer) : "Strength" : 0 : "Number of points of damage to take before breaking. 0 means don't break."
 	preferredcarryangles(vector) : "Preferred Player-carry Angles" : "0 0 0" : "If the 'Use Preferred Carry Angles' spawnflag is set, this angle is the angle which the object should orient to when the player picks it up, with the physgun or +USE."
 	notsolid(choices) : "Not solid to world" : 0 =
 	[
@@ -4925,7 +4923,7 @@
 	
 	// Inputs
 	input Break(void) : "Force the constraint to break."
-	input TurnOn(void) : "Enable the constraint.  Do this when the objects don't exist when the constraint spawns - or when you have deactivated the constraint.  Broken constraints can NOT be turned on.  They have been deleted."
+	input TurnOn(void) : "Enable the constraint. Do this when the objects don't exist when the constraint spawns - or when you have deactivated the constraint. Broken constraints can NOT be turned on. They have been deleted."
 	input TurnOff(void) : "Disable this constraint." 
 
 	// Outputs
@@ -4936,7 +4934,7 @@
 	"An entity used to manage a group of interacting constraints and keep them stable. " +
 	"All constraints on a set of entities should be placed in the same system, or they will fight each other during simulation."
 [
-	additionaliterations(integer) : "Additional System Iterations" : 0 : "Adding iterations makes the interactions among constraints in a system tighter.  It will not compensate for errors due to collision, but will help in cases where objects of disparate mass are constrained to each other."
+	additionaliterations(integer) : "Additional System Iterations" : 0 : "Adding iterations makes the interactions among constraints in a system tighter. It will not compensate for errors due to collision, but will help in cases where objects of disparate mass are constrained to each other."
 ]
 
 @PointClass base(Targetname,Angles) = phys_keepupright : "A controller that tries to keep an entity facing a particular direction."
@@ -4995,7 +4993,7 @@
 @PointClass size(-4 -4 -4, 4 4 4) = info_mass_center :
 	"An entity that overrides the mass center of the target physics prop, or func_physbox, by moving it to the info_mass_center's location."
 [
-	target(target_destination) : "Target object" : ""  : "The entity whose mass center will be overridden."
+	target(target_destination) : "Target object" : "" : "The entity whose mass center will be overridden."
 ]
 
 @PointClass halfgridsnap base(Targetname) = phys_spring : 
@@ -5015,8 +5013,8 @@
 
 	springaxis(vecline) : "Spring Axis" : "" : "Use the helper. Drag it out to match the virtual spring."
 	length(string) : "Spring Length" : "0" : "How long the spring would be if it was at rest (nothing hanging on it or attached). 0 means the length of the brush."
-	constant(string) : "Spring Constant" : "50" : "Stiffness of the spring.  The larger the number the less the spring will stretch."
-	damping(string) : "Damping Constant" : "2.0" : "How much energy the spring loses.  The larger the number, the less bouncy the spring."
+	constant(string) : "Spring Constant" : "50" : "Stiffness of the spring. The larger the number the less the spring will stretch."
+	damping(string) : "Damping Constant" : "2.0" : "How much energy the spring loses. The larger the number, the less bouncy the spring."
 	relativedamping(string) : "Relative Damping Constant" : "0.1" : "The amount of energy the spring loses proportional to the relative velocity of the two objects the spring is attached to."
 	// UNDONE: add max tension and what event to fire when it breaks
 	breaklength(string) : "Break on Length" : "0" : "If the spring's length ever exceeds this length, the spring breaks."
@@ -5404,7 +5402,7 @@
 	"A prop that can be placed in hierarchy and can play animations. It can also be configured to break when it takes enough damage.\n"+
 	"prop_dynamic_override is a prototyping entity only. It will allow the use of models designed to be used as prop_physics."
 [
-	health(integer) : "Health" : 0 : "Number of points of damage to take before breaking.  0 means don't break."	
+	health(integer) : "Health" : 0 : "Number of points of damage to take before breaking. 0 means don't break."	
 ]
 
 @BaseClass base(Targetname, Global, Angles, Studiomodel, BreakableProp, DXLevelChoice, BaseFadeProp) = BasePropPhysics
@@ -5477,7 +5475,7 @@
 	"A prop that physically simulates as a single rigid body. It can be constrained to other physics objects using hinges "+
 	"or other constraints. It can also be configured to break when it takes enough damage. Health can be overridden on this version."
 [
-	health(integer) : "Health" : 0 : "Number of points of damage to take before breaking.  0 means don't break."
+	health(integer) : "Health" : 0 : "Number of points of damage to take before breaking. 0 means don't break."
 	
 	// Inputs
 	input Ignite(void) : "Ignite, burst into flames."
@@ -5566,7 +5564,7 @@
 		1 : "Open"
 	]
 
-	PortalVersion(integer)	readonly	: "Portal Version"      : 1  : "(Don't change). Differentiates between shipping HL2 maps and maps using new engine features."
+	PortalVersion(integer) readonly : "Portal Version" : 1 : "(Don't change). Differentiates between shipping HL2 maps and maps using new engine features."
 
 	// Inputs
 	input Open(void) : "Open the portal. When the portal is open is can be seen through."
@@ -5600,8 +5598,8 @@
 ]
 
 @SolidClass quadbounds() base(BreakableBrush, RenderFields, Shadow) = func_breakable_surf : 
-	"A breakable surface, for partially breakable glass / tile / etc.  All faces but the desired visible one must be marked as NODRAW and that" +
-	"face must be 4 sided.  The material applied to the visible face must be set up to be breakable." 
+	"A breakable surface, for partially breakable glass / tile / etc. All faces but the desired visible one must be marked as NODRAW and that" +
+	"face must be 4 sided. The material applied to the visible face must be set up to be breakable." 
 [
 	spawnflags(Flags) = 
 	[
@@ -5645,7 +5643,7 @@
 ]
 
 @SolidClass color(180 180 0) = func_viscluster : 
-	"Any leaves touching this brush will have their vis merged together into a single cluster.  Use multiple func_viscluster entities to reduce vis time"
+	"Any leaves touching this brush will have their vis merged together into a single cluster. Use multiple func_viscluster entities to reduce vis time"
 [
 ]
 
@@ -5678,7 +5676,7 @@
 	]
 
 	// Inputs
-	input  Toggle(void) : "Toggle the brush on/off. When off, the brush will be non-solid and invisible." 
+	input Toggle(void) : "Toggle the brush on/off. When off, the brush will be non-solid and invisible." 
 ]
 
 
@@ -5926,10 +5924,10 @@
 [
 	spawnflags(Flags) =
 	[
-		1:  "Disabled" : 0
-		2:  "Fire once" : 0
-		4:  "Branch Reverse" : 0
-		8:  "Disable train" : 0
+		1: "Disabled" : 0
+		2: "Fire once" : 0
+		4: "Branch Reverse" : 0
+		8: "Disable train" : 0
 		16: "Teleport to THIS path track" : 0
 		32: "Part of an uphill path" : 0
 		64: "Part of a downhill path" : 0
@@ -5959,7 +5957,7 @@
 
 	// Outputs
 	output OnPass(void) : "Fired when any entity following this path passes this path_track node."
-	output OnTeleport(void)  : "Fired when any entity following this path teleports directly to this path_track node."
+	output OnTeleport(void) : "Fired when any entity following this path teleports directly to this path_track node."
 ]
 
 
@@ -5998,7 +5996,7 @@
 	"An entity that triggers a level change.\n" +
 	"Place an info_landmark in both maps that marks the 'same' location in each map.\n"+
 	"TIPS & TRICKS: To fire events in the next level, use the OnLevelChange output to turn on "+
-	"an env_global in the current level.  Create a logic_auto in the next level that checks "+
+	"an env_global in the current level. Create a logic_auto in the next level that checks "+
 	"for the state set by the env_global.\n\n"+
 	"To control which entities go through the level transition, create one or more trigger_transitions and "+
 	"give them the same name as the landmark. Any entities within the trigger_transition(s) will go to the next map."
@@ -6170,7 +6168,7 @@
 @SolidClass base(Trigger, Angles) = trigger_wind : 
 	"A trigger volume that pushes physics objects that touch it."
 [
-	Speed(integer) : "Speed" : 200   : "The baseline for how hard the wind blows."
+	Speed(integer) : "Speed" : 200 : "The baseline for how hard the wind blows."
 	SpeedNoise(integer) : "Speed Noise" : 0 : "Noise added to wind speed +/-"
 	DirectionNoise(integer) : "Direction Noise" : 10 : "Noise added to wind direction."
 	HoldTime(integer) : "Hold Time" : 0 : "Baseline for how long to wait before changing wind."
@@ -6184,9 +6182,9 @@
 	"A trigger volume that can be told to push all physics objects that are inside of it in the direction specified by this trigger's angles.\n"+
 	"Also outputs the force at the time of impact for anyone else that wants to use it."
 [
-	Magnitude(float) : "Magnitude" : 200    : "The strength of the impact. Negative values reverse the direction."
+	Magnitude(float) : "Magnitude" : 200 : "The strength of the impact. Negative values reverse the direction."
 	noise(float) : "Noise" : "0.1" : "The amount of directional noise (0-1). 0 = no noise, 1 = random direction."
-	viewkick(float) : "Viewkick" : "0.05" : "The amount to kick player's view if the player is in the trigger.  Proportional to magnitude (0-1)."
+	viewkick(float) : "Viewkick" : "0.05" : "The amount to kick player's view if the player is in the trigger. Proportional to magnitude (0-1)."
 
 	// Inputs
 	input Impact(float) : "Fire the impact, pushing all entities within the volume."
@@ -6347,7 +6345,7 @@
 	input ShowLogo(void) : "Show the HL2 logo."
 	
 	// Outputs
-	output OnCreditsDone(void)  : "Fired when the credits having finished rolling."
+	output OnCreditsDone(void) : "Fired when the credits having finished rolling."
 ]
 
 @PointClass base(Parentname, Targetname) size(-8 -8 -8, 8 8 8 ) = material_modify_control : 
@@ -6367,7 +6365,7 @@
 //-------------------------------------------------------------------------
 // Devshot camera
 //	- Used by the -makedevshots system, which automatically takes screenshots
-//	  at the position of every devshot camera in the level.
+//	at the position of every devshot camera in the level.
 //-------------------------------------------------------------------------
 
 @PointClass base(Angles) studioprop("models/editor/camera.mdl") = point_devshot_camera : 
@@ -6431,7 +6429,7 @@
 [
 	spawnflags(flags) =
 	[
-		1  : "Enabled"				: 1
+		1 : "Enabled"				: 1
 	]
 
 	target(target_destination)	: "target" : : "target"	
@@ -6500,51 +6498,51 @@
 
 @PointClass base(Origin, Targetname, EnableDisable) size(-2 -2 -2, 2 2 2) color(0 255 0) = point_gamestats_counter : "Generic game statistics counter."
 [
-	Name(string) 		: "Name of statistic counter"
+	Name(string) : "Name of statistic counter"
 
-	input SetName(string)  : "Changes name of statistic counter"
+	input SetName(string) : "Changes name of statistic counter"
 	input Increment(float) : "Increments named statistic counter by specified value"
 ]
 
 @PointClass base(Angles) size( -8 -8 -8, 8 8 8 ) instance() = func_instance : 
-	"An entity for placing an instance of a map file.  You may translate and rotate this entity. " +
-	"You can use the replace keys to do parameter changes on the instance contents.  In a $ at the " +
-	"beginning of a variable name.  Then just use the $variable name inside of the instance contents on any "+
+	"An entity for placing an instance of a map file. You may translate and rotate this entity. " +
+	"You can use the replace keys to do parameter changes on the instance contents. In a $ at the " +
+	"beginning of a variable name. Then just use the $variable name inside of the instance contents on any "+
 	"value portion of a key/value pair."
 [
 	targetname(target_source) : "Fix Up Name" : : "The name that all entities will be fixed up with based upon the fix up style."
 	file(instance_file) : "VMF Filename" : : "This indicates a map file relative to the map's file name"
-	fixup_style(Choices) : "Entity Name Fix Up" : 0 : "Fixup style for instanced entity names.  Uses the 'Fix Up Name' field." =
+	fixup_style(Choices) : "Entity Name Fix Up" : 0 : "Fixup style for instanced entity names. Uses the 'Fix Up Name' field." =
 	[
 		0 : "Prefix"
 		1 : "Postfix"
 		2 : "None"
 	]
 
-	replace01(instance_variable) : "Replace" : : "This is a replacement parameter.  It goes in the form of $variable value.  All entities inside of that instance that have $variable somewhere will be replaced with the value contents.  Example: $color 255 0 0"
-	replace02(instance_variable) : "Replace" : : "This is a replacement parameter.  It goes in the form of $variable value.  All entities inside of that instance that have $variable somewhere will be replaced with the value contents.  Example: $color 255 0 0"
-	replace03(instance_variable) : "Replace" : : "This is a replacement parameter.  It goes in the form of $variable value.  All entities inside of that instance that have $variable somewhere will be replaced with the value contents.  Example: $color 255 0 0"
-	replace04(instance_variable) : "Replace" : : "This is a replacement parameter.  It goes in the form of $variable value.  All entities inside of that instance that have $variable somewhere will be replaced with the value contents.  Example: $color 255 0 0"
-	replace05(instance_variable) : "Replace" : : "This is a replacement parameter.  It goes in the form of $variable value.  All entities inside of that instance that have $variable somewhere will be replaced with the value contents.  Example: $color 255 0 0"
-	replace06(instance_variable) : "Replace" : : "This is a replacement parameter.  It goes in the form of $variable value.  All entities inside of that instance that have $variable somewhere will be replaced with the value contents.  Example: $color 255 0 0"
-	replace07(instance_variable) : "Replace" : : "This is a replacement parameter.  It goes in the form of $variable value.  All entities inside of that instance that have $variable somewhere will be replaced with the value contents.  Example: $color 255 0 0"
-	replace08(instance_variable) : "Replace" : : "This is a replacement parameter.  It goes in the form of $variable value.  All entities inside of that instance that have $variable somewhere will be replaced with the value contents.  Example: $color 255 0 0"
-	replace09(instance_variable) : "Replace" : : "This is a replacement parameter.  It goes in the form of $variable value.  All entities inside of that instance that have $variable somewhere will be replaced with the value contents.  Example: $color 255 0 0"
-	replace10(instance_variable) : "Replace" : : "This is a replacement parameter.  It goes in the form of $variable value.  All entities inside of that instance that have $variable somewhere will be replaced with the value contents.  Example: $color 255 0 0"
+	replace01(instance_variable) : "Replace" : : "This is a replacement parameter. It goes in the form of $variable value. All entities inside of that instance that have $variable somewhere will be replaced with the value contents. Example: $color 255 0 0"
+	replace02(instance_variable) : "Replace" : : "This is a replacement parameter. It goes in the form of $variable value. All entities inside of that instance that have $variable somewhere will be replaced with the value contents. Example: $color 255 0 0"
+	replace03(instance_variable) : "Replace" : : "This is a replacement parameter. It goes in the form of $variable value. All entities inside of that instance that have $variable somewhere will be replaced with the value contents. Example: $color 255 0 0"
+	replace04(instance_variable) : "Replace" : : "This is a replacement parameter. It goes in the form of $variable value. All entities inside of that instance that have $variable somewhere will be replaced with the value contents. Example: $color 255 0 0"
+	replace05(instance_variable) : "Replace" : : "This is a replacement parameter. It goes in the form of $variable value. All entities inside of that instance that have $variable somewhere will be replaced with the value contents. Example: $color 255 0 0"
+	replace06(instance_variable) : "Replace" : : "This is a replacement parameter. It goes in the form of $variable value. All entities inside of that instance that have $variable somewhere will be replaced with the value contents. Example: $color 255 0 0"
+	replace07(instance_variable) : "Replace" : : "This is a replacement parameter. It goes in the form of $variable value. All entities inside of that instance that have $variable somewhere will be replaced with the value contents. Example: $color 255 0 0"
+	replace08(instance_variable) : "Replace" : : "This is a replacement parameter. It goes in the form of $variable value. All entities inside of that instance that have $variable somewhere will be replaced with the value contents. Example: $color 255 0 0"
+	replace09(instance_variable) : "Replace" : : "This is a replacement parameter. It goes in the form of $variable value. All entities inside of that instance that have $variable somewhere will be replaced with the value contents. Example: $color 255 0 0"
+	replace10(instance_variable) : "Replace" : : "This is a replacement parameter. It goes in the form of $variable value. All entities inside of that instance that have $variable somewhere will be replaced with the value contents. Example: $color 255 0 0"
 ]
 
 @PointClass size( -8 -8 -8, 8 8 8 ) = func_instance_parms : 
-	"Place one copy of this entity inside of an instance.  Whenever you add a $parameter for the instance, get the properties " +
-	"of this entity.  It will auto-populate it with the variables and allow you to indicate the variable type."
+	"Place one copy of this entity inside of an instance. Whenever you add a $parameter for the instance, get the properties " +
+	"of this entity. It will auto-populate it with the variables and allow you to indicate the variable type."
 [
-	parm1(instance_parm) : "Parm" : : "This is a parameter.  It goes in the form of $variable type."
-	parm2(instance_parm) : "Parm" : : "This is a parameter.  It goes in the form of $variable type."
-	parm3(instance_parm) : "Parm" : : "This is a parameter.  It goes in the form of $variable type."
-	parm4(instance_parm) : "Parm" : : "This is a parameter.  It goes in the form of $variable type."
-	parm5(instance_parm) : "Parm" : : "This is a parameter.  It goes in the form of $variable type."
-	parm6(instance_parm) : "Parm" : : "This is a parameter.  It goes in the form of $variable type."
-	parm7(instance_parm) : "Parm" : : "This is a parameter.  It goes in the form of $variable type."
-	parm8(instance_parm) : "Parm" : : "This is a parameter.  It goes in the form of $variable type."
-	parm9(instance_parm) : "Parm" : : "This is a parameter.  It goes in the form of $variable type."
-	parm10(instance_parm) : "Parm" : : "This is a parameter.  It goes in the form of $variable type."
+	parm1(instance_parm) : "Parm" : : "This is a parameter. It goes in the form of $variable type."
+	parm2(instance_parm) : "Parm" : : "This is a parameter. It goes in the form of $variable type."
+	parm3(instance_parm) : "Parm" : : "This is a parameter. It goes in the form of $variable type."
+	parm4(instance_parm) : "Parm" : : "This is a parameter. It goes in the form of $variable type."
+	parm5(instance_parm) : "Parm" : : "This is a parameter. It goes in the form of $variable type."
+	parm6(instance_parm) : "Parm" : : "This is a parameter. It goes in the form of $variable type."
+	parm7(instance_parm) : "Parm" : : "This is a parameter. It goes in the form of $variable type."
+	parm8(instance_parm) : "Parm" : : "This is a parameter. It goes in the form of $variable type."
+	parm9(instance_parm) : "Parm" : : "This is a parameter. It goes in the form of $variable type."
+	parm10(instance_parm) : "Parm" : : "This is a parameter. It goes in the form of $variable type."
 ]

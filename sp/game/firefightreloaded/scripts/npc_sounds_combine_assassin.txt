@@ -1,11 +1,9 @@
 "NPC_Assassin.Footstep"
 {
-	"channel"		"CHAN_BODY"
-	"volume"		"1.0"
-	"pitch"		"95, 105"
-
+	"channel"	"CHAN_BODY"
+	"volume"	"1.0"
+	"pitch"	"95, 105"
 	"soundlevel"	"SNDLVL_NORM"
-
 	"rndwave"
 	{
 		"wave"	"player/footsteps/tile1.wav"
@@ -15,10 +13,9 @@
 
 "NPC_Assassin.ShootPistol"
 {
-	"channel"		"CHAN_WEAPON"
-	"volume"		"0.7"
+	"channel"	"CHAN_WEAPON"
+	"volume"	"0.7"
 	"soundlevel"	"SNDLVL_GUNFIRE"
-	"pitch"			"90,120"
-
-	"wave"		"^weapons/pistol/pistol_fire3.wav"
+	"pitch"	"90,120"
+	"wave"	"^weapons/pistol/pistol_fire3.wav"
 }

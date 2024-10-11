@@ -1,11 +1,11 @@
 //basic recipe for friendly hunters
 "npc_hunter_friendly_preset1"
 {
-	"new_model"		"models/hunter_colorable.mdl"
+	"new_model"	"models/hunter_colorable.mdl"
 	"new_material_color"	"55 108 145"
 	"health_multiplier"	"2"
 	"additional_speed"	"75"
 	"volley_normal_delay"	"0.05"
-	"volley_size"		"13"
-	"persist"		"0"
+	"volley_size"	"13"
+	"persist"	"0"
 }

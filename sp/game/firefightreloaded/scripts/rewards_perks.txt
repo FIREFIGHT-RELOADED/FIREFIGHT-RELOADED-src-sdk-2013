@@ -21,7 +21,7 @@
 {
 	"1"
 	{
-		"name"		"#GameUI_PerkInfiniteAmmo"
+		"name"	"#GameUI_PerkInfiniteAmmo"
 		"item_type"	"8"
 		"min_level"	"10"
 		"perk_id"	"2"
@@ -29,7 +29,7 @@
 	}
 	"2"
 	{
-		"name"		"#GameUI_PerkInfiniteAuxPower"
+		"name"	"#GameUI_PerkInfiniteAuxPower"
 		"item_type"	"8"
 		"min_level"	"7"
 		//aux power is default perk inder perk_id
@@ -37,7 +37,7 @@
 	}
 	"3"
 	{
-		"name"		"#GameUI_PerkHealthRegeneration"
+		"name"	"#GameUI_PerkHealthRegeneration"
 		"item_type"	"8"
 		"min_level"	"1"
 		"perk_id"	"4"
@@ -45,7 +45,7 @@
 	}
 	"4"
 	{
-		"name"		"#GameUI_PerkHealthRegenerationRate"
+		"name"	"#GameUI_PerkHealthRegenerationRate"
 		"item_type"	"8"
 		"min_level"	"1"
 		"perk_id"	"3"
@@ -53,7 +53,7 @@
 	}
 	"5"
 	{
-		"name"		"#GameUI_KashBonus"
+		"name"	"#GameUI_KashBonus"
 		"item_type"	"9"
 		"min_level"	"1"
 		"perk_id"	"3"

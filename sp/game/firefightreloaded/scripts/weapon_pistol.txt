@@ -4,52 +4,52 @@ WeaponData
 {
 	// Weapon data is loaded by both the Game and Client DLLs.
 	"printname"	"#HL2_Pistol"
-	"viewmodel"			"models/weapons/v_pistol.mdl"
-	"playermodel"		"models/weapons/w_pistol.mdl"
-	"anim_prefix"		"pistol"
-	"weapon_type"		"pistol"
-	"bucket"			"1"
+	"viewmodel"	"models/weapons/v_pistol.mdl"
+	"playermodel"	"models/weapons/w_pistol.mdl"
+	"anim_prefix"	"pistol"
+	"weapon_type"	"pistol"
+	"bucket"	"1"
 	"bucket_position"	"0"
-	"bucket_360"			"0"
+	"bucket_360"	"0"
 	"bucket_position_360"	"0"
 
-	"clip_size"			"18"
-	"default_clip"			"54"
-	"primary_ammo"		"Pistol"
+	"clip_size"	"18"
+	"default_clip"	"54"
+	"primary_ammo"	"Pistol"
 	"secondary_ammo"	"None"
 
-	"weight"		"2"
-	"rumble"		"1"
-	"item_flags"		"0"
+	"weight"	"2"
+	"rumble"	"1"
+	"item_flags"	"0"
 	
-	"BuiltRightHanded" 		"1" 
-	"AllowFlipping" 		"1"
-	"MagazineStyledReloads"		"1"
-	"UseMuzzleSmoke"		"1"
-	"useironsights"		"1"
-	"LowerWeapon"			"1"
+	"BuiltRightHanded"	"1"
+	"AllowFlipping"	"1"
+	"MagazineStyledReloads"	"1"
+	"UseMuzzleSmoke"	"1"
+	"useironsights"	"1"
+	"LowerWeapon"	"1"
 	"useironsightcrosshair" "1"
 	
 	IronSight
 	{
-		"right"		"-5.5"
-		"up"		"3.1"
+		"right"	"-5.5"
+		"up"	"3.1"
 		"forward"	"-10"
-		"fov"		"-5"
+		"fov"	"-5"
 	}
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
 	{
-		"reload"		"Weapon_Pistol.Reload"
-		"reload_npc"		"Weapon_Pistol.NPC_Reload"
-		"empty"			"Weapon_Pistol.Empty"
-		"single_shot"		"Weapon_Pistol.Single"
+		"reload"	"Weapon_Pistol.Reload"
+		"reload_npc"	"Weapon_Pistol.NPC_Reload"
+		"empty"	"Weapon_Pistol.Empty"
+		"single_shot"	"Weapon_Pistol.Single"
 		"single_shot_npc"	"Weapon_Pistol.NPC_Single"
-		"special1"		"Weapon_Pistol.Special1"
-		"special2"		"Weapon_Pistol.Special2"
-		"special3"		"Weapon_FlareGun.Single"
-		"burst"			"Weapon_Pistol.Burst"
+		"special1"	"Weapon_Pistol.Special1"
+		"special2"	"Weapon_Pistol.Special2"
+		"special3"	"Weapon_FlareGun.Single"
+		"burst"	"Weapon_Pistol.Burst"
 	}
 
 	// Weapon Sprite data is loaded by the Client DLL.
@@ -57,36 +57,36 @@ WeaponData
 	{
 		"weapon"
 		{
-				"font"		"WeaponIcons"
-				"character"	"d"
+			"font"	"WeaponIcons"
+			"character"	"d"
 		}
 		"weapon_s"
-		{	
-				"font"		"WeaponIconsSelected"
-				"character"	"d"
+		{
+			"font"	"WeaponIconsSelected"
+			"character"	"d"
 		}
 		"weapon_small"
 		{
-				"font"		"WeaponIconsSmall"
-				"character"	"d"
+			"font"	"WeaponIconsSmall"
+			"character"	"d"
 		}
 		"ammo"
 		{
-				"font"		"WeaponIconsSmall"
-				"character"	"p"
+			"font"	"WeaponIconsSmall"
+			"character"	"p"
 		}
 		"crosshair"
 		{
-				"font"		"Crosshairs"
-				"character"	"Q"
+			"font"	"Crosshairs"
+			"character"	"Q"
 		}
 		"autoaim"
 		{
-				"file"		"sprites/crosshairs"
-				"x"			"0"
-				"y"			"48"
-				"width"		"24"
-				"height"	"24"
+			"file"	"sprites/crosshairs"
+			"x"	"0"
+			"y"	"48"
+			"width"	"24"
+			"height"	"24"
 		}
 	}
 }
