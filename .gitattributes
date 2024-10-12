@@ -37,6 +37,8 @@ vpc_osx binary
 *.vmt text
 *.inl text
 *.asm text
+*.qc text
+*.smd text
 
 .gitignore text
 sourcesdk_def.mak text
