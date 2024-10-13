@@ -434,6 +434,17 @@ void CAI_Enemies::MarkAsEluded( CBaseEntity *pEnemy )
 	}
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: Notes that the given enemy has eluded me
+//-----------------------------------------------------------------------------
+void CAI_Enemies::MarkAsNotEluded(CBaseEntity* pEnemy)
+{
+	AI_EnemyInfo_t* pMemory = Find(pEnemy);
+	if (pMemory)
+	{
+		pMemory->bEludedMe = false;
+	}
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Returns last known posiiton of given enemy

@@ -1048,6 +1048,7 @@ public:
 	const Vector &		GetEnemyLKP() const;
 	float				GetEnemyLastTimeSeen() const;
 	void				MarkEnemyAsEluded();
+	void				MarkEnemyAsNotEluded();
 	void				ClearEnemyMemory();
 	bool				EnemyHasEludedMe() const;
 	
@@ -1675,12 +1676,12 @@ public:
 	virtual float		CoverRadius( void ) { return 1024; } // Default cover radius
 	virtual float		GetMaxTacticalLateralMovement( void ) { return MAXTACLAT_IGNORE; }
 
-protected:
-	virtual void		OnChangeHintGroup( string_t oldGroup, string_t newGroup ) {}
-
-	CAI_Squad *			m_pSquad;		// The squad that I'm on
+public:
+	CAI_Squad* m_pSquad;		// The squad that I'm on
 	string_t			m_SquadName;
 
+protected:
+	virtual void		OnChangeHintGroup( string_t oldGroup, string_t newGroup ) {}
 	int					m_iMySquadSlot;	// this is the behaviour slot that the npc currently holds in the squad. 
 
 private:

@@ -24,9 +24,10 @@
 #include "filesystem.h"
 #include "KeyValues.h"
 #include "randnpcloader.h"
-#include "firefightreloaded/npc_combineace.h"
+#include "npc_combineace.h"
 #include "npc_citizen17.h"
-#include "firefightreloaded/mapinfo.h"
+#include "mapinfo.h"
+#include "npc_hgrunt.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -54,6 +55,15 @@ static const char *g_MetropoliceWeapons[] =
 	"weapon_pistol",
 	"weapon_stunstick",
 	"weapon_mp5"
+};
+
+static int g_HGruntWeapons[] =
+{
+	WEAPON_HGRUNT_SMG,
+	WEAPON_HGRUNT_SMG_FRAG,
+	WEAPON_HGRUNT_SMG_GL,
+	WEAPON_HGRUNT_SHOTGUN,
+	WEAPON_HGRUNT_SHOTGUN_FRAG
 };
 
 //precache list
@@ -534,6 +544,7 @@ void CNPCMakerFirefight::MakeNPC()
 
 	pent->m_spawnEquipment = NULL_STRING;
 	const char* equip = entry->GetRandomEquip();
+	int gruntEquip = HGRUNT_9MMAR;
 	if (equip == NULL)
 	{
 		if (Q_stristr(pRandomName, "npc_metropolice") ||
@@ -576,9 +587,60 @@ void CNPCMakerFirefight::MakeNPC()
 			int randomChoiceSoldier = random->RandomInt(0, nWeaponsSoldier - 1);
 			equip = g_CombineSoldierWeapons[randomChoiceSoldier];
 		}
+		else if (Q_stristr(pRandomName, "npc_hgrunt"))
+		{
+			int nWeaponsHGrunt = ARRAYSIZE(g_HGruntWeapons);
+			int randomChoiceHGrunt = random->RandomInt(0, nWeaponsHGrunt - 1);
+			gruntEquip = g_HGruntWeapons[randomChoiceHGrunt];
+		}
+	}
+	else
+	{
+		if (Q_stristr(pRandomName, "npc_hgrunt"))
+		{
+			if (Q_stristr(equip, "weapon_smg1"))
+			{
+				gruntEquip = WEAPON_HGRUNT_SMG_GL;
+			}
+			else if (Q_stristr(equip, "weapon_ar2") || Q_stristr(equip, "weapon_mp5"))
+			{
+				int shouldSpawnWithFrags = random->RandomInt(0, 5);
+				if (shouldSpawnWithFrags == 5)
+				{
+					gruntEquip = WEAPON_HGRUNT_SMG_FRAG;
+				}
+				else
+				{
+					gruntEquip = WEAPON_HGRUNT_SMG;
+				}
+			}
+			else if (Q_stristr(equip, "weapon_shotgun"))
+			{
+				int shouldSpawnWithFrags = random->RandomInt(0, 5);
+				if (shouldSpawnWithFrags == 5)
+				{
+					gruntEquip = WEAPON_HGRUNT_SHOTGUN_FRAG;
+				}
+				else
+				{
+					gruntEquip = WEAPON_HGRUNT_SHOTGUN;
+				}
+			}
+		}
 	}
 
-	pent->m_spawnEquipment = MAKE_STRING(equip);
+	if (Q_stristr(pRandomName, "npc_hgrunt"))
+	{
+		CHGrunt *pGrunt = dynamic_cast<CHGrunt*>(pent);
+		if (pGrunt)
+		{
+			pGrunt->m_iWeapons = gruntEquip;
+		}
+	}
+	else
+	{
+		pent->m_spawnEquipment = MAKE_STRING(equip);
+	}
 
 	if (Q_stristr(pRandomName, "npc_citizen"))
 	{
@@ -592,6 +654,14 @@ void CNPCMakerFirefight::MakeNPC()
 	{
 		if (g_pGameRules->GetSkillLevel() > SKILL_HARD)
 			pent->AddSpawnFlags(SF_CSCANNER_STRIDER_SCOUT);
+	}
+	else if (Q_stristr(pRandomName, "npc_hgrunt"))
+	{
+		int shouldSpawnAsLeader = random->RandomInt(0, 3);
+		if (shouldSpawnAsLeader == 3)
+		{
+			pent->AddSpawnFlags(SF_GRUNT_LEADER);
+		}
 	}
 
 	if (entry->npcAttributePreset != 0 )

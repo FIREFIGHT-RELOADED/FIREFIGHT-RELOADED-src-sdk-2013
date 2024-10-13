@@ -88,6 +88,7 @@ public:
 	float			TimeAtFirstHand( CBaseEntity *pEnemy );
 	
 	void			MarkAsEluded( CBaseEntity *enemy );						// Don't know where he is (whole squad)
+	void			MarkAsNotEluded(CBaseEntity* enemy);						// Don't know where he is (whole squad)
 	bool			HasEludedMe( CBaseEntity *pEnemy );
 
 	void			SetTimeValidEnemy( CBaseEntity *pEnemy, float flTime );

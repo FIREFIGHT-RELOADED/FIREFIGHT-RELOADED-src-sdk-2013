@@ -10485,6 +10485,11 @@ void CAI_BaseNPC::MarkEnemyAsEluded()
 	GetEnemies()->MarkAsEluded( GetEnemy() );
 }
 
+void CAI_BaseNPC::MarkEnemyAsNotEluded()
+{
+	GetEnemies()->MarkAsNotEluded(GetEnemy());
+}
+
 void CAI_BaseNPC::ClearEnemyMemory()
 {
 	GetEnemies()->ClearMemory( GetEnemy() );

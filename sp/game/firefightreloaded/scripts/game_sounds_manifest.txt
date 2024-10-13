@@ -125,6 +125,7 @@ game_sounds_manifest
 	"precache_file"		"scripts/npc_sounds_agrunt.txt"
 	"precache_file"		"scripts/npc_sounds_controller.txt"
 	"precache_file"		"scripts/npc_sounds_ministrider.txt"
+	"precache_file"		"scripts/npc_sounds_hgrunt.txt"
 	//Player Voice
 	"precache_file"		"scripts/game_sounds_player_voice.txt"
 	"precache_file"		"scripts/game_sounds_gore.txt"

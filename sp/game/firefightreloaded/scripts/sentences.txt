@@ -1480,129 +1480,129 @@ METROPOLICE_HIT_BY_PHYSOBJECT4 on1 malcompliant10107my1020 off1 {Len 1.5}
 //HECU
 
 // HUMAN GRUNTS
-HG_GREN0 hgrunt/clik(p120) grenade! clik {Len 1.17}
-HG_GREN1 hgrunt/(t30) clik take!(e75) cover!(s5) clik {Len 0.95}
-HG_GREN2 hgrunt/clik clik oh! shit! clik {Len 1.59}
-HG_GREN3 hgrunt/(p110 t40) clik(p120) get!(e78) down!(t30) clik {Len 0.78}
-HG_GREN4 hgrunt/clik(p110) (t40) of!(e75) god! clik(p110) {Len 0.82}
-HG_GREN5 hgrunt/clik no! clik {Len 0.91}
-HG_GREN6 hgrunt/clik move! clik(p120) {Len 1.04}
+HG_GREN0 npc/hgrunt/clik(p120) grenade! clik {Len 1.17}
+HG_GREN1 npc/hgrunt/(t30) clik take!(e75) cover!(s5) clik {Len 0.95}
+HG_GREN2 npc/hgrunt/clik clik oh! shit! clik {Len 1.59}
+HG_GREN3 npc/hgrunt/(p110 t40) clik(p120) get!(e78) down!(t30) clik {Len 0.78}
+HG_GREN4 npc/hgrunt/clik(p110) (t40) of!(e75) god! clik(p110) {Len 0.82}
+HG_GREN5 npc/hgrunt/clik no! clik {Len 0.91}
+HG_GREN6 npc/hgrunt/clik move! clik(p120) {Len 1.04}
 
 // Player Alert
-HG_ALERT0 hgrunt/(t30) squad!, we!(e80) got!(e80) freeman!(t20 p105), clik(p110) {Len 2.14}
-HG_ALERT1 hgrunt/clik(p110) target! clik {Len 1.13}
-HG_ALERT2 hgrunt/clik movement! clik {Len 1.18}
-HG_ALERT3 hgrunt/(t40) shit!(t20), (t50) we! got! hostiles!(p120 t0) clik {Len 2.07}
-HG_ALERT4 hgrunt/(t20) clik(p110) squad!, get!(e80) freeman!, clik(p110) clik {Len 2.37}
-HG_ALERT5 hgrunt/(t20) clik squad!, neutralize!(e90) freeman! clik {Len 2.67}
-HG_ALERT6 hgrunt/(t30) clik clik move!(e75) in! clik(p120) {Len 1.06}
+HG_ALERT0 npc/hgrunt/(t30) squad!, we!(e80) got!(e80) freeman!(t20 p105), clik(p110) {Len 2.14}
+HG_ALERT1 npc/hgrunt/clik(p110) target! clik {Len 1.13}
+HG_ALERT2 npc/hgrunt/clik movement! clik {Len 1.18}
+HG_ALERT3 npc/hgrunt/(t40) shit!(t20), (t50) we! got! hostiles!(p120 t0) clik {Len 2.07}
+HG_ALERT4 npc/hgrunt/(t20) clik(p110) squad!, get!(e80) freeman!, clik(p110) clik {Len 2.37}
+HG_ALERT5 npc/hgrunt/(t20) clik squad!, neutralize!(e90) freeman! clik {Len 2.67}
+HG_ALERT6 npc/hgrunt/(t30) clik clik move!(e75) in! clik(p120) {Len 1.06}
 
 // Monster Alert
-HG_MONST0 hgrunt/clik(p110) (t50) bogies!(t0), my! sector!(t0) clik {Len 2.28}
-HG_MONST1 hgrunt/clik(p110) (t40) clik(p120) we!(e75) got! bogies! clik {Len 1.30}
-HG_MONST2 hgrunt/clik clik (t30) alien!(e85) alert! clik {Len 1.46}
-HG_MONST3 hgrunt/clik clik (t30) alien!(e85) movement!(t0) clik(p120) {Len 1.72}
+HG_MONST0 npc/hgrunt/clik(p110) (t50) bogies!(t0), my! sector!(t0) clik {Len 2.28}
+HG_MONST1 npc/hgrunt/clik(p110) (t40) clik(p120) we!(e75) got! bogies! clik {Len 1.30}
+HG_MONST2 npc/hgrunt/clik clik (t30) alien!(e85) alert! clik {Len 1.46}
+HG_MONST3 npc/hgrunt/clik clik (t30) alien!(e85) movement!(t0) clik(p120) {Len 1.72}
 
 // Take cover
-HG_COVER0 hgrunt/clik (t30) take! cover!(t0) clik {Len 1.38}
-HG_COVER1 hgrunt/clik (t45) (e75) I!(e80) need!(e80) suppressing!(t20) fire!(t10) clik {Len 1.79}
-HG_COVER2 hgrunt/clik (t45) we! need! backup!(t10) clik {Len 1.58}
-HG_COVER3 hgrunt/clik(p120) (t40) two!(e75) hot!(e80) here! clik {Len 1.14}
-HG_COVER4 hgrunt/clik(p110) (t30) fall!(e80) out! clik clik {Len 1.17}
-HG_COVER5 hgrunt/clik(p120) (t20) clear! this! area! clik {Len 1.69}
-HG_COVER6 hgrunt/clik (t40) god! damn! clik {Len 1.05}
-HG_COVER7 hgrunt/clik (t40) cover!(e75) fire! clik {Len 0.95}
+HG_COVER0 npc/hgrunt/clik (t30) take! cover!(t0) clik {Len 1.38}
+HG_COVER1 npc/hgrunt/clik (t45) (e75) I!(e80) need!(e80) suppressing!(t20) fire!(t10) clik {Len 1.79}
+HG_COVER2 npc/hgrunt/clik (t45) we! need! backup!(t10) clik {Len 1.58}
+HG_COVER3 npc/hgrunt/clik(p120) (t40) two!(e75) hot!(e80) here! clik {Len 1.14}
+HG_COVER4 npc/hgrunt/clik(p110) (t30) fall!(e80) out! clik clik {Len 1.17}
+HG_COVER5 npc/hgrunt/clik(p120) (t20) clear! this! area! clik {Len 1.69}
+HG_COVER6 npc/hgrunt/clik (t40) god! damn! clik {Len 1.05}
+HG_COVER7 npc/hgrunt/clik (t40) cover!(e75) fire! clik {Len 0.95}
 
 // Throw grenade
-HG_THROW0 hgrunt/clik(p120) (t40) fire!(e90) in!(e90) the!(e60) hole!(e100) clik {Len 1.37}
-HG_THROW1 hgrunt/clik (t30) take!(e75) this!(e100 t0) clik {Len 1.03}
-HG_THROW2 hgrunt/clik (t35) fire in the(e50) hole clik(p120) {Len 1.66}
-HG_THROW3 hgrunt/clik(p110) (t35 e80) squad, stay down clik {Len 1.51}
+HG_THROW0 npc/hgrunt/clik(p120) (t40) fire!(e90) in!(e90) the!(e60) hole!(e100) clik {Len 1.37}
+HG_THROW1 npc/hgrunt/clik (t30) take!(e75) this!(e100 t0) clik {Len 1.03}
+HG_THROW2 npc/hgrunt/clik (t35) fire in the(e50) hole clik(p120) {Len 1.66}
+HG_THROW3 npc/hgrunt/clik(p110) (t35 e80) squad, stay down clik {Len 1.51}
  
 // Taunt
-HG_TAUNT0 hgrunt/clik (t30 e75) uhh, we got heavy fire here clik {Len 2.05}
-HG_TAUNT1 hgrunt/clik(p120) (t40) roger, hold position clik {Len 1.82}
-HG_TAUNT2 hgrunt/clik (t40) we!(e80) will!(e75) kick!(e80) your!(e75) ass! clik {Len 1.55}
-HG_TAUNT3 hgrunt/clik (t40) mister, you(e75) are going down clik {Len 2.28}
-HG_TAUNT4 hgrunt/clik(p120) (t40) you got nothing clik {Len 1.45}
-HG_TAUNT5 hgrunt/clik(p110) (t40) request! backup! clik(p120) clik {Len 1.32}
+HG_TAUNT0 npc/hgrunt/clik (t30 e75) uhh, we got heavy fire here clik {Len 2.05}
+HG_TAUNT1 npc/hgrunt/clik(p120) (t40) roger, hold position clik {Len 1.82}
+HG_TAUNT2 npc/hgrunt/clik (t40) we!(e80) will!(e75) kick!(e80) your!(e75) ass! clik {Len 1.55}
+HG_TAUNT3 npc/hgrunt/clik (t40) mister, you(e75) are going down clik {Len 2.28}
+HG_TAUNT4 npc/hgrunt/clik(p120) (t40) you got nothing clik {Len 1.45}
+HG_TAUNT5 npc/hgrunt/clik(p110) (t40) request! backup! clik(p120) clik {Len 1.32}
 
 // Easter Egg Taunts
-HG_TAUNT_EASTEREGG1 hgrunt/clik (t40) my ass is heavy clik {Len 2.28}
-HG_TAUNT_EASTEREGG2 hgrunt/clik (t40) my!(e80) ass!(e75) is!(e80) heavy! clik {Len 2.28}
+HG_TAUNT_EASTEREGG1 npc/hgrunt/clik (t40) my ass is heavy clik {Len 2.28}
+HG_TAUNT_EASTEREGG2 npc/hgrunt/clik (t40) my!(e80) ass!(e75) is!(e80) heavy! clik {Len 2.28}
 
 // Charge
-HG_CHARGE0 hgrunt/clik (t40) go! recon! clik(p120) {Len 1.21}
-HG_CHARGE1 hgrunt/clik(p110) (t40) move!(e75) in! clik {Len 0.84}
-HG_CHARGE2 hgrunt/clik go! clik(p120) {Len 0.91}
-HG_CHARGE3 hgrunt/clik lets! go! clik(p120) {Len 1.37}
+HG_CHARGE0 npc/hgrunt/clik (t40) go! recon! clik(p120) {Len 1.21}
+HG_CHARGE1 npc/hgrunt/clik(p110) (t40) move!(e75) in! clik {Len 0.84}
+HG_CHARGE2 npc/hgrunt/clik go! clik(p120) {Len 0.91}
+HG_CHARGE3 npc/hgrunt/clik lets! go! clik(p120) {Len 1.37}
 
 // Idle
-HG_IDLE0 hgrunt/gr_idle1 {Len 2.97}
-HG_IDLE1 hgrunt/gr_idle2 {Len 2.50}
-HG_IDLE2 hgrunt/gr_idle3 {Len 2.50}
+HG_IDLE0 npc/hgrunt/gr_idle1 {Len 2.97}
+HG_IDLE1 npc/hgrunt/gr_idle2 {Len 2.50}
+HG_IDLE2 npc/hgrunt/gr_idle3 {Len 2.50}
 
-HG_QUEST0 hgrunt/clik (t25) stay(e80) alert people clik(p120) {Len 1.83}
-HG_QUEST1 hgrunt/clik (t30) radio(e75) check, over clik(p120) {Len 1.65}
-HG_QUEST2 hgrunt/clik (t20) maintain lookout clik(p120) {Len 1.56}
-HG_QUEST3 hgrunt/clik(p110) (t30) squad, quiet(e75) down clik(p120) {Len 1.92}
-HG_QUEST4 hgrunt/clik(p120) (t30) hold position, clik {Len 1.58}
-HG_QUEST5 hgrunt/clik(p120) (t30) sweep(e80) that sector, clik(p120) clik(p120) {Len 1.85}
-HG_QUEST6 hgrunt/clik(p120) (t30) uhh, go tango sweep formation clik(p120) clik(p120) {Len 3.12}
-HG_QUEST7 hgrunt/clik(p120) (t30) echo(e75) mission is go clik(p120) clik(p120) {Len 2.05}
-HG_QUEST8 hgrunt/clik(p110) (t30) fire(e75) team, weapons(e75) check ok clik(p120) clik {Len 2.72}
-HG_QUEST9 hgrunt/clik(p110) (t30) fire(e75) team, objective foxtrot niner clik(p120) {Len 3.20}
-HG_QUEST10 hgrunt/clik (t30) ok(e75) mission, zero(e75) niner clik {Len 2.33}
-HG_QUEST11 hgrunt/clik (t30) squad, stay(e80) alert(e80) four freeman, over clik {Len 3.53}
+HG_QUEST0 npc/hgrunt/clik (t25) stay(e80) alert people clik(p120) {Len 1.83}
+HG_QUEST1 npc/hgrunt/clik (t30) radio(e75) check, over clik(p120) {Len 1.65}
+HG_QUEST2 npc/hgrunt/clik (t20) maintain lookout clik(p120) {Len 1.56}
+HG_QUEST3 npc/hgrunt/clik(p110) (t30) squad, quiet(e75) down clik(p120) {Len 1.92}
+HG_QUEST4 npc/hgrunt/clik(p120) (t30) hold position, clik {Len 1.58}
+HG_QUEST5 npc/hgrunt/clik(p120) (t30) sweep(e80) that sector, clik(p120) clik(p120) {Len 1.85}
+HG_QUEST6 npc/hgrunt/clik(p120) (t30) uhh, go tango sweep formation clik(p120) clik(p120) {Len 3.12}
+HG_QUEST7 npc/hgrunt/clik(p120) (t30) echo(e75) mission is go clik(p120) clik(p120) {Len 2.05}
+HG_QUEST8 npc/hgrunt/clik(p110) (t30) fire(e75) team, weapons(e75) check ok clik(p120) clik {Len 2.72}
+HG_QUEST9 npc/hgrunt/clik(p110) (t30) fire(e75) team, objective foxtrot niner clik(p120) {Len 3.20}
+HG_QUEST10 npc/hgrunt/clik (t30) ok(e75) mission, zero(e75) niner clik {Len 2.33}
+HG_QUEST11 npc/hgrunt/clik (t30) squad, stay(e80) alert(e80) four freeman, over clik {Len 3.53}
 
-HG_ANSWER0 hgrunt/clik(p110) (t20) uhh roger(e75) that, clik(p120) clik {Len 1.87}
-HG_ANSWER1 hgrunt/clik(p120) (t10) yessir clik {Len 1.06}
-HG_ANSWER2 hgrunt/clik(p120) (t30) affirmative, sir clik {Len 1.57}
-HG_ANSWER3 hgrunt/clik (t30) negative clik(p120) clik {Len 0.94}
-HG_ANSWER4 hgrunt/clik(p105) (t30) roger clik {Len 0.84}
-HG_ANSWER5 hgrunt/clik(p105) (t30) ok control clik {Len 1.46}
-HG_ANSWER6 hgrunt/clik(p105) (t30) that(e75) is, uhh, affirmative clik {Len 2.31}
+HG_ANSWER0 npc/hgrunt/clik(p110) (t20) uhh roger(e75) that, clik(p120) clik {Len 1.87}
+HG_ANSWER1 npc/hgrunt/clik(p120) (t10) yessir clik {Len 1.06}
+HG_ANSWER2 npc/hgrunt/clik(p120) (t30) affirmative, sir clik {Len 1.57}
+HG_ANSWER3 npc/hgrunt/clik (t30) negative clik(p120) clik {Len 0.94}
+HG_ANSWER4 npc/hgrunt/clik(p105) (t30) roger clik {Len 0.84}
+HG_ANSWER5 npc/hgrunt/clik(p105) (t30) ok control clik {Len 1.46}
+HG_ANSWER6 npc/hgrunt/clik(p105) (t30) that(e75) is, uhh, affirmative clik {Len 2.31}
 
-HG_CLEAR0 hgrunt/clik(p130) (t30) all(e75) clear sir, clik {Len 1.65}
-HG_CLEAR1 hgrunt/clik (t30) bravo(e75) post, clear clik(p120) {Len 1.70}
-HG_CLEAR2 hgrunt/clik(p110) (t30) delta(e75) team, clear clik(p120) {Len 1.62}
-HG_CLEAR3 hgrunt/clik(p110) (t40) no sign hostiles sir, over clik(p120) {Len 2.62}
-HG_CLEAR4 hgrunt/clik (t30) no(e80) sign objective sir, over clik(p120) {Len 2.77}
-HG_CLEAR5 hgrunt/clik (t30) no(e75) movement this level clik(p120) {Len 1.91}
-HG_CLEAR6 hgrunt/clik(p120) (t28) sir, sector secure, over clik(p120) clik(p120) {Len 2.76}
-HG_CLEAR7 hgrunt/clik(p120) (t30) command(e75) post, team in position, over clik {Len 3.13}
-HG_CLEAR8 hgrunt/clik (t30) recon, in(e75) position, all quiet clik(p120) {Len 2.88}
-HG_CLEAR9 hgrunt/clik(p110) (t30) lookout(e90) post, all quiet, over clik(p110) {Len 2.70}
-HG_CLEAR10 hgrunt/clik (t40) sir, I(e80) here(e75) something clik {Len 1.72}
-HG_CLEAR11 hgrunt/clik(p120) (t30) sir, uhh, zero movement, over clik {Len 3.20}
-HG_CLEAR12 hgrunt/clik (t30) area secure sir, over clik(p120) {Len 2.30}
+HG_CLEAR0 npc/hgrunt/clik(p130) (t30) all(e75) clear sir, clik {Len 1.65}
+HG_CLEAR1 npc/hgrunt/clik (t30) bravo(e75) post, clear clik(p120) {Len 1.70}
+HG_CLEAR2 npc/hgrunt/clik(p110) (t30) delta(e75) team, clear clik(p120) {Len 1.62}
+HG_CLEAR3 npc/hgrunt/clik(p110) (t40) no sign hostiles sir, over clik(p120) {Len 2.62}
+HG_CLEAR4 npc/hgrunt/clik (t30) no(e80) sign objective sir, over clik(p120) {Len 2.77}
+HG_CLEAR5 npc/hgrunt/clik (t30) no(e75) movement this level clik(p120) {Len 1.91}
+HG_CLEAR6 npc/hgrunt/clik(p120) (t28) sir, sector secure, over clik(p120) clik(p120) {Len 2.76}
+HG_CLEAR7 npc/hgrunt/clik(p120) (t30) command(e75) post, team in position, over clik {Len 3.13}
+HG_CLEAR8 npc/hgrunt/clik (t30) recon, in(e75) position, all quiet clik(p120) {Len 2.88}
+HG_CLEAR9 npc/hgrunt/clik(p110) (t30) lookout(e90) post, all quiet, over clik(p110) {Len 2.70}
+HG_CLEAR10 npc/hgrunt/clik (t40) sir, I(e80) here(e75) something clik {Len 1.72}
+HG_CLEAR11 npc/hgrunt/clik(p120) (t30) sir, uhh, zero movement, over clik {Len 3.20}
+HG_CLEAR12 npc/hgrunt/clik (t30) area secure sir, over clik(p120) {Len 2.30}
 
-HG_CHECK0 hgrunt/clik (t30) ok, check(e75) in clik {Len 1.63}
-HG_CHECK1 hgrunt/clik(p110) (t30) squad, are(e80) hostiles clear clik(p120) {Len 2.72}
-HG_CHECK2 hgrunt/clik (t30) check(e80) in people clik {Len 1.40}
-HG_CHECK3 hgrunt/clik (t30) lookout, check(e75) in clik(p110) {Len 1.53}
-HG_CHECK4 hgrunt/clik (t30) recon(e90) team, check(e80) in clik {Len 2.09}
-HG_CHECK5 hgrunt/clik(p130) (t30) movement check, over clik {Len 1.80}
-HG_CHECK6 hgrunt/clik (t30) check your zone, over, clik {Len 2.43}
-HG_CHECK7 hgrunt/clik (t30) everything(e85) ok(e75) there, clik(p130) {Len 1.66}
+HG_CHECK0 npc/hgrunt/clik (t30) ok, check(e75) in clik {Len 1.63}
+HG_CHECK1 npc/hgrunt/clik(p110) (t30) squad, are(e80) hostiles clear clik(p120) {Len 2.72}
+HG_CHECK2 npc/hgrunt/clik (t30) check(e80) in people clik {Len 1.40}
+HG_CHECK3 npc/hgrunt/clik (t30) lookout, check(e75) in clik(p110) {Len 1.53}
+HG_CHECK4 npc/hgrunt/clik (t30) recon(e90) team, check(e80) in clik {Len 2.09}
+HG_CHECK5 npc/hgrunt/clik(p130) (t30) movement check, over clik {Len 1.80}
+HG_CHECK6 npc/hgrunt/clik (t30) check your zone, over, clik {Len 2.43}
+HG_CHECK7 npc/hgrunt/clik (t30) everything(e85) ok(e75) there, clik(p130) {Len 1.66}
 
 //narrative
 
-HG_SNOOP1A hgrunt/c2a2_hg_chat1a {Len 2.65}
-HG_SNOOP2A hgrunt/c2a2_hg_chat2a {Len 1.95}
-HG_SNOOP3A hgrunt/c2a2_hg_chat3a {Len 5.04}
-HG_SNOOP4A hgrunt/c2a2_hg_chat4a {Len 4.69}
-HG_SNOOP5A hgrunt/c2a2_hg_chat5a {Len 4.59}
+HG_SNOOP1A npc/hgrunt/c2a2_hg_chat1a {Len 2.65}
+HG_SNOOP2A npc/hgrunt/c2a2_hg_chat2a {Len 1.95}
+HG_SNOOP3A npc/hgrunt/c2a2_hg_chat3a {Len 5.04}
+HG_SNOOP4A npc/hgrunt/c2a2_hg_chat4a {Len 4.69}
+HG_SNOOP5A npc/hgrunt/c2a2_hg_chat5a {Len 4.59}
 
-HG_DRAG1A hgrunt/c2a3_hg_1drag {Len 2.17}
-HG_DRAG2A hgrunt/c2a3_hg_2drag {Len 1.84}
-HG_DRAG3A hgrunt/c2a3_hg_3drag {Len 3.48}
-HG_DRAG4A hgrunt/c2a3_hg_4drag {Len 2.64}
-HG_DRAG5A hgrunt/c2a3_hg_5drag {Len 2.19}
-HG_DRAG6A hgrunt/c2a3_hg_laugh {Len 2.94}
+HG_DRAG1A npc/hgrunt/c2a3_hg_1drag {Len 2.17}
+HG_DRAG2A npc/hgrunt/c2a3_hg_2drag {Len 1.84}
+HG_DRAG3A npc/hgrunt/c2a3_hg_3drag {Len 3.48}
+HG_DRAG4A npc/hgrunt/c2a3_hg_4drag {Len 2.64}
+HG_DRAG5A npc/hgrunt/c2a3_hg_5drag {Len 2.19}
+HG_DRAG6A npc/hgrunt/c2a3_hg_laugh {Len 2.94}
 
-HG_SUCKS hgrunt/hg_sucks {Len 6.35}
-HG_CIVVIES hgrunt/hg_civvies {Len 6.73}
+HG_SUCKS npc/hgrunt/hg_sucks {Len 6.35}
+HG_CIVVIES npc/hgrunt/hg_civvies {Len 6.73}
 
 //END CHARACTER SECTION
 

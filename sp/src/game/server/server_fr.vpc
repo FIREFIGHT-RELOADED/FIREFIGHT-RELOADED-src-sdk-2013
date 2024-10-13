@@ -431,6 +431,8 @@ $Project "Server (FR)"
 				$File	"firefightreloaded\npc_agrunt.cpp"
 				$File	"firefightreloaded\npc_agrunt.h"
 				$File	"firefightreloaded\npc_acontroller.cpp"
+                $File	"firefightreloaded\npc_hgrunt.cpp"
+                $File	"firefightreloaded\npc_hgrunt.h"
 			}
 		}
         

@@ -475,12 +475,10 @@ END_DATADESC()
 //=========================================================
 // IRelationPriority - overridden because Human Grunts are 
 // Alien Grunt's nemesis.
-// In FR, we use the Combine as the nemesis.
-// The Combine ate the plumbuses.
 //=========================================================
 int	 CAGrunt::IRelationPriority(CBaseEntity* pTarget)
 {
-	if ( pTarget->Classify() == CLASS_COMBINE || pTarget->Classify() == CLASS_PLAYER )
+	if (!IsEntityAlien(pTarget))
 	{
 		return ( BaseClass::IRelationPriority ( pTarget ) + 1 );
 	}

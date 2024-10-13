@@ -1,0 +1,80 @@
+"HGrunt.Reload"
+{
+	"channel"	"CHAN_WEAPON"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_80db"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"npc/hgrunt/gr_reload1.wav"
+	}
+}
+
+"HGrunt.GrenadeLaunch"
+{
+	"channel"	"CHAN_WEAPON"
+	"volume"	"0.8"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"weapons/glauncher.wav"
+	}
+}
+
+"HGrunt.9MM"
+{
+	"channel"	"CHAN_WEAPON"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_140db"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"npc/hgrunt/gr_mgun1.wav"
+		"wave"		"npc/hgrunt/gr_mgun2.wav"
+	}
+}
+
+"HGrunt.Shotgun"
+{
+	"channel"	"CHAN_WEAPON"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_140db"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"weapons/sbarrel1.wav"
+	}
+}
+
+"HGrunt.Pain"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_80db"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"npc/hgrunt/gr_pain1.wav"
+		"wave"		"npc/hgrunt/gr_pain2.wav"
+		"wave"		"npc/hgrunt/gr_pain3.wav"
+		"wave"		"npc/hgrunt/gr_pain4.wav"
+		"wave"		"npc/hgrunt/gr_pain5.wav"
+
+	}
+}
+
+"HGrunt.Die"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_80db"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"npc/hgrunt/gr_die1.wav"
+		"wave"		"npc/hgrunt/gr_die2.wav"
+		"wave"		"npc/hgrunt/gr_die3.wav"
+
+	}
+}

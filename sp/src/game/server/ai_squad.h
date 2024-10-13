@@ -111,6 +111,7 @@ public:
 	bool					SquadIsMember( CBaseEntity *pMember );
 	bool					IsLeader( CAI_BaseNPC *pLeader );
 	CAI_BaseNPC				*GetLeader( void );
+	bool					HasAnyMembers(void) { return (m_SquadMembers.Count() > 0); }
 
 	int						BroadcastInteraction( int interactionType, void *data, CBaseCombatCharacter *sender = NULL );
 

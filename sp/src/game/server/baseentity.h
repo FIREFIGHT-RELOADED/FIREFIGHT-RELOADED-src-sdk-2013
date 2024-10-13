@@ -125,6 +125,7 @@ enum Class_T
 	CLASS_ALIEN_BIOWEAPON,
 	CLASS_COMBINE_ADVISOR,
 	CLASS_COMBINE_TURRET,
+	CLASS_HUMAN_MILITARY,
 
 	NUM_AI_CLASSES
 };
@@ -890,6 +891,19 @@ public:
 // Classify - returns the type of group (i.e, "houndeye", or "human military" so that NPCs with different classnames
 // still realize that they are teammates. (overridden for NPCs that form groups)
 	virtual Class_T Classify ( void );
+	virtual bool IsEntityAlien(CBaseEntity* pEnt)
+	{
+		Class_T iClass = pEnt->Classify();
+		return ((iClass != CLASS_PLAYER_ALLY) &&
+			(iClass != CLASS_PLAYER_ALLY_VITAL) &&
+			(iClass != CLASS_CITIZEN_REBEL) &&
+			(iClass != CLASS_CITIZEN_PASSIVE) &&
+			(iClass != CLASS_MANHACK) &&
+			(iClass != CLASS_SCANNER) &&
+			(iClass != CLASS_METROPOLICE) &&
+			(iClass != CLASS_COMBINE) &&
+			(iClass != CLASS_HUMAN_MILITARY));
+	}
 	virtual void	DeathNotice ( CBaseEntity *pVictim ) {}// NPC maker children use this to tell the NPC maker that they have died.
 	virtual bool	KilledNotice(CBaseEntity* pVictim) { return false; }// NPC maker children use this to tell the NPC maker that they have died. Trigged by event_killed events.
 	virtual bool	ShouldAttractAutoAim( CBaseEntity *pAimingEnt ) { return ((GetFlags() & FL_AIMTARGET) != 0); }
