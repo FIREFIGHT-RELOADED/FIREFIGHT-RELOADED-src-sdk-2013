@@ -580,41 +580,40 @@ float CHGrunt::MaxYawSpeed( void )
 	switch ( GetActivity() )
 	{
 	case ACT_IDLE:	
-		flYS = 150;		
+		flYS = 75;		
 		break;
 	case ACT_RUN:	
-		flYS = 150;	
+		flYS = 75;	
 		break;
 	case ACT_WALK:	
-		flYS = 180;		
+		flYS = 90;		
 		break;
 	case ACT_RANGE_ATTACK1:	
-		flYS = 120;	
+		flYS = 60;	
 		break;
 	case ACT_RANGE_ATTACK2:	
-		flYS = 120;	
+		flYS = 60;	
 		break;
 	case ACT_MELEE_ATTACK1:	
-		flYS = 120;	
+		flYS = 60;	
 		break;
 	case ACT_MELEE_ATTACK2:	
-		flYS = 120;	
+		flYS = 60;	
 		break;
 	case ACT_TURN_LEFT:
 	case ACT_TURN_RIGHT:	
-		flYS = 180;
+		flYS = 90;
 		break;
 	case ACT_GLIDE:
 	case ACT_FLY:
-		flYS = 30;
+		flYS = 15;
 		break;
 	default:
-		flYS = 90;
+		flYS = 45;
 		break;
 	}
 
-	// Yaw speed is handled differently now!
-	return flYS * 0.5f;
+	return flYS;
 }
 
 void CHGrunt::IdleSound( void )
