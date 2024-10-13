@@ -55,6 +55,7 @@
 #include	"hl2_gamerules.h"
 
 ConVar	sk_hgrunt_health( "sk_hgrunt_health","0");
+ConVar	sk_hgrunt_limp_health("sk_hgrunt_limp_health", "20");
 ConVar  sk_hgrunt_kick ( "sk_hgrunt_kick", "0" );
 ConVar  sk_hgrunt_shotgun_pellets ( "sk_hgrunt_shotgun_pellets", "0" );
 ConVar  sk_hgrunt_grenade_speed ( "sk_hgrunt_grenade_speed", "0" );
@@ -221,19 +222,6 @@ void CHGrunt::Event_Killed( const CTakeDamageInfo &info )
 	}
 
 	BaseClass::Event_Killed( info );
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//
-//
-//-----------------------------------------------------------------------------
-Class_T	CHGrunt::Classify(void)
-{
-	if (m_fIsFriendly)
-		return CLASS_PLAYER_ALLY;
-
-	return CLASS_HUMAN_MILITARY;
 }
 
 //=========================================================
@@ -665,6 +653,19 @@ void CHGrunt::CheckAmmo ( void )
     {
 	 	 SetCondition( COND_NO_PRIMARY_AMMO );
     }
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//
+//
+//-----------------------------------------------------------------------------
+Class_T	CHGrunt::Classify(void)
+{
+	if (m_fIsFriendly)
+		return CLASS_PLAYER_ALLY;
+
+	return CLASS_HUMAN_MILITARY;
 }
 
 //=========================================================
@@ -1167,7 +1168,7 @@ Activity CHGrunt::NPC_TranslateActivity( Activity NewActivity )
 		}
 		break;
 	case ACT_RUN:
-		if ( m_iHealth <= HGRUNT_LIMP_HEALTH )
+		if ( m_iHealth <= sk_hgrunt_limp_health.GetInt())
 		{
 			// limp!
 			return ACT_RUN_HURT;
@@ -1178,7 +1179,7 @@ Activity CHGrunt::NPC_TranslateActivity( Activity NewActivity )
 		}
 		break;
 	case ACT_WALK:
-		if ( m_iHealth <= HGRUNT_LIMP_HEALTH )
+		if ( m_iHealth <= sk_hgrunt_limp_health.GetInt())
 		{
 			// limp!
 			return ACT_WALK_HURT;
@@ -1391,14 +1392,14 @@ int CHGrunt::SelectSchedule( void )
 					}
 				}
 
-				if ( OccupyStrategySlotRange ( SQUAD_SLOT_ENGAGE1, SQUAD_SLOT_ENGAGE2 ) )
+				if ( OccupyStrategySlotRange ( SQUAD_SLOT_CHARGE1, SQUAD_SLOT_CHARGE2 ) )
 				{
-					// try to take an available ENGAGE slot
+					// try to take an available CHARGE slot
 					return SCHED_RANGE_ATTACK1;
 				}
 				else if ( HasCondition ( COND_CAN_RANGE_ATTACK2 ) && OccupyStrategySlotRange( SQUAD_SLOT_GRENADE1, SQUAD_SLOT_GRENADE2 ) )
 				{
-					// throw a grenade if can and no engage slots are available
+					// throw a grenade if can and no CHARGE slots are available
 					return SCHED_RANGE_ATTACK2;
 				}
 				else
@@ -1420,7 +1421,7 @@ int CHGrunt::SelectSchedule( void )
 					}
 					return SCHED_RANGE_ATTACK2;
 				}
-				else if ( OccupyStrategySlotRange ( SQUAD_SLOT_ENGAGE1, SQUAD_SLOT_ENGAGE2 ) )
+				else if ( OccupyStrategySlotRange ( SQUAD_SLOT_CHARGE1, SQUAD_SLOT_CHARGE2 ) )
 				{
 					//!!!KELLY - grunt cannot see the enemy and has just decided to 
 					// charge the enemy's position. 
@@ -1760,8 +1761,8 @@ AI_BEGIN_CUSTOM_NPC( npc_hgrunt, CHGrunt )
 		
 	DECLARE_SQUADSLOT( SQUAD_SLOT_GRENADE1 )
 	DECLARE_SQUADSLOT( SQUAD_SLOT_GRENADE2 )
-	DECLARE_SQUADSLOT( SQUAD_SLOT_ENGAGE1 )
-	DECLARE_SQUADSLOT( SQUAD_SLOT_ENGAGE2 )
+	DECLARE_SQUADSLOT( SQUAD_SLOT_CHARGE1 )
+	DECLARE_SQUADSLOT( SQUAD_SLOT_CHARGE2 )
 
 	//=========================================================
 	// > SCHED_GRUNT_FAIL
