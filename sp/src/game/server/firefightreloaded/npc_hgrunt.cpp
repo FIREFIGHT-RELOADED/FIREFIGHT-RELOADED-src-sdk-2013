@@ -460,11 +460,7 @@ int CHGrunt::GetGrenadeConditions( float flDot, float flDist  )
 		
 	if (FBitSet( m_iWeapons, HGRUNT_HANDGRENADE))
 	{
-		Vector vGunPos;
-		QAngle angGunAngles;
-		GetAttachment( "0", vGunPos, angGunAngles );
-
-
+		Vector vGunPos = Weapon_ShootPosition();
 		Vector vecToss = VecCheckToss( this, vGunPos, vecTarget, -1, 0.5, false );
 
 		if ( vecToss != vec3_origin )
@@ -486,10 +482,7 @@ int CHGrunt::GetGrenadeConditions( float flDot, float flDist  )
 	}
 	else
 	{
-		Vector vGunPos;
-		QAngle angGunAngles;
-		GetAttachment( "0", vGunPos, angGunAngles );
-		
+		Vector vGunPos = Weapon_ShootPosition();
 		Vector vecToss = VecCheckThrow( this, vGunPos, vecTarget, sk_hgrunt_grenade_speed.GetFloat(), 0.5 );
 
 		if ( vecToss != vec3_origin )
@@ -603,7 +596,7 @@ void CHGrunt::IdleSound( void )
 		if (!g_fGruntQuestion)
 		{
 			// ask question or make statement
-			switch ( random->RandomInt( 0,3 ) )
+			switch ( random->RandomInt( 0,2 ) )
 			{
 			case 0: // check in
 				SENTENCEG_PlayRndSz( edict(), "HG_CHECK", 0.75f, SNDLVL_TALKING, 0, m_voicePitch);
@@ -616,10 +609,6 @@ void CHGrunt::IdleSound( void )
 			case 2: // statement
 				SENTENCEG_PlayRndSz( edict(), "HG_IDLE", 0.75f, SNDLVL_TALKING, 0, m_voicePitch);
 				break;
-			case 3: // use leftover narrative chatter
-				SENTENCEG_PlayRndSz(edict(), "HG_CIVVIES", 0.75f, SNDLVL_TALKING, 0, m_voicePitch);
-				g_fGruntQuestion = 3;
-				break;
 			}
 		}
 		else
@@ -631,9 +620,6 @@ void CHGrunt::IdleSound( void )
 				break;
 			case 2: // question 
 				SENTENCEG_PlayRndSz( edict(), "HG_ANSWER", 0.75f, SNDLVL_TALKING, 0, m_voicePitch);
-				break;
-			case 3: // question 
-				SENTENCEG_PlayRndSz(edict(), "HG_SUCKS", 0.75f, SNDLVL_TALKING, 0, m_voicePitch);
 				break;
 			}
 			g_fGruntQuestion = 0;
