@@ -50,7 +50,7 @@
 "HGrunt.Pain"
 {
 	"channel"	"CHAN_VOICE"
-	"volume"	"1.0"
+	"volume"	"1.5"
 	"soundlevel"	"SNDLVL_80db"
 	"pitch"		"PITCH_NORM"
 	"rndwave"
@@ -67,7 +67,7 @@
 "HGrunt.Die"
 {
 	"channel"	"CHAN_VOICE"
-	"volume"	"1.0"
+	"volume"	"1.5"
 	"soundlevel"	"SNDLVL_80db"
 	"pitch"		"PITCH_NORM"
 	"rndwave"

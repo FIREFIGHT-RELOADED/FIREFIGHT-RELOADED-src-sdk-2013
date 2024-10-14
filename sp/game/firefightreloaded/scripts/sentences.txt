@@ -1528,8 +1528,8 @@ HG_TAUNT4 npc/hgrunt/clik(p120) (t40) you got nothing clik {Len 1.45}
 HG_TAUNT5 npc/hgrunt/clik(p110) (t40) request! backup! clik(p120) clik {Len 1.32}
 
 // Easter Egg Taunts
-HG_TAUNT_EASTEREGG1 npc/hgrunt/clik (t40) my ass is heavy clik {Len 2.28}
-HG_TAUNT_EASTEREGG2 npc/hgrunt/clik (t40) my!(e80) ass!(e75) is!(e80) heavy! clik {Len 2.28}
+HG_TAUNT_EASTEREGG1 npc/hgrunt/clik (t30) my ass is(e90 p110) heavy clik(p120) clik {Len 2.28}
+HG_TAUNT_EASTEREGG2 npc/hgrunt/clik my!(e95) ass!(e95) is!(p90) heavy! clik(p120) clik {Len 2.28}
 
 // Charge
 HG_CHARGE0 npc/hgrunt/clik (t40) go! recon! clik(p120) {Len 1.21}

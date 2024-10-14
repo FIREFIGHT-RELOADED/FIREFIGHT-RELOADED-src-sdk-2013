@@ -101,6 +101,7 @@ enum
 } HGRUNT_SENTENCE_TYPES;
 
 LINK_ENTITY_TO_CLASS( npc_hgrunt, CHGrunt );
+LINK_ENTITY_TO_CLASS(npc_hgrunt_friendly, CHGrunt);
 
 //---------------------------------------------------------
 // Save/Restore
@@ -145,7 +146,7 @@ void CHGrunt::SpeakSentence( void )
 
 	if ( FOkToSpeak() )
 	{
-		SENTENCEG_PlayRndSz( edict(), pGruntSentences[ m_iSentence ], 1.0f, SNDLVL_TALKING, 0, m_voicePitch);
+		SENTENCEG_PlayRndSz( edict(), pGruntSentences[ m_iSentence ], 0.75f, SNDLVL_TALKING, 0, m_voicePitch);
 		JustSpoke();
 	}
 }
@@ -307,8 +308,7 @@ void CHGrunt::PrescheduleThink ( void )
 //=========================================================
 bool CHGrunt::FCanCheckAttacks( void )
 {
-	// This condition set when too close to a grenade to blow it up
-	if ( !HasCondition( COND_TOO_CLOSE_TO_ATTACK ) )
+	if ( !HasCondition(COND_TOO_CLOSE_TO_ATTACK) )
 	{
 		return true;
 	}
@@ -351,22 +351,14 @@ int CHGrunt::RangeAttack1Conditions ( float flDot, float flDist )
 			return COND_NONE;
 		}
 
-		Vector vecSrc;
-		QAngle angAngles;
+		Vector vecSrc = Weapon_ShootPosition();
 
-		GetAttachment( "0", vecSrc, angAngles );
-
-		//NDebugOverlay::Line( GetAbsOrigin() + GetViewOffset(), GetEnemy()->BodyTarget(GetAbsOrigin() + GetViewOffset()), 255, 0, 0, false, 0.1 );
-		// verify that a bullet fired from the gun will hit the enemy before the world.
-		UTIL_TraceLine( GetAbsOrigin() + GetViewOffset(), GetEnemy()->BodyTarget(GetAbsOrigin() + GetViewOffset()), MASK_SHOT, this/*pentIgnore*/, COLLISION_GROUP_NONE, &tr);
+		UTIL_TraceLine( GetAbsOrigin() + GetViewOffset(), GetEnemy()->BodyTarget(GetAbsOrigin() + GetViewOffset()), MASK_SHOT, this, COLLISION_GROUP_NONE, &tr);
 
 		if ( tr.fraction == 1.0 || tr.m_pEnt == GetEnemy() )
 		{
-			//NDebugOverlay::Line( tr.startpos, tr.endpos, 0, 255, 0, false, 1.0 );
 			return COND_CAN_RANGE_ATTACK1;
 		}
-
-		//NDebugOverlay::Line( tr.startpos, tr.endpos, 255, 0, 0, false, 1.0 );
 	}
 
 	return COND_NONE;
@@ -611,18 +603,22 @@ void CHGrunt::IdleSound( void )
 		if (!g_fGruntQuestion)
 		{
 			// ask question or make statement
-			switch ( random->RandomInt( 0,2 ) )
+			switch ( random->RandomInt( 0,3 ) )
 			{
 			case 0: // check in
-				SENTENCEG_PlayRndSz( edict(), "HG_CHECK", 1.0f, SNDLVL_TALKING, 0, m_voicePitch);
+				SENTENCEG_PlayRndSz( edict(), "HG_CHECK", 0.75f, SNDLVL_TALKING, 0, m_voicePitch);
 				g_fGruntQuestion = 1;
 				break;
 			case 1: // question
-				SENTENCEG_PlayRndSz( edict(), "HG_QUEST", 1.0f, SNDLVL_TALKING, 0, m_voicePitch);
+				SENTENCEG_PlayRndSz( edict(), "HG_QUEST", 0.75f, SNDLVL_TALKING, 0, m_voicePitch);
 				g_fGruntQuestion = 2;
 				break;
 			case 2: // statement
-				SENTENCEG_PlayRndSz( edict(), "HG_IDLE", 1.0f, SNDLVL_TALKING, 0, m_voicePitch);
+				SENTENCEG_PlayRndSz( edict(), "HG_IDLE", 0.75f, SNDLVL_TALKING, 0, m_voicePitch);
+				break;
+			case 3: // use leftover narrative chatter
+				SENTENCEG_PlayRndSz(edict(), "HG_CIVVIES", 0.75f, SNDLVL_TALKING, 0, m_voicePitch);
+				g_fGruntQuestion = 3;
 				break;
 			}
 		}
@@ -631,10 +627,13 @@ void CHGrunt::IdleSound( void )
 			switch (g_fGruntQuestion)
 			{
 			case 1: // check in
-				SENTENCEG_PlayRndSz( edict(), "HG_CLEAR", 1.0f, SNDLVL_TALKING, 0, m_voicePitch);
+				SENTENCEG_PlayRndSz( edict(), "HG_CLEAR", 0.75f, SNDLVL_TALKING, 0, m_voicePitch);
 				break;
 			case 2: // question 
-				SENTENCEG_PlayRndSz( edict(), "HG_ANSWER", 1.0f, SNDLVL_TALKING, 0, m_voicePitch);
+				SENTENCEG_PlayRndSz( edict(), "HG_ANSWER", 0.75f, SNDLVL_TALKING, 0, m_voicePitch);
+				break;
+			case 3: // question 
+				SENTENCEG_PlayRndSz(edict(), "HG_SUCKS", 0.75f, SNDLVL_TALKING, 0, m_voicePitch);
 				break;
 			}
 			g_fGruntQuestion = 0;
@@ -777,12 +776,9 @@ void CHGrunt::HandleAnimEvent( animevent_t *pEvent )
 			CPASAttenuationFilter filter2( this );
 			EmitSound( filter2, entindex(), "HGrunt.GrenadeLaunch" );
 			
-			Vector vecSrc;
-			QAngle angAngles;
-
-			GetAttachment( "0", vecSrc, angAngles );
+			Vector vecSrc = Weapon_ShootPosition();
 		
-			CGrenadeAR2 * m_pMyGrenade = (CGrenadeAR2*)Create( "grenade_ar2", vecSrc, angAngles, this );
+			CGrenadeAR2 * m_pMyGrenade = (CGrenadeAR2*)Create( "grenade_ar2", vecSrc, vec3_angle, this );
 			m_pMyGrenade->SetAbsVelocity( m_vecTossVelocity );
 			m_pMyGrenade->SetLocalAngularVelocity(RandomAngle(-400, 400)); //tumble in air
 			m_pMyGrenade->SetMoveType(MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE);
@@ -884,7 +880,7 @@ void CHGrunt::HandleAnimEvent( animevent_t *pEvent )
 		{
 			if ( FOkToSpeak() )
 			{
-				SENTENCEG_PlayRndSz( edict(), "HG_ALERT", 1.0f, SNDLVL_NORM, 0, m_voicePitch);
+				SENTENCEG_PlayRndSz( edict(), "HG_ALERT", 0.75f, SNDLVL_NORM, 0, m_voicePitch);
 				 JustSpoke();
 			}
 
@@ -901,6 +897,11 @@ void CHGrunt::HandleAnimEvent( animevent_t *pEvent )
 //=========================================================
 void CHGrunt::Spawn()
 {
+	if (FClassnameIs(this, "npc_hgrunt_friendly"))
+	{
+		AddSpawnFlags(SF_GRUNT_FRIENDLY);
+	}
+
 	if (HasSpawnFlags(SF_GRUNT_FRIENDLY))
 	{
 		BecomeFriendly();
@@ -1240,7 +1241,7 @@ int CHGrunt::SelectSchedule( void )
 				
 		if (FOkToSpeak())
 		{
-			SENTENCEG_PlayRndSz( edict(), "HG_GREN", 1.0f, SNDLVL_TALKING, 0, m_voicePitch);
+			SENTENCEG_PlayRndSz( edict(), "HG_GREN", 0.75f, SNDLVL_TALKING, 0, m_voicePitch);
 			JustSpoke();
 		}
 		return SCHED_TAKE_COVER_FROM_BEST_SOUND;
@@ -1265,7 +1266,7 @@ int CHGrunt::SelectSchedule( void )
 				{
 					if (random->RandomInt(1, sk_hgrunt_eastereggtaunt_prob.GetInt()) == sk_hgrunt_eastereggtaunt_prob.GetInt())
 					{
-						SENTENCEG_PlayRndSz(edict(), "HG_TAUNT_EASTEREGG", 1.0f, SNDLVL_TALKING, 0, m_voicePitch);
+						SENTENCEG_PlayRndSz(edict(), "HG_TAUNT_EASTEREGG", 0.75f, SNDLVL_TALKING, 0, m_voicePitch);
 						JustSpoke();
 					}
 				}
@@ -1306,10 +1307,10 @@ int CHGrunt::SelectSchedule( void )
 						{
 							if ((GetEnemy() != NULL) && (GetEnemy()->IsPlayer()) || (GetEnemy()->Classify() == CLASS_PLAYER_NPC))
 								// player
-								SENTENCEG_PlayRndSz( edict(), "HG_ALERT", 1.0f, SNDLVL_TALKING, 0, m_voicePitch);
+								SENTENCEG_PlayRndSz( edict(), "HG_ALERT", 0.75f, SNDLVL_TALKING, 0, m_voicePitch);
 							else if ((GetEnemy() != NULL) && (IsEntityAlien(GetEnemy())))
 								// monster
-								SENTENCEG_PlayRndSz( edict(), "HG_MONST", 1.0f, SNDLVL_TALKING, 0, m_voicePitch);
+								SENTENCEG_PlayRndSz( edict(), "HG_MONST", 0.75f, SNDLVL_TALKING, 0, m_voicePitch);
 
 							JustSpoke();
 						}
@@ -1349,7 +1350,7 @@ int CHGrunt::SelectSchedule( void )
 					//!!!KELLY - this grunt was hit and is going to run to cover.
 					if (FOkToSpeak() && random->RandomInt(0, 1))
 					{
-						SENTENCEG_PlayRndSz( edict(), "HG_COVER", 1.0f, SNDLVL_TALKING, 0, m_voicePitch);
+						SENTENCEG_PlayRndSz( edict(), "HG_COVER", 0.75f, SNDLVL_TALKING, 0, m_voicePitch);
 						m_iSentence = HGRUNT_SENT_COVER;
 						JustSpoke();
 					}
@@ -1416,7 +1417,7 @@ int CHGrunt::SelectSchedule( void )
 					//!!!KELLY - this grunt is about to throw or fire a grenade at the player. Great place for "fire in the hole"  "frag out" etc
 					if (FOkToSpeak())
 					{
-						SENTENCEG_PlayRndSz( edict(), "HG_THROW", 1.0f, SNDLVL_TALKING, 0, m_voicePitch);
+						SENTENCEG_PlayRndSz( edict(), "HG_THROW", 0.75f, SNDLVL_TALKING, 0, m_voicePitch);
 						JustSpoke();
 					}
 					return SCHED_RANGE_ATTACK2;
@@ -1427,7 +1428,7 @@ int CHGrunt::SelectSchedule( void )
 					// charge the enemy's position. 
 					if (FOkToSpeak() && random->RandomInt(0, 1))
 					{
-						SENTENCEG_PlayRndSz(edict(), "HG_CHARGE", 1.0f, SNDLVL_TALKING, 0, m_voicePitch);
+						SENTENCEG_PlayRndSz(edict(), "HG_CHARGE", 0.75f, SNDLVL_TALKING, 0, m_voicePitch);
 						m_iSentence = HGRUNT_SENT_CHARGE;
 						JustSpoke();
 					}
@@ -1443,11 +1444,11 @@ int CHGrunt::SelectSchedule( void )
 					{
                         if (random->RandomInt(1, sk_hgrunt_eastereggtaunt_prob.GetInt()) == sk_hgrunt_eastereggtaunt_prob.GetInt())
                         {
-                            SENTENCEG_PlayRndSz( edict(), "HG_TAUNT_EASTEREGG", 1.0f, SNDLVL_TALKING, 0, m_voicePitch);
+                            SENTENCEG_PlayRndSz( edict(), "HG_TAUNT_EASTEREGG", 0.75f, SNDLVL_TALKING, 0, m_voicePitch);
                         }
                         else
                         {
-                            SENTENCEG_PlayRndSz( edict(), "HG_TAUNT", 1.0f, SNDLVL_TALKING, 0, m_voicePitch);
+                            SENTENCEG_PlayRndSz( edict(), "HG_TAUNT", 0.75f, SNDLVL_TALKING, 0, m_voicePitch);
                         }
                         
 						JustSpoke();
@@ -1493,7 +1494,7 @@ int CHGrunt::TranslateSchedule( int scheduleType )
 				{
 					if (FOkToSpeak())
 					{
-						SENTENCEG_PlayRndSz( edict(), "HG_THROW", 1.0f, SNDLVL_TALKING, 0, m_voicePitch);
+						SENTENCEG_PlayRndSz( edict(), "HG_THROW", 0.75f, SNDLVL_TALKING, 0, m_voicePitch);
 						JustSpoke();
 					}
 					return SCHED_GRUNT_TOSS_GRENADE_COVER;
@@ -1632,7 +1633,7 @@ int CHGrunt::SquadRecruit( int searchRadius, int maxMembers )
 	if ( m_SquadName != NULL_STRING )
 	{
 		// I have a netname, so unconditionally recruit everyone else with that name.
-		pEntity = gEntList.FindEntityByClassname( pEntity, "npc_hgrunt" );
+		pEntity = gEntList.FindEntityByClassname( pEntity, GetClassname() );
 
 		while ( pEntity )
 		{
@@ -1651,7 +1652,7 @@ int CHGrunt::SquadRecruit( int searchRadius, int maxMembers )
 				}
 			}
 	
-			pEntity = gEntList.FindEntityByClassname( pEntity, "npc_hgrunt" );
+			pEntity = gEntList.FindEntityByClassname( pEntity, GetClassname());
 		}
 
 		return squadCount;
@@ -1665,7 +1666,7 @@ int CHGrunt::SquadRecruit( int searchRadius, int maxMembers )
 
 		while ( ( pEntity = gEntList.FindEntityInSphere( pEntity, GetAbsOrigin(), searchRadius ) ) != NULL )
 		{
-			if ( !FClassnameIs ( pEntity, "npc_hgrunt" ) )
+			if ( !FClassnameIs ( pEntity, GetClassname()) )
 				  continue;
 
 			CHGrunt *pRecruit = (CHGrunt*)pEntity->MyNPCPointer();

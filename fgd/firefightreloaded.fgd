@@ -117,6 +117,24 @@
 @NPCClass base(BaseNPC) studio("models/houndeye.mdl") = npc_houndeye : "Houndeye" []
 @NPCClass base(BaseNPC) studio("models/agrunt.mdl") = npc_agrunt : "Alien Grunt" []
 @NPCClass base(BaseNPC) studio("models/controller.mdl") = npc_acontroller : "Alien Controller" []
+@NPCClass base(BaseNPC) studio("models/hgrunt.mdl") = monster_human_grunt : "Human Grunt"
+[
+	spawnflags(Flags) =
+	[
+		32 : "Squad Leader" : 0
+        64 : "Friendly" : 0
+	]
+	netname(string) : "Squad Name"
+	weapons(Choices) : "Weapons" : 1 =
+	[
+		1 : "SMG"
+		3 : "SMG_FRAG"
+		5 : "SMG_GL"
+		8 : "SHOTGUN"
+		10 : "SHOTGUN_FRAG"
+        12 : "SHOTGUN_GL"
+	]
+]
 
 @PointClass base(Item) studio("models/items/grenadeammo.mdl") = item_ammo_grenade : "Frag Grenade (ammo)" []
 @PointClass base(Weapon) studio("models/weapons/w_sniper_new.mdl") = weapon_sniper_rifle : "Sniper Rifle" []

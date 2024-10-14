@@ -596,13 +596,15 @@ void CNPCMakerFirefight::MakeNPC()
 	}
 	else
 	{
-		if (Q_stristr(pRandomName, "npc_hgrunt"))
+		if (Q_stristr(pRandomName, "npc_hgrunt") ||
+			Q_stristr(pRandomName, "npc_hgrunt_friendly") ||
+			Q_stristr(pRandomName, "npc_hgrunt_ace"))
 		{
-			if (Q_stristr(equip, "weapon_smg1"))
+			if (Q_stristr(equip, "weapon_9mmar_gl"))
 			{
 				gruntEquip = WEAPON_HGRUNT_SMG_GL;
 			}
-			else if (Q_stristr(equip, "weapon_ar2") || Q_stristr(equip, "weapon_mp5"))
+			else if (Q_stristr(equip, "weapon_9mmar"))
 			{
 				int shouldSpawnWithFrags = random->RandomInt(0, 5);
 				if (shouldSpawnWithFrags == 5)
@@ -626,10 +628,16 @@ void CNPCMakerFirefight::MakeNPC()
 					gruntEquip = WEAPON_HGRUNT_SHOTGUN;
 				}
 			}
+			else if (Q_stristr(equip, "weapon_shotgun_gl"))
+			{
+				gruntEquip = WEAPON_HGRUNT_SHOTGUN_GL;
+			}
 		}
 	}
 
-	if (Q_stristr(pRandomName, "npc_hgrunt"))
+	if (Q_stristr(pRandomName, "npc_hgrunt") ||
+		Q_stristr(pRandomName, "npc_hgrunt_friendly") ||
+		Q_stristr(pRandomName, "npc_hgrunt_ace"))
 	{
 		CHGrunt *pGrunt = dynamic_cast<CHGrunt*>(pent);
 		if (pGrunt)
@@ -655,7 +663,9 @@ void CNPCMakerFirefight::MakeNPC()
 		if (g_pGameRules->GetSkillLevel() > SKILL_HARD)
 			pent->AddSpawnFlags(SF_CSCANNER_STRIDER_SCOUT);
 	}
-	else if (Q_stristr(pRandomName, "npc_hgrunt"))
+	else if (Q_stristr(pRandomName, "npc_hgrunt") || 
+		Q_stristr(pRandomName, "npc_hgrunt_friendly") || 
+		Q_stristr(pRandomName, "npc_hgrunt_ace"))
 	{
 		int shouldSpawnAsLeader = random->RandomInt(0, 3);
 		if (shouldSpawnAsLeader == 3)
