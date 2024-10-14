@@ -902,11 +902,6 @@ void CHGrunt::Spawn()
 		AddSpawnFlags(SF_GRUNT_FRIENDLY);
 	}
 
-	if (HasSpawnFlags(SF_GRUNT_FRIENDLY))
-	{
-		BecomeFriendly();
-	}
-
 	Precache( );
 
 	SetModel( "models/hgrunt.mdl" );
@@ -935,6 +930,11 @@ void CHGrunt::Spawn()
 	CapabilitiesAdd(bits_CAP_INNATE_RANGE_ATTACK2 );
 	// Innate range attack for kicking
 	CapabilitiesAdd(bits_CAP_INNATE_MELEE_ATTACK1 );
+
+	if (HasSpawnFlags(SF_GRUNT_FRIENDLY))
+	{
+		BecomeFriendly();
+	}
 			
 	m_fFirstEncounter	= true;// this is true when the grunt spawns, because he hasn't encountered an enemy yet.
 
