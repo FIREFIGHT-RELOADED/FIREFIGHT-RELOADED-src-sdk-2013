@@ -662,8 +662,7 @@ void CNPCMakerFirefight::MakeNPC()
 			pent->AddSpawnFlags(SF_CSCANNER_STRIDER_SCOUT);
 	}
 	else if (Q_stristr(pRandomName, "npc_hgrunt") || 
-		Q_stristr(pRandomName, "npc_hgrunt_friendly") || 
-		Q_stristr(pRandomName, "npc_hgrunt_ace"))
+		Q_stristr(pRandomName, "npc_hgrunt_friendly"))
 	{
 		int shouldSpawnAsLeader = random->RandomInt(0, 3);
 		if (shouldSpawnAsLeader == 3)
