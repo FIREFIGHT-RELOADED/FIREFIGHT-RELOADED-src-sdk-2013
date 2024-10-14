@@ -96,33 +96,45 @@
 		"min_level"		"3"
 		"exp"	"75"
 	}
+    "14"
+	{
+		"classname"		"npc_hgrunt"
+		"min_level"		"5"
+        "equipment"	
+		{
+			"weapon_9mmar" "7"
+			"weapon_9mmar_gl" "4"
+			"weapon_shotgun" "3"
+		}
+		"exp"	"30"
+	}
 	//LEVEL 4
-	"14"
+	"15"
 	{
 		"classname"		"npc_combine_shot"
 		"min_level"		"4"
 		"exp"	"75"
 	}
-	"15"
+	"16"
 	{
 		"classname"		"npc_strider"
 		"min_level"		"4"
 		"exp"	"75"
 	}
-	"16"
+	"17"
 	{
 		"classname"		"npc_antlion"
 		"min_level"		"4"
 		"exp"	"75"
 	}
-	"17"
+	"18"
 	{
 		"classname"		"npc_playerbot"
 		"min_level"		"4"
 		"rare"			"1"
 	}
 	//LEVEL 5
-	"18"
+	"19"
 	{
 		"classname"		"npc_combine_e"
 		"min_level"		"5"
@@ -139,19 +151,19 @@
             "weapon_gatling" "1"
 		}
 	}
-	"19"
+	"20"
 	{
 		"classname"		"npc_poisonzombie"
 		"min_level"		"5"
 		"exp"	"75"
 	}
-	"20"
+	"21"
 	{
 		"classname"		"npc_agrunt"
 		"min_level"		"5"
 		"exp"	"75"
 	}
-    "21"
+    "22"
 	{
 		"classname"		"npc_combine_s_friendly"
 		"min_level"		"5"
@@ -160,43 +172,43 @@
 		"rare"			"1"
 	}
 	//LEVEL 6
-	"22"
+	"23"
 	{
 		"classname"		"npc_acontroller"
 		"min_level"		"6"
 		"exp"	"75"
 	}
-	"23"
+	"24"
 	{
 		"classname"		"npc_hunter"
 		"min_level"		"6"
 		"exp"	"75"
 	}
-	"24"
+	"25"
 	{
 		"classname"		"npc_zombine"
 		"min_level"		"6"
 		"exp"	"75"
 	}
 	//LEVEL 7
-	"25"
+	"26"
 	{
 		"classname"		"npc_antlionworker"
 		"min_level"		"7"
 		"exp"	"75"
 	}
-	"26"
+	"27"
 	{
 		"classname"		"npc_antlionguard"
 		"min_level"		"7"
 		"exp"	"75"
 	}
-	"27"
+	"28"
 	{
 		"classname"		"npc_vortigaunt"
 		"min_level"		"7"
 	}
-    "28"
+    "29"
 	{
 		"classname"		"npc_combine_e_friendly"
 		"min_level"		"7"
@@ -215,13 +227,13 @@
 		}
 	}
 	//LEVEL 8
-	"29"
+	"30"
 	{
 		"classname"		"npc_assassin"
 		"min_level"		"8"
 		"exp"	"75"
 	}
-	"30"
+	"31"
 	{
 		//ministrider
 		"classname"		"npc_hunter"
@@ -229,26 +241,26 @@
 		"min_level"		"8"
 		"exp"	"75"
 	}
-    "31"
+    "32"
 	{
 		"classname"		"npc_hunter_friendly"
 		"preset"		"1"
 		"min_level"		"8"
 	}
 	//LEVEL 9
-	"32"
+	"33"
 	{
 		"classname"		"npc_antlionguardian"
 		"min_level"		"9"
 		"exp"	"75"
 	}
-	"33"
+	"34"
 	{
 		"classname"		"npc_stalker"
 		"min_level"		"9"
 		"exp"	"75"
 	}
-	"34"
+	"35"
 	{
 		//boomsquids
 		"classname"		"npc_bullsquid"
@@ -257,7 +269,7 @@
 		"exp"	"75"
 	}
 	//LEVEL 10
-	"35"
+	"36"
 	{
 		"classname"		"npc_combine_ace"
 		"min_level"		"10"
@@ -275,20 +287,20 @@
             "weapon_gatling" "3"
 		}
 	}
-	"36"
+	"37"
 	{
 		"classname"		"npc_rollermine"
 		"min_level"		"10"
 		"exp"	"75"
 	}
-	"37"
+	"38"
 	{
 		"classname"		"npc_cscanner"
 		"min_level"		"10"
 		"exp"	"75"
 	}
 	//LEVEl 11
-	"38"
+	"39"
 	{
 		//Elite Hunter
 		"classname"		"npc_hunter"
@@ -297,7 +309,7 @@
 		"exp"	"75"
 	}
 	//LEVEL 12
-	"39"
+	"40"
 	{
 		//kamikaze headcrab
 		"classname"		"npc_headcrab_fast"
@@ -306,7 +318,7 @@
 		"exp"	"75"
 	}
 	//LEVEL 13
-	"40"
+	"41"
 	{
 		//Demolitions Hunter
 		"classname"		"npc_hunter"
@@ -315,7 +327,7 @@
 		"exp"	"75"
 	}
 	//LEVEL 14
-	"41"
+	"42"
 	{
 		//Anti-Aircraft Hunter
 		"classname"		"npc_hunter"
@@ -324,7 +336,7 @@
 		"exp"	"75"
 	}
 	//LEVEL 15
-	"42"
+	"43"
 	{
 		//super ace
 		"classname"		"npc_combine_ace"
@@ -344,7 +356,7 @@
             "weapon_gatling" "3"
 		}
 	}
-    "43"
+    "44"
 	{
 		"classname"		"npc_combine_ace_friendly"
 		"min_level"		"15"
@@ -365,7 +377,7 @@
 	}
 	//LEVEL 16
 	//advisor drones of various combine units.
-	"44"
+	"45"
 	{
 		"classname"		"npc_combine_s"
 		"wildcard"		"1"
@@ -374,7 +386,7 @@
 		"rare"			"1"
 		"exp"	"75"
 	}
-	"45"
+	"46"
 	{
 		"classname"		"npc_metropolice"
 		"wildcard"		"1"
@@ -383,7 +395,7 @@
 		"rare"			"1"
 		"exp"	"75"
 	}
-	"46"
+	"47"
 	{
 		"classname"		"npc_hunter"
 		"wildcard"		"1"
@@ -392,7 +404,7 @@
 		"rare"			"1"
 		"exp"	"75"
 	}
-	"47"
+	"48"
 	{
 		"classname"		"npc_combine_ace"
 		"wildcard"		"1"
@@ -412,7 +424,7 @@
 			"weapon_oicw" "5"
 		}
 	}
-	"48"
+	"49"
 	{
 		//railgun hunters
 		"classname"		"npc_hunter"
@@ -423,7 +435,7 @@
 	}
     //Level 19
     //Same as above, but they aren't rare. This is so players can easily access the ending.
-    "49"
+    "50"
 	{
 		"classname"		"npc_combine_s"
 		"wildcard"		"1"
@@ -431,7 +443,7 @@
 		"min_level"		"19"
 		"exp"	"60"
 	}
-	"50"
+	"51"
 	{
 		"classname"		"npc_metropolice"
 		"wildcard"		"1"
@@ -439,7 +451,7 @@
 		"min_level"		"19"
 		"exp"	"60"
 	}
-	"51"
+	"52"
 	{
 		"classname"		"npc_hunter"
 		"wildcard"		"1"
@@ -447,7 +459,7 @@
 		"min_level"		"19"
 		"exp"	"75"
 	}
-	"52"
+	"53"
 	{
 		"classname"		"npc_combine_ace"
 		"wildcard"		"1"
