@@ -616,6 +616,10 @@ void CNPCMakerFirefight::MakeNPC()
 					gruntEquip = WEAPON_HGRUNT_SMG;
 				}
 			}
+			else if (Q_stristr(equip, "weapon_shotgun_gl"))
+			{
+				gruntEquip = WEAPON_HGRUNT_SHOTGUN_GL;
+			}
 			else if (Q_stristr(equip, "weapon_shotgun"))
 			{
 				int shouldSpawnWithFrags = random->RandomInt(0, 5);
@@ -627,10 +631,6 @@ void CNPCMakerFirefight::MakeNPC()
 				{
 					gruntEquip = WEAPON_HGRUNT_SHOTGUN;
 				}
-			}
-			else if (Q_stristr(equip, "weapon_shotgun_gl"))
-			{
-				gruntEquip = WEAPON_HGRUNT_SHOTGUN_GL;
 			}
 		}
 	}

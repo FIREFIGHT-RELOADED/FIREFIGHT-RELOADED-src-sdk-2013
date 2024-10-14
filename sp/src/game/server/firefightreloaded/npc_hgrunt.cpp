@@ -705,7 +705,7 @@ void CHGrunt::Shoot (int bulletnum, Vector cone)
 	Vector forward, right, up;
 	AngleVectors( GetAbsAngles(), &forward, &right, &up );
 
-	FireBullets(bulletnum, vecShootOrigin, vecShootDir, cone, 2048, m_iAmmoType, 0);
+	FireBullets(bulletnum, vecShootOrigin, vecShootDir, cone, 2048, m_iAmmoType);
 	
 	DoMuzzleFlash();
 	
