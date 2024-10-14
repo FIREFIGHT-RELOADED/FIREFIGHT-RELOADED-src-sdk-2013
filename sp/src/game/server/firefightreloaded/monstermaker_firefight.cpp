@@ -597,8 +597,7 @@ void CNPCMakerFirefight::MakeNPC()
 	else
 	{
 		if (Q_stristr(pRandomName, "npc_hgrunt") ||
-			Q_stristr(pRandomName, "npc_hgrunt_friendly") ||
-			Q_stristr(pRandomName, "npc_hgrunt_ace"))
+			Q_stristr(pRandomName, "npc_hgrunt_friendly"))
 		{
 			if (Q_stristr(equip, "weapon_9mmar_gl"))
 			{
@@ -636,8 +635,7 @@ void CNPCMakerFirefight::MakeNPC()
 	}
 
 	if (Q_stristr(pRandomName, "npc_hgrunt") ||
-		Q_stristr(pRandomName, "npc_hgrunt_friendly") ||
-		Q_stristr(pRandomName, "npc_hgrunt_ace"))
+		Q_stristr(pRandomName, "npc_hgrunt_friendly"))
 	{
 		CHGrunt *pGrunt = dynamic_cast<CHGrunt*>(pent);
 		if (pGrunt)
