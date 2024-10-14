@@ -2334,6 +2334,16 @@ void CNPC_Hunter::GatherChargeConditions()
 
 	if ( !hunter_charge.GetBool() )
 		return;
+
+	if (m_pAttributes != NULL)
+	{
+		bool ministrider = m_pAttributes->GetBool("ministrider", 0);
+
+		if (ministrider)
+		{
+			return;
+		}
+	}
 		
 	if ( !GetEnemy() )
 		return;
@@ -4964,6 +4974,16 @@ int CNPC_Hunter::MeleeAttack1ConditionsVsEnemyInVehicle( CBaseCombatCharacter *p
 	if( !IsCorporealEnemy( GetEnemy() ) )
 		return COND_NONE;
 
+	if (m_pAttributes != NULL)
+	{
+		bool ministrider = m_pAttributes->GetBool("ministrider", 0);
+
+		if (ministrider)
+		{
+			return COND_NONE;
+		}
+	}
+
 	// Try and trace a box to the player, and if I hit the vehicle, attack it
 	Vector vecDelta = (pEnemy->WorldSpaceCenter() - WorldSpaceCenter());
 	VectorNormalize( vecDelta );
@@ -4989,6 +5009,16 @@ int CNPC_Hunter::MeleeAttack1Conditions ( float flDot, float flDist )
 {
 	if ( !IsCorporealEnemy( GetEnemy() ) )
 		return COND_NONE;
+
+	if (m_pAttributes != NULL)
+	{
+		bool ministrider = m_pAttributes->GetBool("ministrider", 0);
+
+		if (ministrider)
+		{
+			return COND_NONE;
+		}
+	}
 		
 	if ( ( gpGlobals->curtime < m_flNextMeleeTime ) && // allow berzerk bashing if cornered
 		!( m_hAttachedBusters.Count() > 0 && gpGlobals->curtime < m_fCorneredTimer ) )
@@ -5504,6 +5534,23 @@ void CNPC_Hunter::DeathSound( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 void CNPC_Hunter::TraceAttack( const CTakeDamageInfo &inputInfo, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator )
 {
+	//for ministriders, we should bleed normally and call the normal trace attack event, since we are vulnrable to normal guns.
+	if (m_pAttributes != NULL)
+	{
+		bool ministrider = m_pAttributes->GetBool("ministrider", 0);
+
+		if (ministrider)
+		{
+			QAngle vecAngles;
+			VectorAngles(ptr->plane.normal, vecAngles);
+			DispatchParticleEffect("blood_impact_synth_01", ptr->endpos, vecAngles);
+			DispatchParticleEffect("blood_impact_synth_01_arc_parent", PATTACH_POINT_FOLLOW, this, gm_nHeadCenterAttachment);
+
+			BaseClass::TraceAttack(inputInfo, vecDir, ptr, pAccumulator);
+			return;
+		}
+	}
+
 	CTakeDamageInfo info = inputInfo;
 
 	// Even though the damage might not hurt us, we want to react to it
@@ -6202,7 +6249,7 @@ void CNPC_Hunter::GetShootDir( Vector &vecDir, const Vector &vecSrc, CBaseEntity
 	const char *pSoundName = "NPC_Hunter.FlechetteShoot";
 	if (m_pAttributes != NULL)
 	{
-		bool sounds = m_pAttributes->GetBool("use_ministrider_sounds", 0);
+		bool sounds = m_pAttributes->GetBool("ministrider", 0);
 
 		if (sounds)
 		{
