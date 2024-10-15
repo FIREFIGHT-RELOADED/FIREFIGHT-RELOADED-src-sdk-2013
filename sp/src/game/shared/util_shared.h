@@ -448,6 +448,10 @@ inline float DistanceToRay( const Vector &pos, const Vector &rayStart, const Vec
 		static CUtlVector< interfaceName* > m_##interfaceName##AutoList; \
 	};
 
+// Creates a simple function for accessing the higher level entity
+#define IMPLEMENT_AUTO_LIST_GET() \
+	virtual CBaseEntity* GetEntity( void ) { return this; }
+
 // Creates the auto add/remove constructor/destructor...
 // Pass false to the constructor to not auto add
 #define IMPLEMENT_AUTO_LIST( interfaceName ) \
