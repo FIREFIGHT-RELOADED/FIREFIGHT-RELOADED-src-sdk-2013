@@ -1,6 +1,8 @@
 //Upgrade IDs
 //FIREFIGHT_UPGRADE_MAXHEALTH = 0
 //FIREFIGHT_UPGRADE_EXPBOOST = 1
+//FIREFIGHT_UPGRADE_KASHBOOST = 2
+//FIREFIGHT_UPGRADE_HEALTHREGENERATION_RANGE = 3
 
 "ShopCatalog"
 {
@@ -29,6 +31,21 @@
 		"price"		"1550"
         "limit"	    "5"
 		"command"	"upgrade 1"
+	}
+    "4"
+	{
+		"name"		"KashBoost"
+		"price"		"3000"
+        "limit"	    "3"
+		"command"	"upgrade 2"
+	}
+    "4"
+	{
+        //setting this to 10 makes it 110 since m_iHealthRegenBoostMult is already set to 1.
+		"name"		"HealthRegenRange"
+		"price"		"2500"
+        "limit"	    "9"
+		"command"	"upgrade 3"
 	}
 	"5"
 	{

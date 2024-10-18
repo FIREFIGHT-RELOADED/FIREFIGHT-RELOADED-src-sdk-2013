@@ -11,9 +11,9 @@
 		"Button.Height.Pressed"					"70"
 		"Button.Underline.Height"				"1"
 
-		"Button.Text.OffsetX.Out"					"64"
-		"Button.Text.OffsetX.Over"					"94"
-		"Button.Text.OffsetX.Pressed"				"94"
+		"Button.Text.OffsetX.Out"					"44"
+		"Button.Text.OffsetX.Over"					"74"
+		"Button.Text.OffsetX.Pressed"				"74"
 		"Button.Text.OffsetY.Out"					"0"
 		"Button.Text.OffsetY.Over"					"-8"
 		"Button.Text.OffsetY.Pressed"				"-8"
