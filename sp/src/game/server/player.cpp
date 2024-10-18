@@ -210,7 +210,9 @@ ConVar  player_debug_print_damage( "player_debug_print_damage", "0", FCVAR_CHEAT
 ConVar sv_regeneration("sv_regeneration", "1", FCVAR_REPLICATED | FCVAR_ARCHIVE);
 ConVar sv_regeneration_wait_time("sv_regeneration_wait_time", "2.3", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar sv_regeneration_rate("sv_regeneration_rate", "5.5", FCVAR_REPLICATED | FCVAR_CHEAT);
-ConVar sv_regen_interval("sv_regen_interval", "10", FCVAR_REPLICATED | FCVAR_CHEAT, "Set what interval of health to regen to.\n    i.e. if this is set to the default value (10), if you are damaged to 75 health, you'll regenerate to 80 health.\n    Set this to 0 to disable this mechanic.");
+ConVar sv_regeneration_interval("sv_regeneration_interval", "10", FCVAR_REPLICATED | FCVAR_CHEAT, "Set what interval of health to regen to.\n    i.e. if this is set to the default value (10), if you are damaged to 75 health, you'll regenerate to 80 health.\n    Set this to 0 to disable this mechanic.");
+
+ConVar sv_health_boost_val("sv_health_boost_val", "10", FCVAR_REPLICATED | FCVAR_CHEAT);
 
 ConVar sv_decay_rate("sv_decay_rate", "8.5", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar sv_decay_increaserateminhealth("sv_decay_increaserateminhealth", "1000", FCVAR_REPLICATED | FCVAR_CHEAT);
@@ -694,6 +696,8 @@ BEGIN_DATADESC( CBasePlayer )
 	DEFINE_FIELD(m_iLevel, FIELD_INTEGER),
 	DEFINE_FIELD(m_iMaxExp, FIELD_INTEGER),
 	DEFINE_FIELD(m_iExpBoostMult, FIELD_INTEGER),
+	DEFINE_FIELD(m_iKashBoostMult, FIELD_INTEGER),
+	DEFINE_FIELD(m_iHealthRegenBoostMult, FIELD_INTEGER),
 	DEFINE_FIELD(m_iPerkInfiniteAuxPower, FIELD_INTEGER),
 	DEFINE_FIELD(m_iPerkInfiniteAmmo, FIELD_INTEGER),
 	DEFINE_FIELD(m_iPerkHealthRegen, FIELD_INTEGER),
@@ -897,6 +901,8 @@ CBasePlayer::CBasePlayer( )
 	m_iLevel = 1;
 	//LevelUp();
 	m_iExpBoostMult = 1;
+	m_iKashBoostMult = 1;
+	m_iHealthRegenBoostMult = 1;
 
 	m_iPerkInfiniteAuxPower = 0;
 	m_iPerkInfiniteAmmo = 0;
@@ -1698,26 +1704,35 @@ void CBasePlayer::ShowPerkMessage(const char *pMessage)
 	MessageEnd();
 }
 
-void CBasePlayer::Market_SetMaxHealth(int limit)
+void CBasePlayer::Market_SetUpgrade(int upgradeID, int limit)
 {
-	if (m_rgMaxUpgrades[FIREFIGHT_UPGRADE_MAXHEALTH] < limit)
+	if (m_rgMaxUpgrades[upgradeID] < limit)
 	{
-		int health = 10;
-		int healthlimit = player_defaulthealth.GetInt() + (10 * limit);
-		IncrementMaxHealthValue(health, healthlimit);
-		IncrementHealthValue(health, healthlimit);
-		m_rgMaxUpgrades[FIREFIGHT_UPGRADE_MAXHEALTH]++;
-		DevMsg("SET m_rgMaxUpgrades[FIREFIGHT_UPGRADE_MAXHEALTH] TO %i\n", m_rgMaxUpgrades[FIREFIGHT_UPGRADE_MAXHEALTH]);
-	}
-}
+		switch (upgradeID)
+		{
+		case FIREFIGHT_UPGRADE_MAXHEALTH:
+			IncrementMaxHealthValue(sv_health_boost_val.GetInt(), player_defaulthealth.GetInt() + (sv_health_boost_val.GetInt() * limit));
+			IncrementHealthValue(sv_health_boost_val.GetInt(), player_defaulthealth.GetInt() + (sv_health_boost_val.GetInt() * limit));
+			DevMsg("SET MAX HEALTH TO %i\n", GetMaxHealthValue());
+			break;
+		case FIREFIGHT_UPGRADE_EXPBOOST:
+			m_iExpBoostMult++;
+			break;
+		case FIREFIGHT_UPGRADE_KASHBOOST:
+			m_iKashBoostMult++;
+			break;
+		case FIREFIGHT_UPGRADE_HEALTHREGENERATION_RANGE:
+			m_iHealthRegenBoostMult++;
+			DevMsg("SET REGEN INTERVAL TO %f. DIVISOR: %f\n", 
+				sv_regeneration_interval.GetFloat() * m_iHealthRegenBoostMult, 
+				m_iHealth / (sv_regeneration_interval.GetFloat() * m_iHealthRegenBoostMult));
+			break;
+		default:
+			break;
+		}
 
-void CBasePlayer::Market_SetEXPBoost(int limit)
-{
-	if (m_rgMaxUpgrades[FIREFIGHT_UPGRADE_EXPBOOST] < limit)
-	{
-		m_iExpBoostMult++;
-		m_rgMaxUpgrades[FIREFIGHT_UPGRADE_EXPBOOST]++;
-		DevMsg("SET m_rgMaxUpgrades[FIREFIGHT_UPGRADE_EXPBOOST] TO %i\n", m_rgMaxUpgrades[FIREFIGHT_UPGRADE_EXPBOOST]);
+		m_rgMaxUpgrades[upgradeID]++;
+		DevMsg("SET m_rgMaxUpgrades[%i] TO %i\n", upgradeID, m_rgMaxUpgrades[upgradeID]);
 	}
 }
 
@@ -5710,8 +5725,10 @@ void CBasePlayer::PostThink()
 
 			if (m_fRegenRemander >= 1)
 			{
+				float interval = sv_regeneration_interval.GetFloat() * m_iHealthRegenBoostMult;
+
 				//If the regen interval is set, and the health is evenly divisible by that interval, don't regen.
-				if (sv_regen_interval.GetFloat() > 0 && floor(m_iHealth / sv_regen_interval.GetFloat()) == m_iHealth / sv_regen_interval.GetFloat())
+				if (sv_regeneration_interval.GetFloat() > 0 && floor(m_iHealth / (interval)) == m_iHealth / (interval))
 				{
 					m_fRegenRemander = 0;
 				}
@@ -8245,14 +8262,7 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 
 		if (m_rgMaxUpgrades[upgradeID] < limit)
 		{
-			if (upgradeID == FIREFIGHT_UPGRADE_MAXHEALTH)
-			{
-				Market_SetMaxHealth(limit);
-			}
-			else if (upgradeID == FIREFIGHT_UPGRADE_EXPBOOST)
-			{
-				Market_SetEXPBoost(limit);
-			}
+			Market_SetUpgrade(upgradeID, limit);
 		}
 		else
 		{

@@ -54,6 +54,8 @@ enum FR_UpgradeIDs_t
 {
 	FIREFIGHT_UPGRADE_MAXHEALTH,
 	FIREFIGHT_UPGRADE_EXPBOOST,
+	FIREFIGHT_UPGRADE_KASHBOOST,
+	FIREFIGHT_UPGRADE_HEALTHREGENERATION_RANGE,
 
 	FIREFIGHT_UPGRADE_MAX
 };
@@ -721,8 +723,7 @@ public:
 	void					ShowLevelMessage(const char *pMessage);
 	void					ShowPerkMessage(const char *pMessage);
 
-	void					Market_SetMaxHealth(int limit);
-	void					Market_SetEXPBoost(int limit);
+	void					Market_SetUpgrade(int upgradeID, int limit);
 
 	// Accessor methods
 	int		FragCount() const		{ return m_iFrags; }
@@ -890,11 +891,11 @@ public:
 	void SetXP(int add = 1) { m_iExp = add; }
 	int GetMaxXP() { return m_iMaxExp; }
 	void SetMaxXP(int add = 1) { m_iMaxExp = add; }
-	void AddXP(int add = 1, bool addboost = true) 
+	void AddXP(int add = 1) 
 	{ 
 		if (m_iLevel != GetMaxLevel())
 		{
-			m_iExp += add * (addboost ? m_iExpBoostMult : 1 );
+			m_iExp += add;
 			CheckLevel();
 		}
 	}
@@ -913,9 +914,9 @@ public:
 	void ResetXPAlt() { m_iExp = 0;}
 	void EXPLevelPenalty();
 	int GetMoney();
-	void SetMoney(int set = 1) 
+	void SetMoney(int set = 1)
 	{ 
-		m_iMoney = set; 
+		m_iMoney = set;
 		//i hate this i hate this i hate this i hate this i hate this i hate this i hate this i hate this 
 		//i hate this i hate this i hate this i hate this i hate this i hate this i hate this i hate this 
 		//i hate this i hate this i hate this i hate this i hate this i hate this i hate this i hate this 
@@ -929,9 +930,9 @@ public:
 			ResetMoney();
 		}
 	}
-	void AddMoney(int add = 1) 
+	void AddMoney(int add = 1)
 	{ 
-		m_iMoney += add; 
+		m_iMoney += add;
 		static ConVarRef player_cur_money("player_cur_money");
 		player_cur_money.SetValue(m_iMoney);
 
@@ -985,9 +986,11 @@ private:
 	CNetworkVar(int, m_iMaxExp);
 	CNetworkVar(int, m_iMoney);
 
-	int m_iExpBoostMult;
-
 public:
+
+	int m_iExpBoostMult;
+	int m_iKashBoostMult;
+	int m_iHealthRegenBoostMult;
 
 	// Used by gamemovement to check if the entity is stuck.
 	int m_StuckLast;

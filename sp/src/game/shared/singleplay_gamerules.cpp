@@ -903,8 +903,11 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 					}
 				}
 
-				moneyReward += pEntity->GetLevel() * 10;
-				xpReward += pEntity->GetLevel() * 10;
+				moneyReward += (pEntity->GetLevel() * 10);
+				xpReward += (pEntity->GetLevel() * 10);
+
+				moneyReward *= pEntity->m_iKashBoostMult;
+				xpReward *= pEntity->m_iExpBoostMult;
 
 				if (g_fr_economy.GetBool())
 				{
