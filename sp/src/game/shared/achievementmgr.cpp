@@ -961,8 +961,8 @@ void CAchievementMgr::AwardAchievement( int iAchievementID )
 		ShowAchievementMessage(pEntity, hint.Access());
 	}
 
-	pEntity->AddXP(pAchievement->GetPointValue());
-	pEntity->AddMoney(pAchievement->GetPointValue());
+	pEntity->AddXP(pAchievement->GetPointValue() * pEntity->m_iExpBoostMult);
+	pEntity->AddMoney(pAchievement->GetPointValue() * pEntity->m_iKashBoostMult);
 #endif
 
     //=============================================================================
