@@ -52,7 +52,10 @@ enum FR_PerkIDs_t
 
 enum FR_UpgradeIDs_t
 {
-	FIREFIGHT_UPGRADE_MAXHEALTH
+	FIREFIGHT_UPGRADE_MAXHEALTH,
+	FIREFIGHT_UPGRADE_EXPBOOST,
+
+	FIREFIGHT_UPGRADE_MAX
 };
 
 // For queuing and processing usercmds
@@ -719,6 +722,7 @@ public:
 	void					ShowPerkMessage(const char *pMessage);
 
 	void					Market_SetMaxHealth(int limit);
+	void					Market_SetEXPBoost(int limit);
 
 	// Accessor methods
 	int		FragCount() const		{ return m_iFrags; }
@@ -890,7 +894,7 @@ public:
 	{ 
 		if (m_iLevel != GetMaxLevel())
 		{
-			m_iExp += add;
+			m_iExp += add * m_iExpBoostMult;
 			CheckLevel();
 		}
 	}
@@ -980,6 +984,8 @@ private:
 	CNetworkVar(int, m_iLevel);
 	CNetworkVar(int, m_iMaxExp);
 	CNetworkVar(int, m_iMoney);
+
+	int m_iExpBoostMult;
 
 public:
 
@@ -1237,7 +1243,7 @@ private:
 	// player locking
 	int						m_iPlayerLocked;
 
-	int						m_iHealthUpgrades;
+	int						m_rgMaxUpgrades[FIREFIGHT_UPGRADE_MAX];
 		
 protected:
 	// the player's personal view model

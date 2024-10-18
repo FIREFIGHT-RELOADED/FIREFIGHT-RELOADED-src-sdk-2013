@@ -1,3 +1,7 @@
+//Upgrade IDs
+//FIREFIGHT_UPGRADE_MAXHEALTH = 0
+//FIREFIGHT_UPGRADE_EXPBOOST = 1
+
 "ShopCatalog"
 {
 	"1"
@@ -19,103 +23,110 @@
         "limit"	    "15"
 		"command"	"upgrade 0"
 	}
-	"4"
+    "4"
+	{
+		"name"		"EXPBoost"
+		"price"		"1550"
+        "limit"	    "5"
+		"command"	"upgrade 1"
+	}
+	"5"
 	{
 		"name"		"PistolAmmo"
 		"price"		"10"
 		"command"	"ammo Pistol 20"
 	}
-	"5"
+	"6"
 	{
 		"name"		"SMGAmmo"
 		"price"		"15"
 		"command"	"ammo SMG1 45"
 	}
-	"6"
+	"7"
 	{
 		"name"		"SMGGrenade"
 		"price"		"185"
 		"command"	"ammo SMG1_Grenade 1"
 	}
-	"7"
+	"8"
 	{
 		"name"		"MP5Ammo"
 		"price"		"10"
 		"command"	"ammo MP5Ammo 30"
 	}
-	"8"
+	"9"
 	{
 		"name"		"357Ammo"
 		"price"		"40"
 		"command"	"ammo 357 20"
 	}
-	"9"
+	"10"
 	{
 		"name"		"AR2Ammo"
 		"price"		"15"
 		"command"	"ammo AR2 20"
 	}
-	"10"
+	"11"
 	{
 		"name"		"AR2DarkEnergyBall"
 		"price"		"250"
 		"command"	"ammo AR2AltFire 1"
 	}
-	"11"
+	"12"
 	{
 		"name"		"CrossbowAmmo"
 		"price"		"55"
 		"command"	"ammo XBowBolt 20"
 	}
-	"12"
+	"13"
 	{
 		"name"		"ShotgunAmmo"
 		"price"		"25"
 		"command"	"ammo Buckshot 20" 
 	}
-	"13"
+	"14"
 	{
 		"name"		"RPGAmmo"
 		"price"		"250"
 		"command"	"ammo RPG_Round 1" 
 	}
-	"14"
+	"15"
 	{
 		"name"		"SniperRifleAmmo"
 		"price"		"85"
 		"command"	"ammo Sniper 15" 
 	}
-	"15"
+	"16"
 	{
 		"name"		"M249ParaAmmo"
 		"price"		"65"
 		"command"	"ammo M249 120" 
 	}
-	"16"
+	"17"
 	{
 		"name"		"GaussAmmo"
 		"price"		"200"
 		"command"	"ammo GaussEnergy 30" 
 	}
-	"17"
+	"18"
 	{
 		"name"		"RailgunAmmo"
 		"price"		"800"
 		"command"	"ammo Railgun 25" 
 	}
-    "18"
+    "19"
 	{
 		"name"		"RailgunOvercharge"
 		"price"		"3000"
 		"command"	"ammo Railgun 300" 
 	}
-	"19"
+	"20"
 	{
 		"name"		"OICWAmmo"
 		"price"		"30"
 		"command"	"ammo 556Round 60" 
 	}
-	"20"
+	"21"
 	{
 		"name"		"AlyxgunAmmo"
 		"price"		"25"

@@ -541,6 +541,7 @@ BEGIN_DATADESC( CBasePlayer )
 	//DEFINE_FIELD( m_iPlayerSound, FIELD_INTEGER ),	// Don't restore, set in Precache()
 	DEFINE_FIELD( m_iTargetVolume, FIELD_INTEGER ),
 	DEFINE_AUTO_ARRAY( m_rgItems, FIELD_INTEGER ),
+	DEFINE_AUTO_ARRAY(m_rgMaxUpgrades, FIELD_INTEGER),
 	//DEFINE_FIELD( m_fNextSuicideTime, FIELD_TIME ),
 	// DEFINE_FIELD( m_PlayerInfo, CPlayerInfo ),
 
@@ -603,7 +604,6 @@ BEGIN_DATADESC( CBasePlayer )
 	DEFINE_FIELD( m_ArmorValue, FIELD_INTEGER ),
 	DEFINE_FIELD( m_MaxArmorValue, FIELD_INTEGER),
 	DEFINE_FIELD(m_MaxHealthVal, FIELD_INTEGER),
-	DEFINE_FIELD(m_iHealthUpgrades, FIELD_INTEGER),
 	DEFINE_FIELD( m_DmgOrigin, FIELD_VECTOR ),
 	DEFINE_FIELD( m_DmgTake, FIELD_FLOAT ),
 	DEFINE_FIELD( m_DmgSave, FIELD_FLOAT ),
@@ -693,6 +693,7 @@ BEGIN_DATADESC( CBasePlayer )
 	DEFINE_FIELD(m_iExp, FIELD_INTEGER),
 	DEFINE_FIELD(m_iLevel, FIELD_INTEGER),
 	DEFINE_FIELD(m_iMaxExp, FIELD_INTEGER),
+	DEFINE_FIELD(m_iExpBoostMult, FIELD_INTEGER),
 	DEFINE_FIELD(m_iPerkInfiniteAuxPower, FIELD_INTEGER),
 	DEFINE_FIELD(m_iPerkInfiniteAmmo, FIELD_INTEGER),
 	DEFINE_FIELD(m_iPerkHealthRegen, FIELD_INTEGER),
@@ -895,6 +896,7 @@ CBasePlayer::CBasePlayer( )
 	m_iMaxExp = 0;
 	m_iLevel = 1;
 	//LevelUp();
+	m_iExpBoostMult = 1;
 
 	m_iPerkInfiniteAuxPower = 0;
 	m_iPerkInfiniteAmmo = 0;
@@ -903,14 +905,18 @@ CBasePlayer::CBasePlayer( )
 
 	m_iMoney = 0;
 
-	m_iHealthUpgrades = 0;
-
 	m_fRegenRate = sv_regeneration_rate.GetFloat();
 
 	m_kvLoadout = NULL;
 
 	m_bForcedLoadout = false;
 	m_szForcedLoadoutName = "";
+
+	for (int i = 0; i < FIREFIGHT_UPGRADE_MAX; i++)
+	{
+		m_rgMaxUpgrades[i] = 0;
+		DevMsg("SET m_rgMaxUpgrades[%i] TO %i\n", i, m_rgMaxUpgrades[i]);
+	}
 }
 
 CBasePlayer::~CBasePlayer( )
@@ -1694,10 +1700,24 @@ void CBasePlayer::ShowPerkMessage(const char *pMessage)
 
 void CBasePlayer::Market_SetMaxHealth(int limit)
 {
-	if (m_iHealthUpgrades < limit)
+	if (m_rgMaxUpgrades[FIREFIGHT_UPGRADE_MAXHEALTH] < limit)
 	{
-		IncrementMaxHealthValue(10, player_defaulthealth.GetInt() + (10 * limit));
-		m_iHealthUpgrades++;
+		int health = 10;
+		int healthlimit = player_defaulthealth.GetInt() + (10 * limit);
+		IncrementMaxHealthValue(health, healthlimit);
+		IncrementHealthValue(health, healthlimit);
+		m_rgMaxUpgrades[FIREFIGHT_UPGRADE_MAXHEALTH]++;
+		DevMsg("SET m_rgMaxUpgrades[FIREFIGHT_UPGRADE_MAXHEALTH] TO %i\n", m_rgMaxUpgrades[FIREFIGHT_UPGRADE_MAXHEALTH]);
+	}
+}
+
+void CBasePlayer::Market_SetEXPBoost(int limit)
+{
+	if (m_rgMaxUpgrades[FIREFIGHT_UPGRADE_EXPBOOST] < limit)
+	{
+		m_iExpBoostMult++;
+		m_rgMaxUpgrades[FIREFIGHT_UPGRADE_EXPBOOST]++;
+		DevMsg("SET m_rgMaxUpgrades[FIREFIGHT_UPGRADE_EXPBOOST] TO %i\n", m_rgMaxUpgrades[FIREFIGHT_UPGRADE_EXPBOOST]);
 	}
 }
 
@@ -6083,13 +6103,14 @@ void CBasePlayer::LoadLoadoutFile(const char* kvName, bool savetoLoadout)
 		bool setMaxHealth = pNode->GetBool("setmaxhealth", false);
 		bool incrementHealth = pNode->GetBool("incrementhealth", true);
 		bool disableincrementhealthmax = pNode->GetBool("disableincrementhealthmax", false);
-		bool resetHealthUpgrades = pNode->GetBool("resetmaxhealthupgrades", true);
+		bool resetUpgrades = pNode->GetBool("resetupgrades", false);
 
 		if (healthNum > 0)
 		{
-			if (setMaxHealth && resetHealthUpgrades)
+			if (setMaxHealth && resetUpgrades)
 			{
-				m_iHealthUpgrades = 0;
+				m_rgMaxUpgrades[FIREFIGHT_UPGRADE_MAXHEALTH] = 0;
+				DevMsg("SET m_rgMaxUpgrades[FIREFIGHT_UPGRADE_MAXHEALTH] TO %i\n", m_rgMaxUpgrades[FIREFIGHT_UPGRADE_MAXHEALTH]);
 			}
 
 			if (incrementHealth)
@@ -8220,27 +8241,40 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		// This is only because "item" can detect if we already own an item.
 		int limit = atoi(args[3]);
 
-		//right now we only have the max health upgrade.
-		if (upgradeID == FIREFIGHT_UPGRADE_MAXHEALTH)
+		bool deny = false;
+
+		if (m_rgMaxUpgrades[upgradeID] < limit)
 		{
-			if (m_iHealthUpgrades < limit)
+			if (upgradeID == FIREFIGHT_UPGRADE_MAXHEALTH)
 			{
 				Market_SetMaxHealth(limit);
-				engine->ClientCommand(edict(), "confirm_purchase %i", moneyAmount);
 			}
-			else
+			else if (upgradeID == FIREFIGHT_UPGRADE_EXPBOOST)
 			{
-				if (sv_store_denynotifications.GetBool())
-				{
-					CFmtStr hint;
-					hint.sprintf("#Valve_StoreBuyDenyTooManyUpgrades");
-					ShowLevelMessage(hint.Access());
-				}
+				Market_SetEXPBoost(limit);
+			}
+		}
+		else
+		{
+			deny = true;
+		}
 
-				if (sv_store_denysounds.GetBool())
-				{
-					EmitSound("Store.InsufficientFunds");
-				}
+		if (!deny)
+		{
+			engine->ClientCommand(edict(), "confirm_purchase %i", moneyAmount);
+		}
+		else
+		{
+			if (sv_store_denynotifications.GetBool())
+			{
+				CFmtStr hint;
+				hint.sprintf("#Valve_StoreBuyDenyTooManyUpgrades");
+				ShowLevelMessage(hint.Access());
+			}
+
+			if (sv_store_denysounds.GetBool())
+			{
+				EmitSound("Store.InsufficientFunds");
 			}
 		}
 
