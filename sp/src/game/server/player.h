@@ -890,11 +890,11 @@ public:
 	void SetXP(int add = 1) { m_iExp = add; }
 	int GetMaxXP() { return m_iMaxExp; }
 	void SetMaxXP(int add = 1) { m_iMaxExp = add; }
-	void AddXP(int add = 1) 
+	void AddXP(int add = 1, bool addboost = true) 
 	{ 
 		if (m_iLevel != GetMaxLevel())
 		{
-			m_iExp += add * m_iExpBoostMult;
+			m_iExp += add * (addboost ? m_iExpBoostMult : 1 );
 			CheckLevel();
 		}
 	}
