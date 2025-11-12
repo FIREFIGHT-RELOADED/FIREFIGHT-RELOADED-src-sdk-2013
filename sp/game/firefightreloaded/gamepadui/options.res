@@ -2,172 +2,172 @@
 {
 	"Difficulty"
 	{
-		"title"			"#GameUI_Difficulty"
-		"alternating"   "1"
+		"title"	"#GameUI_Difficulty"
+		"alternating"	"1"
 		"items"
 		{
 			"BasicSkillSelection"
 			{
-				"text"			"#GameUI_SelectDifficulty"
-				"type"			"wheelywheel"
-				"convar"		"_gamepadui_skill"
+				"text"	"#GameUI_SelectDifficulty"
+				"type"	"wheelywheel"
+				"convar"	"_gamepadui_skill"
 
 				"options"
 				{
-					"0"		"#GameUI_Easy"
-					"1"		"#GameUI_Medium"
-					"2"		"#GameUI_Hard"
-					"3"		"#GameUI_VeryHard"
-					"4"		"#GameUI_Nightmare"
+					"0"	"#GameUI_Easy"
+					"1"	"#GameUI_Medium"
+					"2"	"#GameUI_Hard"
+					"3"	"#GameUI_VeryHard"
+					"4"	"#GameUI_Nightmare"
 				}
 			}
-            
-            "LoadoutSelection"
+
+			"LoadoutSelection"
 			{
-				"text"			"#GameUI_SelectLoadout"
-				"type"			"wheelywheel"
-				"convar"		"sv_player_defaultloadout"
-                "usesstring"    "1"
+				"text"	"#GameUI_SelectLoadout"
+				"type"	"wheelywheel"
+				"convar"	"sv_player_defaultloadout"
+				"usesstring"	"1"
 
 				"options"
 				{
 					"default"		        "#GameUI_LoadoutDefault"
 					"default_nomelee"		"#GameUI_LoadoutDefaultNoMelee"
-                    "ironkick"		        "#GameUI_IronKickMode"
-                    "hardcore"		        "#GameUI_HardcoreMode"
-                    "default_hardcore"		        "#GameUI_LoadoutDefaultHardcore"
-                    "default_nomelee_hardcore"		        "#GameUI_LoadoutDefaultNoMeleeHardcore"
-                    "gaussrail"		        "#GameUI_LoadoutRailgun"
-                    "explosives"		        "#GameUI_LoadoutExplosives"
-                    "snipers"		        "#GameUI_LoadoutSnipers"
-                    "randomizer"            "#GameUI_LoadoutRandomizer"
-                    "randomizer_hardcore"   "#GameUI_LoadoutRandomizerPermadeath"
-                    "mapadd"		        "#FIREFIGHTRELOADED_ModMapping_Mapadd"
+					"ironkick"		        "#GameUI_IronKickMode"
+					"hardcore"		        "#GameUI_HardcoreMode"
+					"default_hardcore"		        "#GameUI_LoadoutDefaultHardcore"
+					"default_nomelee_hardcore"		        "#GameUI_LoadoutDefaultNoMeleeHardcore"
+					"gaussrail"		        "#GameUI_LoadoutRailgun"
+					"explosives"		        "#GameUI_LoadoutExplosives"
+					"snipers"		        "#GameUI_LoadoutSnipers"
+					"randomizer"            "#GameUI_LoadoutRandomizer"
+					"randomizer_hardcore"	"#GameUI_LoadoutRandomizerPermadeath"
+					"mapadd"		        "#FIREFIGHTRELOADED_ModMapping_Mapadd"
 				}
 			}
-            
-            "ClassicModifier"
+
+			"ClassicModifier"
 			{
-				"text"			"#GameUI_ClassicMode"
-				"type"			"wheelywheel"
-				"convar"		"g_fr_classic"
+				"text"	"#GameUI_ClassicMode"
+				"type"	"wheelywheel"
+				"convar"	"g_fr_classic"
 
 				"options"
 				{
-					"0"		"#gameui_disabled"
-					"1"		"#gameui_enabled"
+					"0"	"#gameui_disabled"
+					"1"	"#gameui_enabled"
 				}
 			}
 
 			"LoneWolfModifier"
 			{
-				"text"			"#GameUI_LoneWolfMode"
-				"type"			"wheelywheel"
-				"convar"		"g_fr_lonewolf"
+				"text"	"#GameUI_LoneWolfMode"
+				"type"	"wheelywheel"
+				"convar"	"g_fr_lonewolf"
 
 				"options"
 				{
-					"0"		"#gameui_disabled"
-					"1"		"#gameui_enabled"
+					"0"	"#gameui_disabled"
+					"1"	"#gameui_enabled"
 				}
 			}
-            
-            "SaveWeapons"
-            {
-                "text"			"#GameUI_SaveWeapons"
-				"type"			"wheelywheel"
-				"convar"		"sk_saveweapons"
+
+			"SaveWeapons"
+			{
+				"text"	"#GameUI_SaveWeapons"
+				"type"	"wheelywheel"
+				"convar"	"sk_saveweapons"
 
 				"options"
 				{
-					"0"		"#gameui_disabled"
-					"1"		"#gameui_enabled"
+					"0"	"#gameui_disabled"
+					"1"	"#gameui_enabled"
 				}
-            }
-            
-            "SavePurchasedWeapons"
-            {
-                "text"			"#GameUI_SaveWeapons_Store"
-				"type"			"wheelywheel"
-				"convar"		"sk_savepurchasedweapons"
+			}
+
+			"SavePurchasedWeapons"
+			{
+				"text"	"#GameUI_SaveWeapons_Store"
+				"type"	"wheelywheel"
+				"convar"	"sk_savepurchasedweapons"
 
 				"options"
 				{
-					"0"		"#gameui_disabled"
-					"1"		"#gameui_enabled"
+					"0"	"#gameui_disabled"
+					"1"	"#gameui_enabled"
 				}
-            }
-            
-            "SaveDroppedWeapons"
-            {
-                "text"			"#GameUI_SaveWeapons_Drops"
-				"type"			"wheelywheel"
-				"convar"		"sk_savedroppedweapons"
+			}
+
+			"SaveDroppedWeapons"
+			{
+				"text"	"#GameUI_SaveWeapons_Drops"
+				"type"	"wheelywheel"
+				"convar"	"sk_savedroppedweapons"
 
 				"options"
 				{
-					"0"		"#gameui_disabled"
-					"1"		"#gameui_enabled"
+					"0"	"#gameui_disabled"
+					"1"	"#gameui_enabled"
 				}
-            }
+			}
 			
 			"Grapple"
 			{
-				"text"			"#GameUI_GrappleToggle"
-				"type"			"wheelywheel"
-				"convar"		"sv_player_grapple"
+				"text"	"#GameUI_GrappleToggle"
+				"type"	"wheelywheel"
+				"convar"	"sv_player_grapple"
 
 				"options"
 				{
-					"0"		"#gameui_disabled"
-					"1"		"#gameui_enabled"
+					"0"	"#gameui_disabled"
+					"1"	"#gameui_enabled"
 				}
 			}
-            
-            "Katana"
+
+			"Katana"
 			{
-				"text"			"#GameUI_KatanaToggle"
-				"type"			"wheelywheel"
-				"convar"		"sv_player_katana"
+				"text"	"#GameUI_KatanaToggle"
+				"type"	"wheelywheel"
+				"convar"	"sv_player_katana"
 
 				"options"
 				{
-					"0"		"#gameui_disabled"
-					"1"		"#gameui_enabled"
+					"0"	"#gameui_disabled"
+					"1"	"#gameui_enabled"
 				}
 			}
-            
-            "Perks"
+
+			"Perks"
 			{
-				"text"			"#GameUI_Perks"
-				"type"			"wheelywheel"
-				"convar"		"sv_fr_perks"
+				"text"	"#GameUI_Perks"
+				"type"	"wheelywheel"
+				"convar"	"sv_fr_perks"
 
 				"options"
 				{
-					"0"		"#gameui_disabled"
-					"1"		"#gameui_enabled"
+					"0"	"#gameui_disabled"
+					"1"	"#gameui_enabled"
 				}
 			}
-            
-            "AdvancedHeader"
+
+			"AdvancedHeader"
 			{
-				"text"			"#GameUI_AdvancedNoEllipsis"
-				"type"			"headeryheader"
-                "advanced"		"1"
+				"text"	"#GameUI_AdvancedNoEllipsis"
+				"type"	"headeryheader"
+				"advanced"	"1"
 			}
-            
-            "ShowAdvancedGameOptions"
+
+			"ShowAdvancedGameOptions"
 			{
-				"text"			"#GameUI_ShowAdvancedOptions"
-				"type"			"wheelywheel"
-				"convar"		"gamepadui_showadvancedoptions"
-                "advanced"		"1"
+				"text"	"#GameUI_ShowAdvancedOptions"
+				"type"	"wheelywheel"
+				"convar"	"gamepadui_showadvancedoptions"
+				"advanced"	"1"
 
 				"options"
 				{
-					"0"		"#gameui_disabled"
-					"1"		"#gameui_enabled"
+					"0"	"#gameui_disabled"
+					"1"	"#gameui_enabled"
 				}
 			}
 			
@@ -176,16 +176,16 @@
 				"text"			"#GameUI_Difficulty_CustomPlayer"
 				"type"			"headeryheader"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 			}
-            
-            "DeckOverride"
+
+			"DeckOverride"
 			{
 				"text"			"#GameUI_DeckOverride"
 				"type"			"wheelywheel"
 				"convar"		"cl_deck_override_client_settings"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -193,14 +193,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "StartingKash"
+
+			"StartingKash"
 			{
 				"text"			"#GameUI_StartingKash"
 				"type"			"wheelywheel"
 				"convar"		"sv_player_startingmoney"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -208,30 +208,30 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "StartingKashAmount"
+
+			"StartingKashAmount"
 			{
 				"text"			"#GameUI_StartingKashAmount"
 				"type"			"slideyslide"
 				"convar"		"sv_player_startingmoney_amount"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"min"			"0"
 				"max"			"9999"
 				"step"			"5"
-                "step_adjustment"   "10"
+				"step_adjustment"	"10"
 
 				"textprecision" "2"
 			}
-            
-            "PlayerHealth"
+
+			"PlayerHealth"
 			{
 				"text"			"#GameUI_PlayerHealth"
 				"type"			"slideyslide"
 				"convar"		"player_defaulthealth"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"1"
 				"max"			"999"
@@ -239,14 +239,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "PlayerArmor"
+
+			"PlayerArmor"
 			{
 				"text"			"#GameUI_PlayerArmor"
 				"type"			"slideyslide"
 				"convar"		"player_defaultarmor"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"1"
 				"max"			"999"
@@ -254,14 +254,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "PlayerMaxArmor"
+
+			"PlayerMaxArmor"
 			{
 				"text"			"#GameUI_PlayerMaxArmor"
 				"type"			"slideyslide"
 				"convar"		"player_maxarmor"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"1"
 				"max"			"999"
@@ -269,30 +269,30 @@
 
 				"textprecision" "2"
 			}
-            
-            "PlayerBaseXP"
+
+			"PlayerBaseXP"
 			{
 				"text"			"#GameUI_PlayerBaseXP"
 				"type"			"slideyslide"
 				"convar"		"player_basexp"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"1"
 				"max"			"9999"
 				"step"			"5"
-                "step_adjustment"   "10"
+				"step_adjustment"	"10"
 
 				"textprecision" "2"
 			}
-            
-            "ArmorMode"
+
+			"ArmorMode"
 			{
 				"text"			"#GameUI_ArmorMode"
 				"type"			"wheelywheel"
 				"convar"		"player_armor_mode"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -301,14 +301,14 @@
 					"2"		"#GameUI_ArmorMode_FR"
 				}
 			}
-            
-            "GrappleRangeRestriction"
+
+			"GrappleRangeRestriction"
 			{
 				"text"			"#GameUI_GrappleRangeRestriction"
 				"type"			"wheelywheel"
 				"convar"		"sk_grapple_rangerestriction"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -316,14 +316,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "GrappleBatteryDrain"
+
+			"GrappleBatteryDrain"
 			{
 				"text"			"#GameUI_GrappleBatteryDrain"
 				"type"			"wheelywheel"
 				"convar"		"sk_grapple_batterydrain"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -331,14 +331,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "GrappleBatteryDrainTime"
+
+			"GrappleBatteryDrainTime"
 			{
 				"text"			"#GameUI_GrappleBatteryDrainTime"
 				"type"			"slideyslide"
 				"convar"		"sk_grapple_batterydrain_time"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"0"
 				"max"			"1"
@@ -346,14 +346,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "GrappleBatteryDrainAmount"
+
+			"GrappleBatteryDrainAmount"
 			{
 				"text"			"#GameUI_GrappleBatteryDrainAmount"
 				"type"			"slideyslide"
 				"convar"		"sk_grapple_batterydrain_amount"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"0"
 				"max"			"100"
@@ -361,19 +361,19 @@
 
 				"textprecision" "2"
 			}
-            
-            "GrappleMaxRange"
+
+			"GrappleMaxRange"
 			{
 				"text"			"#GameUI_GrappleMaxRange"
 				"type"			"slideyslide"
 				"convar"		"sk_grapple_rangerestriction_max"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"1"
 				"max"			"100000"
 				"step"			"5"
-                "step_adjustment"   "20"
+				"step_adjustment"	"20"
 
 				"textprecision" "2"
 			}
@@ -383,8 +383,8 @@
 				"text"			"#GameUI_RocketJumping"
 				"type"			"wheelywheel"
 				"convar"		"sv_player_rocketjumping"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -398,8 +398,8 @@
 				"text"			"#GameUI_ChangeMaxSpeed"
 				"type"			"wheelywheel"
 				"convar"		"sv_leagcy_maxspeed"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -414,7 +414,7 @@
 				"type"			"slideyslide"
 				"convar"		"sv_player_bullettime_timescale"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"1"
 				"max"			"100"
@@ -429,7 +429,7 @@
 				"type"			"slideyslide"
 				"convar"		"sv_player_bullettime_shop_timescale"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"1"
 				"max"			"100"
@@ -437,14 +437,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "HealthChargerRecharge"
+
+			"HealthChargerRecharge"
 			{
 				"text"			"#GameUI_HealthCharger_Recharge"
 				"type"			"wheelywheel"
 				"convar"		"sv_healthcharger_recharge"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -452,14 +452,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "HealthChargerRechargeTime"
+
+			"HealthChargerRechargeTime"
 			{
 				"text"			"#GameUI_HealthCharger_Recharge_Time"
 				"type"			"slideyslide"
 				"convar"		"sv_healthcharger_recharge_time"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"0"
 				"max"			"300"
@@ -467,14 +467,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "SuitChargerRecharge"
+
+			"SuitChargerRecharge"
 			{
 				"text"			"#GameUI_SuitCharger_Recharge"
 				"type"			"wheelywheel"
 				"convar"		"sv_suitcharger_recharge"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -482,14 +482,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "SuitChargerRechargeTime"
+
+			"SuitChargerRechargeTime"
 			{
 				"text"			"#GameUI_SuitCharger_Recharge_Time"
 				"type"			"slideyslide"
 				"convar"		"sv_suitcharger_recharge_time"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"0"
 				"max"			"300"
@@ -497,14 +497,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "HealthChargerUsesMoney"
+
+			"HealthChargerUsesMoney"
 			{
 				"text"			"#GameUI_HealthChargerUsesMoney"
 				"type"			"wheelywheel"
 				"convar"		"sk_healthcharger_usesmoney"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -512,14 +512,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "SuitChargerUsesMoney"
+
+			"SuitChargerUsesMoney"
 			{
 				"text"			"#GameUI_SuitChargerUsesMoney"
 				"type"			"wheelywheel"
 				"convar"		"sk_suitcharger_usesmoney"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -527,14 +527,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "ToggleEconomy"
+
+			"ToggleEconomy"
 			{
 				"text"			"#GameUI_ToggleEconomy"
 				"type"			"wheelywheel"
 				"convar"		"g_fr_economy"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -542,14 +542,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "PerksInfiniteAuxPower"
+
+			"PerksInfiniteAuxPower"
 			{
 				"text"			"#GameUI_Perks_InfiniteAuxPower"
 				"type"			"wheelywheel"
 				"convar"		"sv_fr_perks_infiniteauxpower"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -557,14 +557,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "PerksInfiniteAmmo"
+
+			"PerksInfiniteAmmo"
 			{
 				"text"			"#GameUI_Perks_InfiniteAmmo"
 				"type"			"wheelywheel"
 				"convar"		"sv_fr_perks_infiniteammo"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -572,14 +572,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "HealthRegenPerk"
+
+			"HealthRegenPerk"
 			{
 				"text"			"#GameUI_MakeHealthRegenPerk"
 				"type"			"wheelywheel"
 				"convar"		"sv_fr_perks_healthregeneration_perkmode"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -594,7 +594,7 @@
 				"type"			"wheelywheel"
 				"convar"		"sv_fr_perks_healthregenerationrate"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -602,14 +602,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "HealthRegenInGeneral"
+
+			"HealthRegenInGeneral"
 			{
 				"text"			"#GameUI_HealthRegen"
 				"type"			"wheelywheel"
 				"convar"		"sv_regeneration"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -624,7 +624,7 @@
 				"type"			"wheelywheel"
 				"convar"		"sv_fr_perks_healthregeneration_perkmode_inmutators"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -639,7 +639,7 @@
 				"type"			"slideyslide"
 				"convar"		"sv_fr_reward_attemptcount"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"1"
 				"max"			"15"
@@ -647,14 +647,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "PlayerAllyRegenTime"
+
+			"PlayerAllyRegenTime"
 			{
 				"text"			"#GameUI_PlayerAllyRegenTime"
 				"type"			"slideyslide"
 				"convar"		"sk_ally_regen_time"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"0.1"
 				"max"			"2"
@@ -662,22 +662,22 @@
 
 				"textprecision" "2"
 			}
-            
-            "CustomWeaponOptions"
+
+			"CustomWeaponOptions"
 			{
 				"text"			"#GameUI_Difficulty_CustomWep"
 				"type"			"headeryheader"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 			}
-            
-            "RailgunOverchargeLimit"
+
+			"RailgunOverchargeLimit"
 			{
 				"text"			"#GameUI_RailgunOverchargeLimit"
 				"type"			"slideyslide"
 				"convar"		"sk_weapon_railgun_overcharge_limit"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"0"
 				"max"			"999"
@@ -685,14 +685,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "PumpSecondaryFire"
+
+			"PumpSecondaryFire"
 			{
 				"text"			"#GameUI_PumpSecondaryFire"
 				"type"			"wheelywheel"
 				"convar"		"sv_shotgun_pumpsecondaryfire"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -700,14 +700,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "InfiniteKnives"
+
+			"InfiniteKnives"
 			{
 				"text"			"#GameUI_InfiniteKnives"
 				"type"			"wheelywheel"
 				"convar"		"sv_infinite_knives"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -715,14 +715,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "InfiniteTurrets"
+
+			"InfiniteTurrets"
 			{
 				"text"			"#GameUI_InfiniteTurrets"
 				"type"			"wheelywheel"
 				"convar"		"sv_infinite_turrets"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -730,14 +730,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "ShootInZoom"
+
+			"ShootInZoom"
 			{
 				"text"			"#GameUI_ShootInZoom"
 				"type"			"wheelywheel"
 				"convar"		"sv_player_shootinzoom"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -745,14 +745,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "SMG1GrenadeGlassPassthrough"
+
+			"SMG1GrenadeGlassPassthrough"
 			{
 				"text"			"#GameUI_SMG1GrenadeGlassPassthrough"
 				"type"			"wheelywheel"
 				"convar"		"smg1_grenade_glass_passthrough"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -760,14 +760,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "CrossbowGlassPassthrough"
+
+			"CrossbowGlassPassthrough"
 			{
 				"text"			"#GameUI_CrossbowGlassPassthrough"
 				"type"			"wheelywheel"
 				"convar"		"crossbow_new_glass_passthrough"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -781,8 +781,8 @@
 				"text"			"#GameUI_MagazineStyledReloads"
 				"type"			"wheelywheel"
 				"convar"		"weapon_magazinestyledreloads"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -790,14 +790,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "ItemRespawn"
+
+			"ItemRespawn"
 			{
 				"text"			"#GameUI_Item_Respawn"
 				"type"			"wheelywheel"
 				"convar"		"sv_item_respawn"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -805,14 +805,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "WeaponRespawn"
+
+			"WeaponRespawn"
 			{
 				"text"			"#GameUI_Weapon_Respawn"
 				"type"			"wheelywheel"
 				"convar"		"sv_weapon_respawn"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -820,14 +820,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "CombineBallSeekAngle"
+
+			"CombineBallSeekAngle"
 			{
 				"text"			"#GameUI_CombineBallSeekAngle"
 				"type"			"slideyslide"
 				"convar"		"sk_combineball_seek_angle"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"5"
 				"max"			"30"
@@ -835,14 +835,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "CombineBallGuideFactor"
+
+			"CombineBallGuideFactor"
 			{
 				"text"			"#GameUI_CombineBallGuideFactor"
 				"type"			"slideyslide"
 				"convar"		"sk_combineball_guidefactor"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"0.1"
 				"max"			"4"
@@ -850,14 +850,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "CombineBallSearchRadius"
+
+			"CombineBallSearchRadius"
 			{
 				"text"			"#GameUI_CombineBallSearchRadius"
 				"type"			"slideyslide"
 				"convar"		"sk_combine_ball_search_radius"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"16"
 				"max"			"2048"
@@ -865,14 +865,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "CombineBallSeekKill"
+
+			"CombineBallSeekKill"
 			{
 				"text"			"#GameUI_CombineBallSeekKill"
 				"type"			"wheelywheel"
 				"convar"		"sk_combineball_seek_kill"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -886,16 +886,16 @@
 				"text"			"#GameUI_Difficulty_CustomEnemy"
 				"type"			"headeryheader"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 			}
-            
-            "SpawnerHideFromPlayer"
+
+			"SpawnerHideFromPlayer"
 			{
 				"text"			"#GameUI_SpawnerHideFromPlayer"
 				"type"			"wheelywheel"
 				"convar"		"sk_spawnerhidefromplayer"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -903,14 +903,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "SpawnerDifficultyAdjust"
+
+			"SpawnerDifficultyAdjust"
 			{
 				"text"			"#GameUI_SpawnerDifficultyAdjust"
 				"type"			"wheelywheel"
 				"convar"		"sk_spawner_difficultyadjust"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -918,14 +918,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "SpawnerDeckAdjust"
+
+			"SpawnerDeckAdjust"
 			{
 				"text"			"#GameUI_SpawnerDeckAdjust"
 				"type"			"slideyslide"
 				"convar"		"sk_spawner_deckadjustfactor"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"1"
 				"max"			"3"
@@ -939,8 +939,8 @@
 				"text"			"#GameUI_SpawnRareEnemies"
 				"type"			"wheelywheel"
 				"convar"		"sk_spawnrareenemies"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -948,14 +948,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "RumbleEnemyAttack"
+
+			"RumbleEnemyAttack"
 			{
 				"text"			"#GameUI_FIREFIGHTRUMBLE_EnemyAttack"
 				"type"			"wheelywheel"
 				"convar"		"firefightrumble_enemyattack"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -963,14 +963,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "AIFear"
+
+			"AIFear"
 			{
 				"text"			"#GameUI_AIFear"
 				"type"			"wheelywheel"
 				"convar"		"ai_enable_fear_behavior"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -984,8 +984,8 @@
 				"text"			"#GameUI_CombineSecondary"
 				"type"			"wheelywheel"
 				"convar"		"sv_combine_shotgunner_secondaryfire"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -993,14 +993,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "SecondaryFireShotgunnerChance"
+
+			"SecondaryFireShotgunnerChance"
 			{
 				"text"			"#GameUI_CombineSecondaryChance"
 				"type"			"slideyslide"
 				"convar"		"sv_combine_shotgunner_secondaryfire_chance"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"0"
 				"max"			"20"
@@ -1008,14 +1008,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "CombineSoldierGrenades"
+
+			"CombineSoldierGrenades"
 			{
 				"text"			"#GameUI_CombineSoldierGrenades"
 				"type"			"wheelywheel"
 				"convar"		"combine_soldier_spawnwithgrenades"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1023,14 +1023,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "CombineAceBulletResistance"
+
+			"CombineAceBulletResistance"
 			{
 				"text"			"#GameUI_CombineAceBulletResistance"
 				"type"			"wheelywheel"
 				"convar"		"combine_ace_disablebulletresistance"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1038,14 +1038,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "CombineTacticalVariants"
+
+			"CombineTacticalVariants"
 			{
 				"text"			"#GameUI_CombineTacticalVariants"
 				"type"			"wheelywheel"
 				"convar"		"combine_spawnwithtacticalvariant"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1053,14 +1053,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "AceShieldMode"
+
+			"AceShieldMode"
 			{
 				"text"			"#GameUI_AceShieldMode"
 				"type"			"wheelywheel"
 				"convar"		"combine_ace_shieldspawnmode"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1069,14 +1069,14 @@
 					"2"		"#GameUI_ShieldMode_Ace_Random"
 				}
 			}
-            
-            "MetropoliceManhacks"
+
+			"MetropoliceManhacks"
 			{
 				"text"			"#GameUI_MetropoliceManhacks"
 				"type"			"wheelywheel"
 				"convar"		"metropolice_spawnwithmanhacks"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1084,14 +1084,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "MetrocopReactionTime"
+
+			"MetrocopReactionTime"
 			{
 				"text"			"#GameUI_MetrocopReactionTime"
 				"type"			"slideyslide"
 				"convar"		"sk_metropolice_stitch_reaction"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"0.1"
 				"max"			"2"
@@ -1099,14 +1099,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "HeadcrablessDamage"
+
+			"HeadcrablessDamage"
 			{
 				"text"			"#GameUI_HeadcrablessDamage"
 				"type"			"wheelywheel"
 				"convar"		"zombie_headcrabless_damage"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1114,14 +1114,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "Armored"
+
+			"Armored"
 			{
 				"text"			"#GameUI_ZombieArmor"
 				"type"			"wheelywheel"
 				"convar"		"sk_zombie_armored"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1129,14 +1129,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "ArmoredRarity"
+
+			"ArmoredRarity"
 			{
 				"text"			"#GameUI_ZombieArmorRarity"
 				"type"			"slideyslide"
 				"convar"		"sk_zombie_armored_rarity"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"0"
 				"max"			"20"
@@ -1144,14 +1144,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "SayCheese"
+
+			"SayCheese"
 			{
 				"text"			"#GameUI_ScannersBlindPlayer"
 				"type"			"wheelywheel"
 				"convar"		"sv_cscanner_blindplayer"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1159,14 +1159,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "SayCheeseOnTheXbox360"
+
+			"SayCheeseOnTheXbox360"
 			{
 				"text"			"#GameUI_ScannerBlindMode"
 				"type"			"wheelywheel"
 				"convar"		"sv_cscanner_blindtime"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1174,14 +1174,14 @@
 					"2"		"#GameUI_ScannerBlindMode_OB360"
 				}
 			}
-            
-            "SayCheeseWithBackjackAndHookers"
+
+			"SayCheeseWithBackjackAndHookers"
 			{
 				"text"			"#GameUI_ScannerBlindOverride"
 				"type"			"slideyslide"
 				"convar"		"sv_cscanner_blindtime_custom"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"0"
 				"max"			"15"
@@ -1189,14 +1189,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "SayCheeseHoldOnTheXbox360"
+
+			"SayCheeseHoldOnTheXbox360"
 			{
 				"text"			"#GameUI_ScannerHoldBlindMode"
 				"type"			"wheelywheel"
 				"convar"		"sv_cscanner_blindholdtime"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1204,14 +1204,14 @@
 					"2"		"#GameUI_ScannerHoldBlindMode_FR"
 				}
 			}
-            
-            "SayCheeseHoldWithBackjackAndHookers"
+
+			"SayCheeseHoldWithBackjackAndHookers"
 			{
 				"text"			"#GameUI_ScannerHoldBlindOverride"
 				"type"			"slideyslide"
 				"convar"		"sv_cscanner_blindholdtime_custom"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"0"
 				"max"			"15"
@@ -1219,14 +1219,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "RollermineStunDelay"
+
+			"RollermineStunDelay"
 			{
 				"text"			"#GameUI_RollermineStunDelay"
 				"type"			"slideyslide"
 				"convar"		"sk_rollermine_stun_delay"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"0.1"
 				"max"			"3.5"
@@ -1234,14 +1234,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "StalkerLasers"
+
+			"StalkerLasers"
 			{
 				"text"			"#GameUI_StalkerLasers"
 				"type"			"wheelywheel"
 				"convar"		"stalker_skilllevellasers"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1249,14 +1249,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "ControllerBallSpeed"
+
+			"ControllerBallSpeed"
 			{
 				"text"			"#GameUI_ControllerBallSpeed"
 				"type"			"slideyslide"
 				"convar"		"sk_controller_speedball"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"100"
 				"max"			"1500"
@@ -1264,14 +1264,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "BossGoTo_DroneKill"
+
+			"BossGoTo_DroneKill"
 			{
 				"text"			"#GameUI_BossGoTo_DroneKill"
 				"type"			"wheelywheel"
 				"convar"		"sk_gotoboss_ondronekill"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1279,14 +1279,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "BossGoTo_OnDeath"
+
+			"BossGoTo_OnDeath"
 			{
 				"text"			"#GameUI_BossGoTo_OnDeath"
 				"type"			"wheelywheel"
 				"convar"		"sk_gotoboss_ondeath"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1294,14 +1294,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "BossGoTo_Level"
+
+			"BossGoTo_Level"
 			{
 				"text"			"#GameUI_BossGoTo_Level"
 				"type"			"slideyslide"
 				"convar"		"sk_gotoboss_onlevel"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"0"
 				"max"			"20"
@@ -1309,14 +1309,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "BossGoTo_ClassicKillCount"
+
+			"BossGoTo_ClassicKillCount"
 			{
 				"text"			"#GameUI_BossGoTo_ClassicKillCount"
 				"type"			"slideyslide"
 				"convar"		"sk_gotoboss_classic_onkillcount"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"0"
 				"max"			"1000"
@@ -1324,14 +1324,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "AdvisorSpeed"
+
+			"AdvisorSpeed"
 			{
 				"text"			"#GameUI_AdvisorSpeed"
 				"type"			"slideyslide"
 				"convar"		"advisor_speed"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"0"
 				"max"			"250"
@@ -1339,14 +1339,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "AdvisorThrowVelocity"
+
+			"AdvisorThrowVelocity"
 			{
 				"text"			"#GameUI_AdvisorThrowVelocity"
 				"type"			"slideyslide"
 				"convar"		"advisor_throw_velocity"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"750"
 				"max"			"20000"
@@ -1354,14 +1354,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "AdvisorThrowRate"
+
+			"AdvisorThrowRate"
 			{
 				"text"			"#GameUI_AdvisorThrowRate"
 				"type"			"slideyslide"
 				"convar"		"advisor_throw_rate"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"1"
 				"max"			"10"
@@ -1369,14 +1369,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "AdvisorThrowWarnTime"
+
+			"AdvisorThrowWarnTime"
 			{
 				"text"			"#GameUI_AdvisorThrowWarnTime"
 				"type"			"slideyslide"
 				"convar"		"advisor_throw_warn_time"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"0.1"
 				"max"			"2"
@@ -1384,14 +1384,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "AdvisorThrowLeadPrefetchTime"
+
+			"AdvisorThrowLeadPrefetchTime"
 			{
 				"text"			"#GameUI_AdvisorThrowLeadPrefetchTime"
 				"type"			"slideyslide"
 				"convar"		"advisor_throw_lead_prefetch_time"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"0.1"
 				"max"			"2"
@@ -1399,14 +1399,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "AdvisorStagingNum"
+
+			"AdvisorStagingNum"
 			{
 				"text"			"#GameUI_AdvisorStagingNum"
 				"type"			"slideyslide"
 				"convar"		"advisor_staging_num"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"1"
 				"max"			"8"
@@ -1414,14 +1414,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "AdvisorBulletResistThrowVelocity"
+
+			"AdvisorBulletResistThrowVelocity"
 			{
 				"text"			"#GameUI_AdvisorBulletResistThrowVelocity"
 				"type"			"slideyslide"
 				"convar"		"advisor_bulletresistance_throw_velocity"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"750"
 				"max"			"20000"
@@ -1429,14 +1429,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "AdvisorBulletResistThrowRate"
+
+			"AdvisorBulletResistThrowRate"
 			{
 				"text"			"#GameUI_AdvisorBulletResistThrowRate"
 				"type"			"slideyslide"
 				"convar"		"advisor_bulletresistance_throw_rate"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"1"
 				"max"			"10"
@@ -1444,14 +1444,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "AdvisorBulletResistStagingNum"
+
+			"AdvisorBulletResistStagingNum"
 			{
 				"text"			"#GameUI_AdvisorBulletResistStagingNum"
 				"type"			"slideyslide"
 				"convar"		"advisor_bulletresistance_staging_num"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"1"
 				"max"			"8"
@@ -1459,14 +1459,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "AdvisorBulletResistSpeed"
+
+			"AdvisorBulletResistSpeed"
 			{
 				"text"			"#GameUI_AdvisorBulletResistSpeed"
 				"type"			"slideyslide"
 				"convar"		"advisor_bulletresistance_speed"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"0"
 				"max"			"150"
@@ -1474,14 +1474,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "AdvisorBulletResistance"
+
+			"AdvisorBulletResistance"
 			{
 				"text"			"#GameUI_AdvisorBulletResistance"
 				"type"			"wheelywheel"
 				"convar"		"advisor_disablebulletresistance"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1489,14 +1489,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "AdvisorPrematureDroning"
+
+			"AdvisorPrematureDroning"
 			{
 				"text"			"#GameUI_AdvisorPrematureDroning"
 				"type"			"wheelywheel"
 				"convar"		"advisor_enable_premature_droning"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1504,14 +1504,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "AdvisorDroning"
+
+			"AdvisorDroning"
 			{
 				"text"			"#GameUI_AdvisorDroning"
 				"type"			"wheelywheel"
 				"convar"		"advisor_enable_droning"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1519,14 +1519,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "AIEnhancedPerseption"
+
+			"AIEnhancedPerseption"
 			{
 				"text"			"#GameUI_AIEnhancedPerseption"
 				"type"			"wheelywheel"
 				"convar"		"ai_enhanced_perseption"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1534,14 +1534,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "Attributes"
+
+			"Attributes"
 			{
 				"text"			"#GameUI_ToggleAttributes"
 				"type"			"wheelywheel"
 				"convar"		"entity_attributes"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1556,7 +1556,7 @@
 				"type"			"slideyslide"
 				"convar"		"entity_attributes_chance"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"1"
 				"max"			"15"
@@ -1571,7 +1571,7 @@
 				"type"			"slideyslide"
 				"convar"		"entity_attributes_numpresets"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"1"
 				"max"			"30"
@@ -1584,7 +1584,7 @@
 	"Gameplay"
 	{
 		"title"			"#GameUI_Game"
-		"alternating"   "1"
+		"alternating"	"1"
 		"items"
 		{
 			"FasterSwitch"
@@ -1625,8 +1625,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "AutoAim"
+
+			"AutoAim"
 			{
 				"text"			"#GameUI_Autoaim"
 				"type"			"wheelywheel"
@@ -1651,8 +1651,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "AutoaimMode"
+
+			"AutoaimMode"
 			{
 				"text"			"#GameUI_AutoaimMode"
 				"type"			"wheelywheel"
@@ -1662,11 +1662,11 @@
 				{
 					"0"		"#gameui_disabled"
 					"1"		"#gameui_enabled"
-                    "2"		"#gameui_enabled_controller"
+					"2"		"#gameui_enabled_controller"
 				}
 			}
-            
-            "AutosaveLevelUp"
+
+			"AutosaveLevelUp"
 			{
 				"text"			"#GameUI_AutosaveLevelUp"
 				"type"			"wheelywheel"
@@ -1678,8 +1678,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "Headshots"
+
+			"Headshots"
 			{
 				"text"			"#GameUI_Headshots"
 				"type"			"wheelywheel"
@@ -1704,8 +1704,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "AllyTalk"
+
+			"AllyTalk"
 			{
 				"text"			"#GameUI_AlliesTalk"
 				"type"			"wheelywheel"
@@ -1717,8 +1717,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "KillingSprees"
+
+			"KillingSprees"
 			{
 				"text"			"#GameUI_KillingSprees"
 				"type"			"wheelywheel"
@@ -1730,8 +1730,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "UseTimer"
+
+			"UseTimer"
 			{
 				"text"			"#GameUI_UseTimer"
 				"type"			"wheelywheel"
@@ -1743,8 +1743,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "Flashlight"
+
+			"Flashlight"
 			{
 				"text"			"#GameUI_UseLeagcyFlashlight"
 				"type"			"wheelywheel"
@@ -1756,14 +1756,14 @@
 					"1"		"#GameUI_HL2Flashlight"
 				}
 			}
-            
-            "MobilityHeader"
+
+			"MobilityHeader"
 			{
 				"text"			"#GameUI_MobilityHeader"
 				"type"			"headeryheader"
 			}
-            
-            "ToggleBunnyhop"
+
+			"ToggleBunnyhop"
 			{
 				"text"			"#GameUI_ToggleBunnyhop"
 				"type"			"wheelywheel"
@@ -1775,8 +1775,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "TogglePowerslide"
+
+			"TogglePowerslide"
 			{
 				"text"			"#GameUI_TogglePowerslide"
 				"type"			"wheelywheel"
@@ -1788,8 +1788,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "ToggleWallrun"
+
+			"ToggleWallrun"
 			{
 				"text"			"#GameUI_ToggleWallrun"
 				"type"			"wheelywheel"
@@ -1806,15 +1806,15 @@
 			{
 				"text"			"#GameUI_AdvancedNoEllipsis"
 				"type"			"headeryheader"
-                "advanced"		"1"
+				"advanced"		"1"
 			}
-            
-            "ShowAdvancedGameOptions2"
+
+			"ShowAdvancedGameOptions2"
 			{
 				"text"			"#GameUI_ShowAdvancedOptions"
 				"type"			"wheelywheel"
 				"convar"		"gamepadui_showadvancedoptions"
-                "advanced"		"1"
+				"advanced"		"1"
 
 				"options"
 				{
@@ -1822,14 +1822,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "LowerVMOnSprint"
+
+			"LowerVMOnSprint"
 			{
 				"text"			"#GameUI_LowerOnSprint"
 				"type"			"wheelywheel"
 				"convar"		"viewmodel_lower_on_sprint"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1837,14 +1837,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "ShowNPCNames"
+
+			"ShowNPCNames"
 			{
 				"text"			"#GameUI_ShowNPCNames"
 				"type"			"wheelywheel"
 				"convar"		"sv_killog_shownpcnames"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1852,14 +1852,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "NPCvNPCKills"
+
+			"NPCvNPCKills"
 			{
 				"text"			"#GameUI_NPCvNPCKills"
 				"type"			"wheelywheel"
 				"convar"		"ai_allow_npcvnpc_killlog"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1867,14 +1867,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "PlayerDropWeaponsOnDeath"
+
+			"PlayerDropWeaponsOnDeath"
 			{
 				"text"			"#GameUI_PlayerDropWeaponsOnDeath"
 				"type"			"wheelywheel"
 				"convar"		"sv_player_dropweaponsondeath"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1882,14 +1882,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "StoreNotificationBuy"
+
+			"StoreNotificationBuy"
 			{
 				"text"			"#GameUI_StoreNotificationBuy"
 				"type"			"wheelywheel"
 				"convar"		"sv_store_buynotifications"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1897,14 +1897,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "StoreNotificationDeny"
+
+			"StoreNotificationDeny"
 			{
 				"text"			"#GameUI_StoreNotificationDeny"
 				"type"			"wheelywheel"
 				"convar"		"sv_store_denynotifications"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1912,14 +1912,14 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "ToggleFloatyMove"
+
+			"ToggleFloatyMove"
 			{
 				"text"			"#GameUI_ToggleFloatyMove"
 				"type"			"wheelywheel"
 				"convar"		"fr_floatymove"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -1927,30 +1927,30 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "GravityAdjust"
+
+			"GravityAdjust"
 			{
 				"text"			"#GameUI_GravityAdjust"
 				"type"			"wheelywheel"
 				"convar"		"sv_gravity"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
 					"600"		"#GameUI_GravityAdjust_HL2"
 					"800"		"#GameUI_GravityAdjust_TF2"
-                    "1100"		"#GameUI_GravityAdjust_ENDGAME"
+					"1100"		"#GameUI_GravityAdjust_ENDGAME"
 				}
 			}
-            
-            "JumpHeight"
+
+			"JumpHeight"
 			{
 				"text"			"#GameUI_JumpHeight"
 				"type"			"slideyslide"
 				"convar"		"sv_jump_height"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"1.0"
 				"max"			"99.0"
@@ -1958,30 +1958,30 @@
 
 				"textprecision" "2"
 			}
-            
-            "ToggleWallrunAnticipation"
+
+			"ToggleWallrunAnticipation"
 			{
 				"text"			"#GameUI_ToggleWallrunAnticipation"
 				"type"			"wheelywheel"
 				"convar"		"sv_wallrun_anticipation"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
 					"0"		"#GameUI_ToggleWallrunAnticipation_None"
 					"1"		"#GameUI_ToggleWallrunAnticipation_ViewRollOnly"
-                    "2"		"#GameUI_ToggleWallrunAnticipation_Full"
+					"2"		"#GameUI_ToggleWallrunAnticipation_Full"
 				}
 			}
-            
-            "WallrunRollAngle"
+
+			"WallrunRollAngle"
 			{
 				"text"			"#GameUI_WallrunViewRollAngle"
 				"type"			"slideyslide"
 				"convar"		"sv_wallrun_roll"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"0.0"
 				"max"			"14.0"
@@ -1989,14 +1989,14 @@
 
 				"textprecision" "2"
 			}
-            
-            "WallrunDirectControl"
+
+			"WallrunDirectControl"
 			{
 				"text"			"#GameUI_WallrunDirectControl"
 				"type"			"wheelywheel"
 				"convar"		"sv_wallrun_requiredirectcontrol"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -2010,8 +2010,8 @@
 				"text"			"#GameUI_IronsightTime"
 				"type"			"slideyslide"
 				"convar"		"ironsight_speed"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"min"			"6.5"
 				"max"			"50"
@@ -2026,7 +2026,7 @@
 				"type"			"slideyslide"
 				"convar"		"sv_rollangle"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"0.0"
 				"max"			"14.0"
@@ -2041,7 +2041,7 @@
 				"type"			"slideyslide"
 				"convar"		"sv_rollspeed"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"min"			"0"
 				"max"			"200"
@@ -2056,7 +2056,7 @@
 				"type"			"wheelywheel"
 				"convar"		"g_fr_spawneroldfunctionality"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -2071,7 +2071,7 @@
 				"type"			"wheelywheel"
 				"convar"		"g_gamemode"
 				"advanced"		"1"
-                "hidden"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -2089,8 +2089,8 @@
 				"text"			"#GameUI_NPCCorpseServer"
 				"type"			"wheelywheel"
 				"convar"		"ai_force_serverside_ragdoll"
-                "advanced"		"1"
-                "hidden"		"1"
+				"advanced"		"1"
+				"hidden"		"1"
 
 				"options"
 				{
@@ -2104,7 +2104,7 @@
 	{
 		"title"			"#GameUI_Keyboard"
 		"items_from"	"keyboard"
-		"alternating"   "1"
+		"alternating"	"1"
 		"items"
 		{
 			"AdvancedHeader"
@@ -2144,7 +2144,7 @@
 	"Mouse"
 	{
 		"title"			"#GameUI_Mouse"
-		"alternating"   "1"
+		"alternating"	"1"
 		"items"
 		{
 			"ReverseMouse"
@@ -2232,7 +2232,7 @@
 	"Audio"
 	{
 		"title"			"#GameUI_Audio"
-		"alternating"   "1"
+		"alternating"	"1"
 		"items"
 		{
 			"SFXSlider"
@@ -2256,8 +2256,8 @@
 				"max"			"1.0"
 				"step"			"0.1"
 			}
-            
-            "MusicSystem"
+
+			"MusicSystem"
 			{
 				"text"			"#GameUI_MusicSystem"
 				"type"			"wheelywheel"
@@ -2269,8 +2269,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "MusicSystemHUD"
+
+			"MusicSystemHUD"
 			{
 				"text"			"#GameUI_MusicSystemHUD"
 				"type"			"wheelywheel"
@@ -2282,8 +2282,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "MusicSystemForceShuffle"
+
+			"MusicSystemForceShuffle"
 			{
 				"text"			"#GameUI_MusicSystemForceShuffle"
 				"type"			"wheelywheel"
@@ -2352,8 +2352,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "LoseFocus2"
+
+			"LoseFocus2"
 			{
 				"text"			"#GameUI_SndPauseLoseFocus"
 				"type"			"wheelywheel"
@@ -2365,8 +2365,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "PauseOnPause"
+
+			"PauseOnPause"
 			{
 				"text"			"#GameUI_SndPauseGamePaused"
 				"type"			"wheelywheel"
@@ -2378,8 +2378,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "BullettimePitchControl"
+
+			"BullettimePitchControl"
 			{
 				"text"			"#GameUI_BullettimePitchControl"
 				"type"			"wheelywheel"
@@ -2391,10 +2391,10 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "BullettimePitchControlOverride"
+
+			"BullettimePitchControlOverride"
 			{
-                "text"			"#GameUI_BullettimePitchControlOverride"
+				"text"			"#GameUI_BullettimePitchControlOverride"
 				"type"			"slideyslide"
 				"convar"		"snd_timescale_pitchcontrol_pitchoverride"
 				"advanced"		"1"
@@ -2419,10 +2419,10 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "RailgunWarningBeepTime"
+
+			"RailgunWarningBeepTime"
 			{
-                "text"			"#GameUI_RailgunWarningBeepTime"
+				"text"			"#GameUI_RailgunWarningBeepTime"
 				"type"			"slideyslide"
 				"convar"		"sk_weapon_railgun_warning_beep_time"
 				"advanced"		"1"
@@ -2433,8 +2433,8 @@
 
 				"textprecision" "2"
 			}
-            
-            "SuitBootup"
+
+			"SuitBootup"
 			{
 				"text"			"#GameUI_SuitBootupMode"
 				"type"			"wheelywheel"
@@ -2446,7 +2446,7 @@
 					"1"	"#GameUI_SuitBootupMode_HL1"
 					"2"	"#GameUI_SuitBootupMode_HL1S"
 					"3"	"#GameUI_SuitBootupMode_FR"
-                    "3"	"#GameUI_SuitBootupMode_FRS"
+					"3"	"#GameUI_SuitBootupMode_FRS"
 				}
 			}
 			
@@ -2463,8 +2463,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "ManOfAFewWordsArentYouKill"
+
+			"ManOfAFewWordsArentYouKill"
 			{
 				"text"			"#GameUI_ToggleKillSound"
 				"type"			"wheelywheel"
@@ -2477,8 +2477,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "ManOfAFewWordsArentYouDeath"
+
+			"ManOfAFewWordsArentYouDeath"
 			{
 				"text"			"#GameUI_ToggleDeathSound"
 				"type"			"wheelywheel"
@@ -2491,8 +2491,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "ManOfAFewWordsArentYouPerk"
+
+			"ManOfAFewWordsArentYouPerk"
 			{
 				"text"			"#GameUI_TogglePerkSound"
 				"type"			"wheelywheel"
@@ -2505,8 +2505,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "ManOfAFewWordsArentYouHit"
+
+			"ManOfAFewWordsArentYouHit"
 			{
 				"text"			"#GameUI_ToggleHitSound"
 				"type"			"wheelywheel"
@@ -2532,8 +2532,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "PlayerDamageSounds"
+
+			"PlayerDamageSounds"
 			{
 				"text"			"#GameUI_PlayerDamageSounds"
 				"type"			"wheelywheel"
@@ -2545,8 +2545,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "StoreMusic"
+
+			"StoreMusic"
 			{
 				"text"			"#GameUI_StoreMusic"
 				"type"			"wheelywheel"
@@ -2559,8 +2559,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "StoreSoundBuy"
+
+			"StoreSoundBuy"
 			{
 				"text"			"#GameUI_StoreSoundBuy"
 				"type"			"wheelywheel"
@@ -2572,8 +2572,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "StoreSoundDeny"
+
+			"StoreSoundDeny"
 			{
 				"text"			"#GameUI_StoreSoundDeny"
 				"type"			"wheelywheel"
@@ -2597,7 +2597,7 @@
 	"Video"
 	{
 		"title"			"#GameUI_Video"
-		"alternating"   "1"
+		"alternating"	"1"
 		"items"
 		{
 			"Resolution"
@@ -2633,8 +2633,8 @@
 
 				"options_from"	"displaymode"
 			}
-            
-            "Glyphs"
+
+			"Glyphs"
 			{
 				"text"			"#Deck_Glyphs"
 				"type"			"wheelywheel"
@@ -2644,14 +2644,14 @@
 				{
 					"0"		"#Deck_Glyphs_Off"
 					"1"		"#Deck_Glyphs_Xbone"
-                    "2"		"#Deck_Glyphs_PS"
-                    "3"		"#Deck_Glyphs_Switch"
-                    "4"		"#Deck_Glyphs_Generic"
-                    "5"		"#Deck_Glyphs_Keyboard"
+					"2"		"#Deck_Glyphs_PS"
+					"3"		"#Deck_Glyphs_Switch"
+					"4"		"#Deck_Glyphs_Generic"
+					"5"		"#Deck_Glyphs_Keyboard"
 				}
 			}
-            
-            "FOV"
+
+			"FOV"
 			{
 				"text"			"#GameUI_FOV"
 				"type"			"slideyslide"
@@ -2692,8 +2692,8 @@
 					"1"		"#GameUI_FlipRight"
 				}
 			}
-            
-            "DeathcamView"
+
+			"DeathcamView"
 			{
 				"text"			"#GameUI_DeathcamMode"
 				"type"			"wheelywheel"
@@ -2703,11 +2703,11 @@
 				{
 					"0"		"#GameUI_DeathcamMode_HL2"
 					"1"		"#GameUI_DeathcamMode_HL2MP"
-                    "2"		"#GameUI_DeathcamMode_FP"
+					"2"		"#GameUI_DeathcamMode_FP"
 				}
 			}
-            
-            "IronsightVignette"
+
+			"IronsightVignette"
 			{
 				"text"			"#GameUI_IronsightVignette"
 				"type"			"wheelywheel"
@@ -2719,8 +2719,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "Crosshair"
+
+			"Crosshair"
 			{
 				"text"			"#GameUI_Crosshair"
 				"type"			"wheelywheel"
@@ -2732,15 +2732,15 @@
 					"1"		"#GameUI_CrosshairOn"
 				}
 			}
-            
-            "CrosshairAppearanceHeader"
+
+			"CrosshairAppearanceHeader"
 			{
 				"text"			"#GameUI_CrosshairDescription"
 				"type"			"headeryheader"
 				"advanced"		"1"
 			}
-            
-            "CrosshairRed"
+
+			"CrosshairRed"
 			{
 				"text"			"#GameUI_CrosshairRed"
 				"type"			"slideyslide"
@@ -2753,8 +2753,8 @@
 
 				"textprecision" "2"
 			}
-            
-            "CrosshairGreen"
+
+			"CrosshairGreen"
 			{
 				"text"			"#GameUI_CrosshairGreen"
 				"type"			"slideyslide"
@@ -2767,8 +2767,8 @@
 
 				"textprecision" "2"
 			}
-            
-            "CrosshairRedBlue"
+
+			"CrosshairRedBlue"
 			{
 				"text"			"#GameUI_CrosshairBlue"
 				"type"			"slideyslide"
@@ -2788,8 +2788,8 @@
 				"type"			"headeryheader"
 				"advanced"		"1"
 			}
-            
-            "DeathcamViewFPSwitch"
+
+			"DeathcamViewFPSwitch"
 			{
 				"text"			"#GameUI_DeathcamMode_FP_Switch"
 				"type"			"wheelywheel"
@@ -2799,11 +2799,11 @@
 				{
 					"0"		"#gameui_disabled"
 					"1"		"#GameUI_DeathcamMode_HL2"
-                    "2"		"#GameUI_DeathcamMode_HL2MP"
+					"2"		"#GameUI_DeathcamMode_HL2MP"
 				}
 			}
-            
-            "DeathcamViewFPSwitchMinDistance"
+
+			"DeathcamViewFPSwitchMinDistance"
 			{
 				"text"			"#GameUI_DeathcamMode_FP_Switch_MinDist"
 				"type"			"slideyslide"
@@ -2815,8 +2815,8 @@
 
 				"textprecision" "2"
 			}
-            
-            "ClassicBlood"
+
+			"ClassicBlood"
 			{
 				"text"			"#GameUI_ClassicBlood"
 				"type"			"wheelywheel"
@@ -2829,8 +2829,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "ClassicFire"
+
+			"ClassicFire"
 			{
 				"text"			"#GameUI_ClassicFire"
 				"type"			"wheelywheel"
@@ -2843,8 +2843,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "NPCMuzzleSmoke"
+
+			"NPCMuzzleSmoke"
 			{
 				"text"			"#GameUI_NPCMuzzleSmoke"
 				"type"			"wheelywheel"
@@ -2857,8 +2857,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "PLRMuzzleSmoke"
+
+			"PLRMuzzleSmoke"
 			{
 				"text"			"#GameUI_PLRMuzzleSmoke"
 				"type"			"wheelywheel"
@@ -2885,8 +2885,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "ZoomDraw"
+
+			"ZoomDraw"
 			{
 				"text"			"#GameUI_ZoomDraw"
 				"type"			"wheelywheel"
@@ -2899,8 +2899,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "PlayerDamageFlash"
+
+			"PlayerDamageFlash"
 			{
 				"text"			"#GameUI_PlayerDamageFlash"
 				"type"			"slideyslide"
@@ -2927,8 +2927,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "NPCGlow"
+
+			"NPCGlow"
 			{
 				"text"			"#GameUI_GlowEffect"
 				"type"			"wheelywheel"
@@ -3073,8 +3073,8 @@
 					"3"		"#GameUI_MuzzleValveStyled"
 				}
 			}
-            
-            "GaussBeam"
+
+			"GaussBeam"
 			{
 				"text"			"#GameUI_GaussBeamOption"
 				"type"			"wheelywheel"
@@ -3087,8 +3087,8 @@
 					"1"		"#Song_Album_HalfLife2"
 				}
 			}
-            
-            "BullettimeBulletSpeed"
+
+			"BullettimeBulletSpeed"
 			{
 				"text"			"#GameUI_Bullettime_Bullet_Speed"
 				"type"			"slideyslide"
@@ -3101,8 +3101,8 @@
 
 				"textprecision" "2"
 			}
-            
-            "BullettimeBulletSpeedOffset"
+
+			"BullettimeBulletSpeedOffset"
 			{
 				"text"			"#GameUI_Bullettime_Bullet_Speed_Offset"
 				"type"			"slideyslide"
@@ -3115,8 +3115,8 @@
 
 				"textprecision" "2"
 			}
-            
-            "BullettimeBulletSpeedOffsetPlayer"
+
+			"BullettimeBulletSpeedOffsetPlayer"
 			{
 				"text"			"#GameUI_Bullettime_Bullet_Speed_Offset_Player"
 				"type"			"slideyslide"
@@ -3255,8 +3255,8 @@
 
 				"textprecision" "2"
 			}
-            
-            "DroppedWeaponCount"
+
+			"DroppedWeaponCount"
 			{
 				"text"			"#GameUI_Performance_WeaponCount"
 				"type"			"slideyslide"
@@ -3283,8 +3283,8 @@
 
 				"textprecision" "2"
 			}
-            
-            "EntTolerance"
+
+			"EntTolerance"
 			{
 				"text"			"#GameUI_EdictTolerance"
 				"type"			"slideyslide"
@@ -3297,8 +3297,8 @@
 
 				"textprecision" "2"
 			}
-            
-            "AIGoByeBye"
+
+			"AIGoByeBye"
 			{
 				"text"			"#GameUI_NPCRemove"
 				"type"			"wheelywheel"
@@ -3311,8 +3311,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "AIGoByeByeTime"
+
+			"AIGoByeByeTime"
 			{
 				"text"			"#GameUI_NPCRemoveTime"
 				"type"			"slideyslide"
@@ -3325,8 +3325,8 @@
 
 				"textprecision" "2"
 			}
-            
-            "AIGoByeByeTimeRare"
+
+			"AIGoByeByeTimeRare"
 			{
 				"text"			"#GameUI_NPCRemoveTimeRare"
 				"type"			"slideyslide"
@@ -3339,8 +3339,8 @@
 
 				"textprecision" "2"
 			}
-            
-            "AIGoByeByeMaxDistance"
+
+			"AIGoByeByeMaxDistance"
 			{
 				"text"			"#GameUI_NPCRemoveMaxDistance"
 				"type"			"slideyslide"
@@ -3353,8 +3353,8 @@
 
 				"textprecision" "2"
 			}
-            
-            "AIGoByeByeFPSControl"
+
+			"AIGoByeByeFPSControl"
 			{
 				"text"			"#GameUI_NPCFPSControl"
 				"type"			"wheelywheel"
@@ -3367,8 +3367,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "AIGoByeByeMinFPS"
+
+			"AIGoByeByeMinFPS"
 			{
 				"text"			"#GameUI_NPCFPSTarget"
 				"type"			"slideyslide"
@@ -3381,8 +3381,8 @@
 
 				"textprecision" "2"
 			}
-            
-            "AIGoByeByeFPSMode"
+
+			"AIGoByeByeFPSMode"
 			{
 				"text"			"#GameUI_NPCFPSMode"
 				"type"			"wheelywheel"
@@ -3396,8 +3396,8 @@
 					"2"		"#gameui_high"
 				}
 			}
-            
-            "SpawnerFPSControl"
+
+			"SpawnerFPSControl"
 			{
 				"text"			"#GameUI_SpawnerFPSControl"
 				"type"			"wheelywheel"
@@ -3410,8 +3410,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "SpawnerFPS"
+
+			"SpawnerFPS"
 			{
 				"text"			"#GameUI_SpawnerFPS"
 				"type"			"slideyslide"
@@ -3424,8 +3424,8 @@
 
 				"textprecision" "2"
 			}
-            
-            "SpawnerMaxDistance"
+
+			"SpawnerMaxDistance"
 			{
 				"text"			"#GameUI_SpawnerMaxDistance"
 				"type"			"slideyslide"
@@ -3438,8 +3438,8 @@
 
 				"textprecision" "2"
 			}
-            
-            "SpawnerMaxDistanceOverrideFactor"
+
+			"SpawnerMaxDistanceOverrideFactor"
 			{
 				"text"			"#GameUI_SpawnerMaxDistanceOverrideFactor"
 				"type"			"slideyslide"
@@ -3466,8 +3466,8 @@
 					"1"		"#gameui_enabled"
 				}
 			}
-            
-            "Turbophysics"
+
+			"Turbophysics"
 			{
 				"text"			"#GameUI_Turbophysics"
 				"type"			"wheelywheel"

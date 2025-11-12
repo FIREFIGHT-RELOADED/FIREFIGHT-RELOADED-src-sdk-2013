@@ -1,11 +1,7 @@
 // Created by Crowbar 0.72
 
 $modelname "Zombie/Classic.mdl"
-
-$bodygroup "studio"
-{
-	studio "Zombie_reference.smd"
-}
+$body studio "Zombie_reference.smd"
 $bodygroup "headcrab1"
 {
 	blank
@@ -61,7 +57,7 @@ $lod 35
 {
 	replacemodel "Zombie_reference.smd" "Zombie_reference_lod3.smd"
 	replacemodel "Headcrab_reference.smd" "Headcrab_reference_lod3.smd"
-    replacemodel "Headcrab_shell_reference.smd" "Headcrab_shell_reference_lod1.smd"
+	replacemodel "Headcrab_shell_reference.smd" "Headcrab_shell_reference_lod1.smd"
 	replacebone "ValveBiped.Bip01_L_Toe0" "ValveBiped.Bip01_L_Foot"
 	replacebone "ValveBiped.Bip01_R_Toe0" "ValveBiped.Bip01_R_Foot"
 	replacebone "ValveBiped.Bip01_L_Finger3" "ValveBiped.Bip01_L_Hand"
@@ -103,7 +99,7 @@ $lod 60
 {
 	replacemodel "Zombie_reference.smd" "Zombie_reference_lod4.smd"
 	replacemodel "Headcrab_reference.smd" "Headcrab_reference_lod4.smd"
-    replacemodel "Headcrab_shell_reference.smd" "Headcrab_shell_reference_lod2.smd"
+	replacemodel "Headcrab_shell_reference.smd" "Headcrab_shell_reference_lod2.smd"
 	replacebone "ValveBiped.Bip01_L_Foot" "ValveBiped.Bip01_L_Calf"
 	replacebone "ValveBiped.Bip01_L_Toe0" "ValveBiped.Bip01_L_Foot"
 	replacebone "ValveBiped.Bip01_R_Foot" "ValveBiped.Bip01_R_Calf"
@@ -150,7 +146,7 @@ $lod 90
 {
 	replacemodel "Zombie_reference.smd" "Zombie_reference_lod5.smd"
 	replacemodel "Headcrab_reference.smd" "Headcrab_reference_lod5.smd"
-    replacemodel "Headcrab_shell_reference.smd" "Headcrab_shell_reference_lod3.smd"
+	replacemodel "Headcrab_shell_reference.smd" "Headcrab_shell_reference_lod3.smd"
 	replacebone "ValveBiped.Bip01_L_Foot" "ValveBiped.Bip01_L_Calf"
 	replacebone "ValveBiped.Bip01_L_Toe0" "ValveBiped.Bip01_L_Foot"
 	replacebone "ValveBiped.Bip01_R_Foot" "ValveBiped.Bip01_R_Calf"
@@ -197,7 +193,7 @@ $shadowlod
 {
 	replacemodel "Zombie_reference.smd" "Zombie_reference_lod6.smd"
 	replacemodel "Headcrab_reference.smd" "Headcrab_reference_lod6.smd"
-    replacemodel "Headcrab_shell_reference.smd" "Headcrab_shell_reference_lod3.smd"
+	replacemodel "Headcrab_shell_reference.smd" "Headcrab_shell_reference_lod3.smd"
 	replacebone "ValveBiped.Bip01_L_Foot" "ValveBiped.Bip01_L_Calf"
 	replacebone "ValveBiped.Bip01_L_Toe0" "ValveBiped.Bip01_L_Foot"
 	replacebone "ValveBiped.Bip01_R_Foot" "ValveBiped.Bip01_R_Calf"
@@ -242,8 +238,6 @@ $shadowlod
 }
 
 $surfaceprop "zombieflesh"
-
-$contents "solid"
 
 $illumposition -2.887 -4.81 33.483
 
@@ -1349,7 +1343,6 @@ $collisionjoints "classic_physics.smd"
 	$damping 0.1
 	$rotdamping 3
 	$rootbone "valvebiped.bip01_pelvis"
-
 
 	$jointconstrain "ValveBiped.Bip01_Spine2" x limit -44 44 1
 	$jointconstrain "ValveBiped.Bip01_Spine2" y limit -39 39 1

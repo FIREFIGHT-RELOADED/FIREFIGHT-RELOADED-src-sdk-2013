@@ -1,21 +1,15 @@
 // Created by Crowbar 0.57
 
 $modelname "player\playermodels\american_assault.mdl"
+$body studio "american_assault_dod_american_american_assault_reference.smd"
 
-$bodygroup "body"
-{
-	studio "american_assault_dod_american_american_assault_reference.smd"
-}
 $bodygroup "helmet"
 {
 	studio "american_assault_dod_american_american_helmet_reference.smd"
 	blank
 }
 
-
 $surfaceprop "flesh"
-
-$contents "solid"
 
 $illumposition -0.002 0.83 34.827
 
@@ -119,9 +113,6 @@ $ikautoplaylock "lfoot" 1 0.1
 $sequence "ragdoll" {
 	"american_assault_anims\ragdoll.smd"
 	activity "ACT_DIERAGDOLL" 1
-	fadein 0.2
-	fadeout 0.2
-	fps 30
 	ikrule "rhand" release
 	ikrule "lhand" release
 	ikrule "rfoot" release

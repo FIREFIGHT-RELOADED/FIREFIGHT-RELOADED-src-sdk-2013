@@ -1,11 +1,7 @@
 // Created by Crowbar 0.72
 
 $modelname "player/playermodels/combine_assassin.mdl"
-
-$bodygroup "sniper_f"
-{
-	studio "sniper_f.smd"
-}
+$body sniper_f "sniper_f.smd"
 
 $lod 20
 {
@@ -211,8 +207,6 @@ $surfaceprop "flesh"
 $jointsurfaceprop "ValveBiped.Bip01_Head1" "computer"
 $jointsurfaceprop "ValveBiped.forward" "computer"
 
-$contents "solid"
-
 $illumposition 1.218 -5.999 31.606
 
 $eyeposition 0 0 64
@@ -355,9 +349,6 @@ $ikautoplaylock "lfoot" 1 0.1
 $sequence "ragdoll" {
 	"sniper_f.smd"
 	activity "ACT_DIERAGDOLL" 1
-	fadein 0.2
-	fadeout 0.2
-	fps 30
 	ikrule "rhand" release contact 0 fakeorigin 0 0 0 fakerotate 0 0 0 floor 0 height 0 radius 0 range 0 0 30 30 target 0
 	ikrule "lhand" release contact 0 fakeorigin 0 0 0 fakerotate 0 0 0 floor 0 height 0 radius 0 range 0 0 30 30 target 1
 	ikrule "rfoot" release contact 0 fakeorigin 0 0 0 fakerotate 0 0 0 floor 0 height 0 radius 0 range 0 0 30 30 target 2

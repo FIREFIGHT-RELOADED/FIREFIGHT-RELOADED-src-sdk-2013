@@ -1,21 +1,14 @@
 // Created by Crowbar 0.57
 
 $modelname "player\playermodels\german_support.mdl"
-
-$bodygroup "body"
-{
-	studio "german_support_dod_german_german_support_reference.smd"
-}
+$body studio "german_support_dod_german_german_support_reference.smd"
 $bodygroup "helmet"
 {
 	studio "german_support_dod_german_german_helmet_reference.smd"
 	blank
 }
 
-
 $surfaceprop "flesh"
-
-$contents "solid"
 
 $illumposition -0.01 1.402 34.797
 
@@ -119,9 +112,6 @@ $ikautoplaylock "lfoot" 1 0.1
 $sequence "ragdoll" {
 	"german_support_anims\ragdoll.smd"
 	activity "ACT_DIERAGDOLL" 1
-	fadein 0.2
-	fadeout 0.2
-	fps 30
 	ikrule "rhand" release
 	ikrule "lhand" release
 	ikrule "rfoot" release

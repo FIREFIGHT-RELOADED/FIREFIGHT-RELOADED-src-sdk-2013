@@ -1,11 +1,7 @@
 // Created by Crowbar 0.72
 
 $modelname "combine_assassin.mdl"
-
-$bodygroup "sniper_f"
-{
-	studio "sniper_f.smd"
-}
+$body sniper_f "sniper_f.smd"
 $bodygroup "guns"
 {
 	blank
@@ -224,8 +220,6 @@ $surfaceprop "flesh"
 $jointsurfaceprop "ValveBiped.Bip01_Head1" "computer"
 $jointsurfaceprop "ValveBiped.forward" "computer"
 
-$contents "solid"
-
 $illumposition 1.218 -5.999 31.606
 
 $eyeposition 0 0 64
@@ -238,10 +232,10 @@ $cdmaterials "models\weapons\w_smg1\"
 $texturegroup "skinfamilies"
 {
 	{ "sniper_f_sheet"   }
-    { "sniper_f_sheet_alt" }
+	{ "sniper_f_sheet_alt" }
 	{ "sniper_f_sheet_r" }
 	{ "sniper_f_sheet_b" }
-    { "sniper_f_sheet_ace" }
+	{ "sniper_f_sheet_ace" }
 }
 
 $attachment "lefthand" "ValveBiped.Bip01_L_Hand" 3.5 0 0 rotate 0 0 0

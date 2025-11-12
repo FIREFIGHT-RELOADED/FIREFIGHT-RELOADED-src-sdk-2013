@@ -29,42 +29,42 @@
 {
 	"player_maxlevel"
 	{
-		"userid"	"short"			
+		"userid"	"short"
 	}
-    
-    "player_levelup"
+
+	"player_levelup"
 	{
-		"userid"	"short"	
-        "level"	    "short"
-	}
-	
-	"player_death"				// a game event, name may be 32 charaters long
-	{
-		"userid"	"short"   	// user ID who died				
-		"attacker"	"short"	 	// user ID who killed
-		"weapon"	"string" 	// weapon name killed used 
+		"userid"	"short"
+		"level"	"short"
 	}
 	
-	"npc_death"				// a game event, name may be 32 charaters long
+	"player_death"	// a game event, name may be 32 characters long
 	{
-		"victimname" "string"   	// user ID who died				
-		"attacker"	"short"	 	// user ID who killed
-		"weapon"	"string" 	// weapon name killed used 
-        "xpreward"	"short"
+		"userid"	"short"	// user ID who died
+		"attacker"	"short"	// user ID who killed
+		"weapon"	"string"	// weapon name killed used
+	}
+	
+	"npc_death"	// a game event, name may be 32 characters long
+	{
+		"victimname" "string"	// user ID who died
+		"attacker"	"short"	// user ID who killed
+		"weapon"	"string"	// weapon name killed used
+		"xpreward"	"short"
 		"moneyreward"	"short"
 	}
 	
-	"player_death_npc"				// a game event, name may be 32 charaters long
+	"player_death_npc"	// a game event, name may be 32 characters long
 	{
-		"userid"	"short"   	// user ID who died				
-		"attacker"	"string"	 	// user ID who killed
-		"weapon"	"string" 	// weapon name killed used 
+		"userid"	"short"	// user ID who died
+		"attacker"	"string"	// user ID who killed
+		"weapon"	"string"	// weapon name killed used
 	}
-    
-    "npc_death_npc"				// a game event, name may be 32 charaters long
+
+	"npc_death_npc"	// a game event, name may be 32 characters long
 	{
-		"victimname" "string"   // user ID who died				
-		"attacker"	"string"	 // user ID who killed
-		"weapon"	"string" 	// weapon name killed used 
+		"victimname" "string"	// user ID who died
+		"attacker"	"string"	// user ID who killed
+		"weapon"	"string"	// weapon name killed used
 	}
 }

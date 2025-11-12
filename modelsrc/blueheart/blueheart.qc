@@ -2,10 +2,7 @@
 
 $modelname "blueheart.mdl"
 
-$bodygroup "axebane"
-{
-	studio "heart.smd"
-}
+$body axebane "heart.smd"
 
 $texturegroup "astro"
 {

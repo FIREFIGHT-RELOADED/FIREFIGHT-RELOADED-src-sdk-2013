@@ -1,16 +1,9 @@
 // Created by Crowbar 0.72
 
 $modelname "weapons/w_gauss.mdl"
-
-$bodygroup "body"
-{
-	studio "tau_reference_world.smd"
-}
-
+$body studio "tau_reference_world.smd"
 
 $surfaceprop "weapon"
-
-$contents "solid"
 
 $illumposition 0.979 12.586 7.556
 
@@ -32,25 +25,13 @@ $definebone "ValveBiped.Weapon_bone" "ValveBiped.Bip01_R_Hand" 5 -1.5 -5.000001 
 $definebone "ValveBiped.w_shotgun" "ValveBiped.Weapon_bone" 4.107145 1.396073 -0.366386 2.167786 88.95456 -77.075714 0 0 0 0 0 0
 $definebone "ValveBiped.muzzle" "ValveBiped.Weapon_bone" 28.579779 0.623145 -5.976273 12.956009 -0.38921 -91.965868 0 0 0 0 0 0
 
-$sequence "idle1" {
-	"w_irifle_anims\idle1.smd"
-	activity "ACT_VM_IDLE" 1
-	fadein 0.2
-	fadeout 0.2
-	snap
-	fps 30
-	loop
-}
-
+$sequence idle "tau_reference_world.smd" { activity "ACT_VM_IDLE" 1 }
 $sequence "fire" {
 	"w_irifle_anims\fire.smd"
 	activity "ACT_RANGE_ATTACK_AR2" 1
 	{ event AE_NPC_MUZZLEFLASH 0 "COMBINE MUZZLE" }
 	{ event 3007 0 "1" }
-	fadein 0.2
-	fadeout 0.2
 	snap
-	fps 30
 }
 
 $collisionmodel "tau_reference_world.smd"

@@ -1,20 +1,11 @@
 // Created by Crowbar 0.72
 
 $modelname "weapons/v_railgun.mdl"
-
-$bodygroup "studio"
-{
-	studio "c_railgun_model.smd"
-}
+$body studio "c_railgun_model.smd"
 $bodygroup "Hands"
 {
 	studio "c_arms_hev.smd"
 }
-
-
-$surfaceprop "default"
-
-$contents "solid"
 
 $illumposition -4.919 -28.541 -16.577
 
@@ -124,10 +115,7 @@ $sectionframes 30 200
 $sequence "idle01" {
 	"v_railgun_anims\idle01.smd"
 	activity "ACT_VM_IDLE" 1
-	fadein 0.2
-	fadeout 0.2
 	node "0"
-	fps 30
 	loop
 }
 

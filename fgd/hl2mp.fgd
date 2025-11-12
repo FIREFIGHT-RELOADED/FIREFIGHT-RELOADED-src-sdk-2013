@@ -48,4 +48,3 @@
 
 
 @PointClass base(Weapon) studio("models/weapons/w_slam.mdl") = weapon_slam : "S.L.A.M. - Selectable Lightweight Attack Munition" []
-

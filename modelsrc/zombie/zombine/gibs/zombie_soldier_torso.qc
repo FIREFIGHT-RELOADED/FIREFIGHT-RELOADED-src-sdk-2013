@@ -1,16 +1,9 @@
 // Created by Crowbar 0.72
 
 $modelname "Zombie/zombie_soldier_torso.mdl"
-
-$bodygroup "studio"
-{
-	studio "Zombie_soldier_torso_reference.smd"
-}
-
+$body studio "Zombie_soldier_torso_reference.smd"
 
 $surfaceprop "zombieflesh"
-
-$contents "solid"
 
 $illumposition 0.487 2.7 47.355
 
@@ -18,9 +11,9 @@ $texturegroup skinfamilies
 {
 	{ "combinesoldiersheet_zombie"  }
 	{ "combinesoldiersheet_zombie_prison" }
-    { "combinesoldiersheet_zombie_shotgunner" }
-    { "combinesoldiersheet_zombie_elite_giblimb" }
-    { "combinesoldiersheet_zombie_ace" }
+	{ "combinesoldiersheet_zombie_shotgunner" }
+	{ "combinesoldiersheet_zombie_elite_giblimb" }
+	{ "combinesoldiersheet_zombie_ace" }
 }
 
 $cdmaterials "models\zombie_classic\"
@@ -63,9 +56,6 @@ $definebone "ValveBiped.Bip01_R_Finger0" "ValveBiped.Bip01_R_Hand" 1.819736 -0.2
 $sequence "ragdoll" {
 	"zombie_soldier_torso_anims\ragdoll.smd"
 	activity "ACT_DIERAGDOLL" 1
-	fadein 0.2
-	fadeout 0.2
-	fps 30
 }
 
 $collisionjoints "zombie_soldier_torso_physics.smd"

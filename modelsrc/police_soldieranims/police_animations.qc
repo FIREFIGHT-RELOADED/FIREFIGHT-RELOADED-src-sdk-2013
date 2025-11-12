@@ -4,8 +4,6 @@ $modelname "Police_animations_noconflicts.mdl"
 
 $surfaceprop "default"
 
-$contents "solid"
-
 $illumposition 0 -0.752 33.456
 
 $cdmaterials "models\police_xsi\"

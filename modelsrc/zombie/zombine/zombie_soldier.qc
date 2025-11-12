@@ -2,10 +2,7 @@
 
 $modelname "Zombie/Zombie_Soldier.mdl"
 
-$bodygroup "studio"
-{
-	studio "Zombie_Soldier_reference.smd"
-}
+$body studio "Zombie_Soldier_reference.smd"
 $bodygroup "headcrab1"
 {
 	blank
@@ -65,7 +62,7 @@ $lod 35
 {
 	replacemodel "Zombie_Soldier_reference.smd" "Zombie_Soldier_reference_lod3.smd"
 	replacemodel "Headcrab_reference.smd" "Headcrab_reference_lod3.smd"
-    replacemodel "Headcrab_shell_reference.smd" "Headcrab_shell_reference_lod1.smd"
+	replacemodel "Headcrab_shell_reference.smd" "Headcrab_shell_reference_lod1.smd"
 	replacebone "ValveBiped.Bip01_L_Toe0" "ValveBiped.Bip01_L_Foot"
 	replacebone "ValveBiped.Bip01_R_Toe0" "ValveBiped.Bip01_R_Foot"
 	replacebone "ValveBiped.Bip01_L_Finger0" "ValveBiped.Bip01_L_Hand"
@@ -114,7 +111,7 @@ $lod 60
 {
 	replacemodel "Zombie_Soldier_reference.smd" "Zombie_Soldier_reference_lod4.smd"
 	replacemodel "Headcrab_reference.smd" "Headcrab_reference_lod4.smd"
-    replacemodel "Headcrab_shell_reference.smd" "Headcrab_shell_reference_lod2.smd"
+	replacemodel "Headcrab_shell_reference.smd" "Headcrab_shell_reference_lod2.smd"
 	replacebone "ValveBiped.Bip01_L_Foot" "ValveBiped.Bip01_L_Calf"
 	replacebone "ValveBiped.Bip01_L_Toe0" "ValveBiped.Bip01_L_Foot"
 	replacebone "ValveBiped.Bip01_R_Foot" "ValveBiped.Bip01_R_Calf"
@@ -168,7 +165,7 @@ $lod 90
 {
 	replacemodel "Zombie_Soldier_reference.smd" "Zombie_Soldier_reference_lod5.smd"
 	replacemodel "Headcrab_reference.smd" "Headcrab_reference_lod5.smd"
-    replacemodel "Headcrab_shell_reference.smd" "Headcrab_shell_reference_lod3.smd"
+	replacemodel "Headcrab_shell_reference.smd" "Headcrab_shell_reference_lod3.smd"
 	replacebone "ValveBiped.Bip01_L_Foot" "ValveBiped.Bip01_L_Calf"
 	replacebone "ValveBiped.Bip01_L_Toe0" "ValveBiped.Bip01_L_Foot"
 	replacebone "ValveBiped.Bip01_R_Foot" "ValveBiped.Bip01_R_Calf"
@@ -222,7 +219,7 @@ $shadowlod
 {
 	replacemodel "Zombie_Soldier_reference.smd" "Zombie_Soldier_reference_lod6.smd"
 	replacemodel "Headcrab_reference.smd" "Headcrab_reference_lod6.smd"
-    replacemodel "Headcrab_shell_reference.smd" "Headcrab_shell_reference_lod3.smd"
+	replacemodel "Headcrab_shell_reference.smd" "Headcrab_shell_reference_lod3.smd"
 	replacebone "ValveBiped.Bip01_L_Foot" "ValveBiped.Bip01_L_Calf"
 	replacebone "ValveBiped.Bip01_L_Toe0" "ValveBiped.Bip01_L_Foot"
 	replacebone "ValveBiped.Bip01_R_Foot" "ValveBiped.Bip01_R_Calf"
@@ -287,9 +284,9 @@ $texturegroup skinfamilies
 {
 	{ "combinesoldiersheet_zombie"  }
 	{ "combinesoldiersheet_zombie_prison" }
-    { "combinesoldiersheet_zombie_shotgunner" }
-    { "combinesoldiersheet_zombie_elite_giblimb" }
-    { "combinesoldiersheet_zombie_ace" }
+	{ "combinesoldiersheet_zombie_shotgunner" }
+	{ "combinesoldiersheet_zombie_elite_giblimb" }
+	{ "combinesoldiersheet_zombie_ace" }
 }
 
 $cdmaterials "models\zombie_classic\"

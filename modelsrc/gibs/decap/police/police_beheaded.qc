@@ -1,16 +1,9 @@
 // Created by Crowbar 0.72
 
 $modelname "gibs/police_beheaded.mdl"
-
-$bodygroup "metrocopheadless"
-{
-	studio "metrocop_reference.smd"
-}
-
+$body metrocopheadless "metrocop_reference.smd"
 
 $surfaceprop "flesh"
-
-$contents "solid"
 
 $illumposition 0.535 0.685 30.688
 
@@ -74,9 +67,6 @@ $ikchain "lfoot" "ValveBiped.Bip01_L_Foot" knee 0.707 -0.707 0
 $sequence "ragdoll" {
 	"police_beheaded_anims\ragdoll.smd"
 	activity "ACT_DIERAGDOLL" 1
-	fadein 0.2
-	fadeout 0.2
-	fps 30
 	ikrule "rhand" release contact 0 fakeorigin 0 0 0 fakerotate 0 0 0 floor 0 height 0 radius 0 range 0 0 91 91 target 0
 	ikrule "lhand" release contact 0 fakeorigin 0 0 0 fakerotate 0 0 0 floor 0 height 0 radius 0 range 0 0 91 91 target 1
 	ikrule "rfoot" release contact 0 fakeorigin 0 0 0 fakerotate 0 0 0 floor 0 height 0 radius 0 range 0 0 91 91 target 2
@@ -92,7 +82,6 @@ $collisionjoints "police_beheaded_physics.smd"
 	$inertia 2
 	$damping 0.01
 	$rotdamping 0.4
-
 
 	$jointconstrain "ValveBiped.Bip01_Spine2" x limit -48 48 1
 	$jointconstrain "ValveBiped.Bip01_Spine2" y limit -25 25 1

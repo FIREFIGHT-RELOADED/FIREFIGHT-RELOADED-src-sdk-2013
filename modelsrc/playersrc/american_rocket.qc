@@ -1,10 +1,7 @@
 // Created by Crowbar 0.57
 
 $modelname "player\playermodels\american_rocket.mdl"
-
-$bodygroup "body"
-{
-	studio "american_rocket_dod_american_american_rocket_reference.smd"
+$body studio "american_rocket_dod_american_american_rocket_reference.smd"
 }
 $bodygroup "helmet"
 {
@@ -12,10 +9,7 @@ $bodygroup "helmet"
 	blank
 }
 
-
 $surfaceprop "flesh"
-
-$contents "solid"
 
 $illumposition -0.002 1.138 34.827
 
@@ -119,9 +113,6 @@ $ikautoplaylock "lfoot" 1 0.1
 $sequence "ragdoll" {
 	"american_rocket_anims\ragdoll.smd"
 	activity "ACT_DIERAGDOLL" 1
-	fadein 0.2
-	fadeout 0.2
-	fps 30
 	ikrule "rhand" release
 	ikrule "lhand" release
 	ikrule "rfoot" release

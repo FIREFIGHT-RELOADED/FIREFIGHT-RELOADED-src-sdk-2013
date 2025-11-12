@@ -28,15 +28,15 @@
 		"Button.Description.Hide.Out"				"1"
 		"Button.Description.Hide.Over"				"0"
 		"Button.Description.Hide.Pressed"			"0"
-        "Button.Description.Wrap"					"0"
+		"Button.Description.Wrap"					"0"
 
 		"Button.Animation.Width"					"0.15"
 		"Button.Animation.Height"					"0.25"
 		"Button.Animation.Background"				"0.2"
-		"Button.Animation.Text"					    "0.2"
-		"Button.Animation.Description"			    "0.3"
-        
-        "Button.Icon.Inset"						"4" 
+		"Button.Animation.Text"					"0.2"
+		"Button.Animation.Description"				"0.3"
+
+		"Button.Icon.Inset"						"4"
 	}
 
 	"Colors"

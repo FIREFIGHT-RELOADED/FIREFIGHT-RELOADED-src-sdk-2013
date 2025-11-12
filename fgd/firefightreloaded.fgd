@@ -97,8 +97,8 @@
 	output OnThrowWarn(void)        : "Fires when I trigger the warning green glow before tossing"
 	output OnThrow(void)            : "Fires just after I throw something"
 	output OnHealthIsNow(integer)       : "When I am damaged, my hitpoints thereafter"
-    output OnPlayerPin(void)       : "Fires when the player gets pinned"
-    output OnStopPlayerPin(void)       : "Fires when the player gets unpinned"
+	output OnPlayerPin(void)       : "Fires when the player gets pinned"
+	output OnStopPlayerPin(void)       : "Fires when the player gets unpinned"
 	
 	input SetThrowRate(float) : "Advisor will throw an object once per this many seconds (plus a little more)"
 	input WrenchImmediate(string) : "Advisor will immediately start levitating all objects with this name"
@@ -110,7 +110,7 @@
 	input ELightOn(void) : "Turn on an entity light at my location. Please remember to turn this off."
 	input ELightOff(void) : "Turn off my entity light."
     
-    input TurnOnBulletResistanceOutline(void) : "Turn on our shields."
+	input TurnOnBulletResistanceOutline(void) : "Turn on our shields."
 	
 	input DoNothing(void) : ""
 ]
@@ -118,21 +118,21 @@
 @NPCClass base(BaseNPC) studio("models/bullsquid.mdl") = npc_bullsquid : "Bullsquid" []
 @NPCClass base(BaseNPC) studio("models/houndeye.mdl") = npc_houndeye : "Houndeye" 
 [
-    spawnflags(Flags) =
+	spawnflags(Flags) =
 	[
 		32 : "Squad Leader" : 0
 	]
 ]
 @NPCClass base(BaseNPC) studio("models/agrunt.mdl") = npc_agrunt : "Alien Grunt" 
 [
-    spawnflags(Flags) =
+	spawnflags(Flags) =
 	[
 		32 : "Squad Leader" : 0
 	]
 ]
 @NPCClass base(BaseNPC) studio("models/controller.mdl") = npc_acontroller : "Alien Controller" 
 [
-    spawnflags(Flags) =
+	spawnflags(Flags) =
 	[
 		32 : "Squad Leader" : 0
 	]
@@ -142,8 +142,8 @@
 	spawnflags(Flags) =
 	[
 		32 : "Squad Leader" : 0
-        64 : "Friendly" : 0
-        32768 : "Mr. Roboto" : 0
+		64 : "Friendly" : 0
+		32768 : "Mr. Roboto" : 0
 	]
 	netname(string) : "Squad Name"
 	weapons(Choices) : "Weapons" : 1 =
@@ -153,7 +153,7 @@
 		5 : "SMG_GL"
 		8 : "SHOTGUN"
 		10 : "SHOTGUN_FRAG"
-        12 : "SHOTGUN_GL"
+		12 : "SHOTGUN_GL"
 	]
 ]
 
@@ -383,9 +383,9 @@
 	spawnflags(flags) =
 	[
 		1: "Play Everywhere" : 0
-        16: "Start Silent" : 0
-        32: "Not Looping" : 0
-        64: "Music" : 0
+		16: "Start Silent" : 0
+		32: "Not Looping" : 0
+		64: "Music" : 0
 	]
     
     message(sound) : "Sound to Play" : "" : "Name of the GameSound entry for the sound to play. Also supports direct .wav filenames."
@@ -397,13 +397,13 @@
 	// Inputs
 	input PlaySound(void) : "Play the FMOD sound."
 	input StopSound(void) : "Stop the FMOD sound."
-    input SetVolume(float) : "Set the sound volume."
-    input IncreaseVolume(float) : "Increase the sound volume."
-    input DecreaseVolume(float) : "Decrease the sound volume."
-    input SetMusicSpeed(float) : "Set the speed of the sound."
-    input Pitch(float) : "Set the pitch of the sound."
-    input IncreasePitch(float) : "Increase the pitch of the sound."
-    input DecreasePitch(float) : "Decrease the pitch of the sound."
+	input SetVolume(float) : "Set the sound volume."
+	input IncreaseVolume(float) : "Increase the sound volume."
+	input DecreaseVolume(float) : "Decrease the sound volume."
+	input SetMusicSpeed(float) : "Set the speed of the sound."
+	input Pitch(float) : "Set the pitch of the sound."
+	input IncreasePitch(float) : "Increase the pitch of the sound."
+	input DecreasePitch(float) : "Decrease the pitch of the sound."
 ]
 
 @PointClass base(Targetname, Parentname, Angles) iconsprite("editor/npc_maker.vmt") = npc_maker_firefight : "NPC Maker (Firefight)"
@@ -439,7 +439,7 @@
 	input Toggle(void) : "Toggles the spawner enabled/disabled state."
 	input Enable(void) : "Enables the spawner."
 	input Disable(void) : "Disables the spawner."
-    input DisableAndDestroyAll(void) : "Disables the spawner and destroys all children."
+	input DisableAndDestroyAll(void) : "Disables the spawner and destroys all children."
 	input SetMaxLiveChildren(integer) : "Sets the maximum number of NPCs that can be alive at any one time from this spawner."
 	input SetMaxLiveRareNPCs(integer) : "Sets the maximum number of rare NPCs that can be alive at any one time from this spawner."
 	input SetSpawnFrequency(float) : "Sets how often (in seconds) a new NPC will be spawned."

@@ -1,6 +1,6 @@
 "firefight_advisor"
 {
-    "ForcedLoadout" "boss"
-    "AllowMusicSystem" "0"
-    "HideFromPlayerOverride"	"0"
+	"ForcedLoadout" "boss"
+	"AllowMusicSystem" "0"
+	"HideFromPlayerOverride"	"0"
 }

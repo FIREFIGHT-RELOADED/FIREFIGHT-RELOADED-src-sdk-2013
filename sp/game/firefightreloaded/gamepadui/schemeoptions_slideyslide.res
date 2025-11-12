@@ -36,12 +36,12 @@
 		"Slider.Fill.Out"						"255 255 255 255"
 		"Slider.Fill.Over"						"255 255 255 255"
 		"Slider.Fill.Pressed"					"0 0 0 255"
-        
-        "Slider.FillMouseEdit.Out"						"0 113 229 255"
+
+		"Slider.FillMouseEdit.Out"						"0 113 229 255"
 		"Slider.FillMouseEdit.Over"						"0 113 229 255"
 		"Slider.FillMouseEdit.Pressed"					"0 0 0 255"
-        
-        "Slider.BackingMouseEdit.Out"					"0 0 0 255"
+
+		"Slider.BackingMouseEdit.Out"					"0 0 0 255"
 		"Slider.BackingMouseEdit.Over"					"0 0 0 255"
 		"Slider.BackingMouseEdit.Pressed"				"0 0 0 255"
 	}

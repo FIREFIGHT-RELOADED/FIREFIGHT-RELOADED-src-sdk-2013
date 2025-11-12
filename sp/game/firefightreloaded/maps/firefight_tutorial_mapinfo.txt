@@ -1,6 +1,6 @@
 "firefight_tutorial"
 {
-    "ForcedLoadout" "training"
-    "AllowMusicSystem" "0"
-    "HideFromPlayerOverride"	"0"
+	"ForcedLoadout" "training"
+	"AllowMusicSystem" "0"
+	"HideFromPlayerOverride"	"0"
 }

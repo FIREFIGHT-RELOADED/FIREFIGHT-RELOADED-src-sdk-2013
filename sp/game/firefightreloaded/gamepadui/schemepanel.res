@@ -130,8 +130,8 @@
 				"antialias"		"1"
 			}
 		}
-        
-        "Button.Prompt.Font"
+
+		"Button.Prompt.Font"
 		{
 			"settings"
 			{

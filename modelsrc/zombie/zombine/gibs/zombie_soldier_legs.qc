@@ -1,16 +1,9 @@
 // Created by Crowbar 0.72
 
 $modelname "Zombie/zombie_soldier_legs.mdl"
-
-$bodygroup "studio"
-{
-	studio "Zombie_soldier_legs_reference.smd"
-}
-
+$body studio "Zombie_soldier_legs_reference.smd"
 
 $surfaceprop "zombieflesh"
-
-$contents "solid"
 
 $illumposition 0.63 2.653 19.042
 
@@ -18,9 +11,9 @@ $texturegroup skinfamilies
 {
 	{ "combinesoldiersheet_zombie"  }
 	{ "combinesoldiersheet_zombie_prison" }
-    { "combinesoldiersheet_zombie_shotgunner" }
-    { "combinesoldiersheet_zombie_elite_giblimb" }
-    { "combinesoldiersheet_zombie_ace" }
+	{ "combinesoldiersheet_zombie_shotgunner" }
+	{ "combinesoldiersheet_zombie_elite_giblimb" }
+	{ "combinesoldiersheet_zombie_ace" }
 }
 
 $cdmaterials "models\zombie_classic\"
@@ -56,9 +49,6 @@ $definebone "ValveBiped.Bip01_Spine" "ValveBiped.Bip01" 0.000005 3.345117 -2.981
 $sequence "ragdoll" {
 	"zombie_soldier_legs_anims\ragdoll.smd"
 	activity "ACT_DIERAGDOLL" 1
-	fadein 0.2
-	fadeout 0.2
-	fps 30
 }
 
 $collisionjoints "zombie_soldier_legs_physics.smd"

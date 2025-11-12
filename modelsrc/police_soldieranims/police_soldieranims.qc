@@ -1,11 +1,7 @@
 // Created by Crowbar 0.72
 
 $modelname "Police_soldieranims.mdl"
-
-$bodygroup "police"
-{
-	studio "Police_reference.smd"
-}
+$body police "Police_reference.smd"
 $bodygroup "manhack"
 {
 	blank
@@ -254,8 +250,6 @@ $surfaceprop "flesh"
 
 $jointsurfaceprop "ValveBiped.Bip01_Head1" "no_decal"
 $jointsurfaceprop "ValveBiped.forward" "no_decal"
-
-$contents "solid"
 
 $illumposition 0.053 1.866 36.32
 

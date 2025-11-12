@@ -1,16 +1,9 @@
 // Created by Crowbar 0.72
 
 $modelname "gibs/soldier_elite_torso.mdl"
-
-$bodygroup "studio"
-{
-	studio "soldier_elite_torso_reference.smd"
-}
-
+$body studio "soldier_elite_torso_reference.smd"
 
 $surfaceprop "flesh"
-
-$contents "solid"
 
 $illumposition -7.093 -1.964 7.809
 

@@ -1,11 +1,7 @@
 // Created by Crowbar 0.57
 
 $modelname "player/playermodels/combine_ace.mdl"
-
-$bodygroup "Soldier"
-{
-	studio "combine_ace_combine_super_soldier_reference.smd"
-}
+$body studio "combine_ace_combine_super_soldier_reference.smd"
 
 $lod 10
 {
@@ -44,8 +40,6 @@ $shadowlod
 }
 
 $surfaceprop "flesh"
-
-$contents "solid"
 
 $illumposition -0.277 -0.011 34.694
 
@@ -134,9 +128,6 @@ $ikautoplaylock "lfoot" 1 0.1
 $sequence "ragdoll" {
 	"combine_ace_anims\ragdoll.smd"
 	activity "ACT_DIERAGDOLL" 1
-	fadein 0.2
-	fadeout 0.2
-	fps 30
 	ikrule "rhand" release
 	ikrule "lhand" release
 	ikrule "rfoot" release

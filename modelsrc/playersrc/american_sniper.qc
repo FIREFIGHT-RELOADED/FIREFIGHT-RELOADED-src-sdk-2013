@@ -1,21 +1,14 @@
 // Created by Crowbar 0.57
 
 $modelname "player\playermodels\american_sniper.mdl"
-
-$bodygroup "body"
-{
-	studio "american_sniper_dod_american_american_sniper_reference.smd"
-}
+$body studio "american_sniper_dod_american_american_sniper_reference.smd"
 $bodygroup "helmet"
 {
 	studio "american_sniper_dod_american_american_helmet_reference.smd"
 	blank
 }
 
-
 $surfaceprop "flesh"
-
-$contents "solid"
 
 $illumposition -0.002 0.478 34.827
 
@@ -119,9 +112,6 @@ $ikautoplaylock "lfoot" 1 0.1
 $sequence "ragdoll" {
 	"american_sniper_anims\ragdoll.smd"
 	activity "ACT_DIERAGDOLL" 1
-	fadein 0.2
-	fadeout 0.2
-	fps 30
 	ikrule "rhand" release
 	ikrule "lhand" release
 	ikrule "rfoot" release

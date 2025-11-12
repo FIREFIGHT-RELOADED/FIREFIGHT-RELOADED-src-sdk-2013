@@ -1,16 +1,9 @@
 // Created by Crowbar 0.72
 
 $modelname "gibs\Combine_Shotgunner_Beheaded.mdl"
-
-$bodygroup "Soldier"
-{
-	studio "cs_shot_ref.smd"
-}
-
+$body Soldier "cs_shot_ref.smd"
 
 $surfaceprop "flesh"
-
-$contents "solid"
 
 $illumposition -0.007 2.204 31.022
 
@@ -74,9 +67,6 @@ $ikchain "lfoot" "ValveBiped.Bip01_L_Foot" knee 0.707 -0.707 0
 $sequence "ragdoll" {
 	"combine_shotgunner_beheaded_anims\ragdoll.smd"
 	activity "ACT_DIERAGDOLL" 1
-	fadein 0.2
-	fadeout 0.2
-	fps 30
 	ikrule "rhand" release contact 0 fakeorigin 0 0 0 fakerotate 0 0 0 floor 0 height 0 radius 0 range 0 0 29 29 target 0
 	ikrule "lhand" release contact 0 fakeorigin 0 0 0 fakerotate 0 0 0 floor 0 height 0 radius 0 range 0 0 29 29 target 1
 	ikrule "rfoot" release contact 0 fakeorigin 0 0 0 fakerotate 0 0 0 floor 0 height 0 radius 0 range 0 0 29 29 target 2
@@ -91,7 +81,6 @@ $collisionjoints "combine_shotgunner_beheaded_physics.smd"
 	$inertia 2
 	$damping 0.01
 	$rotdamping 0.4
-
 
 	$jointconstrain "ValveBiped.Bip01_Spine2" x limit -48 48 1
 	$jointconstrain "ValveBiped.Bip01_Spine2" y limit -25 25 1
@@ -193,7 +182,7 @@ $collisiontext
 
 $keyvalues
 {
-	physgun_interactions 
+	physgun_interactions
 	{
 		"onpickup" "boogie"
 		"onlaunch" "spin_zaxis"
