@@ -1,0 +1,8 @@
+"Subrect"
+{
+	"$Material"	"decals/decals_mod2x"
+	"$Pos"		"384 128"
+	"$Size"		"128 128"
+	"$decalscale" 	0.25
+	"$modelmaterial" "decals/Blood7"
+}
