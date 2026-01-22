@@ -218,6 +218,7 @@
 		"wildcard"	"1"
 		"preset"	"2"
 		"task_selection_ignore"	"1"
+		"ally"	"1"
 		"rare"	"1"
 		"equipment"
 		{
@@ -284,6 +285,7 @@
 		"wildcard"	"1"
 		"preset"	"2"
 		"task_selection_ignore"	"1"
+		"ally"	"1"
 		"rare"	"1"
 		"equipment"
 		{
@@ -301,6 +303,7 @@
 		"classname"	"npc_vortigaunt"
 		"min_level"	"11"
 		"task_selection_ignore"	"1"
+		"ally"	"1"
 		"rare"	"1"
 	}
 	"36"
@@ -315,6 +318,7 @@
 		"preset"	"1"
 		"min_level"	"11"
 		"task_selection_ignore"	"1"
+		"ally"	"1"
 		"rare"	"1"
 	}
 	"38"
@@ -475,6 +479,7 @@
 		"wildcard"	"1"
 		"preset"	"2"
 		"task_selection_ignore"	"1"
+		"ally"	"1"
 		"rare"	"1"
 		"equipment"
 		{

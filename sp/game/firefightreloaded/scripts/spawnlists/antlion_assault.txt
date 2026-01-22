@@ -4,6 +4,10 @@
 
 "antlion_assault"
 {
+	"settings"
+	{
+		"canusebugbait"	"0"
+	}
 	//COMMON
 	"1"
 	{
@@ -35,5 +39,6 @@
 		"preset"		"0"
 		"rare"			"1"
 		"task_selection_ignore"	"1"
+		"ally"	"1"
 	}
 }

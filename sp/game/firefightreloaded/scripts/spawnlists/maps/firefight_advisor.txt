@@ -72,6 +72,7 @@
 		"preset"		"0"
 		"rare"			"1"
 		"task_selection_ignore"	"1"
+		"ally"	"1"
 	}
 	"9"
 	{

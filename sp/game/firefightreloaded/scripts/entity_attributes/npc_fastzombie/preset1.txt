@@ -7,6 +7,6 @@
 	"is_rare"		"1"
 	"has_outlines"		"1"
 	"kamikaze"		"1"
-	"outline_color"		"60 60 255"
+	"outline_color"		"255 60 60"
 	"persist"		"0"
 }
