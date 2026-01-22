@@ -1436,6 +1436,7 @@ acttable_t	CWeaponRPG::m_acttable[] =
 	{ ACT_WALK_AIM_STIMULATED,		ACT_WALK_RPG,	false },
 	{ ACT_WALK_AIM_AGITATED,		ACT_WALK_RPG,				false },//always aims
 
+	{ ACT_RUN_AIM,					ACT_RUN_RPG,				true },
 	{ ACT_RUN_AIM_RELAXED,			ACT_RUN_RPG,			false },//never aims
 	{ ACT_RUN_AIM_STIMULATED,		ACT_RUN_RPG,	false },
 	{ ACT_RUN_AIM_AGITATED,			ACT_RUN_RPG,				false },//always aims
