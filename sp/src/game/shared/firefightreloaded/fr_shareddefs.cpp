@@ -57,6 +57,11 @@ bool UTIL_FR_CanForceAntlionsAllied()
 		return false;
 	}
 
+	if (GlobalEntity_GetState("cannot_force_allied_antlions") == GLOBAL_ON)
+	{
+		return false;
+	}
+
 	return g_pGameRules->GetGamemode() != FR_GAMEMODE_ANTLIONASSAULT && !g_fr_lonewolf.GetBool();
 }
 

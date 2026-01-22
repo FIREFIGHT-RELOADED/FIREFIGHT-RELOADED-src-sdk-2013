@@ -28,6 +28,7 @@ public:
 	struct Settings_t
 	{
 		float spawnTime;
+		bool canUseBugbait;
 	};
 
 	struct EquipEntry_t
@@ -77,6 +78,7 @@ public:
 		int extraMoney;
 		bool subsituteValues;
 		bool taskIgnore;
+		bool ally;
 		CCopyableUtlVector<EquipEntry_t> spawnEquipment;
 		float totalEquipWeight;
 	};
@@ -89,6 +91,7 @@ public:
 	const SpawnEntry_t* GetRandomEntry(bool isRare) const;
 	const SpawnEntry_t* GetEntry(const char* query, int preset = -1, bool wildcard = false) const;
 	const bool ContainsRareEnemies() const;
+	const bool ContainsAllies() const;
 
 public:
 	Settings_t m_Settings;

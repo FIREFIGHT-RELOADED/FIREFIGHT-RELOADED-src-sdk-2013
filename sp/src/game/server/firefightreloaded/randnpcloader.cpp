@@ -43,7 +43,7 @@ void dumpspawnlist_cb()
 
 	for ( auto& iter : g_npcLoader->m_Entries )
 	{
-		ConColorMsg(spawnEntries, "[%s (%p)] name=\"%s\", %s minPlayerLevel=%d npcAttributePreset=%d npcAttributeWildcard=%d grenades=[%d, %d] weight=%f, totalEquipWeight=%f, extraExp=%d, extraMoney=%d, subsituteValues=%s taskIgnore=%s\n",
+		ConColorMsg(spawnEntries, "[%s (%p)] name=\"%s\", %s minPlayerLevel=%d npcAttributePreset=%d npcAttributeWildcard=%d grenades=[%d, %d] weight=%f, totalEquipWeight=%f, extraExp=%d, extraMoney=%d, subsituteValues=%s taskIgnore=%s ally=%s\n",
 			iter.classname,
 			&iter,
 			iter.classname,
@@ -58,7 +58,8 @@ void dumpspawnlist_cb()
 			iter.extraExp,
 			iter.extraMoney,
 			iter.subsituteValues ? "true" : "false",
-			iter.taskIgnore ? "true" : "false"
+			iter.taskIgnore ? "true" : "false",
+			iter.ally ? "true" : "false"
 		);
 		for ( auto& iter2 : iter.spawnEquipment )
 		{
@@ -189,10 +190,13 @@ bool CRandNPCLoader::Load()
 		{
 			m_Settings.spawnTime = settings->GetFloat("spawntime", TIME_SETBYHAMMER);
 		}
+
+		m_Settings.canUseBugbait = settings->GetBool("canusebugbait", true);
 	}
 	else
 	{
 		m_Settings.spawnTime = TIME_SETBYHAMMER;
+		m_Settings.canUseBugbait = true;
 	}
 
 	AddEntries( pKV );
@@ -214,6 +218,16 @@ const CRandNPCLoader::SpawnEntry_t* CRandNPCLoader::GetRandomEntry(bool isRare) 
 	float totalWeight = 0;
 	for ( auto& iter : m_Entries )
 	{
+		//prioritize enemies over allies.
+		bool coinFlip = false;
+		if (ContainsAllies())
+		{
+			coinFlip = ((random->RandomInt(0, 1) == 1) ? true : false);
+
+			if (!coinFlip && iter.ally)
+				continue;
+		}
+
 		if ( largestPlayerLevel >= iter.minPlayerLevel && iter.isRare == isRare )
 		{
 			totalWeight += iter.weight;
@@ -281,6 +295,21 @@ const bool CRandNPCLoader::ContainsRareEnemies() const
 	}
 
 	return (iRareEnemies > 0);
+}
+
+const bool CRandNPCLoader::ContainsAllies() const
+{
+	int iAllies = 0;
+
+	for (auto& iter : m_Entries)
+	{
+		if (iter.ally)
+		{
+			iAllies++;
+		}
+	}
+
+	return (iAllies > 0);
 }
 
 bool CRandNPCLoader::AddEntries( KeyValues* pKV )
@@ -354,6 +383,7 @@ bool CRandNPCLoader::ParseEntry( SpawnEntry_t& entry, KeyValues *kv)
 	}
 
 	entry.taskIgnore = kv->GetBool("task_selection_ignore", false);
+	entry.ally = kv->GetBool("ally", false);
 	entry.spawnEquipment.RemoveAll();
 	entry.totalEquipWeight = 0;
 	entry.grenadesMin = entry.grenadesMax = -1;
@@ -448,6 +478,7 @@ CRandNPCLoader::SpawnEntry_t::SpawnEntry_t()
 	extraMoney = -1;
 	subsituteValues = true;
 	taskIgnore = false;
+	ally = false;
 	isRare = false;
 	weight = 1;
 	grenadesMin = grenadesMax = -1;

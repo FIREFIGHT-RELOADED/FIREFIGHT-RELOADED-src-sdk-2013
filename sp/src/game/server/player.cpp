@@ -1466,6 +1466,11 @@ void CBasePlayer::AssignKillTask(bool cmd, const char* target)
 
 		bool reroll = false;
 
+		if (pEntry->ally)
+		{
+			reroll = true;
+		}
+
 		// allies don't count.
 		// counting antlions
 		if (UTIL_FR_AreAntlionsAllied() &&

@@ -231,6 +231,18 @@ void CNPCMakerFirefight::Precache(void)
 		m_bUsingMapSpawnTime = true;
 	}
 
+	if (!g_npcLoader->m_Settings.canUseBugbait)
+	{
+		if (!GlobalEntity_IsInTable("cannot_force_allied_antlions"))
+		{
+			GlobalEntity_Add(MAKE_STRING("cannot_force_allied_antlions"), gpGlobals->mapname, GLOBAL_ON);
+		}
+		else
+		{
+			GlobalEntity_SetState(MAKE_STRING("cannot_force_allied_antlions"), GLOBAL_ON);
+		}
+	}
+
 	int nWeapons = ARRAYSIZE(g_Weapons);
 	for (int i = 0; i < nWeapons; ++i)
 		UTIL_PrecacheOther(g_Weapons[i]);
@@ -965,30 +977,21 @@ void CNPCMakerFirefight::MakeNPC()
 		}
 	}
 
-	if (pent->Classify() == CLASS_PLAYER_ALLY ||
-		pent->Classify() == CLASS_PLAYER_ALLY_VITAL ||
-		pent->Classify() == CLASS_VORTIGAUNT ||
-		pent->Classify() == CLASS_PLAYER_NPC ||
-		(pent->Classify() == CLASS_ANTLION && UTIL_FR_AreAntlionsAllied()))
+	if (!g_fr_lonewolf.GetBool())
 	{
-#ifdef GLOWS_ENABLE
-		if (!pent->IsGlowEffectActive() && !pent->m_denyOutlines)
+		if (entry->ally || (pent->Classify() == CLASS_ANTLION && UTIL_FR_AreAntlionsAllied()))
 		{
-			Vector allyColor = Vector(26, 77, 153);
-			pent->m_bImportantOutline = true;
-			pent->GiveOutline(allyColor);
-		}
+#ifdef GLOWS_ENABLE
+			if (!pent->IsGlowEffectActive() && !pent->m_denyOutlines)
+			{
+				Vector allyColor = Vector(26, 77, 153);
+				pent->m_bImportantOutline = true;
+				pent->GiveOutline(allyColor);
+			}
 #endif
 
-		if (!g_fr_lonewolf.GetBool())
-		{
 			//alert all players.
 			AllyAlert();
-		}
-		else
-		{
-			UTIL_Remove(pent);
-			return;
 		}
 	}
 
