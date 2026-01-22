@@ -5949,7 +5949,7 @@ bool CAI_BaseNPC::UpdateEnemyMemory( CBaseEntity *pEnemy, const Vector &position
 		if ( !firstHand && pEnemy && result && GetState() == NPC_STATE_IDLE ) // if it's a new potential enemy
 			ForceDecisionThink();
 
-		if ( firstHand && pEnemy && m_pSquad )
+		if ( firstHand && pEnemy && m_pSquad && result)
 		{
 			m_pSquad->UpdateEnemyMemory( this, pEnemy, position );
 		}

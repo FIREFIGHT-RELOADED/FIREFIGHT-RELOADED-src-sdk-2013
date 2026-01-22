@@ -778,6 +778,9 @@ private:
 // UNDONE: Add start command?
 void CSoundControllerImp::ProcessCommand( SoundCommand_t *pCmd )
 {
+	if (pCmd->m_pPatch == NULL)
+		return;
+
 	switch( pCmd->m_command )
 	{
 	case SOUNDCTRL_CHANGE_VOLUME:
