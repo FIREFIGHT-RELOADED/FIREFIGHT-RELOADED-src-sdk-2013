@@ -12,12 +12,13 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+ConVar sv_enable_coop("sv_enable_coop", "0", FCVAR_NONE, "Enable 6-player co-op. WARNING: This mode is unsupported and you will have issues regarding gameplay stability and consistency.");
+
 void CServerGameClients::GetPlayerLimits( int& minplayers, int& maxplayers, int &defaultMaxPlayers ) const
 {
 	minplayers = defaultMaxPlayers = 1; 
-	maxplayers = 6; //MAX_PLAYERS;
+	maxplayers = (sv_enable_coop.GetBool() ? 6 : 1); //MAX_PLAYERS;
 }
-
 
 // -------------------------------------------------------------------------------------------- //
 // Mod-specific CServerGameDLL implementation.
