@@ -1008,6 +1008,9 @@
             "FIREFIGHTRELOADED_SKYBORNEDECAP_NAME": "Primal Instinct",
             "FIREFIGHTRELOADED_SKYBORNEDECAP_DESC": "Deliver a headshot kill (with weapons that can headshot) immediately after sending an enemy into the air.",
             "FIREFIGHTRELOADED_SKYBORNEDECAP_ACHIEVED": "ACHIEVEMENT UNLOCKED:\nPrimal Instinct\nDeliver a headshot kill (with weapons that can headshot) immediately after sending an enemy into the air.",
+            "FR_Chat_All": "\u0002%s1 :  %s2",
+            "FR_Chat_AllDead": "\u0001*DEAD* \u0003%s1\u0001 :  %s2",
+            "FR_Chat_DS": "\u0002%s1 :  %s2",
             "HL2_SAVING": "Saving..."
         }
     }
