@@ -232,6 +232,11 @@
 				"font"		"WeaponIconsKillFeed"
 				"character"	"4"
 		}
+		"weapon_frag"
+		{
+				"font"		"WeaponIconsKillFeed"
+				"character"	"4"
+		}
 		"env_explosion"
 		{
 				"font"		"WeaponIconsKillFeed"
