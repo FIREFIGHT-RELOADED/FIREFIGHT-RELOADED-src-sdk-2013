@@ -37,7 +37,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-#define		SQUID_SPRINT_DIST	256 // how close the squid has to get before starting to sprint and refusing to swerve
+#define	SQUID_SPRINT_DIST	256 // how close the squid has to get before starting to sprint and refusing to swerve
+#define	SQUID_SPIT_FIRERATE	3.5f
 
 ConVar sk_bullsquid_health( "sk_bullsquid_health", "0" );
 ConVar sk_bullsquid_dmg_bite( "sk_bullsquid_dmg_bite", "0" );
@@ -746,17 +747,6 @@ int CNPC_Bullsquid::RangeAttack1Conditions( float flDot, float flDist )
 			}
 		}
 
-		if ( IsMoving() )
-		{
-			// don't spit again for a long time, resume chasing enemy.
-			m_flNextSpitTime = gpGlobals->curtime + 5;
-		}
-		else
-		{
-			// not moving, so spit again pretty soon.
-			m_flNextSpitTime = gpGlobals->curtime + 0.5;
-		}
-
 		return( COND_CAN_RANGE_ATTACK1 );
 	}
 
@@ -846,48 +836,19 @@ Disposition_t CNPC_Bullsquid::IRelationType( CBaseEntity *pTarget )
 //=========================================================
 int CNPC_Bullsquid::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 {
-
-#if 0 //Fix later.
-
-	float flDist;
-	Vector vecApex, vOffset;
-
-	// if the squid is running, has an enemy, was hurt by the enemy, hasn't been hurt in the last 3 seconds, and isn't too close to the enemy,
-	// it will swerve. (whew).
-	if ( GetEnemy() != NULL && IsMoving() && pevAttacker == GetEnemy() && gpGlobals->curtime - m_flLastHurtTime > 3 )
+	// immediately try to defend outselves if we just got hurt within the last 3 seconds.
+	if (gpGlobals->curtime - m_flLastHurtTime <= 3)
 	{
-		flDist = ( GetAbsOrigin() - GetEnemy()->GetAbsOrigin() ).Length2D();
-		
-		if ( flDist > SQUID_SPRINT_DIST )
-		{
-			AI_Waypoint_t*	pRoute = GetNavigator()->GetPath()->Route();
-
-			if ( pRoute )
-			{
-				flDist = ( GetAbsOrigin() - pRoute[ pRoute->iNodeID ].vecLocation ).Length2D();// reusing flDist. 
-
-				if ( GetNavigator()->GetPath()->BuildTriangulationRoute( GetAbsOrigin(), pRoute[ pRoute->iNodeID ].vecLocation, flDist * 0.5, GetEnemy(), &vecApex, &vOffset, NAV_GROUND ) )
-				{
-					GetNavigator()->PrependWaypoint( vecApex, bits_WP_TO_DETOUR | bits_WP_DONT_SIMPLIFY );
-				}
-			}
-		}
+		m_flNextSpitTime = 0;
 	}
-#endif
 
 	if ((inputInfo.GetInflictor()->ClassMatches(GetClassname()) || inputInfo.GetInflictor() == this || inputInfo.GetAttacker() == this) && !(inputInfo.GetDamageType() == DMG_GENERIC))
 	{
 		return 0;
 	}
 
-	if ( !FClassnameIs( inputInfo.GetAttacker(), "npc_headcrab" ) || 
-		!FClassnameIs(inputInfo.GetAttacker(), "npc_headcrab_poison") || 
-		!FClassnameIs(inputInfo.GetAttacker(), "npc_headcrab_black") || 
-		!FClassnameIs(inputInfo.GetAttacker(), "npc_headcrab_fast") )
-	{
-		// don't forget about headcrabs if it was a headcrab that hurt the squid.
-		m_flLastHurtTime = gpGlobals->curtime;
-	}
+	// don't forget about headcrabs if it was a headcrab that hurt the squid.
+	m_flLastHurtTime = gpGlobals->curtime;
 
 	return BaseClass::OnTakeDamage_Alive( inputInfo );
 }
@@ -1033,9 +994,8 @@ int CNPC_Bullsquid::SelectSchedule( void )
 			}
 
 			return SCHED_PATROL_WALK_LOOP;
-
-			break;
 		}
+		break;
 	case NPC_STATE_COMBAT:
 		{
 // dead enemy
@@ -1055,7 +1015,16 @@ int CNPC_Bullsquid::SelectSchedule( void )
 				}
 				else
 				{
-					return SCHED_WAKE_ANGRY;
+					//shoot spit at the enemy.
+					if (!IsMoving())
+					{
+						m_flNextSpitTime = gpGlobals->curtime + SQUID_SPIT_FIRERATE;
+						return SCHED_RANGE_ATTACK1;
+					}
+					else
+					{
+						return SCHED_WAKE_ANGRY;
+					}
 				}
 			}
 
@@ -1075,25 +1044,36 @@ int CNPC_Bullsquid::SelectSchedule( void )
 				return SCHED_SQUID_EAT;
 			}
 
-			if ( HasCondition( COND_CAN_RANGE_ATTACK1 ) )
+			if (HasCondition(COND_CAN_MELEE_ATTACK1))
 			{
-				return SCHED_RANGE_ATTACK1;
-			}
-
-			if ( HasCondition( COND_CAN_MELEE_ATTACK1 ) )
-			{
+				// spit immediately after meleeing
+				m_flNextSpitTime = 0;
 				return SCHED_MELEE_ATTACK1;
 			}
 
-			if ( HasCondition( COND_CAN_MELEE_ATTACK2 ) )
+			if (HasCondition(COND_CAN_MELEE_ATTACK2))
 			{
+				// spit immediately after meleeing
+				m_flNextSpitTime = 0;
 				return SCHED_MELEE_ATTACK2;
 			}
-			
-			return SCHED_CHASE_ENEMY;
 
-			break;
+			if (!IsMoving() && HasCondition(COND_CAN_RANGE_ATTACK1))
+			{
+				// spit immediately after it stops moving.
+				m_flNextSpitTime = 0;
+			}
+
+			if (gpGlobals->curtime >= m_flNextSpitTime && !IsMoving())
+			{
+				// not moving, so spit again pretty soon.
+				m_flNextSpitTime = gpGlobals->curtime + SQUID_SPIT_FIRERATE;
+				return SCHED_RANGE_ATTACK1;
+			}
+
+			return SCHED_CHASE_ENEMY;
 		}
+		break;
 	}
 
 	return BaseClass::SelectSchedule();

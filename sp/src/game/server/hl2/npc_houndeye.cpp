@@ -763,6 +763,25 @@ void CNPC_Houndeye::Event_Killed( const CTakeDamageInfo &info )
 	BaseClass::Event_Killed( info );
 }
 
+int	NumHoundeyeMembers(CAI_BaseNPC *pNPC)
+{
+	int nHoundeyeMembers = 0;
+	AISquadIter_t iter;
+
+	CAI_BaseNPC* pSquadmate = pNPC->GetSquad()->GetFirstMember(&iter);
+	while (pSquadmate)
+	{
+		if (FClassnameIs(pSquadmate, "npc_houndeye"))
+		{
+			nHoundeyeMembers++;
+		}
+
+		pSquadmate = pNPC->GetSquad()->GetNextMember(&iter);
+	}
+
+	return nHoundeyeMembers;
+}
+
 //=========================================================
 // SonicAttack
 //=========================================================
@@ -787,7 +806,7 @@ void CNPC_Houndeye::SonicAttack ( void )
 	{
 		if (pEntity->m_takedamage != DAMAGE_NO)
 		{
-			if (pEntity != this && !FClassnameIs(pEntity, "npc_houndeye") && IRelationType(pEntity) != D_LI)
+			if (pEntity != this && FClassnameIs(pEntity, "npc_houndeye") && IRelationType(pEntity) != D_LI)
 			{// houndeyes don't hurt other houndeyes with their attack
 
 				// houndeyes do FULL damage if the ent in question is visible. Half damage otherwise.
@@ -798,7 +817,7 @@ void CNPC_Houndeye::SonicAttack ( void )
 				
 				if ( IsInSquad())
 				{
-					if (GetSquad()->NumMembers() > 1)
+					if (NumHoundeyeMembers(this) > 1)
 					{
 						// squad gets attack bonus.
 						flAdjustedDamage = (sk_Houndeye_dmg_blast.GetFloat() * 2) * (HOUNDEYE_SQUAD_BONUS * (GetSquad()->NumMembers() - 1));

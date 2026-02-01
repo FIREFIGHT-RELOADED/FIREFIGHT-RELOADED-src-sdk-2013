@@ -541,7 +541,7 @@ bool CNPC_Combine::CorpseDecapitate(const CTakeDamageInfo& info)
 
 			if ( m_pAttributes != NULL )
 			{
-				m_pAttributes->SwitchEntityModel( this, "body_decap_model", STRING( this->GetModelName() ) );
+				m_pAttributes->SwitchEntityModel( this, "body_decap_model");
 				m_pAttributes->SwitchEntityColor( this, "new_color" );
 			}
 
@@ -563,7 +563,7 @@ bool CNPC_Combine::CorpseDecapitate(const CTakeDamageInfo& info)
 
 			if ( m_pAttributes != NULL )
 			{
-				m_pAttributes->SwitchEntityModel( this, "body_decap_model", STRING( this->GetModelName() ) );
+				m_pAttributes->SwitchEntityModel( this, "body_decap_model");
 				m_pAttributes->SwitchEntityColor( this, "new_color" );
 			}
 
@@ -574,7 +574,7 @@ bool CNPC_Combine::CorpseDecapitate(const CTakeDamageInfo& info)
 			{
 				if ( m_pAttributes != NULL )
 				{
-					m_pAttributes->SwitchEntityModel( pHeadGib, "head_gib_model", STRING( pHeadGib->GetModelName() ) );
+					m_pAttributes->SwitchEntityModel( pHeadGib, "head_gib_model");
 					m_pAttributes->SwitchEntityColor( pHeadGib, "new_color" );
 				}
 			}
@@ -665,7 +665,7 @@ CTakeDamageInfo CNPC_Combine::CorpseGibExt(const CTakeDamageInfo& info)
 		{
 			if (m_pAttributes != NULL)
 			{
-				m_pAttributes->SwitchEntityModel(pHeadGib, "head_gib_model", STRING(pHeadGib->GetModelName()));
+				m_pAttributes->SwitchEntityModel(pHeadGib, "head_gib_model");
 				m_pAttributes->SwitchEntityColor(pHeadGib, "new_color");
 			}
 		}
@@ -678,7 +678,7 @@ CTakeDamageInfo CNPC_Combine::CorpseGibExt(const CTakeDamageInfo& info)
 
 			if (m_pAttributes != NULL)
 			{
-				m_pAttributes->SwitchEntityModel(pLeftArmGib, "left_arm_gib_model", STRING(pLeftArmGib->GetModelName()));
+				m_pAttributes->SwitchEntityModel(pLeftArmGib, "left_arm_gib_model");
 				m_pAttributes->SwitchEntityColor(pLeftArmGib, "new_color");
 			}
 		}
@@ -691,7 +691,7 @@ CTakeDamageInfo CNPC_Combine::CorpseGibExt(const CTakeDamageInfo& info)
 
 			if (m_pAttributes != NULL)
 			{
-				m_pAttributes->SwitchEntityModel(pRightArmGib, "right_arm_gib_model", STRING(pRightArmGib->GetModelName()));
+				m_pAttributes->SwitchEntityModel(pRightArmGib, "right_arm_gib_model");
 				m_pAttributes->SwitchEntityColor(pRightArmGib, "new_color");
 			}
 		}
@@ -704,7 +704,7 @@ CTakeDamageInfo CNPC_Combine::CorpseGibExt(const CTakeDamageInfo& info)
 
 			if (m_pAttributes != NULL)
 			{
-				m_pAttributes->SwitchEntityModel(pTorsoGib, "torso_gib_model", STRING(pTorsoGib->GetModelName()));
+				m_pAttributes->SwitchEntityModel(pTorsoGib, "torso_gib_model");
 				m_pAttributes->SwitchEntityColor(pTorsoGib, "new_color");
 			}
 		}
@@ -717,7 +717,7 @@ CTakeDamageInfo CNPC_Combine::CorpseGibExt(const CTakeDamageInfo& info)
 
 			if (m_pAttributes != NULL)
 			{
-				m_pAttributes->SwitchEntityModel(pPelvisGib, "pelvis_gib_model", STRING(pPelvisGib->GetModelName()));
+				m_pAttributes->SwitchEntityModel(pPelvisGib, "pelvis_gib_model");
 				m_pAttributes->SwitchEntityColor(pPelvisGib, "new_color");
 			}
 		}
@@ -730,7 +730,7 @@ CTakeDamageInfo CNPC_Combine::CorpseGibExt(const CTakeDamageInfo& info)
 
 			if (m_pAttributes != NULL)
 			{
-				m_pAttributes->SwitchEntityModel(pLeftLegGib, "left_leg_gib_model", STRING(pLeftLegGib->GetModelName()));
+				m_pAttributes->SwitchEntityModel(pLeftLegGib, "left_leg_gib_model");
 				m_pAttributes->SwitchEntityColor(pLeftLegGib, "new_color");
 			}
 		}
@@ -743,7 +743,7 @@ CTakeDamageInfo CNPC_Combine::CorpseGibExt(const CTakeDamageInfo& info)
 
 			if (m_pAttributes != NULL)
 			{
-				m_pAttributes->SwitchEntityModel(pRightLegGib, "right_leg_gib_model", STRING(pRightLegGib->GetModelName()));
+				m_pAttributes->SwitchEntityModel(pRightLegGib, "right_leg_gib_model");
 				m_pAttributes->SwitchEntityColor(pRightLegGib, "new_color");
 			}
 		}

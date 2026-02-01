@@ -1207,7 +1207,7 @@ void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info)
 
 		if (m_pAttributes != NULL)
 		{
-			m_pAttributes->SwitchEntityModel(pLegGib, "leg_gib_model", STRING(pLegGib->GetModelName()));
+			m_pAttributes->SwitchEntityModel(pLegGib, "leg_gib_model");
 			m_pAttributes->SwitchEntityColor(pLegGib, "new_color");
 			m_pAttributes->SwitchEntitySkin(pLegGib, "new_skin");
 		}
@@ -1234,7 +1234,7 @@ void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info)
 
 		if (m_pAttributes != NULL)
 		{
-			m_pAttributes->SwitchEntityModel(pTorsoGib, "torso_gib_model", STRING(pTorsoGib->GetModelName()));
+			m_pAttributes->SwitchEntityModel(pTorsoGib, "torso_gib_model");
 			m_pAttributes->SwitchEntityColor(pTorsoGib, "new_color");
 			m_pAttributes->SwitchEntitySkin(pTorsoGib, "new_skin");
 		}
@@ -2389,7 +2389,7 @@ void CNPC_BaseZombie::BecomeTorso( const Vector &vecTorsoForce, const Vector &ve
 
 			if (m_pAttributes != NULL)
 			{
-				m_pAttributes->SwitchEntityModel(pGib, "leg_gib_model", STRING(pGib->GetModelName()));
+				m_pAttributes->SwitchEntityModel(pGib, "leg_gib_model");
 				m_pAttributes->SwitchEntityColor(pGib, "new_color");
 				m_pAttributes->SwitchEntitySkin(pGib, "new_skin");
 			}

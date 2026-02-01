@@ -7552,7 +7552,7 @@ void CAI_BaseNPC::LoadInitAttributes()
 {
 	if (m_pAttributes != NULL)
 	{
-		m_pAttributes->SwitchEntityModel(this, "new_model", STRING(GetModelName()));
+		m_pAttributes->SwitchEntityModel(this, "new_model");
 		m_pAttributes->SwitchEntityColor(this, "new_color");
 		m_pAttributes->SwitchEntityRenderMode(this, "new_render_mode");
 		m_pAttributes->SwitchEntityRenderFX(this, "new_render_fx");

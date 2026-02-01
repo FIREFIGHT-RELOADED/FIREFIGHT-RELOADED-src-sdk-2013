@@ -172,9 +172,9 @@ Vector CAttributesLoader::GetVector(const char* szString, Vector defaultValue)
 	return data->GetVector(szString, defaultValue);
 }
 
-void CAttributesLoader::SwitchEntityModel(CBaseEntity* ent, const char* szString, const char* defaultValue)
+void CAttributesLoader::SwitchEntityModel(CBaseEntity* ent, const char* szString)
 {
-	const char* newModelName = STRING(AllocPooledString(GetString(szString, defaultValue)));
+	const char* newModelName = STRING(AllocPooledString(GetString(szString)));
 
 	if (strlen(newModelName) > 0)
 	{

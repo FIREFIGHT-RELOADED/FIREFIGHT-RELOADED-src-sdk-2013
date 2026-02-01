@@ -332,7 +332,7 @@ void CNPC_CombineAce::LoadInitAttributes()
 
 		if (!m_bNoArmor)
 		{
-			m_pAttributes->SwitchEntityModel(pArmor, "new_shield_model", STRING(pArmor->GetModelName()));
+			m_pAttributes->SwitchEntityModel(pArmor, "new_shield_model");
 			m_pAttributes->SwitchEntityColor(pArmor, "new_shield_color");
 		}
 
@@ -922,7 +922,7 @@ void CNPC_CombineAce::Event_Killed( const CTakeDamageInfo &info )
 
 		if (m_pAttributes != NULL)
 		{
-			m_pAttributes->SwitchEntityModel(shield, "new_shield_model", STRING(shield->GetModelName()));
+			m_pAttributes->SwitchEntityModel(shield, "new_shield_model");
 			m_pAttributes->SwitchEntityColor(shield, "new_shield_color");
 		}
 	}
