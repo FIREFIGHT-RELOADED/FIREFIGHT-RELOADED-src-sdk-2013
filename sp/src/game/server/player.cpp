@@ -1451,17 +1451,18 @@ void CBasePlayer::AssignKillTask(bool cmd, const char* target)
 
 	if (pEntry)
 	{
-		random->SetSeed((int)gpGlobals->curtime);
+		CUniformRandomStream randomStream;
+		randomStream.SetSeed((int)gpGlobals->curtime);
 
 		int count = TASKLIST_KILL_TASK_MIN_KILL_COUNT;
 
 		if (pEntry->isRare)
 		{
-			count = random->RandomInt(TASKLIST_KILL_TASK_MIN_KILL_RARE_COUNT, TASKLIST_KILL_TASK_MAX_KILL_COUNT);
+			count = randomStream.RandomInt(TASKLIST_KILL_TASK_MIN_KILL_RARE_COUNT, TASKLIST_KILL_TASK_MAX_KILL_COUNT);
 		}
 		else
 		{
-			count = random->RandomInt(TASKLIST_KILL_TASK_MIN_KILL_COUNT, TASKLIST_KILL_TASK_MAX_KILL_COUNT);
+			count = randomStream.RandomInt(TASKLIST_KILL_TASK_MIN_KILL_COUNT, TASKLIST_KILL_TASK_MAX_KILL_COUNT);
 		}
 
 		bool reroll = false;
