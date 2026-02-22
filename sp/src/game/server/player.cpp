@@ -6884,14 +6884,10 @@ void CBasePlayer::WeaponSpawnLogic(void)
 			if (pInfo != NULL)
 			{
 				m_szForcedLoadoutName = pInfo->GetString("ForcedLoadout", "");
-				if (Q_strcmp(m_szForcedLoadoutName, "") == 1)
-				{
-					m_bForcedLoadout = true;
-					//WeaponSpawnLogic();
-					Msg("Loading forced loadout '%s'.\n", m_szForcedLoadoutName);
-					LoadLoadoutFile(m_szForcedLoadoutName);
-					return;
-				}
+				m_bForcedLoadout = true;
+				Msg("Loading forced loadout '%s'.\n", m_szForcedLoadoutName);
+				LoadLoadoutFile(m_szForcedLoadoutName);
+				return;
 			}
 
 			Msg("Loading default loadout.\n");
