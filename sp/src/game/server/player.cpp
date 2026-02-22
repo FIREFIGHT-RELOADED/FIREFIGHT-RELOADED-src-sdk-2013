@@ -1446,50 +1446,20 @@ void CBasePlayer::AssignKillTask(bool cmd, const char* target)
 			coinFlip = ((random->RandomInt(0, 1) == 1) ? true : false);
 		}
 
-		pEntry = g_ref_npcLoader->GetRandomEntry(coinFlip);
+		pEntry = g_ref_npcLoader->GetRandomKillTaskEntry(coinFlip);
 	}
 
 	if (pEntry)
 	{
-		CUniformRandomStream randomStream;
-		randomStream.SetSeed((int)gpGlobals->curtime);
-
 		int count = TASKLIST_KILL_TASK_MIN_KILL_COUNT;
 
 		if (pEntry->isRare)
 		{
-			count = randomStream.RandomInt(TASKLIST_KILL_TASK_MIN_KILL_RARE_COUNT, TASKLIST_KILL_TASK_MAX_KILL_COUNT);
+			count = random->RandomInt(TASKLIST_KILL_TASK_MIN_KILL_RARE_COUNT, TASKLIST_KILL_TASK_MAX_KILL_COUNT);
 		}
 		else
 		{
-			count = randomStream.RandomInt(TASKLIST_KILL_TASK_MIN_KILL_COUNT, TASKLIST_KILL_TASK_MAX_KILL_COUNT);
-		}
-
-		bool reroll = false;
-
-		if (pEntry->ally)
-		{
-			reroll = true;
-		}
-
-		// allies don't count.
-		// counting antlions
-		if (UTIL_FR_AreAntlionsAllied() &&
-			(Q_strcmp(pEntry->classname, "npc_antlion") || Q_strcmp(pEntry->classname, "npc_antlionworker")))
-		{
-			reroll = true;
-		}
-
-		if (pEntry->taskIgnore)
-		{
-			reroll = true;
-		}
-
-		if (reroll && !cmd)
-		{
-			//try to assign a different task. this MAY cause problems.
-			AssignKillTask();
-			return;
+			count = random->RandomInt(TASKLIST_KILL_TASK_MIN_KILL_COUNT, TASKLIST_KILL_TASK_MAX_KILL_COUNT);
 		}
 
 		NpcName target_name;

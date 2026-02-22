@@ -89,6 +89,7 @@ public:
 	bool Load();
 	bool AddEntries( KeyValues *kv );
 	const SpawnEntry_t* GetRandomEntry(bool isRare) const;
+	const SpawnEntry_t* GetRandomKillTaskEntry(bool isRare) const;
 	const SpawnEntry_t* GetEntry(const char* query, int preset = -1, bool wildcard = false) const;
 	const bool ContainsRareEnemies() const;
 	const bool ContainsAllies() const;

@@ -251,6 +251,52 @@ const CRandNPCLoader::SpawnEntry_t* CRandNPCLoader::GetRandomEntry(bool isRare) 
 	return NULL;
 }
 
+const CRandNPCLoader::SpawnEntry_t* CRandNPCLoader::GetRandomKillTaskEntry(bool isRare) const
+{
+	int largestPlayerLevel = GetLargestLevel();
+
+	random->SetSeed((int)gpGlobals->curtime);
+
+	// If the candidate is applicable, add to our weight.
+	// originally, we had a list of candidates here, but that was causing a stack overflow crash in some instances.
+	// so, we'll just go through the list we have.
+	float totalWeight = 0;
+	for (auto& iter : m_Entries)
+	{
+		// no coin flip. just check if they're an ally or ignored.
+		if (iter.ally)
+			continue;
+
+		if (UTIL_FR_AreAntlionsAllied() &&
+			(Q_strcmp(iter.classname, "npc_antlion") || Q_strcmp(iter.classname, "npc_antlionworker")))
+			continue;
+
+		if (iter.taskIgnore)
+			continue;
+
+		if (largestPlayerLevel >= iter.minPlayerLevel && iter.isRare == isRare)
+		{
+			totalWeight += iter.weight;
+		}
+	}
+
+	// then, use the weight to determine what we should spawn, making sure the enemy can spawn in this fashion.
+	// This naive algorithm (implemented elsewhere too) could ignore very small weights.
+	// If this comes up, then we'll look into this.
+	float choice = random->RandomFloat(0, totalWeight);
+	for (auto& iter2 : m_Entries)
+	{
+		if (largestPlayerLevel >= iter2.minPlayerLevel && iter2.isRare == isRare)
+		{
+			choice -= iter2.weight;
+			if (choice <= 0)
+				return &iter2;
+		}
+	}
+
+	return NULL;
+}
+
 const CRandNPCLoader::SpawnEntry_t* CRandNPCLoader::GetEntry(const char* query, int preset, bool wildcard) const
 {
 	for (auto &iter : m_Entries)

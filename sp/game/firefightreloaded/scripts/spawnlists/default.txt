@@ -69,9 +69,8 @@
 	}
 	"10"
 	{
-		"classname"	"npc_houndeye"
+		"classname"	"npc_antlion"
 		"min_level"	"4"
-		"rare"	"1"
 		"exp"	"35"
 	}
 	"11"
@@ -113,8 +112,9 @@
 	}
 	"14"
 	{
-		"classname"	"npc_antlion"
+		"classname"	"npc_houndeye"
 		"min_level"	"5"
+		"rare"	"1"
 		"exp"	"35"
 	}
 	"15"
