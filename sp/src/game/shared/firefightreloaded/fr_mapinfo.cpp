@@ -45,7 +45,7 @@ KeyValues* CMapInfo::GetMapInfoData(const char* pMapName)
 	KeyValues* pKV = new KeyValues(pMapName);
 	if (pKV->LoadFromFile(g_pFullFileSystem, szFullName))
 	{
-		Warning("Failed to load mapinfo file '%s'.\n", szFullName);
+		Msg("Loaded mapinfo file '%s'.\n", szFullName);
 		return pKV;
 	}
 
