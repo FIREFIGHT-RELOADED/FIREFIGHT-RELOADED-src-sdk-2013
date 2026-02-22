@@ -6499,9 +6499,12 @@ void CBasePlayer::LoadLoadoutFile(const char* kvName, bool savetoLoadout)
 		{
 			m_kvLoadout = pKV->MakeCopy();
 		}
+
+		Msg("Loaded loadout '%s'.", szFullFileName);
 	}
 	else
 	{
+		Warning("Unable to load loadout '%s'. Loading default.", szFullFileName);
 		LoadLoadoutFile("default", savetoLoadout);
 		return;
 	}
@@ -6885,15 +6888,18 @@ void CBasePlayer::WeaponSpawnLogic(void)
 				{
 					m_bForcedLoadout = true;
 					//WeaponSpawnLogic();
+					Msg("Loading forced loadout '%s'.", m_szForcedLoadoutName);
 					LoadLoadoutFile(m_szForcedLoadoutName);
 					return;
 				}
 			}
 
+			Msg("Loading default loadout.");
 			LoadLoadoutFile(sv_player_defaultloadout.GetString());
 		}
 		else
 		{
+			Msg("Loading forced loadout '%s'.", m_szForcedLoadoutName);
 			LoadLoadoutFile(m_szForcedLoadoutName);
 		}
 	}
