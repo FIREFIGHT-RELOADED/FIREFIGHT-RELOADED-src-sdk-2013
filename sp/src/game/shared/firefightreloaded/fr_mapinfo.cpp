@@ -39,14 +39,16 @@ KeyValues* CMapInfo::GetMapInfoData()
 
 KeyValues* CMapInfo::GetMapInfoData(const char* pMapName)
 {
-	char szFullName[512];
+	char szFullName[MAX_PATH];
 	Q_snprintf(szFullName, sizeof(szFullName), "maps/%s_mapinfo.txt", pMapName);
 
 	KeyValues* pKV = new KeyValues(pMapName);
 	if (pKV->LoadFromFile(g_pFullFileSystem, szFullName))
 	{
+		Warning("Failed to load mapinfo file '%s'.\n", szFullName);
 		return pKV;
 	}
 
+	Warning("Failed to load mapinfo file '%s'.\n", szFullName);
 	return NULL;
 }
