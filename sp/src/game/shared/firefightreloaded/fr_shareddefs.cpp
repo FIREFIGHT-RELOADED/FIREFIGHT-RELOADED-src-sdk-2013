@@ -47,7 +47,7 @@ const char* UTIL_FR_GetVersion(bool cmd)
 	return result;
 }
 
-// checks to seeb if the antlion bypass is available for this gamemode.
+// checks to see if the antlion bypass is available for this gamemode.
 #if GAME_DLL
 bool UTIL_FR_CanForceAntlionsAllied()
 {
@@ -62,7 +62,7 @@ bool UTIL_FR_CanForceAntlionsAllied()
 		return false;
 	}
 
-	return g_pGameRules->GetGamemode() != FR_GAMEMODE_ANTLIONASSAULT && !g_fr_lonewolf.GetBool();
+	return ((g_pGameRules->GetGamemode() != FR_GAMEMODE_ANTLIONASSAULT) && !g_fr_lonewolf.GetBool());
 }
 
 bool UTIL_FR_AreAntlionsAllied()
@@ -70,7 +70,7 @@ bool UTIL_FR_AreAntlionsAllied()
 	if (!UTIL_FR_CanForceAntlionsAllied())
 		return false;
 
-	return GlobalEntity_GetState("antlion_allied") == GLOBAL_ON;
+	return (GlobalEntity_GetState("antlion_allied") == GLOBAL_ON);
 }
 #endif
 

@@ -977,22 +977,19 @@ void CNPCMakerFirefight::MakeNPC()
 		}
 	}
 
-	if (!g_fr_lonewolf.GetBool())
+	if (CRandNPCLoader::EntryIsAlly(entry))
 	{
-		if (entry->ally || (pent->Classify() == CLASS_ANTLION && UTIL_FR_AreAntlionsAllied()))
-		{
 #ifdef GLOWS_ENABLE
-			if (!pent->IsGlowEffectActive() && !pent->m_denyOutlines)
-			{
-				Vector allyColor = Vector(26, 77, 153);
-				pent->m_bImportantOutline = true;
-				pent->GiveOutline(allyColor);
-			}
+		if (!pent->IsGlowEffectActive() && !pent->m_denyOutlines)
+		{
+			Vector allyColor = Vector(26, 77, 153);
+			pent->m_bImportantOutline = true;
+			pent->GiveOutline(allyColor);
+		}
 #endif
 
-			//alert all players.
-			AllyAlert();
-		}
+		//alert all players.
+		AllyAlert();
 	}
 
 	ChildPostSpawn(pent);

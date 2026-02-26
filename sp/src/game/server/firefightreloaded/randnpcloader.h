@@ -93,6 +93,7 @@ public:
 	const SpawnEntry_t* GetEntry(const char* query, int preset = -1, bool wildcard = false) const;
 	const bool ContainsRareEnemies() const;
 	const bool ContainsAllies() const;
+	static bool EntryIsAlly(const SpawnEntry_t* entry);
 
 public:
 	Settings_t m_Settings;

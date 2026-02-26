@@ -206,6 +206,19 @@ bool CRandNPCLoader::Load()
 	return true;
 }
 
+bool CRandNPCLoader::EntryIsAlly(const SpawnEntry_t* entry)
+{
+	// no coin flip. just check if they're an ally or ignored.
+	if (entry->ally)
+		return true;
+
+	if (UTIL_FR_AreAntlionsAllied() &&
+		(Q_strcmp(entry->classname, "npc_antlion") || Q_strcmp(entry->classname, "npc_antlionworker")))
+		return true;
+
+	return false;
+}
+
 const CRandNPCLoader::SpawnEntry_t* CRandNPCLoader::GetRandomEntry(bool isRare) const
 {
 	int largestPlayerLevel = GetLargestLevel();
@@ -224,7 +237,10 @@ const CRandNPCLoader::SpawnEntry_t* CRandNPCLoader::GetRandomEntry(bool isRare) 
 		{
 			coinFlip = ((random->RandomInt(0, 1) == 1) ? true : false);
 
-			if (!coinFlip && iter.ally)
+			if (!coinFlip && EntryIsAlly(&iter))
+				continue;
+
+			if (EntryIsAlly(&iter) && g_fr_lonewolf.GetBool())
 				continue;
 		}
 
@@ -263,13 +279,12 @@ const CRandNPCLoader::SpawnEntry_t* CRandNPCLoader::GetRandomKillTaskEntry(bool 
 	float totalWeight = 0;
 	for (auto& iter : m_Entries)
 	{
-		// no coin flip. just check if they're an ally or ignored.
-		if (iter.ally)
-			continue;
-
-		if (UTIL_FR_AreAntlionsAllied() &&
-			(Q_strcmp(iter.classname, "npc_antlion") || Q_strcmp(iter.classname, "npc_antlionworker")))
-			continue;
+		if (ContainsAllies())
+		{
+			// no coin flip. just check if they're an ally or ignored.
+			if (EntryIsAlly(&iter))
+				continue;
+		}
 
 		if (iter.taskIgnore)
 			continue;
