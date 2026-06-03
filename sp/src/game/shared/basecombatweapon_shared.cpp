@@ -2142,6 +2142,12 @@ bool CBaseCombatWeapon::Holster( CBaseCombatWeapon *pSwitchingTo )
 	m_bInReload = false; 
 	m_bFiringWholeClip = false;
 
+	CBasePlayer* pPlayer = ToBasePlayer(GetOwner()); // Weapon Smoke effect fix
+	if (pPlayer)
+	{
+		StopParticleEffects(pPlayer->GetViewModel()); // Weapon Smoke effect fix
+	}
+
 	//tell everyone that we are holstering.
 	m_bHolstering = true;
 
