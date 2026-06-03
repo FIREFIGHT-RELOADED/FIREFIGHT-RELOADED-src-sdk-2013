@@ -433,7 +433,10 @@ void CWeaponTurret::MoveHologram(void)
 
 		if (tr.fraction != 1.0)
 		{
+			// Raise the end position a little up off the floor, place the npc and drop him down
+			tr.endpos.z += 12;
 			pHologram->SetAbsOrigin(tr.endpos);
+			UTIL_DropToFloor(pHologram, MASK_NPCSOLID);
 			//pHologram->SetAbsAngles(angles);
 
 			// Calculate build angles
