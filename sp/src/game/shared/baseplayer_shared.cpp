@@ -354,7 +354,7 @@ void CBasePlayer::ItemPostFrame()
 			pRailgun = (CWeaponRailgun*)pWeapon;
 			break;
 		}
-}
+	}
 
 	if (pRailgun)
 	{
